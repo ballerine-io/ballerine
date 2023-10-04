@@ -21,7 +21,7 @@ import { File } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import keyBy from 'lodash/keyBy';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { ITokenScope } from "@/common/decorators/token-scope.decorator";
+import { ITokenScope } from '@/common/decorators/token-scope.decorator';
 
 type OptionalUiDefDefiniton = UiDefDefinition | null;
 
@@ -150,6 +150,15 @@ export class CollectionFlowService {
     return workflowData ? workflowData : null;
   }
 
+  async getWorkflowContext(workflowId: string, projectIds: TProjectIds) {
+    const workflowContext = await this.workflowRuntimeDataRepository.findContext(
+      workflowId,
+      projectIds,
+    );
+
+    return workflowContext;
+  }
+
   // async updateFlow(
   //   adapter: IWorkflowAdapter,
   //   updatePayload: UpdateFlowPayload,
@@ -244,26 +253,37 @@ export class CollectionFlowService {
     return updatedDocuments;
   }
 
-  async updateWorkflowRuntimeData(payload: UpdateFlowDto, tokenScope: ITokenScope){
-    const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(tokenScope.workflowRuntimeDataId,{}, [tokenScope.projectId] as TProjectIds);
+  async updateWorkflowRuntimeData(payload: UpdateFlowDto, tokenScope: ITokenScope) {
+    const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
+      tokenScope.workflowRuntimeDataId,
+      {},
+      [tokenScope.projectId] as TProjectIds,
+    );
 
-    if (payload.data.endUser){
-      await this.endUserService.updateById(tokenScope.endUserId, {data: payload.data.endUser}, tokenScope.projectId)
+    if (payload.data.endUser) {
+      await this.endUserService.updateById(
+        tokenScope.endUserId,
+        { data: payload.data.endUser },
+        tokenScope.projectId,
+      );
     }
 
-    if (payload.data.ballerineEntityId && payload.data.business){
-      await this.businessService.updateById(payload.data.ballerineEntityId!, { data: payload.data.business }, tokenScope.projectId)
+    if (payload.data.ballerineEntityId && payload.data.business) {
+      await this.businessService.updateById(
+        payload.data.ballerineEntityId!,
+        { data: payload.data.business },
+        tokenScope.projectId,
+      );
     }
 
     return await this.workflowService.createOrUpdateWorkflowRuntime({
-        workflowDefinitionId: workflowRuntime.workflowDefinitionId,
-        context: payload.data.context as DefaultContextSchema,
-        config: workflowRuntime.config,
-        parentWorkflowId: undefined,
-        projectIds: [tokenScope.projectId],
-        currentProjectId: tokenScope.projectId
-      }
-    );
+      workflowDefinitionId: workflowRuntime.workflowDefinitionId,
+      context: payload.data.context as DefaultContextSchema,
+      config: workflowRuntime.config,
+      parentWorkflowId: undefined,
+      projectIds: [tokenScope.projectId],
+      currentProjectId: tokenScope.projectId,
+    });
   }
 
   async finishFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {

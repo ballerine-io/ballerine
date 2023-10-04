@@ -11,10 +11,11 @@ interface State {
   payload: ContextPayload;
 }
 
-export const useStateLogic = (machineApi: StateMachineAPI) => {
+export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) => {
   useEffect(() => {
     machineApi.setContext({
       ...machineApi.getContext(),
+      ...initialContext,
       flowConfig: { apiUrl: `http://${new URL(import.meta.env.VITE_API_URL as string).host}` },
       tokenId: getAccessToken(),
     });

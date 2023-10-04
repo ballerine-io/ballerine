@@ -1,9 +1,7 @@
 import * as common from '@nestjs/common';
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
-import {
-  UnsupportedFlowTypeException
-} from '@/collection-flow/exceptions/unsupported-flow-type.exception';
+import { UnsupportedFlowTypeException } from '@/collection-flow/exceptions/unsupported-flow-type.exception';
 import { UpdateFlowDto } from '@/collection-flow/dto/update-flow-input.dto';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
@@ -13,10 +11,10 @@ import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { Public } from '@/common/decorators/public.decorator';
 import { ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
-import { WorkflowService } from "@/workflow/workflow.service";
-import { EndUserService } from "@/end-user/end-user.service";
-import { BusinessService } from "@/business/business.service";
-import { DefaultContextSchema } from "@ballerine/common";
+import { WorkflowService } from '@/workflow/workflow.service';
+import { EndUserService } from '@/end-user/end-user.service';
+import { BusinessService } from '@/business/business.service';
+import { DefaultContextSchema } from '@ballerine/common';
 
 @Public()
 @UseTokenAuthGuard()
@@ -63,6 +61,13 @@ export class ColectionFlowController {
     }
   }
 
+  @common.Get('/context')
+  async getContext(@TokenScope() tokenScope: ITokenScope) {
+    return await this.service.getWorkflowContext(tokenScope.workflowRuntimeDataId, [
+      tokenScope.projectId,
+    ]);
+  }
+
   @common.Get('/configuration')
   async getFlowConfiguration(
     @TokenScope() tokenScope: ITokenScope,
@@ -93,22 +98,22 @@ export class ColectionFlowController {
 
   @common.Put('')
   async updateFlow(@common.Body() payload: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
-    return await this.service.updateWorkflowRuntimeData(payload, tokenScope)
+    return await this.service.updateWorkflowRuntimeData(payload, tokenScope);
   }
 
   @common.Post('/send-event')
   async finishFlow(
     @TokenScope() tokenScope: ITokenScope,
     @common.Body() body: { eventName: string },
-    ) {
+  ) {
     return await this.workflowService.event(
       {
         id: tokenScope.workflowRuntimeDataId,
-        name: body.eventName
+        name: body.eventName,
       },
       [tokenScope.projectId],
-      tokenScope.projectId
-    )
+      tokenScope.projectId,
+    );
   }
 
   @common.Post('resubmit')

@@ -58,24 +58,30 @@ export const ContactsPage = {
               name: 'first-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainContact.firstName',
-              option: {
+              options: {
                 label: 'Name',
                 hint: 'First Name',
+                jsonFormDefinition: {
+                  type: 'string'
+                }
               },
             },
             {
               name: 'last-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainContact.lastName',
-              option: {
+              options: {
                 hint: 'Last Name',
+                jsonFormDefinition: {
+                  type: 'string'
+                }
               },
             },
             {
               name: 'email-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainContact.email',
-              option: {
+              options: {
                 jsonFormDefinition: {
                   type: 'string',
                   format: 'email',
@@ -88,8 +94,12 @@ export const ContactsPage = {
               name: 'phone-number-input',
               type: 'international-phone-number',
               valueDestination: 'entity.data.additionalInfo.mainContact.phone',
-              option: {
+              options: {
                 label: 'Phone Number',
+                uiSchema: {
+                  'ui:field': 'PhoneInput',
+                  'ui:label': true,
+                }
               },
             },
           ],

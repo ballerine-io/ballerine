@@ -2,6 +2,7 @@ import {
   fetchActiveWorkflow,
   fetchCollectionFlowSchema,
   fetchCustomer,
+  fetchFlowContext,
   fetchUISchema,
   getFlowSession,
 } from '@app/domains/collection-flow/collection-flow.api';
@@ -28,5 +29,9 @@ export const collectionFlowQuerykeys = createQueryKeys('collectionFlow', {
   getCustomer: () => ({
     queryKey: [{}],
     queryFn: () => fetchCustomer(),
+  }),
+  getContext: () => ({
+    queryKey: [{}],
+    queryFn: () => fetchFlowContext(),
   }),
 });
