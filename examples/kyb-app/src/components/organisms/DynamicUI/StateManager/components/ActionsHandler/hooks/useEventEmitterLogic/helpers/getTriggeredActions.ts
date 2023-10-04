@@ -5,7 +5,7 @@ export const getTriggeredActions = (event: UIEvent, actions: Action[]): Action[]
   return actions.filter(action => {
     return (
       action.dispatchOn.uiEvents.length &&
-      action.dispatchOn.uiEvents.every(
+      action.dispatchOn.uiEvents.some(
         actionEvent =>
           actionEvent.uiElementName === event.elementName &&
           actionEvent.event.toLocaleLowerCase() === event.type.toLocaleLowerCase(),

@@ -27,40 +27,13 @@ const availableOnButtonRule = {
 const dispatchOpenCorporateRule = {
   and: [
     {
-      '>': [
-        {
-          length: {
-            var: 'entity.data.registrationNumber',
-          },
-        },
-        4,
-      ],
+      var: 'entity.data.registrationNumber',
     },
     {
-      and: [
-        {
-          '==': [
-            {
-              length: {
-                var: 'entity.data.country',
-              },
-            },
-            2,
-          ],
-        },
-        {
-          '==': [
-            {
-              var: 'entity.data.country',
-            },
-            {
-              toUpperCase: {
-                var: 'entity.data.country',
-              },
-            },
-          ],
-        },
-      ],
+      var: 'entity.data.country',
+    },
+    {
+      var: 'entity.data.state',
     },
   ],
 };
@@ -112,6 +85,17 @@ export const BusinessInfoPage = {
               valueDestination: 'entity.data.country',
               options: {
                 hint: 'Hong Kong',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+              },
+            },
+            {
+              name: 'state-input',
+              type: 'state',
+              valueDestination: 'entity.data.state',
+              options: {
+                hint: 'State',
                 jsonFormDefinition: {
                   type: 'string',
                 },

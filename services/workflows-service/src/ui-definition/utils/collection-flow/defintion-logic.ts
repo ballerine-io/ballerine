@@ -76,6 +76,7 @@ export const definition = {
         url: `{VITE_API_URL}/api/v1/collection-flow/end-user`,
         method: 'POST',
         headers: { Authorization: 'Bearer {tokenId}' },
+        stateNames: [],
         request: {
           transform: [
             {
@@ -118,6 +119,7 @@ export const definition = {
         pluginKind: 'api',
         url: `{VITE_API_URL}/api/v1/collection-flow/business/business-information`,
         method: 'GET',
+        stateNames: [],
         headers: { Authorization: 'Bearer {tokenId}' },
         request: {
           transform: [

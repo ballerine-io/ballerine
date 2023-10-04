@@ -31,8 +31,6 @@ export const App = () => {
   const elements = schema.data?.uiSchema?.elements;
   const definition = schema.data?.definition.definition;
 
-  console.log('def', definition);
-
   return (
     <AppLoadingContainer dependencies={dependancyQueries}>
       {/* <CustomerProvider loadingPlaceholder={<LoadingScreen />} fallback={CustomerProviderFallback}>
@@ -49,7 +47,6 @@ export const App = () => {
             {({ state, stateApi }) => (
               <DynamicUI.PageResolver state={state} pages={elements}>
                 {({ currentPage }) => {
-                  console.log('current page', currentPage);
                   return currentPage ? (
                     <>
                       <ActionsHandler actions={currentPage.actions} stateApi={stateApi}>

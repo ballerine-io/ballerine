@@ -18,8 +18,10 @@ import { JmespathTransformer } from './utils/context-transformers/jmespath-trans
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 import {
   ActionablePlugin,
-  ActionablePlugins, CommonPlugin,
-  CommonPlugins, HttpPlugin,
+  ActionablePlugins,
+  CommonPlugin,
+  CommonPlugins,
+  HttpPlugin,
   HttpPlugins,
   StatePlugin,
 } from './plugins/types';
@@ -508,27 +510,31 @@ export class WorkflowRunner {
 
   private async __invokeCommonPlugin(commonPlugin: CommonPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const {callbackAction, error} = await commonPlugin.invoke?.(this.#__context);
+    const { callbackAction, error } = await commonPlugin.invoke?.(this.#__context);
     if (!!error) {
       this.#__context.pluginsOutput = {
         ...(this.#__context.pluginsOutput || {}),
-        ...{[commonPlugin.name]: {error: error}},
+        ...{ [commonPlugin.name]: { error: error } },
       };
     }
-    if (callbackAction) await this.sendEvent({type: callbackAction});
+    if (callbackAction) await this.sendEvent({ type: callbackAction });
   }
 
   private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const {callbackAction, responseBody, error} = await apiPlugin.invoke?.(this.#__context);
+    const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(this.#__context);
     if (!this.isPluginWithCallbackAction(apiPlugin)) return;
 
     if (apiPlugin.persistResponseDestination && responseBody) {
-      this.#__context = this.mergeToContext(this.#__context, responseBody, apiPlugin.persistResponseDestination)
+      this.#__context = this.mergeToContext(
+        this.#__context,
+        responseBody,
+        apiPlugin.persistResponseDestination,
+      );
     } else {
       this.#__context.pluginsOutput = {
         ...(this.#__context.pluginsOutput || {}),
-        ...{[apiPlugin.name]: responseBody ? responseBody : {error: error}},
+        ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
       };
     }
 
@@ -547,32 +553,32 @@ export class WorkflowRunner {
     return service.getSnapshot();
   }
 
-  overrideContext(context: any){
-    return this.#__context = context
+  overrideContext(context: any) {
+    return (this.#__context = context);
   }
 
-  async invokePlugin(pluginName: string){
+  async invokePlugin(pluginName: string) {
     const { apiPlugins, commonPlugins, childWorkflowPlugins } = this.#__extensions;
     const pluginToInvoke = [
       ...(apiPlugins ?? []),
       ...(commonPlugins ?? []),
-      ...(childWorkflowPlugins ?? [])
+      ...(childWorkflowPlugins ?? []),
     ]
       .filter(plugin => !!plugin)
-      .find(plugin => plugin?.name === pluginName)
+      .find(plugin => plugin?.name === pluginName);
 
     if (pluginToInvoke && this.isHttpPlugin(pluginToInvoke)) {
-      return await this.__invokeApiPlugin(pluginToInvoke)
+      return await this.__invokeApiPlugin(pluginToInvoke);
     }
     if (pluginToInvoke && pluginToInvoke instanceof IterativePlugin) {
-      return await this.__invokeCommonPlugin(pluginToInvoke)
+      return await this.__invokeCommonPlugin(pluginToInvoke);
     }
   }
 
   isHttpPlugin(plugin: unknown): plugin is HttpPlugin {
-    return plugin instanceof ApiPlugin ||
-      plugin instanceof WebhookPlugin ||
-      plugin instanceof KycPlugin;
+    return (
+      plugin instanceof ApiPlugin || plugin instanceof WebhookPlugin || plugin instanceof KycPlugin
+    );
   }
 
   mergeToContext(
@@ -599,25 +605,25 @@ export class WorkflowRunner {
     obj[finalKey] = this.deepMerge(informationToPersist, obj[finalKey]);
 
     return sourceContext;
-  };
+  }
 
   deepMerge(source: Record<string, any>, target: Record<string, any>) {
-    const output = {...target};
+    const output = { ...target };
 
     if (isObject(target) && isObject(source)) {
-      Object.keys(source).forEach((key) => {
+      Object.keys(source).forEach(key => {
         if (isObject(source[key])) {
           if (!target[key]) {
-            Object.assign(output, {[key]: source[key]});
+            Object.assign(output, { [key]: source[key] });
           } else {
             output[key] = this.deepMerge(source[key], target[key]);
           }
         } else {
-          Object.assign(output, {[key]: source[key]});
+          Object.assign(output, { [key]: source[key] });
         }
       });
     }
 
     return output;
-  };
+  }
 }
