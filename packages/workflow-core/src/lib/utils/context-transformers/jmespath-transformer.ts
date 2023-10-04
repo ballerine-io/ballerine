@@ -19,7 +19,7 @@ export class JmespathTransformer extends BaseContextTransformer {
    */
   async transform(context: TContext, _options = {}) {
     const response = await search(context, this.mapping);
-    debugger
+
     return response;
   }
 }
