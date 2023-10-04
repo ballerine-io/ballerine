@@ -1,33 +1,36 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { fetchUpdateWorkflowById, TWorkflowById } from '../../../fetchers';
+import { TWorkflowById, updateWorkflowDocumentById } from '../../../fetchers';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import { workflowsQueryKeys } from '../../../query-keys';
 
-export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: string }) => {
+export const useUpdateDocumentByIdMutation = ({
+  workflowId,
+  documentId,
+}: {
+  workflowId: string;
+  documentId: string;
+}) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
   const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
 
   return useMutation({
     mutationFn: ({
-      context,
+      document,
     }: {
-      context: Record<PropertyKey, unknown>;
-      action:
-        | 'approve_document'
-        | 'reject_document'
-        | 'ask_revision_document'
-        | 'update_document_properties';
+      document: Record<PropertyKey, unknown>;
+      action: 'update_document_properties';
     }) =>
-      fetchUpdateWorkflowById({
+      updateWorkflowDocumentById({
         workflowId,
+        documentId,
         body: {
-          context,
+          document,
         },
       }),
-    onMutate: async ({ context }) => {
+    onMutate: async ({ document }) => {
       await queryClient.cancelQueries({
         queryKey: workflowById.queryKey,
       });
@@ -37,8 +40,13 @@ export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: stri
         return {
           ...oldWorkflow,
           context: {
-            ...oldWorkflow?.context,
-            ...context,
+            ...oldWorkflow.context,
+            documents: oldWorkflow.context.documents.map((doc: { id: string }) => {
+              if (doc.id === documentId) {
+                return document;
+              }
+              return doc;
+            }),
           },
         };
       });
