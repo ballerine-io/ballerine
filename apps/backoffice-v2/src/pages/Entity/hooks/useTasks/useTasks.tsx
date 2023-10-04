@@ -418,7 +418,6 @@ export const useTasks = ({
         {
           type: 'table',
           value: {
-            caption: 'Table caption',
             columns: [
               {
                 accessorKey: 'id',
@@ -455,7 +454,6 @@ export const useTasks = ({
         {
           type: 'table',
           value: {
-            caption: 'Table caption',
             columns: [
               {
                 accessorKey: 'id',

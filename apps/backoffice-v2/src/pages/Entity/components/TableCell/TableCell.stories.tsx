@@ -101,3 +101,22 @@ export const WithNoColumns = {
     },
   },
 } satisfies Story;
+
+export const WithCustomCells = {
+  args: {
+    value: {
+      caption: 'Caption',
+      columns: [
+        {
+          accessorKey: 'url',
+          header: 'URL',
+        },
+      ],
+      data: [
+        {
+          url: 'https://www.google.com',
+        },
+      ],
+    },
+  },
+} satisfies Story;
