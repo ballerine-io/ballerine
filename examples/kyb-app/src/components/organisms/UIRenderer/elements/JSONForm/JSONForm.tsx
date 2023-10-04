@@ -45,7 +45,7 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
 
   const handleSubmit = useCallback(() => {}, []);
 
-  console.log('json form render', formSchema);
+  console.log('json form render', uiSchema);
 
   return (
     <DynamicForm schema={formSchema} uiSchema={uiSchema} fields={fields} onSubmit={handleSubmit} />
