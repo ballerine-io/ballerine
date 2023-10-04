@@ -148,6 +148,7 @@ export const definition = {
           ],
         },
         persistResponseDestination: 'entity.data',
+        successAction: 'business_information'
       },
     ],
   },
