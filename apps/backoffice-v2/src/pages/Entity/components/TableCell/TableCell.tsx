@@ -4,7 +4,7 @@ import {
   Table,
   TableBody,
   TableCaption,
-  TableCell as TableCellUI,
+  TableCell as TableCellComponent,
   TableHead,
   TableHeader,
   TableRow,
@@ -45,21 +45,21 @@ export const TableCell = forwardRef(
             table.getRowModel().rows?.map(row => (
               <TableRow key={row.id} {...value?.props?.row}>
                 {row.getVisibleCells()?.map(cell => (
-                  <TableCellUI key={cell.id}>
+                  <TableCellComponent key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCellUI>
+                  </TableCellComponent>
                 ))}
               </TableRow>
             ))}
           {!table.getRowModel().rows?.length && (
             <TableRow {...value?.props?.row}>
-              <TableCellUI
+              <TableCellComponent
                 colSpan={value?.columns?.length}
                 className="h-24 text-center"
                 {...value?.props?.cell}
               >
                 No results.
-              </TableCellUI>
+              </TableCellComponent>
             </TableRow>
           )}
         </TableBody>
