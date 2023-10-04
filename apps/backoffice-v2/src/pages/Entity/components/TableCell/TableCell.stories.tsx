@@ -111,10 +111,21 @@ export const WithCustomCells = {
           accessorKey: 'url',
           header: 'URL',
         },
+        {
+          accessorKey: 'json',
+          header: 'JSON',
+        },
       ],
       data: [
         {
-          url: 'https://www.google.com',
+          url: 'https://www.example1.com',
+          json: {
+            foo: 'bar',
+          },
+        },
+        {
+          url: 'https://www.example2.com',
+          json: [1, 2, 3],
         },
       ],
     },

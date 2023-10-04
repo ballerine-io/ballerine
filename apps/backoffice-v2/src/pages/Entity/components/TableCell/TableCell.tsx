@@ -13,6 +13,9 @@ import { ITableCellProps } from './interfaces';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import { buttonVariants } from '../../../../common/components/atoms/Button/Button';
+import { isObject } from '@ballerine/common';
+import { FileJson2 } from 'lucide-react';
+import { JsonDialog } from '../../../../common/components/molecules/JsonDialog';
 
 export const TableCell = forwardRef(
   <TData extends RowData, TValue = unknown>(
@@ -27,6 +30,22 @@ export const TableCell = forwardRef(
       defaultColumn: {
         cell: props => {
           const value = props.getValue();
+
+          if (isObject(value) || Array.isArray(value)) {
+            return (
+              <div className={`flex items-end justify-start`}>
+                <JsonDialog
+                  buttonProps={{
+                    variant: 'link',
+                    className: 'p-0 text-blue-500',
+                  }}
+                  rightIcon={<FileJson2 size={`16`} />}
+                  dialogButtonText={`View Information`}
+                  json={JSON.stringify(value)}
+                />
+              </div>
+            );
+          }
 
           if (isValidUrl(value)) {
             return (
