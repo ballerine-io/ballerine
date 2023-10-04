@@ -16,6 +16,7 @@ import { ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorat
 import { WorkflowService } from "@/workflow/workflow.service";
 import { EndUserService } from "@/end-user/end-user.service";
 import { BusinessService } from "@/business/business.service";
+import { DefaultContextSchema } from "@ballerine/common";
 
 @Public()
 @UseTokenAuthGuard()
@@ -98,15 +99,13 @@ export class ColectionFlowController {
       await this.endUserService.updateById(tokenScope.endUserId, {data: dto.data.endUser}, tokenScope.projectId)
     }
 
-    if (dto.data.business){
-      const {id, ...restBusinessInfo} = dto.data.business
-
-      await this.businessService.updateById(id!, {data: restBusinessInfo}, tokenScope.projectId)
+    if (dto.data.ballerineEntityId && dto.data.business){
+      await this.businessService.updateById(dto.data.ballerineEntityId!, { data: dto.data.business }, tokenScope.projectId)
     }
 
     return await this.workflowService.createOrUpdateWorkflowRuntime({
         workflowDefinitionId: workflowRuntime.workflowDefinitionId,
-        context: dto.data.context,
+        context: dto.data.context as DefaultContextSchema,
         config: workflowRuntime.config,
         parentWorkflowId: undefined,
         projectIds: [tokenScope.projectId],
@@ -115,13 +114,18 @@ export class ColectionFlowController {
     );
   }
 
-  @common.Post('finish')
-  async finishFlow(@TokenScope() tokenScope: ITokenScope) {
-    return this.service.finishFlow(
-      tokenScope.workflowRuntimeDataId,
+  @common.Post('/send-event')
+  async finishFlow(
+    @TokenScope() tokenScope: ITokenScope,
+    @common.Body() body: { eventName: string },
+    ) {
+    return await this.workflowService.event(
+      {
+        id: tokenScope.workflowRuntimeDataId,
+        name: body.eventName
+      },
       [tokenScope.projectId],
-      tokenScope.projectId,
-    );
+      tokenScope.projectId)
   }
 
   @common.Post('resubmit')

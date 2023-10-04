@@ -91,6 +91,9 @@ export class UpdateFlowPayload {
   @IsObject()
   business?: object;
 
+  @IsString()
+  ballerineEntityId?: string;
+
   @IsObject()
   endUser?: object;
 
@@ -101,5 +104,5 @@ export class UpdateFlowPayload {
 export class UpdateFlowDto {
   @ValidateNested()
   @IsNotEmpty()
-  data!: any;
+  data!: UpdateFlowPayload;
 }

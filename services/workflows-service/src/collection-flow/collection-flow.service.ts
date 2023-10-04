@@ -251,21 +251,6 @@ export class CollectionFlowService {
       {},
       projectIds,
     );
-
-    return await this.workflowService.updateContextById(
-      workflowRuntimeData.id,
-      {
-        ...workflowRuntimeData.context,
-        entity: {
-          ...workflowRuntimeData.context.entity,
-          data: {
-            ...workflowRuntimeData.context.entity.data,
-            __isFinished: true,
-          },
-        },
-      },
-      projectIds,
-    );
   }
 
   async resubmitFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
