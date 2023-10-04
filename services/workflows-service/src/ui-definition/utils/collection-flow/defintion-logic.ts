@@ -117,7 +117,7 @@ export const definition = {
       {
         name: 'fetch_company_information',
         pluginKind: 'api',
-        url: `{VITE_API_URL}/api/v1/collection-flow/business/business-information`,
+        url: `{flowConfig.apiUrl}/api/v1/collection-flow/business/business-information`,
         method: 'GET',
         stateNames: [],
         headers: { Authorization: 'Bearer {tokenId}' },
@@ -133,6 +133,21 @@ export const definition = {
             },
           ],
         },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+              companyName: name,
+              taxIdentificationNumber: vat,
+              numberOfEmployees: numberOfEmployees,
+              businessType: companyType,
+              additionalInfo: {openCorporate: @}
+              }`,
+            },
+          ],
+        },
+        persistResponseDestination: 'entity.data',
       },
     ],
   },

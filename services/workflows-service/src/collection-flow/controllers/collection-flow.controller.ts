@@ -14,7 +14,7 @@ import { ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorat
 
 @Public()
 @UseTokenAuthGuard()
-@common.Controller('collection-flow')
+@common.Controller('internal/collection-flow')
 export class ColectionFlowController {
   constructor(
     protected readonly service: CollectionFlowService,
