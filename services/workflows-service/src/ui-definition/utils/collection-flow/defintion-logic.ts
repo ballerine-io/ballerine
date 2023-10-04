@@ -107,7 +107,8 @@ export const definition = {
               data: {
                 context: @,
                 endUser: entity.data.additionalInfo.mainRepresentative,
-                business: merge({id: ballerineEntityId}, entity.data)
+                business: entity.data,
+                ballerineEntityId: ballerineEntityId
                 }
               }`
             },
@@ -152,6 +153,22 @@ export const definition = {
         successAction: 'business_information',
         errorAction: 'business_information',
       },
+      {
+        name: 'send_collection_flow_finished',
+        pluginKind: 'api',
+        url: `{flowConfig.apiUrl}/api/v1/collection-flow/send-event/?token={tokenId}`,
+        method: 'POST',
+        stateNames: ['finished'],
+        headers: { Authorization: 'Bearer {tokenId}' },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{eventName: 'COLLECTION_FLOW_FINISHED'}`
+            },
+          ],
+        },
+      }
     ],
   },
 };
