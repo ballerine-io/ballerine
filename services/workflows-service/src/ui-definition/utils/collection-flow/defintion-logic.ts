@@ -73,7 +73,7 @@ export const definition = {
       {
         name: 'update_end_user',
         pluginKind: 'api',
-        url: `{VITE_API_URL}/api/v1/collection-flow/end-user`,
+        url: `{flowConfig.apiUrl}/api/v1/collection-flow/end-user?toke={tokenId}`,
         method: 'POST',
         headers: { Authorization: 'Bearer {tokenId}' },
         stateNames: [],
@@ -95,7 +95,7 @@ export const definition = {
       {
         name: 'update_runtime_data',
         pluginKind: 'api',
-        url: `{VITE_API_URL}/api/v1/collection-flow/{tokenId}`,
+        url: `{flowConfig.apiUrl}/api/v1/collection-flow/{tokenId}`,
         method: 'PUT',
         stateNames: ['company_information', 'address_information'],
         headers: { Authorization: 'Bearer {tokenId}' },
@@ -117,7 +117,7 @@ export const definition = {
       {
         name: 'fetch_company_information',
         pluginKind: 'api',
-        url: `{flowConfig.apiUrl}/api/v1/collection-flow/business/business-information?token={tokenId}`,
+        url: `{flowConfig.apiUrl}/api/v1/collection-flow/business/business-information`,
         method: 'GET',
         stateNames: [],
         headers: { Authorization: 'Bearer {tokenId}' },
@@ -126,6 +126,7 @@ export const definition = {
             {
               transformer: 'jmespath',
               mapping: `{
+              token: tokenId,
               registrationNumber: entity.data.registrationNumber,
               jurisdictionCode: entity.data.country,
               vendor: 'open-corporates'
