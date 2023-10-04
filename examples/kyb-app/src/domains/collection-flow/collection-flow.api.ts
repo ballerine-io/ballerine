@@ -10,6 +10,7 @@ import {
   UISchema,
   UpdateFlowDto,
 } from '@app/domains/collection-flow/types';
+import { AnyObject } from '@ballerine/ui';
 
 export const fetchUser = async (): Promise<TUser> => {
   const result = await request.get('collection-flow/user').json<TUser>();
@@ -78,4 +79,10 @@ export const fetchCustomer = async (): Promise<TCustomer> => {
   const result = await request.get('collection-flow/customer').json<TCustomer>();
 
   return result;
+};
+
+export const fetchFlowContext = async (): Promise<AnyObject> => {
+  const result = await request.get('collection-flow/context');
+
+  return result.json();
 };

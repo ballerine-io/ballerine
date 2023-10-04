@@ -16,6 +16,7 @@ import { Cell } from '@app/components/organisms/UIRenderer/elements/Cell';
 import { ActionsHandler } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
 import { ButtonUIElement } from '@app/components/organisms/UIRenderer/elements/ButtonUI';
 import { JSONForm } from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
+import { useFlowContextQuery } from '@app/hooks/useFlowContextQuery';
 
 const elems = {
   h1: Title,
@@ -26,17 +27,22 @@ const elems = {
 };
 
 export const App = () => {
-  const dependancyQueries = [useCollectionFlowSchemaQuery(), useCustomerQuery()];
+  const dependancyQueries = [
+    useCollectionFlowSchemaQuery(),
+    useCustomerQuery(),
+    useFlowContextQuery(),
+  ];
   const schema = useUISchemasQuery();
   const elements = schema.data?.uiSchema?.elements;
   const definition = schema.data?.definition.definition;
+  const { data: context } = useFlowContextQuery();
 
   return (
     <AppLoadingContainer dependencies={dependancyQueries}>
       {/* <CustomerProvider loadingPlaceholder={<LoadingScreen />} fallback={CustomerProviderFallback}>
         <RouterProvider router={router} />
       </CustomerProvider> */}
-      {definition ? (
+      {definition && context ? (
         <DynamicUI>
           <DynamicUI.StateManager
             workflowId="1"

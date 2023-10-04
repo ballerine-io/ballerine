@@ -22,6 +22,7 @@ interface Props<TFormData> {
   warnings?: InputsWarnings;
   disabled?: boolean;
   fields?: Record<keyof RegistryFieldsType, RJSVInputAdapter<any>>;
+  liveValidate?: boolean;
   transformErrors?: (errors: RJSFValidationError[], uiSchema: UiSchema) => RJSFValidationError[];
   onChange?: (formData: TFormData) => void;
   onSubmit: (formData: TFormData) => void;
@@ -35,6 +36,7 @@ export function DynamicForm<TFormData extends object>({
   warnings,
   disabled,
   fields = baseFields,
+  liveValidate = false,
   transformErrors,
   onChange,
   onSubmit,
@@ -76,6 +78,7 @@ export function DynamicForm<TFormData extends object>({
         templates={templates}
         showErrorList={false}
         disabled={disabled}
+        liveValidate={liveValidate}
         transformErrors={transformErrors}
       />
     </Provider>

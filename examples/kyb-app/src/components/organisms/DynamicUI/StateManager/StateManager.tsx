@@ -14,15 +14,16 @@ export const StateManager = ({
   definitionType,
   children,
   workflowId,
+  initialContext,
 }: StateManagerProps) => {
   const machine = useMemo(
     () => createStateMachine(workflowId, definition, definitionType, extensions),
-    [definition, workflowId],
+    [definition, workflowId, definitionType, extensions],
   );
 
   const { machineApi } = useMachineLogic(machine);
   const { contextPayload, state, sendEvent, invokePlugin, setContext, getContext, getState } =
-    useStateLogic(machineApi);
+    useStateLogic(machineApi, initialContext);
 
   console.log('context', machineApi.getContext());
 
