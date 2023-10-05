@@ -20,6 +20,7 @@ import { useRevisionTaskByIdMutation } from '../../../../domains/entities/hooks/
 import { MotionBadge } from '../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
+import { workflowRuntimeDataContext } from '../../__TEMP__';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -412,6 +413,14 @@ export const useTasks = ({
           },
         ];
 
+  const {
+    entity: {
+      data: { additionalInfo: mockEntityDataAdditionalInfo },
+    },
+  } = workflowRuntimeDataContext;
+  const { store: storeInfo, bank: bankDetails } = mockEntityDataAdditionalInfo;
+  const { website: websiteBasicRequirement, processingDetails } = storeInfo;
+
   const storeInfoBlock = [
     {
       cells: [
@@ -426,33 +435,14 @@ export const useTasks = ({
         {
           type: 'details',
           value: {
-            data: [
-              {
-                title: 'Company English Name',
-                value: 'ACME Corp',
-              },
-              {
-                title: 'Registration Number',
-                value: 'CRN12345678',
-              },
-              {
-                title: 'Company Type',
-                value: 'Limited License',
-              },
-              {
-                title: 'Registered Country',
-                value: 'United Kingdom',
-              },
-              {
-                title: 'Tax Identity Number',
-                value: 'Empty',
-              },
-              {
-                title: 'Date of Establishment',
-                value: '10/02/1998',
-              },
-            ],
+            data: Object.entries(storeInfo ?? {})?.map(([title, value]) => ({
+              title,
+              value,
+              type: 'string',
+              isEditable: false,
+            })),
           },
+          hideSeparator: true,
         },
       ],
     },
@@ -472,33 +462,14 @@ export const useTasks = ({
         {
           type: 'details',
           value: {
-            data: [
-              {
-                title: 'Company English Name',
-                value: 'ACME Corp',
-              },
-              {
-                title: 'Registration Number',
-                value: 'CRN12345678',
-              },
-              {
-                title: 'Company Type',
-                value: 'Limited License',
-              },
-              {
-                title: 'Registered Country',
-                value: 'United Kingdom',
-              },
-              {
-                title: 'Tax Identity Number',
-                value: 'Empty',
-              },
-              {
-                title: 'Date of Establishment',
-                value: '10/02/1998',
-              },
-            ],
+            data: Object.entries(bankDetails ?? {})?.map(([title, value]) => ({
+              title,
+              value,
+              type: 'string',
+              isEditable: false,
+            })),
           },
+          hideSeparator: true,
         },
       ],
     },
@@ -518,33 +489,41 @@ export const useTasks = ({
         {
           type: 'details',
           value: {
-            data: [
-              {
-                title: 'Company English Name',
-                value: 'ACME Corp',
-              },
-              {
-                title: 'Registration Number',
-                value: 'CRN12345678',
-              },
-              {
-                title: 'Company Type',
-                value: 'Limited License',
-              },
-              {
-                title: 'Registered Country',
-                value: 'United Kingdom',
-              },
-              {
-                title: 'Tax Identity Number',
-                value: 'Empty',
-              },
-              {
-                title: 'Date of Establishment',
-                value: '10/02/1998',
-              },
-            ],
+            data: Object.entries(websiteBasicRequirement ?? {})?.map(([title, value]) => ({
+              title,
+              value,
+              type: 'string',
+              isEditable: false,
+            })),
           },
+          hideSeparator: true,
+        },
+      ],
+    },
+  ];
+
+  const processingDetailsBlock = [
+    {
+      cells: [
+        {
+          type: 'heading',
+          value: 'Processing details',
+        },
+        {
+          type: 'subheading',
+          value: 'User-Provided Data',
+        },
+        {
+          type: 'details',
+          value: {
+            data: Object.entries(processingDetails ?? {})?.map(([title, value]) => ({
+              title,
+              value,
+              type: 'string',
+              isEditable: false,
+            })),
+          },
+          hideSeparator: true,
         },
       ],
     },
@@ -556,6 +535,7 @@ export const useTasks = ({
           ...storeInfoBlock,
           ...websiteBasicRequirementBlock,
           ...bankingDetailsBlock,
+          ...processingDetailsBlock,
           ...entityInfoBlock,
           ...registryInfoBlock,
           ...taskBlocks,
