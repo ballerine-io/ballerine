@@ -458,9 +458,62 @@ export const useTasks = ({
     },
   ];
 
+  const websiteBasicRequirementBlock = [
+    {
+      cells: [
+        {
+          type: 'heading',
+          value: 'Website Basic Requirement',
+        },
+        {
+          type: 'subheading',
+          value: 'User-Provided Data',
+        },
+        {
+          type: 'details',
+          value: {
+            data: [
+              {
+                title: 'Company English Name',
+                value: 'ACME Corp',
+              },
+              {
+                title: 'Registration Number',
+                value: 'CRN12345678',
+              },
+              {
+                title: 'Company Type',
+                value: 'Limited License',
+              },
+              {
+                title: 'Registered Country',
+                value: 'United Kingdom',
+              },
+              {
+                title: 'Tax Identity Number',
+                value: 'Empty',
+              },
+              {
+                title: 'Date of Establishment',
+                value: '10/02/1998',
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ];
+
   return useMemo(() => {
     return entity
-      ? [...storeInfoBlock, ...entityInfoBlock, ...registryInfoBlock, ...taskBlocks, ...mapBlock]
+      ? [
+          ...storeInfoBlock,
+          ...websiteBasicRequirementBlock,
+          ...entityInfoBlock,
+          ...registryInfoBlock,
+          ...taskBlocks,
+          ...mapBlock,
+        ]
       : [];
   }, [
     address,
