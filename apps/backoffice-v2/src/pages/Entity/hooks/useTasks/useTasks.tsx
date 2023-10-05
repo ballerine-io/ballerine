@@ -20,7 +20,6 @@ import { useRevisionTaskByIdMutation } from '../../../../domains/entities/hooks/
 import { MotionBadge } from '../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
-import { workflowRuntimeDataContext } from '../../__TEMP__';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -42,6 +41,9 @@ export const useTasks = ({
   documents: TWorkflowById['context']['documents'];
   parentMachine: TWorkflowById['context']['parentMachine'];
 }) => {
+  const { store: storeInfo, bank: bankDetails } =
+    workflow?.context?.entity?.data?.additionalInfo ?? {};
+  const { website: websiteBasicRequirement, processingDetails } = storeInfo ?? {};
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
   const docsData = useStorageFilesQuery(
@@ -413,133 +415,137 @@ export const useTasks = ({
           },
         ];
 
-  const {
-    entity: {
-      data: { additionalInfo: mockEntityDataAdditionalInfo },
-    },
-  } = workflowRuntimeDataContext;
-  const { store: storeInfo, bank: bankDetails } = mockEntityDataAdditionalInfo;
-  const { website: websiteBasicRequirement, processingDetails } = storeInfo;
-
-  const storeInfoBlock = [
-    {
-      cells: [
-        {
-          type: 'heading',
-          value: 'Store Info',
-        },
-        {
-          type: 'subheading',
-          value: 'User-provided data',
-        },
-        {
-          type: 'details',
-          value: {
-            data: Object.entries(storeInfo ?? {})?.map(([title, value]) => ({
-              title,
-              value,
-              type: 'string',
-              isEditable: false,
-            })),
+  const storeInfoBlock =
+    Object.keys(storeInfo ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Store Info',
+              },
+              {
+                type: 'subheading',
+                value: 'User-provided data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(storeInfo)?.map(([title, value]) => ({
+                    title,
+                    value,
+                    type: 'string',
+                    isEditable: false,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
           },
-          hideSeparator: true,
-        },
-      ],
-    },
-  ];
+        ];
 
-  const websiteBasicRequirementBlock = [
-    {
-      cells: [
-        {
-          type: 'heading',
-          value: 'Website Basic Requirement',
-        },
-        {
-          type: 'subheading',
-          value: 'User-Provided Data',
-        },
-        {
-          type: 'details',
-          value: {
-            data: Object.entries(bankDetails ?? {})?.map(([title, value]) => ({
-              title,
-              value,
-              type: 'string',
-              isEditable: false,
-            })),
+  const websiteBasicRequirementBlock =
+    Object.keys(bankDetails ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Website Basic Requirement',
+              },
+              {
+                type: 'subheading',
+                value: 'User-Provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(bankDetails)?.map(([title, value]) => ({
+                    title,
+                    value,
+                    type: 'string',
+                    isEditable: false,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
           },
-          hideSeparator: true,
-        },
-      ],
-    },
-  ];
+        ];
 
-  const bankingDetailsBlock = [
-    {
-      cells: [
-        {
-          type: 'heading',
-          value: 'Banking details',
-        },
-        {
-          type: 'subheading',
-          value: 'User-Provided Data',
-        },
-        {
-          type: 'details',
-          value: {
-            data: Object.entries(websiteBasicRequirement ?? {})?.map(([title, value]) => ({
-              title,
-              value,
-              type: 'string',
-              isEditable: false,
-            })),
+  const bankingDetailsBlock =
+    Object.keys(websiteBasicRequirement ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Banking details',
+              },
+              {
+                type: 'subheading',
+                value: 'User-Provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(websiteBasicRequirement)?.map(([title, value]) => ({
+                    title,
+                    value,
+                    type: 'string',
+                    isEditable: false,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
           },
-          hideSeparator: true,
-        },
-      ],
-    },
-  ];
+        ];
 
-  const processingDetailsBlock = [
-    {
-      cells: [
-        {
-          type: 'heading',
-          value: 'Processing details',
-        },
-        {
-          type: 'subheading',
-          value: 'User-Provided Data',
-        },
-        {
-          type: 'details',
-          value: {
-            data: Object.entries(processingDetails ?? {})?.map(([title, value]) => ({
-              title,
-              value,
-              type: 'string',
-              isEditable: false,
-            })),
+  const processingDetailsBlock =
+    Object.keys(processingDetails ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Processing details',
+              },
+              {
+                type: 'subheading',
+                value: 'User-Provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(processingDetails)?.map(([title, value]) => ({
+                    title,
+                    value,
+                    type: 'string',
+                    isEditable: false,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
           },
-          hideSeparator: true,
-        },
-      ],
-    },
-  ];
+        ];
 
   return useMemo(() => {
     return entity
       ? [
-          ...storeInfoBlock,
-          ...websiteBasicRequirementBlock,
-          ...bankingDetailsBlock,
-          ...processingDetailsBlock,
           ...entityInfoBlock,
           ...registryInfoBlock,
           ...taskBlocks,
           ...mapBlock,
+          ...storeInfoBlock,
+          ...websiteBasicRequirementBlock,
+          ...bankingDetailsBlock,
+          ...processingDetailsBlock,
         ]
       : [];
   }, [
