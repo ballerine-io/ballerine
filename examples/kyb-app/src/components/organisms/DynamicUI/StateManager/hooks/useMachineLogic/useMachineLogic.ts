@@ -31,6 +31,17 @@ export const useMachineLogic = (
 
   const sendEvent = useCallback(
     async (eventName: string) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const eventsWithStates = machine.getSnapshot().machine.states[machine.getSnapshot().value]
+        ?.config?.on as Record<string, Record<'target', string> | undefined>;
+      const nextTransitionState = eventsWithStates?.[eventName];
+      debugger;
+      if (nextTransitionState) {
+        const nextStateName = nextTransitionState.target;
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        machine.overrideContext({ ...machine.getSnapshot().context, state: nextStateName });
+      }
+
       await machine.sendEvent({ type: eventName });
     },
     [machine],

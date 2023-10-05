@@ -176,9 +176,6 @@ export const WebsiteBasicRequirement = {
               value: availableOnButtonRule,
             },
           ],
-          options: {
-            text: 'Continue',
-          },
         },
       ],
     },

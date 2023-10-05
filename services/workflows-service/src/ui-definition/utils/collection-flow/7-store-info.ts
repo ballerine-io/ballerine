@@ -188,9 +188,6 @@ export const StoreInfoPage = {
               value: availableOnButtonRule,
             },
           ],
-          options: {
-            text: 'Continue',
-          },
         },
       ],
     },

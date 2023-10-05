@@ -13,11 +13,13 @@ interface State {
 
 export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) => {
   useEffect(() => {
-    console.log('context', initialContext)
     machineApi.setContext({
       ...machineApi.getContext(),
       ...initialContext,
-      flowConfig: { apiUrl: `http://${new URL(import.meta.env.VITE_API_URL as string).host}`, tokenId: getAccessToken() },
+      flowConfig: {
+        apiUrl: `http://${new URL(import.meta.env.VITE_API_URL as string).host}`,
+        tokenId: getAccessToken(),
+      },
     });
   }, []);
 
