@@ -119,9 +119,6 @@ export const ContactsPage = {
               value: availableOnButtonRule,
             },
           ],
-          options: {
-            text: 'Continue',
-          },
         },
       ],
     },

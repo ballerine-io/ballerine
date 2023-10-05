@@ -165,9 +165,6 @@ export const BankingDetailsPage = {
               value: availableOnButtonRule,
             },
           ],
-          options: {
-            text: 'Continue',
-          },
         },
       ],
     },

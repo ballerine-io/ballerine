@@ -342,9 +342,6 @@ export const ProcessingDetails = {
               value: availableOnButtonRule,
             },
           ],
-          options: {
-            text: 'Continue',
-          },
         },
       ],
     },

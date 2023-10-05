@@ -1,10 +1,8 @@
 import { BusinessService } from '@/business/business.service';
-import { UpdateFlowDto, UpdateFlowPayload } from '@/collection-flow/dto/update-flow-input.dto';
+import { UpdateFlowDto } from '@/collection-flow/dto/update-flow-input.dto';
 import { recursiveMerge } from '@/collection-flow/helpers/recursive-merge';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-step.model';
-import { IWorkflowAdapter } from '@/collection-flow/workflow-adapters/abstract-workflow-adapter';
-import { KYBParentKYCSessionExampleFlowData } from '@/collection-flow/workflow-adapters/kyb_parent_kyc_session_example/kyb_parent_kyc_session_example.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
 import { EndUserService } from '@/end-user/end-user.service';
@@ -16,8 +14,7 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { WorkflowService } from '@/workflow/workflow.service';
 import { DefaultContextSchema, TDocument } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
-import { UiDefinitionContext, Customer, EndUser } from '@prisma/client';
-import { File } from '@prisma/client';
+import { Customer, EndUser, File, UiDefinitionContext } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import keyBy from 'lodash/keyBy';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
@@ -267,9 +264,10 @@ export class CollectionFlowService {
       );
     }
 
+    const { state, ...resetContext } = payload.data.context as Record<string, any>;
     return await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: workflowRuntime.workflowDefinitionId,
-      context: payload.data.context as DefaultContextSchema,
+      context: resetContext as DefaultContextSchema,
       config: workflowRuntime.config,
       parentWorkflowId: undefined,
       projectIds: [tokenScope.projectId],
@@ -297,10 +295,9 @@ export class CollectionFlowService {
     return await this.workflowService.syncContextById(
       tokenScope.workflowRuntimeDataId,
       payload.data.context as DefaultContextSchema,
-      tokenScope.projectId
+      tokenScope.projectId,
     );
   }
-
 
   async finishFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
     await this.workflowService.event({ id: flowId, name: 'start' }, projectIds, currentProjectId);

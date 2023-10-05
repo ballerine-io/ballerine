@@ -253,9 +253,6 @@ export const DirectorsAndUbosPage = {
               value: availableOnButtonRule,
             },
           ],
-          options: {
-            text: 'Continue',
-          },
         },
       ],
     },
