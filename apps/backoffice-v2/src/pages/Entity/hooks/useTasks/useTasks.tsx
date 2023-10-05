@@ -20,6 +20,9 @@ import { useRevisionTaskByIdMutation } from '../../../../domains/entities/hooks/
 import { MotionBadge } from '../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
+import { Badge } from '@ballerine/ui';
+import { buttonVariants } from '../../../../common/components/atoms/Button/Button';
+import { WarningFilledSvg } from '../../../../common/components/atoms/icons';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -555,16 +558,40 @@ export const useTasks = ({
                   {
                     accessorKey: 'totalMatches',
                     header: 'Total matches',
+                    cell: props => {
+                      return (
+                        <Badge variant={'warning'} className={`rounded-lg py-4 font-bold`}>
+                          {props.getValue()} match
+                        </Badge>
+                      );
+                    },
                   },
                   {
                     accessorKey: 'fullReport',
                     header: 'Full report',
+                    cell: props => {
+                      const value = props.getValue();
+
+                      return (
+                        <a
+                          className={buttonVariants({
+                            variant: 'link',
+                            className: 'cursor-pointer !p-0 !text-blue-500',
+                          })}
+                          target={'_blank'}
+                          rel={'noopener noreferrer'}
+                          href={value}
+                        >
+                          View {'<>'}
+                        </a>
+                      );
+                    },
                   },
                 ],
                 data: [
                   {
                     totalMatches: 1,
-                    fullReport: 'Some report',
+                    fullReport: 'http://example.com',
                   },
                 ],
               },
@@ -600,7 +627,7 @@ export const useTasks = ({
                 data: [
                   {
                     primaryName: 'Some name',
-                    lastReviewed: 'Some date',
+                    lastReviewed: new Date().toISOString(),
                   },
                 ],
               },
@@ -612,9 +639,25 @@ export const useTasks = ({
                   {
                     accessorKey: 'labels',
                     header: 'Labels',
+                    cell: props => {
+                      const value = props.getValue();
+
+                      return (
+                        <div className={'flex space-x-2'}>
+                          <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
+                          <span>{value}</span>
+                        </div>
+                      );
+                    },
                   },
                 ],
                 data: [
+                  {
+                    labels: 'Some label',
+                  },
+                  {
+                    labels: 'Some label',
+                  },
                   {
                     labels: 'Some label',
                   },
@@ -648,7 +691,10 @@ export const useTasks = ({
                 ],
                 data: [
                   {
-                    sources: 'Some source',
+                    sources: 'http://example.com',
+                  },
+                  {
+                    sources: 'http://example.com',
                   },
                 ],
               },
@@ -660,11 +706,28 @@ export const useTasks = ({
                   {
                     accessorKey: 'alternativeNames',
                     header: 'Alternative names',
+                    cell: props => {
+                      const value = props.getValue();
+
+                      return (
+                        <a
+                          className={buttonVariants({
+                            variant: 'link',
+                            className: 'cursor-pointer !p-0 !text-blue-500',
+                          })}
+                          target={'_blank'}
+                          rel={'noopener noreferrer'}
+                          href={value}
+                        >
+                          View {'<>'}
+                        </a>
+                      );
+                    },
                   },
                 ],
                 data: [
                   {
-                    alternativeNames: 'Some name',
+                    alternativeNames: 'http://example.com',
                   },
                 ],
               },
@@ -740,6 +803,11 @@ export const useTasks = ({
                   },
                 ],
                 data: [
+                  {
+                    linkedAddresses: 'Some address',
+                    city: 'Tel-Aviv',
+                    country: 'Israel',
+                  },
                   {
                     linkedAddresses: 'Some address',
                     city: 'Tel-Aviv',
