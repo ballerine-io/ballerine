@@ -16,7 +16,7 @@ export const ShareholdersView = () => {
 
   return !isFinished ? (
     <AppShell.FormContainer header={<ViewHeader />}>
-      <DynamicForm<UBOSContext[]>
+      <DynamicForm
         className="max-w-[384px]"
         schema={formSchema}
         uiSchema={uiSchema}
