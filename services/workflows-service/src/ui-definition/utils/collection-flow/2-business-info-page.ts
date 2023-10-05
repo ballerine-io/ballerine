@@ -106,7 +106,9 @@ export const BusinessInfoPage = {
           elements: [
             {
               type: 'h1',
-              value: 'Personal information',
+              options: {
+                text: 'Business information',
+              }
             },
           ],
         },

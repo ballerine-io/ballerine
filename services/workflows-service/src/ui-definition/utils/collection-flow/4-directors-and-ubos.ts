@@ -89,14 +89,16 @@ export const DirectorsAndUbosPage = {
           elements: [
             {
               type: 'h1',
-              value: 'Address',
+              options: {
+                text: 'Directors & UBOs',
+              }
             },
             {
               type: 'h3',
-              value: 'UBOs',
               options: {
+                text: 'UBOs',
                 classNames: ['padding-top-10'],
-              },
+              }
             },
           ],
         },
@@ -195,6 +197,13 @@ export const DirectorsAndUbosPage = {
               },
             },
           ],
+        },
+        {
+          type: 'h3',
+          options: {
+            text: 'Directors',
+            classNames: ['padding-top-10'],
+          }
         },
         {
           type: 'container',

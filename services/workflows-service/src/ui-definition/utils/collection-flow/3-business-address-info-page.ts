@@ -88,12 +88,14 @@ export const BusinessAddressInfoPage = {
           elements: [
             {
               type: 'h1',
-              value: 'Address',
+              options: {
+                text: 'Address',
+              }
             },
             {
               type: 'h3',
-              value: 'Registered Address',
               options: {
+                text: 'Registered Address',
                 classNames: ['padding-top-10'],
               },
             },
@@ -114,6 +116,7 @@ export const BusinessAddressInfoPage = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
+                  minLength: 1,
                 },
                 label: 'Street',
                 hint: 'Downing Street',
@@ -138,6 +141,7 @@ export const BusinessAddressInfoPage = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
+                  minLength: 1,
                 },
                 label: 'City',
                 hint: 'London',
@@ -152,6 +156,7 @@ export const BusinessAddressInfoPage = {
                 hint: 'United Kingdom',
                 jsonFormDefinition: {
                   type: 'string',
+                  minLength: 1,
                   oneOf: [
                     // Line below should removed in case when field is required.
                     // { const: '', title: '' },
@@ -188,7 +193,10 @@ export const BusinessAddressInfoPage = {
               ],
             },
           },
-          visibleOn: [physicalAddressForm],
+          visibleOn: [{
+            type: 'json-logic',
+            value: physicalAddressForm
+          }],
           elements: [
             {
               name: 'physical-street-input',

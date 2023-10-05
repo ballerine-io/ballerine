@@ -89,7 +89,9 @@ export const BankingDetailsPage = {
           elements: [
             {
               type: 'h1',
-              value: 'Banking Details',
+              options: {
+                text: 'Banking Details'
+              }
             },
           ],
         },
@@ -118,6 +120,7 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: "string",
+                  minLength: 1,
                 },
                 label: 'Cardholder Name',
                 hint: 'John W. Doe',
@@ -130,6 +133,7 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: "string",
+                  minLength: 1,
                 },
                 label: 'Resident Address',
                 hint: 'Fla 5A, Tower 2, The Peak, 123 Queens Road, Hong Kong',
@@ -142,6 +146,7 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: "string",
+                  minLength: 1,
                 },
                 label: 'Account Number',
                 hint: '0123456789',
@@ -154,6 +159,7 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: "string",
+                  minLength: 1,
                 },
                 label: 'IBAN',
                 hint: 'HK00HKB01234567890123',
@@ -166,6 +172,7 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: "string",
+                  minLength: 1,
                 },
                 label: 'Swift Code',
                 hint: 'BBBBCCDDXXX',
@@ -178,6 +185,7 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: "string",
+                  minLength: 1,
                 },
                 label: 'Bank Name',
                 hint: 'Honk Kong Bank',
@@ -190,6 +198,7 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: "string",
+                  minLength: 1,
                 },
                 label: 'Bank Address',
                 hint: "456 King's Road, North Point, Hong Kong",
@@ -202,6 +211,7 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: "string",
+                  minLength: 1,
                 },
                 label: 'Sub-Branch Number',
                 hint: '0012',
@@ -214,6 +224,7 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
+                  minLength: 1,
                   oneOf: [
                     { title: '', const: '' },
                     ...currencyCodes.map(code => ({ title: code.code.toUpperCase(), const: code.code })),

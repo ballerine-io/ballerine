@@ -11,9 +11,11 @@ export const getDispatchableActions = (context: AnyObject, actions: Action[]) =>
       new JsonSchemaRuleEngine(),
     ]);
 
+    if (!action.dispatchOn.rules) return true;
+
     return (
-      action.dispatchOn.rules.length &&
-      action.dispatchOn.rules.some(rule =>
+      action.dispatchOn?.rules?.length &&
+      action.dispatchOn?.rules?.some(rule =>
         engineManager.getEngine(rule.type).isActive(context, rule as Rule),
       )
     );
