@@ -167,80 +167,110 @@ export const DirectorsAndUbosPage = {
             },
           ],
         },
-        // {
-        //   type: 'container',
-        //   elements: [
-        //     {
-        //       name: 'directors-component',
-        //       type: 'directors-component',
-        //       valueDestination: 'entity.data.additionalInfo.directors',
-        //       options: {
-        //         htmlHint: '<p>Add all the directors of the company.</p>',
-        //       },
-        //       elements: [
-        //         {
-        //           name: 'first-name-input',
-        //           type: 'json-form:text',
-        //           valueDestination: 'firstName',
-        //           options: {
-        //             label: 'Name',
-        //             hint: 'First Name',
-        //           },
-        //         },
-        //         {
-        //           name: 'last-name-input',
-        //           type: 'json-form:text',
-        //           valueDestination: 'lastName',
-        //           options: {
-        //             hint: 'Last Name',
-        //           },
-        //         },
-        //         {
-        //           name: 'nationality-input',
-        //           type: 'nationality-picker',
-        //           valueDestination: 'nationality',
-        //           options: {
-        //             label: 'Nationality',
-        //             hint: 'Chinese',
-        //           },
-        //         },
-        //         {
-        //           name: 'identity-number-input',
-        //           type: 'json-form:text',
-        //           valueDestination: 'identityNumber',
-        //           options: {
-        //             label: 'Identity Number',
-        //             hint: '11010219820519759X',
-        //           },
-        //         },
-        //         {
-        //           name: 'address-of-residence-input',
-        //           type: 'json-form:text',
-        //           valueDestination: 'fullAddress',
-        //           options: {
-        //             label: 'Address of Residence',
-        //             hint: '22, Choyangmen, Chaoyang District, Beijing, China',
-        //           },
-        //         },
-        //         {
-        //           name: 'email-input',
-        //           type: 'json-form:email',
-        //           valueDestination: 'email',
-        //           options: {
-        //             jsonFormDefinition: {
-        //               type: 'email',
-        //             },
-        //             label: 'Email',
-        //             hint: 'name@companyhk.com',
-        //           },
-        //         },
-        //       ],
-        //     },
-        //   ],
-        // },
+        {
+          type: 'container',
+          elements: [
+            {
+              name: 'directors-component',
+              type: 'json-form',
+              valueDestination: 'entity.data.additionalInfo.directors',
+              options: {
+                description: '<p>Add all the directors of the company.</p>',
+                jsonFormDefinition: {
+                  type: 'array',
+                },
+              },
+              elements: [
+                {
+                  name: 'first-name-input',
+                  type: 'json-form:text',
+                  valueDestination: 'firstName',
+                  options: {
+                    jsonFormDefinition: {
+                      type: 'string'
+                    },
+                    label: 'Name',
+                    hint: 'First Name',
+                  },
+                },
+                {
+                  name: 'last-name-input',
+                  type: 'json-form:text',
+                  valueDestination: 'lastName',
+                  options: {
+                    jsonFormDefinition: {
+                      type: 'string'
+                    },
+                    hint: 'Last Name',
+                  },
+                },
+                {
+                  name: 'nationality-input',
+                  type: 'nationality-picker',
+                  valueDestination: 'nationality',
+                  options: {
+                    jsonFormDefinition: {
+                      type: 'string',
+                      oneOf: [
+                        // Nationality title value
+                        {const: 'Afghan', title: 'Afghan'},
+                        {const: 'Albanian', title: 'Albanian'},
+                        {const: 'Algerian', title: 'Algerian'},
+                        {const: 'American', title: 'American'},
+                        {const: 'Andorran', title: 'Andorran'},
+                        {const: 'Angolan', title: 'Angolan'},
+                        {const: 'Antiguans', title: 'Antiguans'},
+                        {const: 'Chinese', title: 'Cinese'}
+                      ],
+                    },
+                    label: 'Nationality',
+                    hint: 'Chinese',
+                  },
+                },
+                {
+                  name: 'identity-number-input',
+                  type: 'json-form:text',
+                  valueDestination: 'identityNumber',
+                  options: {
+                    jsonFormDefinition: {
+                      type: 'number'
+                    },
+                    label: 'Identity Number',
+                    hint: '11010219820519759X',
+                  },
+                },
+                {
+                  name: 'address-of-residence-input',
+                  type: 'json-form:text',
+                  valueDestination: 'fullAddress',
+                  options: {
+                    jsonFormDefinition: {
+                      type: 'string'
+                    },
+                    label: 'Address of Residence',
+                    hint: '22, Choyangmen, Chaoyang District, Beijing, China',
+                  },
+                },
+                {
+                  name: 'email-input',
+                  type: 'json-form:email',
+                  valueDestination: 'email',
+                  options: {
+                    jsonFormDefinition: {
+                      type: 'string',
+                      format: 'email',
+                    },
+                    label: 'Email',
+                    hint: 'name@companyhk.com',
+                  },
+                },
+              ],
+            },
+          ],
+        },
         {
           name: 'next-page-button',
-          type: 'button',
+          type: 'json-form:button',
           options: {
             uiDefinition: {
               classNames: ['align-right', 'padding-top-10'],

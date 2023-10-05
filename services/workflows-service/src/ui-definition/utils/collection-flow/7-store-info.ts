@@ -82,6 +82,9 @@ export const StoreInfoPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.websiteUrls',
               options: {
+                jsonFormDefinition: {
+                  type: 'string'
+                },
                 label: 'Website URLS (divide with comma if more than one)',
                 hint: 'www.example.cn',
               },
@@ -91,6 +94,9 @@ export const StoreInfoPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.dba',
               options: {
+                jsonFormDefinition: {
+                  type: 'string'
+                },
                 label: 'DBA (Descriptor)',
                 hint: 'Barclays',
               },
@@ -102,16 +108,19 @@ export const StoreInfoPage = {
               options: {
                 label: 'Industry',
                 hint: 'Food & Beverage',
-                options: [
-                  { label: 'Food & Beverage', value: 'Food & Beverage' },
-                  { label: 'Retail', value: 'Retail' },
-                  { label: 'Travel', value: 'Travel' },
-                  { label: 'Entertainment', value: 'Entertainment' },
-                  { label: 'Education', value: 'Education' },
-                  { label: 'Healthcare', value: 'Healthcare' },
-                  { label: 'Professional Services', value: 'Professional Services' },
-                  { label: 'Other', value: 'Other' },
-                ],
+                jsonFormDefinition: {
+                  type: 'string',
+                  oneOf: [
+                    { const: 'Food & Beverage', title: 'Food & Beverage' },
+                    { const: 'Retail', title: 'Retail' },
+                    { const: 'Travel', title: 'Travel' },
+                    { const: 'Entertainment', title: 'Entertainment' },
+                    { const: 'Education', title: 'Education' },
+                    { const: 'Healthcare', title: 'Healthcare' },
+                    { const: 'Professional Services', title: 'Professional Services' },
+                    { const: 'Other', title: 'Other' },
+                  ]
+                },
               },
             },
             {
@@ -119,6 +128,9 @@ export const StoreInfoPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.products',
               options: {
+                jsonFormDefinition: {
+                  type: 'string'
+                },
                 classNames: ['min-width-40px'],
                 label: 'Products (divide with comma if more than one)',
                 hint: 'Smart Watches, Wireless Earbuds, Portable Chargers.',
@@ -131,7 +143,10 @@ export const StoreInfoPage = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
-                  format: 'date',
+                },
+                uiSchema: {
+                  'ui:field': 'DateInput',
+                  'ui:label': true,
                 },
                 label: 'Established Date',
                 hint: 'DD/MM/YYYY',
@@ -142,6 +157,9 @@ export const StoreInfoPage = {
               type: 'checkbox',
               valueDestination: 'entity.data.additionalInfo.store.hasMobileApp',
               options: {
+                jsonFormDefinition: {
+                  type: 'boolean'
+                },
                 label: 'I have mobile application',
               },
             },
@@ -151,6 +169,9 @@ export const StoreInfoPage = {
               valueDestination: 'entity.data.additionalInfo.store.mobileAppName',
               visibleOn: [hasMobileAppVisibilityRule],
               options: {
+                jsonFormDefinition: {
+                  type: 'string'
+                },
                 label: 'App Name',
                 hint: 'App Name',
               },
@@ -160,6 +181,9 @@ export const StoreInfoPage = {
               type: 'checkbox',
               valueDestination: 'entity.data.additionalInfo.store.hasActiveWebsite',
               options: {
+                jsonFormDefinition: {
+                  type: 'boolean'
+                },
                 label: "I declare that the website's business activity does not require a license",
               },
             },
@@ -167,6 +191,9 @@ export const StoreInfoPage = {
               name: 'active-store-website-checkbox',
               type: 'json-form:label',
               options: {
+                jsonFormDefinition: {
+                  type: 'boolean'
+                },
                 label: "I declare that the website's business activity does not require a license",
                 classNames: ['text-color-grey', 'padding-top-10'],
               },
@@ -175,7 +202,7 @@ export const StoreInfoPage = {
         },
         {
           name: 'next-page-button',
-          type: 'button',
+          type: 'json-form:button',
           options: {
             uiDefinition: {
               classNames: ['align-right', 'padding-top-10'],

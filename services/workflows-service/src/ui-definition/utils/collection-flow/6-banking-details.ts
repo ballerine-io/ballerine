@@ -1,3 +1,5 @@
+import { currencyCodes } from '../schema-utils/currency-codes';
+
 const availableOnButtonRule = {
   and: [
     { var: 'entity.data' },
@@ -72,6 +74,9 @@ export const BankingDetailsPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.holderName',
               options: {
+                jsonFormDefinition: {
+                  type: "string",
+                },
                 label: 'Cardholder Name',
                 hint: 'John W. Doe',
               },
@@ -81,6 +86,9 @@ export const BankingDetailsPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.holderFullAddress',
               options: {
+                jsonFormDefinition: {
+                  type: "string",
+                },
                 label: 'Resident Address',
                 hint: 'Fla 5A, Tower 2, The Peak, 123 Queens Road, Hong Kong',
               },
@@ -90,6 +98,9 @@ export const BankingDetailsPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.accountNumber',
               options: {
+                jsonFormDefinition: {
+                  type: "string",
+                },
                 label: 'Account Number',
                 hint: '0123456789',
               },
@@ -99,6 +110,9 @@ export const BankingDetailsPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.iban',
               options: {
+                jsonFormDefinition: {
+                  type: "string",
+                },
                 label: 'IBAN',
                 hint: 'HK00HKB01234567890123',
               },
@@ -108,6 +122,9 @@ export const BankingDetailsPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.swiftCode',
               options: {
+                jsonFormDefinition: {
+                  type: "string",
+                },
                 label: 'Swift Code',
                 hint: 'BBBBCCDDXXX',
               },
@@ -117,6 +134,9 @@ export const BankingDetailsPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.bankName',
               options: {
+                jsonFormDefinition: {
+                  type: "string",
+                },
                 label: 'Bank Name',
                 hint: 'Honk Kong Bank',
               },
@@ -126,6 +146,9 @@ export const BankingDetailsPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.bankAddress',
               options: {
+                jsonFormDefinition: {
+                  type: "string",
+                },
                 label: 'Bank Address',
                 hint: "456 King's Road, North Point, Hong Kong",
               },
@@ -135,6 +158,9 @@ export const BankingDetailsPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.subBranch',
               options: {
+                jsonFormDefinition: {
+                  type: "string",
+                },
                 label: 'Sub-Branch Number',
                 hint: '0012',
               },
@@ -144,6 +170,13 @@ export const BankingDetailsPage = {
               type: 'currency-picker',
               valueDestination: 'entity.data.additionalInfo.bank.currency',
               options: {
+                jsonFormDefinition: {
+                  type: 'string',
+                  oneOf: [
+                    { title: '', const: '' },
+                    ...currencyCodes.map(code => ({ title: code.code.toUpperCase(), const: code.code })),
+                  ],
+                },
                 label: 'Account Currency',
                 hint: 'CNY',
               },
@@ -152,7 +185,7 @@ export const BankingDetailsPage = {
         },
         {
           name: 'next-page-button',
-          type: 'button',
+          type: 'json-form:button',
           options: {
             uiDefinition: {
               classNames: ['align-right', 'padding-top-10'],
