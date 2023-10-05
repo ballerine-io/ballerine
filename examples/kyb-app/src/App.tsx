@@ -17,9 +17,11 @@ import { ActionsHandler } from '@app/components/organisms/DynamicUI/StateManager
 import { ButtonUIElement } from '@app/components/organisms/UIRenderer/elements/ButtonUI';
 import { JSONForm } from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
 import { useFlowContextQuery } from '@app/hooks/useFlowContextQuery';
+import { AnyObject } from '@ballerine/ui';
 
 const elems = {
   h1: Title,
+  h3: (props: AnyObject) => <h3 className="font-bold">{props?.options?.text}</h3>,
   'json-form': JSONForm,
   container: Cell,
   mainContainer: Cell,
@@ -56,10 +58,8 @@ export const App = () => {
                 {({ currentPage }) => {
                   return currentPage ? (
                     <>
-                      <ActionsHandler actions={currentPage.actions} stateApi={stateApi}>
-                        <UIRenderer elements={elems} schema={currentPage.elements} />
-                      </ActionsHandler>
                       <div className="flex flex-col gap-4">
+                        DEBUG
                         <div>
                           {currentPage
                             ? currentPage.stateName
@@ -70,6 +70,9 @@ export const App = () => {
                           <button onClick={() => stateApi.sendEvent('NEXT')}>next</button>
                         </div>
                       </div>
+                      <ActionsHandler actions={currentPage.actions} stateApi={stateApi}>
+                        <UIRenderer elements={elems} schema={currentPage.elements} />
+                      </ActionsHandler>
                     </>
                   ) : null;
                 }}

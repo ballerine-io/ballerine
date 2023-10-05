@@ -70,7 +70,9 @@ export const WebsiteBasicRequirement = {
           elements: [
             {
               type: 'h1',
-              value: 'Website Basic Requirement',
+              options: {
+                text: 'Website Basic Requirement'
+              }
             },
           ],
         },
