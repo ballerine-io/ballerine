@@ -218,7 +218,7 @@ export const BusinessInfoPage = {
               valueDestination: 'entity.data.additionalInfo.registeredCapitalInYuan',
               options: {
                 jsonFormDefinition: {
-                  type: 'number',
+                  type: 'integer',
                 },
                 format: 'currency',
                 hint: '2,000,000',

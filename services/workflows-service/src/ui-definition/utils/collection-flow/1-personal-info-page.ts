@@ -14,7 +14,7 @@ const availableOnButtonRule = {
               properties: {
                 mainRepresentative: {
                   type: 'object',
-                  required: ['phone', 'dateOfBirth', 'jobTitle', 'firstName', 'lastName'],
+                  required: ['phone', 'dateOfBirth', 'firstName', 'lastName', 'additionalInfo'],
                   properties: {
                     phone: {
                       type: 'string',
@@ -22,7 +22,6 @@ const availableOnButtonRule = {
                     },
                     dateOfBirth: {
                       type: 'string',
-                      pattern: '^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\\d{4})$',
                     },
                     jobTitle: {
                       type: 'string',
@@ -36,6 +35,16 @@ const availableOnButtonRule = {
                       type: 'string',
                       minLength: 2,
                     },
+                    additionalInfo: {
+                      type: 'object',
+                      required: ['jobTitle'],
+                      properties: {
+                        jobTitle: {
+                          type: 'string',
+                          minLength: 2,
+                        }
+                      }
+                    }
                   },
                 },
               },
