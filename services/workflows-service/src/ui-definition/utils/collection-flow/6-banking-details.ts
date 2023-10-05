@@ -1,34 +1,76 @@
 import {currencyCodes} from '../schema-utils/currency-codes';
 
 const availableOnButtonRule = {
-  and: [
-    { var: 'entity.data' },
-    { var: 'entity.data.additionalInfo' },
-    { var: 'entity.data.additionalInfo.bank' },
-    { var: 'entity.data.additionalInfo.bank.holderName' },
-    { var: 'entity.data.additionalInfo.bank.holderFullAddress' },
-    { var: 'entity.data.additionalInfo.bank.accountNumber' },
-    { var: 'entity.data.additionalInfo.bank.iban' },
-    { var: 'entity.data.additionalInfo.bank.swiftCode' },
-    { var: 'entity.data.additionalInfo.bank.bankName' },
-    { var: 'entity.data.additionalInfo.bank.bankAddress' },
-    { var: 'entity.data.additionalInfo.bank.subBranch' },
-    { var: 'entity.data.additionalInfo.bank.bankName' },
-    { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.holderName' }] }, 5] },
-    { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.holderFullAddress' }] }, 8] },
-    {
-      and: [
-        { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.accountNumber' }] }, 6] },
-        { '<= ': [{ maxLength: [{ var: 'entity.data.additionalInfo.bank.accountNumber' }] }, 15] },
-      ],
-    },
-    { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.iban' }] }, 15] },
-    { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.swiftCode' }] }, 8] },
-    { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.bankName' }] }, 3] },
-    { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.bankAddress' }] }, 10] },
-    { regex: [{ var: 'entity.data.additionalInfo.bank.subBranch' }, '^[0-9]+$'] },
-    { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.bankName' }] }, 3] },
-  ],
+  "type": "object",
+  "properties": {
+    "entity": {
+      "type": "object",
+      "required": ["data"],
+      "properties": {
+        "data": {
+          "type": "object",
+          "required": ["additionalInfo"],
+          "properties": {
+            "additionalInfo": {
+              "type": "object",
+              "required": ["bank"],
+              "properties": {
+                "bank": {
+                  "type": "object",
+                  "required": [
+                    "holderName",
+                    "holderFullAddress",
+                    "accountNumber",
+                    "iban",
+                    "swiftCode",
+                    "bankName",
+                    "bankAddress",
+                    "subBranch"
+                  ],
+                  "properties": {
+                    "holderName": {
+                      "type": "string",
+                      "minLength": 5
+                    },
+                    "holderFullAddress": {
+                      "type": "string",
+                      "minLength": 8
+                    },
+                    "accountNumber": {
+                      "type": "string",
+                      "minLength": 6,
+                      "maxLength": 15
+                    },
+                    "iban": {
+                      "type": "string",
+                      "minLength": 15
+                    },
+                    "swiftCode": {
+                      "type": "string",
+                      "minLength": 8
+                    },
+                    "bankName": {
+                      "type": "string",
+                      "minLength": 3
+                    },
+                    "bankAddress": {
+                      "type": "string",
+                      "minLength": 10
+                    },
+                    "subBranch": {
+                      "type": "string",
+                      "pattern": "^[0-9]+$"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["entity"]
 };
 export const BankingDetailsPage = {
   type: 'page',
@@ -204,7 +246,7 @@ export const BankingDetailsPage = {
           },
           availableOn: [
             {
-              type: 'json-logic',
+              type: 'json-schema',
               value: availableOnButtonRule,
             },
           ],
@@ -231,7 +273,7 @@ export const BankingDetailsPage = {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
           {
-            type: 'json-logic',
+            type: 'json-schema',
             value: availableOnButtonRule,
           },
         ],

@@ -1,62 +1,70 @@
-import { getCountriesList } from '../schema-utils/countries';
+import {getCountriesList} from '../schema-utils/countries';
 
 const availableOnButtonRule = {
-  or: [
-    {
-      and: [
-        { var: 'entity.data' },
-        { var: 'entity.data.additionalInfo' },
-        { var: 'entity.data.additionalInfo.headquarters' },
-        { var: 'entity.data.additionalInfo.headquarters.street' },
-        // { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.street' }] }, 2] },
-        // { typeof: [{ var: 'entity.data.additionalInfo.headquarters.streetNumber' }, 'number'] },
-        // { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.city' }] }, 2] },
-        // { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.country' }] }, 2] },
-        // {
-        //   '==': [{ var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' }, false],
-        // },
-      ],
-    },
-    {
-      and: [
-        { var: 'entity.data' },
-        { var: 'entity.data.additionalInfo' },
-        { var: 'entity.data.additionalInfo.headquarters' },
-        { var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' },
-        // {
-        //   '==': [{ var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' }, true],
-        // },
-        // { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.street' }] }, 2] },
-        // { typeof: [{ var: 'entity.data.additionalInfo.headquarters.streetNumber' }, 'number'] },
-        // { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.city' }] }, 2] },
-        // { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.headquarters.country' }] }, 2] },
-        // {
-        //   '>= ': [
-        //     { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.street' }] },
-        //     2,
-        //   ],
-        // },
-        // {
-        //   typeof: [
-        //     { var: 'entity.data.additionalInfo.headquarters.physical.streetNumber' },
-        //     'number',
-        //   ],
-        // },
-        // {
-        //   '>= ': [
-        //     { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.city' }] },
-        //     2,
-        //   ],
-        // },
-        // {
-        //   '>= ': [
-        //     { minLength: [{ var: 'entity.data.additionalInfo.headquarters.physical.country' }] },
-        //     2,
-        //   ],
-        // },
-      ],
-    },
-  ],
+  "type": "object",
+  "properties": {
+    "entity": {
+      "type": "object",
+      "required": ["data"],
+      "properties": {
+        "data": {
+          "type": "object",
+          "required": ["additionalInfo"],
+          "properties": {
+            "additionalInfo": {
+              "type": "object",
+              "required": ["headquarters"],
+              "properties": {
+                "headquarters": {
+                  "type": "object",
+                  "oneOf": [
+                    {
+                      "required": ["street", "streetNumber", "city", "country", "isDifferentFromPhysical"],
+                      "properties": {
+                        "street": { "type": "string", "minLength": 2 },
+                        "streetNumber": { "type": "number" },
+                        "city": { "type": "string", "minLength": 2 },
+                        "country": { "type": "string", "minLength": 2 },
+                        "isDifferentFromPhysical": { "enum": [false] }
+                      }
+                    },
+                    {
+                      "required": [
+                        "street",
+                        "streetNumber",
+                        "city",
+                        "country",
+                        "isDifferentFromPhysical",
+                        "physical"
+                      ],
+                      "properties": {
+                        "isDifferentFromPhysical": { "enum": [true] },
+                        "street": { "type": "string", "minLength": 2 },
+                        "streetNumber": { "type": "number" },
+                        "city": { "type": "string", "minLength": 2 },
+                        "country": { "type": "string", "minLength": 2 },
+                        "physical": {
+                          "type": "object",
+                          "required": ["street", "streetNumber", "city", "country"],
+                          "properties": {
+                            "street": { "type": "string", "minLength": 2 },
+                            "streetNumber": { "type": "number" },
+                            "city": { "type": "string", "minLength": 2 },
+                            "country": { "type": "string", "minLength": 2 }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["entity"]
 };
 
 const physicalAddressForm = {
@@ -104,6 +112,9 @@ export const BusinessAddressInfoPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.street',
               options: {
+                jsonFormDefinition: {
+                  type: 'string',
+                },
                 label: 'Street',
                 hint: 'Downing Street',
               },
@@ -252,7 +263,7 @@ export const BusinessAddressInfoPage = {
           type: 'json-form:button',
           availableOn: [
             {
-              type: 'json-logic',
+              type: 'json-schema',
               value: availableOnButtonRule,
             },
           ],
@@ -285,7 +296,7 @@ export const BusinessAddressInfoPage = {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
           {
-            type: 'json-logic',
+            type: 'json-schema',
             value: availableOnButtonRule,
           },
         ],

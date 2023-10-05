@@ -1,17 +1,48 @@
 const availableOnButtonRule = {
-  and: [
-    { var: 'entity.data' },
-    { var: 'entity.data.additionalInfo' },
-    { var: 'entity.data.additionalInfo.mainContact' },
-    { var: 'entity.data.additionalInfo.mainContact.firstName' },
-    { var: 'entity.data.additionalInfo.mainContact.lastName' },
-    { var: 'entity.data.additionalInfo.mainContact.email' },
-    { var: 'entity.data.additionalInfo.mainContact.phone' },
-    { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.mainContact.firstName' }] }, 3] },
-    { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.mainContact.lastName' }] }, 3] },
-    { regex: [{ var: 'entity.data.additionalInfo.mainContact.email' }, '^\\S+@\\S+\\.\\S+$'] },
-    { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.mainContact.phone' }] }, 6] },
-  ],
+  "type": "object",
+  "properties": {
+    "entity": {
+      "type": "object",
+      "required": ["data"],
+      "properties": {
+        "data": {
+          "type": "object",
+          "required": ["additionalInfo"],
+          "properties": {
+            "additionalInfo": {
+              "type": "object",
+              "required": ["mainContact"],
+              "properties": {
+                "mainContact": {
+                  "type": "object",
+                  "required": ["firstName", "lastName", "email", "phone"],
+                  "properties": {
+                    "firstName": {
+                      "type": "string",
+                      "minLength": 3
+                    },
+                    "lastName": {
+                      "type": "string",
+                      "minLength": 3
+                    },
+                    "email": {
+                      "type": "string",
+                      "pattern": "^\\S+@\\S+\\.\\S+$"
+                    },
+                    "phone": {
+                      "type": "string",
+                      "minLength": 6
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["entity"]
 };
 export const ContactsPage = {
   type: 'page',
@@ -125,7 +156,7 @@ export const ContactsPage = {
           },
           availableOn: [
             {
-              type: 'json-logic',
+              type: 'json-schema',
               value: availableOnButtonRule,
             },
           ],
@@ -152,7 +183,7 @@ export const ContactsPage = {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
           {
-            type: 'json-logic',
+            type: 'json-schema',
             value: availableOnButtonRule,
           },
         ],

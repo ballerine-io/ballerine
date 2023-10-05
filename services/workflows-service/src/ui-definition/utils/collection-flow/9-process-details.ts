@@ -1,123 +1,78 @@
 const availableOnButtonRule = {
-  and: [
-    { var: 'entity.data' },
-    { var: 'entity.data.additionalInfo' },
-    { var: 'entity.data.additionalInfo.store' },
-    { var: 'entity.data.additionalInfo.store.processingDetails' },
-    { var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume' },
-    { var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions' },
-    { var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay' },
-    {
-      var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay',
-    },
-    { var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales' },
-    { var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales' },
-    { var: 'entity.data.additionalInfo.store.processingDetails.mainCategory' },
-    {
-      if: [
-        { var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales' },
-        {
-          and: [
-            {
-              '!!': [
-                { var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume' },
-              ],
-            },
-            {
-              '!!': [
-                { var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions' },
-              ],
-            },
-            {
-              '!!': [
-                {
-                  var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay',
-                },
-              ],
-            },
-            {
-              '!!': [
-                {
-                  var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay',
-                },
-              ],
-            },
-            {
-              '!!': [
-                { var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales' },
-              ],
-            },
-            {
-              '!!': [
-                { var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales' },
-              ],
-            },
-            {
-              '!!': [
-                {
-                  var: 'entity.data.additionalInfo.store.processingDetails.spikeSalesAverageVolume',
-                },
-              ],
-            },
-            {
-              '!!': [
-                {
-                  var: 'entity.data.additionalInfo.store.processingDetails.spikeTransactionNumber',
-                },
-              ],
-            },
-            {
-              '!!': [
-                { var: 'entity.data.additionalInfo.store.processingDetails.spikeOfVolumeInRegion' },
-              ],
-            },
-            { '!!': [{ var: 'entity.data.additionalInfo.store.processingDetails.mainCategory' }] },
-            { '!!': [{ var: 'entity.data.additionalInfo.store.processingDetails.businessModel' }] },
-          ],
-        },
-        {
-          and: [
-            {
-              '!!': [
-                { var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume' },
-              ],
-            },
-            {
-              '!!': [
-                { var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions' },
-              ],
-            },
-            {
-              '!!': [
-                {
-                  var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay',
-                },
-              ],
-            },
-            {
-              '!!': [
-                {
-                  var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay',
-                },
-              ],
-            },
-            {
-              '!!': [
-                { var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales' },
-              ],
-            },
-            {
-              '!!': [
-                { var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales' },
-              ],
-            },
-            { '!!': [{ var: 'entity.data.additionalInfo.store.processingDetails.mainCategory' }] },
-            { '!!': [{ var: 'entity.data.additionalInfo.store.processingDetails.businessModel' }] },
-          ],
-        },
-      ],
-    },
-  ],
+  "type": "object",
+  "properties": {
+    "entity": {
+      "type": "object",
+      "required": ["data"],
+      "properties": {
+        "data": {
+          "type": "object",
+          "required": ["additionalInfo"],
+          "properties": {
+            "additionalInfo": {
+              "type": "object",
+              "required": ["store"],
+              "properties": {
+                "store": {
+                  "type": "object",
+                  "required": ["processingDetails"],
+                  "properties": {
+                    "processingDetails": {
+                      "type": "object",
+                      "properties": {
+                        "monthlySalesVolume": { "type": ["number", "null"] },
+                        "monthlyTransactions": { "type": ["number", "null"] },
+                        "estimatedMonthlySalesClipsPay": { "type": ["number", "null"] },
+                        "estimatedMonthlyTransactionsClipsPay": { "type": ["number", "null"] },
+                        "averageTicketSales": { "type": ["number", "null"] },
+                        "maximumTicketSales": { "type": ["number", "null"] },
+                        "mainCategory": { "type": ["string", "null"] },
+                        "businessModel": { "type": ["string", "null"] },
+                        "isSpikeInSales": { "type": ["boolean", "null"] },
+                        "spikeSalesAverageVolume": { "type": ["number", "null"] },
+                        "spikeTransactionNumber": { "type": ["number", "null"] },
+                        "spikeOfVolumeInRegion": { "type": ["string", "null"] }
+                      },
+                      "oneOf": [
+                        {
+                          "required": [
+                            "monthlySalesVolume",
+                            "monthlyTransactions",
+                            "estimatedMonthlySalesClipsPay",
+                            "estimatedMonthlyTransactionsClipsPay",
+                            "averageTicketSales",
+                            "maximumTicketSales",
+                            "spikeSalesAverageVolume",
+                            "spikeTransactionNumber",
+                            "spikeOfVolumeInRegion",
+                            "mainCategory",
+                            "businessModel"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "monthlySalesVolume",
+                            "monthlyTransactions",
+                            "estimatedMonthlySalesClipsPay",
+                            "estimatedMonthlyTransactionsClipsPay",
+                            "averageTicketSales",
+                            "maximumTicketSales",
+                            "mainCategory",
+                            "businessModel"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["entity"]
 };
 
 const isSpikeInSaleVisibility = {
@@ -348,7 +303,7 @@ export const ProcessingDetails = {
           },
           availableOn: [
             {
-              type: 'json-logic',
+              type: 'json-schema',
               value: availableOnButtonRule,
             },
           ],
@@ -375,7 +330,7 @@ export const ProcessingDetails = {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
           {
-            type: 'json-logic',
+            type: 'json-schema',
             value: availableOnButtonRule,
           },
         ],
