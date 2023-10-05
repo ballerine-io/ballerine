@@ -56,9 +56,9 @@ export const CompanyInformationView = () => {
 
   return (
     <AppShell.FormContainer header={<ViewHeader />}>
-      <DynamicForm<CompanyInformationContext>
+      <DynamicForm
         className="max-w-[384px]"
-        formData={context.flowData.companyInformation}
+        formData={context.flowData.companyInformation as CompanyInformationContext}
         schema={schema}
         uiSchema={uiSchema}
         onSubmit={next}

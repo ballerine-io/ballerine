@@ -17,7 +17,7 @@ export const TextField = ({
         schema.type === 'integer' || schema.type === 'number'
           ? event.target.value
             ? Number(event.target.value)
-            : event.target.value
+            : undefined
           : event.target.value;
 
       onChange(serializedValue);
