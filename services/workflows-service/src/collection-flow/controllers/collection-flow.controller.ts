@@ -62,7 +62,11 @@ export class ColectionFlowController {
 
   @common.Get('/context')
   async getContext(@TokenScope() tokenScope: ITokenScope) {
-    return await this.workflowService.getWorkflowRuntimeDataById(tokenScope.workflowRuntimeDataId, {select: {context: true}}, [tokenScope.projectId]);
+    return await this.workflowService.getWorkflowRuntimeDataById(
+      tokenScope.workflowRuntimeDataId,
+      { select: { context: true } },
+      [tokenScope.projectId],
+    );
   }
 
   @common.Get('/configuration')

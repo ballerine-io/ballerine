@@ -11,7 +11,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { BusinessUpdateDto } from "@/business/dtos/business.update";
+import { BusinessUpdateDto } from '@/business/dtos/business.update';
 
 export class MainRepresentative {
   @IsString()

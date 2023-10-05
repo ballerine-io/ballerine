@@ -54,8 +54,6 @@ export const withDynamicUIInterceptor = (Component: React.ComponentType<RJSVInpu
       };
     }, [baseDefinition, inputId]);
 
-    console.log('definition', definition);
-
     const { onChangeHandler } = useUIElementHandlers(definition);
 
     const handleChange = useCallback((value: unknown) => {
