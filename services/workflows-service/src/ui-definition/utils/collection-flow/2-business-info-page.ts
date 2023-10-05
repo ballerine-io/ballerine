@@ -201,13 +201,13 @@ export const BusinessInfoPage = {
                   'ui:field': 'AutocompleteInput',
                   'ui:label': true,
                   options: [
-                    { label: 'Corporation', value: 'corporation' },
-                    { label: 'Limited Liability Company', value: 'limited_liability_company' },
-                    { label: 'Partnership', value: 'partnership' },
-                    { label: 'Sole Proprietorship', value: 'sole_proprietorship' },
-                    { label: 'Non-Profit', value: 'non_profit' },
-                    { label: 'Government', value: 'government' },
-                    { label: 'Other', value: 'other' },
+                    { title: 'Corporation', const: 'corporation' },
+                    { title: 'Limited Liability Company', const: 'limited_liability_company' },
+                    { title: 'Partnership', const: 'partnership' },
+                    { title: 'Sole Proprietorship', const: 'sole_proprietorship' },
+                    { title: 'Non-Profit', const: 'non_profit' },
+                    { title: 'Government', const: 'government' },
+                    { title: 'Other', const: 'other' },
                   ],
                 },
               },
@@ -248,7 +248,7 @@ export const BusinessInfoPage = {
           },
           availableOn: [
             {
-              type: 'json-logic',
+              type: 'json-schema',
               value: availableOnButtonRule,
             },
           ],
@@ -275,14 +275,18 @@ export const BusinessInfoPage = {
     },
     {
       type: 'definitionEvent',
-      event: 'PREVIOUS',
+      params: {
+        eventName: 'PREVIOUS'
+      },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
       },
     },
     {
       type: 'definitionEvent',
-      event: 'NEXT',
+      params: {
+        eventName: 'NEXT',
+      },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [

@@ -21,6 +21,5 @@ export const createInitialFormData = (
     formData = (get(context, definition.valueDestination) as AnyObject[]) || [];
   }
 
-  console.log('form data', formData);
   return formData;
 };

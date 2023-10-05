@@ -12,6 +12,12 @@ interface State {
 }
 
 export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) => {
+  const [contextPayload, _setContext] = useState<State>(() => ({
+    machineState: machineApi.getState(),
+    payload: machineApi.getContext(),
+  }));
+  const contextRef = useRef<ContextPayload>(contextPayload);
+
   useEffect(() => {
     machineApi.setContext({
       ...machineApi.getContext(),
@@ -21,13 +27,15 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
         tokenId: getAccessToken(),
       },
     });
-  }, []);
 
-  const [contextPayload, _setContext] = useState<State>(() => ({
-    machineState: machineApi.getState(),
-    payload: machineApi.getContext(),
-  }));
-  const contextRef = useRef<ContextPayload>(contextPayload);
+    const newState = {
+      machineState: machineApi.getState(),
+      payload: machineApi.getContext(),
+    };
+    contextRef.current = newState;
+
+    _setContext(newState);
+  }, []);
 
   const setContext = useCallback(
     (newContext: AnyObject) => {

@@ -3,43 +3,43 @@ const availableOnButtonRule = {
     { var: 'entity.data' },
     { var: 'entity.data.additionalInfo' },
     { var: 'entity.data.additionalInfo.ubos' },
-    { '>=': [{ length: [{ var: 'entity.data.additionalInfo.ubos' }] }, 1] },
-    {
-      reduce: [
-        { var: 'entity.data.additionalInfo.ubos' },
-        {
-          and: [
-            { '>= ': [{ minLength: [{ var: 'current.firstName' }] }, 3] },
-            { '>= ': [{ minLength: [{ var: 'current.lastName' }] }, 3] },
-            { '>= ': [{ minLength: [{ var: 'current.nationality' }] }, 3] },
-            { '!!': [{ var: 'current.identityNumber' }] },
-            { regex: [{ var: 'current.email' }, '^\\S+@\\S+\\.\\S+$'] },
-            { '!!': [{ var: 'current.fullAddress' }] },
-            { '>= ': [{ var: 'current.percentageOfOwnership' }, 25] },
-            { '<= ': [{ var: 'current.percentageOfOwnership' }, 100] },
-          ],
-        },
-        true,
-      ],
-    },
-    { var: 'entity.data.additionalInfo.directors' },
-    { '>=': [{ length: [{ var: 'entity.data.additionalInfo.directors' }] }, 1] },
-    {
-      reduce: [
-        { var: 'entity.data.additionalInfo.directors' },
-        {
-          and: [
-            { '>= ': [{ minLength: [{ var: 'current.firstName' }] }, 3] },
-            { '>= ': [{ minLength: [{ var: 'current.lastName' }] }, 3] },
-            { '>= ': [{ minLength: [{ var: 'current.nationality' }] }, 3] },
-            { '!!': [{ var: 'current.identityNumber' }] },
-            { regex: [{ var: 'current.email' }, '^\\S+@\\S+\\.\\S+$'] },
-            { '!!': [{ var: 'current.fullAddress' }] },
-          ],
-        },
-        true,
-      ],
-    },
+    // { '>=': [{ length: [{ var: 'entity.data.additionalInfo.ubos' }] }, 1] },
+    // {
+    //   reduce: [
+    //     { var: 'entity.data.additionalInfo.ubos' },
+    //     {
+    //       and: [
+    //         { '>= ': [{ minLength: [{ var: 'current.firstName' }] }, 3] },
+    //         { '>= ': [{ minLength: [{ var: 'current.lastName' }] }, 3] },
+    //         { '>= ': [{ minLength: [{ var: 'current.nationality' }] }, 3] },
+    //         { '!!': [{ var: 'current.identityNumber' }] },
+    //         { regex: [{ var: 'current.email' }, '^\\S+@\\S+\\.\\S+$'] },
+    //         { '!!': [{ var: 'current.fullAddress' }] },
+    //         { '>= ': [{ var: 'current.percentageOfOwnership' }, 25] },
+    //         { '<= ': [{ var: 'current.percentageOfOwnership' }, 100] },
+    //       ],
+    //     },
+    //     true,
+    //   ],
+    // },
+    // { var: 'entity.data.additionalInfo.directors' },
+    // { '>=': [{ length: [{ var: 'entity.data.additionalInfo.directors' }] }, 1] },
+    // {
+    //   reduce: [
+    //     { var: 'entity.data.additionalInfo.directors' },
+    //     {
+    //       and: [
+    //         { '>= ': [{ minLength: [{ var: 'current.firstName' }] }, 3] },
+    //         { '>= ': [{ minLength: [{ var: 'current.lastName' }] }, 3] },
+    //         { '>= ': [{ minLength: [{ var: 'current.nationality' }] }, 3] },
+    //         { '!!': [{ var: 'current.identityNumber' }] },
+    //         { regex: [{ var: 'current.email' }, '^\\S+@\\S+\\.\\S+$'] },
+    //         { '!!': [{ var: 'current.fullAddress' }] },
+    //       ],
+    //     },
+    //     true,
+    //   ],
+    // },
   ],
 };
 
@@ -82,7 +82,7 @@ export const DirectorsAndUbosPage = {
           },
           elements: [
             {
-              name: 'first-name-input',
+              name: 'ubos:first-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.ubos.firstName', //entity.data.additionalInfo.ubos[0].firstName
               options: {
@@ -94,7 +94,7 @@ export const DirectorsAndUbosPage = {
               },
             },
             {
-              name: 'last-name-input',
+              name: 'ubos:last-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.ubos.lastName',
               options: {
@@ -105,7 +105,7 @@ export const DirectorsAndUbosPage = {
               },
             },
             {
-              name: 'nationality-input',
+              name: 'ubos:nationality-input',
               type: 'nationality-picker',
               valueDestination: 'entity.data.additionalInfo.ubos.nationality',
               options: {
@@ -117,7 +117,7 @@ export const DirectorsAndUbosPage = {
               },
             },
             {
-              name: 'identity-number-input',
+              name: 'ubos:identity-number-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.ubos.identityNumber',
               options: {
@@ -129,7 +129,7 @@ export const DirectorsAndUbosPage = {
               },
             },
             {
-              name: 'email-input',
+              name: 'ubos:email-input',
               type: 'json-form:email',
               valueDestination: 'entity.data.additionalInfo.ubos.email',
               options: {
@@ -142,7 +142,7 @@ export const DirectorsAndUbosPage = {
               },
             },
             {
-              name: 'address-of-residence-input',
+              name: 'ubos:address-of-residence-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.ubos.fullAddress',
               options: {
@@ -154,7 +154,7 @@ export const DirectorsAndUbosPage = {
               },
             },
             {
-              name: 'ownership-percentage-input',
+              name: 'ubos:ownership-percentage-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.ubos.percentageOfOwnership',
               options: {
@@ -182,9 +182,9 @@ export const DirectorsAndUbosPage = {
               },
               elements: [
                 {
-                  name: 'first-name-input',
+                  name: 'directors:first-name-input',
                   type: 'json-form:text',
-                  valueDestination: 'firstName',
+                  valueDestination: 'entity.data.additionalInfo.directors.firstName',
                   options: {
                     jsonFormDefinition: {
                       type: 'string'
@@ -194,9 +194,9 @@ export const DirectorsAndUbosPage = {
                   },
                 },
                 {
-                  name: 'last-name-input',
+                  name: 'directors:last-name-input',
                   type: 'json-form:text',
-                  valueDestination: 'lastName',
+                  valueDestination: 'entity.data.additionalInfo.directors.lastName',
                   options: {
                     jsonFormDefinition: {
                       type: 'string'
@@ -205,9 +205,9 @@ export const DirectorsAndUbosPage = {
                   },
                 },
                 {
-                  name: 'nationality-input',
+                  name: 'directors:nationality-input',
                   type: 'nationality-picker',
-                  valueDestination: 'nationality',
+                  valueDestination: 'entity.data.additionalInfo.directors.nationality',
                   options: {
                     jsonFormDefinition: {
                       type: 'string',
@@ -228,9 +228,9 @@ export const DirectorsAndUbosPage = {
                   },
                 },
                 {
-                  name: 'identity-number-input',
+                  name: 'directors:identity-number-input',
                   type: 'json-form:text',
-                  valueDestination: 'identityNumber',
+                  valueDestination: 'entity.data.additionalInfo.directors.identityNumber',
                   options: {
                     jsonFormDefinition: {
                       type: 'number'
@@ -240,9 +240,9 @@ export const DirectorsAndUbosPage = {
                   },
                 },
                 {
-                  name: 'address-of-residence-input',
+                  name: 'directors:address-of-residence-input',
                   type: 'json-form:text',
-                  valueDestination: 'fullAddress',
+                  valueDestination: 'entity.data.additionalInfo.directors.fullAddress',
                   options: {
                     jsonFormDefinition: {
                       type: 'string'
@@ -252,9 +252,9 @@ export const DirectorsAndUbosPage = {
                   },
                 },
                 {
-                  name: 'email-input',
+                  name: 'directors:email-input',
                   type: 'json-form:email',
-                  valueDestination: 'email',
+                  valueDestination: 'entity.data.additionalInfo.directors.email',
                   options: {
                     jsonFormDefinition: {
                       type: 'string',
@@ -300,14 +300,18 @@ export const DirectorsAndUbosPage = {
   actions: [
     {
       type: 'definitionEvent',
-      event: 'PREVIOUS',
+      params: {
+        eventName: 'PREVIOUS'
+      },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }]
       },
     },
     {
       type: 'definitionEvent',
-      event: 'NEXT',
+      params: {
+        eventName: 'NEXT',
+      },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [

@@ -215,14 +215,18 @@ export const WebsiteBasicRequirement = {
   actions: [
     {
       type: 'definitionEvent',
-      event: 'PREVIOUS',
+      params: {
+        eventName: 'PREVIOUS'
+      },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }]
       },
     },
     {
       type: 'definitionEvent',
-      event: 'NEXT',
+      params: {
+        eventName: 'NEXT',
+      },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
