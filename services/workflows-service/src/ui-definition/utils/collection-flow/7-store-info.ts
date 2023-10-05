@@ -21,7 +21,6 @@ const availableOnButtonRule = {
                     "products",
                     "established",
                     "hasMobileApp",
-                    "hasActiveWebsite"
                   ],
                   "properties": {
                     "websiteUrls": {
@@ -40,9 +39,6 @@ const availableOnButtonRule = {
                       "type": "string"
                     },
                     "hasMobileApp": {
-                      "type": "boolean"
-                    },
-                    "hasActiveWebsite": {
                       "type": "boolean"
                     },
                     "mobileAppName": {
