@@ -114,6 +114,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^4.19.1
         version: 4.28.0(react-dom@18.2.0)(react@18.2.0)
+      '@tanstack/react-table':
+        specifier: ^8.9.2
+        version: 8.9.2(react-dom@18.2.0)(react@18.2.0)
       class-variance-authority:
         specifier: ^0.6.0
         version: 0.6.0(typescript@4.9.5)
