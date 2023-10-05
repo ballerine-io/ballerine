@@ -10,6 +10,7 @@ import { NestedDetails } from '../../components/NestedDetails/NestedDetails';
 import { MapCell } from '../../components/MapCell/MapCell';
 import { CaseCallToAction } from '../../components/CaseCallToAction/CaseCallToAction';
 import { BadgeCell } from '../../components/BadgeCell/BadgeCell';
+import { TableCell } from '../../components/TableCell/TableCell';
 
 export const cells = {
   heading: Heading,
@@ -24,4 +25,5 @@ export const cells = {
   multiDocuments: MultiDocuments,
   map: MapCell,
   caseCallToAction: CaseCallToAction,
+  table: TableCell,
 };
