@@ -80,7 +80,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       (acc, curr) => {
         let propertyValue = formData?.[curr];
 
-        if (!propertyValue) return acc;
+        if (isNullish(propertyValue) || propertyValue === '') return acc;
 
         if (
           document?.propertiesSchema?.properties?.[curr]?.format === 'date-time' &&
@@ -155,7 +155,8 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
               };
 
               const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-                const inputValue = event.target.value;
+                const isCheckbox = event.target.type === 'checkbox';
+                const inputValue = isCheckbox ? event.target.checked : event.target.value;
 
                 form.setValue(title, inputValue === 'Unavailable' ? '' : inputValue);
               };
@@ -178,11 +179,10 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                     let inputType: string;
 
                     if (!format) {
-                      inputType = type === 'string' ? 'text' : type;
-                    } else if (format === 'date-time') {
-                      inputType = 'datetime-local';
+                      inputType =
+                        type === 'boolean' ? 'checkbox' : type === 'string' ? 'text' : type;
                     } else {
-                      inputType = format;
+                      inputType = format === 'date-time' ? 'datetime-local' : format;
                     }
 
                     return (
@@ -275,6 +275,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                               pattern={pattern}
                               autoComplete={'off'}
                               value={displayValue(originalValue)}
+                              checked={originalValue}
                               onChange={handleInputChange}
                             />
                           </FormControl>
