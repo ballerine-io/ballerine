@@ -23,7 +23,7 @@ export class DocumentChangedWebhookCaller {
   constructor(
     private httpService: HttpService,
     private readonly configService: ConfigService,
-    private workflowEventEmitter: WorkflowEventEmitterService,
+    workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
   ) {

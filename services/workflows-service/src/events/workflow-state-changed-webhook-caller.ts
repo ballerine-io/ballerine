@@ -21,7 +21,7 @@ export class WorkflowStateChangedWebhookCaller {
 
   constructor(
     private httpService: HttpService,
-    private workflowEventEmitter: WorkflowEventEmitterService,
+    workflowEventEmitter: WorkflowEventEmitterService,
     private configService: ConfigService,
     private readonly logger: AppLoggerService,
     private readonly customerService: CustomerService,
