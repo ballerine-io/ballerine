@@ -19,7 +19,7 @@ export const kybParentDynamicExample = {
     states: {
       idle: {
         on: {
-          start: 'run_ubos',
+          COLLECTION_FLOW_FINISHED: 'manual_review',
         },
       },
       run_ubos: {
