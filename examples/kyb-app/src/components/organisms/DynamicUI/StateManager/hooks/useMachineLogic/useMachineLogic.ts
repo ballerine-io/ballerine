@@ -35,7 +35,7 @@ export const useMachineLogic = (
       const eventsWithStates = machine.getSnapshot().machine.states[machine.getSnapshot().value]
         ?.config?.on as Record<string, Record<'target', string> | undefined>;
       const nextTransitionState = eventsWithStates?.[eventName];
-      debugger;
+
       if (nextTransitionState) {
         const nextStateName = nextTransitionState.target;
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment

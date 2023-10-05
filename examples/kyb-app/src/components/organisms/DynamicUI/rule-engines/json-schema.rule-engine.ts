@@ -9,6 +9,10 @@ export class JsonSchemaRuleEngine implements RuleEngine {
     const validator = new Ajv({ allErrors: true });
     const validationResult = validator.validate(rule.value, context);
     if (!validationResult) {
+      const validationErrorMessage = validator.errors
+        ?.map(error => `${error.instancePath} - ${error.message}`)
+        .join(' | ');
+      console.warn(validationErrorMessage);
       return false;
     }
 
