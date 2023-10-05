@@ -41,7 +41,6 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
 
   const handleArrayInputChange = useCallback(
     (values: AnyObject[]) => {
-      validate();
       if (definition.options?.jsonFormDefinition?.type === 'array') {
         const prevContext = stateApi.getContext();
         const currentValue = get(prevContext, definition.valueDestination);
@@ -52,6 +51,7 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
           stateApi.setContext(prevContext);
         }
       }
+      validate();
     },
     [definition, stateApi, validate],
   );

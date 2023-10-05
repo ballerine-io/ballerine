@@ -31,7 +31,7 @@ const availableOnButtonRule = {
                       "lastName": {"type": "string"},
                       "nationality": {"type": "string"},
                       "identityNumber": {"type": "string"},
-                      "email": {"type": "string", "format": "email"},
+                      "email": {"type": "string"},
                       "fullAddress": {"type": "string"},
                       "percentageOfOwnership": {"type": "number"}
                     }
@@ -57,7 +57,7 @@ const availableOnButtonRule = {
                         "enum": ["Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Antiguans", "Chinese"]
                       },
                       "identityNumber": {"type": "number"},
-                      "email": {"type": "string", "format": "email"},
+                      "email": {"type": "string"},
                       "fullAddress": {"type": "string"}
                     }
                   }

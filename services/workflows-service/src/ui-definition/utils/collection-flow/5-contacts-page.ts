@@ -127,6 +127,10 @@ export const ContactsPage = {
               valueDestination: 'entity.data.additionalInfo.mainContact.phone',
               options: {
                 label: 'Phone Number',
+                jsonFormDefinition: {
+                  type: 'string',
+                  minLength: 3,
+                },
                 uiSchema: {
                   'ui:field': 'PhoneInput',
                   'ui:label': true,

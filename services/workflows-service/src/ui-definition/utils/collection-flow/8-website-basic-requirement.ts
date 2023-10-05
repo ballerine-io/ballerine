@@ -25,7 +25,7 @@ const availableOnButtonRule = {
                         "returnPolicyUrl",
                         "shippingPolicyUrl",
                         "aboutUsUrl",
-                        "productQuantityUrl",
+                        "productQuantity",
                         "productDescription",
                         "productPrice",
                         "websiteLanguage"
@@ -36,9 +36,9 @@ const availableOnButtonRule = {
                         "returnPolicyUrl": { "type": "string", "not": { "enum": [""] } },
                         "shippingPolicyUrl": { "type": "string", "not": { "enum": [""] } },
                         "aboutUsUrl": { "type": "string", "not": { "enum": [""] } },
-                        "productQuantityUrl": { "type": "string", "not": { "enum": [""] } },
+                        "productQuantity": { "type": "number", "not": { "enum": [""] } },
+                        "productPrice": { "type": "number", "not": { "enum": [""] } },
                         "productDescription": { "type": "string", "not": { "enum": [""] } },
-                        "productPrice": { "type": "string", "not": { "enum": [""] } },
                         "websiteLanguage": { "type": "string", "not": { "enum": [""] } }
                       }
                     }
@@ -163,13 +163,13 @@ export const WebsiteBasicRequirement = {
             {
               name: 'product-quantity-url-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.store.website.productQuantityUrl',
+              valueDestination: 'entity.data.additionalInfo.store.website.productQuantity',
               options: {
-                jsonFormDefintion: {
-                  type: 'string',
+                jsonFormDefinition: {
+                  type: 'number',
                 },
-                label: 'Product Quantity URL',
-                hint: 'www.example.com/products',
+                label: 'Product Quantity (not less than 5)',
+                hint: '100',
               },
             },
             {
@@ -190,7 +190,6 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.productPrice',
               options: {
-
                 label: 'Reasonable Product/Service Price',
                 hint: '100 USD',
                 jsonFormDefinition: {
