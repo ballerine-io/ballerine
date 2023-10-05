@@ -1,4 +1,4 @@
-import { getCountriesList } from '../schema-utils/countries';
+import {getCountriesList} from '../schema-utils/countries';
 
 const availableOnButtonRule = {
   or: [
@@ -103,7 +103,7 @@ export const BusinessAddressInfoPage = {
               name: 'street-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.street',
-              option: {
+              options: {
                 label: 'Street',
                 hint: 'Downing Street',
               },

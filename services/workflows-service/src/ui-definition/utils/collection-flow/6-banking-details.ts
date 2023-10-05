@@ -71,7 +71,7 @@ export const BankingDetailsPage = {
               name: 'card-holder-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.holderName',
-              option: {
+              options: {
                 label: 'Cardholder Name',
                 hint: 'John W. Doe',
               },
@@ -80,7 +80,7 @@ export const BankingDetailsPage = {
               name: 'resident-address-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.holderFullAddress',
-              option: {
+              options: {
                 label: 'Resident Address',
                 hint: 'Fla 5A, Tower 2, The Peak, 123 Queens Road, Hong Kong',
               },
@@ -89,7 +89,7 @@ export const BankingDetailsPage = {
               name: 'account-number-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.accountNumber',
-              option: {
+              options: {
                 label: 'Account Number',
                 hint: '0123456789',
               },
@@ -98,7 +98,7 @@ export const BankingDetailsPage = {
               name: 'iban-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.iban',
-              option: {
+              options: {
                 label: 'IBAN',
                 hint: 'HK00HKB01234567890123',
               },
@@ -107,7 +107,7 @@ export const BankingDetailsPage = {
               name: 'swift-code-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.swiftCode',
-              option: {
+              options: {
                 label: 'Swift Code',
                 hint: 'BBBBCCDDXXX',
               },
@@ -116,7 +116,7 @@ export const BankingDetailsPage = {
               name: 'bank-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.bankName',
-              option: {
+              options: {
                 label: 'Bank Name',
                 hint: 'Honk Kong Bank',
               },
@@ -125,7 +125,7 @@ export const BankingDetailsPage = {
               name: 'bank-address-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.bankAddress',
-              option: {
+              options: {
                 label: 'Bank Address',
                 hint: "456 King's Road, North Point, Hong Kong",
               },
@@ -134,7 +134,7 @@ export const BankingDetailsPage = {
               name: 'bank-sub-branch-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.subBranch',
-              option: {
+              options: {
                 label: 'Sub-Branch Number',
                 hint: '0012',
               },
@@ -143,7 +143,7 @@ export const BankingDetailsPage = {
               name: 'account-currency-input',
               type: 'currency-picker',
               valueDestination: 'entity.data.additionalInfo.bank.currency',
-              option: {
+              options: {
                 label: 'Account Currency',
                 hint: 'CNY',
               },
@@ -165,7 +165,7 @@ export const BankingDetailsPage = {
               value: availableOnButtonRule,
             },
           ],
-          option: {
+          options: {
             text: 'Continue',
           },
         },

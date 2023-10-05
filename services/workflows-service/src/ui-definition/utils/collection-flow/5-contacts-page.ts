@@ -119,7 +119,7 @@ export const ContactsPage = {
               value: availableOnButtonRule,
             },
           ],
-          option: {
+          options: {
             text: 'Continue',
           },
         },

@@ -158,7 +158,7 @@ export const ProcessingDetails = {
               type: 'json-form:text',
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume',
-              option: {
+              options: {
                 label: 'Monthly Sales Volume',
                 hint: '5,000',
                 jsonFormDefinition: {
@@ -171,7 +171,7 @@ export const ProcessingDetails = {
               type: 'json-form:text',
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions',
-              option: {
+              options: {
                 label: 'Monthly Number Of Transactions',
                 hint: '200',
                 jsonFormDefinition: {
@@ -184,7 +184,7 @@ export const ProcessingDetails = {
               type: 'json-form:text',
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay',
-              option: {
+              options: {
                 label: 'Est. Monthly Sales Volume through ClipsPay',
                 hint: '3,000',
                 jsonFormDefinition: {
@@ -197,7 +197,7 @@ export const ProcessingDetails = {
               type: 'json-form:text',
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay',
-              option: {
+              options: {
                 label: 'Est. Monthly Number of Transactions through ClipsPay',
                 hint: '150',
                 jsonFormDefinition: {
@@ -210,7 +210,7 @@ export const ProcessingDetails = {
               type: 'json-form:text',
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.averageTicketSales',
-              option: {
+              options: {
                 label: 'Average Ticket Sales',
                 hint: '25',
                 jsonFormDefinition: {
@@ -223,7 +223,7 @@ export const ProcessingDetails = {
               type: 'json-form:text',
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales',
-              option: {
+              options: {
                 label: 'Maximum Ticket Sales',
                 hint: '200',
                 jsonFormDefinition: {
@@ -235,7 +235,7 @@ export const ProcessingDetails = {
               name: 'spike-in-transactions-input',
               type: 'checkbox',
               valueDestination: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales',
-              option: {
+              options: {
                 label: 'There are spikes in transactions (e.g., promotions, events, etc.)',
                 jsonFormDefinition: {
                   type: 'number',
@@ -260,7 +260,7 @@ export const ProcessingDetails = {
                   type: 'json-form:text',
                   valueDestination:
                     'entity.data.additionalInfo.store.processingDetails.spikeSalesAverageVolume',
-                  option: {
+                  options: {
                     label: 'Spike Sales Average Volume',
                     hint: '150,000',
                     jsonFormDefinition: {
@@ -273,7 +273,7 @@ export const ProcessingDetails = {
                   type: 'json-form:text',
                   valueDestination:
                     'entity.data.additionalInfo.store.processingDetails.spikeTransactionNumber',
-                  option: {
+                  options: {
                     label: 'Spike Transaction Number',
                     hint: '200',
                     jsonFormDefinition: {
@@ -286,7 +286,7 @@ export const ProcessingDetails = {
                   type: 'json-form:text',
                   valueDestination:
                     'entity.data.additionalInfo.store.processingDetails.spikeOfVolumeInRegion',
-                  option: {
+                  options: {
                     label: 'Split of volume by regions in %',
                     hint: 'Asia 70%, Europe 30%',
                   },
@@ -342,7 +342,7 @@ export const ProcessingDetails = {
               value: availableOnButtonRule,
             },
           ],
-          option: {
+          options: {
             text: 'Continue',
           },
         },

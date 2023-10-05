@@ -81,7 +81,7 @@ export const StoreInfoPage = {
               name: 'store-website-urls-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.websiteUrls',
-              option: {
+              options: {
                 label: 'Website URLS (divide with comma if more than one)',
                 hint: 'www.example.cn',
               },
@@ -90,7 +90,7 @@ export const StoreInfoPage = {
               name: 'store-dba-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.dba',
-              option: {
+              options: {
                 label: 'DBA (Descriptor)',
                 hint: 'Barclays',
               },
@@ -99,7 +99,7 @@ export const StoreInfoPage = {
               name: 'store-industry-input',
               type: 'json-form:dropdown',
               valueDestination: 'entity.data.additionalInfo.store.industry',
-              option: {
+              options: {
                 label: 'Industry',
                 hint: 'Food & Beverage',
                 options: [
@@ -118,7 +118,7 @@ export const StoreInfoPage = {
               name: 'store-products-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.products',
-              option: {
+              options: {
                 classNames: ['min-width-40px'],
                 label: 'Products (divide with comma if more than one)',
                 hint: 'Smart Watches, Wireless Earbuds, Portable Chargers.',
@@ -128,7 +128,7 @@ export const StoreInfoPage = {
               name: 'store-established-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.established',
-              option: {
+              options: {
                 jsonFormDefinition: {
                   type: 'string',
                   format: 'date',
@@ -141,7 +141,7 @@ export const StoreInfoPage = {
               name: 'store-has-mobile-checkbox',
               type: 'checkbox',
               valueDestination: 'entity.data.additionalInfo.store.hasMobileApp',
-              option: {
+              options: {
                 label: 'I have mobile application',
               },
             },
@@ -150,7 +150,7 @@ export const StoreInfoPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.mobileAppName',
               visibleOn: [hasMobileAppVisibilityRule],
-              option: {
+              options: {
                 label: 'App Name',
                 hint: 'App Name',
               },
@@ -159,14 +159,14 @@ export const StoreInfoPage = {
               name: 'active-store-website-checkbox',
               type: 'checkbox',
               valueDestination: 'entity.data.additionalInfo.store.hasActiveWebsite',
-              option: {
+              options: {
                 label: "I declare that the website's business activity does not require a license",
               },
             },
             {
               name: 'active-store-website-checkbox',
               type: 'json-form:label',
-              option: {
+              options: {
                 label: "I declare that the website's business activity does not require a license",
                 classNames: ['text-color-grey', 'padding-top-10'],
               },
@@ -188,7 +188,7 @@ export const StoreInfoPage = {
               value: availableOnButtonRule,
             },
           ],
-          option: {
+          options: {
             text: 'Continue',
           },
         },
