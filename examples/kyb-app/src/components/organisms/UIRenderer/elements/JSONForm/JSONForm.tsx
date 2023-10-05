@@ -11,6 +11,8 @@ import get from 'lodash/get';
 import debounce from 'lodash/debounce';
 import { AnyObject } from '../../../../../../../../packages/ui/dist';
 import { jsonFormFields } from '@app/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
+import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
+import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
 
 export interface JSONFormElementBaseParams {
   jsonFormDefinition: RJSFSchema;
@@ -26,6 +28,7 @@ export interface JSONFormElementParams {
 }
 
 export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition, actions }) => {
+  const { hidden } = useUIElementProps(definition);
   const { formSchema, uiSchema } = useMemo(
     () => createFormSchemaFromUIElements(definition),
     [definition],
@@ -36,8 +39,6 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
   const formData = useMemo(() => createInitialFormData(definition, payload), [definition, payload]);
 
   const formRef = useRef<any>(null);
-
-  const validate = useMemo(() => debounce(() => formRef.current.validateForm(), 500), [formRef]);
 
   const handleArrayInputChange = useCallback(
     (values: AnyObject[]) => {
@@ -51,20 +52,22 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
           stateApi.setContext(prevContext);
         }
       }
-      validate();
+
+      setTimeout(() => void formRef.current.validateForm(), 1);
     },
-    [definition, stateApi, validate],
+    [definition, stateApi, formRef],
   );
 
   const handleSubmit = useCallback(() => {}, []);
 
-  return (
+  return hidden ? null : (
     <DynamicForm
       schema={formSchema}
       uiSchema={uiSchema}
       fields={jsonFormFields}
       formData={formData}
       ref={formRef}
+      transformErrors={transformRJSFErrors}
       onChange={handleArrayInputChange}
       onSubmit={handleSubmit}
     />

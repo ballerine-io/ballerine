@@ -127,6 +127,7 @@ export const BusinessInfoPage = {
                 hint: '1000000032985',
                 jsonFormDefinition: {
                   type: 'string',
+                  minLength: 1,
                 },
               },
             },
@@ -139,6 +140,7 @@ export const BusinessInfoPage = {
                 hint: 'Hong Kong',
                 jsonFormDefinition: {
                   type: 'string',
+                  minLength: 1,
                   oneOf: [
                     // Line below should removed in case when field is required.
                     // { const: '', title: '' },
@@ -159,6 +161,7 @@ export const BusinessInfoPage = {
                 hint: 'English Name',
                 jsonFormDefinition: {
                   type: 'string',
+                  minLength: 1,
                 },
               },
             },

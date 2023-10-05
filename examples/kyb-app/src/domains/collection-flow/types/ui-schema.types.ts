@@ -33,6 +33,7 @@ export interface UIElement<TElementParams> {
   name: string;
   type: UIElementType;
   availableOn?: Rule[];
+  visibleOn?: Rule[];
   required?: boolean;
   options: TElementParams;
   valueDestination?: string;
