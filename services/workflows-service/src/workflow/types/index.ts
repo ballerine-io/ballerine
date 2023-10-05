@@ -51,7 +51,11 @@ export type WorkflowRuntimeListQueryResult = WorkflowRuntimeData & {
   assignee: User | null;
 };
 
-export interface IWorkflowContextChangedEventData {
+interface WebhookableEvent {
+  sharedSecret: string;
+}
+
+export interface IWorkflowContextChangedEventData extends WebhookableEvent {
   eventName: 'workflow.context.changed';
   oldRuntimeData: WorkflowRuntimeData;
   updatedRuntimeData: WorkflowRuntimeData;
@@ -60,7 +64,7 @@ export interface IWorkflowContextChangedEventData {
   correlationId: string;
 }
 
-export interface IWorkflowCompletedEventData {
+export interface IWorkflowCompletedEventData extends WebhookableEvent {
   eventName: 'workflow.completed';
   // TODO: Move to a shared package
   runtimeData: WorkflowRuntimeData;
@@ -69,7 +73,7 @@ export interface IWorkflowCompletedEventData {
   correlationId: string;
 }
 
-export interface IWorkflowStateChangedEventData {
+export interface IWorkflowStateChangedEventData extends WebhookableEvent {
   eventName: 'workflow.state.changed';
   runtimeData: WorkflowRuntimeData;
   state: string;
