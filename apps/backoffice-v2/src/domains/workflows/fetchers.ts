@@ -6,6 +6,7 @@ import { Method, States } from '../../common/enums';
 import { IWorkflowId } from './interfaces';
 import qs from 'qs';
 import { zPropertyKey } from '../../lib/zod/utils/z-property-key/z-property-key';
+import { workflowRuntimeDataContext } from '../../pages/Entity/__TEMP__';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -90,7 +91,13 @@ export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
       }),
     )
     .optional(),
-});
+}).transform(data => ({
+  ...data,
+  context: {
+    ...data?.context,
+    ...workflowRuntimeDataContext,
+  },
+}));
 
 export const fetchWorkflowById = async ({
   workflowId,
