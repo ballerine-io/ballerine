@@ -504,11 +504,58 @@ export const useTasks = ({
     },
   ];
 
+  const bankingDetailsBlock = [
+    {
+      cells: [
+        {
+          type: 'heading',
+          value: 'Banking details',
+        },
+        {
+          type: 'subheading',
+          value: 'User-Provided Data',
+        },
+        {
+          type: 'details',
+          value: {
+            data: [
+              {
+                title: 'Company English Name',
+                value: 'ACME Corp',
+              },
+              {
+                title: 'Registration Number',
+                value: 'CRN12345678',
+              },
+              {
+                title: 'Company Type',
+                value: 'Limited License',
+              },
+              {
+                title: 'Registered Country',
+                value: 'United Kingdom',
+              },
+              {
+                title: 'Tax Identity Number',
+                value: 'Empty',
+              },
+              {
+                title: 'Date of Establishment',
+                value: '10/02/1998',
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ];
+
   return useMemo(() => {
     return entity
       ? [
           ...storeInfoBlock,
           ...websiteBasicRequirementBlock,
+          ...bankingDetailsBlock,
           ...entityInfoBlock,
           ...registryInfoBlock,
           ...taskBlocks,
