@@ -30,7 +30,29 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
     return !isAvailable;
   }, [payload, definition]);
 
+  const hidden = useMemo(() => {
+    if (!definition.visibleOn || !definition.visibleOn.length) return false;
+
+    const engineManager = new EngineManager(engines);
+
+    const isVisible = definition.visibleOn.every(rule => {
+      const engine = engineManager.getEngine(rule.type);
+
+      if (!engine) {
+        console.log(`Engine ${rule.type} not found`);
+        return true;
+      }
+
+      return engine.isActive(payload, rule);
+    });
+
+    return !isVisible;
+  }, [payload, definition]);
+
+  console.log('def', definition, hidden);
+
   return {
     disabled,
+    hidden,
   };
 };

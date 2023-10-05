@@ -104,6 +104,7 @@ export const PersonalInfoPage = {
                 hint: 'First Name',
                 jsonFormDefinition: {
                   type: 'string',
+                  minLength: 2,
                 },
               },
             },
@@ -115,6 +116,7 @@ export const PersonalInfoPage = {
                 hint: 'Last Name',
                 jsonFormDefinition: {
                   type: 'string',
+                  minLength: 2,
                 },
               },
             },
@@ -128,6 +130,7 @@ export const PersonalInfoPage = {
                 hint: 'CEO / Manager / Partner',
                 jsonFormDefinition: {
                   type: 'string',
+                  minLength: 2,
                 },
               },
             },
