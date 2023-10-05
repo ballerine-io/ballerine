@@ -4,6 +4,12 @@
 
 ### Patch Changes
 
+- Update
+
+## 0.6.7
+
+### Patch Changes
+
 - Documents schemas update
 
 ## 0.6.7
