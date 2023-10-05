@@ -239,7 +239,7 @@ export const BusinessAddressInfoPage = {
         },
         {
           name: 'next-page-button',
-          type: 'button',
+          type: 'json-form:button',
           availableOn: [
             {
               type: 'json-logic',

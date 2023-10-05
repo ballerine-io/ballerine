@@ -75,6 +75,9 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.mainWebsite',
               options: {
+                jsonFormDefinition: {
+                  type: 'string'
+                },
                 label: "Company's Main Website Address",
                 hint: 'www.example.cn',
                 description: 'the same as the application Entities',
@@ -85,6 +88,9 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.contactDetails',
               options: {
+                jsonFormDefinition: {
+                  type: 'string'
+                },
                 label: 'Contact Details (or Return Address)',
                 hint: '22, chaoyangmen, chaoyan district, beijing, china',
               },
@@ -94,6 +100,9 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.returnPolicyUrl',
               options: {
+                jsonFormDefinition: {
+                  type: 'string'
+                },
                 label: 'Return / Exchange Policy URL',
                 hint: 'www.example.com/return-policy',
               },
@@ -103,6 +112,9 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.shippingPolicyUrl',
               options: {
+                jsonFormDefinition: {
+                  type: 'string'
+                },
                 label: 'Shipping Policy',
                 hint: 'www.example.com/shipping-policy',
               },
@@ -112,6 +124,9 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.aboutUsUrl',
               options: {
+                jsonFormDefinition: {
+                  type: 'string'
+                },
                 label: 'About Us/Brand Intro URL',
                 hint: 'www.example.com/about-us',
               },
@@ -133,6 +148,9 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.productDescription',
               options: {
+                jsonFormDefinition: {
+                  type: 'string'
+                },
                 label: 'Adequate Product/Service Description',
                 hint: 'offers a range of organic skincare products, including moisturizers, serums, and cleansers. Each product is made using natural ingredients sourced sustainably.',
                 classNames: ['min-width-40px'],
@@ -143,6 +161,7 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.productPrice',
               options: {
+
                 label: 'Reasonable Product/Service Price',
                 hint: '100 USD',
                 jsonFormDefinition: {
@@ -155,6 +174,9 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:dropdown',
               valueDestination: 'entity.data.additionalInfo.store.website.websiteLanguage',
               options: {
+                jsonFormDefinition: {
+                  type: 'string'
+                },
                 label: 'Website Language',
                 hint: 'English',
               },
@@ -163,7 +185,7 @@ export const WebsiteBasicRequirement = {
         },
         {
           name: 'next-page-button',
-          type: 'button',
+          type: 'json-form:button',
           options: {
             uiDefinition: {
               classNames: ['align-right', 'padding-top-10'],

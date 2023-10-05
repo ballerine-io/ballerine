@@ -106,7 +106,7 @@ export const ContactsPage = {
         },
         {
           name: 'next-page-button',
-          type: 'button',
+          type: 'json-form:button',
           options: {
             uiDefinition: {
               classNames: ['align-right', 'padding-top-10'],
