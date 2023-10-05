@@ -13,7 +13,7 @@ export const SubscriptionSchema = z.discriminatedUnion('type', [
 export const ConfigSchema = z
   .object({
     isLegacyReject: z.boolean().optional(),
-    subscriptions: z.array(SubscriptionSchema),
+    subscriptions: z.array(SubscriptionSchema).optional(),
     completedWhenTasksResolved: z.boolean().optional(),
     workflowLevelResolution: z.boolean().optional(),
     allowMultipleActiveWorkflows: z.boolean().optional(),
