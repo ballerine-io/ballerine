@@ -328,6 +328,16 @@ export const ProcessingDetails = {
           ],
         },
         {
+          name: 'previous-page-button',
+          type: 'json-form:button',
+          options: {
+            uiDefinition: {
+              classNames: ['align-right', 'padding-top-10'],
+            },
+            text: 'PREVIOUS',
+          },
+        },
+        {
           name: 'next-page-button',
           type: 'json-form:button',
           options: {
@@ -349,7 +359,14 @@ export const ProcessingDetails = {
   actions: [
     {
       type: 'definitionEvent',
-      event: 'next',
+      event: 'PREVIOUS',
+      dispatchOn: {
+        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
+      },
+    },
+    {
+      type: 'definitionEvent',
+      event: 'NEXT',
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
