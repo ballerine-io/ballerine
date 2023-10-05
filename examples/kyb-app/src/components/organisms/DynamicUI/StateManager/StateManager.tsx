@@ -17,7 +17,7 @@ export const StateManager = ({
   initialContext,
 }: StateManagerProps) => {
   const machine = useMemo(
-    () => createStateMachine(workflowId, definition, definitionType, extensions),
+    () => createStateMachine(workflowId, definition, definitionType, extensions, initialContext),
     [definition, workflowId, definitionType, extensions],
   );
 

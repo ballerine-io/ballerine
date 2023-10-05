@@ -7,6 +7,7 @@ export const createStateMachine = (
   definition: State,
   definitionType: string,
   extensions: AnyObject,
+  workflowContext?: AnyObject,
 ) =>
   createWorkflow({
     runtimeId: workflowId,
@@ -14,4 +15,5 @@ export const createStateMachine = (
     definition: definition as any,
     definitionType: 'statechart-json',
     extensions: extensions,
+    workflowContext: workflowContext,
   });
