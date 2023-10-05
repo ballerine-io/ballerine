@@ -435,7 +435,6 @@ export const useTasks = ({
                   data: Object.entries(storeInfo)?.map(([title, value]) => ({
                     title,
                     value,
-                    type: 'string',
                     isEditable: false,
                   })),
                 },
@@ -465,7 +464,6 @@ export const useTasks = ({
                   data: Object.entries(bankDetails)?.map(([title, value]) => ({
                     title,
                     value,
-                    type: 'string',
                     isEditable: false,
                   })),
                 },
@@ -495,7 +493,6 @@ export const useTasks = ({
                   data: Object.entries(websiteBasicRequirement)?.map(([title, value]) => ({
                     title,
                     value,
-                    type: 'string',
                     isEditable: false,
                   })),
                 },
@@ -525,7 +522,6 @@ export const useTasks = ({
                   data: Object.entries(processingDetails)?.map(([title, value]) => ({
                     title,
                     value,
-                    type: 'string',
                     isEditable: false,
                   })),
                 },
