@@ -75,10 +75,9 @@ export const DirectorsAndUbosPage = {
           type: 'json-form',
           valueDestination: 'entity.data.additionalInfo.ubos',
           options: {
+            description: '<p>add all the natural persons that own or control, <bold>Directly Or Indirectly</bold> more than 25% of the company.</p>',
             jsonFormDefinition: {
               type: 'array',
-              description:
-                '<p>add all the natural persons that own or control, <bold>Directly Or Indirectly</bold> more than 25% of the company.</p>',
             },
           },
           elements: [
@@ -183,7 +182,7 @@ export const DirectorsAndUbosPage = {
         //           name: 'first-name-input',
         //           type: 'json-form:text',
         //           valueDestination: 'firstName',
-        //           option: {
+        //           options: {
         //             label: 'Name',
         //             hint: 'First Name',
         //           },
@@ -192,7 +191,7 @@ export const DirectorsAndUbosPage = {
         //           name: 'last-name-input',
         //           type: 'json-form:text',
         //           valueDestination: 'lastName',
-        //           option: {
+        //           options: {
         //             hint: 'Last Name',
         //           },
         //         },
@@ -200,7 +199,7 @@ export const DirectorsAndUbosPage = {
         //           name: 'nationality-input',
         //           type: 'nationality-picker',
         //           valueDestination: 'nationality',
-        //           option: {
+        //           options: {
         //             label: 'Nationality',
         //             hint: 'Chinese',
         //           },
@@ -209,7 +208,7 @@ export const DirectorsAndUbosPage = {
         //           name: 'identity-number-input',
         //           type: 'json-form:text',
         //           valueDestination: 'identityNumber',
-        //           option: {
+        //           options: {
         //             label: 'Identity Number',
         //             hint: '11010219820519759X',
         //           },
@@ -218,7 +217,7 @@ export const DirectorsAndUbosPage = {
         //           name: 'address-of-residence-input',
         //           type: 'json-form:text',
         //           valueDestination: 'fullAddress',
-        //           option: {
+        //           options: {
         //             label: 'Address of Residence',
         //             hint: '22, Choyangmen, Chaoyang District, Beijing, China',
         //           },
@@ -227,7 +226,7 @@ export const DirectorsAndUbosPage = {
         //           name: 'email-input',
         //           type: 'json-form:email',
         //           valueDestination: 'email',
-        //           option: {
+        //           options: {
         //             jsonFormDefinition: {
         //               type: 'email',
         //             },
@@ -254,7 +253,7 @@ export const DirectorsAndUbosPage = {
               value: availableOnButtonRule,
             },
           ],
-          option: {
+          options: {
             text: 'Continue',
           },
         },

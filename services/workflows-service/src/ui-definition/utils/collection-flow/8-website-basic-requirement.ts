@@ -65,7 +65,7 @@ export const WebsiteBasicRequirement = {
           elements: [
             {
               type: 'json-form:hint',
-              option: {
+              options: {
                 label:
                   'This list is intended only as a basic pre-entry check of the websites and does not refer to specific product application requirements.',
               },
@@ -74,7 +74,7 @@ export const WebsiteBasicRequirement = {
               name: 'main-company-website-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.mainWebsite',
-              option: {
+              options: {
                 label: "Company's Main Website Address",
                 hint: 'www.example.cn',
                 description: 'the same as the application Entities',
@@ -84,7 +84,7 @@ export const WebsiteBasicRequirement = {
               name: 'contact-details-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.contactDetails',
-              option: {
+              options: {
                 label: 'Contact Details (or Return Address)',
                 hint: '22, chaoyangmen, chaoyan district, beijing, china',
               },
@@ -93,7 +93,7 @@ export const WebsiteBasicRequirement = {
               name: 'return-policy-url-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.returnPolicyUrl',
-              option: {
+              options: {
                 label: 'Return / Exchange Policy URL',
                 hint: 'www.example.com/return-policy',
               },
@@ -102,7 +102,7 @@ export const WebsiteBasicRequirement = {
               name: 'shipping-policy-url-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.shippingPolicyUrl',
-              option: {
+              options: {
                 label: 'Shipping Policy',
                 hint: 'www.example.com/shipping-policy',
               },
@@ -111,7 +111,7 @@ export const WebsiteBasicRequirement = {
               name: 'about-us-url-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.aboutUsUrl',
-              option: {
+              options: {
                 label: 'About Us/Brand Intro URL',
                 hint: 'www.example.com/about-us',
               },
@@ -120,7 +120,10 @@ export const WebsiteBasicRequirement = {
               name: 'product-quantity-url-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.productQuantityUrl',
-              option: {
+              options: {
+                jsonFormDefintion: {
+                  type: 'string',
+                },
                 label: 'Product Quantity URL',
                 hint: 'www.example.com/products',
               },
@@ -129,7 +132,7 @@ export const WebsiteBasicRequirement = {
               name: 'product-description-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.productDescription',
-              option: {
+              options: {
                 label: 'Adequate Product/Service Description',
                 hint: 'offers a range of organic skincare products, including moisturizers, serums, and cleansers. Each product is made using natural ingredients sourced sustainably.',
                 classNames: ['min-width-40px'],
@@ -139,7 +142,7 @@ export const WebsiteBasicRequirement = {
               name: 'product-price-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.productPrice',
-              option: {
+              options: {
                 label: 'Reasonable Product/Service Price',
                 hint: '100 USD',
                 jsonFormDefinition: {
@@ -151,7 +154,7 @@ export const WebsiteBasicRequirement = {
               name: 'website-language-input',
               type: 'json-form:dropdown',
               valueDestination: 'entity.data.additionalInfo.store.website.websiteLanguage',
-              option: {
+              options: {
                 label: 'Website Language',
                 hint: 'English',
               },
@@ -173,7 +176,7 @@ export const WebsiteBasicRequirement = {
               value: availableOnButtonRule,
             },
           ],
-          option: {
+          options: {
             text: 'Continue',
           },
         },
