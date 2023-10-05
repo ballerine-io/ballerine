@@ -67,7 +67,7 @@ const availableOnButtonRule = {
 
 
 const hasMobileAppVisibilityRule = {
-  '==': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, true],
+  '==': [{ var: 'entity.data.additionalInfo.store.hasMobileApp' }, true],
 };
 
 export const StoreInfoPage = {
@@ -87,7 +87,9 @@ export const StoreInfoPage = {
           elements: [
             {
               type: 'h1',
-              value: 'Store Info',
+              options: {
+                text: 'Store Info'
+              }
             },
           ],
         },
@@ -195,11 +197,19 @@ export const StoreInfoPage = {
                 label: 'I have mobile application',
               },
             },
+          ],
+        },
+        {
+          type: 'json-form',
+          visibleOn: [{
+            type: 'json-logic',
+            value: hasMobileAppVisibilityRule
+          }],
+          elements: [
             {
               name: 'store-mobile-app-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.mobileAppName',
-              visibleOn: [hasMobileAppVisibilityRule],
               options: {
                 jsonFormDefinition: {
                   type: 'string'
@@ -208,6 +218,11 @@ export const StoreInfoPage = {
                 hint: 'App Name',
               },
             },
+          ]
+        },
+        {
+          type: 'json-form',
+          elements: [
             {
               name: 'active-store-website-checkbox',
               type: 'checkbox',
@@ -219,18 +234,7 @@ export const StoreInfoPage = {
                 label: "I declare that the website's business activity does not require a license",
               },
             },
-            {
-              name: 'active-store-website-checkbox',
-              type: 'json-form:label',
-              options: {
-                jsonFormDefinition: {
-                  type: 'boolean'
-                },
-                label: "I declare that the website's business activity does not require a license",
-                classNames: ['text-color-grey', 'padding-top-10'],
-              },
-            },
-          ],
+          ]
         },
         {
           name: 'previous-page-button',

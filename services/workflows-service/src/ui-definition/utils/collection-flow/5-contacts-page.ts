@@ -61,12 +61,14 @@ export const ContactsPage = {
           elements: [
             {
               type: 'h1',
-              value: 'Contacts',
+              options: {
+                text: 'Contacts'
+              }
             },
             {
               type: 'h3',
-              value: 'Main Contact',
               options: {
+                text: 'Main Contact',
                 classNames: ['padding-top-10'],
               },
             },
@@ -94,6 +96,7 @@ export const ContactsPage = {
                 hint: 'First Name',
                 jsonFormDefinition: {
                   type: 'string',
+                  minLength: 1,
                 },
               },
             },
@@ -105,6 +108,7 @@ export const ContactsPage = {
                 hint: 'Last Name',
                 jsonFormDefinition: {
                   type: 'string',
+                  minLength: 1,
                 },
               },
             },
@@ -116,6 +120,7 @@ export const ContactsPage = {
                 jsonFormDefinition: {
                   type: 'string',
                   format: 'email',
+                  minLength: 1,
                 },
                 label: 'Email',
                 hint: 'example@example.cn',
