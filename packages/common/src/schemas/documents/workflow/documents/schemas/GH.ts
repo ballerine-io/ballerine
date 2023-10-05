@@ -694,54 +694,6 @@ export const getGhanaDocuments = (): TDocument[] => {
         issueDate: TypePastDate,
       }),
     },
-    {
-      category: 'proof_of_registration',
-      type: 'form_a',
-      issuer: {
-        country: 'GH',
-      },
-      issuingVersion: 1,
-      version: 1,
-      propertiesSchema: {
-        type: 'object',
-        required: ['registrationNumber', 'taxIdNumber'],
-        properties: {
-          registrationNumber: {
-            type: 'string',
-            pattern: alphaNumeric,
-          },
-          taxIdNumber: {
-            type: 'string',
-            pattern: alphaNumeric,
-          },
-        },
-      },
-    },
-    {
-      category: 'proof_of_registration',
-      type: 'shareholder_details',
-      issuer: {
-        country: 'GH',
-      },
-      issuingVersion: 1,
-      version: 1,
-      propertiesSchema: {
-        type: 'object',
-        required: ['firstName', 'lastName'],
-        properties: {
-          firstName: {
-            type: 'string',
-          },
-          middleName: {
-            type: 'string',
-          },
-          lastName: {
-            type: 'string',
-          },
-        },
-      },
-    },
-
     // Proof of Ownership
     {
       category: 'proof_of_ownership',
