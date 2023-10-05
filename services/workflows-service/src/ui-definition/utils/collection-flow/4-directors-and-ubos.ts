@@ -1,47 +1,76 @@
 const availableOnButtonRule = {
-  and: [
-    { var: 'entity.data' },
-    { var: 'entity.data.additionalInfo' },
-    { var: 'entity.data.additionalInfo.ubos' },
-    // { '>=': [{ length: [{ var: 'entity.data.additionalInfo.ubos' }] }, 1] },
-    // {
-    //   reduce: [
-    //     { var: 'entity.data.additionalInfo.ubos' },
-    //     {
-    //       and: [
-    //         { '>= ': [{ minLength: [{ var: 'current.firstName' }] }, 3] },
-    //         { '>= ': [{ minLength: [{ var: 'current.lastName' }] }, 3] },
-    //         { '>= ': [{ minLength: [{ var: 'current.nationality' }] }, 3] },
-    //         { '!!': [{ var: 'current.identityNumber' }] },
-    //         { regex: [{ var: 'current.email' }, '^\\S+@\\S+\\.\\S+$'] },
-    //         { '!!': [{ var: 'current.fullAddress' }] },
-    //         { '>= ': [{ var: 'current.percentageOfOwnership' }, 25] },
-    //         { '<= ': [{ var: 'current.percentageOfOwnership' }, 100] },
-    //       ],
-    //     },
-    //     true,
-    //   ],
-    // },
-    // { var: 'entity.data.additionalInfo.directors' },
-    // { '>=': [{ length: [{ var: 'entity.data.additionalInfo.directors' }] }, 1] },
-    // {
-    //   reduce: [
-    //     { var: 'entity.data.additionalInfo.directors' },
-    //     {
-    //       and: [
-    //         { '>= ': [{ minLength: [{ var: 'current.firstName' }] }, 3] },
-    //         { '>= ': [{ minLength: [{ var: 'current.lastName' }] }, 3] },
-    //         { '>= ': [{ minLength: [{ var: 'current.nationality' }] }, 3] },
-    //         { '!!': [{ var: 'current.identityNumber' }] },
-    //         { regex: [{ var: 'current.email' }, '^\\S+@\\S+\\.\\S+$'] },
-    //         { '!!': [{ var: 'current.fullAddress' }] },
-    //       ],
-    //     },
-    //     true,
-    //   ],
-    // },
-  ],
-};
+  "type": "object",
+  "properties": {
+    "entity": {
+      "type": "object",
+      "required": ["data"],
+      "properties": {
+        "data": {
+          "type": "object",
+          "required": ["additionalInfo"],
+          "properties": {
+            "additionalInfo": {
+              "type": "object",
+              "required": ["ubos", "directors"],
+              "properties": {
+                "ubos": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "firstName",
+                      "lastName",
+                      "nationality",
+                      "identityNumber",
+                      "email",
+                      "fullAddress",
+                      "percentageOfOwnership"
+                    ],
+                    "properties": {
+                      "firstName": {"type": "string"},
+                      "lastName": {"type": "string"},
+                      "nationality": {"type": "string"},
+                      "identityNumber": {"type": "string"},
+                      "email": {"type": "string", "format": "email"},
+                      "fullAddress": {"type": "string"},
+                      "percentageOfOwnership": {"type": "number"}
+                    }
+                  }
+                },
+                "directors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "firstName",
+                      "lastName",
+                      "nationality",
+                      "identityNumber",
+                      "email",
+                      "fullAddress"
+                    ],
+                    "properties": {
+                      "firstName": {"type": "string"},
+                      "lastName": {"type": "string"},
+                      "nationality": {
+                        "type": "string",
+                        "enum": ["Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Antiguans", "Chinese"]
+                      },
+                      "identityNumber": {"type": "number"},
+                      "email": {"type": "string", "format": "email"},
+                      "fullAddress": {"type": "string"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["entity"]
+}
 
 export const DirectorsAndUbosPage = {
   type: 'page',
@@ -289,7 +318,7 @@ export const DirectorsAndUbosPage = {
           },
           availableOn: [
             {
-              type: 'json-logic',
+              type: 'json-schema',
               value: availableOnButtonRule,
             },
           ],
@@ -316,7 +345,7 @@ export const DirectorsAndUbosPage = {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
           {
-            type: 'json-logic',
+            type: 'json-schema',
             value: availableOnButtonRule,
           },
         ],

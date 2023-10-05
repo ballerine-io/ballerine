@@ -1,28 +1,57 @@
 const availableOnButtonRule = {
-  and: [
-    { var: 'entity.data' },
-    { var: 'entity.data.additionalInfo' },
-    { var: 'entity.data.additionalInfo.store' },
-    { var: 'entity.data.additionalInfo.store.website' },
-    { var: 'entity.data.additionalInfo.store.website.mainWebsite' },
-    { var: 'entity.data.additionalInfo.store.website.contactDetails' },
-    { var: 'entity.data.additionalInfo.store.website.returnPolicyUrl' },
-    { var: 'entity.data.additionalInfo.store.website.shippingPolicyUrl' },
-    { var: 'entity.data.additionalInfo.store.website.aboutUsUrl' },
-    { var: 'entity.data.additionalInfo.store.website.productQuantityUrl' },
-    { var: 'entity.data.additionalInfo.store.website.productDescription' },
-    { var: 'entity.data.additionalInfo.store.website.productPrice' },
-    { var: 'entity.data.additionalInfo.store.website.websiteLanguage' },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.website.mainWebsite' }, ''] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.website.contactDetails' }, ''] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.website.returnPolicyUrl' }, ''] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.website.shippingPolicyUrl' }, ''] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.website.aboutUsUrl' }, ''] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.website.productQuantityUrl' }, ''] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.website.productDescription' }, ''] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.website.productPrice' }, ''] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.website.websiteLanguage' }, ''] },
-  ],
+  "type": "object",
+  "properties": {
+    "entity": {
+      "type": "object",
+      "required": ["data"],
+      "properties": {
+        "data": {
+          "type": "object",
+          "required": ["additionalInfo"],
+          "properties": {
+            "additionalInfo": {
+              "type": "object",
+              "required": ["store"],
+              "properties": {
+                "store": {
+                  "type": "object",
+                  "required": ["website"],
+                  "properties": {
+                    "website": {
+                      "type": "object",
+                      "required": [
+                        "mainWebsite",
+                        "contactDetails",
+                        "returnPolicyUrl",
+                        "shippingPolicyUrl",
+                        "aboutUsUrl",
+                        "productQuantityUrl",
+                        "productDescription",
+                        "productPrice",
+                        "websiteLanguage"
+                      ],
+                      "properties": {
+                        "mainWebsite": { "type": "string", "not": { "enum": [""] } },
+                        "contactDetails": { "type": "string", "not": { "enum": [""] } },
+                        "returnPolicyUrl": { "type": "string", "not": { "enum": [""] } },
+                        "shippingPolicyUrl": { "type": "string", "not": { "enum": [""] } },
+                        "aboutUsUrl": { "type": "string", "not": { "enum": [""] } },
+                        "productQuantityUrl": { "type": "string", "not": { "enum": [""] } },
+                        "productDescription": { "type": "string", "not": { "enum": [""] } },
+                        "productPrice": { "type": "string", "not": { "enum": [""] } },
+                        "websiteLanguage": { "type": "string", "not": { "enum": [""] } }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["entity"]
 };
 export const WebsiteBasicRequirement = {
   type: 'page',
@@ -204,7 +233,7 @@ export const WebsiteBasicRequirement = {
           },
           availableOn: [
             {
-              type: 'json-logic',
+              type: 'json-schema',
               value: availableOnButtonRule,
             },
           ],
@@ -231,7 +260,7 @@ export const WebsiteBasicRequirement = {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
           {
-            type: 'json-logic',
+            type: 'json-schema',
             value: availableOnButtonRule,
           },
         ],

@@ -1,38 +1,71 @@
 const availableOnButtonRule = {
-  and: [
-    { var: 'entity.data' },
-    { var: 'entity.data.additionalInfo' },
-    { var: 'entity.data.additionalInfo.store' },
-    { var: 'entity.data.additionalInfo.store.websiteUrls' },
-    { var: 'entity.data.additionalInfo.store.dba' },
-    { var: 'entity.data.additionalInfo.store.products' },
-    { var: 'entity.data.additionalInfo.store.established' },
-    { var: 'entity.data.additionalInfo.store.hasMobileApp' },
-    { var: 'entity.data.additionalInfo.store.hasActiveWebsite' },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.websiteUrls' }, ''] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.dba' }, ''] },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.products' }, ''] },
-    {
-      regex: [
-        { var: 'entity.data.additionalInfo.store.established' },
-        '^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$',
-      ],
-    },
-    { '!=': [{ var: 'entity.data.additionalInfo.store.dba' }, ''] },
-    {
-      and: [
-        { var: 'entity.data.additionalInfo.store.mobileAppName' },
-        {
-          if: [
-            { var: 'entity.data.additionalInfo.store.hasMobileApp' },
-            { '!=': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, ''] },
-            { '==': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, ''] },
-          ],
-        },
-      ],
-    },
-  ],
+  "type": "object",
+  "properties": {
+    "entity": {
+      "type": "object",
+      "required": ["data"],
+      "properties": {
+        "data": {
+          "type": "object",
+          "required": ["additionalInfo"],
+          "properties": {
+            "additionalInfo": {
+              "type": "object",
+              "required": ["store"],
+              "properties": {
+                "store": {
+                  "type": "object",
+                  "required": [
+                    "websiteUrls",
+                    "dba",
+                    "products",
+                    "established",
+                    "hasMobileApp",
+                    "hasActiveWebsite"
+                  ],
+                  "properties": {
+                    "websiteUrls": {
+                      "type": "string",
+                      "not": { "enum": [""] }
+                    },
+                    "dba": {
+                      "type": "string",
+                      "not": { "enum": [""] }
+                    },
+                    "products": {
+                      "type": "string",
+                      "not": { "enum": [""] }
+                    },
+                    "established": {
+                      "type": "string",
+                      "pattern": "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}$"
+                    },
+                    "hasMobileApp": {
+                      "type": "boolean"
+                    },
+                    "hasActiveWebsite": {
+                      "type": "boolean"
+                    },
+                    "mobileAppName": {
+                      "type": "string",
+                      "if": {
+                        "properties": { "hasMobileApp": { "enum": [true] } }
+                      },
+                      "then": { "not": { "enum": [""] } },
+                      "else": { "enum": [""] }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["entity"]
 };
+
 
 const hasMobileAppVisibilityRule = {
   '==': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, true],
@@ -221,7 +254,7 @@ export const StoreInfoPage = {
           },
           availableOn: [
             {
-              type: 'json-logic',
+              type: 'json-schema',
               value: availableOnButtonRule,
             },
           ],
@@ -248,7 +281,7 @@ export const StoreInfoPage = {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
           {
-            type: 'json-logic',
+            type: 'json-schema',
             value: availableOnButtonRule,
           },
         ],
