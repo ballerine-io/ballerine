@@ -412,8 +412,56 @@ export const useTasks = ({
           },
         ];
 
+  const storeInfoBlock = [
+    {
+      cells: [
+        {
+          type: 'heading',
+          value: 'Store Info',
+        },
+        {
+          type: 'subheading',
+          value: 'User-provided data',
+        },
+        {
+          type: 'details',
+          value: {
+            data: [
+              {
+                title: 'Company English Name',
+                value: 'ACME Corp',
+              },
+              {
+                title: 'Registration Number',
+                value: 'CRN12345678',
+              },
+              {
+                title: 'Company Type',
+                value: 'Limited License',
+              },
+              {
+                title: 'Registered Country',
+                value: 'United Kingdom',
+              },
+              {
+                title: 'Tax Identity Number',
+                value: 'Empty',
+              },
+              {
+                title: 'Date of Establishment',
+                value: '10/02/1998',
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ];
+
   return useMemo(() => {
-    return entity ? [...entityInfoBlock, ...registryInfoBlock, ...taskBlocks, ...mapBlock] : [];
+    return entity
+      ? [...storeInfoBlock, ...entityInfoBlock, ...registryInfoBlock, ...taskBlocks, ...mapBlock]
+      : [];
   }, [
     address,
     caseState.writeEnabled,
