@@ -3,12 +3,10 @@ import { createFormSchemaFromUIElements } from '@app/components/organisms/UIRend
 import { createInitialFormData } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/createInitialFormData';
 import { UIElementComponent } from '@app/components/organisms/UIRenderer/types';
 
-import { DynamicForm } from '@ballerine/ui';
+import { AnyObject, DynamicForm } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { useCallback, useMemo, useState } from 'react';
 import set from 'lodash/set';
-import get from 'lodash/get';
-import { AnyObject } from '../../../../../../../../packages/ui/dist';
 import { jsonFormFields } from '@app/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
 
 export interface JSONFormElementBaseParams {
@@ -24,11 +22,12 @@ export interface JSONFormElementParams {
   jsonFormDefinition?: { type?: string; required?: string[] };
 }
 
-export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition, actions }) => {
+export const Documents: UIElementComponent<JSONFormElementParams> = ({ definition, actions }) => {
   const { formSchema, uiSchema } = useMemo(
     () => createFormSchemaFromUIElements(definition),
     [definition],
   );
+  const [isUploading, setUploading] = useState(false);
   const { stateApi } = useStateManagerContext();
 
   const { payload } = useStateManagerContext();
@@ -38,16 +37,12 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
   );
 
   const handleArrayInputChange = useCallback(
-    (values: AnyObject[]) => {
+    async (values: AnyObject) => {
       if (definition.options?.jsonFormDefinition?.type === 'array') {
         const prevContext = stateApi.getContext();
-        const currentValue = get(prevContext, definition.valueDestination);
+        set(prevContext, definition.valueDestination, values);
 
-        if (Array.isArray(currentValue) && currentValue.length !== values.length) {
-          set(prevContext, definition.valueDestination, values);
-
-          stateApi.setContext(prevContext);
-        }
+        stateApi.setContext(prevContext);
       }
     },
     [definition, stateApi],
@@ -64,9 +59,7 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
       formData={initialFormData}
       onChange={handleArrayInputChange}
       onSubmit={handleSubmit}
+      disabled
     />
   );
 };
-
-//@ts-nocheck
-// JSONForm.Documents = Documents;

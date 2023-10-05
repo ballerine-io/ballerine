@@ -77,7 +77,7 @@ export const WebsiteBasicRequirement = {
               option: {
                 label: "Company's Main Website Address",
                 hint: 'www.example.cn',
-                description: 'the same as the application Entities'
+                description: 'the same as the application Entities',
               },
             },
             {
@@ -161,8 +161,11 @@ export const WebsiteBasicRequirement = {
         {
           name: 'next-page-button',
           type: 'button',
-          uiDefinition: {
-            classNames: ['align-right', 'padding-top-10'],
+          options: {
+            uiDefinition: {
+              classNames: ['align-right', 'padding-top-10'],
+            },
+            text: 'Continue',
           },
           availableOn: [
             {

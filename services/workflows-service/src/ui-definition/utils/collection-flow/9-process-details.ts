@@ -7,44 +7,118 @@ const availableOnButtonRule = {
     { var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume' },
     { var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions' },
     { var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay' },
-    { var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay' },
+    {
+      var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay',
+    },
     { var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales' },
     { var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales' },
     { var: 'entity.data.additionalInfo.store.processingDetails.mainCategory' },
     {
       if: [
-        {var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales'},
+        { var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales' },
         {
           and: [
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.spikeSalesAverageVolume'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.spikeTransactionNumber'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.spikeOfVolumeInRegion'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.mainCategory'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.businessModel'}]}
-          ]
+            {
+              '!!': [
+                { var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume' },
+              ],
+            },
+            {
+              '!!': [
+                { var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions' },
+              ],
+            },
+            {
+              '!!': [
+                {
+                  var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay',
+                },
+              ],
+            },
+            {
+              '!!': [
+                {
+                  var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay',
+                },
+              ],
+            },
+            {
+              '!!': [
+                { var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales' },
+              ],
+            },
+            {
+              '!!': [
+                { var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales' },
+              ],
+            },
+            {
+              '!!': [
+                {
+                  var: 'entity.data.additionalInfo.store.processingDetails.spikeSalesAverageVolume',
+                },
+              ],
+            },
+            {
+              '!!': [
+                {
+                  var: 'entity.data.additionalInfo.store.processingDetails.spikeTransactionNumber',
+                },
+              ],
+            },
+            {
+              '!!': [
+                { var: 'entity.data.additionalInfo.store.processingDetails.spikeOfVolumeInRegion' },
+              ],
+            },
+            { '!!': [{ var: 'entity.data.additionalInfo.store.processingDetails.mainCategory' }] },
+            { '!!': [{ var: 'entity.data.additionalInfo.store.processingDetails.businessModel' }] },
+          ],
         },
         {
           and: [
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.mainCategory'}]},
-            {'!!': [{var: 'entity.data.additionalInfo.store.processingDetails.businessModel'}]}
-          ]
-        }
-      ]
-    }
-  ]
-}
+            {
+              '!!': [
+                { var: 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume' },
+              ],
+            },
+            {
+              '!!': [
+                { var: 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions' },
+              ],
+            },
+            {
+              '!!': [
+                {
+                  var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay',
+                },
+              ],
+            },
+            {
+              '!!': [
+                {
+                  var: 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay',
+                },
+              ],
+            },
+            {
+              '!!': [
+                { var: 'entity.data.additionalInfo.store.processingDetails.averageTicketSales' },
+              ],
+            },
+            {
+              '!!': [
+                { var: 'entity.data.additionalInfo.store.processingDetails.maximumTicketSales' },
+              ],
+            },
+            { '!!': [{ var: 'entity.data.additionalInfo.store.processingDetails.mainCategory' }] },
+            { '!!': [{ var: 'entity.data.additionalInfo.store.processingDetails.businessModel' }] },
+          ],
+        },
+      ],
+    },
+  ],
+};
 
 const isSpikeInSaleVisibility = {
   '==': [{ var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales' }, true],
@@ -250,14 +324,17 @@ export const ProcessingDetails = {
                 },
               },
               valueDestination: 'entity.data.additionalInfo.store.processingDetails.businessModel',
-            }
+            },
           ],
         },
         {
           name: 'next-page-button',
           type: 'button',
-          uiDefinition: {
-            classNames: ['align-right', 'padding-top-10'],
+          options: {
+            uiDefinition: {
+              classNames: ['align-right', 'padding-top-10'],
+            },
+            text: 'Continue',
           },
           availableOn: [
             {

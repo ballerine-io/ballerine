@@ -1,14 +1,14 @@
 const availableOnButtonRule = {
   and: [
-    { "var": "entity.data" },
-    { "var": "entity.data.additionalInfo" },
-    { "var": "entity.data.additionalInfo.store" },
-    { "var": "entity.data.additionalInfo.store.websiteUrls" },
-    { "var": "entity.data.additionalInfo.store.dba" },
-    { "var": "entity.data.additionalInfo.store.products" },
-    { "var": "entity.data.additionalInfo.store.established" },
-    { "var": "entity.data.additionalInfo.store.hasMobileApp" },
-    { "var": "entity.data.additionalInfo.store.hasActiveWebsite" },
+    { var: 'entity.data' },
+    { var: 'entity.data.additionalInfo' },
+    { var: 'entity.data.additionalInfo.store' },
+    { var: 'entity.data.additionalInfo.store.websiteUrls' },
+    { var: 'entity.data.additionalInfo.store.dba' },
+    { var: 'entity.data.additionalInfo.store.products' },
+    { var: 'entity.data.additionalInfo.store.established' },
+    { var: 'entity.data.additionalInfo.store.hasMobileApp' },
+    { var: 'entity.data.additionalInfo.store.hasActiveWebsite' },
     { '!=': [{ var: 'entity.data.additionalInfo.store.websiteUrls' }, ''] },
     { '!=': [{ var: 'entity.data.additionalInfo.store.dba' }, ''] },
     { '!=': [{ var: 'entity.data.additionalInfo.store.products' }, ''] },
@@ -21,15 +21,15 @@ const availableOnButtonRule = {
     { '!=': [{ var: 'entity.data.additionalInfo.store.dba' }, ''] },
     {
       and: [
-        {"var": "entity.data.additionalInfo.store.mobileAppName"},
+        { var: 'entity.data.additionalInfo.store.mobileAppName' },
         {
           if: [
-            {var: 'entity.data.additionalInfo.store.hasMobileApp'},
-            {'!=': [{var: 'entity.data.additionalInfo.store.mobileAppName'}, '']},
-            {'==': [{var: 'entity.data.additionalInfo.store.mobileAppName'}, '']},
-          ]
+            { var: 'entity.data.additionalInfo.store.hasMobileApp' },
+            { '!=': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, ''] },
+            { '==': [{ var: 'entity.data.additionalInfo.store.mobileAppName' }, ''] },
+          ],
         },
-      ]
+      ],
     },
   ],
 };
@@ -176,8 +176,11 @@ export const StoreInfoPage = {
         {
           name: 'next-page-button',
           type: 'button',
-          uiDefinition: {
-            classNames: ['align-right', 'padding-top-10'],
+          options: {
+            uiDefinition: {
+              classNames: ['align-right', 'padding-top-10'],
+            },
+            text: 'Continue',
           },
           availableOn: [
             {

@@ -26,6 +26,7 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
       const elementDefinition = {
         ...uiElement.options.jsonFormDefinition,
         title: uiElement.options.label,
+        description: uiElement.options.description,
       };
 
       formSchema.properties[uiElement.name] = elementDefinition;
@@ -52,6 +53,7 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
       const elementDefinition = {
         ...uiElement.options.jsonFormDefinition,
         title: uiElement.options.label,
+        description: uiElement.options.description,
       };
 
       //@ts-nocheck

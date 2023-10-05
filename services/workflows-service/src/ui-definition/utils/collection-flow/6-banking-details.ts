@@ -1,17 +1,17 @@
 const availableOnButtonRule = {
   and: [
-    { "var": "entity.data" },
-    { "var": "entity.data.additionalInfo" },
-    { "var": "entity.data.additionalInfo.bank" },
-    { "var": "entity.data.additionalInfo.bank.holderName" },
-    { "var": "entity.data.additionalInfo.bank.holderFullAddress" },
-    { "var": "entity.data.additionalInfo.bank.accountNumber" },
-    { "var": "entity.data.additionalInfo.bank.iban" },
-    { "var": "entity.data.additionalInfo.bank.swiftCode" },
-    { "var": "entity.data.additionalInfo.bank.bankName" },
-    { "var": "entity.data.additionalInfo.bank.bankAddress" },
-    { "var": "entity.data.additionalInfo.bank.subBranch" },
-    { "var": "entity.data.additionalInfo.bank.bankName" },
+    { var: 'entity.data' },
+    { var: 'entity.data.additionalInfo' },
+    { var: 'entity.data.additionalInfo.bank' },
+    { var: 'entity.data.additionalInfo.bank.holderName' },
+    { var: 'entity.data.additionalInfo.bank.holderFullAddress' },
+    { var: 'entity.data.additionalInfo.bank.accountNumber' },
+    { var: 'entity.data.additionalInfo.bank.iban' },
+    { var: 'entity.data.additionalInfo.bank.swiftCode' },
+    { var: 'entity.data.additionalInfo.bank.bankName' },
+    { var: 'entity.data.additionalInfo.bank.bankAddress' },
+    { var: 'entity.data.additionalInfo.bank.subBranch' },
+    { var: 'entity.data.additionalInfo.bank.bankName' },
     { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.holderName' }] }, 5] },
     { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.bank.holderFullAddress' }] }, 8] },
     {
@@ -153,8 +153,11 @@ export const BankingDetailsPage = {
         {
           name: 'next-page-button',
           type: 'button',
-          uiDefinition: {
-            classNames: ['align-right', 'padding-top-10'],
+          options: {
+            uiDefinition: {
+              classNames: ['align-right', 'padding-top-10'],
+            },
+            text: 'Continue',
           },
           availableOn: [
             {

@@ -25,7 +25,7 @@ export const uiKybParentUiSchema = (workflowDefinitionId: string) =>
         StoreInfoPage,
         WebsiteBasicRequirement,
         ProcessingDetails,
-        CompanyDocuments,
+        // CompanyDocuments,
       ],
     },
     definition: definition,
