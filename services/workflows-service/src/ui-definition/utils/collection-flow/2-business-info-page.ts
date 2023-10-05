@@ -1,4 +1,4 @@
-import { getCountriesList } from '../schema-utils/countries';
+import {getCountriesList} from '../schema-utils/countries';
 
 const availableOnButtonRule = {
   type: 'object',
@@ -182,7 +182,7 @@ export const BusinessInfoPage = {
                 jsonFormDefinition: {
                   type: 'number',
                 },
-                hint: '20',
+                hint: 20,
                 label: 'Amount of Employees',
               },
             },
@@ -228,6 +228,16 @@ export const BusinessInfoPage = {
           ],
         },
         {
+          name: 'previous-page-button',
+          type: 'json-form:button',
+          options: {
+            uiDefinition: {
+              classNames: ['align-right', 'padding-top-10'],
+            },
+            text: 'PREVIOUS',
+          },
+        },
+        {
           name: 'next-page-button',
           type: 'json-form:button',
           options: {
@@ -261,6 +271,13 @@ export const BusinessInfoPage = {
             value: dispatchOpenCorporateRule,
           },
         ],
+      },
+    },
+    {
+      type: 'definitionEvent',
+      event: 'PREVIOUS',
+      dispatchOn: {
+        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
       },
     },
     {

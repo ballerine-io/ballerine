@@ -238,6 +238,16 @@ export const BusinessAddressInfoPage = {
           ],
         },
         {
+          name: 'previous-page-button',
+          type: 'json-form:button',
+          options: {
+            uiDefinition: {
+              classNames: ['align-right', 'padding-top-10'],
+            },
+            text: 'PREVIOUS',
+          },
+        },
+        {
           name: 'next-page-button',
           type: 'json-form:button',
           availableOn: [
@@ -257,6 +267,13 @@ export const BusinessAddressInfoPage = {
     },
   ],
   actions: [
+    {
+      type: 'definitionEvent',
+      event: 'PREVIOUS',
+      dispatchOn: {
+        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
+      },
+    },
     {
       type: 'definitionEvent',
       event: 'NEXT',

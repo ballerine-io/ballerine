@@ -1,4 +1,4 @@
-import { currencyCodes } from '../schema-utils/currency-codes';
+import {currencyCodes} from '../schema-utils/currency-codes';
 
 const availableOnButtonRule = {
   and: [
@@ -184,6 +184,16 @@ export const BankingDetailsPage = {
           ],
         },
         {
+          name: 'previous-page-button',
+          type: 'json-form:button',
+          options: {
+            uiDefinition: {
+              classNames: ['align-right', 'padding-top-10'],
+            },
+            text: 'PREVIOUS',
+          },
+        },
+        {
           name: 'next-page-button',
           type: 'json-form:button',
           options: {
@@ -205,7 +215,14 @@ export const BankingDetailsPage = {
   actions: [
     {
       type: 'definitionEvent',
-      event: 'next',
+      event: 'PREVIOUS',
+      dispatchOn: {
+        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }]
+      },
+    },
+    {
+      type: 'definitionEvent',
+      event: 'NEXT',
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
