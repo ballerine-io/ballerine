@@ -7,8 +7,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
 
   isActive(context: unknown, rule: Rule): boolean {
     const validator = new Ajv({ allErrors: true });
-    const validationResult = validator.validate(rule, context);
-
+    const validationResult = validator.validate(rule.value, context);
     if (!validationResult) {
       return false;
     }

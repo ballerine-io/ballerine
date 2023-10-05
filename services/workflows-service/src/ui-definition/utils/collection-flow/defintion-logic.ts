@@ -192,7 +192,7 @@ export const definition = {
         pluginKind: 'api',
         url: `{flowConfig.apiUrl}/api/v1/collection-flow/send-event/?token={flowConfig.tokenId}`,
         method: 'POST',
-        stateNames: ['finished'],
+        stateNames: ['finish'],
         headers: { Authorization: 'Bearer {flowConfig.tokenId}' },
         request: {
           transform: [
