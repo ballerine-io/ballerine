@@ -12,7 +12,7 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
   const { payload } = useStateManagerContext();
 
   const disabled = useMemo(() => {
-    if (!definition.availableOn || !definition.availableOn.length) return true;
+    if (!definition.availableOn || !definition.availableOn.length) return false;
 
     const engineManager = new EngineManager(engines);
 
