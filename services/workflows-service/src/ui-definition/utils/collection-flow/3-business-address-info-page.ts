@@ -1,4 +1,4 @@
-import {getCountriesList} from '../schema-utils/countries';
+import { getCountriesList } from '../schema-utils/countries';
 
 const availableOnButtonRule = {
   or: [
