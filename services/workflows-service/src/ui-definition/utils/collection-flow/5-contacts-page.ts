@@ -1,12 +1,12 @@
 const availableOnButtonRule = {
   and: [
-    { "var": "entity.data" },
-    { "var": "entity.data.additionalInfo" },
-    { "var": "entity.data.additionalInfo.mainContact" },
-    { "var": "entity.data.additionalInfo.mainContact.firstName" },
-    { "var": "entity.data.additionalInfo.mainContact.lastName" },
-    { "var": "entity.data.additionalInfo.mainContact.email" },
-    { "var": "entity.data.additionalInfo.mainContact.phone" },
+    { var: 'entity.data' },
+    { var: 'entity.data.additionalInfo' },
+    { var: 'entity.data.additionalInfo.mainContact' },
+    { var: 'entity.data.additionalInfo.mainContact.firstName' },
+    { var: 'entity.data.additionalInfo.mainContact.lastName' },
+    { var: 'entity.data.additionalInfo.mainContact.email' },
+    { var: 'entity.data.additionalInfo.mainContact.phone' },
     { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.mainContact.firstName' }] }, 3] },
     { '>= ': [{ minLength: [{ var: 'entity.data.additionalInfo.mainContact.lastName' }] }, 3] },
     { regex: [{ var: 'entity.data.additionalInfo.mainContact.email' }, '^\\S+@\\S+\\.\\S+$'] },
@@ -62,8 +62,8 @@ export const ContactsPage = {
                 label: 'Name',
                 hint: 'First Name',
                 jsonFormDefinition: {
-                  type: 'string'
-                }
+                  type: 'string',
+                },
               },
             },
             {
@@ -73,8 +73,8 @@ export const ContactsPage = {
               options: {
                 hint: 'Last Name',
                 jsonFormDefinition: {
-                  type: 'string'
-                }
+                  type: 'string',
+                },
               },
             },
             {
@@ -99,7 +99,7 @@ export const ContactsPage = {
                 uiSchema: {
                   'ui:field': 'PhoneInput',
                   'ui:label': true,
-                }
+                },
               },
             },
           ],
@@ -107,8 +107,11 @@ export const ContactsPage = {
         {
           name: 'next-page-button',
           type: 'button',
-          uiDefinition: {
-            classNames: ['align-right', 'padding-top-10'],
+          options: {
+            uiDefinition: {
+              classNames: ['align-right', 'padding-top-10'],
+            },
+            text: 'Continue',
           },
           availableOn: [
             {

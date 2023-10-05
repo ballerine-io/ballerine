@@ -240,16 +240,16 @@ export const BusinessAddressInfoPage = {
         {
           name: 'next-page-button',
           type: 'button',
-          uiDefinition: {
-            classNames: ['align-right', 'padding-top-10'],
-          },
           availableOn: [
             {
               type: 'json-logic',
               value: availableOnButtonRule,
             },
           ],
-          option: {
+          options: {
+            uiDefinition: {
+              classNames: ['align-right', 'padding-top-10'],
+            },
             text: 'Continue',
           },
         },

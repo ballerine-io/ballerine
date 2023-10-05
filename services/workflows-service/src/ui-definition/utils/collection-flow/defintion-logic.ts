@@ -97,7 +97,18 @@ export const definition = {
         pluginKind: 'api',
         url: `{flowConfig.apiUrl}/api/v1/collection-flow/sync/?token={flowConfig.tokenId}`,
         method: 'PUT',
-        stateNames: ['personal_details', 'business_information', 'business_address_information', 'directors_and_ubos', 'contacts_page', 'banking_details', 'store_info', 'website_basic_requirement', 'processing_details', 'company_documents'],
+        // stateNames: ['personal_details', 'business_information', 'business_address_information', 'directors_and_ubos', 'contacts_page', 'banking_details', 'store_info', 'website_basic_requirement', 'processing_details', 'company_documents'],
+        stateNames: [
+          'personal_details',
+          'business_information',
+          'business_address_information',
+          'directors_and_ubos',
+          'contacts_page',
+          'banking_details',
+          'store_info',
+          'website_basic_requirement',
+          'processing_details',
+        ],
         headers: { Authorization: 'Bearer {flowConfig.tokenId}' },
         request: {
           transform: [
@@ -110,7 +121,7 @@ export const definition = {
                 business: entity.data,
                 ballerineEntityId: entity.ballerineEntityId
                 }
-              }`
+              }`,
             },
           ],
         },
@@ -133,7 +144,7 @@ export const definition = {
                 business: entity.data,
                 ballerineEntityId: ballerineEntityId
                 }
-              }`
+              }`,
             },
           ],
         },
@@ -187,11 +198,11 @@ export const definition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping: `{eventName: 'COLLECTION_FLOW_FINISHED'}`
+              mapping: `{eventName: 'COLLECTION_FLOW_FINISHED'}`,
             },
           ],
         },
-      }
+      },
     ],
   },
 };

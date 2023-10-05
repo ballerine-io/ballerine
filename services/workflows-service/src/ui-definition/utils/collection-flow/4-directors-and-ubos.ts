@@ -242,8 +242,11 @@ export const DirectorsAndUbosPage = {
         {
           name: 'next-page-button',
           type: 'button',
-          uiDefinition: {
-            classNames: ['align-right', 'padding-top-10'],
+          options: {
+            uiDefinition: {
+              classNames: ['align-right', 'padding-top-10'],
+            },
+            text: 'Continue',
           },
           availableOn: [
             {

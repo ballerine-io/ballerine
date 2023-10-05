@@ -1,51 +1,51 @@
 const availableOnButtonRule = {
-  "type": "object",
-  "properties": {
-    "entity": {
-      "type": "object",
-      "properties": {
-        "data": {
-          "type": "object",
-          "required": ["additionalInfo"],
-          "properties": {
-            "additionalInfo": {
-              "type": "object",
-              "required": ["mainRepresentative"],
-              "properties": {
-                "mainRepresentative": {
-                  "type": "object",
-                  "required": ["phone", "dateOfBirth", "jobTitle", "firstName", "lastName"],
-                  "properties": {
-                    "phone": {
-                      "type": "string",
-                      "pattern": "^[+]?[0-9]{10,15}$"
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          required: ['additionalInfo'],
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['mainRepresentative'],
+              properties: {
+                mainRepresentative: {
+                  type: 'object',
+                  required: ['phone', 'dateOfBirth', 'jobTitle', 'firstName', 'lastName'],
+                  properties: {
+                    phone: {
+                      type: 'string',
+                      pattern: '^[+]?[0-9]{10,15}$',
                     },
-                    "dateOfBirth": {
-                      "type": "string",
-                      "pattern": "^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\\d{4})$"
+                    dateOfBirth: {
+                      type: 'string',
+                      pattern: '^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-(\\d{4})$',
                     },
-                    "jobTitle": {
-                      "type": "string",
-                      "minLength": 3
+                    jobTitle: {
+                      type: 'string',
+                      minLength: 3,
                     },
-                    "firstName": {
-                      "type": "string",
-                      "minLength": 2
+                    firstName: {
+                      type: 'string',
+                      minLength: 2,
                     },
-                    "lastName": {
-                      "type": "string",
-                      "minLength": 2
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                    lastName: {
+                      type: 'string',
+                      minLength: 2,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
-  "required": ["entity"]
+  required: ['entity'],
 };
 
 export const PersonalInfoPage = {
@@ -160,8 +160,11 @@ export const PersonalInfoPage = {
         {
           name: 'next-page-button',
           type: 'json-form:button',
-          uiDefinition: {
-            classNames: ['align-right', 'padding-top-10'],
+          options: {
+            uiDefinition: {
+              classNames: ['align-right', 'padding-top-10'],
+            },
+            text: 'Continue',
           },
           availableOn: [
             {
@@ -169,9 +172,6 @@ export const PersonalInfoPage = {
               value: availableOnButtonRule,
             },
           ],
-          options: {
-            text: 'Continue',
-          },
         },
       ],
     },

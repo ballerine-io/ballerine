@@ -1,92 +1,92 @@
 import { getCountriesList } from '../schema-utils/countries';
 
-const availableOnButtonRule =  {
-  "type": "object",
-  "properties": {
-    "entity": {
-      "type": "object",
-      "required": ["data"],
-      "properties": {
-        "data": {
-          "type": "object",
-          "required": [
-            "additionalInfo",
-            "businessType",
-            "numberOfEmployees",
-            "taxIdentificationNumber",
-            "companyName",
-            "country",
-            "registrationNumber"
+const availableOnButtonRule = {
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      required: ['data'],
+      properties: {
+        data: {
+          type: 'object',
+          required: [
+            'additionalInfo',
+            'businessType',
+            'numberOfEmployees',
+            'taxIdentificationNumber',
+            'companyName',
+            'country',
+            'registrationNumber',
           ],
-          "properties": {
-            "additionalInfo": {
-              "type": "object",
-              "required": ["registeredCapitalInYuan"],
-              "properties": {
-                "registeredCapitalInYuan": {
-                  "type": "number"
-                }
-              }
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['registeredCapitalInYuan'],
+              properties: {
+                registeredCapitalInYuan: {
+                  type: 'number',
+                },
+              },
             },
-            "businessType": {
-              "type": "string",
-              "minLength": 4
+            businessType: {
+              type: 'string',
+              minLength: 4,
             },
-            "numberOfEmployees": {
-              "type": "number"
+            numberOfEmployees: {
+              type: 'number',
             },
-            "taxIdentificationNumber": {
-              "type": "string",
-              "minLength": 4
+            taxIdentificationNumber: {
+              type: 'string',
+              minLength: 4,
             },
-            "companyName": {
-              "type": "string",
-              "minLength": 4
+            companyName: {
+              type: 'string',
+              minLength: 4,
             },
-            "country": {
-              "type": "string",
-              "minLength": 2,
-              "maxLength": 2,
-              "pattern": "^[A-Z]{2}$"
+            country: {
+              type: 'string',
+              minLength: 2,
+              maxLength: 2,
+              pattern: '^[A-Z]{2}$',
             },
-            "registrationNumber": {
-              "type": "string",
-              "minLength": 4
-            }
-          }
-        }
-      }
-    }
+            registrationNumber: {
+              type: 'string',
+              minLength: 4,
+            },
+          },
+        },
+      },
+    },
   },
-  "required": ["entity"]
+  required: ['entity'],
 };
 
 const dispatchOpenCorporateRule = {
-  "type": "object",
-  "properties": {
-    "entity": {
-      "type": "object",
-      "required": ["data"],
-      "properties": {
-        "data": {
-          "type": "object",
-          "required": ["registrationNumber", "country"],
-          "properties": {
-            "registrationNumber": {
-              "type": "string",
-              "minLength": 6
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      required: ['data'],
+      properties: {
+        data: {
+          type: 'object',
+          required: ['registrationNumber', 'country'],
+          properties: {
+            registrationNumber: {
+              type: 'string',
+              minLength: 6,
             },
-            "country": {
-              "type": "string",
-              "minLength": 2,
-              "maxLength": 2
-            }
-          }
-        }
-      }
-    }
+            country: {
+              type: 'string',
+              minLength: 2,
+              maxLength: 2,
+            },
+          },
+        },
+      },
+    },
   },
-  "required": ["entity"]
+  required: ['entity'],
 };
 
 export const BusinessInfoPage = {
@@ -230,8 +230,11 @@ export const BusinessInfoPage = {
         {
           name: 'next-page-button',
           type: 'button',
-          uiDefinition: {
-            classNames: ['align-right', 'padding-top-10'],
+          options: {
+            uiDefinition: {
+              classNames: ['align-right', 'padding-top-10'],
+            },
+            text: 'Continue',
           },
           availableOn: [
             {
@@ -239,9 +242,6 @@ export const BusinessInfoPage = {
               value: availableOnButtonRule,
             },
           ],
-          options: {
-            text: 'Continue',
-          },
         },
       ],
     },
