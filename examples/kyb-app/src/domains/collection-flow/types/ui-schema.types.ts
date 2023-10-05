@@ -32,7 +32,7 @@ export interface Action<TParams = AnyObject> {
 export interface UIElement<TElementParams> {
   name: string;
   type: UIElementType;
-  activeOn?: Rule[];
+  availableOn?: Rule[];
   required?: boolean;
   options: TElementParams;
   valueDestination?: string;

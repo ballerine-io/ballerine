@@ -54,6 +54,8 @@ export const withDynamicUIInterceptor = (Component: React.ComponentType<RJSVInpu
       };
     }, [baseDefinition, inputId]);
 
+    console.log('definition', definition);
+
     const { onChangeHandler } = useUIElementHandlers(definition);
 
     const handleChange = useCallback((value: unknown) => {
@@ -66,8 +68,6 @@ export const withDynamicUIInterceptor = (Component: React.ComponentType<RJSVInpu
       onChangeHandler(evt as React.ChangeEvent<any>);
       onChange(value);
     }, []);
-
-    console.log('def destination', definition.valueDestination);
 
     const value = useMemo(
       () => get(payload, definition.valueDestination) as any,

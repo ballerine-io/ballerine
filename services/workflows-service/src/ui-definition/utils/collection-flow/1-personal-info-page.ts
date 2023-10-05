@@ -177,7 +177,7 @@ export const PersonalInfoPage = {
           },
           availableOn: [
             {
-              type: 'json-logic',
+              type: 'json-schema',
               value: availableOnButtonRule,
             },
           ],
