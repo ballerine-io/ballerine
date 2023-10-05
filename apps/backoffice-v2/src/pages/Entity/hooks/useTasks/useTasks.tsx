@@ -531,9 +531,233 @@ export const useTasks = ({
           },
         ];
 
+  const companySanctionsBlock = [
+    {
+      cells: [
+        {
+          type: 'heading',
+          value: 'Company Sanctions',
+        },
+        {
+          type: 'container',
+          value: [
+            {
+              type: 'subheading',
+              value: 'Company check results',
+              props: {
+                className: 'text-lg mb-3 block ms-2',
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'totalMatches',
+                    header: 'Total matches',
+                  },
+                  {
+                    accessorKey: 'fullReport',
+                    header: 'Full report',
+                  },
+                ],
+                data: [
+                  {
+                    totalMatches: 1,
+                    fullReport: 'Some report',
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        {
+          type: 'container',
+          props: {
+            className: 'space-y-4',
+          },
+          value: [
+            {
+              type: 'subheading',
+              value: 'Match 1',
+              props: {
+                className: 'text-lg mb-3 block ms-2',
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'primaryName',
+                    header: 'Primary name',
+                  },
+                  {
+                    accessorKey: 'lastReviewed',
+                    header: 'Last reviewed',
+                  },
+                ],
+                data: [
+                  {
+                    primaryName: 'Some name',
+                    lastReviewed: 'Some date',
+                  },
+                ],
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'labels',
+                    header: 'Labels',
+                  },
+                ],
+                data: [
+                  {
+                    labels: 'Some label',
+                  },
+                ],
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'reasonsForMatch',
+                    header: 'Reasons for Match',
+                  },
+                ],
+                data: [
+                  {
+                    reasonsForMatch: 'Some reason',
+                  },
+                ],
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'sources',
+                    header: 'Sources',
+                  },
+                ],
+                data: [
+                  {
+                    sources: 'Some source',
+                  },
+                ],
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'alternativeNames',
+                    header: 'Alternative names',
+                  },
+                ],
+                data: [
+                  {
+                    alternativeNames: 'Some name',
+                  },
+                ],
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'officialLists',
+                    header: 'Official lists',
+                  },
+                ],
+                data: [
+                  {
+                    officialLists: 'Some list',
+                  },
+                ],
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'furtherInformation',
+                    header: 'Further information',
+                  },
+                ],
+                data: [
+                  {
+                    furtherInformation: 'Some information',
+                  },
+                ],
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'linkedIndividuals',
+                    header: 'Linked individuals',
+                  },
+                  {
+                    accessorKey: 'description',
+                    header: 'Description',
+                  },
+                ],
+                data: [
+                  {
+                    linkedIndividuals: 'Some individual',
+                    description: 'Some description',
+                  },
+                ],
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'linkedAddresses',
+                    header: 'Linked addresses',
+                  },
+                  {
+                    accessorKey: 'city',
+                    header: 'City',
+                  },
+                  {
+                    accessorKey: 'country',
+                    header: 'Country',
+                  },
+                ],
+                data: [
+                  {
+                    linkedAddresses: 'Some address',
+                    city: 'Tel-Aviv',
+                    country: 'Israel',
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
   return useMemo(() => {
     return entity
       ? [
+          ...companySanctionsBlock,
           ...entityInfoBlock,
           ...registryInfoBlock,
           ...taskBlocks,
