@@ -60,7 +60,7 @@ export const CompanyDocuments = {
             {
               name: 'document-certificates-of-incorporation',
               type: 'document',
-              valueDestination: 'documents[0].pages[0].fileId',
+              valueDestination: 'documents[0].pages[0].ballerineFileId',
               options: {
                 label: 'Certificate of Incorporation',
                 description: 'Not older than 6 months.',
@@ -88,7 +88,7 @@ export const CompanyDocuments = {
             {
               name: 'document-business-registration-certificate',
               type: 'document',
-              valueDestination: 'documents[1].pages[0].fileId',
+              valueDestination: 'documents[1].pages[0].ballerineFileId',
               options: {
                 label: 'Business Registration Certificate',
                 description: 'Notarized document',
@@ -116,7 +116,7 @@ export const CompanyDocuments = {
             {
               name: 'document-corporate-tax-certificate',
               type: 'document',
-              valueDestination: 'documents[2].pages[0].fileId',
+              valueDestination: 'documents[2].pages[0].ballerineFileId',
               options: {
                 label: 'Business Registration Certificate',
                 jsonFormDefinition: {
@@ -143,7 +143,7 @@ export const CompanyDocuments = {
             {
               name: 'document-certificate-of-good-standing',
               type: 'document',
-              valueDestination: 'documents[3].pages[0].fileId',
+              valueDestination: 'documents[3].pages[0].ballerineFileId',
               options: {
                 label: 'Certificate of Good Standing',
                 description: 'If the company is older than 12 months',
@@ -171,7 +171,7 @@ export const CompanyDocuments = {
             {
               name: 'document-certificate-of-directors-and-shareholders',
               type: 'document',
-              valueDestination: 'documents[4].pages[0].fileId',
+              valueDestination: 'documents[4].pages[0].ballerineFileId',
               options: {
                 label: 'Certificate of Directors & Shareholders',
                 jsonFormDefinition: {
@@ -198,7 +198,7 @@ export const CompanyDocuments = {
             {
               name: 'document-picture-of-company-seal',
               type: 'document',
-              valueDestination: 'documents[5].pages[0].fileId',
+              valueDestination: 'documents[5].pages[0].ballerineFileId',
               options: {
                 label: 'Picture of the company seal',
                 jsonFormDefinition: {
@@ -229,7 +229,7 @@ export const CompanyDocuments = {
             {
               name: 'document-website-pictures',
               type: 'document',
-              valueDestination: 'documents[6].pages[0].fileId',
+              valueDestination: 'documents[6].pages[0].ballerineFileId',
               options: {
                 label: 'Domain purchase record/certificate',
                 jsonFormDefinition: {
@@ -255,7 +255,7 @@ export const CompanyDocuments = {
             {
               name: 'document-office-front-door-pictures',
               type: 'document',
-              valueDestination: 'documents[7].pages[0].fileId',
+              valueDestination: 'documents[7].pages[0].ballerineFileId',
               options: {
                 label: 'Front door photo showing the company name',
                 jsonFormDefinition: {
@@ -282,7 +282,7 @@ export const CompanyDocuments = {
             {
               name: 'document-office-interior-pictures',
               type: 'document',
-              valueDestination: 'documents[8].pages[0].fileId',
+              valueDestination: 'documents[8].pages[0].ballerineFileId',
               options: {
                 label: 'Photo showing interior of the office',
                 jsonFormDefinition: {
@@ -309,7 +309,7 @@ export const CompanyDocuments = {
             {
               name: 'document-transaction-data-last-months',
               type: 'document',
-              valueDestination: 'documents[9].pages[0].fileId',
+              valueDestination: 'documents[9].pages[0].ballerineFileId',
               options: {
                 label: 'Transaction data for the last 3-6 months',
                 description: 'All electric documents must be complete and legible.',
