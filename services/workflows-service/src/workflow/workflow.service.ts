@@ -73,6 +73,7 @@ import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import keyBy from 'lodash/keyBy';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 
 type TEntityId = string;
 
@@ -132,6 +133,7 @@ export class WorkflowService {
     private readonly projectScopeService: ProjectScopeService,
     private readonly userService: UserService,
     private readonly salesforceService: SalesforceService,
+    private readonly workflowTokenService: WorkflowTokenService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
@@ -1392,6 +1394,8 @@ export class WorkflowService {
     } catch (error) {
       throw new BadRequestException(error);
     }
+    const customer = await this.customerService.getByProjectId(projectIds![0]!);
+    context.customerName = customer.displayName;
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
     const entityId = await this.__findOrPersistEntityInformation(
       context,
@@ -1399,7 +1403,6 @@ export class WorkflowService {
       currentProjectId,
     );
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
-    const customer = await this.customerService.getByProjectId(projectIds![0]!);
     const existingWorkflowRuntimeData =
       await this.workflowRuntimeDataRepository.findActiveWorkflowByEntity(
         {
@@ -1440,8 +1443,6 @@ export class WorkflowService {
             } as InputJsonValue,
             config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
             status: 'active',
-            state: workflowDefinition.definition.initial,
-            tags: workflowDefinition.definition.states[workflowDefinition.definition.initial]?.tags,
             workflowDefinitionId: workflowDefinition.id,
             ...(parentWorkflowId &&
               ({
@@ -1455,6 +1456,53 @@ export class WorkflowService {
         },
         currentProjectId,
       );
+
+      if (workflowRuntimeData.config.createCollectionFlowToken) {
+        const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        const workflowToken = await this.workflowTokenService.create(currentProjectId, {
+          workflowRuntimeDataId: workflowRuntimeData.id,
+          expiresAt: nowPlus30Days,
+        });
+
+        workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
+          workflowRuntimeData.id,
+          {
+            data: {
+              context: {
+                ...workflowRuntimeData.context,
+                token: workflowToken.token,
+              } as InputJsonValue,
+            },
+          },
+          currentProjectId,
+        );
+      }
+
+      await this.event(
+        {
+          id: workflowRuntimeData.id,
+          name: workflowDefinition.definition.initial,
+        },
+        projectIds,
+        currentProjectId,
+      );
+      workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+        workflowRuntimeData.id,
+        {},
+        projectIds,
+      );
+
+      if ('salesforceObjectName' in salesforceData && salesforceData.salesforceObjectName) {
+        await this.updateSalesforceRecord({
+          workflowRuntimeData: workflowRuntimeData[0].workflowRuntimeData,
+          data: {
+            KYB_Started_At__c: workflowRuntimeData[0].workflowRuntimeData.createdAt,
+            KYB_Status__c: 'In Progress',
+            KYB_Assigned_Agent__c: '',
+          },
+        });
+      }
+
       newWorkflowCreated = true;
     } else {
       contextToInsert.documents = updateDocuments(

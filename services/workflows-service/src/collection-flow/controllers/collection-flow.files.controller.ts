@@ -30,7 +30,6 @@ export class CollectionFlowFilesController {
       uri: file.location || String(file.path),
       fileNameOnDisk: String(file.path),
       fileNameInBucket: file.key,
-      userId: tokenScope.endUserId,
       projectId: tokenScope.projectId,
       mimeType: file.mimetype,
     });

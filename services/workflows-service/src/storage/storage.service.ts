@@ -3,6 +3,7 @@ import { FileRepository } from './storage.repository';
 import { IFileIds } from './types';
 import { Prisma } from '@prisma/client';
 import { TProjectId, TProjectIds } from '@/types';
+import { SetOptional } from 'type-fest';
 
 @Injectable()
 export class StorageService {
@@ -11,16 +12,19 @@ export class StorageService {
   async createFileLink({
     uri,
     fileNameOnDisk,
-    userId,
+    userId = '', // @TODO: Check the circumstances
     fileNameInBucket,
     projectId,
     mimeType,
-  }: Pick<
-    Prisma.FileCreateInput,
-    'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket' | 'mimeType'
-  > & {
-    projectId: TProjectId;
-  }) {
+  }: SetOptional<
+    Pick<
+      Prisma.FileCreateInput,
+      'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket' | 'mimeType'
+    > & {
+      projectId: TProjectId;
+    },
+    'userId'
+  >) {
     const file = await this.fileRepository.create(
       {
         data: {
