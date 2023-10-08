@@ -62,7 +62,7 @@ importers:
     dependencies:
       '@ballerine/common':
         specifier: 0.7.10
-        version: link:../../packages/common
+        version: 0.7.10
       '@ballerine/ui':
         specifier: 0.3.1
         version: link:../../packages/ui
@@ -529,7 +529,7 @@ importers:
     dependencies:
       '@ballerine/common':
         specifier: 0.7.10
-        version: link:../../packages/common
+        version: 0.7.10
       '@ballerine/workflow-browser-sdk':
         specifier: 0.5.7
         version: link:../../sdks/workflow-browser-sdk
@@ -1330,7 +1330,7 @@ importers:
     dependencies:
       '@ballerine/common':
         specifier: 0.7.10
-        version: link:../common
+        version: 0.7.10
       ajv:
         specifier: ^8.12.0
         version: 8.12.0
@@ -1478,7 +1478,7 @@ importers:
     dependencies:
       '@ballerine/common':
         specifier: 0.7.10
-        version: link:../../packages/common
+        version: 0.7.10
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
         version: 0.8.0
@@ -1605,7 +1605,7 @@ importers:
     dependencies:
       '@ballerine/common':
         specifier: 0.7.10
-        version: link:../../packages/common
+        version: 0.7.10
       '@ballerine/workflow-core':
         specifier: 0.5.7
         version: link:../../packages/workflow-core
@@ -1976,7 +1976,7 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.7.10
+        specifier: 0.7.11
         version: link:../../packages/common
       '@ballerine/workflow-core':
         specifier: 0.5.7
@@ -2035,6 +2035,9 @@ importers:
       '@sentry/node':
         specifier: ^7.52.1
         version: 7.52.1
+      '@sinclair/typebox':
+        specifier: ^0.31.7
+        version: 0.31.7
       '@t3-oss/env-core':
         specifier: ^0.3.1
         version: 0.3.1(typescript@4.9.5)(zod@3.22.3)
@@ -7944,6 +7947,15 @@ packages:
     resolution: {integrity: sha512-WYRqLyBOwtoi193YJvonsz5fdY73/MpAxaO9Sj1dp2nOeqKAv2j880ELUVfyfgYE18ZDBB4qoykvT4X3Rea7KA==}
     engines: {node: '>=12'}
     dependencies:
+      ajv: 8.12.0
+      json-schema-to-zod: 0.6.3
+    dev: false
+
+  /@ballerine/common@0.7.10:
+    resolution: {integrity: sha512-/q+7qJa3d01iGSPX9druXq6ptFG5KR5iV1gLhyapDWuY5hG3zamPesUIsn58y51kGqkDoEXtJNOV6XsjMIPbOQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      '@sinclair/typebox': 0.31.7
       ajv: 8.12.0
       json-schema-to-zod: 0.6.3
     dev: false
@@ -36600,5 +36612,4 @@ packages:
   file:services/workflows-service/plugins/verify-repository-project-scoped:
     resolution: {directory: services/workflows-service/plugins/verify-repository-project-scoped, type: directory}
     name: eslint-plugin-ballerine
-    version: 1.0.0
     dev: true

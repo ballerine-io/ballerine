@@ -11,7 +11,7 @@ export class WorkflowTokenRepository {
     projectId: TProjectId,
     data: Pick<
       Prisma.WorkflowRuntimeDataTokenUncheckedCreateInput,
-      'workflowRuntimeDataId' | 'endUserId' | 'expiresAt'
+      'workflowRuntimeDataId' | 'expiresAt'
     >,
   ) {
     return await this.prisma.workflowRuntimeDataToken.create({

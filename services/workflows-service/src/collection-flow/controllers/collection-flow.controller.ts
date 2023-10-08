@@ -27,8 +27,8 @@ export class ColectionFlowController {
   }
 
   @common.Get('/user')
-  async getUser(@TokenScope() tokenScope: ITokenScope) {
-    return this.service.getUser(tokenScope.endUserId, tokenScope.projectId);
+  async getUser() {
+    return {}; // @TODO: Make sure the client is not using this endpoint and remove it.
   }
 
   @common.Get('/active-flow')
