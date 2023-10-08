@@ -873,9 +873,8 @@ export class WorkflowService {
     context: WorkflowRuntimeData['context'],
     projectId: TProjectId,
   ) {
-    return this.workflowRuntimeDataRepository.updateById(id, {data: {context}}, projectId);
+    return this.workflowRuntimeDataRepository.updateById(id, { data: { context } }, projectId);
   }
-
 
   async updateWorkflowRuntimeData(
     workflowRuntimeId: string,

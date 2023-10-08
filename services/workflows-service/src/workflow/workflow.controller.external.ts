@@ -329,7 +329,7 @@ export class WorkflowControllerExternal {
             },
           },
         },
-        documents: []
+        documents: [],
       },
       projectIds: [currentProjectId],
       currentProjectId: currentProjectId,
