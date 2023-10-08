@@ -107,7 +107,6 @@ export const BankingDetailsPage = {
                 'swift-code-input',
                 'bank-name-input',
                 'bank-address-input',
-                'bank-sub-branch-input',
                 'account-currency-input',
               ],
             },

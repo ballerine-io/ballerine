@@ -43,7 +43,17 @@ export const CompanyDocuments = {
           type: 'json-form:documents',
           options: {
             jsonFormDefinition: {
-              required: [],
+              required: [
+                "document-certificates-of-incorporation",
+                "document-business-registration-certificate",
+                "document-corporate-tax-certificate",
+                "document-certificate-of-good-standing",
+                "document-certificate-of-directors-and-shareholders",
+                "document-picture-of-company-seal",
+                "document-website-pictures",
+                "document-transaction-data-last-months",
+                "confirmation-checkbox"
+              ],
             },
           },
           elements: [

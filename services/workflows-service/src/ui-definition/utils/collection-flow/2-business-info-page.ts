@@ -116,7 +116,15 @@ export const BusinessInfoPage = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: ['registration-number-input', 'country-picker-input', 'company-name-input'],
+              required: [
+                "registration-number-input",
+                "country-picker-input",
+                "company-name-input",
+                "tax-identification-number-input",
+                "number-of-employees-input",
+                "business-type-input",
+                "registered-capital-in-yuan-type-input"
+              ],
             },
           },
           elements: [
