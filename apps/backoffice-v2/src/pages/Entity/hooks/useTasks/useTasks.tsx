@@ -21,8 +21,10 @@ import { MotionBadge } from '../../../../common/components/molecules/MotionBadge
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
 import { Badge } from '@ballerine/ui';
-import { buttonVariants } from '../../../../common/components/atoms/Button/Button';
 import { WarningFilledSvg } from '../../../../common/components/atoms/icons';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { toTitleCase } from 'string-ts';
+import { isValidUrl } from '../../../../common/utils/is-valid-url';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -418,6 +420,20 @@ export const useTasks = ({
           },
         ];
 
+  const companySanctions = pluginsOutput?.company_sanctions?.data?.map(sanction => ({
+    sources: sanction?.entity?.sources,
+    officialLists: sanction?.entity?.officialLists,
+    fullReport: sanction,
+    linkedIndividuals: sanction?.entity?.linkedIndividuals,
+    lastReviewed: sanction?.entity?.lastReviewed,
+    primaryName: sanction?.entity?.name,
+    labels: sanction?.entity?.categories,
+    reasonsForMatch: sanction?.matchedFields,
+    furtherInformation: sanction?.entity?.furtherInformation,
+    alternativeNames: sanction?.entity?.otherNames,
+    places: sanction?.entity?.places,
+  }));
+
   const storeInfoBlock =
     Object.keys(storeInfo ?? {}).length === 0
       ? []
@@ -548,7 +564,7 @@ export const useTasks = ({
               type: 'subheading',
               value: 'Company check results',
               props: {
-                className: 'text-lg mb-3 block ms-2',
+                className: 'text-lg mb-2 mt-4 block ms-2',
               },
             },
             {
@@ -559,9 +575,11 @@ export const useTasks = ({
                     accessorKey: 'totalMatches',
                     header: 'Total matches',
                     cell: props => {
+                      const value = props.getValue();
+
                       return (
                         <Badge variant={'warning'} className={`rounded-lg py-4 font-bold`}>
-                          {props.getValue()} match
+                          {value} {value === 1 ? 'match' : 'matches'}
                         </Badge>
                       );
                     },
@@ -569,46 +587,31 @@ export const useTasks = ({
                   {
                     accessorKey: 'fullReport',
                     header: 'Full report',
-                    cell: props => {
-                      const value = props.getValue();
-
-                      return (
-                        <a
-                          className={buttonVariants({
-                            variant: 'link',
-                            className: 'cursor-pointer !p-0 !text-blue-500',
-                          })}
-                          target={'_blank'}
-                          rel={'noopener noreferrer'}
-                          href={value}
-                        >
-                          View {'<>'}
-                        </a>
-                      );
-                    },
                   },
                 ],
                 data: [
                   {
-                    totalMatches: 1,
-                    fullReport: 'http://example.com',
+                    totalMatches: companySanctions?.length,
+                    fullReport: companySanctions,
                   },
                 ],
               },
             },
           ],
         },
-        {
+        ...(companySanctions?.map((sanction, index) => ({
           type: 'container',
           props: {
-            className: 'space-y-4',
+            className: ctw('space-y-8', {
+              'mt-2': index === 0,
+            }),
           },
           value: [
             {
               type: 'subheading',
-              value: 'Match 1',
+              value: `Match ${index + 1}`,
               props: {
-                className: 'text-lg mb-3 block ms-2',
+                className: 'text-lg block ms-2',
               },
             },
             {
@@ -626,8 +629,8 @@ export const useTasks = ({
                 ],
                 data: [
                   {
-                    primaryName: 'Some name',
-                    lastReviewed: new Date().toISOString(),
+                    primaryName: sanction?.primaryName,
+                    lastReviewed: sanction?.lastReviewed,
                   },
                 ],
               },
@@ -637,7 +640,7 @@ export const useTasks = ({
               value: {
                 columns: [
                   {
-                    accessorKey: 'labels',
+                    accessorKey: 'label',
                     header: 'Labels',
                     cell: props => {
                       const value = props.getValue();
@@ -651,17 +654,7 @@ export const useTasks = ({
                     },
                   },
                 ],
-                data: [
-                  {
-                    labels: 'Some label',
-                  },
-                  {
-                    labels: 'Some label',
-                  },
-                  {
-                    labels: 'Some label',
-                  },
-                ],
+                data: sanction?.labels?.map(label => ({ label })),
               },
             },
             {
@@ -669,34 +662,33 @@ export const useTasks = ({
               value: {
                 columns: [
                   {
-                    accessorKey: 'reasonsForMatch',
+                    accessorKey: 'reasonForMatch',
                     header: 'Reasons for Match',
                   },
                 ],
-                data: [
-                  {
-                    reasonsForMatch: 'Some reason',
-                  },
-                ],
+                data: sanction?.reasonsForMatch?.map(reasonForMatch => ({
+                  reasonForMatch: toTitleCase(reasonForMatch),
+                })),
               },
             },
             {
               type: 'table',
               value: {
+                props: {
+                  cell: {
+                    className: 'break-all w-[60ch]',
+                  },
+                },
                 columns: [
                   {
-                    accessorKey: 'sources',
+                    accessorKey: 'source',
                     header: 'Sources',
                   },
                 ],
-                data: [
-                  {
-                    sources: 'http://example.com',
-                  },
-                  {
-                    sources: 'http://example.com',
-                  },
-                ],
+                data: sanction?.sources
+                  ?.map(({ url: source }) => ({ source }))
+                  // TODO: Research why zod's url validation fails on some valid urls.
+                  ?.filter(({ source }) => isValidUrl(source)),
               },
             },
             {
@@ -706,28 +698,11 @@ export const useTasks = ({
                   {
                     accessorKey: 'alternativeNames',
                     header: 'Alternative names',
-                    cell: props => {
-                      const value = props.getValue();
-
-                      return (
-                        <a
-                          className={buttonVariants({
-                            variant: 'link',
-                            className: 'cursor-pointer !p-0 !text-blue-500',
-                          })}
-                          target={'_blank'}
-                          rel={'noopener noreferrer'}
-                          href={value}
-                        >
-                          View {'<>'}
-                        </a>
-                      );
-                    },
                   },
                 ],
                 data: [
                   {
-                    alternativeNames: 'http://example.com',
+                    alternativeNames: sanction?.alternativeNames,
                   },
                 ],
               },
@@ -737,15 +712,13 @@ export const useTasks = ({
               value: {
                 columns: [
                   {
-                    accessorKey: 'officialLists',
+                    accessorKey: 'officialList',
                     header: 'Official lists',
                   },
                 ],
-                data: [
-                  {
-                    officialLists: 'Some list',
-                  },
-                ],
+                data: sanction?.officialLists?.map(({ description: officialList }) => ({
+                  officialList,
+                })),
               },
             },
             {
@@ -757,11 +730,9 @@ export const useTasks = ({
                     header: 'Further information',
                   },
                 ],
-                data: [
-                  {
-                    furtherInformation: 'Some information',
-                  },
-                ],
+                data: sanction?.furtherInformation?.map(furtherInformation => ({
+                  furtherInformation,
+                })),
               },
             },
             {
@@ -769,20 +740,22 @@ export const useTasks = ({
               value: {
                 columns: [
                   {
-                    accessorKey: 'linkedIndividuals',
-                    header: 'Linked individuals',
+                    accessorKey: 'linkedIndividual',
+                    header: 'Linked individual',
                   },
                   {
                     accessorKey: 'description',
                     header: 'Description',
                   },
                 ],
-                data: [
-                  {
-                    linkedIndividuals: 'Some individual',
-                    description: 'Some description',
-                  },
-                ],
+                data: sanction?.linkedIndividuals?.map(
+                  ({ firstName, middleName, lastName, description }) => ({
+                    linkedIndividual: `${firstName}${
+                      middleName ? `${middleName} ` : ''
+                    } ${lastName}`,
+                    description,
+                  }),
+                ),
               },
             },
             {
@@ -790,8 +763,8 @@ export const useTasks = ({
               value: {
                 columns: [
                   {
-                    accessorKey: 'linkedAddresses',
-                    header: 'Linked addresses',
+                    accessorKey: 'linkedAddress',
+                    header: 'Linked address',
                   },
                   {
                     accessorKey: 'city',
@@ -802,22 +775,15 @@ export const useTasks = ({
                     header: 'Country',
                   },
                 ],
-                data: [
-                  {
-                    linkedAddresses: 'Some address',
-                    city: 'Tel-Aviv',
-                    country: 'Israel',
-                  },
-                  {
-                    linkedAddresses: 'Some address',
-                    city: 'Tel-Aviv',
-                    country: 'Israel',
-                  },
-                ],
+                data: sanction?.places?.map(({ country, city, address }) => ({
+                  linkedAddress: address || 'Unavailable',
+                  city: city || 'Unavailable',
+                  country: country || 'Unavailable',
+                })),
               },
             },
           ],
-        },
+        })) ?? []),
       ],
     },
   ];

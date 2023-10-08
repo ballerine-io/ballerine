@@ -189,6 +189,9 @@ importers:
       react-zoom-pan-pinch:
         specifier: ^3.0.8
         version: 3.0.8(react-dom@18.2.0)(react@18.2.0)
+      string-ts:
+        specifier: ^1.2.0
+        version: 1.2.0
       tailwind-merge:
         specifier: ^1.10.0
         version: 1.10.0
@@ -33041,6 +33044,10 @@ packages:
       char-regex: 1.0.2
       strip-ansi: 6.0.1
     dev: true
+
+  /string-ts@1.2.0:
+    resolution: {integrity: sha512-4pRpax75q05wvh7HS3I3TgXM1R24NrS/x4yZ1Y46IOwavriZi5/cjC9OEn9BrJpjXV7VTcF1s/Wj6iEv2rlVvg==}
+    dev: false
 
   /string-width@4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
