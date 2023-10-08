@@ -83,13 +83,9 @@ export const WebsiteBasicRequirement = {
               required: [
                 'operation-entities-name-input',
                 'contact-details-input',
-                'return-policy-url-input',
-                'shipping-policy-url-input',
-                'about-us-url-input',
                 'product-quantity-url-input',
                 'product-description-input',
                 'product-price-input',
-                'website-language-input',
               ],
             },
           },

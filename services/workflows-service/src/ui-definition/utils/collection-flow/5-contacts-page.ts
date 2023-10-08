@@ -1,49 +1,3 @@
-const availableOnButtonRule = {
-  "type": "object",
-  "properties": {
-    "entity": {
-      "type": "object",
-      "required": ["data"],
-      "properties": {
-        "data": {
-          "type": "object",
-          "required": ["additionalInfo"],
-          "properties": {
-            "additionalInfo": {
-              "type": "object",
-              "required": ["mainContact"],
-              "properties": {
-                "mainContact": {
-                  "type": "object",
-                  "required": ["firstName", "lastName", "email", "phone"],
-                  "properties": {
-                    "firstName": {
-                      "type": "string",
-                      "minLength": 3
-                    },
-                    "lastName": {
-                      "type": "string",
-                      "minLength": 3
-                    },
-                    "email": {
-                      "type": "string",
-                      "pattern": "^\\S+@\\S+\\.\\S+$"
-                    },
-                    "phone": {
-                      "type": "string",
-                      "minLength": 6
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "required": ["entity"]
-};
 export const ContactsPage = {
   type: 'page',
   number: 5,
@@ -78,12 +32,7 @@ export const ContactsPage = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: [
-                'first-name-input',
-                'last-name-input',
-                'email-input',
-                'phone-number-input',
-              ],
+              required: [],
             },
           },
           elements: [
@@ -163,12 +112,6 @@ export const ContactsPage = {
             },
             text: 'Continue',
           },
-          availableOn: [
-            {
-              type: 'json-schema',
-              value: availableOnButtonRule,
-            },
-          ],
         },
       ],
     },
@@ -190,12 +133,6 @@ export const ContactsPage = {
       },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
-        rules: [
-          {
-            type: 'json-schema',
-            value: availableOnButtonRule,
-          },
-        ],
       },
     }
   ],

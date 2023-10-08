@@ -110,7 +110,13 @@ export const ProcessingDetails = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: [],
+              required: [
+                "monthly-sales-volume-input",
+                "monthly-number-transactions-input",
+                "average-ticket-sales-input",
+                "spike-in-transactions-input",
+                "main-category-input",
+              ],
             },
           },
           elements: [
@@ -120,8 +126,8 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume',
               options: {
-                label: 'Monthly Sales Volume',
-                hint: '5,000',
+                label: 'Monthly Sales Volume (CNY)',
+                hint: '5,000,000',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -134,7 +140,7 @@ export const ProcessingDetails = {
                 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions',
               options: {
                 label: 'Monthly Number Of Transactions',
-                hint: '200',
+                hint: '500',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -146,8 +152,8 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay',
               options: {
-                label: 'Est. Monthly Sales Volume through ClipsPay',
-                hint: '3,000',
+                label: 'Est. Monthly Sales Volume through ClipsPay (CNY)',
+                hint: '400,000',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -170,10 +176,23 @@ export const ProcessingDetails = {
               name: 'average-ticket-sales-input',
               type: 'json-form:text',
               valueDestination:
-                'entity.data.additionalInfo.store.processingDetails.averageTicketSales',
+                'entity.data.additionalInfo.store.processingDetails.averageTicketAmount',
               options: {
-                label: 'Average Ticket Sales',
+                label: 'Average Ticket Amount (CNY)',
                 hint: '25',
+                jsonFormDefinition: {
+                  type: 'number',
+                },
+              },
+            },
+            {
+              name: 'minimum-ticket-sales-input',
+              type: 'json-form:text',
+              valueDestination:
+                'entity.data.additionalInfo.store.processingDetails.minimumTicketAmount',
+              options: {
+                label: 'Minimum Ticket Amount (CNY)',
+                hint: '300',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -183,10 +202,10 @@ export const ProcessingDetails = {
               name: 'maximum-ticket-sales-input',
               type: 'json-form:text',
               valueDestination:
-                'entity.data.additionalInfo.store.processingDetails.maximumTicketSales',
+                'entity.data.additionalInfo.store.processingDetails.maximumTicketAmount',
               options: {
-                label: 'Maximum Ticket Sales',
-                hint: '200',
+                label: 'Maximum Ticket Amount (CNY)',
+                hint: '2000',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -211,7 +230,6 @@ export const ProcessingDetails = {
             jsonFormDefinition: {
               required: [
                 'spike-sales-volume-input',
-                'spike-sales-transaction-number-input',
                 'split-of-volume-in-region',
               ],
             },
@@ -255,7 +273,7 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.spikeOfVolumeInRegion',
               options: {
-                label: 'Split of volume by regions in %',
+                label: 'Split of volume by regions in % (divided by comma)',
                 hint: 'Asia 70%, Europe 30%',
                 jsonFormDefinition: {
                   type: 'string',
@@ -270,6 +288,13 @@ export const ProcessingDetails = {
         },
         {
           type: 'json-form',
+          options: {
+            jsonFormDefinition: {
+              required: [
+                "main-category-input",
+              ],
+            }
+          },
           elements: [
             {
               name: 'main-category-input',
@@ -293,7 +318,7 @@ export const ProcessingDetails = {
                     }
                   ]
                 },
-                label: 'Main Category',
+                label: 'Customer Category',
                 hint: 'B2C',
               },
             }
@@ -301,10 +326,13 @@ export const ProcessingDetails = {
         },
         {
           type: 'json-form',
-          visibleOn: [{
-            type: 'json-logic',
-            value: isCustomBusinessModel
-          }],
+          options: {
+            jsonFormDefinition: {
+              required: [
+                "business-model-input",
+              ],
+            }
+          },
           elements: [
             {
               name: 'business-model-input',
