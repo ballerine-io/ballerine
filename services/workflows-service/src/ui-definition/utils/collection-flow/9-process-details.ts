@@ -22,10 +22,7 @@ const availableOnButtonRule = {
                       "properties": {
                         "monthlySalesVolume": { "type": ["number", "null"] },
                         "monthlyTransactions": { "type": ["number", "null"] },
-                        "estimatedMonthlySalesClipsPay": { "type": ["number", "null"] },
-                        "estimatedMonthlyTransactionsClipsPay": { "type": ["number", "null"] },
-                        "averageTicketSales": { "type": ["number", "null"] },
-                        "maximumTicketSales": { "type": ["number", "null"] },
+                        "averageTicketAmount": { "type": ["number", "null"] },
                         "mainCategory": { "type": ["string", "null"] },
                         "businessModel": { "type": ["string", "null"] },
                         "isSpikeInSales": { "type": ["boolean", "null"] },
@@ -38,10 +35,8 @@ const availableOnButtonRule = {
                           "required": [
                             "monthlySalesVolume",
                             "monthlyTransactions",
-                            "estimatedMonthlySalesClipsPay",
-                            "estimatedMonthlyTransactionsClipsPay",
-                            "averageTicketSales",
-                            "maximumTicketSales",
+                            "averageTicketAmount",
+                            "isSpikeInSales",
                             "spikeSalesAverageVolume",
                             "spikeTransactionNumber",
                             "spikeOfVolumeInRegion",
@@ -53,10 +48,7 @@ const availableOnButtonRule = {
                           "required": [
                             "monthlySalesVolume",
                             "monthlyTransactions",
-                            "estimatedMonthlySalesClipsPay",
-                            "estimatedMonthlyTransactionsClipsPay",
-                            "averageTicketSales",
-                            "maximumTicketSales",
+                            "averageTicketAmount",
                             "mainCategory",
                             "businessModel"
                           ]
@@ -114,8 +106,6 @@ export const ProcessingDetails = {
                 "monthly-sales-volume-input",
                 "monthly-number-transactions-input",
                 "average-ticket-sales-input",
-                "spike-in-transactions-input",
-                "main-category-input",
               ],
             },
           },
@@ -355,6 +345,18 @@ export const ProcessingDetails = {
               }
             }
           ],
+        },
+        {
+          name: 'other-business-model-input',
+          type: 'json-form:text',
+          valueDestination:
+            'entity.data.additionalInfo.store.processingDetails.otherBusinessModel',
+          options: {
+            label: 'Business Model',
+            jsonFormDefinition: {
+              type: 'string',
+            },
+          },
         },
         {
           name: 'previous-page-button',
