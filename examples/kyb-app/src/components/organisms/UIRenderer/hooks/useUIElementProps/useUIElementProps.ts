@@ -1,5 +1,6 @@
 import { EngineManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
 import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { JsonLogicRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines';
 import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
 import { UIElement } from '@app/domains/collection-flow';
@@ -10,6 +11,7 @@ const engines = [new JsonSchemaRuleEngine(), new JsonLogicRuleEngine()];
 
 export const useUIElementProps = (definition: UIElement<AnyObject>) => {
   const { payload } = useStateManagerContext();
+  const { state } = useDynamicUIContext();
 
   const disabled = useMemo(() => {
     if (!definition.availableOn || !definition.availableOn.length) return false;
@@ -24,11 +26,11 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
         return true;
       }
 
-      return engine.isActive(payload, rule);
+      return engine.isActive(payload, rule, definition, state);
     });
 
     return !isAvailable;
-  }, [payload, definition]);
+  }, [payload, definition, state]);
 
   const hidden = useMemo(() => {
     if (!definition.visibleOn || !definition.visibleOn.length) return false;
@@ -43,13 +45,11 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
         return true;
       }
 
-      return engine.isActive(payload, rule);
+      return engine.isActive(payload, rule, definition, state);
     });
 
     return !isVisible;
-  }, [payload, definition]);
-
-  console.log('def', definition, hidden);
+  }, [payload, definition, state]);
 
   return {
     disabled,
