@@ -6,7 +6,7 @@ import set from 'lodash/set';
 import { Action, Rule } from '@app/domains/collection-flow';
 import { EventEngine } from '@app/components/organisms/DynamicUI/rule-engines/event.engine';
 import { JsonLogicRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
-import { JsonSchemaRuleEngine } from "@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine";
+import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
 import { EngineManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
 
 export interface ApiActionParams {
@@ -88,6 +88,7 @@ export class ApiActionHandler implements ActionHandler {
 
       if (!engine) throw new Error(`Provided rule with engine ${rule.type} not supported`);
 
+      //@ts-ignore
       return engine.isActive(context, rule as Rule);
     });
   }
