@@ -264,7 +264,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               kybCompanyName: entity.data.companyName,
               customerCompanyName: entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              resubmissionLink: join('',['https://','eu.demo.ballerine.app','/?resubmitEvent=RESUBMITTED', '&token=', token]),
+              resubmissionLink: join('',['https://eu.demo.ballerine.app/?resubmitEvent=RESUBMITTED', '&token=', token]),
               supportEmail: join('',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'@support.com']),
               from: 'no-reply@ballerine.com',
               name: join(' ',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,'Team']),
