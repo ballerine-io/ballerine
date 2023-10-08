@@ -16,20 +16,20 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
 
     const engineManager = new EngineManager(engines);
 
-    const isAvailableWithErros = definition.availableOn.map(rule => {
+    const isAvailableByRules = definition.availableOn.map(rule => {
       const engine = engineManager.getEngine(rule.type);
 
       if (!engine) {
         console.log(`Engine ${rule.type} not found`);
-        return {isValid: true, errors: []};
+        return true;
       }
 
-      return engine.isActive(payload, rule);
+      let {isValid} = engine.isActive(payload, rule);
+      return isValid;
     });
-    const allRulesValid = isAvailableWithErros.every(({isValid}) => isValid)
-    const errors = isAvailableWithErros.map(({errors}) => errors).flat();
+    const isAllRulesValid = isAvailableByRules.every((isValid) => isValid)
 
-    return { isValid: allRulesValid, errors };
+    return isAllRulesValid;
   }, [payload, definition]);
 
   const hidden = useMemo(() => {
@@ -46,10 +46,23 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
       }
 
       const {isValid} = engine.isActive(payload, rule);
-      return {isValid, errors: []};
+
+      return {isValid};
     });
 
     return !isVisible;
+  }, [payload, definition]);
+
+  const errors = useMemo(() => {
+    if (!definition.availableOn || !definition.availableOn.length || !definition.availableOn.every(rule => rule.isRequired)) return [];
+    const engineManager = new EngineManager(engines);
+
+    return definition.availableOn.map(rule => {
+      const engine = engineManager.getEngine(rule.type);
+      const {errors} = engine.isActive(payload, rule);
+
+      return errors
+    }).flat();
   }, [payload, definition]);
 
   console.log('def', definition, hidden);
@@ -57,5 +70,6 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
   return {
     disabled,
     hidden,
+    errors
   };
 };
