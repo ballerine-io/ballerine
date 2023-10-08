@@ -877,6 +877,42 @@ export const useTasks = ({
     },
   ];
 
+  const directorsBlock = [
+    {
+      cells: [
+        {
+          type: 'heading',
+          value: 'Directors',
+        },
+        {
+          type: 'subheading',
+          value: 'Registry-Provided Data',
+        },
+        {
+          type: 'table',
+          value: {
+            columns: [
+              {
+                accessorKey: 'name',
+                header: 'Name',
+              },
+              {
+                accessorKey: 'position',
+                header: 'Position',
+              },
+            ],
+            data: [
+              {
+                name: 'Zhang Yuzhuo',
+                position: 'Chairman, non-executive director',
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ];
+
   return useMemo(() => {
     return entity
       ? [
@@ -889,7 +925,8 @@ export const useTasks = ({
           ...websiteBasicRequirementBlock,
           ...bankingDetailsBlock,
           ...processingDetailsBlock,
-          ...ubosBlock
+          ...ubosBlock,
+          ...directorsBlock
         ]
       : [];
   }, [
