@@ -45,7 +45,7 @@ export const CompanyInformationView = () => {
         {
           ...contextRef.current.flowData.companyInformation,
           companyName: companyInformation.name,
-          companyType: companyInformation.companyType,
+          companyType: companyInformation.companyType || '',
           registrationDate: companyInformation.incorporationDate,
         },
         contextRef.current.shared,
