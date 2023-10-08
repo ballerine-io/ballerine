@@ -831,6 +831,52 @@ export const useTasks = ({
     },
   ];
 
+  const ubosBlock = [
+    {
+      cells: [
+        {
+          type: 'heading',
+          value: 'UBOs',
+        },
+        {
+          type: 'subheading',
+          value: 'Registry-Provided Data',
+        },
+        {
+          type: 'table',
+          value: {
+            columns: [
+              {
+                accessorKey: 'name',
+                header: 'Name',
+              },
+              {
+                accessorKey: 'percentage',
+                header: 'Percentage (25% or higher)',
+              },
+              {
+                accessorKey: 'type',
+                header: 'Type',
+              },
+              {
+                accessorKey: 'level',
+                header: 'Level',
+              },
+            ],
+            data: [
+              {
+                name: 'John Doe',
+                percentage: '25%',
+                type: 'Person',
+                level: '1',
+              },
+            ],
+          },
+        },
+      ],
+    },
+  ];
+
   return useMemo(() => {
     return entity
       ? [
@@ -843,6 +889,7 @@ export const useTasks = ({
           ...websiteBasicRequirementBlock,
           ...bankingDetailsBlock,
           ...processingDetailsBlock,
+          ...ubosBlock
         ]
       : [];
   }, [
