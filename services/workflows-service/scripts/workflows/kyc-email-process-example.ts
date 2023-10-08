@@ -124,7 +124,7 @@ export const kycEmailSessionDefinition = {
               name: join(' ',[entity.data.additionalInfo.customerCompany,'Team']),
               receivers: [entity.data.email],
               subject: '{customerCompanyName} activation, Action needed.',
-              preheader: 'Verify your identity for Happy Home Goods activation with {customerCompanyName}.',
+              preheader: 'Verify your identity for {kybCompanyName} activation with {customerCompanyName}.',
               templateId: (documents[].decision[].status | [0])=='revision' && 'd-2c6ae291d9df4f4a8770d6a4e272d803' || 'd-61c568cfa5b145b5916ff89790fe2065',
               revisionReason: documents[].decision[].revisionReason | [0],
               supportEmail: join('',[entity.data.additionalInfo.companyName,'@support.com'])
