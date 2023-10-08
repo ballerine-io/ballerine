@@ -39,7 +39,7 @@ export const DocumentField = (
     async (file: File) => {
       toggleElementLoading();
 
-      const documentPath = `documnents[${documentIndex}]`;
+      const documentPath = `documents[${documentIndex}]`;
 
       const context = stateApi.getContext();
       const currentDocumentValue = get(context, documentPath) as Document;
