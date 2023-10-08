@@ -1,4 +1,4 @@
-import { Input, Label } from '@components/atoms';
+import { Input } from '@components/atoms';
 import { RJSVInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { useCallback, useEffect, useRef } from 'react';
 
@@ -6,7 +6,6 @@ export const FileInputAdapter: RJSVInputAdapter<File> = ({
   id,
   name,
   uiSchema,
-  schema,
   formData,
   disabled,
   onChange,
@@ -38,7 +37,6 @@ export const FileInputAdapter: RJSVInputAdapter<File> = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor={id}>{schema.title}</Label>
       <Input
         ref={inputRef}
         type="file"

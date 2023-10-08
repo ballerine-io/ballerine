@@ -55,16 +55,16 @@ export const definition = {
       },
       processing_details: {
         on: {
-          NEXT: 'finish',
+          NEXT: 'company_documents',
           PREVIOUS: 'website_basic_requirement',
         },
       },
-      // company_documents: {
-      //   on: {
-      //     NEXT: 'finish',
-      //     PREVIOUS: 'website_basic_requirement',
-      //   },
-      // },
+      company_documents: {
+        on: {
+          NEXT: 'finish',
+          PREVIOUS: 'processing_details',
+        },
+      },
       finish: { type: 'final' },
     },
   },
