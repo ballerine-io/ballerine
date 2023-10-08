@@ -1,3 +1,4 @@
+import { DocumentField } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField';
 import { withDynamicUIInterceptor } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withDynamicUIInterceptor/withDynamicUIInterceptor';
 import {
   TextInputAdapter,
@@ -18,4 +19,5 @@ export const jsonFormFields = {
   DateInput: withDynamicUIInterceptor(DateInputAdater),
   PhoneInput: withDynamicUIInterceptor(PhoneInputAdapter),
   AutocompleteInput: withDynamicUIInterceptor(AutocompleteTextInputAdapter),
+  DocumentInput: withDynamicUIInterceptor(DocumentField),
 };

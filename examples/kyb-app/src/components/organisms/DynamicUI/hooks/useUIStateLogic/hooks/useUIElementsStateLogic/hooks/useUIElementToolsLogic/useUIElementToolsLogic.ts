@@ -1,5 +1,5 @@
 import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 export const useUIElementToolsLogic = (elementId: string) => {
   const { helpers, state } = useDynamicUIContext();
@@ -17,7 +17,13 @@ export const useUIElementToolsLogic = (elementId: string) => {
     setUIElementState(elementId, { ...prevState, isLoading: !prevState?.isLoading });
   }, [elementsStateRef, elementId, setUIElementState]);
 
+  const elementState = useMemo(
+    () => state.elements[elementId] || null,
+    [state.elements, elementId],
+  );
+
   return {
+    state: elementState,
     toggleElementLoading,
   };
 };
