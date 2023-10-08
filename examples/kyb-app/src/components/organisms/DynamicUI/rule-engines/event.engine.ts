@@ -1,9 +1,11 @@
-import { RuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
+import {
+  RuleEngine
+} from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
 
 export class EventEngine implements RuleEngine {
   public ENGINE_NAME = 'event';
 
-  isActive(): boolean {
-    return true;
+  isActive() {
+    return {isValid: true, errors: []};
   }
 }

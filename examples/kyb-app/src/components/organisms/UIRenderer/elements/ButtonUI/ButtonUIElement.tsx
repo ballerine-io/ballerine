@@ -5,7 +5,7 @@ import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/us
 
 export const ButtonUIElement: UIElementComponent<{ text: string }> = ({ definition }) => {
   const { onClickHandler } = useUIElementHandlers(definition);
-  const { disabled } = useUIElementProps(definition);
+  const { disabled, errors } = useUIElementProps(definition);
 
   return (
     <Button variant="secondary" onClick={onClickHandler} disabled={disabled}>

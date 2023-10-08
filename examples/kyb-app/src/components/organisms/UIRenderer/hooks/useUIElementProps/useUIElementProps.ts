@@ -16,18 +16,20 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
 
     const engineManager = new EngineManager(engines);
 
-    const isAvailable = definition.availableOn.every(rule => {
+    const isAvailableWithErros = definition.availableOn.map(rule => {
       const engine = engineManager.getEngine(rule.type);
 
       if (!engine) {
         console.log(`Engine ${rule.type} not found`);
-        return true;
+        return {isValid: true, errors: []};
       }
 
       return engine.isActive(payload, rule);
     });
+    const allRulesValid = isAvailableWithErros.every(({isValid}) => isValid)
+    const errors = isAvailableWithErros.map(({errors}) => errors).flat();
 
-    return !isAvailable;
+    return { isValid: allRulesValid, errors };
   }, [payload, definition]);
 
   const hidden = useMemo(() => {
@@ -43,7 +45,8 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
         return true;
       }
 
-      return engine.isActive(payload, rule);
+      const {isValid} = engine.isActive(payload, rule);
+      return {isValid, errors: []};
     });
 
     return !isVisible;
