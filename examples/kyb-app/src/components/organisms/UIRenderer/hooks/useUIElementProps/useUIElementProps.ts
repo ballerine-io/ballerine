@@ -54,7 +54,7 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
   }, [payload, definition]);
 
   const errors = useMemo(() => {
-    if (!definition.availableOn || !definition.availableOn.length || !definition.availableOn.every(rule => rule.isIncludingErrors)) return [];
+    if (!definition.availableOn || !definition.availableOn.length || !definition.availableOn.some(rule => rule.isIncludingErrors)) return [];
     const engineManager = new EngineManager(engines);
 
     return definition.availableOn.map(rule => {
