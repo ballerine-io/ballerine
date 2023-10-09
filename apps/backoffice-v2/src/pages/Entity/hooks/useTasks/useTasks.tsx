@@ -602,7 +602,7 @@ export const useTasks = ({
         ...(companySanctions?.map((sanction, index) => ({
           type: 'container',
           props: {
-            className: ctw('space-y-8', {
+            className: ctw({
               'mt-2': index === 0,
             }),
           },
@@ -611,12 +611,17 @@ export const useTasks = ({
               type: 'subheading',
               value: `Match ${index + 1}`,
               props: {
-                className: 'text-lg block ms-2',
+                className: 'text-lg block ms-2 mb-6',
               },
             },
             {
               type: 'table',
               value: {
+                props: {
+                  table: {
+                    className: 'mb-8',
+                  },
+                },
                 columns: [
                   {
                     accessorKey: 'primaryName',
@@ -638,6 +643,11 @@ export const useTasks = ({
             {
               type: 'table',
               value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
                 columns: [
                   {
                     accessorKey: 'label',
@@ -660,6 +670,11 @@ export const useTasks = ({
             {
               type: 'table',
               value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
                 columns: [
                   {
                     accessorKey: 'reasonForMatch',
@@ -675,6 +690,9 @@ export const useTasks = ({
               type: 'table',
               value: {
                 props: {
+                  table: {
+                    className: 'my-8',
+                  },
                   cell: {
                     className: 'break-all w-[60ch]',
                   },
@@ -694,6 +712,11 @@ export const useTasks = ({
             {
               type: 'table',
               value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
                 columns: [
                   {
                     accessorKey: 'alternativeNames',
@@ -710,6 +733,11 @@ export const useTasks = ({
             {
               type: 'table',
               value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
                 columns: [
                   {
                     accessorKey: 'officialList',
@@ -724,6 +752,11 @@ export const useTasks = ({
             {
               type: 'table',
               value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
                 columns: [
                   {
                     accessorKey: 'furtherInformation',
@@ -738,6 +771,11 @@ export const useTasks = ({
             {
               type: 'table',
               value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
                 columns: [
                   {
                     accessorKey: 'linkedIndividual',
@@ -761,6 +799,11 @@ export const useTasks = ({
             {
               type: 'table',
               value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
                 columns: [
                   {
                     accessorKey: 'linkedAddress',
