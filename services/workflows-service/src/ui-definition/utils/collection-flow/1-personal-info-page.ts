@@ -215,7 +215,7 @@ export const PersonalInfoPage = {
           {
             type: 'json-schema',
             value: availableOnButtonRule,
-            isRequired: true,
+            isIncludingErrors: true,
           },
         ],
       },
