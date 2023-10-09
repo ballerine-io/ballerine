@@ -39,7 +39,7 @@ export const getUgandaDocuments = (): TDocument[] => {
         businessName: Type.String(),
         registrationNumber: TypeAlphanumericString,
         issuer: TypeStringEnum(['KCCA', 'Other']),
-        expirationDate: Type.Optional(TypePastDate),
+        expirationDate: Type.String({ format: 'date' }),
       }),
     },
     {
@@ -80,7 +80,7 @@ export const getUgandaDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        dateOfStatement: Type.String({ format: 'date-time' }),
+        dateOfStatement: Type.Optional(Type.String()),
         from: Type.String({ format: 'date' }),
         to: Type.String({ format: 'date' }),
         msisdn: TypeUgandaMobileNumber,
@@ -193,7 +193,7 @@ export const getUgandaDocuments = (): TDocument[] => {
     {
       category: 'proof_of_employment',
       type: 'appointment_letter',
-      issuer: { country: 'GH' },
+      issuer: { country: 'UG' },
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
@@ -201,6 +201,61 @@ export const getUgandaDocuments = (): TDocument[] => {
         employerName: TypeStringAtLeastOneWord,
         nationalIdNumber: Type.String(),
         position: Type.String(),
+        issueDate: TypePastDate,
+      }),
+    },
+
+    // Proof of Ownership
+    {
+      category: 'proof_of_ownership',
+      type: 'form_a',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        registrationNumber: TypeAlphanumericString,
+        taxIdNumber: TypeAlphanumericString,
+        issueDate: TypePastDate,
+        firstName: Type.String(),
+        middleName: Type.Optional(Type.String()),
+        lastName: Type.String(),
+        dateOfBirth: TypePastDate,
+        nationalIdNumber: TypeUgandaMobileNumber,
+      }),
+    },
+    {
+      category: 'proof_of_ownership',
+      type: 'receipt_for_permit',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        issueDate: TypePastDate,
+      }),
+    },
+    {
+      category: 'proof_of_ownership',
+      type: 'property_rate',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        payerName: Type.String(),
+        issueDate: TypePastDate,
+      }),
+    },
+    {
+      category: 'proof_of_ownership',
+      type: 'business_utility_bill',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        payerName: Type.String(),
         issueDate: TypePastDate,
       }),
     },

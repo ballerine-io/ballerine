@@ -6,6 +6,7 @@ import { Method, States } from '../../common/enums';
 import { IWorkflowId } from './interfaces';
 import qs from 'qs';
 import { zPropertyKey } from '../../lib/zod/utils/z-property-key/z-property-key';
+import { workflowRuntimeDataContext } from '../../pages/Entity/__TEMP__';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -90,7 +91,13 @@ export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
       }),
     )
     .optional(),
-});
+}).transform(data => ({
+  ...data,
+  context: {
+    ...data?.context,
+    ...workflowRuntimeDataContext,
+  },
+}));
 
 export const fetchWorkflowById = async ({
   workflowId,
@@ -116,6 +123,24 @@ export const fetchUpdateWorkflowById = async ({
 }) => {
   const [workflow, error] = await apiClient({
     endpoint: `workflows/${workflowId}`,
+    method: Method.PATCH,
+    body,
+    schema: z.any(),
+  });
+
+  return handleZodError(error, workflow);
+};
+
+export const updateWorkflowDocumentById = async ({
+  workflowId,
+  documentId,
+  body,
+}: IWorkflowId & {
+  documentId: string;
+  body: Record<PropertyKey, unknown>;
+}) => {
+  const [workflow, error] = await apiClient({
+    endpoint: `workflows/${workflowId}/documents/${documentId}`,
     method: Method.PATCH,
     body,
     schema: z.any(),
