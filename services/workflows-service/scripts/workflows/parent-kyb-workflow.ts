@@ -52,10 +52,15 @@ export const kybParentDynamicExample = {
       },
       manual_review: {
         tags: [StateTag.MANUAL_REVIEW],
-        type: 'final' as const,
+        on: {
+          revision: 'revision'},
       },
       auto_reject: {
         tags: [StateTag.REJECTED],
+        type: 'final' as const,
+      },
+      revision: {
+        tags: [StateTag.REVISION],
         type: 'final' as const,
       },
     },

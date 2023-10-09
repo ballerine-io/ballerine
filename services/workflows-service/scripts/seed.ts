@@ -1164,7 +1164,7 @@ async function seed(bcryptSalt: string | number) {
         childWorkflowsRuntimeData: true,
       },
       where: {
-        workflowDefinitionId: 'kyb_parent_kyc_session_example',
+        workflowDefinitionId: 'dynamic_kyb_parent_example',
         businessId: { not: null },
       },
     },
