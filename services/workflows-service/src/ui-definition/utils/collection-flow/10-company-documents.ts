@@ -40,19 +40,19 @@ export const CompanyDocuments = {
           ],
         },
         {
-          type: 'json-form:documents',
+          type: 'json-form',
           options: {
             jsonFormDefinition: {
               required: [
-                "document-certificates-of-incorporation",
-                "document-business-registration-certificate",
-                "document-corporate-tax-certificate",
-                "document-certificate-of-good-standing",
-                "document-certificate-of-directors-and-shareholders",
-                "document-picture-of-company-seal",
-                "document-website-pictures",
-                "document-transaction-data-last-months",
-                "confirmation-checkbox"
+                'document-certificates-of-incorporation',
+                'document-business-registration-certificate',
+                'document-corporate-tax-certificate',
+                'document-certificate-of-good-standing',
+                'document-certificate-of-directors-and-shareholders',
+                'document-picture-of-company-seal',
+                'document-website-pictures',
+                'document-transaction-data-last-months',
+                'confirmation-checkbox',
               ],
             },
           },
@@ -60,6 +60,7 @@ export const CompanyDocuments = {
             {
               name: 'document-certificates-of-incorporation',
               type: 'document',
+              valueDestination: 'documents[0].pages[0].ballerineFileId',
               options: {
                 label: 'Certificate of Incorporation',
                 description: 'Not older than 6 months.',
@@ -67,7 +68,7 @@ export const CompanyDocuments = {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:field': 'FileInput',
+                  'ui:field': 'DocumentInput',
                 },
                 documentData: {
                   category: 'registration_document',
@@ -78,11 +79,16 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                 },
+                mappingParams: {
+                  documentIndex: 0,
+                  documentPage: 0,
+                },
               },
             },
             {
               name: 'document-business-registration-certificate',
               type: 'document',
+              valueDestination: 'documents[1].pages[0].ballerineFileId',
               options: {
                 label: 'Business Registration Certificate',
                 description: 'Notarized document',
@@ -90,7 +96,7 @@ export const CompanyDocuments = {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:field': 'FileInput',
+                  'ui:field': 'DocumentInput',
                 },
                 documentData: {
                   category: 'registration_document',
@@ -101,18 +107,23 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                 },
+                mappingParams: {
+                  documentIndex: 1,
+                  documentPage: 0,
+                },
               },
             },
             {
               name: 'document-corporate-tax-certificate',
               type: 'document',
+              valueDestination: 'documents[2].pages[0].ballerineFileId',
               options: {
                 label: 'Business Registration Certificate',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:field': 'FileInput',
+                  'ui:field': 'DocumentInput',
                 },
                 documentData: {
                   category: 'corporate_tax_certificate',
@@ -123,11 +134,16 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                 },
+                mappingParams: {
+                  documentIndex: 2,
+                  documentPage: 0,
+                },
               },
             },
             {
               name: 'document-certificate-of-good-standing',
               type: 'document',
+              valueDestination: 'documents[3].pages[0].ballerineFileId',
               options: {
                 label: 'Certificate of Good Standing',
                 description: 'If the company is older than 12 months',
@@ -135,7 +151,7 @@ export const CompanyDocuments = {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:field': 'FileInput',
+                  'ui:field': 'DocumentInput',
                 },
                 documentData: {
                   category: 'certificate_of_good_standing',
@@ -146,18 +162,23 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                 },
+                mappingParams: {
+                  documentIndex: 3,
+                  documentPage: 0,
+                },
               },
             },
             {
               name: 'document-certificate-of-directors-and-shareholders',
               type: 'document',
+              valueDestination: 'documents[4].pages[0].ballerineFileId',
               options: {
                 label: 'Certificate of Directors & Shareholders',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:field': 'FileInput',
+                  'ui:field': 'DocumentInput',
                 },
                 documentData: {
                   category: 'certificate_of_directors_and_shareholders',
@@ -168,18 +189,23 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                 },
+                mappingParams: {
+                  documentIndex: 4,
+                  documentPage: 0,
+                },
               },
             },
             {
               name: 'document-picture-of-company-seal',
               type: 'document',
+              valueDestination: 'documents[5].pages[0].ballerineFileId',
               options: {
                 label: 'Picture of the company seal',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:field': 'FileInput',
+                  'ui:field': 'DocumentInput',
                 },
                 documentData: {
                   category: 'picture_of_company_seal',
@@ -191,6 +217,10 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                 },
               },
+              mappingParams: {
+                documentIndex: 5,
+                documentPage: 0,
+              },
             },
             {
               type: 'h3',
@@ -199,17 +229,22 @@ export const CompanyDocuments = {
             {
               name: 'document-website-pictures',
               type: 'document',
+              valueDestination: 'documents[6].pages[0].ballerineFileId',
               options: {
                 label: 'Domain purchase record/certificate',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:field': 'FileInput',
+                  'ui:field': 'DocumentInput',
                 },
                 documentData: {
                   category: 'website_picture',
                   type: 'business_registration',
+                },
+                mappingParams: {
+                  documentIndex: 6,
+                  documentPage: 0,
                 },
               },
             },
@@ -220,13 +255,14 @@ export const CompanyDocuments = {
             {
               name: 'document-office-front-door-pictures',
               type: 'document',
+              valueDestination: 'documents[7].pages[0].ballerineFileId',
               options: {
                 label: 'Front door photo showing the company name',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:field': 'FileInput',
+                  'ui:field': 'DocumentInput',
                 },
                 documentData: {
                   category: 'office_picture_front_door',
@@ -237,18 +273,23 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                 },
+                mappingParams: {
+                  documentIndex: 7,
+                  documentPage: 0,
+                },
               },
             },
             {
               name: 'document-office-interior-pictures',
               type: 'document',
+              valueDestination: 'documents[8].pages[0].ballerineFileId',
               options: {
                 label: 'Photo showing interior of the office',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:field': 'FileInput',
+                  'ui:field': 'DocumentInput',
                 },
                 documentData: {
                   category: 'office_interior_picture',
@@ -259,11 +300,16 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                 },
+                mappingParams: {
+                  documentIndex: 8,
+                  documentPage: 0,
+                },
               },
             },
             {
               name: 'document-transaction-data-last-months',
               type: 'document',
+              valueDestination: 'documents[9].pages[0].ballerineFileId',
               options: {
                 label: 'Transaction data for the last 3-6 months',
                 description: 'All electric documents must be complete and legible.',
@@ -271,7 +317,7 @@ export const CompanyDocuments = {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:field': 'FileInput',
+                  'ui:field': 'DocumentInput',
                 },
                 documentData: {
                   category: 'office_transactions_last_months',
@@ -281,6 +327,10 @@ export const CompanyDocuments = {
                   },
                   version: '1',
                   issuingVersion: 1,
+                },
+                mappingParams: {
+                  documentIndex: 9,
+                  documentPage: 0,
                 },
               },
             },
@@ -350,7 +400,7 @@ export const CompanyDocuments = {
         eventName: 'PREVIOUS',
       },
       dispatchOn: {
-        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }]
+        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
       },
     },
     {

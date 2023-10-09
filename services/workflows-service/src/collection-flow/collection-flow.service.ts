@@ -265,7 +265,13 @@ export class CollectionFlowService {
     }
 
     const { state, ...resetContext } = payload.data.context as Record<string, any>;
-    return await this.workflowService.createOrUpdateWorkflowRuntime({
+
+    resetContext.documents = await this.__persistFileUrlsToDocuments(
+      (payload.data.context as any).documents,
+      [tokenScope.projectId],
+    );
+
+    const updateResult = await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: workflowRuntime.workflowDefinitionId,
       context: resetContext as DefaultContextSchema,
       config: workflowRuntime.config,
@@ -273,6 +279,8 @@ export class CollectionFlowService {
       projectIds: [tokenScope.projectId],
       currentProjectId: tokenScope.projectId,
     });
+
+    return updateResult;
   }
 
   async syncWorkflow(payload: UpdateFlowDto, tokenScope: ITokenScope) {

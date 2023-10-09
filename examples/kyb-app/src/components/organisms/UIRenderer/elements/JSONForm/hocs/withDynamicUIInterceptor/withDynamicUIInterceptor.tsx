@@ -5,6 +5,8 @@ import { RJSVInputProps, AnyObject } from '@ballerine/ui';
 import { useCallback, useMemo } from 'react';
 import get from 'lodash/get';
 import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
+import { UIElement } from '@app/domains/collection-flow';
 
 const findLastDigit = (str: string) => {
   const digitRegex = /\d+/g;
@@ -29,7 +31,11 @@ const injectIndexToDestinationIfNeeded = (destination: string, index: number | n
   return pathElements.join('.').replace(`${indexPath}.`, indexPath);
 };
 
-export const withDynamicUIInterceptor = (Component: React.ComponentType<RJSVInputProps>) => {
+export const withDynamicUIInterceptor = (
+  Component: React.ComponentType<
+    RJSVInputProps | (RJSVInputProps & { definition?: UIElement<AnyObject> })
+  >,
+) => {
   function Wrapper(props: RJSVInputProps) {
     const inputId = (props.idSchema as AnyObject)?.$id as string;
     const { name, onChange } = props;
@@ -54,6 +60,8 @@ export const withDynamicUIInterceptor = (Component: React.ComponentType<RJSVInpu
       };
     }, [baseDefinition, inputId]);
 
+    const { disabled } = useUIElementProps(baseDefinition);
+
     const { onChangeHandler } = useUIElementHandlers(definition);
 
     const handleChange = useCallback((value: unknown) => {
@@ -72,7 +80,15 @@ export const withDynamicUIInterceptor = (Component: React.ComponentType<RJSVInpu
       [payload, definition],
     );
 
-    return <Component {...props} formData={value} onChange={handleChange} />;
+    return (
+      <Component
+        {...props}
+        disabled={disabled || props.disabled}
+        formData={value}
+        definition={definition}
+        onChange={handleChange}
+      />
+    );
   }
 
   return Wrapper;

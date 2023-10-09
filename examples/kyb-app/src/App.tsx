@@ -18,6 +18,8 @@ import { ButtonUIElement } from '@app/components/organisms/UIRenderer/elements/B
 import { JSONForm } from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
 import { useFlowContextQuery } from '@app/hooks/useFlowContextQuery';
 import { AnyObject } from '@ballerine/ui';
+import { useUIElementToolsLogic } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/hooks/useUIElementToolsLogic';
+import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 
 const elems = {
   h1: Title,
@@ -26,6 +28,22 @@ const elems = {
   container: Cell,
   mainContainer: Cell,
   'json-form:button': ButtonUIElement,
+};
+
+const Toggler = () => {
+  const { toggleElementLoading } = useUIElementToolsLogic('first-name-input');
+  const { state } = useDynamicUIContext();
+
+  console.log('UI STATE', state);
+
+  return (
+    <div>
+      {' '}
+      <button type="button" onClick={toggleElementLoading}>
+        Toggle scoped loading state
+      </button>
+    </div>
+  );
 };
 
 export const App = () => {
@@ -58,18 +76,18 @@ export const App = () => {
                 {({ currentPage }) => {
                   return currentPage ? (
                     <>
-                      {/*<div className="flex flex-col gap-4">*/}
-                      {/*  DEBUG*/}
-                      {/*  <div>*/}
-                      {/*    {currentPage*/}
-                      {/*      ? currentPage.stateName*/}
-                      {/*      : 'Page not found and state ' + state}*/}
-                      {/*  </div>*/}
-                      {/*  <div className="flex gap-4">*/}
-                      {/*    <button onClick={() => stateApi.sendEvent('PREVIOUS')}>prev</button>*/}
-                      {/*    <button onClick={() => stateApi.sendEvent('NEXT')}>next</button>*/}
-                      {/*  </div>*/}
-                      {/*</div>*/}
+                      <div className="flex flex-col gap-4">
+                        DEBUG
+                        <div>
+                          {currentPage
+                            ? currentPage.stateName
+                            : 'Page not found and state ' + state}
+                        </div>
+                        <div className="flex gap-4">
+                          <button onClick={() => stateApi.sendEvent('PREVIOUS')}>prev</button>
+                          <button onClick={() => stateApi.sendEvent('NEXT')}>next</button>
+                        </div>
+                      </div>
                       <ActionsHandler actions={currentPage.actions} stateApi={stateApi}>
                         <UIRenderer elements={elems} schema={currentPage.elements} />
                       </ActionsHandler>
