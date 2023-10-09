@@ -96,7 +96,7 @@ export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
   ...data,
   context: {
     ...data?.context,
-      ...workflowRuntimeDataContext,
+    ...workflowRuntimeDataContext,
     pluginsOutput: {
       ...data?.context?.pluginsOutput,
       company_sanctions: companySanctions,
