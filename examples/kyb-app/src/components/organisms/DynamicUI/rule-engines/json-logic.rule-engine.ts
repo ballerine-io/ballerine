@@ -7,12 +7,12 @@ import jsonLogic from 'json-logic-js';
 export class JsonLogicRuleEngine implements RuleEngine {
   public readonly ENGINE_NAME = 'json-logic';
 
-  isActive(context: unknown, rule: Rule, _: UIElement<AnyObject>, uiState: UIState): boolean {
+  test(context: unknown, rule: Rule, _: UIElement<AnyObject>, uiState: UIState) {
     const result = jsonLogic.apply(rule.value, {
       ...(context as object),
       uiState,
     } as AnyObject) as boolean;
 
-    return result;
+    return { isValid: result, errors: [] };
   }
 }

@@ -1406,12 +1406,14 @@ export class WorkflowService {
         ...contextToInsert,
         documents: this.omitTypeFromDocumentsPages(contextToInsert.documents),
       };
+
       const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
         contextWithoutDocumentPageType?.documents,
         entityId,
         currentProjectId,
         customer.name,
       );
+
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
         {
           data: {
