@@ -41,6 +41,9 @@ export const useTasks = ({
   documents: TWorkflowById['context']['documents'];
   parentMachine: TWorkflowById['context']['parentMachine'];
 }) => {
+  const { store: storeInfo, bank: bankDetails } =
+    workflow?.context?.entity?.data?.additionalInfo ?? {};
+  const { website: websiteBasicRequirement, processingDetails } = storeInfo ?? {};
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
   const docsData = useStorageFilesQuery(
@@ -412,8 +415,135 @@ export const useTasks = ({
           },
         ];
 
+  const storeInfoBlock =
+    Object.keys(storeInfo ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Store Info',
+              },
+              {
+                type: 'subheading',
+                value: 'User-provided data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(storeInfo)?.map(([title, value]) => ({
+                    title,
+                    value,
+                    isEditable: false,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
+          },
+        ];
+
+  const websiteBasicRequirementBlock =
+    Object.keys(bankDetails ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Website Basic Requirement',
+              },
+              {
+                type: 'subheading',
+                value: 'User-Provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(bankDetails)?.map(([title, value]) => ({
+                    title,
+                    value,
+                    isEditable: false,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
+          },
+        ];
+
+  const bankingDetailsBlock =
+    Object.keys(websiteBasicRequirement ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Banking details',
+              },
+              {
+                type: 'subheading',
+                value: 'User-Provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(websiteBasicRequirement)?.map(([title, value]) => ({
+                    title,
+                    value,
+                    isEditable: false,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
+          },
+        ];
+
+  const processingDetailsBlock =
+    Object.keys(processingDetails ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Processing details',
+              },
+              {
+                type: 'subheading',
+                value: 'User-Provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(processingDetails)?.map(([title, value]) => ({
+                    title,
+                    value,
+                    isEditable: false,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
+          },
+        ];
+
   return useMemo(() => {
-    return entity ? [...entityInfoBlock, ...registryInfoBlock, ...taskBlocks, ...mapBlock] : [];
+    return entity
+      ? [
+          ...entityInfoBlock,
+          ...registryInfoBlock,
+          ...taskBlocks,
+          ...mapBlock,
+          ...storeInfoBlock,
+          ...websiteBasicRequirementBlock,
+          ...bankingDetailsBlock,
+          ...processingDetailsBlock,
+        ]
+      : [];
   }, [
     address,
     caseState.writeEnabled,
