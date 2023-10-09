@@ -6,18 +6,18 @@ export const uploadFile = async (dto: UploadFileDto): Promise<UploadFileResult> 
   formData.append('file', dto.file);
 
   const { id: fileId } = await request
-    .post('external/storage', {
+    .post('collection-flow/files', {
       body: formData,
     })
     .json<{
       id: string;
     }>();
 
-  return await request.get(`external/storage/${fileId}`).json<UploadFileResult>();
+  return await request.get(`collection-flow/files/${fileId}`).json<UploadFileResult>();
 };
 
 export const fetchFile = async (fileId: string): Promise<IFile> => {
-  const result = await request.get(`external/storage/${fileId}`);
+  const result = await request.get(`collection-flow/files/${fileId}`);
 
   return result.json<IFile>();
 };

@@ -4,6 +4,7 @@
 
 ### Patch Changes
 
+- Version bump
 - Updated dependencies
   - @ballerine/ui@0.3.1
 

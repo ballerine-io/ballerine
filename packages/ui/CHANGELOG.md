@@ -5,6 +5,7 @@
 ### Patch Changes
 
 - Added export of ctw utility
+- Version bump
 
 ## 0.3.0
 
