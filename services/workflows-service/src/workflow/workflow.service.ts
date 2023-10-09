@@ -873,9 +873,8 @@ export class WorkflowService {
     context: WorkflowRuntimeData['context'],
     projectId: TProjectId,
   ) {
-    return this.workflowRuntimeDataRepository.updateById(id, {data: {context}}, projectId);
+    return this.workflowRuntimeDataRepository.updateById(id, { data: { context } }, projectId);
   }
-
 
   async updateWorkflowRuntimeData(
     workflowRuntimeId: string,
@@ -1407,12 +1406,14 @@ export class WorkflowService {
         ...contextToInsert,
         documents: this.omitTypeFromDocumentsPages(contextToInsert.documents),
       };
+
       const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
         contextWithoutDocumentPageType?.documents,
         entityId,
         currentProjectId,
         customer.name,
       );
+
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
         {
           data: {
