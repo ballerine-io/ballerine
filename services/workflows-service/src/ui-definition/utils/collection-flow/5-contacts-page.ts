@@ -8,7 +8,7 @@ export const ContactsPage = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'collection-flow-head',
+          type: 'stepper',
         },
         {
           type: 'container',
@@ -16,8 +16,8 @@ export const ContactsPage = {
             {
               type: 'h1',
               options: {
-                text: 'Contacts'
-              }
+                text: 'Contacts',
+              },
             },
             {
               type: 'h3',
@@ -120,7 +120,7 @@ export const ContactsPage = {
     {
       type: 'definitionEvent',
       params: {
-        eventName: 'PREVIOUS'
+        eventName: 'PREVIOUS',
       },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
@@ -134,6 +134,6 @@ export const ContactsPage = {
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
       },
-    }
+    },
   ],
 };

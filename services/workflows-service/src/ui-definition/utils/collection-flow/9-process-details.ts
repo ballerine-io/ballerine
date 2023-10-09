@@ -1,70 +1,70 @@
 const availableOnButtonRule = {
-  "type": "object",
-  "properties": {
-    "entity": {
-      "type": "object",
-      "required": ["data"],
-      "properties": {
-        "data": {
-          "type": "object",
-          "required": ["additionalInfo"],
-          "properties": {
-            "additionalInfo": {
-              "type": "object",
-              "required": ["store"],
-              "properties": {
-                "store": {
-                  "type": "object",
-                  "required": ["processingDetails"],
-                  "properties": {
-                    "processingDetails": {
-                      "type": "object",
-                      "properties": {
-                        "monthlySalesVolume": { "type": ["number", "null"] },
-                        "monthlyTransactions": { "type": ["number", "null"] },
-                        "averageTicketAmount": { "type": ["number", "null"] },
-                        "mainCategory": { "type": ["string", "null"] },
-                        "businessModel": { "type": ["string", "null"] },
-                        "isSpikeInSales": { "type": ["boolean", "null"] },
-                        "spikeSalesAverageVolume": { "type": ["number", "null"] },
-                        "spikeTransactionNumber": { "type": ["number", "null"] },
-                        "spikeOfVolumeInRegion": { "type": ["string", "null"] }
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      required: ['data'],
+      properties: {
+        data: {
+          type: 'object',
+          required: ['additionalInfo'],
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['store'],
+              properties: {
+                store: {
+                  type: 'object',
+                  required: ['processingDetails'],
+                  properties: {
+                    processingDetails: {
+                      type: 'object',
+                      properties: {
+                        monthlySalesVolume: { type: ['number', 'null'] },
+                        monthlyTransactions: { type: ['number', 'null'] },
+                        averageTicketAmount: { type: ['number', 'null'] },
+                        mainCategory: { type: ['string', 'null'] },
+                        businessModel: { type: ['string', 'null'] },
+                        isSpikeInSales: { type: ['boolean', 'null'] },
+                        spikeSalesAverageVolume: { type: ['number', 'null'] },
+                        spikeTransactionNumber: { type: ['number', 'null'] },
+                        spikeOfVolumeInRegion: { type: ['string', 'null'] },
                       },
-                      "oneOf": [
+                      oneOf: [
                         {
-                          "required": [
-                            "monthlySalesVolume",
-                            "monthlyTransactions",
-                            "averageTicketAmount",
-                            "isSpikeInSales",
-                            "spikeSalesAverageVolume",
-                            "spikeTransactionNumber",
-                            "spikeOfVolumeInRegion",
-                            "mainCategory",
-                            "businessModel"
-                          ]
+                          required: [
+                            'monthlySalesVolume',
+                            'monthlyTransactions',
+                            'averageTicketAmount',
+                            'isSpikeInSales',
+                            'spikeSalesAverageVolume',
+                            'spikeTransactionNumber',
+                            'spikeOfVolumeInRegion',
+                            'mainCategory',
+                            'businessModel',
+                          ],
                         },
                         {
-                          "required": [
-                            "monthlySalesVolume",
-                            "monthlyTransactions",
-                            "averageTicketAmount",
-                            "mainCategory",
-                            "businessModel"
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                          required: [
+                            'monthlySalesVolume',
+                            'monthlyTransactions',
+                            'averageTicketAmount',
+                            'mainCategory',
+                            'businessModel',
+                          ],
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
-  "required": ["entity"]
+  required: ['entity'],
 };
 
 const isSpikeInSaleVisibility = {
@@ -73,7 +73,7 @@ const isSpikeInSaleVisibility = {
 
 const isCustomBusinessModel = {
   '==': [{ var: 'entity.data.additionalInfo.store.processingDetails.mainCategory' }, 'Other'],
-}
+};
 
 export const ProcessingDetails = {
   type: 'page',
@@ -85,7 +85,7 @@ export const ProcessingDetails = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'collection-flow-head',
+          type: 'stepper',
         },
         {
           type: 'container',
@@ -93,8 +93,8 @@ export const ProcessingDetails = {
             {
               type: 'h1',
               options: {
-                text: 'Processing Details'
-              }
+                text: 'Processing Details',
+              },
             },
           ],
         },
@@ -103,9 +103,9 @@ export const ProcessingDetails = {
           options: {
             jsonFormDefinition: {
               required: [
-                "monthly-sales-volume-input",
-                "monthly-number-transactions-input",
-                "average-ticket-sales-input",
+                'monthly-sales-volume-input',
+                'monthly-number-transactions-input',
+                'average-ticket-sales-input',
               ],
             },
           },
@@ -218,17 +218,14 @@ export const ProcessingDetails = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: [
-                'spike-sales-volume-input',
-                'split-of-volume-in-region',
-              ],
+              required: ['spike-sales-volume-input', 'split-of-volume-in-region'],
             },
           },
           visibleOn: [
             {
               type: 'json-logic',
-              value: isSpikeInSaleVisibility
-            }
+              value: isSpikeInSaleVisibility,
+            },
           ],
           elements: [
             {
@@ -280,10 +277,8 @@ export const ProcessingDetails = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: [
-                "main-category-input",
-              ],
-            }
+              required: ['main-category-input'],
+            },
           },
           elements: [
             {
@@ -295,33 +290,35 @@ export const ProcessingDetails = {
                   type: 'string',
                   oneOf: [
                     {
-                      title: 'B2C', const: 'B2C',
+                      title: 'B2C',
+                      const: 'B2C',
                     },
                     {
-                      title: 'B2B', const: 'B2B',
+                      title: 'B2B',
+                      const: 'B2B',
                     },
                     {
-                      title: 'C2C', const: 'C2C',
+                      title: 'C2C',
+                      const: 'C2C',
                     },
                     {
-                      title: 'Other', const: 'Other',
-                    }
-                  ]
+                      title: 'Other',
+                      const: 'Other',
+                    },
+                  ],
                 },
                 label: 'Customer Category',
                 hint: 'B2C',
               },
-            }
+            },
           ],
         },
         {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: [
-                "business-model-input",
-              ],
-            }
+              required: ['business-model-input'],
+            },
           },
           elements: [
             {
@@ -332,25 +329,27 @@ export const ProcessingDetails = {
                   type: 'string',
                   oneOf: [
                     {
-                      title: 'Membership', const: 'Membership',
+                      title: 'Membership',
+                      const: 'Membership',
                     },
                     {
-                      title: 'Direct Purchase', const: 'Direct Purchase',
+                      title: 'Direct Purchase',
+                      const: 'Direct Purchase',
                     },
                     {
-                      title: 'Other', const: 'Other',
+                      title: 'Other',
+                      const: 'Other',
                     },
-                  ]
+                  ],
                 },
-              }
-            }
+              },
+            },
           ],
         },
         {
           name: 'other-business-model-input',
           type: 'json-form:text',
-          valueDestination:
-            'entity.data.additionalInfo.store.processingDetails.otherBusinessModel',
+          valueDestination: 'entity.data.additionalInfo.store.processingDetails.otherBusinessModel',
           options: {
             label: 'Business Model',
             jsonFormDefinition: {
@@ -391,7 +390,7 @@ export const ProcessingDetails = {
     {
       type: 'definitionEvent',
       params: {
-        eventName: 'PREVIOUS'
+        eventName: 'PREVIOUS',
       },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
