@@ -3,10 +3,10 @@ import { UpdateFlowPayload } from '@/collection-flow/dto/update-flow-input.dto';
 import { recursiveMerge } from '@/collection-flow/helpers/recursive-merge';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { FlowStepModel } from '@/collection-flow/models/flow-step.model';
-import { GetActiveFlowParams, SigninCredentials } from '@/collection-flow/types/params';
 import { IWorkflowAdapter } from '@/collection-flow/workflow-adapters/abstract-workflow-adapter';
 import { KYBParentKYCSessionExampleFlowData } from '@/collection-flow/workflow-adapters/kyb_parent_kyc_session_example/kyb_parent_kyc_session_example.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { CustomerService } from '@/customer/customer.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
 import { StorageService } from '@/storage/storage.service';
@@ -16,7 +16,8 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { WorkflowService } from '@/workflow/workflow.service';
 import { TDocument } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
-import { Business, Customer, EndUser, File } from '@prisma/client';
+import { Customer, EndUser } from '@prisma/client';
+import { File } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import keyBy from 'lodash/keyBy';
 
@@ -29,45 +30,16 @@ export class CollectionFlowService {
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowService: WorkflowService,
     protected readonly businessService: BusinessService,
+    protected readonly customerService: CustomerService,
     protected readonly storageService: StorageService,
   ) {}
 
-  async authorize(credentials: SigninCredentials, projectId: TProjectId): Promise<EndUser> {
-    //@ts-expect-error
-    const existingEndUser = await this.endUserService.getByEmail(credentials.email, projectId);
-
-    if (!existingEndUser) {
-      const newUser = await this.initializeNewEndUser(credentials, projectId);
-
-      await this.workflowService.createOrUpdateWorkflowRuntime({
-        workflowDefinitionId: credentials.flowType,
-        context: {
-          entity: {
-            ballerineEntityId: newUser.businesses.at(-1)?.id,
-            type: 'business',
-          },
-          documents: [],
-        },
-        projectIds: projectId ? [projectId] : [],
-        currentProjectId: projectId,
-      });
-
-      return newUser;
-    }
-
-    return existingEndUser;
+  async getCustomerDetails(projectId: TProjectId): Promise<Customer> {
+    return this.customerService.getByProjectId(projectId);
   }
 
-  private async initializeNewEndUser(credentials: SigninCredentials, projectId: TProjectId) {
-    const endUser = await this.endUserService.createWithBusiness(
-      {
-        firstName: '',
-        lastName: '',
-        email: credentials.email,
-        companyName: '',
-      },
-      projectId,
-    );
+  async getUser(endUserId: string, projectId: TProjectId): Promise<EndUser> {
+    const endUser = await this.endUserService.getById(endUserId, {}, [projectId]);
 
     return endUser;
   }
@@ -154,34 +126,16 @@ export class CollectionFlowService {
     });
   }
 
-  async getActiveFlow(
-    { endUserId, workflowRuntimeDefinitionId }: GetActiveFlowParams,
-    projectIds: TProjectIds,
-  ) {
-    const endUser = (await this.endUserService.getById(
-      endUserId,
-      {
-        include: { businesses: true },
-      },
+  async getActiveFlow(workflowRuntimeId: string, projectIds: TProjectIds) {
+    this.logger.log(`Getting active workflow ${workflowRuntimeId}`);
+
+    const workflowData = await this.workflowRuntimeDataRepository.findById(
+      workflowRuntimeId,
+      {},
       projectIds,
-    )) as EndUser & { businesses: Business[] };
+    );
 
-    if (!endUser || !endUser.businesses.length) return null;
-
-    const query = {
-      endUserId: endUser.id,
-      ...{
-        workflowDefinitionId: workflowRuntimeDefinitionId,
-        businessId: endUser.businesses.at(-1)!.id,
-      },
-      projectIds,
-    };
-
-    this.logger.log(`Getting last active workflow`, query);
-
-    const workflowData = await this.workflowRuntimeDataRepository.findLastActive(query, projectIds);
-
-    this.logger.log('Last active workflow', { workflowId: workflowData ? workflowData.id : null });
+    this.logger.log('Active workflow', { workflowId: workflowData ? workflowData.id : null });
 
     return workflowData ? workflowData : null;
   }

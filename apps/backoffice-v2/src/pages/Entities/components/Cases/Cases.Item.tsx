@@ -6,7 +6,6 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { Avatar } from '../../../../common/components/atoms/Avatar';
 import { IItemProps } from '../../../Entity/components/Case/interfaces';
 import { stringToRGB } from '../../../../common/utils/string-to-rgb/string-to-rgb';
-import { getTimePastFromNow } from '../../../../common/utils/get-time-past-from-now';
 import { ApprovedSvg, RejectedSvg } from '../../../../common/components/atoms/icons';
 import { UserAvatar } from '../../../../common/components/atoms/UserAvatar/UserAvatar';
 import { createInitials } from '../../../../common/utils/create-initials/create-initials';
@@ -63,7 +62,7 @@ export const Item: FunctionComponent<IItemProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className={ctw(`indicator-center indicator-item indicator-middle`, {
+            className={ctw(`indicator-center indicator-middle indicator-item`, {
               hidden: status !== 'REJECTED' && status !== 'APPROVED',
               'text-success': status === 'APPROVED',
               'text-error': status === 'REJECTED',
@@ -85,7 +84,7 @@ export const Item: FunctionComponent<IItemProps> = ({
         </div>
         <div className={`max-w-[115px]`}>
           <div ref={ref} className={`mb-[2px] text-sm font-bold`} style={styles}>
-            {fullName}
+            {fullName || 'N/A'}
           </div>
           <div className={`text-xs opacity-60`}>
             {dayjs(new Date(createdAt)).format('D MMM YYYY HH:mm')}

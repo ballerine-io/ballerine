@@ -1,10 +1,10 @@
 import {
-  authorizeUser,
   fetchActiveWorkflow,
   fetchCollectionFlowSchema,
+  fetchCustomer,
   getFlowSession,
 } from '@app/domains/collection-flow/collection-flow.api';
-import { GetActiveWorkflowDto, GetSessionDto } from '@app/domains/collection-flow/types';
+import { GetActiveWorkflowDto } from '@app/domains/collection-flow/types';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 export const collectionFlowQuerykeys = createQueryKeys('collectionFlow', {
@@ -12,12 +12,16 @@ export const collectionFlowQuerykeys = createQueryKeys('collectionFlow', {
     queryFn: () => fetchCollectionFlowSchema(),
     queryKey: [{}],
   }),
-  getSession: (query: GetSessionDto) => ({
-    queryFn: () => getFlowSession(query),
-    queryKey: [{ query }],
+  getSession: () => ({
+    queryFn: () => getFlowSession(),
+    queryKey: [{}],
   }),
   getFlowData: (query: GetActiveWorkflowDto) => ({
     queryKey: [{ query }],
     queryFn: () => fetchActiveWorkflow(query),
+  }),
+  getCustomer: () => ({
+    queryFn: () => fetchCustomer(),
+    queryKey: [{}],
   }),
 });

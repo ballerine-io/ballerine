@@ -8,7 +8,6 @@ import { Button, buttonVariants } from '../../../../common/components/atoms/Butt
 import React, { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { AnyRecord } from '../../../../common/types';
 import { IEditableDetails } from './interfaces';
-import { useUpdateWorkflowByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateWorkflowByIdMutation/useUpdateWorkflowByIdMutation';
 import { FormField } from '../../../../common/components/organisms/Form/Form.Field';
 import { FormItem } from '../../../../common/components/organisms/Form/Form.Item';
 import { FormLabel } from '../../../../common/components/organisms/Form/Form.Label';
@@ -24,6 +23,7 @@ import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 import { isNullish, isObject } from '@ballerine/common';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import { FileJson2 } from 'lucide-react';
+import { useUpdateDocumentByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateDocumentByIdMutation/useUpdateDocumentByIdMutation';
 import { isValidDate } from '../../../../common/utils/is-valid-date';
 import { isValidIsoDate } from '../../../../common/utils/is-valid-iso-date/is-valid-iso-date';
 import { JsonDialog } from '@ballerine/ui';
@@ -69,57 +69,53 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const form = useForm({
     defaultValues,
   });
-  const { mutate: mutateUpdateWorkflowById } = useUpdateWorkflowByIdMutation({
+  const { mutate: mutateUpdateWorkflowById } = useUpdateDocumentByIdMutation({
     workflowId,
+    documentId: valueId,
   });
   const onMutateTaskDecisionById = ({
-    context,
+    document,
     action,
   }: {
-    context: AnyRecord;
+    document: AnyRecord;
     action: Parameters<typeof mutateUpdateWorkflowById>[0]['action'];
   }) =>
     mutateUpdateWorkflowById({
-      context,
+      document,
       action,
     });
   const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = formData => {
-    const context = {
-      documents: documents?.map(document => {
-        if (document?.id !== valueId) return document;
+    const document = documents?.find(document => document?.id === valueId);
+    const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
+      (acc, curr) => {
+        let propertyValue = formData?.[curr];
 
-        const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
-          (acc, curr) => {
-            let propertyValue = formData?.[curr];
+        if (isNullish(propertyValue) || propertyValue === '') return acc;
 
-            if (!propertyValue) return acc;
+        if (
+          document?.propertiesSchema?.properties?.[curr]?.format === 'date-time' &&
+          typeof propertyValue === 'string' &&
+          propertyValue?.length === 16
+        ) {
+          propertyValue = `${propertyValue}:00`;
+        }
 
-            if (
-              document?.propertiesSchema?.properties?.[curr]?.format === 'date-time' &&
-              typeof propertyValue === 'string' &&
-              propertyValue?.length === 16
-            ) {
-              propertyValue = `${propertyValue}:00`;
-            }
+        acc[curr] = propertyValue;
 
-            acc[curr] = propertyValue;
+        return acc;
+      },
+      {},
+    );
 
-            return acc;
-          },
-          {},
-        );
-
-        return {
-          ...document,
-          type: formData.type,
-          category: formData.category,
-          properties: properties,
-        };
-      }),
+    const newDocument = {
+      ...document,
+      type: formData.type,
+      category: formData.category,
+      properties: properties,
     };
 
     return onMutateTaskDecisionById({
-      context,
+      document: newDocument,
       action: 'update_document_properties',
     });
   };
@@ -144,6 +140,10 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
       if (type === 'string') {
         return 'text';
+      }
+
+      if (type === 'boolean') {
+        return 'checkbox';
       }
 
       if (isValidDate(value, { isStrict: false }) || isValidIsoDate(value) || type === 'date') {
@@ -203,7 +203,8 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
               };
 
               const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-                const inputValue = event.target.value;
+                const isCheckbox = event.target.type === 'checkbox';
+                const inputValue = isCheckbox ? event.target.checked : event.target.value;
 
                 form.setValue(title, inputValue === 'Unavailable' ? '' : inputValue);
               };
@@ -318,6 +319,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                               {...(pattern && { pattern })}
                               autoComplete={'off'}
                               value={displayValue(originalValue)}
+                              checked={originalValue}
                               onChange={handleInputChange}
                             />
                           </FormControl>

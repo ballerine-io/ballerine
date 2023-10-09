@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { AnyRecord, DefaultContextSchema } from '@ballerine/common';
+import { AnyRecord } from '@ballerine/common';
 import { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
@@ -24,7 +24,6 @@ export class HookCallbackHandlerService {
     data,
     resultDestinationPath,
     processName,
-    projectIds,
     currentProjectId,
   }: {
     workflowRuntime: WorkflowRuntimeData;
