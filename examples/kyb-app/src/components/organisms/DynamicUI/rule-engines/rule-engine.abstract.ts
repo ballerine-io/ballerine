@@ -5,15 +5,20 @@ import { AnyObject } from '@ballerine/ui';
 export type ErrorField = {
   field: string;
   message: string;
+};
+
+export interface RuleTestResult {
+  isValid: boolean;
+  errors?: ErrorField[];
 }
 
 export abstract class RuleEngine {
   public readonly ENGINE_NAME: string;
 
-  abstract isActive(
+  abstract test(
     context: unknown,
     rule: Rule,
     definition: UIElement<AnyObject>,
     uiState: UIState,
-  ): { isValid: boolean, errors?: ErrorField[] };
+  ): RuleTestResult;
 }

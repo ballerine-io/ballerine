@@ -13,25 +13,21 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
   const { payload } = useStateManagerContext();
   const { state } = useDynamicUIContext();
 
-  const disabled = useMemo(() => {
-    if (!definition.availableOn || !definition.availableOn.length) return false;
+  const availabilityTestResults = useMemo(() => {
+    const ruleEngineManager = new EngineManager(engines);
 
-    const engineManager = new EngineManager(engines);
-
-    const isAvailableByRules = definition.availableOn.map(rule => {
-      const engine = engineManager.getEngine(rule.type);
-
-      if (!engine) {
-        console.log(`Engine ${rule.type} not found`);
-        return true;
-      }
-
-      return engine.isActive(payload, rule, definition, state);
-    });
-    const isAllRulesValid = isAvailableByRules.every((isValid) => isValid)
-
-    return isAllRulesValid;
+    return (
+      definition.availableOn?.map(rule =>
+        ruleEngineManager.getEngine(rule.type).test(payload, rule, definition, state),
+      ) || []
+    );
   }, [payload, definition, state]);
+
+  const disabled = useMemo(() => {
+    return availabilityTestResults.length
+      ? availabilityTestResults.some(result => !result.isValid)
+      : false;
+  }, [availabilityTestResults]);
 
   const hidden = useMemo(() => {
     if (!definition.visibleOn || !definition.visibleOn.length) return false;
@@ -46,36 +42,34 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
         return true;
       }
 
-      const {isValid} = engine.isActive(payload, rule);
+      const { isValid } = engine.test(payload, rule, definition, state);
 
-      return {isValid};
+      return isValid;
     });
 
     return !isVisible;
-  }, [payload, definition]);
+  }, [payload, definition, state]);
 
   const errors = useMemo(() => {
-    if (!definition.availableOn || !definition.availableOn.length || !definition.availableOn.some(rule => rule.isIncludingErrors)) return [];
+    if (
+      !definition.availableOn ||
+      !definition.availableOn.length ||
+      !definition.availableOn.some(rule => rule.isIncludingErrors)
+    )
+      return [];
     const engineManager = new EngineManager(engines);
 
     return definition.availableOn.map(rule => {
       const engine = engineManager.getEngine(rule.type);
-      const {errors} = engine.isActive(payload, rule);
+      const { errors } = engine.test(payload, rule, definition, state);
 
-      return errors
-    }).flat();
-  }, [payload, definition]);
-
-  console.log('def', definition, hidden);
-      return engine.isActive(payload, rule, definition, state);
+      return errors;
     });
-
-    return !isVisible;
-  }, [payload, definition, state, errors]);
+  }, [payload, definition, state]);
 
   return {
     disabled,
     hidden,
-    errors
+    errors,
   };
 };
