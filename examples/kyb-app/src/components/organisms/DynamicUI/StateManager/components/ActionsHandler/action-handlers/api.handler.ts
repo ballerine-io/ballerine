@@ -82,14 +82,14 @@ export class ApiActionHandler implements ActionHandler {
     return { ...context };
   }
 
-  private canInvoke(context: unknown, action: Action): boolean {
+  private canInvoke(context: unknown, action: Action) {
     return action.dispatchOn.rules.every(rule => {
       const engine = this.engineManager.getEngine(rule.type);
 
       if (!engine) throw new Error(`Provided rule with engine ${rule.type} not supported`);
 
       //@ts-ignore
-      return engine.isActive(context, rule as Rule);
+      return engine.test(context, rule as Rule);
     });
   }
 }

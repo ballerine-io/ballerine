@@ -3,7 +3,7 @@ import { RuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/rul
 export class EventEngine implements RuleEngine {
   public ENGINE_NAME = 'event';
 
-  isActive(): boolean {
-    return true;
+  test() {
+    return { isValid: true, errors: [] };
   }
 }

@@ -14,6 +14,7 @@ export interface BaseRule {
 
 export interface Rule extends BaseRule {
   value: string;
+  isIncludingErrors?: boolean;
 }
 
 export interface EventRule extends BaseRule {
