@@ -11,7 +11,10 @@ const { Provider } = pageResolverContext;
 export const PageResolver = ({ state, pages, children }: PageResolverProps) => {
   const currentPage = useCurrentPageElement(state, pages);
 
-  const context: PageResolverContext = useMemo(() => ({ currentPage }), [currentPage]);
+  const context: PageResolverContext = useMemo(
+    () => ({ currentPage, pages }),
+    [currentPage, pages],
+  );
 
   const child = useMemo(
     () => (typeof children === 'function' ? children(context) : children),

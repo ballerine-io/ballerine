@@ -2,8 +2,8 @@ import { useUIElementsStateLogic } from '@app/components/organisms/DynamicUI/hoo
 import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
 import { useMemo } from 'react';
 
-export const useUIStateLogic = () => {
-  const { uiElementsState, setState } = useUIElementsStateLogic();
+export const useUIStateLogic = (initialState?: UIState) => {
+  const { uiElementsState, setState } = useUIElementsStateLogic(initialState?.elements);
 
   const uiState: UIState = useMemo(() => {
     const state: UIState = {

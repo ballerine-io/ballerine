@@ -1,5 +1,6 @@
 export interface UIElementState {
   isLoading: boolean;
+  isCompleted: boolean;
 }
 
 export interface UIElementsState {
@@ -7,3 +8,4 @@ export interface UIElementsState {
 }
 
 export type UIElementStateSetter = (elementId: string, state: UIElementState) => void;
+export type UIElementCompletionSetter = (elementId: string, completed: boolean) => void;

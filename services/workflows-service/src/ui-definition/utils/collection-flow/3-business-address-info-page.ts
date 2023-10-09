@@ -1,70 +1,76 @@
-import {getCountriesList} from '../schema-utils/countries';
+import { getCountriesList } from '../schema-utils/countries';
 
 const availableOnButtonRule = {
-  "type": "object",
-  "properties": {
-    "entity": {
-      "type": "object",
-      "required": ["data"],
-      "properties": {
-        "data": {
-          "type": "object",
-          "required": ["additionalInfo"],
-          "properties": {
-            "additionalInfo": {
-              "type": "object",
-              "required": ["headquarters"],
-              "properties": {
-                "headquarters": {
-                  "type": "object",
-                  "oneOf": [
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      required: ['data'],
+      properties: {
+        data: {
+          type: 'object',
+          required: ['additionalInfo'],
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['headquarters'],
+              properties: {
+                headquarters: {
+                  type: 'object',
+                  oneOf: [
                     {
-                      "required": ["street", "streetNumber", "city", "country", "isDifferentFromPhysical"],
-                      "properties": {
-                        "street": { "type": "string", "minLength": 2 },
-                        "streetNumber": { "type": "number" },
-                        "city": { "type": "string", "minLength": 2 },
-                        "country": { "type": "string", "minLength": 2 },
-                        "isDifferentFromPhysical": { "enum": [false] }
-                      }
+                      required: [
+                        'street',
+                        'streetNumber',
+                        'city',
+                        'country',
+                        'isDifferentFromPhysical',
+                      ],
+                      properties: {
+                        street: { type: 'string', minLength: 2 },
+                        streetNumber: { type: 'number' },
+                        city: { type: 'string', minLength: 2 },
+                        country: { type: 'string', minLength: 2 },
+                        isDifferentFromPhysical: { enum: [false] },
+                      },
                     },
                     {
-                      "required": [
-                        "street",
-                        "streetNumber",
-                        "city",
-                        "country",
-                        "isDifferentFromPhysical",
-                        "physical"
+                      required: [
+                        'street',
+                        'streetNumber',
+                        'city',
+                        'country',
+                        'isDifferentFromPhysical',
+                        'physical',
                       ],
-                      "properties": {
-                        "isDifferentFromPhysical": { "enum": [true] },
-                        "street": { "type": "string", "minLength": 2 },
-                        "streetNumber": { "type": "number" },
-                        "city": { "type": "string", "minLength": 2 },
-                        "country": { "type": "string", "minLength": 2 },
-                        "physical": {
-                          "type": "object",
-                          "required": ["street", "streetNumber", "city", "country"],
-                          "properties": {
-                            "street": { "type": "string", "minLength": 2 },
-                            "streetNumber": { "type": "number" },
-                            "city": { "type": "string", "minLength": 2 },
-                            "country": { "type": "string", "minLength": 2 }
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                      properties: {
+                        isDifferentFromPhysical: { enum: [true] },
+                        street: { type: 'string', minLength: 2 },
+                        streetNumber: { type: 'number' },
+                        city: { type: 'string', minLength: 2 },
+                        country: { type: 'string', minLength: 2 },
+                        physical: {
+                          type: 'object',
+                          required: ['street', 'streetNumber', 'city', 'country'],
+                          properties: {
+                            street: { type: 'string', minLength: 2 },
+                            streetNumber: { type: 'number' },
+                            city: { type: 'string', minLength: 2 },
+                            country: { type: 'string', minLength: 2 },
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
-  "required": ["entity"]
+  required: ['entity'],
 };
 
 const physicalAddressForm = {
@@ -81,7 +87,7 @@ export const BusinessAddressInfoPage = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'collection-flow-head',
+          type: 'stepper',
         },
         {
           type: 'container',
@@ -90,7 +96,7 @@ export const BusinessAddressInfoPage = {
               type: 'h1',
               options: {
                 text: 'Address',
-              }
+              },
             },
             {
               type: 'h3',
@@ -193,10 +199,12 @@ export const BusinessAddressInfoPage = {
               ],
             },
           },
-          visibleOn: [{
-            type: 'json-logic',
-            value: physicalAddressForm
-          }],
+          visibleOn: [
+            {
+              type: 'json-logic',
+              value: physicalAddressForm,
+            },
+          ],
           elements: [
             {
               name: 'physical-street-input',
@@ -289,7 +297,7 @@ export const BusinessAddressInfoPage = {
     {
       type: 'definitionEvent',
       params: {
-        eventName: 'PREVIOUS'
+        eventName: 'PREVIOUS',
       },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],

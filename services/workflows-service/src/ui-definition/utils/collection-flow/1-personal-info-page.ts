@@ -42,9 +42,9 @@ const availableOnButtonRule = {
                         jobTitle: {
                           type: 'string',
                           minLength: 2,
-                        }
-                      }
-                    }
+                        },
+                      },
+                    },
                   },
                 },
               },
@@ -67,7 +67,7 @@ export const PersonalInfoPage = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'collection-flow-head',
+          type: 'stepper',
         },
         {
           type: 'container',
