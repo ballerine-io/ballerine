@@ -31,8 +31,14 @@ export class JsonSchemaRuleEngine implements RuleEngine {
       return uniqueErroredParams.map(_ => {
         const fieldId = error.instancePath.split('/').filter(part => part !== '');
 
-        if (error.params.missingProperty) {
-          fieldId.push(error.params.missingProperty as string);
+        if (
+          error.params.missingProperty ||
+          (Array.isArray(error.params.errors) && error.params.errors[0]?.params.missingProperty)
+        ) {
+          fieldId.push(
+            (error.params.missingProperty as string) ||
+              error.params.errors[0]?.params.missingProperty,
+          );
         }
 
         return {
