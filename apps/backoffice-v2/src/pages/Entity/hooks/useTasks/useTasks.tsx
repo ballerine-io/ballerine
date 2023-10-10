@@ -20,6 +20,11 @@ import { useRevisionTaskByIdMutation } from '../../../../domains/entities/hooks/
 import { MotionBadge } from '../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
+import { Badge } from '@ballerine/ui';
+import { WarningFilledSvg } from '../../../../common/components/atoms/icons';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { toTitleCase } from 'string-ts';
+import { isValidUrl } from '../../../../common/utils/is-valid-url';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -415,6 +420,20 @@ export const useTasks = ({
           },
         ];
 
+  const companySanctions = pluginsOutput?.company_sanctions?.data?.map(sanction => ({
+    sources: sanction?.entity?.sources,
+    officialLists: sanction?.entity?.officialLists,
+    fullReport: sanction,
+    linkedIndividuals: sanction?.entity?.linkedIndividuals,
+    lastReviewed: sanction?.entity?.lastReviewed,
+    primaryName: sanction?.entity?.name,
+    labels: sanction?.entity?.categories,
+    reasonsForMatch: sanction?.matchedFields,
+    furtherInformation: sanction?.entity?.furtherInformation,
+    alternativeNames: sanction?.entity?.otherNames,
+    places: sanction?.entity?.places,
+  }));
+
   const storeInfoBlock =
     Object.keys(storeInfo ?? {}).length === 0
       ? []
@@ -531,9 +550,291 @@ export const useTasks = ({
           },
         ];
 
+  const companySanctionsBlock = [
+    {
+      cells: [
+        {
+          type: 'heading',
+          value: 'Company Sanctions',
+        },
+        {
+          type: 'container',
+          value: [
+            {
+              type: 'subheading',
+              value: 'Company check results',
+              props: {
+                className: 'text-lg mb-2 mt-4 block ms-2',
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'totalMatches',
+                    header: 'Total matches',
+                    cell: props => {
+                      const value = props.getValue();
+
+                      return (
+                        <Badge variant={'warning'} className={`rounded-lg py-4 font-bold`}>
+                          {value} {value === 1 ? 'match' : 'matches'}
+                        </Badge>
+                      );
+                    },
+                  },
+                  {
+                    accessorKey: 'fullReport',
+                    header: 'Full report',
+                  },
+                ],
+                data: [
+                  {
+                    totalMatches: companySanctions?.length,
+                    fullReport: companySanctions,
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        ...(companySanctions?.map((sanction, index) => ({
+          type: 'container',
+          props: {
+            className: ctw({
+              'mt-2': index === 0,
+            }),
+          },
+          value: [
+            {
+              type: 'subheading',
+              value: `Match ${index + 1}`,
+              props: {
+                className: 'text-lg block ms-2 mb-6',
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                props: {
+                  table: {
+                    className: 'mb-8',
+                  },
+                },
+                columns: [
+                  {
+                    accessorKey: 'primaryName',
+                    header: 'Primary name',
+                  },
+                  {
+                    accessorKey: 'lastReviewed',
+                    header: 'Last reviewed',
+                  },
+                ],
+                data: [
+                  {
+                    primaryName: sanction?.primaryName,
+                    lastReviewed: sanction?.lastReviewed,
+                  },
+                ],
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
+                columns: [
+                  {
+                    accessorKey: 'label',
+                    header: 'Labels',
+                    cell: props => {
+                      const value = props.getValue();
+
+                      return (
+                        <div className={'flex space-x-2'}>
+                          <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
+                          <span>{value}</span>
+                        </div>
+                      );
+                    },
+                  },
+                ],
+                data: sanction?.labels?.map(label => ({ label })),
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
+                columns: [
+                  {
+                    accessorKey: 'reasonForMatch',
+                    header: 'Reasons for Match',
+                  },
+                ],
+                data: sanction?.reasonsForMatch?.map(reasonForMatch => ({
+                  reasonForMatch: toTitleCase(reasonForMatch),
+                })),
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                  cell: {
+                    className: 'break-all w-[60ch]',
+                  },
+                },
+                columns: [
+                  {
+                    accessorKey: 'source',
+                    header: 'Sources',
+                  },
+                ],
+                data: sanction?.sources
+                  ?.map(({ url: source }) => ({ source }))
+                  // TODO: Research why zod's url validation fails on some valid urls.
+                  ?.filter(({ source }) => isValidUrl(source)),
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
+                columns: [
+                  {
+                    accessorKey: 'alternativeNames',
+                    header: 'Alternative names',
+                  },
+                ],
+                data: [
+                  {
+                    alternativeNames: sanction?.alternativeNames,
+                  },
+                ],
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
+                columns: [
+                  {
+                    accessorKey: 'officialList',
+                    header: 'Official lists',
+                  },
+                ],
+                data: sanction?.officialLists?.map(({ description: officialList }) => ({
+                  officialList,
+                })),
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
+                columns: [
+                  {
+                    accessorKey: 'furtherInformation',
+                    header: 'Further information',
+                  },
+                ],
+                data: sanction?.furtherInformation?.map(furtherInformation => ({
+                  furtherInformation,
+                })),
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
+                columns: [
+                  {
+                    accessorKey: 'linkedIndividual',
+                    header: 'Linked individual',
+                  },
+                  {
+                    accessorKey: 'description',
+                    header: 'Description',
+                  },
+                ],
+                data: sanction?.linkedIndividuals?.map(
+                  ({ firstName, middleName, lastName, description }) => ({
+                    linkedIndividual: `${firstName}${
+                      middleName ? `${middleName} ` : ''
+                    } ${lastName}`,
+                    description,
+                  }),
+                ),
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
+                columns: [
+                  {
+                    accessorKey: 'linkedAddress',
+                    header: 'Linked address',
+                  },
+                  {
+                    accessorKey: 'city',
+                    header: 'City',
+                  },
+                  {
+                    accessorKey: 'country',
+                    header: 'Country',
+                  },
+                ],
+                data: sanction?.places?.map(({ country, city, address }) => ({
+                  linkedAddress: address || 'Unavailable',
+                  city: city || 'Unavailable',
+                  country: country || 'Unavailable',
+                })),
+              },
+            },
+          ],
+        })) ?? []),
+      ],
+    },
+  ];
+
   return useMemo(() => {
     return entity
       ? [
+          ...companySanctionsBlock,
           ...entityInfoBlock,
           ...registryInfoBlock,
           ...taskBlocks,
