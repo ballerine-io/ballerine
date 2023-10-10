@@ -12,9 +12,9 @@ export interface BaseRule {
   type: 'json-logic' | 'jmespath' | 'event';
 }
 
-export interface Rule extends BaseRule {
+export interface IRule extends BaseRule {
   value: string;
-  isIncludingErrors?: boolean;
+  persistStateRule?: boolean;
 }
 
 export interface EventRule extends BaseRule {
@@ -25,7 +25,7 @@ export interface Action<TParams = AnyObject> {
   type: string;
   dispatchOn: {
     uiEvents: { event: string; uiElementName: string }[];
-    rules: (Rule | EventRule)[];
+    rules: (IRule | EventRule)[];
   };
   params: TParams;
 }
@@ -33,8 +33,8 @@ export interface Action<TParams = AnyObject> {
 export interface UIElement<TElementParams> {
   name: string;
   type: UIElementType;
-  availableOn?: Rule[];
-  visibleOn?: Rule[];
+  availableOn?: IRule[];
+  visibleOn?: IRule[];
   required?: boolean;
   options: TElementParams;
   valueDestination?: string;

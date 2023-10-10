@@ -3,7 +3,7 @@ import { AnyObject } from '@ballerine/ui';
 import ky from 'ky';
 import jmespath from 'jmespath';
 import set from 'lodash/set';
-import { Action, Rule } from '@app/domains/collection-flow';
+import { Action, IRule } from '@app/domains/collection-flow';
 import { EventEngine } from '@app/components/organisms/DynamicUI/rule-engines/event.engine';
 import { JsonLogicRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
 import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
@@ -89,7 +89,7 @@ export class ApiActionHandler implements ActionHandler {
       if (!engine) throw new Error(`Provided rule with engine ${rule.type} not supported`);
 
       //@ts-ignore
-      return engine.test(context, rule as Rule);
+      return engine.test(context, rule as IRule);
     });
   }
 }
