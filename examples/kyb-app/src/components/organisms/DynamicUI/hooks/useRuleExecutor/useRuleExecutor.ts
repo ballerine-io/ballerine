@@ -25,24 +25,33 @@ export const useRuleExecutor = (
 
   const executeRules = useMemo(
     () =>
-      debounce(
-        (context: AnyObject, rules: Rule[], definition: UIElement<AnyObject>, uiState: UIState) => {
-          const executionResult =
-            rules?.map(rule => {
-              const engine = rulesManager.getEngine(rule.type);
+      // debounce(
+      //   (context: AnyObject, rules: Rule[], definition: UIElement<AnyObject>, uiState: UIState) => {
+      //     const executionResult =
+      //       rules?.map(rule => {
+      //         const engine = rulesManager.getEngine(rule.type);
 
-              return engine.test(context, rule, definition, uiState);
-            }) || [];
+      //         return engine.test(context, rule, definition, uiState);
+      //       }) || [];
 
-          setExecutionResult(executionResult);
-        },
-        300,
-      ),
+      //     setExecutionResult(executionResult);
+      //   },
+      //   300,
+      // ),
+      (context: AnyObject, rules: Rule[], definition: UIElement<AnyObject>, uiState: UIState) => {
+        const executionResult =
+          rules?.map(rule => {
+            const engine = rulesManager.getEngine(rule.type);
+
+            return engine.test(context, rule, definition, uiState);
+          }) || [];
+
+        setExecutionResult(executionResult);
+      },
     [rulesManager],
   );
 
   useEffect(() => {
-    console.log('effect');
     executeRules(context, rules, definition, uiState);
   }, [context, rules, definition, uiState, executeRules]);
 

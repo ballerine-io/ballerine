@@ -1,6 +1,6 @@
 import { getCountriesList } from '../schema-utils/countries';
 
-const availableOnButtonRule = {
+const validationSchema = {
     type: 'object',
     properties: {
       entity: {
@@ -152,6 +152,10 @@ export const BusinessInfoPage = {
   number: 2, // routing number of page
   stateName: 'business_information', // this is the route from xstate
   name: 'Company Information', // page name ( in stepper )
+  pageValidator: {
+    type: 'json-schema',
+    value: validationSchema
+  },
   elements: [
     {
       type: 'mainContainer',
@@ -317,7 +321,7 @@ export const BusinessInfoPage = {
           availableOn: [
             {
               type: 'json-schema',
-              value: availableOnButtonRule,
+              value: validationSchema,
             },
           ],
         },
@@ -360,7 +364,7 @@ export const BusinessInfoPage = {
         rules: [
           {
             type: 'json-schema',
-            value: availableOnButtonRule,
+            value: validationSchema,
           },
         ],
       },

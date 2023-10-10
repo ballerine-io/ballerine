@@ -27,8 +27,6 @@ export const DocumentField = (
 
   const { toggleElementLoading } = useUIElementToolsLogic(definition.name);
 
-  console.log('form data', formData);
-
   useEffect(() => {
     if (!formData || formData instanceof File) return;
     const fileId = formData as string;

@@ -10,7 +10,7 @@ export class EventDispatcherHandler implements ActionHandler {
   readonly ACTION_TYPE = 'definitionEvent';
 
   async run<TContext>(
-    context: TContext,
+    _: TContext,
     action: Action<EventDispatcherParams>,
     api: StateMachineAPI,
   ): Promise<TContext> {

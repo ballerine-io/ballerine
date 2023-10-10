@@ -12,8 +12,6 @@ export const StepperUI = () => {
   const { pages, currentPage } = usePageResolverContext();
   const { state } = useStateManagerContext();
 
-  console.log('ui state', uiState);
-
   const steps: Step[] = useMemo(() => {
     return pages.map(page => {
       const stepStatus = uiState.elements[page.stateName]?.isCompleted ? 'completed' : 'idle';

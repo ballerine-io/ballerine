@@ -1,4 +1,4 @@
-const availableOnButtonRule = {
+const validationSchema = {
     type: 'object',
     properties: {
       entity: {
@@ -98,6 +98,10 @@ export const ProcessingDetails = {
   number: 9,
   stateName: 'processing_details',
   name: 'Processing Details',
+  pageValidator: {
+    type: 'json-schema',
+    value: validationSchema
+  },
   elements: [
     {
       type: 'mainContainer',
@@ -406,7 +410,7 @@ export const ProcessingDetails = {
           availableOn: [
             {
               type: 'json-schema',
-              value: availableOnButtonRule,
+              value: validationSchema,
             },
           ],
         },
@@ -433,7 +437,7 @@ export const ProcessingDetails = {
         rules: [
           {
             type: 'json-schema',
-            value: availableOnButtonRule,
+            value: validationSchema,
           },
         ],
       },

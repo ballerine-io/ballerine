@@ -1,6 +1,6 @@
 import { currencyCodes } from '../schema-utils/currency-codes';
 
-const availableOnButtonRule = {
+const validationSchema = {
     type: 'object',
     properties: {
       entity: {
@@ -112,6 +112,10 @@ export const BankingDetailsPage = {
   number: 6,
   stateName: 'banking_details',
   name: 'Banking Details',
+  pageValidator: {
+    type: 'json-schema',
+    value: validationSchema
+  },
   elements: [
     {
       type: 'mainContainer',
@@ -151,7 +155,6 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 1,
                 },
                 label: 'Cardholder Name',
                 hint: 'John W. Doe',
@@ -164,7 +167,6 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 1,
                 },
                 label: 'Resident Address',
                 hint: 'Fla 5A, Tower 2, The Peak, 123 Queens Road, Hong Kong',
@@ -177,7 +179,6 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 1,
                 },
                 label: 'Account Number',
                 hint: '0123456789',
@@ -190,7 +191,6 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 1,
                 },
                 label: 'IBAN',
                 hint: 'HK00HKB01234567890123',
@@ -203,7 +203,6 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 1,
                 },
                 label: 'Swift Code',
                 hint: 'BBBBCCDDXXX',
@@ -216,7 +215,6 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 1,
                 },
                 label: 'Bank Name',
                 hint: 'Honk Kong Bank',
@@ -229,7 +227,6 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 1,
                 },
                 label: 'Bank Address',
                 hint: "456 King's Road, North Point, Hong Kong",
@@ -242,7 +239,6 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 1,
                 },
                 label: 'Sub-Branch Number',
                 hint: '0012',
@@ -255,7 +251,6 @@ export const BankingDetailsPage = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 1,
                   oneOf: [
                     { title: '', const: '' },
                     ...currencyCodes.map(code => ({
@@ -292,7 +287,7 @@ export const BankingDetailsPage = {
           availableOn: [
             {
               type: 'json-schema',
-              value: availableOnButtonRule,
+              value: validationSchema,
             },
           ],
         },
@@ -319,7 +314,7 @@ export const BankingDetailsPage = {
         rules: [
           {
             type: 'json-schema',
-            value: availableOnButtonRule,
+            value: validationSchema,
           },
         ],
       },

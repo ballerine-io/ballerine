@@ -42,7 +42,6 @@ export const ContactsPage = {
                 hint: 'First Name',
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 1,
                 },
               },
             },
@@ -54,7 +53,6 @@ export const ContactsPage = {
                 hint: 'Last Name',
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 1,
                 },
               },
             },
@@ -66,7 +64,6 @@ export const ContactsPage = {
                 jsonFormDefinition: {
                   type: 'string',
                   format: 'email',
-                  minLength: 1,
                 },
                 label: 'Email',
                 hint: 'example@example.cn',
@@ -80,7 +77,6 @@ export const ContactsPage = {
                 label: 'Phone Number',
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 3,
                 },
                 uiSchema: {
                   'ui:field': 'PhoneInput',

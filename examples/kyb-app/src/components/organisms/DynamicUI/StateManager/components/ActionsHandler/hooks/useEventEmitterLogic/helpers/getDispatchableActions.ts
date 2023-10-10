@@ -21,8 +21,8 @@ export const getDispatchableActions = (
 
     return (
       action.dispatchOn?.rules?.length &&
-      action.dispatchOn?.rules?.some(rule =>
-        engineManager.getEngine(rule.type).test(context, rule, definition, state),
+      action.dispatchOn?.rules?.some(
+        rule => engineManager.getEngine(rule.type).test(context, rule, definition, state).isValid,
       )
     );
   });
