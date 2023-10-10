@@ -69,9 +69,6 @@ export const StoreInfoPage = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'stepper',
-        },
-        {
           type: 'container',
           elements: [
             {

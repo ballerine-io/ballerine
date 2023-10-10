@@ -91,9 +91,6 @@ export const DirectorsAndUbosPage = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'stepper',
-        },
-        {
           type: 'container',
           elements: [
             {
@@ -139,6 +136,7 @@ export const DirectorsAndUbosPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.ubos.lastName',
               options: {
+                label: 'Last Name',
                 hint: 'Last Name',
                 jsonFormDefinition: {
                   type: 'string',
@@ -249,6 +247,7 @@ export const DirectorsAndUbosPage = {
                     jsonFormDefinition: {
                       type: 'string',
                     },
+                    label: 'Last Name',
                     hint: 'Last Name',
                   },
                 },

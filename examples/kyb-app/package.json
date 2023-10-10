@@ -21,6 +21,7 @@
     "@tanstack/react-query": "^4.29.25",
     "@xstate/react": "^3.2.2",
     "ajv": "^8.12.0",
+    "ajv-errors": "^3.0.0",
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
     "country-state-city": "^3.1.4",

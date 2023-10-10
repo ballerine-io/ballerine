@@ -1,4 +1,4 @@
-const availableOnButtonRule = {
+const validationSchema = {
   type: 'object',
   properties: {
     entity: {
@@ -30,6 +30,9 @@ const availableOnButtonRule = {
                     firstName: {
                       type: 'string',
                       minLength: 2,
+                      errorMessage: {
+                        minLength: 'Mimimum length is 2.',
+                      }
                     },
                     lastName: {
                       type: 'string',
@@ -62,12 +65,16 @@ export const PersonalInfoPage = {
   name: 'Personal details',
   number: 1,
   stateName: 'personal_details',
+  pageValidator: {
+    type: 'json-schema',
+    value: validationSchema
+  },
   elements: [
     {
       type: 'mainContainer',
       elements: [
         {
-          type: 'stepper',
+          type: 'collection-flow-head',
         },
         {
           type: 'container',
@@ -82,18 +89,14 @@ export const PersonalInfoPage = {
         },
         {
           type: 'json-form',
-          options: {
-            jsonFormDefinition: {
-              required: [
-                'first-name-input',
-                'last-name-input',
-                'job-title-input',
-                'date-of-birth-input',
-                'phone-number-input',
-              ],
-            },
-          },
           valueDestination: 'entity.data.additionalInfo.mainRepresentative',
+          name: 'json-form:personal-information',
+          availableOn: [
+            {
+              type: 'json-schema',
+              value: validationSchema,
+            },
+          ],
           elements: [
             {
               name: 'first-name-input',
@@ -104,7 +107,6 @@ export const PersonalInfoPage = {
                 hint: 'First Name',
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 2,
                 },
               },
             },
@@ -116,7 +118,6 @@ export const PersonalInfoPage = {
                 hint: 'Last Name',
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 2,
                 },
               },
             },
@@ -130,7 +131,6 @@ export const PersonalInfoPage = {
                 hint: 'CEO / Manager / Partner',
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 2,
                 },
               },
             },
@@ -143,7 +143,6 @@ export const PersonalInfoPage = {
                 hint: 'DD/MM/YYYY',
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 1,
                 },
                 uiSchema: {
                   'ui:field': 'DateInput',
@@ -159,7 +158,6 @@ export const PersonalInfoPage = {
                 label: 'Phone number',
                 jsonFormDefinition: {
                   type: 'string',
-                  minLength: 1,
                 },
                 uiSchema: {
                   'ui:field': 'PhoneInput',
@@ -181,7 +179,7 @@ export const PersonalInfoPage = {
           availableOn: [
             {
               type: 'json-schema',
-              value: availableOnButtonRule,
+              value: validationSchema,
             },
           ],
         },
@@ -198,8 +196,8 @@ export const PersonalInfoPage = {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
           {
-            type: 'json-logic',
-            value: availableOnButtonRule,
+            type: 'json-schema',
+            value: validationSchema,
           },
         ],
       },
@@ -214,8 +212,7 @@ export const PersonalInfoPage = {
         rules: [
           {
             type: 'json-schema',
-            value: availableOnButtonRule,
-            persistStateRule: true,
+            value: validationSchema,
           },
         ],
       },
