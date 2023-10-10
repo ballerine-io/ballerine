@@ -2,13 +2,13 @@ import {
   ErrorField,
   RuleEngine,
 } from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
-import { Rule } from '@app/domains/collection-flow';
+import { IRule } from '@app/domains/collection-flow';
 import Ajv from 'ajv';
 
 export class JsonSchemaRuleEngine implements RuleEngine {
   public readonly ENGINE_NAME = 'json-schema';
 
-  test(context: unknown, rule: Rule) {
+  test(context: unknown, rule: IRule) {
     const validator = new Ajv({ allErrors: true });
     const validationResult = validator.validate(rule.value, context);
     if (!validationResult) {
