@@ -50,6 +50,7 @@ export const useTasks = ({
     store: storeInfo,
     bank: bankDetails,
     directors,
+    mainRepresentative,
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { website: websiteBasicRequirement, processingDetails } = storeInfo ?? {};
   const { data: session } = useAuthenticatedUserQuery();
@@ -559,6 +560,35 @@ export const useTasks = ({
           },
         ];
 
+  const mainRepresentativeBlock =
+    Object.keys(mainRepresentative ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Main Representative',
+              },
+              {
+                type: 'subheading',
+                value: 'User-Provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(mainRepresentative)?.map(([title, value]) => ({
+                    title,
+                    value,
+                    isEditable: false,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
+          },
+        ];
+
   const companySanctionsBlock = companySanctions
     ? [
         {
@@ -938,6 +968,7 @@ export const useTasks = ({
           ...websiteBasicRequirementBlock,
           ...bankingDetailsBlock,
           ...processingDetailsBlock,
+          ...mainRepresentativeBlock,
           ...mapBlock,
         ]
       : [];
