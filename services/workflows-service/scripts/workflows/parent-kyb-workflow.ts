@@ -53,7 +53,8 @@ export const kybParentDynamicExample = {
       manual_review: {
         tags: [StateTag.MANUAL_REVIEW],
         on: {
-          revision: 'revision'},
+          revision: 'revision',
+        },
       },
       auto_reject: {
         tags: [StateTag.REJECTED],
