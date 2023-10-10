@@ -49,7 +49,9 @@ export const useTasks = ({
   const {
     store: storeInfo,
     bank: bankDetails,
-    directors,
+    directors: directorsUserProvided,
+    mainRepresentative,
+    mainContact,
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { website: websiteBasicRequirement, processingDetails } = storeInfo ?? {};
   const { data: session } = useAuthenticatedUserQuery();
@@ -442,6 +444,10 @@ export const useTasks = ({
     type: ubo?.type,
     level: ubo?.level,
   }));
+  const directorsRegistryProvided = pluginsOutput?.directors?.data?.map(({ name, position }) => ({
+    name,
+    position,
+  }));
 
   const storeInfoBlock =
     Object.keys(storeInfo ?? {}).length === 0
@@ -484,7 +490,7 @@ export const useTasks = ({
               },
               {
                 type: 'subheading',
-                value: 'User-Provided Data',
+                value: 'User-provided Data',
               },
               {
                 type: 'details',
@@ -513,7 +519,7 @@ export const useTasks = ({
               },
               {
                 type: 'subheading',
-                value: 'User-Provided Data',
+                value: 'User-provided Data',
               },
               {
                 type: 'details',
@@ -542,7 +548,7 @@ export const useTasks = ({
               },
               {
                 type: 'subheading',
-                value: 'User-Provided Data',
+                value: 'User-provided Data',
               },
               {
                 type: 'details',
@@ -554,6 +560,62 @@ export const useTasks = ({
                   })),
                 },
                 hideSeparator: true,
+              },
+            ],
+          },
+        ];
+
+  const mainRepresentativeBlock =
+    Object.keys(mainRepresentative ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Main Representative',
+              },
+              {
+                type: 'subheading',
+                value: 'User-provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(mainRepresentative)?.map(([title, value]) => ({
+                    title,
+                    value,
+                    isEditable: false,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
+          },
+        ];
+
+  const mainContactBlock =
+    Object.keys(mainContact ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Main Contact',
+              },
+              {
+                type: 'subheading',
+                value: 'User-provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(mainContact ?? {})?.map(([title, value]) => ({
+                    title,
+                    value,
+                  })),
+                },
               },
             ],
           },
@@ -852,7 +914,7 @@ export const useTasks = ({
             },
             {
               type: 'subheading',
-              value: 'Registry-Provided Data',
+              value: 'Registry-provided Data',
             },
             {
               type: 'table',
@@ -888,8 +950,8 @@ export const useTasks = ({
       ]
     : [];
 
-  const directorsBlock =
-    Object.keys(directors ?? {}).length === 0
+  const directorsUserProvidedBlock =
+    Object.keys(directorsUserProvided ?? {}).length === 0
       ? []
       : [
           {
@@ -900,7 +962,7 @@ export const useTasks = ({
               },
               {
                 type: 'subheading',
-                value: 'Registry-Provided Data',
+                value: 'User-provided Data',
               },
               {
                 type: 'table',
@@ -911,19 +973,67 @@ export const useTasks = ({
                       header: 'Name',
                     },
                     {
-                      accessorKey: 'position',
-                      header: 'Position',
+                      accessorKey: 'nationality',
+                      header: 'Nationality',
+                    },
+                    {
+                      accessorKey: 'identityNumber',
+                      header: 'Identity number',
+                    },
+                    {
+                      accessorKey: 'email',
+                      header: 'Email',
+                    },
+                    {
+                      accessorKey: 'address',
+                      header: 'Address',
                     },
                   ],
-                  data: directors?.map(({ firstName, lastName, position }) => ({
-                    name: `${firstName} ${lastName}`,
-                    position,
-                  })),
+                  data: directorsUserProvided?.map(
+                    ({ firstName, lastName, fullAddress: address, ...rest }) => ({
+                      name: `${firstName} ${lastName}`,
+                      address,
+                      ...rest,
+                    }),
+                  ),
                 },
               },
             ],
           },
         ];
+
+  const directorsRegistryProvidedBlock = directorsRegistryProvided
+    ? [
+        {
+          cells: [
+            {
+              type: 'heading',
+              value: 'Directors',
+            },
+            {
+              type: 'subheading',
+              value: 'Registry-provided Data',
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'name',
+                    header: 'Name',
+                  },
+                  {
+                    accessorKey: 'position',
+                    header: 'Position',
+                  },
+                ],
+                data: directorsRegistryProvided,
+              },
+            },
+          ],
+        },
+      ]
+    : [];
 
   return useMemo(() => {
     return entity
@@ -932,12 +1042,15 @@ export const useTasks = ({
           ...registryInfoBlock,
           ...companySanctionsBlock,
           ...taskBlocks,
-          ...directorsBlock,
+          ...directorsUserProvidedBlock,
+          ...directorsRegistryProvidedBlock,
           ...ubosBlock,
           ...storeInfoBlock,
           ...websiteBasicRequirementBlock,
           ...bankingDetailsBlock,
           ...processingDetailsBlock,
+          ...mainContactBlock,
+          ...mainRepresentativeBlock,
           ...mapBlock,
         ]
       : [];
