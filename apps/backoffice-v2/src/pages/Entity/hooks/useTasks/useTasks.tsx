@@ -49,7 +49,7 @@ export const useTasks = ({
   const {
     store: storeInfo,
     bank: bankDetails,
-    directors,
+    directors: directorsUserProvided,
     mainRepresentative,
     mainContact,
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
@@ -443,6 +443,10 @@ export const useTasks = ({
     percentage: ubo?.percentage,
     type: ubo?.type,
     level: ubo?.level,
+  }));
+  const directorsRegistryProvided = pluginsOutput?.directors?.data?.map(({ name, position }) => ({
+    name,
+    position,
   }));
 
   const storeInfoBlock =
@@ -946,8 +950,8 @@ export const useTasks = ({
       ]
     : [];
 
-  const directorsBlock =
-    Object.keys(directors ?? {}).length === 0
+  const directorsUserProvidedBlock =
+    Object.keys(directorsUserProvided ?? {}).length === 0
       ? []
       : [
           {
@@ -985,7 +989,7 @@ export const useTasks = ({
                       header: 'Address',
                     },
                   ],
-                  data: directors?.map(
+                  data: directorsUserProvided?.map(
                     ({ firstName, lastName, fullAddress: address, ...rest }) => ({
                       name: `${firstName} ${lastName}`,
                       address,
@@ -998,6 +1002,39 @@ export const useTasks = ({
           },
         ];
 
+  const directorsRegistryProvidedBlock = directorsRegistryProvided
+    ? [
+        {
+          cells: [
+            {
+              type: 'heading',
+              value: 'Directors',
+            },
+            {
+              type: 'subheading',
+              value: 'Registry-provided Data',
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'name',
+                    header: 'Name',
+                  },
+                  {
+                    accessorKey: 'position',
+                    header: 'Position',
+                  },
+                ],
+                data: directorsRegistryProvided,
+              },
+            },
+          ],
+        },
+      ]
+    : [];
+
   return useMemo(() => {
     return entity
       ? [
@@ -1005,7 +1042,8 @@ export const useTasks = ({
           ...registryInfoBlock,
           ...companySanctionsBlock,
           ...taskBlocks,
-          ...directorsBlock,
+          ...directorsUserProvidedBlock,
+          ...directorsRegistryProvidedBlock,
           ...ubosBlock,
           ...storeInfoBlock,
           ...websiteBasicRequirementBlock,
