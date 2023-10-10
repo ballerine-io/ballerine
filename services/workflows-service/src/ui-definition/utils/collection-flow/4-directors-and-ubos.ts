@@ -1,76 +1,85 @@
 const availableOnButtonRule = {
-  "type": "object",
-  "properties": {
-    "entity": {
-      "type": "object",
-      "required": ["data"],
-      "properties": {
-        "data": {
-          "type": "object",
-          "required": ["additionalInfo"],
-          "properties": {
-            "additionalInfo": {
-              "type": "object",
-              "required": ["ubos", "directors"],
-              "properties": {
-                "ubos": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "required": [
-                      "firstName",
-                      "lastName",
-                      "nationality",
-                      "identityNumber",
-                      "email",
-                      "fullAddress",
-                      "percentageOfOwnership"
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      required: ['data'],
+      properties: {
+        data: {
+          type: 'object',
+          required: ['additionalInfo'],
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['ubos', 'directors'],
+              properties: {
+                ubos: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: [
+                      'firstName',
+                      'lastName',
+                      'nationality',
+                      'identityNumber',
+                      'email',
+                      'fullAddress',
+                      'percentageOfOwnership',
                     ],
-                    "properties": {
-                      "firstName": {"type": "string"},
-                      "lastName": {"type": "string"},
-                      "nationality": {"type": "string"},
-                      "identityNumber": {"type": "string"},
-                      "email": {"type": "string"},
-                      "fullAddress": {"type": "string"},
-                      "percentageOfOwnership": {"type": "number"}
-                    }
-                  }
+                    properties: {
+                      firstName: { type: 'string' },
+                      lastName: { type: 'string' },
+                      nationality: { type: 'string' },
+                      identityNumber: { type: 'string' },
+                      email: { type: 'string' },
+                      fullAddress: { type: 'string' },
+                      percentageOfOwnership: { type: 'number' },
+                    },
+                  },
                 },
-                "directors": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "required": [
-                      "firstName",
-                      "lastName",
-                      "nationality",
-                      "identityNumber",
-                      "email",
-                      "fullAddress"
+                directors: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: [
+                      'firstName',
+                      'lastName',
+                      'nationality',
+                      'identityNumber',
+                      'email',
+                      'fullAddress',
                     ],
-                    "properties": {
-                      "firstName": {"type": "string"},
-                      "lastName": {"type": "string"},
-                      "nationality": {
-                        "type": "string",
-                        "enum": ["Afghan", "Albanian", "Algerian", "American", "Andorran", "Angolan", "Antiguans", "Chinese"]
+                    properties: {
+                      firstName: { type: 'string' },
+                      lastName: { type: 'string' },
+                      nationality: {
+                        type: 'string',
+                        enum: [
+                          'Afghan',
+                          'Albanian',
+                          'Algerian',
+                          'American',
+                          'Andorran',
+                          'Angolan',
+                          'Antiguans',
+                          'Chinese',
+                        ],
                       },
-                      "identityNumber": {"type": "number"},
-                      "email": {"type": "string"},
-                      "fullAddress": {"type": "string"}
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                      identityNumber: { type: 'number' },
+                      email: { type: 'string' },
+                      fullAddress: { type: 'string' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
-  "required": ["entity"]
-}
+  required: ['entity'],
+};
 
 export const DirectorsAndUbosPage = {
   type: 'page',
@@ -82,7 +91,7 @@ export const DirectorsAndUbosPage = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'collection-flow-head',
+          type: 'stepper',
         },
         {
           type: 'container',
@@ -91,14 +100,14 @@ export const DirectorsAndUbosPage = {
               type: 'h1',
               options: {
                 text: 'Directors & UBOs',
-              }
+              },
             },
             {
               type: 'h3',
               options: {
                 text: 'UBOs',
                 classNames: ['padding-top-10'],
-              }
+              },
             },
           ],
         },
@@ -106,7 +115,8 @@ export const DirectorsAndUbosPage = {
           type: 'json-form',
           valueDestination: 'entity.data.additionalInfo.ubos',
           options: {
-            description: '<p>add all the natural persons that own or control, <bold>Directly Or Indirectly</bold> more than 25% of the company.</p>',
+            description:
+              '<p>add all the natural persons that own or control, <bold>Directly Or Indirectly</bold> more than 25% of the company.</p>',
             jsonFormDefinition: {
               type: 'array',
             },
@@ -203,7 +213,7 @@ export const DirectorsAndUbosPage = {
           options: {
             text: 'Directors',
             classNames: ['padding-top-10'],
-          }
+          },
         },
         {
           type: 'container',
@@ -225,7 +235,7 @@ export const DirectorsAndUbosPage = {
                   valueDestination: 'entity.data.additionalInfo.directors.firstName',
                   options: {
                     jsonFormDefinition: {
-                      type: 'string'
+                      type: 'string',
                     },
                     label: 'Name',
                     hint: 'First Name',
@@ -237,7 +247,7 @@ export const DirectorsAndUbosPage = {
                   valueDestination: 'entity.data.additionalInfo.directors.lastName',
                   options: {
                     jsonFormDefinition: {
-                      type: 'string'
+                      type: 'string',
                     },
                     hint: 'Last Name',
                   },
@@ -251,14 +261,14 @@ export const DirectorsAndUbosPage = {
                       type: 'string',
                       oneOf: [
                         // Nationality title value
-                        {const: 'Afghan', title: 'Afghan'},
-                        {const: 'Albanian', title: 'Albanian'},
-                        {const: 'Algerian', title: 'Algerian'},
-                        {const: 'American', title: 'American'},
-                        {const: 'Andorran', title: 'Andorran'},
-                        {const: 'Angolan', title: 'Angolan'},
-                        {const: 'Antiguans', title: 'Antiguans'},
-                        {const: 'Chinese', title: 'Cinese'}
+                        { const: 'Afghan', title: 'Afghan' },
+                        { const: 'Albanian', title: 'Albanian' },
+                        { const: 'Algerian', title: 'Algerian' },
+                        { const: 'American', title: 'American' },
+                        { const: 'Andorran', title: 'Andorran' },
+                        { const: 'Angolan', title: 'Angolan' },
+                        { const: 'Antiguans', title: 'Antiguans' },
+                        { const: 'Chinese', title: 'Cinese' },
                       ],
                     },
                     label: 'Nationality',
@@ -271,7 +281,7 @@ export const DirectorsAndUbosPage = {
                   valueDestination: 'entity.data.additionalInfo.directors.identityNumber',
                   options: {
                     jsonFormDefinition: {
-                      type: 'number'
+                      type: 'number',
                     },
                     label: 'Identity Number',
                     hint: '11010219820519759X',
@@ -283,7 +293,7 @@ export const DirectorsAndUbosPage = {
                   valueDestination: 'entity.data.additionalInfo.directors.fullAddress',
                   options: {
                     jsonFormDefinition: {
-                      type: 'string'
+                      type: 'string',
                     },
                     label: 'Address of Residence',
                     hint: '22, Choyangmen, Chaoyang District, Beijing, China',
@@ -339,10 +349,10 @@ export const DirectorsAndUbosPage = {
     {
       type: 'definitionEvent',
       params: {
-        eventName: 'PREVIOUS'
+        eventName: 'PREVIOUS',
       },
       dispatchOn: {
-        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }]
+        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
       },
     },
     {

@@ -1,76 +1,76 @@
-import {currencyCodes} from '../schema-utils/currency-codes';
+import { currencyCodes } from '../schema-utils/currency-codes';
 
 const availableOnButtonRule = {
-  "type": "object",
-  "properties": {
-    "entity": {
-      "type": "object",
-      "required": ["data"],
-      "properties": {
-        "data": {
-          "type": "object",
-          "required": ["additionalInfo"],
-          "properties": {
-            "additionalInfo": {
-              "type": "object",
-              "required": ["bank"],
-              "properties": {
-                "bank": {
-                  "type": "object",
-                  "required": [
-                    "holderName",
-                    "holderFullAddress",
-                    "accountNumber",
-                    "iban",
-                    "swiftCode",
-                    "bankName",
-                    "bankAddress",
-                    "subBranch"
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      required: ['data'],
+      properties: {
+        data: {
+          type: 'object',
+          required: ['additionalInfo'],
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['bank'],
+              properties: {
+                bank: {
+                  type: 'object',
+                  required: [
+                    'holderName',
+                    'holderFullAddress',
+                    'accountNumber',
+                    'iban',
+                    'swiftCode',
+                    'bankName',
+                    'bankAddress',
+                    'subBranch',
                   ],
-                  "properties": {
-                    "holderName": {
-                      "type": "string",
-                      "minLength": 5
+                  properties: {
+                    holderName: {
+                      type: 'string',
+                      minLength: 5,
                     },
-                    "holderFullAddress": {
-                      "type": "string",
-                      "minLength": 8
+                    holderFullAddress: {
+                      type: 'string',
+                      minLength: 8,
                     },
-                    "accountNumber": {
-                      "type": "string",
-                      "minLength": 6,
-                      "maxLength": 15
+                    accountNumber: {
+                      type: 'string',
+                      minLength: 6,
+                      maxLength: 15,
                     },
-                    "iban": {
-                      "type": "string",
-                      "minLength": 15
+                    iban: {
+                      type: 'string',
+                      minLength: 15,
                     },
-                    "swiftCode": {
-                      "type": "string",
-                      "minLength": 8
+                    swiftCode: {
+                      type: 'string',
+                      minLength: 8,
                     },
-                    "bankName": {
-                      "type": "string",
-                      "minLength": 3
+                    bankName: {
+                      type: 'string',
+                      minLength: 3,
                     },
-                    "bankAddress": {
-                      "type": "string",
-                      "minLength": 10
+                    bankAddress: {
+                      type: 'string',
+                      minLength: 10,
                     },
-                    "subBranch": {
-                      "type": "string",
-                      "pattern": "^[0-9]+$"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                    subBranch: {
+                      type: 'string',
+                      pattern: '^[0-9]+$',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
-  "required": ["entity"]
+  required: ['entity'],
 };
 export const BankingDetailsPage = {
   type: 'page',
@@ -82,7 +82,7 @@ export const BankingDetailsPage = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'collection-flow-head',
+          type: 'stepper',
         },
         {
           type: 'container',
@@ -90,8 +90,8 @@ export const BankingDetailsPage = {
             {
               type: 'h1',
               options: {
-                text: 'Banking Details'
-              }
+                text: 'Banking Details',
+              },
             },
           ],
         },
@@ -118,7 +118,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.holderName',
               options: {
                 jsonFormDefinition: {
-                  type: "string",
+                  type: 'string',
                   minLength: 1,
                 },
                 label: 'Cardholder Name',
@@ -131,7 +131,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.holderFullAddress',
               options: {
                 jsonFormDefinition: {
-                  type: "string",
+                  type: 'string',
                   minLength: 1,
                 },
                 label: 'Resident Address',
@@ -144,7 +144,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.accountNumber',
               options: {
                 jsonFormDefinition: {
-                  type: "string",
+                  type: 'string',
                   minLength: 1,
                 },
                 label: 'Account Number',
@@ -157,7 +157,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.iban',
               options: {
                 jsonFormDefinition: {
-                  type: "string",
+                  type: 'string',
                   minLength: 1,
                 },
                 label: 'IBAN',
@@ -170,7 +170,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.swiftCode',
               options: {
                 jsonFormDefinition: {
-                  type: "string",
+                  type: 'string',
                   minLength: 1,
                 },
                 label: 'Swift Code',
@@ -183,7 +183,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.bankName',
               options: {
                 jsonFormDefinition: {
-                  type: "string",
+                  type: 'string',
                   minLength: 1,
                 },
                 label: 'Bank Name',
@@ -196,7 +196,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.bankAddress',
               options: {
                 jsonFormDefinition: {
-                  type: "string",
+                  type: 'string',
                   minLength: 1,
                 },
                 label: 'Bank Address',
@@ -209,7 +209,7 @@ export const BankingDetailsPage = {
               valueDestination: 'entity.data.additionalInfo.bank.subBranch',
               options: {
                 jsonFormDefinition: {
-                  type: "string",
+                  type: 'string',
                   minLength: 1,
                 },
                 label: 'Sub-Branch Number',
@@ -226,7 +226,10 @@ export const BankingDetailsPage = {
                   minLength: 1,
                   oneOf: [
                     { title: '', const: '' },
-                    ...currencyCodes.map(code => ({ title: code.code.toUpperCase(), const: code.code })),
+                    ...currencyCodes.map(code => ({
+                      title: code.code.toUpperCase(),
+                      const: code.code,
+                    })),
                   ],
                 },
                 label: 'Account Currency',
@@ -268,10 +271,10 @@ export const BankingDetailsPage = {
     {
       type: 'definitionEvent',
       params: {
-        eventName: 'PREVIOUS'
+        eventName: 'PREVIOUS',
       },
       dispatchOn: {
-        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }]
+        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
       },
     },
     {

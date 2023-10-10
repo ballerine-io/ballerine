@@ -60,7 +60,7 @@ export const useRejectTaskByIdMutation = (workflowId: string) => {
       toast.success(t('toast:reject_document.success'));
     },
     onError: (_error, _variables, context) => {
-      toast.error(t('toast:reject_document.error'));
+      toast.error(t('toast:reject_document.error', { errorMessage: _error.message }));
       queryClient.setQueryData(workflowById.queryKey, context.previousWorkflow);
     },
   });
