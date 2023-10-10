@@ -1,59 +1,76 @@
 const availableOnButtonRule = {
-  type: 'object',
-  properties: {
-    entity: {
-      type: 'object',
-      required: ['data'],
-      properties: {
-        data: {
-          type: 'object',
-          required: ['additionalInfo'],
-          properties: {
-            additionalInfo: {
-              type: 'object',
-              required: ['store'],
-              properties: {
-                store: {
-                  type: 'object',
-                  required: ['websiteUrls', 'dba', 'products', 'established', 'hasMobileApp'],
-                  properties: {
-                    websiteUrls: {
-                      type: 'string',
-                      not: { enum: [''] },
-                    },
-                    dba: {
-                      type: 'string',
-                      not: { enum: [''] },
-                    },
-                    products: {
-                      type: 'string',
-                      not: { enum: [''] },
-                    },
-                    established: {
-                      type: 'string',
-                    },
-                    hasMobileApp: {
-                      type: 'boolean',
-                    },
-                    mobileAppName: {
-                      type: 'string',
-                      if: {
-                        properties: { hasMobileApp: { enum: [true] } },
+    type: 'object',
+    properties: {
+      entity: {
+        type: 'object',
+        properties: {
+          data: {
+            type: 'object',
+            properties: {
+              additionalInfo: {
+                type: 'object',
+                properties: {
+                  store: {
+                    type: 'object',
+                    properties: {
+                      websiteUrls: {
+                        type: 'string',
+                        not: { enum: [''] },
+                        errorMessage: 'Website URL(s) should not be empty.'
                       },
-                      then: { not: { enum: [''] } },
-                      else: { enum: [''] },
+                      dba: {
+                        type: 'string',
+                        not: { enum: [''] },
+                        errorMessage: 'Doing Business As (DBA) should not be empty.'
+                      },
+                      products: {
+                        type: 'string',
+                        not: { enum: [''] },
+                        errorMessage: 'Products information should not be empty.'
+                      },
+                      established: {
+                        type: 'string',
+                        errorMessage: 'Establishment date should be a valid string.'
+                      },
+                      hasMobileApp: {
+                        type: 'boolean',
+                        errorMessage: 'Has Mobile App should be either true or false.'
+                      },
+                      mobileAppName: {
+                        type: 'string',
+                        if: {
+                          properties: { hasMobileApp: { enum: [true] } },
+                        },
+                        then: {
+                          not: { enum: [''] },
+                          errorMessage: 'Mobile App Name should not be empty.'
+                        },
+                        else: {
+                          enum: [''],
+                          errorMessage: 'Mobile App Name should be empty if no mobile app exists.'
+                        },
+                      },
                     },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+                    required: ['websiteUrls', 'dba', 'products', 'established', 'hasMobileApp'],
+                    errorMessage: {
+                      required: {
+                        websiteUrls: 'Website URL(s) is required.',
+                        dba: 'Doing Business As (DBA) is required.',
+                        products: 'Products information is required.',
+                        established: 'Establishment date is required.',
+                        hasMobileApp: 'Information on mobile app availability is required.'
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
-  },
-  required: ['entity'],
-};
+    required: ['entity'],
+  };
 
 const hasMobileAppVisibilityRule = {
   '==': [{ var: 'entity.data.additionalInfo.store.hasMobileApp' }, true],
