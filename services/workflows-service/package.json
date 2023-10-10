@@ -30,7 +30,7 @@
     "db:init": "npm run db:migrate-save -- --name 'initial version' && npm run db:migrate-up seed",
     "prisma:generate": "prisma generate",
     "json-schema:generate": "json2ts src/workflow/schemas/default-context-schema.json src/workflow/schemas/context.d.ts",
-    "docker:db": "docker compose -f docker-compose.db.yml up -d --wait",
+    "docker:db": "docker-compose -f docker-compose.db.yml up -d",
     "docker:build": "docker build .",
     "compose:up": "docker compose up -d",
     "compose:down": "docker compose down --volumes",
