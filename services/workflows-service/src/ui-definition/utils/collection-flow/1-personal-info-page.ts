@@ -1,64 +1,79 @@
 const validationSchema = {
-  type: 'object',
-  properties: {
-    entity: {
-      type: 'object',
-      properties: {
-        data: {
-          type: 'object',
-          required: ['additionalInfo'],
-          properties: {
-            additionalInfo: {
-              type: 'object',
-              required: ['mainRepresentative'],
-              properties: {
-                mainRepresentative: {
-                  type: 'object',
-                  required: ['phone', 'dateOfBirth', 'firstName', 'lastName', 'additionalInfo'],
-                  properties: {
-                    phone: {
-                      type: 'string',
-                      pattern: '^[+]?[0-9]{10,15}$',
-                    },
-                    dateOfBirth: {
-                      type: 'string',
-                    },
-                    jobTitle: {
-                      type: 'string',
-                      minLength: 3,
-                    },
-                    firstName: {
-                      type: 'string',
-                      minLength: 2,
-                      errorMessage: {
-                        minLength: 'Mimimum length is 2.',
-                      }
-                    },
-                    lastName: {
-                      type: 'string',
-                      minLength: 2,
-                    },
-                    additionalInfo: {
-                      type: 'object',
-                      required: ['jobTitle'],
-                      properties: {
-                        jobTitle: {
-                          type: 'string',
-                          minLength: 2,
-                        },
+    "type": "object",
+    "required": ["entity"],
+    "properties": {
+      "entity": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": ["additionalInfo"],
+            "properties": {
+              "additionalInfo": {
+                "type": "object",
+                "required": ["mainRepresentative"],
+                "properties": {
+                  "mainRepresentative": {
+                    "type": "object",
+                    "required": ["phone", "dateOfBirth", "firstName", "lastName", "additionalInfo"],
+                    "properties": {
+                      "phone": {
+                        "type": "string",
+                        "pattern": "^[+]?[0-9]{10,15}$",
+                        "errorMessage": {
+                          "pattern": "Phone number must be 10 to 15 digits long and may start with a +."
+                        }
                       },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
-  required: ['entity'],
-};
+                      "dateOfBirth": {
+                        "type": "string",
+                        "errorMessage": {
+                          "type": "Date of birth must be a string."
+                        }
+                      },
+                      "jobTitle": {
+                        "type": "string",
+                        "minLength": 3,
+                        "errorMessage": {
+                          "minLength": "Job title must be at least 3 characters long."
+                        }
+                      },
+                      "firstName": {
+                        "type": "string",
+                        "minLength": 2,
+                        "errorMessage": {
+                          "minLength": "First name must be at least 2 characters long."
+                        }
+                      },
+                      "lastName": {
+                        "type": "string",
+                        "minLength": 2,
+                        "errorMessage": {
+                          "minLength": "Last name must be at least 2 characters long."
+                        }
+                      },
+                      "additionalInfo": {
+                        "type": "object",
+                        "required": ["jobTitle"],
+                        "properties": {
+                          "jobTitle": {
+                            "type": "string",
+                            "minLength": 2,
+                            "errorMessage": {
+                              "minLength": "Job title within 'additionalInfo' must be at least 2 characters long."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  };
 
 export const PersonalInfoPage = {
   type: 'page',
