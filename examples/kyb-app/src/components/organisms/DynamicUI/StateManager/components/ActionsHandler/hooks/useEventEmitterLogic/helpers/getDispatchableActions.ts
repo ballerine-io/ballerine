@@ -1,6 +1,6 @@
 import { EngineManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
 import { JsonLogicRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
-import { Action, IRule, UIElement } from '@app/domains/collection-flow';
+import { Action, UIElement } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
 import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
@@ -22,7 +22,7 @@ export const getDispatchableActions = (
     return (
       action.dispatchOn?.rules?.length &&
       action.dispatchOn?.rules?.some(rule =>
-        engineManager.getEngine(rule.type).test(context, rule as IRule, definition, state),
+        engineManager.getEngine(rule.type).test(context, rule, definition, state),
       )
     );
   });

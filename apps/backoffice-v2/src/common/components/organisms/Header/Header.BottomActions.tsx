@@ -33,7 +33,7 @@ export const BottomActions = () => {
         <div className="text-sm">{fullName}</div>
       </div>
       <button
-        className="btn btn-ghost btn-block ml-1 justify-start gap-x-2 px-0 text-sm font-medium normal-case hover:bg-transparent"
+        className="btn-ghost btn-block btn ml-1 justify-start gap-x-2 px-0 text-sm font-medium normal-case hover:bg-transparent"
         onClick={onSignOut}
       >
         <LogOutSvg className="h-4 w-4" />

@@ -85,9 +85,6 @@ export const ProcessingDetails = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'stepper',
-        },
-        {
           type: 'container',
           elements: [
             {
@@ -347,15 +344,27 @@ export const ProcessingDetails = {
           ],
         },
         {
-          name: 'other-business-model-input',
-          type: 'json-form:text',
-          valueDestination: 'entity.data.additionalInfo.store.processingDetails.otherBusinessModel',
-          options: {
-            label: 'Business Model',
-            jsonFormDefinition: {
-              type: 'string',
+          type: 'json-form',
+          visibleOn: [
+            {
+              type: 'json-logic',
+              value: isCustomBusinessModel,
             },
-          },
+          ],
+          elements: [
+            {
+              name: 'other-business-model-input',
+              type: 'json-form:text',
+              valueDestination:
+                'entity.data.additionalInfo.store.processingDetails.otherBusinessModel',
+              options: {
+                label: 'Business Model',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+              },
+            },
+          ],
         },
         {
           name: 'previous-page-button',

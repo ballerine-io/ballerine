@@ -8,9 +8,6 @@ export const ContactsPage = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'stepper',
-        },
-        {
           type: 'container',
           elements: [
             {

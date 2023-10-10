@@ -65,7 +65,7 @@ export const App = () => {
               <DynamicUI.PageResolver state={state} pages={elements}>
                 {({ currentPage }) => {
                   return currentPage ? (
-                    <>
+                    <DynamicUI.Page page={currentPage}>
                       <div className="flex flex-col gap-4">
                         DEBUG
                         <div>
@@ -87,7 +87,7 @@ export const App = () => {
                           <UIRenderer elements={elems} schema={currentPage.elements} />
                         </ActionsHandler>
                       </DynamicUI.TransitionListener>
-                    </>
+                    </DynamicUI.Page>
                   ) : null;
                 }}
               </DynamicUI.PageResolver>

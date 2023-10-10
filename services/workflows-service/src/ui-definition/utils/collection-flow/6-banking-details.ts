@@ -82,9 +82,6 @@ export const BankingDetailsPage = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'stepper',
-        },
-        {
           type: 'container',
           elements: [
             {

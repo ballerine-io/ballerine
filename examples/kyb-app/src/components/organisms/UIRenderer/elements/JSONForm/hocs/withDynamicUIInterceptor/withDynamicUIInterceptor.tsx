@@ -2,11 +2,12 @@ import { usePageResolverContext } from '@app/components/organisms/DynamicUI/Page
 import { findDefinitionByName } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
 import { useUIElementHandlers } from '@app/components/organisms/UIRenderer/hooks/useUIElementHandlers';
 import { RJSVInputProps, AnyObject } from '@ballerine/ui';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import get from 'lodash/get';
 import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
 import { UIElement } from '@app/domains/collection-flow';
+import { usePageContext } from '@app/components/organisms/DynamicUI/Page';
 
 const findLastDigit = (str: string) => {
   const digitRegex = /\d+/g;
@@ -38,9 +39,11 @@ export const withDynamicUIInterceptor = (
 ) => {
   function Wrapper(props: RJSVInputProps) {
     const inputId = (props.idSchema as AnyObject)?.$id as string;
+    const [isTouched, setTouched] = useState(false);
     const { name, onChange } = props;
     const { payload } = useStateManagerContext();
     const { currentPage } = usePageResolverContext();
+    const { errors } = usePageContext();
 
     const baseDefinition = useMemo(() => {
       const definition = findDefinitionByName(name, currentPage.elements);
@@ -73,6 +76,7 @@ export const withDynamicUIInterceptor = (
       };
       onChangeHandler(evt as React.ChangeEvent<any>);
       onChange(value);
+      setTouched(true);
     }, []);
 
     const value = useMemo(
@@ -80,14 +84,21 @@ export const withDynamicUIInterceptor = (
       [payload, definition],
     );
 
+    if (baseDefinition.name === 'first-name-input') {
+      console.log('FIRST INPUT ERRORS', errors);
+    }
+
     return (
-      <Component
-        {...props}
-        disabled={disabled || props.disabled}
-        formData={value}
-        definition={definition}
-        onChange={handleChange}
-      />
+      <div>
+        <Component
+          {...props}
+          disabled={disabled || props.disabled}
+          formData={value}
+          definition={definition}
+          onChange={handleChange}
+        />
+        {isTouched && errors[definition.valueDestination]?.message}
+      </div>
     );
   }
 
