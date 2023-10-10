@@ -229,7 +229,7 @@ export class WorkflowBrowserSDK {
     this.#__subscribers.push({ event, cb });
   }
 
-  overrideContext(context: any) {
+  overrideContext<TContext extends Record<string, any>>(context: any): TContext {
     return this.#__service.overrideContext(context);
   }
   async invokePlugin(pluginName: string) {
