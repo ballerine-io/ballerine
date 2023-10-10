@@ -24,9 +24,6 @@ export const CompanyDocuments = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'stepper',
-        },
-        {
           type: 'container',
           elements: [
             {

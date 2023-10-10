@@ -3,6 +3,7 @@ import { RJSFValidationError } from '@rjsf/utils';
 
 export const transformRJSFErrors = (errors: RJSFValidationError[]): RJSFValidationError[] => {
   return errors.map(error => {
+    console.log('error', error);
     if (error.name === 'minLength' || error.name === 'required') {
       error.message = 'This field is required.';
     }

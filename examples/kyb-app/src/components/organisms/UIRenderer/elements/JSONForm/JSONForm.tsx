@@ -5,7 +5,7 @@ import { UIElementComponent } from '@app/components/organisms/UIRenderer/types';
 
 import { DynamicForm } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import set from 'lodash/set';
 import get from 'lodash/get';
 import debounce from 'lodash/debounce';
@@ -13,6 +13,7 @@ import { AnyObject } from '../../../../../../../../packages/ui/dist';
 import { jsonFormFields } from '@app/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
 import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
 import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
+import { usePageContext } from '@app/components/organisms/DynamicUI/Page/hooks/usePageContext';
 
 export interface JSONFormElementBaseParams {
   jsonFormDefinition: RJSFSchema;
@@ -37,11 +38,16 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
 
   const { payload } = useStateManagerContext();
   const formData = useMemo(() => createInitialFormData(definition, payload), [definition, payload]);
+  const [isTouched, setTouched] = useState(false);
 
   const formRef = useRef<any>(null);
 
+  const { errors } = usePageContext();
+  console.log('page errors', errors);
+
   const handleArrayInputChange = useCallback(
     (values: AnyObject[]) => {
+      setTouched(true);
       if (definition.options?.jsonFormDefinition?.type === 'array') {
         const prevContext = stateApi.getContext();
         const currentValue = get(prevContext, definition.valueDestination);
@@ -52,10 +58,8 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
           stateApi.setContext(prevContext);
         }
       }
-
-      setTimeout(() => void formRef.current.validateForm(), 1);
     },
-    [definition, stateApi, formRef],
+    [definition, stateApi],
   );
 
   const handleSubmit = useCallback(() => {}, []);
@@ -67,6 +71,7 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
       fields={jsonFormFields}
       formData={formData}
       ref={formRef}
+      liveValidate={isTouched}
       transformErrors={transformRJSFErrors}
       onChange={handleArrayInputChange}
       onSubmit={handleSubmit}

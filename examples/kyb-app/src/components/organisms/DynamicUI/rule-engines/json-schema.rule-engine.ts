@@ -2,17 +2,20 @@ import {
   ErrorField,
   RuleEngine,
 } from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
-import { IRule } from '@app/domains/collection-flow';
+import { Rule, UIElement } from '@app/domains/collection-flow';
+import { AnyObject } from '@ballerine/ui';
 import Ajv from 'ajv';
+import ajvErrors from 'ajv-errors';
 
 export class JsonSchemaRuleEngine implements RuleEngine {
   public readonly ENGINE_NAME = 'json-schema';
 
-  test(context: unknown, rule: IRule) {
+  test(context: unknown, rule: Rule, definition: UIElement<AnyObject>) {
     const validator = new Ajv({ allErrors: true });
+    ajvErrors(validator);
     const validationResult = validator.validate(rule.value, context);
     if (!validationResult) {
-      const validationErrorMessage = this.__extractErrorsWithFields(validator);
+      const validationErrorMessage = this.__extractErrorsWithFields(validator, definition);
 
       return { isValid: false, errors: validationErrorMessage.flat() };
     }
@@ -20,19 +23,27 @@ export class JsonSchemaRuleEngine implements RuleEngine {
     return { isValid: true, errors: [] };
   }
 
-  private __extractErrorsWithFields(validator: Ajv) {
-    return validator.errors?.map(error => {
+  private __extractErrorsWithFields(validator: Ajv, definition: UIElement<AnyObject>) {
+    const result = validator.errors?.map(error => {
       const erroredParams = Object.values(error.params) as string[];
       const uniqueErroredParams = Array.from(new Set(erroredParams));
 
-      return uniqueErroredParams.map(erroredParam => {
-        const field = error.instancePath
-          .split('/')
-          .filter(part => part !== '')
-          .concat(erroredParam)
-          .join('.');
-        return { field, message: error.message } as ErrorField;
+      return uniqueErroredParams.map(_ => {
+        const fieldId = error.instancePath.split('/').filter(part => part !== '');
+
+        if (error.params.missingProperty) {
+          fieldId.push(error.params.missingProperty as string);
+        }
+
+        return {
+          fieldId: fieldId.join('.'),
+          message: error.message,
+          definitionName: definition.name,
+          fieldDestination: definition.valueDestination,
+        } as ErrorField;
       });
     });
+
+    return result.flat();
   }
 }

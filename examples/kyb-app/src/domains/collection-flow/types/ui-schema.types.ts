@@ -1,6 +1,6 @@
 import { AnyObject } from '@ballerine/ui';
 
-export type UIElementType = 'text' | 'button';
+export type UIElementType = string;
 
 export type BaseRuleValue = string;
 export type EventRuleValue = {
@@ -10,6 +10,10 @@ export type EventRuleValue = {
 
 export interface BaseRule {
   type: 'json-logic' | 'jmespath' | 'event';
+}
+
+export interface JSONLogicRule extends BaseRule {
+  value: AnyObject;
 }
 
 export interface IRule extends BaseRule {
@@ -25,18 +29,22 @@ export interface Action<TParams = AnyObject> {
   type: string;
   dispatchOn: {
     uiEvents: { event: string; uiElementName: string }[];
-    rules: (IRule | EventRule)[];
+    rules: Rule[];
   };
   params: TParams;
 }
 
+export type Rule = JSONLogicRule;
+
+export type UIElementDestination = string;
+
 export interface UIElement<TElementParams> {
   name: string;
   type: UIElementType;
-  availableOn?: IRule[];
-  visibleOn?: IRule[];
+  availableOn?: Rule[];
+  visibleOn?: Rule[];
   required?: boolean;
   options: TElementParams;
-  valueDestination?: string;
+  valueDestination?: UIElementDestination;
   elements?: UIElement<AnyObject>[];
 }
