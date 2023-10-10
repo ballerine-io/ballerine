@@ -1,45 +1,93 @@
 const availableOnButtonRule = {
-  type: 'object',
-  properties: {
-    entity: {
-      type: 'object',
-      required: ['data'],
-      properties: {
-        data: {
-          type: 'object',
-          required: ['additionalInfo'],
-          properties: {
-            additionalInfo: {
-              type: 'object',
-              required: ['store'],
-              properties: {
-                store: {
-                  type: 'object',
-                  required: ['website'],
-                  properties: {
-                    website: {
-                      type: 'object',
-                      required: [
-                        'mainWebsite',
-                        'contactDetails',
-                        'returnPolicyUrl',
-                        'shippingPolicyUrl',
-                        'aboutUsUrl',
-                        'productQuantity',
-                        'productDescription',
-                        'productPrice',
-                        'websiteLanguage',
-                      ],
-                      properties: {
-                        mainWebsite: { type: 'string', not: { enum: [''] } },
-                        contactDetails: { type: 'string', not: { enum: [''] } },
-                        returnPolicyUrl: { type: 'string', not: { enum: [''] } },
-                        shippingPolicyUrl: { type: 'string', not: { enum: [''] } },
-                        aboutUsUrl: { type: 'string', not: { enum: [''] } },
-                        productQuantity: { type: 'number', not: { enum: [''] } },
-                        productPrice: { type: 'number', not: { enum: [''] } },
-                        productDescription: { type: 'string', not: { enum: [''] } },
-                        websiteLanguage: { type: 'string', not: { enum: [''] } },
+    type: 'object',
+    properties: {
+      entity: {
+        type: 'object',
+        required: ['data'],
+        properties: {
+          data: {
+            type: 'object',
+            required: ['additionalInfo'],
+            properties: {
+              additionalInfo: {
+                type: 'object',
+                required: ['store'],
+                properties: {
+                  store: {
+                    type: 'object',
+                    required: ['website'],
+                    properties: {
+                      website: {
+                        type: 'object',
+                        required: [
+                          'mainWebsite',
+                          'contactDetails',
+                          'returnPolicyUrl',
+                          'shippingPolicyUrl',
+                          'aboutUsUrl',
+                          'productQuantity',
+                          'productDescription',
+                          'productPrice',
+                          'websiteLanguage',
+                        ],
+                        properties: {
+                          mainWebsite: {
+                            type: 'string',
+                            not: { enum: [''] },
+                            errorMessage: 'Main website URL should not be empty.'
+                          },
+                          contactDetails: {
+                            type: 'string',
+                            not: { enum: [''] },
+                            errorMessage: 'Contact details should not be empty.'
+                          },
+                          returnPolicyUrl: {
+                            type: 'string',
+                            not: { enum: [''] },
+                            errorMessage: 'Return policy URL should not be empty.'
+                          },
+                          shippingPolicyUrl: {
+                            type: 'string',
+                            not: { enum: [''] },
+                            errorMessage: 'Shipping policy URL should not be empty.'
+                          },
+                          aboutUsUrl: {
+                            type: 'string',
+                            not: { enum: [''] },
+                            errorMessage: 'About us URL should not be empty.'
+                          },
+                          productQuantity: {
+                            type: 'number',
+                            errorMessage: 'Product quantity should be a valid number.'
+                          },
+                          productPrice: {
+                            type: 'number',
+                            errorMessage: 'Product price should be a valid number.'
+                          },
+                          productDescription: {
+                            type: 'string',
+                            not: { enum: [''] },
+                            errorMessage: 'Product description should not be empty.'
+                          },
+                          websiteLanguage: {
+                            type: 'string',
+                            not: { enum: [''] },
+                            errorMessage: 'Website language should not be empty.'
+                          },
+                        },
+                        errorMessage: {
+                          required: {
+                            mainWebsite: 'Main website URL is required.',
+                            contactDetails: 'Contact details are required.',
+                            returnPolicyUrl: 'Return policy URL is required.',
+                            shippingPolicyUrl: 'Shipping policy URL is required.',
+                            aboutUsUrl: 'About us URL is required.',
+                            productQuantity: 'Product quantity is required.',
+                            productDescription: 'Product description is required.',
+                            productPrice: 'Product price is required.',
+                            websiteLanguage: 'Website language is required.',
+                          }
+                        }
                       },
                     },
                   },
@@ -50,9 +98,9 @@ const availableOnButtonRule = {
         },
       },
     },
-  },
-  required: ['entity'],
-};
+    required: ['entity'],
+  };
+
 export const WebsiteBasicRequirement = {
   type: 'page',
   number: 8,

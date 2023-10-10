@@ -1,59 +1,78 @@
 const availableOnButtonRule = {
-  type: 'object',
-  properties: {
-    entity: {
-      type: 'object',
-      required: ['data'],
-      properties: {
-        data: {
-          type: 'object',
-          required: ['additionalInfo'],
-          properties: {
-            additionalInfo: {
-              type: 'object',
-              required: ['store'],
-              properties: {
-                store: {
-                  type: 'object',
-                  required: ['processingDetails'],
-                  properties: {
-                    processingDetails: {
-                      type: 'object',
-                      properties: {
-                        monthlySalesVolume: { type: ['number', 'null'] },
-                        monthlyTransactions: { type: ['number', 'null'] },
-                        averageTicketAmount: { type: ['number', 'null'] },
-                        mainCategory: { type: ['string', 'null'] },
-                        businessModel: { type: ['string', 'null'] },
-                        isSpikeInSales: { type: ['boolean', 'null'] },
-                        spikeSalesAverageVolume: { type: ['number', 'null'] },
-                        spikeTransactionNumber: { type: ['number', 'null'] },
-                        spikeOfVolumeInRegion: { type: ['string', 'null'] },
+    type: 'object',
+    properties: {
+      entity: {
+        type: 'object',
+        required: ['data'],
+        properties: {
+          data: {
+            type: 'object',
+            required: ['additionalInfo'],
+            properties: {
+              additionalInfo: {
+                type: 'object',
+                required: ['store'],
+                properties: {
+                  store: {
+                    type: 'object',
+                    required: ['processingDetails'],
+                    properties: {
+                      processingDetails: {
+                        type: 'object',
+                        properties: {
+                          monthlySalesVolume: { type: ['number', 'null'] },
+                          monthlyTransactions: { type: ['number', 'null'] },
+                          averageTicketAmount: { type: ['number', 'null'] },
+                          mainCategory: { type: ['string', 'null'] },
+                          businessModel: { type: ['string', 'null'] },
+                          isSpikeInSales: { type: ['boolean', 'null'] },
+                          spikeSalesAverageVolume: { type: ['number', 'null'] },
+                          spikeTransactionNumber: { type: ['number', 'null'] },
+                          spikeOfVolumeInRegion: { type: ['string', 'null'] },
+                        },
+                        oneOf: [
+                          {
+                            required: [
+                              'monthlySalesVolume',
+                              'monthlyTransactions',
+                              'averageTicketAmount',
+                              'isSpikeInSales',
+                              'spikeSalesAverageVolume',
+                              'spikeTransactionNumber',
+                              'spikeOfVolumeInRegion',
+                              'mainCategory',
+                              'businessModel',
+                            ],
+                            errorMessage: {
+                              monthlySalesVolume: 'Monthly Sales Volume is required when spike in sales details are provided.',
+                              monthlyTransactions: 'Monthly Transactions are required when spike in sales details are provided.',
+                              averageTicketAmount: 'Average Ticket Amount is required when spike in sales details are provided.',
+                              isSpikeInSales: 'Is Spike In Sales is required when spike in sales details are provided.',
+                              spikeSalesAverageVolume: 'Spike Sales Average Volume is required when spike in sales details are provided.',
+                              spikeTransactionNumber: 'Spike Transaction Number is required when spike in sales details are provided.',
+                              spikeOfVolumeInRegion: 'Spike Of Volume In Region is required when spike in sales details are provided.',
+                              mainCategory: 'Main Category is required when spike in sales details are provided.',
+                              businessModel: 'Business Model is required when spike in sales details are provided.',
+                            }
+                          },
+                          {
+                            required: [
+                              'monthlySalesVolume',
+                              'monthlyTransactions',
+                              'averageTicketAmount',
+                              'mainCategory',
+                              'businessModel',
+                            ],
+                            errorMessage: {
+                              monthlySalesVolume: 'Monthly Sales Volume is required when no spike in sales details are provided.',
+                              monthlyTransactions: 'Monthly Transactions are required when no spike in sales details are provided.',
+                              averageTicketAmount: 'Average Ticket Amount is required when no spike in sales details are provided.',
+                              mainCategory: 'Main Category is required when no spike in sales details are provided.',
+                              businessModel: 'Business Model is required when no spike in sales details are provided.',
+                            }
+                          },
+                        ],
                       },
-                      oneOf: [
-                        {
-                          required: [
-                            'monthlySalesVolume',
-                            'monthlyTransactions',
-                            'averageTicketAmount',
-                            'isSpikeInSales',
-                            'spikeSalesAverageVolume',
-                            'spikeTransactionNumber',
-                            'spikeOfVolumeInRegion',
-                            'mainCategory',
-                            'businessModel',
-                          ],
-                        },
-                        {
-                          required: [
-                            'monthlySalesVolume',
-                            'monthlyTransactions',
-                            'averageTicketAmount',
-                            'mainCategory',
-                            'businessModel',
-                          ],
-                        },
-                      ],
                     },
                   },
                 },
@@ -63,9 +82,8 @@ const availableOnButtonRule = {
         },
       },
     },
-  },
-  required: ['entity'],
-};
+    required: ['entity'],
+  };
 
 const isSpikeInSaleVisibility = {
   '==': [{ var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales' }, true],
