@@ -1,4 +1,4 @@
-import { Action, UIElement } from '@app/domains/collection-flow/types/ui-schema.types';
+import { Action, Rule, UIElement } from '@app/domains/collection-flow/types/ui-schema.types';
 import { Workflow } from '@app/domains/workflows/types';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
@@ -139,6 +139,7 @@ export interface UIPage {
   stateName: string;
   elements: UIElement<AnyObject>[];
   actions: Action[];
+  pageValidator?: Rule;
 }
 
 export interface UISchema {

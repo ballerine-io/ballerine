@@ -63,9 +63,6 @@ export const WebsiteBasicRequirement = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'stepper',
-        },
-        {
           type: 'container',
           elements: [
             {
