@@ -51,6 +51,7 @@ export const useTasks = ({
     bank: bankDetails,
     directors,
     mainRepresentative,
+    mainContact,
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { website: websiteBasicRequirement, processingDetails } = storeInfo ?? {};
   const { data: session } = useAuthenticatedUserQuery();
@@ -589,6 +590,33 @@ export const useTasks = ({
           },
         ];
 
+  const mainContactBlock =
+    Object.keys(mainContact ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Main Contact',
+              },
+              {
+                type: 'subheading',
+                value: 'User-provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(mainContact ?? {})?.map(([title, value]) => ({
+                    title,
+                    value,
+                  })),
+                },
+              },
+            ],
+          },
+        ];
+
   const companySanctionsBlock = companySanctions
     ? [
         {
@@ -941,14 +969,29 @@ export const useTasks = ({
                       header: 'Name',
                     },
                     {
-                      accessorKey: 'position',
-                      header: 'Position',
+                      accessorKey: 'nationality',
+                      header: 'Nationality',
+                    },
+                    {
+                      accessorKey: 'identityNumber',
+                      header: 'Identity number',
+                    },
+                    {
+                      accessorKey: 'email',
+                      header: 'Email',
+                    },
+                    {
+                      accessorKey: 'address',
+                      header: 'Address',
                     },
                   ],
-                  data: directors?.map(({ firstName, lastName, position }) => ({
-                    name: `${firstName} ${lastName}`,
-                    position,
-                  })),
+                  data: directors?.map(
+                    ({ firstName, lastName, fullAddress: address, ...rest }) => ({
+                      name: `${firstName} ${lastName}`,
+                      address,
+                      ...rest,
+                    }),
+                  ),
                 },
               },
             ],
@@ -968,6 +1011,7 @@ export const useTasks = ({
           ...websiteBasicRequirementBlock,
           ...bankingDetailsBlock,
           ...processingDetailsBlock,
+          ...mainContactBlock,
           ...mainRepresentativeBlock,
           ...mapBlock,
         ]
