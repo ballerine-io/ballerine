@@ -258,7 +258,7 @@ export class CollectionFlowService {
 
     if (payload.data.ballerineEntityId && payload.data.business) {
       await this.businessService.updateById(
-        payload.data.ballerineEntityId!,
+        payload.data.ballerineEntityId,
         { data: payload.data.business },
         tokenScope.projectId,
       );
@@ -294,7 +294,7 @@ export class CollectionFlowService {
 
     if (payload.data.ballerineEntityId && payload.data.business) {
       await this.businessService.updateById(
-        payload.data.ballerineEntityId!,
+        payload.data.ballerineEntityId,
         { data: payload.data.business },
         tokenScope.projectId,
       );
