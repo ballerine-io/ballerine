@@ -916,17 +916,17 @@ export const useTasks = ({
   return useMemo(() => {
     return entity
       ? [
-          ...companySanctionsBlock,
           ...entityInfoBlock,
           ...registryInfoBlock,
+          ...companySanctionsBlock,
           ...taskBlocks,
-          ...mapBlock,
+          ...directorsBlock,
+          ...ubosBlock,
           ...storeInfoBlock,
           ...websiteBasicRequirementBlock,
           ...bankingDetailsBlock,
           ...processingDetailsBlock,
-          ...ubosBlock,
-          ...directorsBlock
+          ...mapBlock,
         ]
       : [];
   }, [
