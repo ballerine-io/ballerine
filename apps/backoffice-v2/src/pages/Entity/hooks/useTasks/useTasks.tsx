@@ -485,7 +485,7 @@ export const useTasks = ({
               },
               {
                 type: 'subheading',
-                value: 'User-Provided Data',
+                value: 'User-provided Data',
               },
               {
                 type: 'details',
@@ -514,7 +514,7 @@ export const useTasks = ({
               },
               {
                 type: 'subheading',
-                value: 'User-Provided Data',
+                value: 'User-provided Data',
               },
               {
                 type: 'details',
@@ -543,7 +543,7 @@ export const useTasks = ({
               },
               {
                 type: 'subheading',
-                value: 'User-Provided Data',
+                value: 'User-provided Data',
               },
               {
                 type: 'details',
@@ -572,7 +572,7 @@ export const useTasks = ({
               },
               {
                 type: 'subheading',
-                value: 'User-Provided Data',
+                value: 'User-provided Data',
               },
               {
                 type: 'details',
@@ -882,7 +882,7 @@ export const useTasks = ({
             },
             {
               type: 'subheading',
-              value: 'Registry-Provided Data',
+              value: 'Registry-provided Data',
             },
             {
               type: 'table',
@@ -930,7 +930,7 @@ export const useTasks = ({
               },
               {
                 type: 'subheading',
-                value: 'Registry-Provided Data',
+                value: 'User-provided Data',
               },
               {
                 type: 'table',
