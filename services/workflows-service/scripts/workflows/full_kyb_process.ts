@@ -123,7 +123,7 @@ export const fullKybProcessWorkflowDefinition = {
   extensions: {
     apiPlugins: [
       {
-        name: 'asia_verify_cn_kyb', // @TODO: does this matter? Should we change it to asia_verify?
+        name: 'asia_verify_cn_kyb',
         pluginKind: 'kyb',
         url: `${env.UNIFIED_API_URL}/companies-v2`,
         method: 'GET',
@@ -137,9 +137,9 @@ export const fullKybProcessWorkflowDefinition = {
               // @TODO: Work out "entity.data.registrationNumber" with Daniel
               transformer: 'jmespath',
               mapping: `{
-              companyNumber: entity.data.registrationNumber,
-              countryOfIncorporation: 'cn',
-              vendor: 'asia-verify'
+                companyNumber: entity.data.registrationNumber,
+                countryOfIncorporation: 'cn',
+                vendor: 'asia-verify'
               }`, // jmespath
             },
           ],
@@ -155,13 +155,11 @@ export const fullKybProcessWorkflowDefinition = {
       },
       {
         // @TODO: handle callback
-        name: 'asia_verify_hk_kyb', // @TODO: does this matter? Should we change it to asia_verify?
-        pluginKind: 'kyb',
+        name: 'asia_verify_hk_kyb',
+        pluginKind: 'webhook',
         url: `${env.UNIFIED_API_URL}/companies-v2`,
         method: 'GET',
         stateNames: ['run_hk_kyb'],
-        successAction: 'HK_KYB_DONE',
-        errorAction: 'HK_KYB_FAIL',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
@@ -169,9 +167,40 @@ export const fullKybProcessWorkflowDefinition = {
               // @TODO: Work out "entity.data.registrationNumber" with Daniel
               transformer: 'jmespath',
               mapping: `{
-              companyNumber: entity.data.registrationNumber,
-              countryOfIncorporation: 'hk',
-              vendor: 'asia-verify'
+                companyNumber: entity.data.registrationNumber,
+                countryOfIncorporation: 'hk',
+                vendor: 'asia-verify'
+              }`, // jmespath
+            },
+          ],
+        },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '@', // jmespath
+            },
+          ],
+        },
+      },
+      {
+        name: 'asia_verify_aml',
+        pluginKind: 'aml',
+        url: `${env.UNIFIED_API_URL}/companies`,
+        method: 'GET',
+        stateNames: ['run_vendor_data_collection'],
+        successAction: 'AML_DONE',
+        errorAction: 'AML_FAIL',
+        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+        request: {
+          transform: [
+            {
+              // @TODO: Work out "entity.data.companyName" and "entity.data.additionalInfo.country" with Daniel
+              transformer: 'jmespath',
+              mapping: `{
+                companyName: entity.data.companyName,
+                countryOfIncorporation: entity.data.additionalInfo.country,
+                vendor: 'asia-verify'
               }`, // jmespath
             },
           ],
@@ -200,17 +229,17 @@ export const fullKybProcessWorkflowDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              kybCompanyName: entity.data.companyName,
-              customerCompanyName: entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,
-              firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              resubmissionLink: join('',['https://',entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'.demo.ballerine.app','/workflowRuntimeId=',workflowRuntimeId,'?resubmitEvent=RESUBMITTED']),
-              supportEmail: join('',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'@support.com']),
-              from: 'no-reply@ballerine.com',
-              name: join(' ',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,'Team']),
-              receivers: [entity.data.additionalInfo.mainRepresentative.email],
-              templateId: 'd-7305991b3e5840f9a14feec767ea7301',
-              revisionReason: documents[].decision[].revisionReason | [0],
-              adapter: '${env.MAIL_ADAPTER}'
+                kybCompanyName: entity.data.companyName,
+                customerCompanyName: entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,
+                firstName: entity.data.additionalInfo.mainRepresentative.firstName,
+                resubmissionLink: join('',['https://',entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'.demo.ballerine.app','/workflowRuntimeId=',workflowRuntimeId,'?resubmitEvent=RESUBMITTED']),
+                supportEmail: join('',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'@support.com']),
+                from: 'no-reply@ballerine.com',
+                name: join(' ',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,'Team']),
+                receivers: [entity.data.additionalInfo.mainRepresentative.email],
+                templateId: 'd-7305991b3e5840f9a14feec767ea7301',
+                revisionReason: documents[].decision[].revisionReason | [0],
+                adapter: '${env.MAIL_ADAPTER}'
               }`, // jmespath
             },
           ],

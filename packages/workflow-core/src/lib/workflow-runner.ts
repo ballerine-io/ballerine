@@ -43,6 +43,7 @@ import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
 import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
 import { search } from 'jmespath';
 import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
+import { AmlPlugin } from './plugins/external-plugin/aml-plugin';
 import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 import { EmailPlugin } from './plugins/external-plugin/email-plugin';
 
@@ -205,6 +206,8 @@ export class WorkflowRunner {
     if (apiPluginSchema.pluginKind === 'kyc-session') return KycSessionPlugin;
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'kyb') return KybPlugin;
+    // @ts-ignore
+    if (apiPluginSchema.pluginKind === 'aml') return AmlPlugin;
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'webhook') return WebhookPlugin;
     // @ts-ignore
