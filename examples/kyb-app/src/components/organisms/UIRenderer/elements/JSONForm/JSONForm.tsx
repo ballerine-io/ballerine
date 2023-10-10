@@ -38,16 +38,11 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
 
   const { payload } = useStateManagerContext();
   const formData = useMemo(() => createInitialFormData(definition, payload), [definition, payload]);
-  const [isTouched, setTouched] = useState(false);
 
   const formRef = useRef<any>(null);
 
-  const { errors } = usePageContext();
-  console.log('page errors', errors);
-
   const handleArrayInputChange = useCallback(
     (values: AnyObject[]) => {
-      setTouched(true);
       if (definition.options?.jsonFormDefinition?.type === 'array') {
         const prevContext = stateApi.getContext();
         const currentValue = get(prevContext, definition.valueDestination);
@@ -71,7 +66,6 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
       fields={jsonFormFields}
       formData={formData}
       ref={formRef}
-      liveValidate={isTouched}
       transformErrors={transformRJSFErrors}
       onChange={handleArrayInputChange}
       onSubmit={handleSubmit}

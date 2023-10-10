@@ -25,8 +25,6 @@ export const StateManager = ({
   const { contextPayload, state, sendEvent, invokePlugin, setContext, getContext, getState } =
     useStateLogic(machineApi, initialContext);
 
-  console.log('context', machineApi.getContext());
-
   const context: StateManagerContext = useMemo(() => {
     const ctx: StateManagerContext = {
       stateApi: {

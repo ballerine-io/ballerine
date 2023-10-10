@@ -1,4 +1,4 @@
-const availableOnButtonRule = {
+const validationSchema = {
     type: 'object',
     properties: {
       entity: {
@@ -182,6 +182,10 @@ export const DirectorsAndUbosPage = {
   number: 4,
   stateName: 'directors_and_ubos',
   name: 'Directors and UBOs',
+  pageValidator: {
+    type: 'json-schema',
+    value: validationSchema
+  },
   elements: [
     {
       type: 'mainContainer',
@@ -433,7 +437,7 @@ export const DirectorsAndUbosPage = {
           availableOn: [
             {
               type: 'json-schema',
-              value: availableOnButtonRule,
+              value: validationSchema,
             },
           ],
         },
@@ -460,7 +464,7 @@ export const DirectorsAndUbosPage = {
         rules: [
           {
             type: 'json-schema',
-            value: availableOnButtonRule,
+            value: validationSchema,
           },
         ],
       },

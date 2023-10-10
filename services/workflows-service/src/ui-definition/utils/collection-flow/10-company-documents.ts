@@ -1,4 +1,4 @@
-const availableOnButtonRule = {
+const validationSchema = {
   and: [
     { '!=': [{ var: 'entity.data.additionalInfo.signature.isConfirmed' }, ''] },
     {
@@ -383,7 +383,7 @@ export const CompanyDocuments = {
           availableOn: [
             {
               type: 'json-logic',
-              value: availableOnButtonRule,
+              value: validationSchema,
             },
           ],
         },
@@ -410,7 +410,7 @@ export const CompanyDocuments = {
         rules: [
           {
             type: 'json-logic',
-            value: availableOnButtonRule,
+            value: validationSchema,
           },
         ],
       },

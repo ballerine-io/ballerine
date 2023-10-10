@@ -1,4 +1,4 @@
-const availableOnButtonRule = {
+const validationSchema = {
     type: 'object',
     properties: {
       entity: {
@@ -106,6 +106,10 @@ export const WebsiteBasicRequirement = {
   number: 8,
   stateName: 'website_basic_requirement',
   name: 'Website Basic Requirement',
+  pageValidator: {
+    type: 'json-schema',
+    value: validationSchema
+  },
   elements: [
     {
       type: 'mainContainer',
@@ -276,7 +280,7 @@ export const WebsiteBasicRequirement = {
           availableOn: [
             {
               type: 'json-schema',
-              value: availableOnButtonRule,
+              value: validationSchema,
             },
           ],
         },
@@ -303,7 +307,7 @@ export const WebsiteBasicRequirement = {
         rules: [
           {
             type: 'json-schema',
-            value: availableOnButtonRule,
+            value: validationSchema,
           },
         ],
       },

@@ -63,12 +63,17 @@ const validationSchema = {
                       "additionalInfo": {
                         "type": "object",
                         "required": ["jobTitle"],
+                        "errorMessage": {
+                          required: {
+                            jobTitle: 'Job title is a required',
+                          }
+                        },
                         "properties": {
                           "jobTitle": {
                             "type": "string",
                             "minLength": 2,
                             "errorMessage": {
-                              "minLength": "Job title within 'additionalInfo' must be at least 2 characters long."
+                              "minLength": "Job title must be at least 2 characters long."
                             }
                           }
                         }
@@ -115,6 +120,11 @@ export const PersonalInfoPage = {
           type: 'json-form',
           valueDestination: 'entity.data.additionalInfo.mainRepresentative',
           name: 'json-form:personal-information',
+          options: {
+            jsonFormDefinition: {
+              required: ['first-name-input', 'last-name-input', 'job-title-input', 'date-of-birth-input', 'phone-number-input']
+            }
+          },
           availableOn: [
             {
               type: 'json-schema',

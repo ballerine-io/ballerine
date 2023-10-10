@@ -71,7 +71,7 @@ export const withDynamicUIInterceptor = (
       const evt = {
         target: {
           name: definition.name,
-          value: !value && value !== 0 ? undefined : value,
+          value: !value && value !== 0 && value !== false ? undefined : value,
         },
       };
       onChangeHandler(evt as React.ChangeEvent<any>);
@@ -83,10 +83,6 @@ export const withDynamicUIInterceptor = (
       () => get(payload, definition.valueDestination) as any,
       [payload, definition],
     );
-
-    if (baseDefinition.name === 'first-name-input') {
-      console.log('FIRST INPUT ERRORS', errors);
-    }
 
     return (
       <div>

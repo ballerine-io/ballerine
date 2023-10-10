@@ -127,7 +127,7 @@ export const definition = {
         },
       },
       {
-        name: 'sync_workflow_runtime',
+        name: 'finish_workflow',
         pluginKind: 'api',
         url: `{flowConfig.apiUrl}/api/v1/collection-flow/?token={flowConfig.tokenId}`,
         method: 'PUT',

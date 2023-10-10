@@ -12,7 +12,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
 
   test(context: unknown, rule: Rule, definition: UIElement<AnyObject>) {
     const validator = new Ajv({ allErrors: true });
-    ajvErrors(validator);
+    ajvErrors(validator, { singleError: true });
     const validationResult = validator.validate(rule.value, context);
     if (!validationResult) {
       const validationErrorMessage = this.__extractErrorsWithFields(validator, definition);
@@ -31,10 +31,14 @@ export class JsonSchemaRuleEngine implements RuleEngine {
       return uniqueErroredParams.map(_ => {
         const fieldId = error.instancePath.split('/').filter(part => part !== '');
 
-        if (
-          error.params.missingProperty ||
-          (Array.isArray(error.params.errors) && error.params.errors[0]?.params.missingProperty)
-        ) {
+        if (error.params.missingProperty) {
+          fieldId.push(
+            (error.params.missingProperty as string) ||
+              error.params.errors[0]?.params.missingProperty,
+          );
+        }
+
+        if (Array.isArray(error.params.errors) && error.params.errors[0]?.params.missingProperty) {
           fieldId.push(
             (error.params.missingProperty as string) ||
               error.params.errors[0]?.params.missingProperty,
@@ -50,6 +54,6 @@ export class JsonSchemaRuleEngine implements RuleEngine {
       });
     });
 
-    return result.flat();
+    return result.flat().filter(result => Boolean(result.message));
   }
 }

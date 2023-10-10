@@ -34,6 +34,8 @@ export const Page = ({ page, children }: PageProps) => {
   const rulesResult = useRuleExecutor(payload, rules, definition, state);
   const documentErrors = usePageErrors(payload);
 
+  console.log('rules result', rulesResult);
+
   const context = useMemo(() => {
     const ctx: PageContext = {
       errors: rulesResult
