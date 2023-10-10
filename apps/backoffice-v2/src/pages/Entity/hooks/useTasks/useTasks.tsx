@@ -46,8 +46,11 @@ export const useTasks = ({
   documents: TWorkflowById['context']['documents'];
   parentMachine: TWorkflowById['context']['parentMachine'];
 }) => {
-  const { store: storeInfo, bank: bankDetails } =
-    workflow?.context?.entity?.data?.additionalInfo ?? {};
+  const {
+    store: storeInfo,
+    bank: bankDetails,
+    directors,
+  } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { website: websiteBasicRequirement, processingDetails } = storeInfo ?? {};
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
@@ -433,6 +436,12 @@ export const useTasks = ({
     alternativeNames: sanction?.entity?.otherNames,
     places: sanction?.entity?.places,
   }));
+  const ubos = pluginsOutput?.ubos?.data?.map(ubo => ({
+    name: ubo?.name,
+    percentage: ubo?.percentage,
+    type: ubo?.type,
+    level: ubo?.level,
+  }));
 
   const storeInfoBlock =
     Object.keys(storeInfo ?? {}).length === 0
@@ -550,299 +559,386 @@ export const useTasks = ({
           },
         ];
 
-  const companySanctionsBlock = [
-    {
-      cells: [
+  const companySanctionsBlock = companySanctions
+    ? [
         {
-          type: 'heading',
-          value: 'Company Sanctions',
+          cells: [
+            {
+              type: 'heading',
+              value: 'Company Sanctions',
+            },
+            {
+              type: 'container',
+              value: [
+                {
+                  type: 'subheading',
+                  value: 'Company check results',
+                  props: {
+                    className: 'text-lg mb-2 mt-4 block ms-2',
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    columns: [
+                      {
+                        accessorKey: 'totalMatches',
+                        header: 'Total matches',
+                        cell: props => {
+                          const value = props.getValue();
+
+                          return (
+                            <Badge variant={'warning'} className={`rounded-lg py-4 font-bold`}>
+                              {value} {value === 1 ? 'match' : 'matches'}
+                            </Badge>
+                          );
+                        },
+                      },
+                      {
+                        accessorKey: 'fullReport',
+                        header: 'Full report',
+                      },
+                    ],
+                    data: [
+                      {
+                        totalMatches: companySanctions?.length,
+                        fullReport: companySanctions,
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+            ...companySanctions?.map((sanction, index) => ({
+              type: 'container',
+              props: {
+                className: ctw({
+                  'mt-2': index === 0,
+                }),
+              },
+              value: [
+                {
+                  type: 'subheading',
+                  value: `Match ${index + 1}`,
+                  props: {
+                    className: 'text-lg block ms-2 mb-6',
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'mb-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'primaryName',
+                        header: 'Primary name',
+                      },
+                      {
+                        accessorKey: 'lastReviewed',
+                        header: 'Last reviewed',
+                      },
+                    ],
+                    data: [
+                      {
+                        primaryName: sanction?.primaryName,
+                        lastReviewed: sanction?.lastReviewed,
+                      },
+                    ],
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'label',
+                        header: 'Labels',
+                        cell: props => {
+                          const value = props.getValue();
+
+                          return (
+                            <div className={'flex space-x-2'}>
+                              <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
+                              <span>{value}</span>
+                            </div>
+                          );
+                        },
+                      },
+                    ],
+                    data: sanction?.labels?.map(label => ({ label })),
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'reasonForMatch',
+                        header: 'Reasons for Match',
+                      },
+                    ],
+                    data: sanction?.reasonsForMatch?.map(reasonForMatch => ({
+                      reasonForMatch: toTitleCase(reasonForMatch),
+                    })),
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                      cell: {
+                        className: 'break-all w-[60ch]',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'source',
+                        header: 'Sources',
+                      },
+                    ],
+                    data: sanction?.sources
+                      ?.map(({ url: source }) => ({ source }))
+                      // TODO: Research why zod's url validation fails on some valid urls.
+                      ?.filter(({ source }) => isValidUrl(source)),
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'alternativeNames',
+                        header: 'Alternative names',
+                      },
+                    ],
+                    data: [
+                      {
+                        alternativeNames: sanction?.alternativeNames,
+                      },
+                    ],
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'officialList',
+                        header: 'Official lists',
+                      },
+                    ],
+                    data: sanction?.officialLists?.map(({ description: officialList }) => ({
+                      officialList,
+                    })),
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'furtherInformation',
+                        header: 'Further information',
+                      },
+                    ],
+                    data: sanction?.furtherInformation?.map(furtherInformation => ({
+                      furtherInformation,
+                    })),
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'linkedIndividual',
+                        header: 'Linked individual',
+                      },
+                      {
+                        accessorKey: 'description',
+                        header: 'Description',
+                      },
+                    ],
+                    data: sanction?.linkedIndividuals?.map(
+                      ({ firstName, middleName, lastName, description }) => ({
+                        linkedIndividual: `${firstName}${
+                          middleName ? `${middleName} ` : ''
+                        } ${lastName}`,
+                        description,
+                      }),
+                    ),
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'linkedAddress',
+                        header: 'Linked address',
+                      },
+                      {
+                        accessorKey: 'city',
+                        header: 'City',
+                      },
+                      {
+                        accessorKey: 'country',
+                        header: 'Country',
+                      },
+                    ],
+                    data: sanction?.places?.map(({ country, city, address }) => ({
+                      linkedAddress: address || 'Unavailable',
+                      city: city || 'Unavailable',
+                      country: country || 'Unavailable',
+                    })),
+                  },
+                },
+              ],
+            })),
+          ],
         },
+      ]
+    : [];
+
+  const ubosBlock = ubos
+    ? [
         {
-          type: 'container',
-          value: [
+          cells: [
+            {
+              type: 'heading',
+              value: 'UBOs',
+            },
             {
               type: 'subheading',
-              value: 'Company check results',
-              props: {
-                className: 'text-lg mb-2 mt-4 block ms-2',
-              },
+              value: 'Registry-Provided Data',
             },
             {
               type: 'table',
               value: {
                 columns: [
                   {
-                    accessorKey: 'totalMatches',
-                    header: 'Total matches',
-                    cell: props => {
-                      const value = props.getValue();
-
-                      return (
-                        <Badge variant={'warning'} className={`rounded-lg py-4 font-bold`}>
-                          {value} {value === 1 ? 'match' : 'matches'}
-                        </Badge>
-                      );
-                    },
+                    accessorKey: 'name',
+                    header: 'Name',
                   },
                   {
-                    accessorKey: 'fullReport',
-                    header: 'Full report',
+                    accessorKey: 'percentage',
+                    header: 'Percentage (25% or higher)',
                   },
-                ],
-                data: [
                   {
-                    totalMatches: companySanctions?.length,
-                    fullReport: companySanctions,
+                    accessorKey: 'type',
+                    header: 'Type',
+                  },
+                  {
+                    accessorKey: 'level',
+                    header: 'Level',
                   },
                 ],
+                data: ubos?.map(({ name, percentage, type, level }) => ({
+                  name,
+                  percentage,
+                  type,
+                  level,
+                })),
               },
             },
           ],
         },
-        ...(companySanctions?.map((sanction, index) => ({
-          type: 'container',
-          props: {
-            className: ctw({
-              'mt-2': index === 0,
-            }),
+      ]
+    : [];
+
+  const directorsBlock =
+    Object.keys(directors ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Directors',
+              },
+              {
+                type: 'subheading',
+                value: 'Registry-Provided Data',
+              },
+              {
+                type: 'table',
+                value: {
+                  columns: [
+                    {
+                      accessorKey: 'name',
+                      header: 'Name',
+                    },
+                    {
+                      accessorKey: 'position',
+                      header: 'Position',
+                    },
+                  ],
+                  data: directors?.map(({ firstName, lastName, position }) => ({
+                    name: `${firstName} ${lastName}`,
+                    position,
+                  })),
+                },
+              },
+            ],
           },
-          value: [
-            {
-              type: 'subheading',
-              value: `Match ${index + 1}`,
-              props: {
-                className: 'text-lg block ms-2 mb-6',
-              },
-            },
-            {
-              type: 'table',
-              value: {
-                props: {
-                  table: {
-                    className: 'mb-8',
-                  },
-                },
-                columns: [
-                  {
-                    accessorKey: 'primaryName',
-                    header: 'Primary name',
-                  },
-                  {
-                    accessorKey: 'lastReviewed',
-                    header: 'Last reviewed',
-                  },
-                ],
-                data: [
-                  {
-                    primaryName: sanction?.primaryName,
-                    lastReviewed: sanction?.lastReviewed,
-                  },
-                ],
-              },
-            },
-            {
-              type: 'table',
-              value: {
-                props: {
-                  table: {
-                    className: 'my-8',
-                  },
-                },
-                columns: [
-                  {
-                    accessorKey: 'label',
-                    header: 'Labels',
-                    cell: props => {
-                      const value = props.getValue();
-
-                      return (
-                        <div className={'flex space-x-2'}>
-                          <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
-                          <span>{value}</span>
-                        </div>
-                      );
-                    },
-                  },
-                ],
-                data: sanction?.labels?.map(label => ({ label })),
-              },
-            },
-            {
-              type: 'table',
-              value: {
-                props: {
-                  table: {
-                    className: 'my-8',
-                  },
-                },
-                columns: [
-                  {
-                    accessorKey: 'reasonForMatch',
-                    header: 'Reasons for Match',
-                  },
-                ],
-                data: sanction?.reasonsForMatch?.map(reasonForMatch => ({
-                  reasonForMatch: toTitleCase(reasonForMatch),
-                })),
-              },
-            },
-            {
-              type: 'table',
-              value: {
-                props: {
-                  table: {
-                    className: 'my-8',
-                  },
-                  cell: {
-                    className: 'break-all w-[60ch]',
-                  },
-                },
-                columns: [
-                  {
-                    accessorKey: 'source',
-                    header: 'Sources',
-                  },
-                ],
-                data: sanction?.sources
-                  ?.map(({ url: source }) => ({ source }))
-                  // TODO: Research why zod's url validation fails on some valid urls.
-                  ?.filter(({ source }) => isValidUrl(source)),
-              },
-            },
-            {
-              type: 'table',
-              value: {
-                props: {
-                  table: {
-                    className: 'my-8',
-                  },
-                },
-                columns: [
-                  {
-                    accessorKey: 'alternativeNames',
-                    header: 'Alternative names',
-                  },
-                ],
-                data: [
-                  {
-                    alternativeNames: sanction?.alternativeNames,
-                  },
-                ],
-              },
-            },
-            {
-              type: 'table',
-              value: {
-                props: {
-                  table: {
-                    className: 'my-8',
-                  },
-                },
-                columns: [
-                  {
-                    accessorKey: 'officialList',
-                    header: 'Official lists',
-                  },
-                ],
-                data: sanction?.officialLists?.map(({ description: officialList }) => ({
-                  officialList,
-                })),
-              },
-            },
-            {
-              type: 'table',
-              value: {
-                props: {
-                  table: {
-                    className: 'my-8',
-                  },
-                },
-                columns: [
-                  {
-                    accessorKey: 'furtherInformation',
-                    header: 'Further information',
-                  },
-                ],
-                data: sanction?.furtherInformation?.map(furtherInformation => ({
-                  furtherInformation,
-                })),
-              },
-            },
-            {
-              type: 'table',
-              value: {
-                props: {
-                  table: {
-                    className: 'my-8',
-                  },
-                },
-                columns: [
-                  {
-                    accessorKey: 'linkedIndividual',
-                    header: 'Linked individual',
-                  },
-                  {
-                    accessorKey: 'description',
-                    header: 'Description',
-                  },
-                ],
-                data: sanction?.linkedIndividuals?.map(
-                  ({ firstName, middleName, lastName, description }) => ({
-                    linkedIndividual: `${firstName}${
-                      middleName ? `${middleName} ` : ''
-                    } ${lastName}`,
-                    description,
-                  }),
-                ),
-              },
-            },
-            {
-              type: 'table',
-              value: {
-                props: {
-                  table: {
-                    className: 'my-8',
-                  },
-                },
-                columns: [
-                  {
-                    accessorKey: 'linkedAddress',
-                    header: 'Linked address',
-                  },
-                  {
-                    accessorKey: 'city',
-                    header: 'City',
-                  },
-                  {
-                    accessorKey: 'country',
-                    header: 'Country',
-                  },
-                ],
-                data: sanction?.places?.map(({ country, city, address }) => ({
-                  linkedAddress: address || 'Unavailable',
-                  city: city || 'Unavailable',
-                  country: country || 'Unavailable',
-                })),
-              },
-            },
-          ],
-        })) ?? []),
-      ],
-    },
-  ];
+        ];
 
   return useMemo(() => {
     return entity
       ? [
-          ...companySanctionsBlock,
           ...entityInfoBlock,
           ...registryInfoBlock,
+          ...companySanctionsBlock,
           ...taskBlocks,
-          ...mapBlock,
+          ...directorsBlock,
+          ...ubosBlock,
           ...storeInfoBlock,
           ...websiteBasicRequirementBlock,
           ...bankingDetailsBlock,
           ...processingDetailsBlock,
+          ...mapBlock,
         ]
       : [];
   }, [
