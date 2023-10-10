@@ -16,6 +16,15 @@ const validationSchema = {
                   "mainRepresentative": {
                     "type": "object",
                     "required": ["phone", "dateOfBirth", "firstName", "lastName", "additionalInfo"],
+                    errorMessage: {
+                      required: {
+                        phone: 'A valid phone number is required.',
+                        dateOfBirth: 'Date of birth is required.',
+                        firstName: 'First name is required.',
+                        lastName: 'Last name is required.',
+                        additionalInfo: 'Additional information is required.'
+                      }
+                    },
                     "properties": {
                       "phone": {
                         "type": "string",
