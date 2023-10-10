@@ -42,9 +42,9 @@ const availableOnButtonRule = {
                         jobTitle: {
                           type: 'string',
                           minLength: 2,
-                        }
-                      }
-                    }
+                        },
+                      },
+                    },
                   },
                 },
               },
@@ -215,7 +215,7 @@ export const PersonalInfoPage = {
           {
             type: 'json-schema',
             value: availableOnButtonRule,
-            isIncludingErrors: true,
+            persistStateRule: true,
           },
         ],
       },

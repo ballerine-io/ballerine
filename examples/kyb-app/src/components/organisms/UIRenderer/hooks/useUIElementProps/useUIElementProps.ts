@@ -54,7 +54,7 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
     if (
       !definition.availableOn ||
       !definition.availableOn.length ||
-      !definition.availableOn.some(rule => rule.isIncludingErrors)
+      !definition.availableOn.some(rule => rule.persistStateRule)
     )
       return [];
     const engineManager = new EngineManager(engines);
