@@ -1,66 +1,59 @@
 const availableOnButtonRule = {
-  "type": "object",
-  "properties": {
-    "entity": {
-      "type": "object",
-      "required": ["data"],
-      "properties": {
-        "data": {
-          "type": "object",
-          "required": ["additionalInfo"],
-          "properties": {
-            "additionalInfo": {
-              "type": "object",
-              "required": ["store"],
-              "properties": {
-                "store": {
-                  "type": "object",
-                  "required": [
-                    "websiteUrls",
-                    "dba",
-                    "products",
-                    "established",
-                    "hasMobileApp",
-                  ],
-                  "properties": {
-                    "websiteUrls": {
-                      "type": "string",
-                      "not": { "enum": [""] }
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      required: ['data'],
+      properties: {
+        data: {
+          type: 'object',
+          required: ['additionalInfo'],
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['store'],
+              properties: {
+                store: {
+                  type: 'object',
+                  required: ['websiteUrls', 'dba', 'products', 'established', 'hasMobileApp'],
+                  properties: {
+                    websiteUrls: {
+                      type: 'string',
+                      not: { enum: [''] },
                     },
-                    "dba": {
-                      "type": "string",
-                      "not": { "enum": [""] }
+                    dba: {
+                      type: 'string',
+                      not: { enum: [''] },
                     },
-                    "products": {
-                      "type": "string",
-                      "not": { "enum": [""] }
+                    products: {
+                      type: 'string',
+                      not: { enum: [''] },
                     },
-                    "established": {
-                      "type": "string"
+                    established: {
+                      type: 'string',
                     },
-                    "hasMobileApp": {
-                      "type": "boolean"
+                    hasMobileApp: {
+                      type: 'boolean',
                     },
-                    "mobileAppName": {
-                      "type": "string",
-                      "if": {
-                        "properties": { "hasMobileApp": { "enum": [true] } }
+                    mobileAppName: {
+                      type: 'string',
+                      if: {
+                        properties: { hasMobileApp: { enum: [true] } },
                       },
-                      "then": { "not": { "enum": [""] } },
-                      "else": { "enum": [""] }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                      then: { not: { enum: [''] } },
+                      else: { enum: [''] },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
-  "required": ["entity"]
+  required: ['entity'],
 };
-
 
 const hasMobileAppVisibilityRule = {
   '==': [{ var: 'entity.data.additionalInfo.store.hasMobileApp' }, true],
@@ -76,7 +69,7 @@ export const StoreInfoPage = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'collection-flow-head',
+          type: 'stepper',
         },
         {
           type: 'container',
@@ -84,8 +77,8 @@ export const StoreInfoPage = {
             {
               type: 'h1',
               options: {
-                text: 'Store Info'
-              }
+                text: 'Store Info',
+              },
             },
           ],
         },
@@ -113,7 +106,7 @@ export const StoreInfoPage = {
               valueDestination: 'entity.data.additionalInfo.store.websiteUrls',
               options: {
                 jsonFormDefinition: {
-                  type: 'string'
+                  type: 'string',
                 },
                 label: 'Website URLS (divide with comma if more than one)',
                 hint: 'www.example.cn',
@@ -125,7 +118,7 @@ export const StoreInfoPage = {
               valueDestination: 'entity.data.additionalInfo.store.dba',
               options: {
                 jsonFormDefinition: {
-                  type: 'string'
+                  type: 'string',
                 },
                 label: 'DBA (Descriptor)',
                 hint: 'Barclays',
@@ -149,7 +142,7 @@ export const StoreInfoPage = {
                     { const: 'Healthcare', title: 'Healthcare' },
                     { const: 'Professional Services', title: 'Professional Services' },
                     { const: 'Other', title: 'Other' },
-                  ]
+                  ],
                 },
               },
             },
@@ -159,7 +152,7 @@ export const StoreInfoPage = {
               valueDestination: 'entity.data.additionalInfo.store.products',
               options: {
                 jsonFormDefinition: {
-                  type: 'string'
+                  type: 'string',
                 },
                 classNames: ['min-width-40px'],
                 label: 'Products (divide with comma if more than one)',
@@ -188,7 +181,7 @@ export const StoreInfoPage = {
               valueDestination: 'entity.data.additionalInfo.store.hasMobileApp',
               options: {
                 jsonFormDefinition: {
-                  type: 'boolean'
+                  type: 'boolean',
                 },
                 label: 'I have mobile application',
               },
@@ -197,10 +190,12 @@ export const StoreInfoPage = {
         },
         {
           type: 'json-form',
-          visibleOn: [{
-            type: 'json-logic',
-            value: hasMobileAppVisibilityRule
-          }],
+          visibleOn: [
+            {
+              type: 'json-logic',
+              value: hasMobileAppVisibilityRule,
+            },
+          ],
           elements: [
             {
               name: 'store-mobile-app-name-input',
@@ -208,13 +203,13 @@ export const StoreInfoPage = {
               valueDestination: 'entity.data.additionalInfo.store.mobileAppName',
               options: {
                 jsonFormDefinition: {
-                  type: 'string'
+                  type: 'string',
                 },
                 label: 'App Name',
                 hint: 'App Name',
               },
             },
-          ]
+          ],
         },
         {
           type: 'json-form',
@@ -225,12 +220,12 @@ export const StoreInfoPage = {
               valueDestination: 'entity.data.additionalInfo.store.hasActiveWebsite',
               options: {
                 jsonFormDefinition: {
-                  type: 'boolean'
+                  type: 'boolean',
                 },
                 label: "I declare that the website's business activity does not require a license",
               },
             },
-          ]
+          ],
         },
         {
           name: 'previous-page-button',
@@ -265,10 +260,10 @@ export const StoreInfoPage = {
     {
       type: 'definitionEvent',
       params: {
-        eventName: 'PREVIOUS'
+        eventName: 'PREVIOUS',
       },
       dispatchOn: {
-        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }]
+        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
       },
     },
     {

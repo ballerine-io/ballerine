@@ -1,4 +1,4 @@
-import {getCountriesList} from '../schema-utils/countries';
+import { getCountriesList } from '../schema-utils/countries';
 
 const availableOnButtonRule = {
   type: 'object',
@@ -99,7 +99,7 @@ export const BusinessInfoPage = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'collection-flow-head',
+          type: 'stepper',
         },
         {
           type: 'container',
@@ -108,7 +108,7 @@ export const BusinessInfoPage = {
               type: 'h1',
               options: {
                 text: 'Business information',
-              }
+              },
             },
           ],
         },
@@ -117,13 +117,13 @@ export const BusinessInfoPage = {
           options: {
             jsonFormDefinition: {
               required: [
-                "registration-number-input",
-                "country-picker-input",
-                "company-name-input",
-                "tax-identification-number-input",
-                "number-of-employees-input",
-                "business-type-input",
-                "registered-capital-in-yuan-type-input"
+                'registration-number-input',
+                'country-picker-input',
+                'company-name-input',
+                'tax-identification-number-input',
+                'number-of-employees-input',
+                'business-type-input',
+                'registered-capital-in-yuan-type-input',
               ],
             },
           },
@@ -289,7 +289,7 @@ export const BusinessInfoPage = {
     {
       type: 'definitionEvent',
       params: {
-        eventName: 'PREVIOUS'
+        eventName: 'PREVIOUS',
       },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],

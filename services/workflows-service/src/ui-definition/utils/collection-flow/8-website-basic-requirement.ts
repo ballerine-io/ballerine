@@ -1,57 +1,57 @@
 const availableOnButtonRule = {
-  "type": "object",
-  "properties": {
-    "entity": {
-      "type": "object",
-      "required": ["data"],
-      "properties": {
-        "data": {
-          "type": "object",
-          "required": ["additionalInfo"],
-          "properties": {
-            "additionalInfo": {
-              "type": "object",
-              "required": ["store"],
-              "properties": {
-                "store": {
-                  "type": "object",
-                  "required": ["website"],
-                  "properties": {
-                    "website": {
-                      "type": "object",
-                      "required": [
-                        "mainWebsite",
-                        "contactDetails",
-                        "returnPolicyUrl",
-                        "shippingPolicyUrl",
-                        "aboutUsUrl",
-                        "productQuantity",
-                        "productDescription",
-                        "productPrice",
-                        "websiteLanguage"
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      required: ['data'],
+      properties: {
+        data: {
+          type: 'object',
+          required: ['additionalInfo'],
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['store'],
+              properties: {
+                store: {
+                  type: 'object',
+                  required: ['website'],
+                  properties: {
+                    website: {
+                      type: 'object',
+                      required: [
+                        'mainWebsite',
+                        'contactDetails',
+                        'returnPolicyUrl',
+                        'shippingPolicyUrl',
+                        'aboutUsUrl',
+                        'productQuantity',
+                        'productDescription',
+                        'productPrice',
+                        'websiteLanguage',
                       ],
-                      "properties": {
-                        "mainWebsite": { "type": "string", "not": { "enum": [""] } },
-                        "contactDetails": { "type": "string", "not": { "enum": [""] } },
-                        "returnPolicyUrl": { "type": "string", "not": { "enum": [""] } },
-                        "shippingPolicyUrl": { "type": "string", "not": { "enum": [""] } },
-                        "aboutUsUrl": { "type": "string", "not": { "enum": [""] } },
-                        "productQuantity": { "type": "number", "not": { "enum": [""] } },
-                        "productPrice": { "type": "number", "not": { "enum": [""] } },
-                        "productDescription": { "type": "string", "not": { "enum": [""] } },
-                        "websiteLanguage": { "type": "string", "not": { "enum": [""] } }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                      properties: {
+                        mainWebsite: { type: 'string', not: { enum: [''] } },
+                        contactDetails: { type: 'string', not: { enum: [''] } },
+                        returnPolicyUrl: { type: 'string', not: { enum: [''] } },
+                        shippingPolicyUrl: { type: 'string', not: { enum: [''] } },
+                        aboutUsUrl: { type: 'string', not: { enum: [''] } },
+                        productQuantity: { type: 'number', not: { enum: [''] } },
+                        productPrice: { type: 'number', not: { enum: [''] } },
+                        productDescription: { type: 'string', not: { enum: [''] } },
+                        websiteLanguage: { type: 'string', not: { enum: [''] } },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
-  "required": ["entity"]
+  required: ['entity'],
 };
 export const WebsiteBasicRequirement = {
   type: 'page',
@@ -63,7 +63,7 @@ export const WebsiteBasicRequirement = {
       type: 'mainContainer',
       elements: [
         {
-          type: 'collection-flow-head',
+          type: 'stepper',
         },
         {
           type: 'container',
@@ -71,8 +71,8 @@ export const WebsiteBasicRequirement = {
             {
               type: 'h1',
               options: {
-                text: 'Website Basic Requirement'
-              }
+                text: 'Website Basic Requirement',
+              },
             },
           ],
         },
@@ -103,7 +103,7 @@ export const WebsiteBasicRequirement = {
               valueDestination: 'entity.data.additionalInfo.store.website.mainWebsite',
               options: {
                 jsonFormDefinition: {
-                  type: 'string'
+                  type: 'string',
                 },
                 label: "Company's Main Website Address",
                 hint: 'www.example.cn',
@@ -116,7 +116,7 @@ export const WebsiteBasicRequirement = {
               valueDestination: 'entity.data.additionalInfo.store.website.contactDetails',
               options: {
                 jsonFormDefinition: {
-                  type: 'string'
+                  type: 'string',
                 },
                 label: 'Contact Details (or Return Address)',
                 hint: '22, chaoyangmen, chaoyan district, beijing, china',
@@ -128,7 +128,7 @@ export const WebsiteBasicRequirement = {
               valueDestination: 'entity.data.additionalInfo.store.website.returnPolicyUrl',
               options: {
                 jsonFormDefinition: {
-                  type: 'string'
+                  type: 'string',
                 },
                 label: 'Return / Exchange Policy URL',
                 hint: 'www.example.com/return-policy',
@@ -140,7 +140,7 @@ export const WebsiteBasicRequirement = {
               valueDestination: 'entity.data.additionalInfo.store.website.shippingPolicyUrl',
               options: {
                 jsonFormDefinition: {
-                  type: 'string'
+                  type: 'string',
                 },
                 label: 'Shipping Policy',
                 hint: 'www.example.com/shipping-policy',
@@ -152,7 +152,7 @@ export const WebsiteBasicRequirement = {
               valueDestination: 'entity.data.additionalInfo.store.website.aboutUsUrl',
               options: {
                 jsonFormDefinition: {
-                  type: 'string'
+                  type: 'string',
                 },
                 label: 'About Us/Brand Intro URL',
                 hint: 'www.example.com/about-us',
@@ -176,7 +176,7 @@ export const WebsiteBasicRequirement = {
               valueDestination: 'entity.data.additionalInfo.store.website.productDescription',
               options: {
                 jsonFormDefinition: {
-                  type: 'string'
+                  type: 'string',
                 },
                 label: 'Adequate Product/Service Description',
                 hint: 'offers a range of organic skincare products, including moisturizers, serums, and cleansers. Each product is made using natural ingredients sourced sustainably.',
@@ -201,7 +201,7 @@ export const WebsiteBasicRequirement = {
               valueDestination: 'entity.data.additionalInfo.store.website.websiteLanguage',
               options: {
                 jsonFormDefinition: {
-                  type: 'string'
+                  type: 'string',
                 },
                 label: 'Website Language',
                 hint: 'English',
@@ -242,10 +242,10 @@ export const WebsiteBasicRequirement = {
     {
       type: 'definitionEvent',
       params: {
-        eventName: 'PREVIOUS'
+        eventName: 'PREVIOUS',
       },
       dispatchOn: {
-        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }]
+        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
       },
     },
     {

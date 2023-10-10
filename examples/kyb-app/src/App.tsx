@@ -18,8 +18,9 @@ import { ButtonUIElement } from '@app/components/organisms/UIRenderer/elements/B
 import { JSONForm } from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
 import { useFlowContextQuery } from '@app/hooks/useFlowContextQuery';
 import { AnyObject } from '@ballerine/ui';
-import { useUIElementToolsLogic } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/hooks/useUIElementToolsLogic';
-import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { StepperUI } from '@app/components/organisms/UIRenderer/elements/StepperUI';
+import { useMemo } from 'react';
+import { prepareInitialUIState } from '@app/helpers/prepareInitialUIState';
 
 const elems = {
   h1: Title,
@@ -28,22 +29,7 @@ const elems = {
   container: Cell,
   mainContainer: Cell,
   'json-form:button': ButtonUIElement,
-};
-
-const Toggler = () => {
-  const { toggleElementLoading } = useUIElementToolsLogic('first-name-input');
-  const { state } = useDynamicUIContext();
-
-  console.log('UI STATE', state);
-
-  return (
-    <div>
-      {' '}
-      <button type="button" onClick={toggleElementLoading}>
-        Toggle scoped loading state
-      </button>
-    </div>
-  );
+  stepper: StepperUI,
 };
 
 export const App = () => {
@@ -57,13 +43,17 @@ export const App = () => {
   const definition = schema.data?.definition.definition;
   const { data: context } = useFlowContextQuery();
 
+  const initialUIState = useMemo(() => {
+    return prepareInitialUIState(elements || [], context?.context || {});
+  }, [elements, context]);
+
   return (
     <AppLoadingContainer dependencies={dependancyQueries}>
       {/* <CustomerProvider loadingPlaceholder={<LoadingScreen />} fallback={CustomerProviderFallback}>
         <RouterProvider router={router} />
       </CustomerProvider> */}
       {definition && context?.context ? (
-        <DynamicUI>
+        <DynamicUI initialState={initialUIState}>
           <DynamicUI.StateManager
             initialContext={context.context}
             workflowId="1"
@@ -88,9 +78,15 @@ export const App = () => {
                           <button onClick={() => stateApi.sendEvent('NEXT')}>next</button>
                         </div>
                       </div>
-                      <ActionsHandler actions={currentPage.actions} stateApi={stateApi}>
-                        <UIRenderer elements={elems} schema={currentPage.elements} />
-                      </ActionsHandler>
+                      <DynamicUI.TransitionListener
+                        onNext={tools => {
+                          tools.setElementCompleted(currentPage.stateName, true);
+                        }}
+                      >
+                        <ActionsHandler actions={currentPage.actions} stateApi={stateApi}>
+                          <UIRenderer elements={elems} schema={currentPage.elements} />
+                        </ActionsHandler>
+                      </DynamicUI.TransitionListener>
                     </>
                   ) : null;
                 }}
