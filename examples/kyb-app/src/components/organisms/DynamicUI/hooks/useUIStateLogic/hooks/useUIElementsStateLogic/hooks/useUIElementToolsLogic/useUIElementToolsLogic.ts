@@ -17,6 +17,15 @@ export const useUIElementToolsLogic = (elementId: string) => {
     setUIElementState(elementId, { ...prevState, isLoading: !prevState?.isLoading });
   }, [elementsStateRef, elementId, setUIElementState]);
 
+  const setElementCompleted = useCallback(
+    (elementId: string, completed: boolean) => {
+      const prevState = elementsStateRef.current[elementId];
+
+      setUIElementState(elementId, { ...prevState, isCompleted: completed });
+    },
+    [elementsStateRef, setUIElementState],
+  );
+
   const elementState = useMemo(
     () => state.elements[elementId] || null,
     [state.elements, elementId],
@@ -24,6 +33,7 @@ export const useUIElementToolsLogic = (elementId: string) => {
 
   return {
     state: elementState,
+    setElementCompleted,
     toggleElementLoading,
   };
 };
