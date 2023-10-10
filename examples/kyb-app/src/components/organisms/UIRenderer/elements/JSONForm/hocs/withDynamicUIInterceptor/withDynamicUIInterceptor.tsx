@@ -71,7 +71,7 @@ export const withDynamicUIInterceptor = (
       const evt = {
         target: {
           name: definition.name,
-          value,
+          value: !value && value !== 0 ? undefined : value,
         },
       };
       onChangeHandler(evt as React.ChangeEvent<any>);
