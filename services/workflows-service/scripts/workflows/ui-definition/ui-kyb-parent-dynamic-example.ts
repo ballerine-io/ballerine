@@ -10,7 +10,6 @@ import { StoreInfoPage } from '../../../src/ui-definition/utils/collection-flow/
 import { WebsiteBasicRequirement } from '../../../src/ui-definition/utils/collection-flow/8-website-basic-requirement';
 import { ProcessingDetails } from '../../../src/ui-definition/utils/collection-flow/9-process-details';
 import { CompanyDocuments } from '../../../src/ui-definition/utils/collection-flow/10-company-documents';
-import { FinishPage } from '../../../src/ui-definition/utils/collection-flow/11-finish.page';
 
 export const uiKybParentUiSchema = (workflowDefinitionId: string) =>
   ({
@@ -26,7 +25,6 @@ export const uiKybParentUiSchema = (workflowDefinitionId: string) =>
         StoreInfoPage,
         WebsiteBasicRequirement,
         ProcessingDetails,
-        FinishPage,
         CompanyDocuments,
       ],
     },

@@ -3,13 +3,16 @@ import { Chip } from '@app/common/components/atoms/Chip';
 import { LoadingSpinner } from '@app/common/components/atoms/LoadingSpinner';
 import { Check } from 'lucide-react';
 import clsx from 'clsx';
+import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 
 interface Props {
-  isLoading?: boolean;
   className?: string;
 }
 
-export const ProgressBar = ({ isLoading, className }: Props) => {
+export const ProgressBar = ({ className }: Props) => {
+  const { state } = useDynamicUIContext();
+  const { isLoading } = state;
+
   return (
     <Chip
       icon={

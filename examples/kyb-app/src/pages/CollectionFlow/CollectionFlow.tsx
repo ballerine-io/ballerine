@@ -11,6 +11,8 @@ import { prepareInitialUIState } from '@app/helpers/prepareInitialUIState';
 import { useFlowContextQuery } from '@app/hooks/useFlowContextQuery';
 import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
 import { useUISchemasQuery } from '@app/hooks/useUISchemasQuery';
+import { ProgressBar } from '@app/pages/CollectionFlow/components/organisms/KYBView/components/ProgressBar';
+import { StepperProgress } from '@app/pages/CollectionFlow/components/organisms/KYBView/components/StepperProgress';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
@@ -85,7 +87,7 @@ export const CollectionFlowDumb = () => {
                         </AppShell.Sidebar>
                         <AppShell.Content>
                           <AppShell.FormContainer>
-                            {/* <div className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-4">
                               DEBUG
                               <div>
                                 {currentPage
@@ -96,8 +98,21 @@ export const CollectionFlowDumb = () => {
                                 <button onClick={() => stateApi.sendEvent('PREVIOUS')}>prev</button>
                                 <button onClick={() => stateApi.sendEvent('NEXT')}>next</button>
                               </div>
-                            </div> */}
-                            <UIRenderer elements={elems} schema={currentPage.elements} />
+                            </div>
+                            <div className="flex flex-col">
+                              <div className="pb-7 flex gap-3 items-center">
+                                <StepperProgress
+                                  currentStep={
+                                    elements.findIndex(page => page.stateName === state) + 1
+                                  }
+                                  totalSteps={elements.length}
+                                />
+                                <ProgressBar />
+                              </div>
+                              <div>
+                                <UIRenderer elements={elems} schema={currentPage.elements} />
+                              </div>
+                            </div>
                           </AppShell.FormContainer>
                         </AppShell.Content>
                       </AppShell>
