@@ -696,6 +696,30 @@ export class WorkflowService {
       revised: 'revised',
     } as const;
     const status = decision.status ? Status[decision.status] : null;
+    const newDecision = (() => {
+      if (!status || status === 'approved') {
+        return {
+          revisionReason: null,
+          rejectionReason: null,
+        };
+      }
+
+      if (status === 'rejected') {
+        return {
+          revisionReason: null,
+          rejectionReason: decision?.reason,
+        };
+      }
+
+      if (['revision', 'revised'].includes(status)) {
+        return {
+          revisionReason: decision?.reason,
+          rejectionReason: null,
+        };
+      }
+
+      throw new BadRequestException(`Invalid decision status: ${status}`);
+    })();
 
     const context = {
       ...workflow?.context,
@@ -722,32 +746,8 @@ export class WorkflowService {
         },
       ),
     };
+
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
-
-    const newDecision = (() => {
-      if (!status || status === 'approved') {
-        return {
-          revisionReason: null,
-          rejectionReason: null,
-        };
-      }
-
-      if (status === 'rejected') {
-        return {
-          revisionReason: null,
-          rejectionReason: decision?.reason,
-        };
-      }
-
-      if (['revision', 'revised'].includes(status)) {
-        return {
-          revisionReason: decision?.reason,
-          rejectionReason: null,
-        };
-      }
-
-      throw new BadRequestException(`Invalid decision status: ${status}`);
-    })();
 
     const document = workflow?.context?.documents?.find(
       (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
