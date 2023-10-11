@@ -724,12 +724,7 @@ export class WorkflowService {
     const context = {
       ...workflow?.context,
       documents: workflow?.context?.documents?.map(
-        ({
-          // @ts-ignore
-          // Validating the context should be done without the propertiesSchema
-          propertiesSchema: _propertiesSchema,
-          ...document
-        }: DefaultContextSchema['documents'][number]) => {
+        (document: DefaultContextSchema['documents'][number]) => {
           const updatedStatus = documentId === document.id ? status : document?.decision?.status;
 
           return {
@@ -761,7 +756,7 @@ export class WorkflowService {
         status,
       },
     };
-    const checkRequiredFields = status === 'approved' ? true : false;
+    const checkRequiredFields = status === 'approved';
     const updatedWorkflow = await this.updateDocumentById(
       { workflowId, documentId, checkRequiredFields },
       documentWithDecision as unknown as DefaultContextSchema['documents'][number],
@@ -928,19 +923,9 @@ export class WorkflowService {
       contextHasChanged = !isEqual(data.context, runtimeData.context);
       mergedContext = merge({}, runtimeData.context, data.context);
 
-      const context = {
-        ...mergedContext,
-        // @ts-ignore
-        documents: mergedContext?.documents?.map(
-          // @ts-ignore
-          // Validating the context should be done without the propertiesSchema
-          ({ propertiesSchema: _propertiesSchema, ...document }) => document,
-        ),
-      };
-
       this.__validateWorkflowDefinitionContext(workflowDef, {
-        ...context,
-        documents: context?.documents?.map(
+        ...mergedContext,
+        documents: mergedContext?.documents?.map(
           (document: DefaultContextSchema['documents'][number]) => ({
             ...document,
             decision: {
@@ -1626,7 +1611,17 @@ export class WorkflowService {
     if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
 
     const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
-    const isValid = validate(context);
+    const isValid = validate({
+      ...context,
+      // Validation should not include the documents' 'propertiesSchema' prop.
+      documents: context?.documents?.map(
+        ({
+          // @ts-ignore
+          propertiesSchema: _propertiesSchema,
+          ...document
+        }) => document,
+      ),
+    });
 
     if (isValid) return;
 
