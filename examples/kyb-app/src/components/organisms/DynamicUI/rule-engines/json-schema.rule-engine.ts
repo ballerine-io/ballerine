@@ -6,13 +6,15 @@ import { Rule, UIElement } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import Ajv from 'ajv/dist/2019';
 import ajvErrors from 'ajv-errors';
+import addFormats from 'ajv-formats';
 
 export class JsonSchemaRuleEngine implements RuleEngine {
   public readonly ENGINE_NAME = 'json-schema';
 
   test(context: unknown, rule: Rule, definition: UIElement<AnyObject>) {
-    const validator = new Ajv({ allErrors: true });
-    ajvErrors(validator, { singleError: true });
+    let validator = new Ajv({ allErrors: true });
+    validator = ajvErrors(validator, { singleError: true });
+    validator = addFormats(validator);
     const validationResult = validator.validate(rule.value, context);
     if (!validationResult) {
       const validationErrorMessage = this.__extractErrorsWithFields(validator, definition);

@@ -6,6 +6,7 @@ import { useDynamicUIContextComposer } from '@app/components/organisms/DynamicUI
 import { TransitionListener } from '@app/components/organisms/DynamicUI/TransitionListener';
 import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
 import { Page } from '@app/components/organisms/DynamicUI/Page';
+import { ActionsHandler } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
 
 const { Provider } = dynamicUIContext;
 
@@ -24,3 +25,4 @@ DynamicUI.StateManager = StateManager;
 DynamicUI.PageResolver = PageResolver;
 DynamicUI.TransitionListener = TransitionListener;
 DynamicUI.Page = Page;
+DynamicUI.ActionsHandler = ActionsHandler;
