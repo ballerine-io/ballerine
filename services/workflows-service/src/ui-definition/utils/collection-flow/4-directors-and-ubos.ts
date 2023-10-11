@@ -212,13 +212,47 @@ export const DirectorsAndUbosPage = {
         },
         {
           type: 'json-form',
+          options: {
+            jsonFormDefinition: {
+              required: ['im-shareholder-checkbox'],
+            },
+          },
+          elements: [
+            {
+              type: 'checkbox',
+              name: 'im-shareholder-checkbox',
+              valueDestination: 'entity.data.additionalInfo.imShareholder',
+              options: {
+                jsonFormDefinition: {
+                  type: 'boolean'
+                },
+                label: 'I own 25% or more of the company',
+                uiSchema: {
+                  'ui:label': false
+                }
+              }
+            }
+          ],
+        },
+        {
+          type: 'json-form',
           valueDestination: 'entity.data.additionalInfo.ubos',
+          visibleOn: [{
+            type: 'json-logic',
+            value: {
+              "if": [
+                { "var": "entity.data.additionalInfo.imShareholder" },
+                false,
+                true
+              ]
+            }
+          }],
           options: {
             description:
               '<p>add all the natural persons that own or control, <bold>Directly Or Indirectly</bold> more than 25% of the company.</p>',
             jsonFormDefinition: {
               type: 'array',
-              required: ["firstName", "lastName", "nationality", "identityNumber", "email", "fullAddress"],
+              required: ["ubos:first-name-input", "ubos:last-name-input", "ubos:nationality-input", "ubos:identity-number-input", "ubos:email-input", "ubos:address-of-residence-input"],
             },
           },
           elements: [
@@ -320,14 +354,48 @@ export const DirectorsAndUbosPage = {
           type: 'container',
           elements: [
             {
+              type: 'json-form',
+              options: {
+                jsonFormDefinition: {
+                  required: ['im-director-checkbox'],
+                },
+              },
+              elements: [
+                {
+                  type: 'checkbox',
+                  name: 'im-director-checkbox',
+                  valueDestination: 'entity.data.additionalInfo.imDirector',
+                  options: {
+                    jsonFormDefinition: {
+                      type: 'boolean'
+                    },
+                    label: 'I\'m director of the company',
+                    uiSchema: {
+                      'ui:label': false
+                    }
+                  }
+                }
+              ],
+            },
+            {
               name: 'directors-component',
               type: 'json-form',
               valueDestination: 'entity.data.additionalInfo.directors',
+              visibleOn: [{
+                type: 'json-logic',
+                value: {
+                  "if": [
+                    { "var": "entity.data.additionalInfo.imDirector" },
+                    false,
+                    true
+                  ]
+                }
+              }],
               options: {
                 description: '<p>Add all the directors of the company.</p>',
                 jsonFormDefinition: {
                   type: 'array',
-                  required: ["firstName", "lastName", "nationality", "identityNumber", "email", "fullAddress"],
+                  required: ["directors:first-name-input", "directors:last-name-input", "directors:nationality-input", "directors:identity-number-input", "directors:email-input", "directors:address-of-residence-input"],
                 },
               },
               elements: [

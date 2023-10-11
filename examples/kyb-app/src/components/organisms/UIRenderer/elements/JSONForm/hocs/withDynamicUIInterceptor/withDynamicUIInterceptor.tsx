@@ -29,7 +29,7 @@ const injectIndexToDestinationIfNeeded = (destination: string, index: number | n
   const pathElements = destination.split('.');
   pathElements.splice(pathElements.length - 1, 0, indexPath);
 
-  return pathElements.join('.').replace(`${indexPath}.`, indexPath);
+  return pathElements.join('.').replace(`.${indexPath}.`, indexPath);
 };
 
 export const withDynamicUIInterceptor = (
@@ -93,11 +93,12 @@ export const withDynamicUIInterceptor = (
           definition={definition}
           onChange={handleChange}
         />
-        {isTouched && (
-          <p className="text-destructive text-[0.8rem] pl-1 pt-1">
-            {errors[definition.valueDestination]?.message}
-          </p>
-        )}
+        {isTouched ||
+          (value && (
+            <p className="text-destructive text-[0.8rem] pl-1 pt-1">
+              {errors[definition.valueDestination]?.message}
+            </p>
+          ))}
       </div>
     );
   }

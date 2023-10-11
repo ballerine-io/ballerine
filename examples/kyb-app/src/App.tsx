@@ -91,3 +91,12 @@ export const App = () => {
     </AppLoadingContainer>
   );
 };
+
+(window as any).toggleDevmode = () => {
+  const key = 'devmode';
+  const isDebug = localStorage.getItem(key);
+
+  isDebug ? localStorage.removeItem(key) : localStorage.setItem(key, 'true');
+
+  location.reload();
+};
