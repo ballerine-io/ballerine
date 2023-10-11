@@ -73,19 +73,27 @@ export const useTasks = ({
       results[docIndex][pageIndex] = docsData?.shift()?.data;
     });
   });
-  const pluginsOutputKeys = Object.keys(pluginsOutput ?? {});
-  const address = getAddressDeep(pluginsOutput, { propertyName: 'registeredAddressInFull' });
+  const pluginsOutputBlacklist = ['company_sanctions', 'directors', 'ubos'];
+  const filteredPluginsOutput = useMemo(
+    () => omitPropsFromObject(pluginsOutput, ...pluginsOutputBlacklist),
+    [pluginsOutput, pluginsOutputBlacklist],
+  );
+  const pluginsOutputKeys = Object.keys(filteredPluginsOutput ?? {});
+  const address = getAddressDeep(filteredPluginsOutput, {
+    propertyName: 'registeredAddressInFull',
+  });
   const { data: locations } = useNominatimQuery(address);
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
   const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
 
   const registryInfoBlock =
-    Object.keys(pluginsOutput ?? {}).length === 0
+    Object.keys(filteredPluginsOutput ?? {}).length === 0
       ? []
       : pluginsOutputKeys
           ?.filter(
             key =>
-              !!Object.keys(pluginsOutput[key] ?? {})?.length && !('error' in pluginsOutput[key]),
+              !!Object.keys(filteredPluginsOutput[key] ?? {})?.length &&
+              !('error' in filteredPluginsOutput[key]),
           )
           ?.map((key, index, collection) => ({
             cells: [
@@ -107,7 +115,7 @@ export const useTasks = ({
                 type: 'details',
                 hideSeparator: index === collection.length - 1,
                 value: {
-                  data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
+                  data: Object.entries(filteredPluginsOutput[key] ?? {})?.map(([title, value]) => ({
                     title,
                     value,
                   })),
