@@ -487,7 +487,7 @@ export const useTasks = ({
         ];
 
   const websiteBasicRequirementBlock =
-    Object.keys(bankDetails ?? {}).length === 0
+    Object.keys(websiteBasicRequirement ?? {}).length === 0
       ? []
       : [
           {
@@ -503,7 +503,7 @@ export const useTasks = ({
               {
                 type: 'details',
                 value: {
-                  data: Object.entries(bankDetails)?.map(([title, value]) => ({
+                  data: Object.entries(websiteBasicRequirement)?.map(([title, value]) => ({
                     title,
                     value,
                     isEditable: false,
@@ -516,7 +516,7 @@ export const useTasks = ({
         ];
 
   const bankingDetailsBlock =
-    Object.keys(websiteBasicRequirement ?? {}).length === 0
+    Object.keys(bankDetails ?? {}).length === 0
       ? []
       : [
           {
@@ -532,7 +532,7 @@ export const useTasks = ({
               {
                 type: 'details',
                 value: {
-                  data: Object.entries(websiteBasicRequirement)?.map(([title, value]) => ({
+                  data: Object.entries(bankDetails)?.map(([title, value]) => ({
                     title,
                     value,
                     isEditable: false,
