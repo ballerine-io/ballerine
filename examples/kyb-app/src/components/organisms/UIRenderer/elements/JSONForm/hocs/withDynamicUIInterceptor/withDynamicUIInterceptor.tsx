@@ -93,12 +93,11 @@ export const withDynamicUIInterceptor = (
           definition={definition}
           onChange={handleChange}
         />
-        {isTouched ||
-          (value && (
-            <p className="text-destructive text-[0.8rem] pl-1 pt-1">
-              {errors[definition.valueDestination]?.message}
-            </p>
-          ))}
+        {isTouched || value ? (
+          <p className="text-destructive text-[0.8rem] pl-1 pt-1">
+            {errors[definition.valueDestination]?.message}
+          </p>
+        ) : null}
       </div>
     );
   }

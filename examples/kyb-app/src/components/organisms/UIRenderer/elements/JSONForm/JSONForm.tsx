@@ -8,12 +8,10 @@ import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import set from 'lodash/set';
 import get from 'lodash/get';
-import debounce from 'lodash/debounce';
 import { AnyObject } from '../../../../../../../../packages/ui/dist';
 import { jsonFormFields } from '@app/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
 import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
 import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
-import { usePageContext } from '@app/components/organisms/DynamicUI/Page/hooks/usePageContext';
 
 export interface JSONFormElementBaseParams {
   jsonFormDefinition: RJSFSchema;
