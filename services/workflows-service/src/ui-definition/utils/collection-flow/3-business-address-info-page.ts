@@ -1,4 +1,4 @@
-import { getCountriesList } from '../schema-utils/countries';
+import {getCountriesList} from '../schema-utils/countries';
 
 const validationSchema = {
     type: 'object',
@@ -16,6 +16,9 @@ const validationSchema = {
                   headquarters: {
                     type: 'object',
                     required: ['street', 'streetNumber', 'city', 'country'],
+                    dependentRequired: {
+                      isDifferentFromPhysical: ["physical"]
+                    },
                     properties: {
                       isDifferentFromPhysical: {
                         type: 'boolean'
@@ -113,9 +116,6 @@ const validationSchema = {
                         },
                       },
                     },
-                    dependentRequired: {
-                      isDifferentFromPhysical: ["physical"]
-                    }
                   }
                 }
               }
