@@ -7,10 +7,7 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { IActionsProps } from './interfaces';
 import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import {
-  AssignDropdown,
-  Assignee,
-} from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
+import { AssignDropdown } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
 import { Button } from '../../../../common/components/atoms/Button/Button';
 import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
 import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
@@ -62,7 +59,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
   } = useCaseActionsLogic({ workflowId: id, fullName });
 
   return (
-    <div className={`sticky top-0 z-50 col-span-2 space-y-2 bg-base-100 px-4 pt-4`}>
+    <div className={`sticky top-0 z-50 col-span-2 space-y-2 bg-base-100 pr-4 pt-4`}>
       <div className={`mb-8 flex flex-row space-x-3.5`}>
         <AssignDropdown
           assignedUser={assignedUser}
@@ -99,7 +96,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           )}
         </div>
         {showResolutionButtons && (
-          <div className={`pe-[3.35rem] flex items-center space-x-4 self-start`}>
+          <div className={`flex items-center space-x-4 self-start pe-[3.35rem]`}>
             <Dialog>
               <DialogTrigger asChild>
                 <Button

@@ -644,7 +644,7 @@ export const useTasks = ({
                   type: 'subheading',
                   value: 'Company check results',
                   props: {
-                    className: 'text-lg mb-2 mt-4 block ms-2',
+                    className: 'text-lg my-4 block',
                   },
                 },
                 {
@@ -923,6 +923,9 @@ export const useTasks = ({
             {
               type: 'subheading',
               value: 'Registry-provided Data',
+              props: {
+                className: 'mb-4',
+              },
             },
             {
               type: 'table',
@@ -971,6 +974,9 @@ export const useTasks = ({
               {
                 type: 'subheading',
                 value: 'User-provided Data',
+                props: {
+                  className: 'mb-4',
+                },
               },
               {
                 type: 'table',
@@ -1021,6 +1027,9 @@ export const useTasks = ({
             {
               type: 'subheading',
               value: 'Registry-provided Data',
+              props: {
+                className: 'mb-4',
+              },
             },
             {
               type: 'table',
