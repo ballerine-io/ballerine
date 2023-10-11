@@ -21,7 +21,7 @@ export const fullKybProcessWorkflowDefinition = {
       data_collection: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
-          start: [
+          COLLECTION_FLOW_FINISHED: [
             {
               target: 'run_cn_kyb',
               cond: {
@@ -49,24 +49,24 @@ export const fullKybProcessWorkflowDefinition = {
       run_cn_kyb: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          // CONTINUE: [{ target: 'run_aml' }],
-          CONTINUE: [{ target: 'run_vendor_data_collection' }],
-          FAILED: [{ target: 'auto_reject' }],
+          // CN_KYB_DONE: [{ target: 'run_aml' }],
+          CN_KYB_DONE: [{ target: 'run_vendor_data_collection' }],
+          CN_KYB_FAIL: [{ target: 'failure' }],
         },
       },
       run_hk_kyb: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          // CONTINUE: [{ target: 'run_aml' }],
-          CONTINUE: [{ target: 'run_vendor_data_collection' }],
-          FAILED: [{ target: 'auto_reject' }],
+          // HK_KYB_HOOK_RESPONDED: [{ target: 'run_aml' }],
+          HK_KYB_HOOK_RESPONDED: [{ target: 'run_vendor_data_collection' }],
+          FAILED: [{ target: 'failure' }],
         },
       },
       run_vendor_data_collection: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          CONTINUE: [{ target: 'manual_review' }],
-          FAILED: [{ target: 'auto_reject' }],
+          VENDOR_DATA_COLLECTION_DONE: [{ target: 'manual_review' }],
+          VENDOR_DATA_COLLECTION_FAIL: [{ target: 'failure' }],
         },
       },
       // run_aml: {
@@ -74,34 +74,26 @@ export const fullKybProcessWorkflowDefinition = {
       //   on: {
       //     CONTINUE: [{ target: 'run_ubos' }],
       //     // @TODO: add 404 handling
-      //     FAILED: [{ target: 'auto_reject' }],
+      //     FAILED: [{ target: 'failure' }],
       //   },
       // },
       // run_ubos: {
       //   tags: [StateTag.PENDING_PROCESS],
       //   on: {
       //     CONTINUE: [{ target: 'run_kyb_enrichment' }],
-      //     FAILED: [{ target: 'auto_reject' }],
+      //     FAILED: [{ target: 'failure' }],
       //   },
       // },
       manual_review: {
         tags: [StateTag.MANUAL_REVIEW],
         on: {
-          approve: 'approved',
-          reject: 'rejected',
-          revision: 'revision',
+          APPROVE: 'approved',
+          REJECT: 'rejected',
+          REVISION: 'revision',
         },
       },
       revision: {
-        tags: [StateTag.REVISION],
-        always: [
-          {
-            target: 'pending_resubmission',
-          },
-        ],
-      },
-      pending_resubmission: {
-        tags: [StateTag.REVISION],
+        tags: [StateTag.REVISION, StateTag.COLLECTION_FLOW],
         on: {
           RESUBMITTED: 'manual_review',
         },
@@ -116,6 +108,10 @@ export const fullKybProcessWorkflowDefinition = {
       },
       auto_reject: {
         tags: [StateTag.REJECTED],
+        type: 'final' as const,
+      },
+      failure: {
+        tags: [StateTag.MANUAL_REVIEW],
         type: 'final' as const,
       },
     },
@@ -156,7 +152,7 @@ export const fullKybProcessWorkflowDefinition = {
       {
         // @TODO: handle callback
         name: 'asia_verify_hk_kyb',
-        pluginKind: 'webhook',
+        pluginKind: 'api',
         url: `${env.UNIFIED_API_URL}/companies-v2`,
         method: 'GET',
         stateNames: ['run_hk_kyb'],
@@ -170,27 +166,20 @@ export const fullKybProcessWorkflowDefinition = {
                 companyNumber: entity.data.registrationNumber,
                 countryOfIncorporation: 'hk',
                 vendor: 'asia-verify'
+                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/HK_KYB_HOOK_RESPONDED','?resultDestination=pluginsOutput.hk_kyb.result']),
               }`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '@', // jmespath
             },
           ],
         },
       },
       {
         name: 'asia_verify_aml',
-        pluginKind: 'aml',
-        url: `${env.UNIFIED_API_URL}/companies`,
+        pluginKind: 'api',
+        url: `{secret.UNIFIED_API_URL}/companies/{entity.data.additionalInfo.country}/{entity.data.companyName}/aml`,
         method: 'GET',
         stateNames: ['run_vendor_data_collection'],
-        successAction: 'AML_DONE',
-        errorAction: 'AML_FAIL',
+        successAction: 'VENDOR_DATA_COLLECTION_DONE',
+        errorAction: 'VENDOR_DATA_COLLECTION_FAIL',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
@@ -215,11 +204,43 @@ export const fullKybProcessWorkflowDefinition = {
         },
       },
       {
+        name: 'asia_verify_aml',
+        pluginKind: 'api',
+        url: `{secret.UNIFIED_API_URL}/companies/{entity.data.additionalInfo.country}/{entity.data.companyName}/ubo`,
+        method: 'GET',
+        stateNames: ['run_vendor_data_collection'],
+        successAction: 'VENDOR_DATA_COLLECTION_DONE',
+        errorAction: 'VENDOR_DATA_COLLECTION_FAIL',
+        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+        request: {
+          transform: [
+            {
+              // @TODO: Work out "entity.data.companyName" and "entity.data.additionalInfo.country" with Daniel
+              transformer: 'jmespath',
+              mapping: `{
+                companyNumber: entity.data.companyNumber,
+                countryOfIncorporation: entity.data.additionalInfo.country,
+                vendor: 'asia-verify',
+                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/UBO_HOOK_RESPONDED','?resultDestination=pluginsOutput.hk_kyb.result']),
+              }`, // jmespath
+            },
+          ],
+        },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '@', // jmespath
+            },
+          ],
+        },
+      },
+      {
         name: 'resubmission_email',
         pluginKind: 'email',
         url: `{secret.EMAIL_API_URL}`,
         method: 'POST',
-        stateNames: ['pending_resubmission'],
+        stateNames: ['revision'],
         headers: {
           Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
           'Content-Type': 'application/json',
