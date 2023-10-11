@@ -4,7 +4,7 @@ import {
 } from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
 import { Rule, UIElement } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
-import Ajv from 'ajv';
+import Ajv from 'ajv/dist/2019';
 import ajvErrors from 'ajv-errors';
 
 export class JsonSchemaRuleEngine implements RuleEngine {

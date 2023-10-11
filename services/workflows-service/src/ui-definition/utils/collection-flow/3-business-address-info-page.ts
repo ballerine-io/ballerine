@@ -16,344 +16,106 @@ const validationSchema = {
                   headquarters: {
                     type: 'object',
                     required: ['street', 'streetNumber', 'city', 'country'],
-                    allOf: [
-                      {
-                        if: {
-                          properties: {
-                            isDifferentFromPhysical: {
-                              const: true
-                            }
-                          }
-                        },
-                        then: {
-                          required: ['street', 'streetNumber', 'city', 'country', 'physical'],
-                          properties: {
-                            street: {
-                              type: 'string',
-                              minLength: 3,
-                              maxLength: 100,
-                              errorMessage: {
-                                minLength: 'Street should be at least 3 characters long.',
-                                maxLength: 'Street should not exceed 100 characters.'
-                              }
-                            },
-                            streetNumber: {
-                              type: 'number',
-                              minLength: 1,
-                              maxLength: 10,
-                              errorMessage: {
-                                minLength: 'Street number is required.',
-                                maxLength: 'Street number should not exceed 10 characters.'
-                              }
-                            },
-                            city: {
-                              type: 'string',
-                              minLength: 2,
-                              maxLength: 50,
-                              errorMessage: {
-                                minLength: 'City should be at least 2 characters long.',
-                                maxLength: 'City should not exceed 50 characters.'
-                              }
-                            },
-                            country: {
-                              type: 'string',
-                              minLength: 2,
-                              maxLength: 2,
-                              pattern: '^[A-Z]{2}$',
-                              errorMessage: {
-                                minLength: 'Country code should be exactly 2 characters.',
-                                maxLength: 'Country code should be exactly 2 characters.',
-                                pattern: 'Invalid country code.'
-                              }
-                            },
-                            isDifferentFromPhysical: {
-                              enum: [true],
-                              errorMessage: {
-                                enum: 'Should be true if physical address is different.'
-                              }
-                            },
-                            physical: {
-                              type: 'object',
-                              errorMessage: {
-                                required: {
-                                  street: 'Street is required.',
-                                  streetNumber: 'Street number is required.',
-                                  city: 'City is required.',
-                                  country: 'Country is required.',
-                                  isDifferentFromPhysical: 'This field is required.',
-                                  physical: 'Physical address details are required.'
-                                }
-                              },
-                              properties: {
-                                street: {
-                                  type: 'string',
-                                  minLength: 3,
-                                  maxLength: 100,
-                                  errorMessage: {
-                                    minLength: 'Street should be at least 3 characters long.',
-                                    maxLength: 'Street should not exceed 100 characters.'
-                                  }
-                                },
-                                streetNumber: {
-                                  type: 'string',
-                                  minLength: 1,
-                                  maxLength: 10,
-                                  errorMessage: {
-                                    minLength: 'Street number is required.',
-                                    maxLength: 'Street number should not exceed 10 characters.'
-                                  }
-                                },
-                                city: {
-                                  type: 'string',
-                                  minLength: 2,
-                                  maxLength: 50,
-                                  errorMessage: {
-                                    minLength: 'City should be at least 2 characters long.',
-                                    maxLength: 'City should not exceed 50 characters.'
-                                  }
-                                },
-                                country: {
-                                  type: 'string',
-                                  minLength: 2,
-                                  maxLength: 2,
-                                  pattern: '^[A-Z]{2}$',
-                                  errorMessage: {
-                                    minLength: 'Country code should be exactly 2 characters.',
-                                    maxLength: 'Country code should be exactly 2 characters.',
-                                    pattern: 'Invalid country code.'
-                                  }
-                                }
-                              },
-                            },
-
-                          }
-                        },
-                        else: {
-                          properties: {
-                            street: {
-                              type: 'string',
-                              minLength: 3,
-                              maxLength: 100,
-                              errorMessage: {
-                                minLength: 'Street should be at least 3 characters long.',
-                                maxLength: 'Street should not exceed 100 characters.'
-                              }
-                            },
-                            streetNumber: {
-                              type: 'number',
-                              minLength: 1,
-                              maxLength: 10,
-                              errorMessage: {
-                                minLength: 'Street number is required.',
-                                maxLength: 'Street number should not exceed 10 characters.'
-                              }
-                            },
-                            city: {
-                              type: 'string',
-                              minLength: 2,
-                              maxLength: 50,
-                              errorMessage: {
-                                minLength: 'City should be at least 2 characters long.',
-                                maxLength: 'City should not exceed 50 characters.'
-                              }
-                            },
-                            country: {
-                              type: 'string',
-                              minLength: 2,
-                              maxLength: 2,
-                              pattern: '^[A-Z]{2}$',
-                              errorMessage: {
-                                minLength: 'Country code should be exactly 2 characters.',
-                                maxLength: 'Country code should be exactly 2 characters.',
-                                pattern: 'Invalid country code.'
-                              }
-                            },
-                            isDifferentFromPhysical: {
-                              enum: [false],
-                              errorMessage: {
-                                enum: 'Should be false if physical address is not different.'
-                              }
-                            }
-
-                          }
-                        }
-                      }
-                    ],
                     properties: {
                       isDifferentFromPhysical: {
                         type: 'boolean'
-                      }
+                      },
+                      street: {
+                        type: 'string',
+                        minLength: 3,
+                        maxLength: 100,
+                        errorMessage: {
+                          minLength: 'Street should be at least 3 characters long.',
+                          maxLength: 'Street should not exceed 100 characters.'
+                        }
+                      },
+                      streetNumber: {
+                        type: 'number',
+                        minLength: 1,
+                        maxLength: 10,
+                        errorMessage: {
+                          minLength: 'Street number is required.',
+                          maxLength: 'Street number should not exceed 10 characters.'
+                        }
+                      },
+                      city: {
+                        type: 'string',
+                        minLength: 2,
+                        maxLength: 50,
+                        errorMessage: {
+                          minLength: 'City should be at least 2 characters long.',
+                          maxLength: 'City should not exceed 50 characters.'
+                        }
+                      },
+                      country: {
+                        type: 'string',
+                        minLength: 2,
+                        maxLength: 2,
+                        pattern: '^[A-Z]{2}$',
+                        errorMessage: {
+                          minLength: 'Country code should be exactly 2 characters.',
+                          maxLength: 'Country code should be exactly 2 characters.',
+                          pattern: 'Invalid country code.'
+                        }
+                      },
+                      physical: {
+                        type: 'object',
+                        required: ['street', 'streetNumber', 'city', 'country'],
+                        errorMessage: {
+                          required: {
+                            street: 'Street is required.',
+                            streetNumber: 'Street number is required.',
+                            city: 'City is required.',
+                            country: 'Country is required.',
+                            isDifferentFromPhysical: 'This field is required.',
+                            physical: 'Physical address details are required.'
+                          }
+                        },
+                        properties: {
+                          street: {
+                            type: 'string',
+                            minLength: 3,
+                            maxLength: 100,
+                            errorMessage: {
+                              minLength: 'Street should be at least 3 characters long.',
+                              maxLength: 'Street should not exceed 100 characters.'
+                            }
+                          },
+                          streetNumber: {
+                            type: 'number',
+                            minLength: 1,
+                            maxLength: 10,
+                            errorMessage: {
+                              minLength: 'Street number is required.',
+                              maxLength: 'Street number should not exceed 10 characters.'
+                            }
+                          },
+                          city: {
+                            type: 'string',
+                            minLength: 2,
+                            maxLength: 50,
+                            errorMessage: {
+                              minLength: 'City should be at least 2 characters long.',
+                              maxLength: 'City should not exceed 50 characters.'
+                            }
+                          },
+                          country: {
+                            type: 'string',
+                            minLength: 2,
+                            maxLength: 2,
+                            pattern: '^[A-Z]{2}$',
+                            errorMessage: {
+                              minLength: 'Country code should be exactly 2 characters.',
+                              maxLength: 'Country code should be exactly 2 characters.',
+                              pattern: 'Invalid country code.'
+                            }
+                          }
+                        },
+                      },
                     },
-                    // oneOf: [
-                    //   {
-                    //     errorMessage: {
-                    //       required: {
-                    //         street: 'Street is required.',
-                    //         streetNumber: 'Street number is required.',
-                    //         city: 'City is required.',
-                    //         country: 'Country is required.',
-                    //         isDifferentFromPhysical: 'This field is required.'
-                    //       }
-                    //     },
-                    //     properties: {
-                    //       street: {
-                    //         type: 'string',
-                    //         minLength: 3,
-                    //         maxLength: 100,
-                    //         errorMessage: {
-                    //           minLength: 'Street should be at least 3 characters long.',
-                    //           maxLength: 'Street should not exceed 100 characters.'
-                    //         }
-                    //       },
-                    //       streetNumber: {
-                    //         type: 'string',
-                    //         minLength: 1,
-                    //         maxLength: 10,
-                    //         errorMessage: {
-                    //           minLength: 'Street number is required.',
-                    //           maxLength: 'Street number should not exceed 10 characters.'
-                    //         }
-                    //       },
-                    //       city: {
-                    //         type: 'string',
-                    //         minLength: 2,
-                    //         maxLength: 50,
-                    //         errorMessage: {
-                    //           minLength: 'City should be at least 2 characters long.',
-                    //           maxLength: 'City should not exceed 50 characters.'
-                    //         }
-                    //       },
-                    //       country: {
-                    //         type: 'string',
-                    //         minLength: 2,
-                    //         maxLength: 2,
-                    //         pattern: '^[A-Z]{2}$',
-                    //         errorMessage: {
-                    //           minLength: 'Country code should be exactly 2 characters.',
-                    //           maxLength: 'Country code should be exactly 2 characters.',
-                    //           pattern: 'Invalid country code.'
-                    //         }
-                    //       },
-                    //       isDifferentFromPhysical: {
-                    //         enum: [false],
-                    //         errorMessage: {
-                    //           enum: 'Should be false if physical address is not different.'
-                    //         }
-                    //       }
-
-                    //     }
-                    //   },
-                    //   {
-                    //     errorMessage: {
-                    //       required: {
-                    //         street: 'Street for physical address is required.',
-                    //         streetNumber: 'Street number for physical address is required.',
-                    //         city: 'City for physical address is required.',
-                    //         country: 'Country for physical address is required.'
-                    //       }
-                    //     },
-                    //     properties: {
-                    //       street: {
-                    //         type: 'string',
-                    //         minLength: 3,
-                    //         maxLength: 100,
-                    //         errorMessage: {
-                    //           minLength: 'Street should be at least 3 characters long.',
-                    //           maxLength: 'Street should not exceed 100 characters.'
-                    //         }
-                    //       },
-                    //       streetNumber: {
-                    //         type: 'string',
-                    //         minLength: 1,
-                    //         maxLength: 10,
-                    //         errorMessage: {
-                    //           minLength: 'Street number is required.',
-                    //           maxLength: 'Street number should not exceed 10 characters.'
-                    //         }
-                    //       },
-                    //       city: {
-                    //         type: 'string',
-                    //         minLength: 2,
-                    //         maxLength: 50,
-                    //         errorMessage: {
-                    //           minLength: 'City should be at least 2 characters long.',
-                    //           maxLength: 'City should not exceed 50 characters.'
-                    //         }
-                    //       },
-                    //       country: {
-                    //         type: 'string',
-                    //         minLength: 2,
-                    //         maxLength: 2,
-                    //         pattern: '^[A-Z]{2}$',
-                    //         errorMessage: {
-                    //           minLength: 'Country code should be exactly 2 characters.',
-                    //           maxLength: 'Country code should be exactly 2 characters.',
-                    //           pattern: 'Invalid country code.'
-                    //         }
-                    //       },
-                    //       isDifferentFromPhysical: {
-                    //         enum: [true],
-                    //         errorMessage: {
-                    //           enum: 'Should be true if physical address is different.'
-                    //         }
-                    //       },
-                    //       physical: {
-                    //         type: 'object',
-                    //         errorMessage: {
-                    //           required: {
-                    //             street: 'Street is required.',
-                    //             streetNumber: 'Street number is required.',
-                    //             city: 'City is required.',
-                    //             country: 'Country is required.',
-                    //             isDifferentFromPhysical: 'This field is required.',
-                    //             physical: 'Physical address details are required.'
-                    //           }
-                    //         },
-                    //         properties: {
-                    //           street: {
-                    //             type: 'string',
-                    //             minLength: 3,
-                    //             maxLength: 100,
-                    //             errorMessage: {
-                    //               minLength: 'Street should be at least 3 characters long.',
-                    //               maxLength: 'Street should not exceed 100 characters.'
-                    //             }
-                    //           },
-                    //           streetNumber: {
-                    //             type: 'string',
-                    //             minLength: 1,
-                    //             maxLength: 10,
-                    //             errorMessage: {
-                    //               minLength: 'Street number is required.',
-                    //               maxLength: 'Street number should not exceed 10 characters.'
-                    //             }
-                    //           },
-                    //           city: {
-                    //             type: 'string',
-                    //             minLength: 2,
-                    //             maxLength: 50,
-                    //             errorMessage: {
-                    //               minLength: 'City should be at least 2 characters long.',
-                    //               maxLength: 'City should not exceed 50 characters.'
-                    //             }
-                    //           },
-                    //           country: {
-                    //             type: 'string',
-                    //             minLength: 2,
-                    //             maxLength: 2,
-                    //             pattern: '^[A-Z]{2}$',
-                    //             errorMessage: {
-                    //               minLength: 'Country code should be exactly 2 characters.',
-                    //               maxLength: 'Country code should be exactly 2 characters.',
-                    //               pattern: 'Invalid country code.'
-                    //             }
-                    //           }
-                    //         },
-                    //       },
-
-                    //     }
-                    //   }
-                    // ]
+                    dependentRequired: {
+                      isDifferentFromPhysical: ["physical"]
+                    }
                   }
                 }
               }
