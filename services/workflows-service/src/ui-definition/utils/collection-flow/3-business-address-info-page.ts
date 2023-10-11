@@ -1,20 +1,20 @@
 import {getCountriesList} from '../schema-utils/countries';
 
 const validationSchema = {
-    type: "object",
+    type: 'object',
     properties: {
       entity: {
-        type: "object",
+        type: 'object',
         properties: {
           data: {
-            type: "object",
+            type: 'object',
             properties: {
               additionalInfo: {
-                type: "object",
-                required: ["headquarters"],
+                type: 'object',
+                required: ['headquarters'],
                 properties: {
                   headquarters: {
-                    type: "object",
+                    type: 'object',
                     if: {
                       properties: {
                         isDifferentFromPhysical: { const: true }
@@ -25,25 +25,114 @@ const validationSchema = {
                       required: ["street", "streetNumber", "city", "country", "physical"]
                     },
                     else: {
-                      required: ["street", "streetNumber", "city", "country"]
+                      required: ["street", "streetNumber", "city", "country"],
+                      errorMessage: {
+                        required: {
+                          street: 'Street is required.',
+                          streetNumber: 'Street number is required.',
+                          city: 'City is required.',
+                          country: 'Country is required.',
+                          isDifferentFromPhysical: 'This field is required.',
+                        }
+                      },
                     },
                     properties: {
-                      isDifferentFromPhysical: { type: "boolean" },
-                      street: { type: "string", minLength: 3, maxLength: 100 },
-                      streetNumber: { type: "number", minLength: 1, maxLength: 10 },
-                      city: { type: "string", minLength: 2, maxLength: 50 },
-                      country: { type: "string", minLength: 2, maxLength: 2, pattern: "^[A-Z]{2}$" },
+                      isDifferentFromPhysical: {
+                        type: 'boolean'
+                      },
+                      street: {
+                        type: 'string',
+                        minLength: 3,
+                        maxLength: 100,
+                        errorMessage: {
+                          minLength: 'Street should be at least 3 characters long.',
+                          maxLength: 'Street should not exceed 100 characters.'
+                        }
+                      },
+                      streetNumber: {
+                        type: 'number',
+                        minLength: 1,
+                        maxLength: 10,
+                        errorMessage: {
+                          minLength: 'Street number is required.',
+                          maxLength: 'Street number should not exceed 10 characters.'
+                        }
+                      },
+                      city: {
+                        type: 'string',
+                        minLength: 2,
+                        maxLength: 50,
+                        errorMessage: {
+                          minLength: 'City should be at least 2 characters long.',
+                          maxLength: 'City should not exceed 50 characters.'
+                        }
+                      },
+                      country: {
+                        type: 'string',
+                        minLength: 2,
+                        maxLength: 2,
+                        pattern: '^[A-Z]{2}$',
+                        errorMessage: {
+                          minLength: 'Country code should be exactly 2 characters.',
+                          maxLength: 'Country code should be exactly 2 characters.',
+                          pattern: 'Invalid country code.'
+                        }
+                      },
                       physical: {
-                        type: "object",
-                        properties: {
-                          street: { type: "string", minLength: 3, maxLength: 100 },
-                          streetNumber: { type: "number", minLength: 1, maxLength: 10 },
-                          city: { type: "string", minLength: 2, maxLength: 50 },
-                          country: { type: "string", minLength: 2, maxLength: 2, pattern: "^[A-Z]{2}$" }
+                        type: 'object',
+                        required: ['street', 'streetNumber', 'city', 'country'],
+                        errorMessage: {
+                          required: {
+                            street: 'Street is required.',
+                            streetNumber: 'Street number is required.',
+                            city: 'City is required.',
+                            country: 'Country is required.',
+                            isDifferentFromPhysical: 'This field is required.',
+                            physical: 'Physical address details are required.'
+                          }
                         },
-                        required: ["street", "streetNumber", "city", "country"]
-                      }
-                    }
+                        properties: {
+                          street: {
+                            type: 'string',
+                            minLength: 3,
+                            maxLength: 100,
+                            errorMessage: {
+                              minLength: 'Street should be at least 3 characters long.',
+                              maxLength: 'Street should not exceed 100 characters.'
+                            }
+                          },
+                          streetNumber: {
+                            type: 'number',
+                            minLength: 1,
+                            maxLength: 10,
+                            errorMessage: {
+                              minLength: 'Street number is required.',
+                              maxLength: 'Street number should not exceed 10 characters.'
+                            }
+                          },
+                          city: {
+                            type: 'string',
+                            minLength: 2,
+                            maxLength: 50,
+                            errorMessage: {
+                              minLength: 'City should be at least 2 characters long.',
+                              maxLength: 'City should not exceed 50 characters.'
+                            }
+                          },
+                          country: {
+                            type: 'string',
+                            minLength: 2,
+                            maxLength: 2,
+                            pattern: '^[A-Z]{2}$',
+                            errorMessage: {
+                              minLength: 'Country code should be exactly 2 characters.',
+                              maxLength: 'Country code should be exactly 2 characters.',
+                              pattern: 'Invalid country code.'
+                            }
+                          }
+                        },
+                      },
+                    },
                   }
                 }
               }
@@ -52,9 +141,8 @@ const validationSchema = {
         }
       }
     },
-    required: ["entity"]
-  }
-;
+    required: ['entity']
+  };
 
 const physicalAddressForm = {
   '==': [{ var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' }, true],
