@@ -624,6 +624,7 @@ export const useTasks = ({
                     value,
                   })),
                 },
+                hideSeparator: true,
               },
             ],
           },

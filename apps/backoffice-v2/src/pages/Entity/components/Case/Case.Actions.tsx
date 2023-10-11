@@ -59,7 +59,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
   } = useCaseActionsLogic({ workflowId: id, fullName });
 
   return (
-    <div className={`sticky top-0 z-50 col-span-2 space-y-2 bg-base-100 pr-4 pt-4`}>
+    <div className={`sticky top-0 z-50 col-span-2 space-y-2 bg-base-100 px-4 pt-4`}>
       <div className={`mb-8 flex flex-row space-x-3.5`}>
         <AssignDropdown
           assignedUser={assignedUser}
