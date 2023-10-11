@@ -90,7 +90,7 @@ export const TableCell = forwardRef(
               <TableCellComponent
                 colSpan={value?.columns?.length}
                 {...value?.props?.cell}
-                className={ctw(value?.props?.cell?.className, 'h-24 !py-px pl-3.5 text-center')}
+                className={ctw(value?.props?.cell?.className, 'h-24 !py-px pl-3.5')}
               >
                 No results.
               </TableCellComponent>

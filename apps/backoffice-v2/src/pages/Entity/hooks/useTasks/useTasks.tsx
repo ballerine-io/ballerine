@@ -472,15 +472,39 @@ export const useTasks = ({
                 value: 'User-provided data',
               },
               {
-                type: 'details',
-                value: {
-                  data: Object.entries(storeInfo)?.map(([title, value]) => ({
-                    title,
-                    value,
-                    isEditable: false,
-                  })),
-                },
-                hideSeparator: true,
+                type: 'container',
+                value: [
+                  {
+                    type: 'details',
+                    value: {
+                      data: Object.entries(omitPropsFromObject(storeInfo, 'websiteUrls'))?.map(
+                        ([title, value]) => ({
+                          title,
+                          value,
+                          isEditable: false,
+                        }),
+                      ),
+                    },
+                    hideSeparator: true,
+                  },
+                  {
+                    type: 'table',
+                    value: {
+                      columns: [
+                        {
+                          accessorKey: 'websiteUrl',
+                          header: 'Website URLs',
+                        },
+                      ],
+                      data: storeInfo?.websiteUrls
+                        ? storeInfo?.websiteUrls
+                            ?.split(',')
+                            ?.map(websiteUrl => ({ websiteUrl: websiteUrl?.trim() }))
+                        : [],
+                    },
+                    hideSeparator: true,
+                  },
+                ],
               },
             ],
           },
