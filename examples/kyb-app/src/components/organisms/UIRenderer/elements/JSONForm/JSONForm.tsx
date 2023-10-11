@@ -12,8 +12,9 @@ import { AnyObject } from '../../../../../../../../packages/ui/dist';
 import { jsonFormFields } from '@app/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
 import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
 import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
+import { DataCreationParams } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withInitialDataCreation';
 
-export interface JSONFormElementBaseParams {
+export interface JSONFormElementBaseParams extends DataCreationParams {
   jsonFormDefinition: RJSFSchema;
   uiSchema?: UiSchema;
   label?: string;
