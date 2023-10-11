@@ -71,7 +71,9 @@ export const useRevisionTaskByIdMutation = (workflowId: string, postUpdateEventN
     },
     onError: (_error, _variables, context) => {
       toast.error(
-        t(`toast:${_variables.decision ? 'ask_revision_document' : 'revert_revision'}.error`),
+        t(`toast:${_variables.decision ? 'ask_revision_document' : 'revert_revision'}.error`, {
+          errorMessage: _error.message,
+        }),
       );
 
       queryClient.setQueryData(workflowById.queryKey, context.previousWorkflow);

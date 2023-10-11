@@ -35,6 +35,8 @@ import { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';
 import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
+import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
+import { DocumentUpdateInput } from './dtos/document-update-update-input';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
@@ -193,6 +195,27 @@ export class WorkflowControllerInternal {
       }
       throw error;
     }
+  }
+
+  @common.Patch(':id/documents/:documentId')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseGuards(WorkflowAssigneeGuard)
+  async updateDocumentPropertiesById(
+    @common.Param() params: DocumentUpdateParamsInput,
+    @common.Body() data: DocumentUpdateInput,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    return await this.service.updateDocumentById(
+      {
+        workflowId: params?.id,
+        documentId: params?.documentId,
+        checkRequiredFields: false,
+      },
+      data.document,
+      currentProjectId,
+    );
   }
 
   // PATCH /workflows/:workflowId/decision/:documentId

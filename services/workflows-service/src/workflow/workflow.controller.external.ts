@@ -33,6 +33,7 @@ import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { EndUserService } from '@/end-user/end-user.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowWithToken } from '@/workflow/dtos/workflow-with-token';
+import { Public } from '@/common/decorators/public.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -258,6 +259,7 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @Public()
   @VerifyUnifiedApiSignatureDecorator()
   async hook(
     @common.Param() params: WorkflowIdWithEventInput,
@@ -328,6 +330,7 @@ export class WorkflowControllerExternal {
           },
         },
         documents: [],
+        projectId: currentProjectId,
       },
       projectIds: [currentProjectId],
       currentProjectId: currentProjectId,

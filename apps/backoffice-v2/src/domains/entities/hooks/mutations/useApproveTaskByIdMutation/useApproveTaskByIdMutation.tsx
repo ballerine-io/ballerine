@@ -60,7 +60,7 @@ export const useApproveTaskByIdMutation = (workflowId: string, postUpdateEventNa
       toast.success(t('toast:approve_document.success'));
     },
     onError: (_error, _variables, context) => {
-      toast.error(t('toast:approve_document.error'));
+      toast.error(t('toast:approve_document.error', { errorMessage: _error.message }));
       queryClient.setQueryData(workflowById.queryKey, context.previousWorkflow);
     },
   });

@@ -1,16 +1,11 @@
 # @ballerine/common
 
-## 0.7.7
+## 0.7.10
 
 ### Patch Changes
 
-- added common definition states and events
-
-## 0.7.6
-
-### Patch Changes
-
-- added common states and events
+- efedc9cb: Update document schemas
+- Version bump
 
 ## 0.7.5
 

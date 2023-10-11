@@ -124,6 +124,24 @@ export const fetchUpdateWorkflowById = async ({
   return handleZodError(error, workflow);
 };
 
+export const updateWorkflowDocumentById = async ({
+  workflowId,
+  documentId,
+  body,
+}: IWorkflowId & {
+  documentId: string;
+  body: Record<PropertyKey, unknown>;
+}) => {
+  const [workflow, error] = await apiClient({
+    endpoint: `workflows/${workflowId}/documents/${documentId}`,
+    method: Method.PATCH,
+    body,
+    schema: z.any(),
+  });
+
+  return handleZodError(error, workflow);
+};
+
 export const updateWorkflowSetAssignById = async ({
   workflowId,
   body,
