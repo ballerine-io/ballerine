@@ -7,7 +7,6 @@ import {
   ApprovalState,
   Business,
   EndUser,
-  File,
   Prisma,
   WorkflowDefinition,
   WorkflowRuntimeData,
@@ -768,6 +767,14 @@ export class WorkflowService {
       documentWithDecision as unknown as DefaultContextSchema['documents'][number],
       projectIds![0]!,
     );
+
+    if (postUpdateEventName) {
+      return await this.event(
+        { id: workflowId, name: postUpdateEventName },
+        projectIds,
+        currentProjectId,
+      );
+    }
 
     return updatedWorkflow;
   }

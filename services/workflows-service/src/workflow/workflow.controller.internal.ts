@@ -233,7 +233,7 @@ export class WorkflowControllerInternal {
     try {
       return await this.service.updateDocumentDecisionById(
         {
-          workflowRuntimeId: params?.id,
+          workflowId: params?.id,
           documentId: params?.documentId,
         },
         {
