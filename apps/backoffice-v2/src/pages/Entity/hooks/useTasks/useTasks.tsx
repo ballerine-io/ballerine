@@ -47,13 +47,13 @@ export const useTasks = ({
   parentMachine: TWorkflowById['context']['parentMachine'];
 }) => {
   const {
-    store: storeInfo,
+    store,
     bank: bankDetails,
     directors: directorsUserProvided,
     mainRepresentative,
     mainContact,
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
-  const { website: websiteBasicRequirement, processingDetails } = storeInfo ?? {};
+  const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
   const docsData = useStorageFilesQuery(
