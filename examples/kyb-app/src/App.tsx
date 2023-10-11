@@ -66,18 +66,18 @@ export const App = () => {
                 {({ currentPage }) => {
                   return currentPage ? (
                     <DynamicUI.Page page={currentPage}>
-                      <div className="flex flex-col gap-4">
-                        DEBUG
-                        <div>
-                          {currentPage
-                            ? currentPage.stateName
-                            : 'Page not found and state ' + state}
-                        </div>
-                        <div className="flex gap-4">
-                          <button onClick={() => stateApi.sendEvent('PREVIOUS')}>prev</button>
-                          <button onClick={() => stateApi.sendEvent('NEXT')}>next</button>
-                        </div>
-                      </div>
+                      {/*<div className="flex flex-col gap-4">*/}
+                      {/*  DEBUG*/}
+                      {/*  <div>*/}
+                      {/*    {currentPage*/}
+                      {/*      ? currentPage.stateName*/}
+                      {/*      : 'Page not found and state ' + state}*/}
+                      {/*  </div>*/}
+                      {/*  <div className="flex gap-4">*/}
+                      {/*    <button onClick={() => stateApi.sendEvent('PREVIOUS')}>prev</button>*/}
+                      {/*    <button onClick={() => stateApi.sendEvent('NEXT')}>next</button>*/}
+                      {/*  </div>*/}
+                      {/*</div>*/}
                       <DynamicUI.TransitionListener
                         onNext={tools => {
                           tools.setElementCompleted(currentPage.stateName, true);
