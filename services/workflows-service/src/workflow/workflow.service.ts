@@ -7,7 +7,6 @@ import {
   ApprovalState,
   Business,
   EndUser,
-  File,
   Prisma,
   WorkflowDefinition,
   WorkflowRuntimeData,
@@ -72,7 +71,6 @@ import { CustomerService } from '@/customer/customer.service';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
-import keyBy from 'lodash/keyBy';
 
 type TEntityId = string;
 
@@ -682,6 +680,7 @@ export class WorkflowService {
     },
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
+    postUpdateEventName?: string,
   ) {
     const workflow = await this.workflowRuntimeDataRepository.findById(workflowId, {}, projectIds);
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
@@ -697,33 +696,6 @@ export class WorkflowService {
       revised: 'revised',
     } as const;
     const status = decision.status ? Status[decision.status] : null;
-
-    this.__validateWorkflowDefinitionContext(workflowDefinition, {
-      ...workflow?.context,
-      documents: workflow?.context?.documents?.map(
-        ({
-          // @ts-ignore
-          // Validating the context should be done without the propertiesSchema
-          propertiesSchema: _propertiesSchema,
-          ...document
-        }: DefaultContextSchema['documents'][number]) => {
-          const updatedStatus = documentId === document.id ? status : document?.decision?.status;
-
-          return {
-            ...document,
-            decision: {
-              ...document?.decision,
-              status: updatedStatus === null ? undefined : updatedStatus,
-            },
-            type:
-              document?.type === 'unknown' && updatedStatus === 'approved'
-                ? undefined
-                : document?.type,
-          };
-        },
-      ),
-    });
-
     const newDecision = (() => {
       if (!status || status === 'approved') {
         return {
@@ -749,6 +721,34 @@ export class WorkflowService {
       throw new BadRequestException(`Invalid decision status: ${status}`);
     })();
 
+    const context = {
+      ...workflow?.context,
+      documents: workflow?.context?.documents?.map(
+        ({
+          // @ts-ignore
+          // Validating the context should be done without the propertiesSchema
+          propertiesSchema: _propertiesSchema,
+          ...document
+        }: DefaultContextSchema['documents'][number]) => {
+          const updatedStatus = documentId === document.id ? status : document?.decision?.status;
+
+          return {
+            ...document,
+            decision: {
+              ...document?.decision,
+              status: updatedStatus === null ? undefined : updatedStatus,
+            },
+            type:
+              document?.type === 'unknown' && updatedStatus === 'approved'
+                ? undefined
+                : document?.type,
+          };
+        },
+      ),
+    };
+
+    this.__validateWorkflowDefinitionContext(workflowDefinition, context);
+
     const document = workflow?.context?.documents?.find(
       (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
     );
@@ -767,6 +767,14 @@ export class WorkflowService {
       documentWithDecision as unknown as DefaultContextSchema['documents'][number],
       projectIds![0]!,
     );
+
+    if (postUpdateEventName) {
+      return await this.event(
+        { id: workflowId, name: postUpdateEventName },
+        projectIds,
+        currentProjectId,
+      );
+    }
 
     return updatedWorkflow;
   }
@@ -827,6 +835,7 @@ export class WorkflowService {
       },
       [projectId],
     );
+    this.__validateWorkflowDefinitionContext(workflowDef, updatedWorkflow.context);
     const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow, [projectId]);
 
     if (
@@ -897,7 +906,7 @@ export class WorkflowService {
     workflowRuntimeId: string,
     data: WorkflowDefinitionUpdateInput,
     projectId: TProjectId,
-  ) {
+  ): Promise<WorkflowRuntimeData> {
     const projectIds: TProjectIds = projectId ? [projectId] : null;
 
     const runtimeData = await this.workflowRuntimeDataRepository.findById(
@@ -983,20 +992,6 @@ export class WorkflowService {
     // @ts-ignore
     // TODO: Use snapshot.done instead
     const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
-    if (
-      ['active'].includes(data.status! || runtimeData.status) &&
-      workflowDef.config?.completedWhenTasksResolved
-    ) {
-      // TODO: Check against `contextSchema` or a policy if the length of documents is equal to the number of tasks defined.
-      const allDocumentsResolved =
-        data.context?.documents?.length &&
-        data.context?.documents?.every((document: DefaultContextSchema['documents'][number]) => {
-          return ['approved', 'rejected'].includes(document?.decision?.status as string);
-        });
-
-      data.status = allDocumentsResolved ? 'completed' : data.status! || runtimeData.status;
-    }
-
     const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
 
     if (isResolved) {
@@ -1099,6 +1094,14 @@ export class WorkflowService {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       await this.handleRuntimeFinalState(runtimeData, data.context, workflowDef);
+    }
+
+    if (data.postUpdateEventName) {
+      return await this.event(
+        { name: data.postUpdateEventName, id: workflowRuntimeId },
+        projectIds,
+        projectId,
+      );
     }
 
     return updatedResult;
@@ -1730,7 +1733,7 @@ export class WorkflowService {
     });
 
     if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
-      return;
+      return updatedRuntimeData;
     }
 
     const approvalState = ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState];
@@ -1766,6 +1769,7 @@ export class WorkflowService {
         currentProjectId,
       );
     }
+    return updatedRuntimeData;
   }
 
   async persistChildWorkflowToParent(

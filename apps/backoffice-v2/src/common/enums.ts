@@ -29,6 +29,8 @@ export const Action = {
   REJECT: 'reject',
   APPROVE: 'approve',
   REVISION: 'revision',
+  TASK_REVIEWED: 'TASK_REVIEWED',
+  CASE_REVIEWED: 'CASE_REVIEWED',
 } as const;
 export const Resource = {
   INDIVIDUAL: 'INDIVIDUAL',

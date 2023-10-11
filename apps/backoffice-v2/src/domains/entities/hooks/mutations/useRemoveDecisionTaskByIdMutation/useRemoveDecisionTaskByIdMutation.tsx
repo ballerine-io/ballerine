@@ -3,26 +3,28 @@ import toast from 'react-hot-toast';
 import { t } from 'i18next';
 import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
-import { Action } from '../../../../../common/enums';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 
-export const useRejectTaskByIdMutation = (workflowId: string, postUpdateEventName?: string) => {
+export const useRemoveDecisionTaskByIdMutation = (
+  workflowId: string,
+  postUpdateEventName?: string,
+) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
   const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
 
   return useMutation({
-    mutationFn: ({ documentId, reason }: { documentId: string; reason?: string }) =>
+    mutationFn: ({ documentId }: { documentId: string }) =>
       updateWorkflowDecision({
         workflowId,
         documentId,
         body: {
-          decision: Action.REJECT,
-          reason,
+          decision: null,
+          reason: null,
           postUpdateEventName,
         },
       }),
-    onMutate: async ({ documentId, reason }) => {
+    onMutate: async ({ documentId }) => {
       await queryClient.cancelQueries({
         queryKey: workflowById.queryKey,
       });
@@ -42,9 +44,9 @@ export const useRejectTaskByIdMutation = (workflowId: string, postUpdateEventNam
                 ...document,
                 decision: {
                   ...document?.decision,
-                  status: 'rejected',
-                  rejectionReason: reason,
+                  status: null,
                   revisionReason: null,
+                  rejectionReason: null,
                 },
               };
             }),
@@ -54,14 +56,15 @@ export const useRejectTaskByIdMutation = (workflowId: string, postUpdateEventNam
 
       return { previousWorkflow };
     },
-    onSuccess: () => {
+    onSuccess: _ => {
       // workflowsQueryKeys._def is the base key for all workflows queries
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
-      toast.success(t('toast:reject_document.success'));
+      toast.success(t(`toast:revert_revision.success`));
     },
     onError: (_error, _variables, context) => {
-      toast.error(t('toast:reject_document.error', { errorMessage: _error.message }));
+      toast.error(t(`toast:revert_revision.error`));
+
       queryClient.setQueryData(workflowById.queryKey, context.previousWorkflow);
     },
   });
