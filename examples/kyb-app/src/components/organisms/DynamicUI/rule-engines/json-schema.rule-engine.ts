@@ -52,7 +52,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
         }
 
         return {
-          fieldId: fieldId.join('.'),
+          fieldId: fieldId.join('.').replaceAll(/\.(\d+)\./g, '[$1]'),
           message: error.message,
           definitionName: definition.name,
           fieldDestination: definition.valueDestination,

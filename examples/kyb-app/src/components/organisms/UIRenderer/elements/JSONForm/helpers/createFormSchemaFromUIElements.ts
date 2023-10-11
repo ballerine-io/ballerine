@@ -33,7 +33,10 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
 
       const elementUISchema = {
         ...uiElement?.options?.uiSchema,
-        'ui:label': Boolean(uiElement?.options?.label),
+        'ui:label':
+          (uiElement.options?.uiSchema || {})['ui:label'] === undefined
+            ? Boolean(uiElement?.options?.label)
+            : (uiElement.options?.uiSchema || {})['ui:label'],
         'ui:placeholder': uiElement?.options?.hint,
       };
 
@@ -44,6 +47,7 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
   if (formSchema.type === 'array') {
     formSchema.items = {
       type: 'object',
+      required: formElement.options?.jsonFormDefinition?.required,
       properties: {},
     };
 

@@ -10,8 +10,8 @@ export interface TransitionListenerTools {
 }
 
 export interface TransitionListenerProps {
-  onPrevious?: (tools: TransitionListenerTools, state: string) => void;
-  onNext?: (tools: TransitionListenerTools, state: string) => void;
+  onPrevious?: (tools: TransitionListenerTools, prevState: string, currentState: string) => void;
+  onNext?: (tools: TransitionListenerTools, prevState: string, currentState: string) => void;
   children: AnyChildren;
 }
 
@@ -34,11 +34,11 @@ export const TransitionListener = ({ onPrevious, onNext, children }: TransitionL
     const prevPageIndex = pages.findIndex(page => page.stateName === prevStateRef.current);
 
     if (currentPageIndex < prevPageIndex) {
-      onPrevious && onPrevious(helpersRef.current, state);
+      onPrevious && onPrevious(helpersRef.current, prevStateRef.current, state);
     }
 
     if (currentPageIndex > prevPageIndex) {
-      onNext && onNext(helpersRef.current, state);
+      onNext && onNext(helpersRef.current, prevStateRef.current, state);
     }
 
     prevStateRef.current = state;

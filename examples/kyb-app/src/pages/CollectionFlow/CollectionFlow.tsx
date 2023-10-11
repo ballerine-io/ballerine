@@ -52,8 +52,8 @@ export const CollectionFlowDumb = () => {
               return currentPage ? (
                 <DynamicUI.Page page={currentPage}>
                   <DynamicUI.TransitionListener
-                    onNext={tools => {
-                      tools.setElementCompleted(currentPage.stateName, true);
+                    onNext={(tools, prevState) => {
+                      tools.setElementCompleted(prevState, true);
                     }}
                   >
                     <DynamicUI.ActionsHandler actions={currentPage.actions} stateApi={stateApi}>
@@ -87,18 +87,22 @@ export const CollectionFlowDumb = () => {
                         </AppShell.Sidebar>
                         <AppShell.Content>
                           <AppShell.FormContainer>
-                            <div className="flex flex-col gap-4">
-                              DEBUG
-                              <div>
-                                {currentPage
-                                  ? currentPage.stateName
-                                  : 'Page not found and state ' + state}
+                            {localStorage.getItem('devmode') ? (
+                              <div className="flex flex-col gap-4">
+                                DEBUG
+                                <div>
+                                  {currentPage
+                                    ? currentPage.stateName
+                                    : 'Page not found and state ' + state}
+                                </div>
+                                <div className="flex gap-4">
+                                  <button onClick={() => stateApi.sendEvent('PREVIOUS')}>
+                                    prev
+                                  </button>
+                                  <button onClick={() => stateApi.sendEvent('NEXT')}>next</button>
+                                </div>
                               </div>
-                              <div className="flex gap-4">
-                                <button onClick={() => stateApi.sendEvent('PREVIOUS')}>prev</button>
-                                <button onClick={() => stateApi.sendEvent('NEXT')}>next</button>
-                              </div>
-                            </div>
+                            ) : null}
                             <div className="flex flex-col">
                               <div className="pb-7 flex gap-3 items-center">
                                 <StepperProgress

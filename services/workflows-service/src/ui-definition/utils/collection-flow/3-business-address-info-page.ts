@@ -252,6 +252,9 @@ export const BusinessAddressInfoPage = {
                 jsonFormDefinition: {
                   type: 'boolean',
                 },
+                uiSchema: {
+                  'ui:label': false
+                }
               },
             },
           ],
