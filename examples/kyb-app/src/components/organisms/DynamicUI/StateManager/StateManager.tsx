@@ -6,7 +6,7 @@ import {
   StateManagerContext,
   StateManagerProps,
 } from '@app/components/organisms/DynamicUI/StateManager/types';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 export const StateManager = ({
   definition,
@@ -16,10 +16,17 @@ export const StateManager = ({
   workflowId,
   initialContext,
 }: StateManagerProps) => {
-  const machine = useMemo(
-    () => createStateMachine(workflowId, definition, definitionType, extensions, initialContext),
-    [definition, workflowId, definitionType, extensions],
-  );
+  const machine = useMemo(() => {
+    const machine = createStateMachine(
+      workflowId,
+      definition,
+      definitionType,
+      extensions,
+      initialContext,
+    );
+    machine.overrideContext(initialContext);
+    return machine;
+  }, []);
 
   const { machineApi } = useMachineLogic(machine);
   const { contextPayload, state, sendEvent, invokePlugin, setContext, getContext, getState } =

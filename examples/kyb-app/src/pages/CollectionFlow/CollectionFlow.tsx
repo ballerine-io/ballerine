@@ -4,6 +4,7 @@ import { UIRenderer } from '@app/components/organisms/UIRenderer';
 import { ButtonUIElement } from '@app/components/organisms/UIRenderer/elements/ButtonUI';
 import { Cell } from '@app/components/organisms/UIRenderer/elements/Cell';
 import { JSONForm } from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
+import { withInitialDataCreation } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withInitialDataCreation';
 import { StepperUI } from '@app/components/organisms/UIRenderer/elements/StepperUI';
 import { Title } from '@app/components/organisms/UIRenderer/elements/Title';
 import { useCustomer } from '@app/components/providers/CustomerProvider';
@@ -19,7 +20,7 @@ import { useMemo } from 'react';
 const elems = {
   h1: Title,
   h3: (props: AnyObject) => <h3 className="font-bold">{props?.options?.text}</h3>,
-  'json-form': JSONForm,
+  'json-form': withInitialDataCreation(JSONForm),
   container: Cell,
   mainContainer: Cell,
   'json-form:button': ButtonUIElement,

@@ -9,12 +9,14 @@ const validationSchema = {
             properties: {
               additionalInfo: {
                 type: 'object',
+                required: ['ubos', 'directors'],
                 properties: {
                   ubos: {
                     type: 'array',
                     items: {
                       type: 'object',
                       required: ["firstName", "lastName", "nationality", "identityNumber", "email", "fullAddress", "percentageOfOwnership"],
+                      minItems: 1,
                       properties: {
                         firstName: {
                           type: 'string',
@@ -93,6 +95,7 @@ const validationSchema = {
                   },
                   directors: {
                     type: 'array',
+                    minItems: 1,
                     items: {
                       type: 'object',
                       required: ["firstName", "lastName", "nationality", "identityNumber", "email", "fullAddress"],
@@ -237,16 +240,6 @@ export const DirectorsAndUbosPage = {
         {
           type: 'json-form',
           valueDestination: 'entity.data.additionalInfo.ubos',
-          visibleOn: [{
-            type: 'json-logic',
-            value: {
-              "if": [
-                { "var": "entity.data.additionalInfo.imShareholder" },
-                false,
-                true
-              ]
-            }
-          }],
           options: {
             description:
               '<p>add all the natural persons that own or control, <bold>Directly Or Indirectly</bold> more than 25% of the company.</p>',
@@ -254,6 +247,34 @@ export const DirectorsAndUbosPage = {
               type: 'array',
               required: ["ubos:first-name-input", "ubos:last-name-input", "ubos:nationality-input", "ubos:identity-number-input", "ubos:email-input", "ubos:address-of-residence-input"],
             },
+            dataCreation: {
+              createWhenHidden: true,
+              destination: 'entity.data.additionalInfo.ubos',
+              schema: {
+                'entity.data.additionalInfo.ubos[0].firstName': 'entity.data.additionalInfo.mainRepresentative.firstName',
+                'entity.data.additionalInfo.ubos[0].lastName': 'entity.data.additionalInfo.mainRepresentative.lastName'
+              },
+              insertRules: [
+                {
+                  type: 'json-logic',
+                  value: {"==":[{"var":"entity.data.additionalInfo.imShareholder"},true]}
+                }
+              ],
+              deleteRules: [
+                {
+                  type: 'json-logic',
+                  value: {
+                    if: [
+                      {
+                        var: 'entity.data.additionalInfo.imShareholder'
+                      },
+                      false,
+                      true
+                    ]
+                  }
+                }
+              ]
+            }
           },
           elements: [
             {
@@ -381,22 +402,40 @@ export const DirectorsAndUbosPage = {
               name: 'directors-component',
               type: 'json-form',
               valueDestination: 'entity.data.additionalInfo.directors',
-              visibleOn: [{
-                type: 'json-logic',
-                value: {
-                  "if": [
-                    { "var": "entity.data.additionalInfo.imDirector" },
-                    false,
-                    true
-                  ]
-                }
-              }],
               options: {
                 description: '<p>Add all the directors of the company.</p>',
                 jsonFormDefinition: {
                   type: 'array',
                   required: ["directors:first-name-input", "directors:last-name-input", "directors:nationality-input", "directors:identity-number-input", "directors:email-input", "directors:address-of-residence-input"],
                 },
+                dataCreation: {
+                  destination: 'entity.data.additionalInfo.directors',
+                  createWhenHidden: true,
+                  schema: {
+                    'entity.data.additionalInfo.directors[0].firstName': 'entity.data.additionalInfo.mainRepresentative.firstName',
+                    'entity.data.additionalInfo.directors[0].lastName': 'entity.data.additionalInfo.mainRepresentative.lastName'
+                  },
+                  insertRules: [
+                    {
+                      type: 'json-logic',
+                      value: {"==":[{"var":"entity.data.additionalInfo.imDirector"},true]}
+                    }
+                  ],
+                  deleteRules: [
+                    {
+                      type: 'json-logic',
+                      value: {
+                        if: [
+                          {
+                            var: 'entity.data.additionalInfo.imDirector'
+                          },
+                          false,
+                          true
+                        ]
+                      }
+                    }
+                  ]
+                }
               },
               elements: [
                 {
@@ -452,7 +491,7 @@ export const DirectorsAndUbosPage = {
                   valueDestination: 'entity.data.additionalInfo.directors.identityNumber',
                   options: {
                     jsonFormDefinition: {
-                      type: 'number',
+                      type: 'string',
                     },
                     label: 'Identity Number',
                     hint: '11010219820519759X',

@@ -17,6 +17,7 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
     machineState: machineApi.getState(),
     payload: machineApi.getContext(),
   }));
+
   const contextRef = useRef<ContextPayload>(contextPayload);
   const { helpers } = useDynamicUIContext();
 
