@@ -21,6 +21,11 @@ import { AnyObject } from '@ballerine/ui';
 import { StepperUI } from '@app/components/organisms/UIRenderer/elements/StepperUI';
 import { useMemo } from 'react';
 import { prepareInitialUIState } from '@app/helpers/prepareInitialUIState';
+import { CustomerProvider } from '@app/components/providers/CustomerProvider';
+import { LoadingScreen } from '@app/common/components/molecules/LoadingScreen';
+import { CustomerProviderFallback } from '@app/components/molecules/CustomerProviderFallback';
+import { RouterProvider } from 'react-router-dom';
+import { router } from '@app/router';
 
 const elems = {
   h1: Title,
@@ -33,26 +38,14 @@ const elems = {
 };
 
 export const App = () => {
-  const dependancyQueries = [
-    useCollectionFlowSchemaQuery(),
-    useCustomerQuery(),
-    useFlowContextQuery(),
-  ];
-  const schema = useUISchemasQuery();
-  const elements = schema.data?.uiSchema?.elements;
-  const definition = schema.data?.definition.definition;
-  const { data: context } = useFlowContextQuery();
-
-  const initialUIState = useMemo(() => {
-    return prepareInitialUIState(elements || [], context?.context || {});
-  }, [elements, context]);
+  const dependancyQueries = [useCustomerQuery(), useUISchemasQuery(), useFlowContextQuery()];
 
   return (
     <AppLoadingContainer dependencies={dependancyQueries}>
-      {/* <CustomerProvider loadingPlaceholder={<LoadingScreen />} fallback={CustomerProviderFallback}>
+      <CustomerProvider loadingPlaceholder={<LoadingScreen />} fallback={CustomerProviderFallback}>
         <RouterProvider router={router} />
-      </CustomerProvider> */}
-      {definition && context?.context ? (
+      </CustomerProvider>
+      {/* {definition && context?.context ? (
         <DynamicUI initialState={initialUIState}>
           <DynamicUI.StateManager
             initialContext={context.context}
@@ -94,7 +87,7 @@ export const App = () => {
             )}
           </DynamicUI.StateManager>
         </DynamicUI>
-      ) : null}
+      ) : null} */}
     </AppLoadingContainer>
   );
 };
