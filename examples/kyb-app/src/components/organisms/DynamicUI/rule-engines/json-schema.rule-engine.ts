@@ -12,9 +12,13 @@ export class JsonSchemaRuleEngine implements RuleEngine {
   public readonly ENGINE_NAME = 'json-schema';
 
   test(context: unknown, rule: Rule, definition: UIElement<AnyObject>) {
-    let validator = new Ajv({ allErrors: true });
-    validator = ajvErrors(validator, { singleError: true });
-    validator = addFormats(validator);
+    const validator = new Ajv({ allErrors: true });
+    addFormats(validator, {
+      formats: ['email', 'uri', 'date', 'date-time'],
+      keywords: true,
+    });
+    ajvErrors(validator, { singleError: true });
+
     const validationResult = validator.validate(rule.value, context);
     if (!validationResult) {
       const validationErrorMessage = this.__extractErrorsWithFields(validator, definition);

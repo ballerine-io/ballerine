@@ -11958,7 +11958,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.21.0
+      '@babel/runtime': 7.22.10
       '@types/react': 18.2.14
       react: 18.2.0
 

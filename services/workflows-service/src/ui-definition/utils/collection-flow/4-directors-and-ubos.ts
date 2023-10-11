@@ -161,12 +161,6 @@ const validationSchema = {
                     }
                   }
                 },
-                errorMessage: {
-                  required: {
-                    ubos: 'UBOs are required.',
-                    directors: 'Directors are required.'
-                  }
-                }
               }
             },
           }
