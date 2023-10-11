@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import isEqual from 'lodash/isEqual';
 import { StateMachineAPI } from '@app/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
 import { getAccessToken } from '@app/helpers/get-access-token.helper';
+import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 
 type ContextPayload = AnyObject;
 
@@ -17,6 +18,7 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
     payload: machineApi.getContext(),
   }));
   const contextRef = useRef<ContextPayload>(contextPayload);
+  const { helpers } = useDynamicUIContext();
 
   useEffect(() => {
     machineApi.setContext({
@@ -64,18 +66,25 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
 
   const sendEvent = useCallback(
     async (eventName: string) => {
-      await machineApi.sendEvent(eventName);
+      helpers.setLoading(true);
+      try {
+        await machineApi.sendEvent(eventName);
 
-      if (!isEqual(machineApi.getContext(), contextRef.current)) {
-        _setContext({
-          machineState: machineApi.getState(),
-          payload: machineApi.getContext(),
-        });
+        if (!isEqual(machineApi.getContext(), contextRef.current)) {
+          _setContext({
+            machineState: machineApi.getState(),
+            payload: machineApi.getContext(),
+          });
+        }
+
+        _setContext(prev => ({ ...prev, machineState: machineApi.getState() }));
+      } catch (error) {
+        console.log(`Error occured on attempt to send event ${eventName}`, error.message);
+      } finally {
+        helpers.setLoading(false);
       }
-
-      _setContext(prev => ({ ...prev, machineState: machineApi.getState() }));
     },
-    [machineApi, contextRef],
+    [machineApi, contextRef, helpers],
   );
 
   const getContext = useCallback(() => machineApi.getContext(), [machineApi]);

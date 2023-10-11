@@ -9,13 +9,13 @@ export const Navigation = () => {
 
   return (
     <div
-      className={clsx('select-none', {
+      className={clsx('select-none cursor-pointer ', {
         'pointer-events-none opacity-50': state.isLoading,
       })}
       onClick={() => stateApi.sendEvent('PREVIOUS')}
     >
       <ArrowLeft className="inline" />
-      <span className="cursor-pointer pl-2 align-middle text-sm font-bold">Back</span>
+      <span className="pl-2 align-middle text-sm font-bold">Back</span>
     </div>
   );
 };

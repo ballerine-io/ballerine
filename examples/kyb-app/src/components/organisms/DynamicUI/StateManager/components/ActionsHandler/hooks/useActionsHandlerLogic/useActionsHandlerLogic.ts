@@ -6,6 +6,7 @@ import { ApiActionHandler } from '@app/components/organisms/DynamicUI/StateManag
 import { EventDispatcherHandler } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/event-dispatcher.handler';
 import { PluginRunnerHandler } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/plugin-runner.handler';
 import debounce from 'lodash/debounce';
+import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 
 const defaultActionHandlers = [
   new ApiActionHandler(),
@@ -19,6 +20,9 @@ export const useActionsHandlerLogic = (
 ) => {
   const [pendingActions, setPendingActions] = useState<Action[]>([]);
   const [isProcessingActions, setProcessingActions] = useState(false);
+  const { helpers } = useDynamicUIContext();
+
+  const { setLoading: setUILoading } = helpers;
 
   const dispatchAction = useCallback((action: Action) => {
     setPendingActions(prev => [...prev, action]);
@@ -27,6 +31,7 @@ export const useActionsHandlerLogic = (
   const _processActions = useCallback(
     async (actions: Action[]) => {
       try {
+        setUILoading(true);
         setProcessingActions(true);
 
         const actionHandlerManager = new ActionHandlerManager(actionHandlers);
@@ -47,9 +52,10 @@ export const useActionsHandlerLogic = (
       } finally {
         setPendingActions([]);
         setProcessingActions(false);
+        setUILoading(false);
       }
     },
-    [actionHandlers, stateApi],
+    [actionHandlers, stateApi, setUILoading],
   );
 
   const processActions = useMemo(() => debounce(_processActions, 100), [_processActions]);

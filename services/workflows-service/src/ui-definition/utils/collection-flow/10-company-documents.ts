@@ -341,18 +341,20 @@ export const CompanyDocuments = {
                 'By checking the checkbox below, I/we hereby declare that the information which was submitted in the attached Merchant application is truthful and genuine in regards to my/our business, legal status and registration, business practice and all other submitted information.',
             },
             {
-              name: 'confirmation-checkbox',
-              type: 'checkbox',
-              valueDestination: 'entity.data.additionalInfo.signature.isConfirmed',
-              options: {
-                label: 'I Confirm',
-                jsonFormDefinition: {
+              type: 'json-form',
+              elements: [
+                {
+                  name: 'confirmation-checkbox',
                   type: 'checkbox',
-                },
-              },
-            },
-            {
-              type: 'pipe',
+                  valueDestination: 'entity.data.additionalInfo.signature.isConfirmed',
+                  options: {
+                    label: 'I Confirm',
+                    jsonFormDefinition: {
+                      type: 'boolean',
+                    },
+                  },
+                }
+              ]
             },
             {
               type: 'description',
