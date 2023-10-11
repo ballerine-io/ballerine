@@ -221,8 +221,8 @@ export class WorkflowControllerExternal {
     @common.Body() data: WorkflowEventInput,
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
-  ): Promise<void> {
-    await this.service.event(
+  ) {
+    return await this.service.event(
       {
         ...data,
         id,
