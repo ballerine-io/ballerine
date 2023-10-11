@@ -1,13 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { fetchWorkflowDecision, TWorkflowById } from '../../../../workflows/fetchers';
+import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import { Action } from '../../../../../common/enums';
 import { TObjectValues } from '../../../../../common/types';
 
-export const useRevisionTaskByIdMutation = (workflowId: string) => {
+export const useRevisionTaskByIdMutation = (workflowId: string, postUpdateEventName?: string) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
   const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
@@ -22,12 +22,13 @@ export const useRevisionTaskByIdMutation = (workflowId: string) => {
       decision: TObjectValues<typeof Action> | null;
       reason?: string;
     }) =>
-      fetchWorkflowDecision({
+      updateWorkflowDecision({
         workflowId,
         documentId,
         body: {
           decision,
           reason,
+          postUpdateEventName,
         },
       }),
     onMutate: async ({ documentId, reason }) => {

@@ -81,8 +81,8 @@ export const defaultContextSchema = {
             type: 'object',
             properties: {
               status: {
-                type: 'string',
-                enum: ['new', 'pending', 'revision', 'approved', 'rejected'],
+                type: ['string', 'null'],
+                enum: ['new', 'pending', 'revision', 'approved', 'rejected', null],
               },
               rejectionReason: {
                 anyOf: [
