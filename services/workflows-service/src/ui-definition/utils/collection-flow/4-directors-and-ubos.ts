@@ -14,6 +14,7 @@ const validationSchema = {
                     type: 'array',
                     items: {
                       type: 'object',
+                      required: ["firstName", "lastName", "nationality", "identityNumber", "email", "fullAddress", "percentageOfOwnership"],
                       properties: {
                         firstName: {
                           type: 'string',
@@ -94,6 +95,7 @@ const validationSchema = {
                     type: 'array',
                     items: {
                       type: 'object',
+                      required: ["firstName", "lastName", "nationality", "identityNumber", "email", "fullAddress"],
                       properties: {
                         firstName: {
                           type: 'string',
@@ -161,6 +163,12 @@ const validationSchema = {
                     }
                   }
                 },
+                errorMessage: {
+                  required: {
+                    ubos: 'UBOs are required.',
+                    directors: 'Directors are required.'
+                  }
+                }
               }
             },
           }
@@ -210,6 +218,7 @@ export const DirectorsAndUbosPage = {
               '<p>add all the natural persons that own or control, <bold>Directly Or Indirectly</bold> more than 25% of the company.</p>',
             jsonFormDefinition: {
               type: 'array',
+              required: ["firstName", "lastName", "nationality", "identityNumber", "email", "fullAddress"],
             },
           },
           elements: [
@@ -318,6 +327,7 @@ export const DirectorsAndUbosPage = {
                 description: '<p>Add all the directors of the company.</p>',
                 jsonFormDefinition: {
                   type: 'array',
+                  required: ["firstName", "lastName", "nationality", "identityNumber", "email", "fullAddress"],
                 },
               },
               elements: [
