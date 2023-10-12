@@ -4,13 +4,23 @@ const validationSchema = {
   properties: {
     documents: {
       type: 'array',
-      minLength: 10,
+      minItems: 10,
       items: {
         type: 'object',
-        required: ['ballerineFileId'],
+        required: ['pages'],
         properties: {
-          ballerineFileId: {
-            type: 'string'
+          pages: {
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['ballerineFileId'],
+              properties: {
+                ballerineFileId: {
+                  type: 'string',
+                  minLength: 1
+                }
+              }
+            }
           }
         }
       }
@@ -373,16 +383,6 @@ export const CompanyDocuments = {
           ],
         },
         {
-          name: 'previous-page-button',
-          type: 'json-form:button',
-          options: {
-            uiDefinition: {
-              classNames: ['align-right', 'padding-top-10'],
-            },
-            text: 'Previous',
-          },
-        },
-        {
           name: 'next-page-button',
           type: 'json-form:button',
           options: {
@@ -393,7 +393,7 @@ export const CompanyDocuments = {
           },
           availableOn: [
             {
-              type: 'json-logic',
+              type: 'json-schema',
               value: validationSchema,
             },
             {
