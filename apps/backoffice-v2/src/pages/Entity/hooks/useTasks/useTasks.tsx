@@ -47,13 +47,13 @@ export const useTasks = ({
   parentMachine: TWorkflowById['context']['parentMachine'];
 }) => {
   const {
-    store: storeInfo,
+    store,
     bank: bankDetails,
     directors: directorsUserProvided,
     mainRepresentative,
     mainContact,
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
-  const { website: websiteBasicRequirement, processingDetails } = storeInfo ?? {};
+  const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
   const docsData = useStorageFilesQuery(
@@ -73,19 +73,27 @@ export const useTasks = ({
       results[docIndex][pageIndex] = docsData?.shift()?.data;
     });
   });
-  const pluginsOutputKeys = Object.keys(pluginsOutput ?? {});
-  const address = getAddressDeep(pluginsOutput, { propertyName: 'registeredAddressInFull' });
+  const pluginsOutputBlacklist = ['company_sanctions', 'directors', 'ubos'];
+  const filteredPluginsOutput = useMemo(
+    () => omitPropsFromObject(pluginsOutput, ...pluginsOutputBlacklist),
+    [pluginsOutput, pluginsOutputBlacklist],
+  );
+  const pluginsOutputKeys = Object.keys(filteredPluginsOutput ?? {});
+  const address = getAddressDeep(filteredPluginsOutput, {
+    propertyName: 'registeredAddressInFull',
+  });
   const { data: locations } = useNominatimQuery(address);
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
   const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
 
   const registryInfoBlock =
-    Object.keys(pluginsOutput ?? {}).length === 0
+    Object.keys(filteredPluginsOutput ?? {}).length === 0
       ? []
       : pluginsOutputKeys
           ?.filter(
             key =>
-              !!Object.keys(pluginsOutput[key] ?? {})?.length && !('error' in pluginsOutput[key]),
+              !!Object.keys(filteredPluginsOutput[key] ?? {})?.length &&
+              !('error' in filteredPluginsOutput[key]),
           )
           ?.map((key, index, collection) => ({
             cells: [
@@ -107,7 +115,7 @@ export const useTasks = ({
                 type: 'details',
                 hideSeparator: index === collection.length - 1,
                 value: {
-                  data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
+                  data: Object.entries(filteredPluginsOutput[key] ?? {})?.map(([title, value]) => ({
                     title,
                     value,
                   })),
@@ -464,22 +472,46 @@ export const useTasks = ({
                 value: 'User-provided data',
               },
               {
-                type: 'details',
-                value: {
-                  data: Object.entries(storeInfo)?.map(([title, value]) => ({
-                    title,
-                    value,
-                    isEditable: false,
-                  })),
-                },
-                hideSeparator: true,
+                type: 'container',
+                value: [
+                  {
+                    type: 'details',
+                    value: {
+                      data: Object.entries(omitPropsFromObject(storeInfo, 'websiteUrls'))?.map(
+                        ([title, value]) => ({
+                          title,
+                          value,
+                          isEditable: false,
+                        }),
+                      ),
+                    },
+                    hideSeparator: true,
+                  },
+                  {
+                    type: 'table',
+                    value: {
+                      columns: [
+                        {
+                          accessorKey: 'websiteUrl',
+                          header: 'Website URLs',
+                        },
+                      ],
+                      data: storeInfo?.websiteUrls
+                        ? storeInfo?.websiteUrls
+                            ?.split(',')
+                            ?.map(websiteUrl => ({ websiteUrl: websiteUrl?.trim() }))
+                        : [],
+                    },
+                    hideSeparator: true,
+                  },
+                ],
               },
             ],
           },
         ];
 
   const websiteBasicRequirementBlock =
-    Object.keys(bankDetails ?? {}).length === 0
+    Object.keys(websiteBasicRequirement ?? {}).length === 0
       ? []
       : [
           {
@@ -495,7 +527,7 @@ export const useTasks = ({
               {
                 type: 'details',
                 value: {
-                  data: Object.entries(bankDetails)?.map(([title, value]) => ({
+                  data: Object.entries(websiteBasicRequirement)?.map(([title, value]) => ({
                     title,
                     value,
                     isEditable: false,
@@ -508,7 +540,7 @@ export const useTasks = ({
         ];
 
   const bankingDetailsBlock =
-    Object.keys(websiteBasicRequirement ?? {}).length === 0
+    Object.keys(bankDetails ?? {}).length === 0
       ? []
       : [
           {
@@ -524,7 +556,7 @@ export const useTasks = ({
               {
                 type: 'details',
                 value: {
-                  data: Object.entries(websiteBasicRequirement)?.map(([title, value]) => ({
+                  data: Object.entries(bankDetails)?.map(([title, value]) => ({
                     title,
                     value,
                     isEditable: false,
@@ -616,6 +648,7 @@ export const useTasks = ({
                     value,
                   })),
                 },
+                hideSeparator: true,
               },
             ],
           },
@@ -636,7 +669,7 @@ export const useTasks = ({
                   type: 'subheading',
                   value: 'Company check results',
                   props: {
-                    className: 'text-lg mb-2 mt-4 block ms-2',
+                    className: 'text-lg my-4 block',
                   },
                 },
                 {
@@ -915,6 +948,9 @@ export const useTasks = ({
             {
               type: 'subheading',
               value: 'Registry-provided Data',
+              props: {
+                className: 'mb-4',
+              },
             },
             {
               type: 'table',
@@ -963,6 +999,9 @@ export const useTasks = ({
               {
                 type: 'subheading',
                 value: 'User-provided Data',
+                props: {
+                  className: 'mb-4',
+                },
               },
               {
                 type: 'table',
@@ -1013,6 +1052,9 @@ export const useTasks = ({
             {
               type: 'subheading',
               value: 'Registry-provided Data',
+              props: {
+                className: 'mb-4',
+              },
             },
             {
               type: 'table',
