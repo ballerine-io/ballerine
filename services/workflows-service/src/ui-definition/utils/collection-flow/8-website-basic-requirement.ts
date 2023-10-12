@@ -253,16 +253,6 @@ export const WebsiteBasicRequirement = {
           ],
         },
         {
-          name: 'previous-page-button',
-          type: 'json-form:button',
-          options: {
-            uiDefinition: {
-              classNames: ['align-right', 'padding-top-10'],
-            },
-            text: 'Previous',
-          },
-        },
-        {
           name: 'next-page-button',
           type: 'json-form:button',
           options: {

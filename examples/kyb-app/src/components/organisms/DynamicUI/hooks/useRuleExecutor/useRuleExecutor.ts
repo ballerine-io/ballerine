@@ -7,7 +7,7 @@ import {
 import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
 import { Rule, UIElement } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { JmespathRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
 
 export const useRuleExecutor = (
@@ -16,6 +16,12 @@ export const useRuleExecutor = (
   definition: UIElement<AnyObject>,
   uiState: UIState,
 ) => {
+  const uiStateRef = useRef(uiState);
+
+  useEffect(() => {
+    uiStateRef.current = uiState;
+  }, [uiState]);
+
   const [executionResult, setExecutionResult] = useState<RuleTestResult[]>([]);
 
   const rulesManager = useMemo(
@@ -44,10 +50,8 @@ export const useRuleExecutor = (
   );
 
   useEffect(() => {
-    executeRules(context, rules, definition, uiState);
-  }, [context, rules, definition, uiState, executeRules]);
-
-  console.log('rule results', executionResult);
+    executeRules(context, rules, definition, uiStateRef.current);
+  }, [context, rules, uiStateRef, definition, executeRules]);
 
   return executionResult;
 };
