@@ -38,7 +38,7 @@ export function withInitialDataCreation<TElementParams>(
 ) {
   const Wrapper = (props: WrappableComponentProps<TElementParams>) => {
     const { definition } = props;
-    const { dataCreation } = definition.options;
+    const { dataCreation } = definition.options || {};
 
     const { state } = useDynamicUIContext();
     const { hidden } = useUIElementProps(definition);
