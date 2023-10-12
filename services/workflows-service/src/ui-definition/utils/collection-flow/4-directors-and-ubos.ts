@@ -306,7 +306,7 @@ export const DirectorsAndUbosPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.ubos.firstName', //entity.data.additionalInfo.ubos[0].firstName
               options: {
-                label: 'Name',
+                label: 'Legal Name',
                 hint: 'First Name',
                 jsonFormDefinition: {
                   type: 'string',
@@ -479,7 +479,7 @@ export const DirectorsAndUbosPage = {
                     jsonFormDefinition: {
                       type: 'string',
                     },
-                    label: 'Name',
+                    label: 'Legal Name',
                     hint: 'First Name',
                   },
                 },

@@ -266,7 +266,7 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.spikeTransactionNumber',
               options: {
-                label: 'Spike Transaction Number',
+                label: 'Spike Transaction Amount',
                 hint: '200',
                 jsonFormDefinition: {
                   type: 'number',
