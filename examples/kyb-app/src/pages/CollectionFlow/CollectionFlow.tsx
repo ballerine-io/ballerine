@@ -22,7 +22,14 @@ import { useMemo } from 'react';
 
 const elems = {
   h1: Title,
-  h3: (props: AnyObject) => <h3 className="font-bold">{props?.options?.text}</h3>,
+  h3: (props: AnyObject) => <h3 className="text-xl font-bold pb-1">{props?.options?.text}</h3>,
+  h4: (props: AnyObject) => <h4 className="text-base font-bold pb-1">{props?.options?.text}</h4>,
+  description: (props: AnyObject) => (
+    <p
+      className="text-sm font-inter pb-2 text-slate-500"
+      dangerouslySetInnerHTML={{ __html: props.options.descriptionRaw as string }}
+    ></p>
+  ),
   'json-form': withInitialDataCreation(JSONForm),
   container: Cell,
   mainContainer: Cell,
@@ -114,7 +121,7 @@ export const CollectionFlowDumb = () => {
                                 </div>
                               ) : null}
                               <div className="flex flex-col">
-                                <div className="pb-7 flex gap-3 items-center">
+                                <div className="pb-3 flex gap-3 items-center">
                                   <StepperProgress
                                     currentStep={
                                       elements.findIndex(page => page.stateName === state) + 1

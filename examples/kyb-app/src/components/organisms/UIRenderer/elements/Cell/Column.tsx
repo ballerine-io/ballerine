@@ -5,5 +5,5 @@ interface Props {
 }
 
 export const Column = ({ children }: Props) => {
-  return <div className="flex-1">{children}</div>;
+  return <>{children}</>;
 };

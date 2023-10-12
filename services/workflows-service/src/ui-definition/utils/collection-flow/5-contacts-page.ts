@@ -79,7 +79,7 @@ export const ContactsPage = {
               },
             },
             {
-              type: 'h3',
+              type: 'h4',
               options: {
                 text: 'Main Contact',
                 classNames: ['padding-top-10'],
@@ -149,21 +149,30 @@ export const ContactsPage = {
           ],
         },
         {
-          name: 'next-page-button',
-          type: 'json-form:button',
+          name: 'controls-container',
+          type: 'container',
           options: {
-            uiDefinition: {
-              classNames: ['align-right', 'padding-top-10'],
-            },
-            text: 'Continue',
+            align: 'right',
           },
-          availableOn: [
+          elements: [
             {
-              type: 'json-schema',
-              value: validationSchema
-            }
+              name: 'next-page-button',
+              type: 'json-form:button',
+              options: {
+                uiDefinition: {
+                  classNames: ['align-right', 'padding-top-10'],
+                },
+                text: 'Continue',
+              },
+              availableOn: [
+                {
+                  type: 'json-schema',
+                  value: validationSchema,
+                },
+              ],
+            },
           ]
-        },
+        }
       ],
     },
   ],

@@ -253,6 +253,13 @@ export const DirectorsAndUbosPage = {
           ],
         },
         {
+          type: 'description',
+          name: 'checkbox-description-1',
+          options: {
+            descriptionRaw: 'Add all of the natural persons that own or control, <br /><b>directly or indirectly</b> more than 25% of the company.'
+          }
+        },
+        {
           type: 'json-form',
           valueDestination: 'entity.data.additionalInfo.ubos',
           options: {
@@ -434,6 +441,13 @@ export const DirectorsAndUbosPage = {
               ],
             },
             {
+              type: 'description',
+              name: 'checkbox-description-2',
+              options: {
+                descriptionRaw: 'Add all of the directors of the company.'
+              }
+            },
+            {
               name: 'directors-component',
               type: 'json-form',
               valueDestination: 'entity.data.additionalInfo.directors',
@@ -571,21 +585,30 @@ export const DirectorsAndUbosPage = {
           ],
         },
         {
-          name: 'next-page-button',
-          type: 'json-form:button',
+          name: 'controls-container',
+          type: 'container',
           options: {
-            uiDefinition: {
-              classNames: ['align-right', 'padding-top-10'],
-            },
-            text: 'Continue',
+            align: 'right',
           },
-          availableOn: [
+          elements: [
             {
-              type: 'json-schema',
-              value: validationSchema,
+              name: 'next-page-button',
+              type: 'json-form:button',
+              options: {
+                uiDefinition: {
+                  classNames: ['align-right', 'padding-top-10'],
+                },
+                text: 'Continue',
+              },
+              availableOn: [
+                {
+                  type: 'json-schema',
+                  value: validationSchema,
+                },
+              ],
             },
-          ],
-        },
+          ]
+        }
       ],
     },
   ],
