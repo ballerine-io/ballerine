@@ -1,76 +1,76 @@
 const validationSchema = {
-    type: 'object',
-    properties: {
-      entity: {
-        type: 'object',
-        properties: {
-          data: {
-            type: 'object',
-            properties: {
-              additionalInfo: {
-                type: 'object',
-                properties: {
-                  store: {
-                    type: 'object',
-                    properties: {
-                      websiteUrls: {
-                        type: 'string',
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              properties: {
+                store: {
+                  type: 'object',
+                  properties: {
+                    websiteUrls: {
+                      type: 'string',
+                      not: { enum: [''] },
+                      errorMessage: 'Website URL(s) should not be empty.',
+                    },
+                    dba: {
+                      type: 'string',
+                      not: { enum: [''] },
+                      errorMessage: 'Doing Business As (DBA) should not be empty.',
+                    },
+                    products: {
+                      type: 'string',
+                      not: { enum: [''] },
+                      errorMessage: 'Products information should not be empty.',
+                    },
+                    established: {
+                      type: 'string',
+                      errorMessage: 'Establishment date should be a valid string.',
+                    },
+                    hasMobileApp: {
+                      type: 'boolean',
+                      errorMessage: 'Has Mobile App should be either true or false.',
+                    },
+                    mobileAppName: {
+                      type: 'string',
+                      if: {
+                        properties: { hasMobileApp: { enum: [true] } },
+                      },
+                      then: {
                         not: { enum: [''] },
-                        errorMessage: 'Website URL(s) should not be empty.'
+                        errorMessage: 'Mobile App Name should not be empty.',
                       },
-                      dba: {
-                        type: 'string',
-                        not: { enum: [''] },
-                        errorMessage: 'Doing Business As (DBA) should not be empty.'
-                      },
-                      products: {
-                        type: 'string',
-                        not: { enum: [''] },
-                        errorMessage: 'Products information should not be empty.'
-                      },
-                      established: {
-                        type: 'string',
-                        errorMessage: 'Establishment date should be a valid string.'
-                      },
-                      hasMobileApp: {
-                        type: 'boolean',
-                        errorMessage: 'Has Mobile App should be either true or false.'
-                      },
-                      mobileAppName: {
-                        type: 'string',
-                        if: {
-                          properties: { hasMobileApp: { enum: [true] } },
-                        },
-                        then: {
-                          not: { enum: [''] },
-                          errorMessage: 'Mobile App Name should not be empty.'
-                        },
-                        else: {
-                          enum: [''],
-                          errorMessage: 'Mobile App Name should be empty if no mobile app exists.'
-                        },
+                      else: {
+                        enum: [''],
+                        errorMessage: 'Mobile App Name should be empty if no mobile app exists.',
                       },
                     },
-                    required: ['websiteUrls', 'dba', 'products', 'established', 'hasMobileApp'],
-                    errorMessage: {
-                      required: {
-                        websiteUrls: 'Website URL(s) is required.',
-                        dba: 'Doing Business As (DBA) is required.',
-                        products: 'Products information is required.',
-                        established: 'Establishment date is required.',
-                        hasMobileApp: 'Information on mobile app availability is required.'
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                  },
+                  required: ['websiteUrls', 'dba', 'products', 'established', 'hasMobileApp'],
+                  errorMessage: {
+                    required: {
+                      websiteUrls: 'Website URL(s) is required.',
+                      dba: 'Doing Business As (DBA) is required.',
+                      products: 'Products information is required.',
+                      established: 'Establishment date is required.',
+                      hasMobileApp: 'Information on mobile app availability is required.',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
-    required: ['entity'],
-  };
+  },
+  required: ['entity'],
+};
 
 const hasMobileAppVisibilityRule = {
   '==': [{ var: 'entity.data.additionalInfo.store.hasMobileApp' }, true],
@@ -83,7 +83,7 @@ export const StoreInfoPage = {
   name: 'Store Info',
   pageValidator: {
     type: 'json-schema',
-    value: validationSchema
+    value: validationSchema,
   },
   elements: [
     {
@@ -126,7 +126,7 @@ export const StoreInfoPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Website URLS (divide with comma if more than one)',
+                label: 'Website URLs (divide with comma if more than one)',
                 hint: 'www.example.cn',
               },
             },
@@ -252,7 +252,7 @@ export const StoreInfoPage = {
             uiDefinition: {
               classNames: ['align-right', 'padding-top-10'],
             },
-            text: 'PREVIOUS',
+            text: 'Previous',
           },
         },
         {

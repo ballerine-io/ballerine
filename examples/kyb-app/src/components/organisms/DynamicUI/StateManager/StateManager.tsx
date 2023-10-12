@@ -6,7 +6,7 @@ import {
   StateManagerContext,
   StateManagerProps,
 } from '@app/components/organisms/DynamicUI/StateManager/types';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
 export const StateManager = ({
   definition,
