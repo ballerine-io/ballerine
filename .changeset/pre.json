@@ -19,6 +19,7 @@
     "@ballerine/docs-site": "0.4.1"
   },
   "changesets": [
-    "fifty-clouds-change"
+    "fifty-clouds-change",
+    "rotten-eyes-drum"
   ]
 }
