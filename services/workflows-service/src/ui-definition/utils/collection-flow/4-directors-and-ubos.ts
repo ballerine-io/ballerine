@@ -1,187 +1,202 @@
 const validationSchema = {
-    type: 'object',
-    properties: {
-      entity: {
-        type: 'object',
-        properties: {
-          data: {
-            type: 'object',
-            properties: {
-              additionalInfo: {
-                type: 'object',
-                required: ['ubos', 'directors'],
-                properties: {
-                  ubos: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      required: ["firstName", "lastName", "nationality", "identityNumber", "email", "fullAddress", "percentageOfOwnership"],
-                      minItems: 1,
-                      properties: {
-                        firstName: {
-                          type: 'string',
-                          minLength: 2,
-                          maxLength: 50,
-                          errorMessage: {
-                            minLength: 'First name should be at least 2 characters long.',
-                            maxLength: 'First name should not exceed 50 characters.'
-                          }
-                        },
-                        lastName: {
-                          type: 'string',
-                          minLength: 2,
-                          maxLength: 50,
-                          errorMessage: {
-                            minLength: 'Last name should be at least 2 characters long.',
-                            maxLength: 'Last name should not exceed 50 characters.'
-                          }
-                        },
-                        nationality: {
-                          type: 'string',
-                          minLength: 1,
-                          errorMessage: {
-                            minLength: 'Invalid nationality. Please select from the available options.'
-                          }
-                        },
-                        identityNumber: {
-                          type: 'string',
-                          minLength: 5,
-                          maxLength: 20,
-                          errorMessage: {
-                            minLength: 'Identity number should be at least 5 characters long.',
-                            maxLength: 'Identity number should not exceed 20 characters.'
-                          }
-                        },
-                        email: {
-                          type: 'string',
-                          format: 'email',
-                          maxLength: 100,
-                          errorMessage: {
-                            format: 'Invalid email address.',
-                            maxLength: 'Email should not exceed 100 characters.'
-                          }
-                        },
-                        fullAddress: {
-                          type: 'string',
-                          minLength: 10,
-                          maxLength: 200,
-                          errorMessage: {
-                            minLength: 'Full address should be at least 10 characters long.',
-                            maxLength: 'Full address should not exceed 200 characters.'
-                          }
-                        },
-                        percentageOfOwnership: {
-                          type: 'number',
-                          minimum: 0,
-                          maximum: 100,
-                          errorMessage: {
-                            minimum: 'Percentage of ownership must be 0 or greater.',
-                            maximum: 'Percentage of ownership must not exceed 100.'
-                          }
-                        }
-                      },
-                      errorMessage: {
-                        required: {
-                          firstName: 'First name is required.',
-                          lastName: 'Last name is required.',
-                          nationality: 'Nationality is required.',
-                          identityNumber: 'Identity number is required.',
-                          email: 'Email is required.',
-                          fullAddress: 'Full address is required.',
-                          percentageOfOwnership: 'Percentage of ownership is required.'
-                        }
-                      }
-                    }
-                  },
-                  directors: {
-                    type: 'array',
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['ubos', 'directors'],
+              properties: {
+                ubos: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: [
+                      'firstName',
+                      'lastName',
+                      'nationality',
+                      'identityNumber',
+                      'email',
+                      'fullAddress',
+                      'percentageOfOwnership',
+                    ],
                     minItems: 1,
-                    items: {
-                      type: 'object',
-                      required: ["firstName", "lastName", "nationality", "identityNumber", "email", "fullAddress"],
-                      properties: {
-                        firstName: {
-                          type: 'string',
-                          minLength: 2,
-                          maxLength: 50,
-                          errorMessage: {
-                            minLength: 'First name should be at least 2 characters long.',
-                            maxLength: 'First name should not exceed 50 characters.'
-                          }
+                    properties: {
+                      firstName: {
+                        type: 'string',
+                        minLength: 2,
+                        maxLength: 50,
+                        errorMessage: {
+                          minLength: 'First name should be at least 2 characters long.',
+                          maxLength: 'First name should not exceed 50 characters.',
                         },
-                        lastName: {
-                          type: 'string',
-                          minLength: 2,
-                          maxLength: 50,
-                          errorMessage: {
-                            minLength: 'Last name should be at least 2 characters long.',
-                            maxLength: 'Last name should not exceed 50 characters.'
-                          }
-                        },
-                        nationality: {
-                          type: 'string',
-                          minLength: 1,
-                          errorMessage: {
-                            minLength: 'Invalid nationality. Please select from the available options.'
-                          }
-                        },
-                        identityNumber: {
-                          type: 'string',
-                          minLength: 5,
-                          maxLength: 20,
-                          errorMessage: {
-                            minLength: 'Identity number should be at least 5 characters long.',
-                            maxLength: 'Identity number should not exceed 20 characters.'
-                          }
-                        },
-                        email: {
-                          type: 'string',
-                          format: 'email',
-                          maxLength: 100,
-                          errorMessage: {
-                            format: 'Invalid email address.',
-                            maxLength: 'Email should not exceed 100 characters.'
-                          }
-                        },
-                        fullAddress: {
-                          type: 'string',
-                          minLength: 10,
-                          maxLength: 200,
-                          errorMessage: {
-                            minLength: 'Full address should be at least 10 characters long.',
-                            maxLength: 'Full address should not exceed 200 characters.'
-                          }
-                        }
                       },
-                      errorMessage: {
-                        required: {
-                          firstName: 'First name is required.',
-                          lastName: 'Last name is required.',
-                          nationality: 'Nationality is required.',
-                          identityNumber: 'Identity number is required.',
-                          email: 'Email is required.',
-                          fullAddress: 'Full address is required.'
-                        }
-                      }
-                    }
-                  }
+                      lastName: {
+                        type: 'string',
+                        minLength: 2,
+                        maxLength: 50,
+                        errorMessage: {
+                          minLength: 'Last name should be at least 2 characters long.',
+                          maxLength: 'Last name should not exceed 50 characters.',
+                        },
+                      },
+                      nationality: {
+                        type: 'string',
+                        minLength: 1,
+                        errorMessage: {
+                          minLength:
+                            'Invalid nationality. Please select from the available options.',
+                        },
+                      },
+                      identityNumber: {
+                        type: 'string',
+                        minLength: 5,
+                        maxLength: 20,
+                        errorMessage: {
+                          minLength: 'Identity number should be at least 5 characters long.',
+                          maxLength: 'Identity number should not exceed 20 characters.',
+                        },
+                      },
+                      email: {
+                        type: 'string',
+                        format: 'email',
+                        maxLength: 100,
+                        errorMessage: {
+                          format: 'Invalid email address.',
+                          maxLength: 'Email should not exceed 100 characters.',
+                        },
+                      },
+                      fullAddress: {
+                        type: 'string',
+                        minLength: 10,
+                        maxLength: 200,
+                        errorMessage: {
+                          minLength: 'Full address should be at least 10 characters long.',
+                          maxLength: 'Full address should not exceed 200 characters.',
+                        },
+                      },
+                      percentageOfOwnership: {
+                        type: 'number',
+                        minimum: 0,
+                        maximum: 100,
+                        errorMessage: {
+                          minimum: 'Percentage of ownership must be 0 or greater.',
+                          maximum: 'Percentage of ownership must not exceed 100.',
+                        },
+                      },
+                    },
+                    errorMessage: {
+                      required: {
+                        firstName: 'First name is required.',
+                        lastName: 'Last name is required.',
+                        nationality: 'Nationality is required.',
+                        identityNumber: 'Identity number is required.',
+                        email: 'Email is required.',
+                        fullAddress: 'Full address is required.',
+                        percentageOfOwnership: 'Percentage of ownership is required.',
+                      },
+                    },
+                  },
                 },
-                errorMessage: {
-                  required: {
-                    ubos: 'UBOs are required.',
-                    directors: 'Directors are required.'
-                  }
-                }
-              }
+                directors: {
+                  type: 'array',
+                  minItems: 1,
+                  items: {
+                    type: 'object',
+                    required: [
+                      'firstName',
+                      'lastName',
+                      'nationality',
+                      'identityNumber',
+                      'email',
+                      'fullAddress',
+                    ],
+                    properties: {
+                      firstName: {
+                        type: 'string',
+                        minLength: 2,
+                        maxLength: 50,
+                        errorMessage: {
+                          minLength: 'First name should be at least 2 characters long.',
+                          maxLength: 'First name should not exceed 50 characters.',
+                        },
+                      },
+                      lastName: {
+                        type: 'string',
+                        minLength: 2,
+                        maxLength: 50,
+                        errorMessage: {
+                          minLength: 'Last name should be at least 2 characters long.',
+                          maxLength: 'Last name should not exceed 50 characters.',
+                        },
+                      },
+                      nationality: {
+                        type: 'string',
+                        minLength: 1,
+                        errorMessage: {
+                          minLength:
+                            'Invalid nationality. Please select from the available options.',
+                        },
+                      },
+                      identityNumber: {
+                        type: 'string',
+                        minLength: 5,
+                        maxLength: 20,
+                        errorMessage: {
+                          minLength: 'Identity number should be at least 5 characters long.',
+                          maxLength: 'Identity number should not exceed 20 characters.',
+                        },
+                      },
+                      email: {
+                        type: 'string',
+                        format: 'email',
+                        maxLength: 100,
+                        errorMessage: {
+                          format: 'Invalid email address.',
+                          maxLength: 'Email should not exceed 100 characters.',
+                        },
+                      },
+                      fullAddress: {
+                        type: 'string',
+                        minLength: 10,
+                        maxLength: 200,
+                        errorMessage: {
+                          minLength: 'Full address should be at least 10 characters long.',
+                          maxLength: 'Full address should not exceed 200 characters.',
+                        },
+                      },
+                    },
+                    errorMessage: {
+                      required: {
+                        firstName: 'First name is required.',
+                        lastName: 'Last name is required.',
+                        nationality: 'Nationality is required.',
+                        identityNumber: 'Identity number is required.',
+                        email: 'Email is required.',
+                        fullAddress: 'Full address is required.',
+                      },
+                    },
+                  },
+                },
+              },
+              errorMessage: {
+                required: {
+                  ubos: 'UBOs are required.',
+                  directors: 'Directors are required.',
+                },
+              },
             },
-          }
+          },
         },
-      }
+      },
     },
-    required: ['entity'],
-  }
-;
-
+  },
+  required: ['entity'],
+};
 export const DirectorsAndUbosPage = {
   type: 'page',
   number: 4,
@@ -189,7 +204,7 @@ export const DirectorsAndUbosPage = {
   name: 'Directors and UBOs',
   pageValidator: {
     type: 'json-schema',
-    value: validationSchema
+    value: validationSchema,
   },
   elements: [
     {
@@ -227,14 +242,14 @@ export const DirectorsAndUbosPage = {
               valueDestination: 'entity.data.additionalInfo.imShareholder',
               options: {
                 jsonFormDefinition: {
-                  type: 'boolean'
+                  type: 'boolean',
                 },
                 label: 'I own 25% or more of the company',
                 uiSchema: {
-                  'ui:label': false
-                }
-              }
-            }
+                  'ui:label': false,
+                },
+              },
+            },
           ],
         },
         {
@@ -245,20 +260,29 @@ export const DirectorsAndUbosPage = {
               '<p>add all the natural persons that own or control, <bold>Directly Or Indirectly</bold> more than 25% of the company.</p>',
             jsonFormDefinition: {
               type: 'array',
-              required: ["ubos:first-name-input", "ubos:last-name-input", "ubos:nationality-input", "ubos:identity-number-input", "ubos:email-input", "ubos:address-of-residence-input"],
+              required: [
+                'ubos:first-name-input',
+                'ubos:last-name-input',
+                'ubos:nationality-input',
+                'ubos:identity-number-input',
+                'ubos:email-input',
+                'ubos:address-of-residence-input',
+              ],
             },
             dataCreation: {
               createWhenHidden: true,
               destination: 'entity.data.additionalInfo.ubos',
               schema: {
-                'entity.data.additionalInfo.ubos[0].firstName': 'entity.data.additionalInfo.mainRepresentative.firstName',
-                'entity.data.additionalInfo.ubos[0].lastName': 'entity.data.additionalInfo.mainRepresentative.lastName'
+                'entity.data.additionalInfo.ubos[0].firstName':
+                  'entity.data.additionalInfo.mainRepresentative.firstName',
+                'entity.data.additionalInfo.ubos[0].lastName':
+                  'entity.data.additionalInfo.mainRepresentative.lastName',
               },
               insertRules: [
                 {
                   type: 'json-logic',
-                  value: {"==":[{"var":"entity.data.additionalInfo.imShareholder"},true]}
-                }
+                  value: { '==': [{ var: 'entity.data.additionalInfo.imShareholder' }, true] },
+                },
               ],
               deleteRules: [
                 {
@@ -266,15 +290,15 @@ export const DirectorsAndUbosPage = {
                   value: {
                     if: [
                       {
-                        var: 'entity.data.additionalInfo.imShareholder'
+                        var: 'entity.data.additionalInfo.imShareholder',
                       },
                       false,
-                      true
-                    ]
-                  }
-                }
-              ]
-            }
+                      true,
+                    ],
+                  },
+                },
+              ],
+            },
           },
           elements: [
             {
@@ -388,14 +412,14 @@ export const DirectorsAndUbosPage = {
                   valueDestination: 'entity.data.additionalInfo.imDirector',
                   options: {
                     jsonFormDefinition: {
-                      type: 'boolean'
+                      type: 'boolean',
                     },
-                    label: 'I\'m director of the company',
+                    label: "I'm director of the company",
                     uiSchema: {
-                      'ui:label': false
-                    }
-                  }
-                }
+                      'ui:label': false,
+                    },
+                  },
+                },
               ],
             },
             {
@@ -406,20 +430,29 @@ export const DirectorsAndUbosPage = {
                 description: '<p>Add all the directors of the company.</p>',
                 jsonFormDefinition: {
                   type: 'array',
-                  required: ["directors:first-name-input", "directors:last-name-input", "directors:nationality-input", "directors:identity-number-input", "directors:email-input", "directors:address-of-residence-input"],
+                  required: [
+                    'directors:first-name-input',
+                    'directors:last-name-input',
+                    'directors:nationality-input',
+                    'directors:identity-number-input',
+                    'directors:email-input',
+                    'directors:address-of-residence-input',
+                  ],
                 },
                 dataCreation: {
                   destination: 'entity.data.additionalInfo.directors',
                   createWhenHidden: true,
                   schema: {
-                    'entity.data.additionalInfo.directors[0].firstName': 'entity.data.additionalInfo.mainRepresentative.firstName',
-                    'entity.data.additionalInfo.directors[0].lastName': 'entity.data.additionalInfo.mainRepresentative.lastName'
+                    'entity.data.additionalInfo.directors[0].firstName':
+                      'entity.data.additionalInfo.mainRepresentative.firstName',
+                    'entity.data.additionalInfo.directors[0].lastName':
+                      'entity.data.additionalInfo.mainRepresentative.lastName',
                   },
                   insertRules: [
                     {
                       type: 'json-logic',
-                      value: {"==":[{"var":"entity.data.additionalInfo.imDirector"},true]}
-                    }
+                      value: { '==': [{ var: 'entity.data.additionalInfo.imDirector' }, true] },
+                    },
                   ],
                   deleteRules: [
                     {
@@ -427,15 +460,15 @@ export const DirectorsAndUbosPage = {
                       value: {
                         if: [
                           {
-                            var: 'entity.data.additionalInfo.imDirector'
+                            var: 'entity.data.additionalInfo.imDirector',
                           },
                           false,
-                          true
-                        ]
-                      }
-                    }
-                  ]
-                }
+                          true,
+                        ],
+                      },
+                    },
+                  ],
+                },
               },
               elements: [
                 {
