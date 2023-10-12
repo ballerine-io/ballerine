@@ -3,12 +3,11 @@ import { createFormSchemaFromUIElements } from '@app/components/organisms/UIRend
 import { createInitialFormData } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/createInitialFormData';
 import { UIElementComponent } from '@app/components/organisms/UIRenderer/types';
 
-import { DynamicForm } from '@ballerine/ui';
+import { AnyObject, DynamicForm } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { useCallback, useMemo, useRef } from 'react';
 import set from 'lodash/set';
 import get from 'lodash/get';
-import { AnyObject } from '../../../../../../../../packages/ui/dist';
 import { jsonFormFields } from '@app/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
 import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
 import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';

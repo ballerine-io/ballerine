@@ -105,10 +105,6 @@ export const withDynamicUIInterceptor = (
       return null;
     }, [errors, pageErrors, currentPage, definition]);
 
-    console.log('destination', definition.valueDestination);
-    console.log('ctx', payload);
-    console.log('value', value);
-
     return (
       <div>
         <Component

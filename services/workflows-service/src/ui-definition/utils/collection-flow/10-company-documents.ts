@@ -1,24 +1,33 @@
 const validationSchema = {
-  and: [
-    { '!=': [{ var: 'entity.data.additionalInfo.signature.isConfirmed' }, ''] },
-    {
-      all: [
-        { var: 'documents' },
-        {
-          and: [
-            { '!!': [{ var: 'ballerineFileId' }] },
-            { '===': [{ length: [{ var: 'ballerineFileId' }] }, 9] },
-          ],
-        },
-      ],
-    },
-  ],
+  type: 'object',
+  required: ['documents'],
+  properties: {
+    documents: {
+      type: 'array',
+      minLength: 10,
+      items: {
+        type: 'object',
+        required: ['ballerineFileId'],
+        properties: {
+          ballerineFileId: {
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
 };
+
+
 export const CompanyDocuments = {
   type: 'page',
   number: 10,
   stateName: 'company_documents',
   name: 'Company Documents',
+  pageValidator: {
+    type: 'json-schema',
+    value: validationSchema,
+  },
   elements: [
     {
       type: 'mainContainer',
@@ -213,10 +222,10 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                 },
-              },
-              mappingParams: {
-                documentIndex: 5,
-                documentPage: 0,
+                mappingParams: {
+                  documentIndex: 5,
+                  documentPage: 0,
+                },
               },
             },
             {
@@ -387,6 +396,10 @@ export const CompanyDocuments = {
               type: 'json-logic',
               value: validationSchema,
             },
+            {
+              type: 'jmespath',
+              value: '!contains(uiState.elements.*.isLoading,`true`)'
+            }
           ],
         },
       ],
