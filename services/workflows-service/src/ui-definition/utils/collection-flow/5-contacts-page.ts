@@ -1,8 +1,70 @@
+const validationSchema = {
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['mainContact'],
+              properties: {
+                mainContact: {
+                  type: 'object',
+                  required: ['firstName', 'lastName', 'email', 'phone'],
+                  errorMessage: {
+                    required: {
+                      firstName: 'First name is required.',
+                      lastName: 'Last name is required.',
+                      phone: 'Phone is required.',
+                      email: 'Email is required'
+                    },
+                  },
+                  properties: {
+                    firstName: {
+                      type: 'string',
+                      minLength: 1,
+                    },
+                    lastName: {
+                      type: 'string',
+                      minLength: 1,
+                    },
+                    phone: {
+                      type: 'string',
+                      pattern: "^[+]?[0-9]{10,15}$",
+                      errorMessage: {
+                        pattern: "Phone number must be 10 to 15 digits long and may start with a +."
+                      }
+                    },
+                    email: {
+                      type: 'string',
+                      format: 'email',
+                      errorMessage: 'Please enter valid email address.'
+                    }
+                  },
+                }
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  required: ['entity'],
+};
+
+
 export const ContactsPage = {
   type: 'page',
   number: 5,
   stateName: 'contacts_page',
   name: 'Contacts',
+  pageValidator: {
+    type: 'json-schema',
+    value: validationSchema
+  },
   elements: [
     {
       type: 'mainContainer',
@@ -29,7 +91,7 @@ export const ContactsPage = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: [],
+              required: ['first-name-input', 'last-name-input', 'email-input', 'phone-number-input'],
             },
           },
           elements: [
@@ -105,6 +167,12 @@ export const ContactsPage = {
             },
             text: 'Continue',
           },
+          availableOn: [
+            {
+              type: 'json-schema',
+              value: validationSchema
+            }
+          ]
         },
       ],
     },
