@@ -282,7 +282,6 @@ export const StoreInfoPage = {
     },
   ],
   actions: [
-
     {
       type: 'definitionEvent',
       params: {

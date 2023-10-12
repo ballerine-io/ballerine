@@ -295,7 +295,6 @@ export const BankingDetailsPage = {
     },
   ],
   actions: [
-
     {
       type: 'definitionEvent',
       params: {

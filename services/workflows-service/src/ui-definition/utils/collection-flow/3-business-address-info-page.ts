@@ -426,7 +426,6 @@ export const BusinessAddressInfoPage = {
     },
   ],
   actions: [
-
     {
       type: 'definitionEvent',
       params: {

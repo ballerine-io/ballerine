@@ -345,7 +345,6 @@ export const BusinessInfoPage = {
         ],
       },
     },
-
     {
       type: 'definitionEvent',
       params: {

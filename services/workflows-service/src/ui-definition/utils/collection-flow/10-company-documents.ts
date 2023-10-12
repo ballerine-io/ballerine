@@ -393,7 +393,6 @@ export const CompanyDocuments = {
     },
   ],
   actions: [
-
     {
       type: 'definitionEvent',
       params: {
