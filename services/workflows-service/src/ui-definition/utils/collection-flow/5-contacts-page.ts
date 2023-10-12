@@ -38,7 +38,7 @@ export const ContactsPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainContact.firstName',
               options: {
-                label: 'Name',
+                label: 'Legal Name',
                 hint: 'First Name',
                 jsonFormDefinition: {
                   type: 'string',

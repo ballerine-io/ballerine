@@ -228,7 +228,7 @@ export const BusinessAddressInfoPage = {
               type: 'country-picker',
               valueDestination: 'entity.data.additionalInfo.headquarters.country',
               options: {
-                label: 'Country',
+                label: 'Registered Country',
                 hint: 'United Kingdom',
                 jsonFormDefinition: {
                   type: 'string',
