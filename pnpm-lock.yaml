@@ -64,13 +64,13 @@ importers:
         specifier: 0.7.12
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.3.3
+        specifier: 0.3.4
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.9
+        specifier: 0.5.10
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.9
+        specifier: 0.5.10
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -534,7 +534,7 @@ importers:
         specifier: 0.7.12
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.9
+        specifier: 0.5.10
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -628,10 +628,10 @@ importers:
   examples/kyb-app:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.1.7
-        version: 0.1.7
+        specifier: 0.1.10
+        version: link:../../packages/blocks
       '@ballerine/ui':
-        specifier: 0.3.3
+        specifier: 0.3.4
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: link:../../sdks/workflow-browser-sdk
@@ -1643,7 +1643,7 @@ importers:
         specifier: 0.7.12
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.9
+        specifier: 0.5.10
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -1776,7 +1776,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.5.9
+        specifier: 0.5.10
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2015,10 +2015,10 @@ importers:
         specifier: 0.7.12
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.9
+        specifier: 0.5.10
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.9
+        specifier: 0.5.10
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -7976,26 +7976,10 @@ packages:
     resolution: {integrity: sha512-wMue2Sy4GAVTk6Ic4tJVcnfdau+gx2EnG7S+uAEe+TWJFqE4YoWN4/H8MSLj4eYJKxGg26lZwboEniNiNwZQ6Q==}
     dev: true
 
-  /@ballerine/blocks@0.1.7:
-    resolution: {integrity: sha512-VTarspbXX5obBnAqcIHS7kyk8UEUhyuid5lrbQmfQwWy/lSa88ds8ypCAJCpA3ojk4sRs1+9gM4j+VQAjxeuYg==}
-    engines: {node: '>=12'}
-    dependencies:
-      '@ballerine/common': 0.7.6
-    dev: false
-
   /@ballerine/common@0.5.19:
     resolution: {integrity: sha512-WYRqLyBOwtoi193YJvonsz5fdY73/MpAxaO9Sj1dp2nOeqKAv2j880ELUVfyfgYE18ZDBB4qoykvT4X3Rea7KA==}
     engines: {node: '>=12'}
     dependencies:
-      ajv: 8.12.0
-      json-schema-to-zod: 0.6.3
-    dev: false
-
-  /@ballerine/common@0.7.6:
-    resolution: {integrity: sha512-YmohNUDem081WwculH3CAUPvNAtcfxg7madegBnsWpKHucs7Tby1o8/kIWrNEOUG9fl0pDKnsH2WkP5YP186Tg==}
-    engines: {node: '>=12'}
-    dependencies:
-      '@sinclair/typebox': 0.31.7
       ajv: 8.12.0
       json-schema-to-zod: 0.6.3
     dev: false
@@ -36688,4 +36672,5 @@ packages:
   file:services/workflows-service/plugins/verify-repository-project-scoped:
     resolution: {directory: services/workflows-service/plugins/verify-repository-project-scoped, type: directory}
     name: eslint-plugin-ballerine
+    version: 1.0.0
     dev: true

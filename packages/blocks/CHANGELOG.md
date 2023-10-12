@@ -1,5 +1,12 @@
 # @ballerine/blocks
 
+## 0.1.10
+
+### Patch Changes
+
+- e51852fe: Bump
+- Version bump
+
 ## 0.1.9
 
 ### Patch Changes
