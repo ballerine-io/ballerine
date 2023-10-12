@@ -1,23 +1,25 @@
+import { withTokenProtected } from '@app/hocs/withTokenProtected';
+import { AccessRestricted } from '@app/pages/AccessRestricted';
 import { CollectionFlow } from '@app/pages/CollectionFlow';
 import { KYB } from '@app/pages/CollectionFlow/components/organisms/KYBView';
 import { Approved } from '@app/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@app/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@app/pages/CollectionFlow/components/pages/Success';
 import { SignIn } from '@app/pages/SignIn';
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    Component: SignIn,
+    Component: withTokenProtected(SignIn),
   },
   {
     path: '/signin',
-    Component: SignIn,
+    Component: withTokenProtected(SignIn),
   },
   {
     path: '/collection-flow',
-    element: <CollectionFlow />,
+    Component: withTokenProtected(CollectionFlow),
     children: [
       {
         path: '',
@@ -33,14 +35,14 @@ export const router = createBrowserRouter([
   },
   {
     path: 'rejected',
-    element: <Rejected />,
+    Component: withTokenProtected(Rejected),
   },
   {
     path: 'approved',
-    element: <Approved />,
+    Component: withTokenProtected(Approved),
   },
   {
-    path: '*',
-    element: <Navigate to="/" />,
+    path: 'restricted',
+    element: <AccessRestricted />,
   },
 ]);

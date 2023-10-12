@@ -1,23 +1,24 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { fetchWorkflowDecision, TWorkflowById } from '../../../../workflows/fetchers';
+import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { Action } from '../../../../../common/enums';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 
-export const useApproveTaskByIdMutation = (workflowId: string) => {
+export const useApproveTaskByIdMutation = (workflowId: string, postUpdateEventName?: string) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
   const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
 
   return useMutation({
     mutationFn: ({ documentId }: { documentId: string }) =>
-      fetchWorkflowDecision({
+      updateWorkflowDecision({
         workflowId,
         documentId,
         body: {
           decision: Action.APPROVE,
+          postUpdateEventName,
         },
       }),
     onMutate: async ({ documentId }) => {
@@ -59,7 +60,7 @@ export const useApproveTaskByIdMutation = (workflowId: string) => {
       toast.success(t('toast:approve_document.success'));
     },
     onError: (_error, _variables, context) => {
-      toast.error(t('toast:approve_document.error'));
+      toast.error(t('toast:approve_document.error', { errorMessage: _error.message }));
       queryClient.setQueryData(workflowById.queryKey, context.previousWorkflow);
     },
   });

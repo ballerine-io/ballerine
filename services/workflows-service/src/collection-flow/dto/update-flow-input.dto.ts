@@ -113,9 +113,6 @@ export class UpdateFlowPayload {
 }
 
 export class UpdateFlowDto {
-  @IsString()
-  flowType!: string;
-
   @ValidateNested()
   @IsNotEmpty()
   @Type(() => UpdateFlowPayload)

@@ -17,17 +17,19 @@ import { isPdf } from '../../../utils/is-pdf/is-pdf';
 export const SelectedImage = forwardRef<HTMLImageElement | HTMLIFrameElement, TSelectedImageProps>(
   ({ className, isLoading, initialImage, ...props }, ref) => {
     const { selectedImage } = useSelectedImage(initialImage);
+
     const [isError, setIsError] = useState(false);
     const onError = useCallback(() => {
       setIsError(true);
     }, []);
+
     const isPlaceholder = isLoading || !selectedImage?.imageUrl || isError;
 
     useEffect(() => {
       if (!isError || !selectedImage?.imageUrl) return;
 
       setIsError(false);
-    }, [isLoading, selectedImage?.imageUrl]);
+    }, [isError, selectedImage?.imageUrl]);
 
     if (isPdf(selectedImage)) {
       return (

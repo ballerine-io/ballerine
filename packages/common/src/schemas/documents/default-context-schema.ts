@@ -81,8 +81,8 @@ export const defaultContextSchema = {
             type: 'object',
             properties: {
               status: {
-                type: 'string',
-                enum: ['new', 'pending', 'revision', 'approved', 'rejected'],
+                type: ['string', 'null'],
+                enum: ['new', 'pending', 'revision', 'approved', 'rejected', null],
               },
               rejectionReason: {
                 anyOf: [
@@ -142,7 +142,7 @@ export const defaultContextSchema = {
                 },
                 provider: {
                   type: 'string',
-                  enum: ['gcs', 'http', 'stream', 'base64', 'ftp'],
+                  enum: ['gcs', 'http', 'stream', 'file-system', 'ftp'],
                 },
                 uri: {
                   type: 'string',

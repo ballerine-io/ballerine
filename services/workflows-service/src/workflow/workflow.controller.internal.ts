@@ -12,8 +12,6 @@ import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
-import { UserData } from '@/user/user-data.decorator';
-import { UserInfo } from '@/user/user-info';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
@@ -37,6 +35,8 @@ import { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';
 import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
+import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
+import { DocumentUpdateInput } from './dtos/document-update-update-input';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
@@ -140,7 +140,7 @@ export class WorkflowControllerInternal {
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<void> {
-    return await this.service.event(
+    await this.service.event(
       {
         ...data,
         id: params.id,
@@ -197,6 +197,27 @@ export class WorkflowControllerInternal {
     }
   }
 
+  @common.Patch(':id/documents/:documentId')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseGuards(WorkflowAssigneeGuard)
+  async updateDocumentPropertiesById(
+    @common.Param() params: DocumentUpdateParamsInput,
+    @common.Body() data: DocumentUpdateInput,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    return await this.service.updateDocumentById(
+      {
+        workflowId: params?.id,
+        documentId: params?.documentId,
+        checkRequiredFields: false,
+      },
+      data.document,
+      currentProjectId,
+    );
+  }
+
   // PATCH /workflows/:workflowId/decision/:documentId
   @common.Patch('/:id/decision/:documentId')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
@@ -221,6 +242,7 @@ export class WorkflowControllerInternal {
         },
         projectIds,
         currentProjectId,
+        data.postUpdateEventName,
       );
     } catch (error) {
       if (isRecordNotFoundError(error)) {

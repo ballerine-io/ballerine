@@ -32,12 +32,28 @@ export const getGhanaDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object({
         msisdn: Type.String({ pattern: '^233[0-9]{9}$' }),
-        accountHolderName: TypeStringAtLeastOneWord,
-        from: Type.String({ format: 'date' }),
-        to: Type.String({ format: 'date' }),
-        timeRun: Type.String({ format: 'date-time' }),
+        accountHolderName: Type.String(),
+        from: Type.Optional(Type.String({ format: 'date' })),
+        to: Type.Optional(Type.String({ format: 'date' })),
+        timeRun: Type.Optional(Type.String()),
       }),
     },
+
+    //     {
+    //       category: 'financial_information',
+    //       type: 'mtn_statement_businesses',
+    //       issuer: { country: 'GH' },
+    //       issuingVersion: 1,
+    //       version: 1,
+    //       propertiesSchema: Type.Object({
+    //         msisdn: Type.String({ pattern: '^233[0-9]{9}$' }),
+    //         accountHolderName: TypeStringAtLeastOneWord,
+    //         from: Type.String({ format: 'date' }),
+    //         to: Type.String({ format: 'date' }),
+    //         timeRun: Type.String(),
+    //       }),
+    //     },
+
     {
       category: 'financial_information',
       type: 'bank_statement',
@@ -678,140 +694,6 @@ export const getGhanaDocuments = (): TDocument[] => {
         issueDate: TypePastDate,
       }),
     },
-    {
-      category: 'proof_of_registration',
-      type: 'form_a',
-      issuer: {
-        country: 'GH',
-      },
-      issuingVersion: 1,
-      version: 1,
-      propertiesSchema: {
-        type: 'object',
-        // required: ['registrationNumber', 'taxIdNumber'],
-        properties: {
-          registrationNumber: {
-            type: 'string',
-            pattern: alphaNumeric,
-          },
-          taxIdNumber: {
-            type: 'string',
-            pattern: alphaNumeric,
-          },
-        },
-      },
-    },
-    {
-      category: 'proof_of_registration',
-      type: 'shareholder_details',
-      issuer: {
-        country: 'GH',
-      },
-      issuingVersion: 1,
-      version: 1,
-      propertiesSchema: {
-        type: 'object',
-        // required: ['firstName', 'lastName'],
-        properties: {
-          firstName: {
-            type: 'string',
-          },
-          middleName: {
-            type: 'string',
-          },
-          lastName: {
-            type: 'string',
-          },
-        },
-      },
-    },
-    {
-      category: 'company_structure',
-      type: 'shareholders',
-      issuer: {
-        type: 'private',
-        country: 'GH',
-      },
-      issuingVersion: 1,
-      version: 1,
-      propertiesSchema: {
-        type: 'object',
-        properties: {
-          firstName: {
-            type: 'string',
-          },
-          middleName: {
-            type: 'string',
-          },
-          lastName: {
-            type: 'string',
-          },
-        },
-      },
-    },
-    {
-      category: 'registration_document',
-      type: 'certificate_of_incorporation',
-      issuer: {
-        type: 'private',
-        country: 'GH',
-      },
-      issuingVersion: 1,
-      version: 1,
-      propertiesSchema: {
-        type: 'object',
-        properties: {
-          companyName: {
-            type: 'string',
-          },
-          country: {
-            type: 'string',
-          },
-          state: {
-            type: 'string',
-          },
-          vat: {
-            type: 'string',
-          },
-          companyType: {
-            type: 'string',
-          },
-          establishmentDate: {
-            type: 'string',
-          },
-        },
-      },
-    },
-    {
-      category: 'proof_of_bank_account',
-      type: 'bank_statement',
-      issuer: {
-        type: 'private',
-        country: 'GH',
-      },
-      issuingVersion: 1,
-      version: 1,
-      propertiesSchema: {
-        type: 'object',
-        properties: {
-          country: {
-            type: 'string',
-          },
-          name: {
-            type: 'string',
-          },
-          holderName: {
-            type: 'string',
-          },
-          accountNumber: {
-            type: 'string',
-          },
-          currency: {
-            type: 'string',
-          },
-        },
-      },
-    },
     // Proof of Ownership
     {
       category: 'proof_of_ownership',
@@ -833,7 +715,7 @@ export const getGhanaDocuments = (): TDocument[] => {
     },
     {
       category: 'proof_of_ownership',
-      type: 'permit',
+      type: 'receipt_for_permit',
       issuer: { country: 'GH' },
       issuingVersion: 1,
       version: 1,
@@ -850,6 +732,19 @@ export const getGhanaDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object({
         businessName: Type.String(),
+        payerName: Type.String(),
+        issueDate: TypePastDate,
+      }),
+    },
+    {
+      category: 'proof_of_ownership',
+      type: 'business_utility_bill',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        payerName: Type.String(),
         issueDate: TypePastDate,
       }),
     },

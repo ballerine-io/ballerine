@@ -14,7 +14,6 @@ import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilte
 import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
 import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
 import { tagToBadgeData } from '../../consts';
-import { StateTag } from '@ballerine/common';
 
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
@@ -46,8 +45,7 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     data: { user: authenticatedUser },
   } = useAuthenticatedUserQuery();
   const caseState = useCaseState(authenticatedUser, workflow);
-  const { data: users } = useUsersQuery();
-  const assignees = users?.filter(assignee => assignee?.id !== authenticatedUser?.id);
+  const { data: assignees } = useUsersQuery();
   const { hasDecision, canApprove, canReject, canRevision } = useCaseDecision();
 
   // Only display the button spinners if the request is longer than 300ms
@@ -70,10 +68,6 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   );
 
   const tag = useMemo(() => {
-    if (!workflow?.context?.entity?.data?.__isFinished) {
-      return StateTag.COLLECTION_FLOW;
-    }
-
     return workflow?.tags?.find(t => tagToBadgeData[t]);
   }, [workflow]);
 

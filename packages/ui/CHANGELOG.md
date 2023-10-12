@@ -1,5 +1,23 @@
 # @ballerine/ui
 
+## 0.3.3
+
+### Patch Changes
+
+- Bump minor version
+
+## 0.3.2
+
+### Patch Changes
+
+- Version minor bump
+
+## 0.3.1
+
+### Patch Changes
+
+- Version bump
+
 ## 0.3.0
 
 ### Minor Changes
