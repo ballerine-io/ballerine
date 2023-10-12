@@ -22,38 +22,29 @@ const validationSchema = {
                       required: [
                         'mainWebsite',
                         'contactDetails',
-                        'returnPolicyUrl',
-                        'shippingPolicyUrl',
-                        'aboutUsUrl',
                         'productQuantity',
                         'productDescription',
                         'productPrice',
-                        'websiteLanguage',
                       ],
                       properties: {
                         mainWebsite: {
                           type: 'string',
-                          not: { enum: [''] },
                           errorMessage: 'Main website URL should not be empty.',
                         },
                         contactDetails: {
                           type: 'string',
-                          not: { enum: [''] },
                           errorMessage: 'Contact details should not be empty.',
                         },
                         returnPolicyUrl: {
                           type: 'string',
-                          not: { enum: [''] },
                           errorMessage: 'Return policy URL should not be empty.',
                         },
                         shippingPolicyUrl: {
                           type: 'string',
-                          not: { enum: [''] },
                           errorMessage: 'Shipping policy URL should not be empty.',
                         },
                         aboutUsUrl: {
                           type: 'string',
-                          not: { enum: [''] },
                           errorMessage: 'About us URL should not be empty.',
                         },
                         productQuantity: {
@@ -66,12 +57,10 @@ const validationSchema = {
                         },
                         productDescription: {
                           type: 'string',
-                          not: { enum: [''] },
                           errorMessage: 'Product description should not be empty.',
                         },
                         websiteLanguage: {
                           type: 'string',
-                          not: { enum: [''] },
                           errorMessage: 'Website language should not be empty.',
                         },
                       },
@@ -130,6 +119,8 @@ export const WebsiteBasicRequirement = {
           options: {
             jsonFormDefinition: {
               required: [
+                'main-company-website-input',
+                'contact-details-input',
                 'operation-entities-name-input',
                 'contact-details-input',
                 'product-quantity-url-input',
@@ -226,6 +217,9 @@ export const WebsiteBasicRequirement = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
+                },
+                uiSchema: {
+                  'ui:widget': 'textarea'
                 },
                 label: 'Adequate Product/Service Description',
                 hint: 'offers a range of organic skincare products, including moisturizers, serums, and cleansers. Each product is made using natural ingredients sourced sustainably.',
