@@ -334,6 +334,17 @@ export const DirectorsAndUbosPage = {
                 hint: 'Chinese',
                 jsonFormDefinition: {
                   type: 'string',
+                  oneOf: [
+                    // Nationality title value
+                    { const: 'Afghan', title: 'Afghan' },
+                    { const: 'Albanian', title: 'Albanian' },
+                    { const: 'Algerian', title: 'Algerian' },
+                    { const: 'American', title: 'American' },
+                    { const: 'Andorran', title: 'Andorran' },
+                    { const: 'Angolan', title: 'Angolan' },
+                    { const: 'Antiguans', title: 'Antiguans' },
+                    { const: 'Chinese', title: 'Chinese' },
+                  ],
                 },
               },
             },
