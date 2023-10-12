@@ -600,15 +600,7 @@ export const DirectorsAndUbosPage = {
     },
   ],
   actions: [
-    {
-      type: 'definitionEvent',
-      params: {
-        eventName: 'PREVIOUS',
-      },
-      dispatchOn: {
-        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
-      },
-    },
+
     {
       type: 'definitionEvent',
       params: {

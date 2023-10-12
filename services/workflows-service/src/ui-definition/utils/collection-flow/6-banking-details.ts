@@ -260,7 +260,7 @@ export const BankingDetailsPage = {
                   ],
                 },
                 label: 'Account Currency',
-                hint: 'CNY',
+                hint: 'in Chinese Yuan',
               },
             },
           ],
@@ -295,15 +295,7 @@ export const BankingDetailsPage = {
     },
   ],
   actions: [
-    {
-      type: 'definitionEvent',
-      params: {
-        eventName: 'PREVIOUS',
-      },
-      dispatchOn: {
-        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
-      },
-    },
+
     {
       type: 'definitionEvent',
       params: {
