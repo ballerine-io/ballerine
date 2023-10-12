@@ -1,112 +1,112 @@
 import { currencyCodes } from '../schema-utils/currency-codes';
 
 const validationSchema = {
-    type: 'object',
-    properties: {
-      entity: {
-        type: 'object',
-        properties: {
-          data: {
-            type: 'object',
-            properties: {
-              additionalInfo: {
-                type: 'object',
-                properties: {
-                  bank: {
-                    type: 'object',
-                    properties: {
-                      holderName: {
-                        type: 'string',
-                        minLength: 5,
-                        maxLength: 50,
-                        errorMessage: {
-                          minLength: 'Holder name should be at least 5 characters long.',
-                          maxLength: 'Holder name should not exceed 50 characters.'
-                        }
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              properties: {
+                bank: {
+                  type: 'object',
+                  properties: {
+                    holderName: {
+                      type: 'string',
+                      minLength: 5,
+                      maxLength: 50,
+                      errorMessage: {
+                        minLength: 'Holder name should be at least 5 characters long.',
+                        maxLength: 'Holder name should not exceed 50 characters.',
                       },
-                      holderFullAddress: {
-                        type: 'string',
-                        minLength: 10,
-                        maxLength: 200,
-                        errorMessage: {
-                          minLength: 'Holder full address should be at least 10 characters long.',
-                          maxLength: 'Holder full address should not exceed 200 characters.'
-                        }
-                      },
-                      accountNumber: {
-                        type: 'string',
-                        minLength: 6,
-                        maxLength: 34,
-                        errorMessage: {
-                          minLength: 'Account number should be at least 6 characters long.',
-                          maxLength: 'Account number should not exceed 34 characters.'
-                        }
-                      },
-                      iban: {
-                        type: 'string',
-                        minLength: 15,
-                        maxLength: 34,
-                        errorMessage: {
-                          minLength: 'IBAN should be at least 15 characters long.',
-                          maxLength: 'IBAN should not exceed 34 characters.'
-                        }
-                      },
-                      swiftCode: {
-                        type: 'string',
-                        minLength: 8,
-                        maxLength: 11,
-                        errorMessage: {
-                          minLength: 'SWIFT code should be at least 8 characters long.',
-                          maxLength: 'SWIFT code should not exceed 11 characters.'
-                        }
-                      },
-                      bankName: {
-                        type: 'string',
-                        minLength: 3,
-                        maxLength: 100,
-                        errorMessage: {
-                          minLength: 'Bank name should be at least 3 characters long.',
-                          maxLength: 'Bank name should not exceed 100 characters.'
-                        }
-                      },
-                      bankAddress: {
-                        type: 'string',
-                        minLength: 10,
-                        maxLength: 200,
-                        errorMessage: {
-                          minLength: 'Bank address should be at least 10 characters long.',
-                          maxLength: 'Bank address should not exceed 200 characters.'
-                        }
-                      },
-                      subBranch: {
-                        type: 'string',
-                        pattern: '^[0-9]+$',
-                        errorMessage: {
-                          pattern: 'Sub-branch should contain only numbers.'
-                        }
-                      }
                     },
-                    errorMessage: {
-                      required: {
-                        holderName: 'Holder name is required.',
-                        holderFullAddress: 'Holder full address is required.',
-                        accountNumber: 'Account number is required.',
-                        iban: 'IBAN is required.',
-                        swiftCode: 'SWIFT code is required.',
-                        bankName: 'Bank name is required.',
-                        bankAddress: 'Bank address is required.',
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    holderFullAddress: {
+                      type: 'string',
+                      minLength: 10,
+                      maxLength: 200,
+                      errorMessage: {
+                        minLength: 'Holder full address should be at least 10 characters long.',
+                        maxLength: 'Holder full address should not exceed 200 characters.',
+                      },
+                    },
+                    accountNumber: {
+                      type: 'string',
+                      minLength: 6,
+                      maxLength: 34,
+                      errorMessage: {
+                        minLength: 'Account number should be at least 6 characters long.',
+                        maxLength: 'Account number should not exceed 34 characters.',
+                      },
+                    },
+                    iban: {
+                      type: 'string',
+                      minLength: 15,
+                      maxLength: 34,
+                      errorMessage: {
+                        minLength: 'IBAN should be at least 15 characters long.',
+                        maxLength: 'IBAN should not exceed 34 characters.',
+                      },
+                    },
+                    swiftCode: {
+                      type: 'string',
+                      minLength: 8,
+                      maxLength: 11,
+                      errorMessage: {
+                        minLength: 'SWIFT code should be at least 8 characters long.',
+                        maxLength: 'SWIFT code should not exceed 11 characters.',
+                      },
+                    },
+                    bankName: {
+                      type: 'string',
+                      minLength: 3,
+                      maxLength: 100,
+                      errorMessage: {
+                        minLength: 'Bank name should be at least 3 characters long.',
+                        maxLength: 'Bank name should not exceed 100 characters.',
+                      },
+                    },
+                    bankAddress: {
+                      type: 'string',
+                      minLength: 10,
+                      maxLength: 200,
+                      errorMessage: {
+                        minLength: 'Bank address should be at least 10 characters long.',
+                        maxLength: 'Bank address should not exceed 200 characters.',
+                      },
+                    },
+                    subBranch: {
+                      type: 'string',
+                      pattern: '^[0-9]+$',
+                      errorMessage: {
+                        pattern: 'Sub-branch should contain only numbers.',
+                      },
+                    },
+                  },
+                  errorMessage: {
+                    required: {
+                      holderName: 'Holder name is required.',
+                      holderFullAddress: 'Holder full address is required.',
+                      accountNumber: 'Account number is required.',
+                      iban: 'IBAN is required.',
+                      swiftCode: 'SWIFT code is required.',
+                      bankName: 'Bank name is required.',
+                      bankAddress: 'Bank address is required.',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
-    required: ['entity'],
-  };
+  },
+  required: ['entity'],
+};
 export const BankingDetailsPage = {
   type: 'page',
   number: 6,
@@ -114,7 +114,7 @@ export const BankingDetailsPage = {
   name: 'Banking Details',
   pageValidator: {
     type: 'json-schema',
-    value: validationSchema
+    value: validationSchema,
   },
   elements: [
     {
@@ -272,7 +272,7 @@ export const BankingDetailsPage = {
             uiDefinition: {
               classNames: ['align-right', 'padding-top-10'],
             },
-            text: 'PREVIOUS',
+            text: 'Previous',
           },
         },
         {

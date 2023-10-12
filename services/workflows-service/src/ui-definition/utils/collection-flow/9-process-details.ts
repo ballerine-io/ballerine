@@ -1,78 +1,77 @@
 const validationSchema = {
-    type: 'object',
-    properties: {
-      entity: {
-        type: 'object',
-        required: ['data'],
-        properties: {
-          data: {
-            type: 'object',
-            required: ['additionalInfo'],
-            properties: {
-              additionalInfo: {
-                type: 'object',
-                required: ['store'],
-                properties: {
-                  store: {
-                    type: 'object',
-                    required: ['processingDetails'],
-                    properties: {
-                      processingDetails: {
-                        type: 'object',
-                        properties: {
-                          monthlySalesVolume: { type: ['number', 'null'] },
-                          monthlyTransactions: { type: ['number', 'null'] },
-                          averageTicketAmount: { type: ['number', 'null'] },
-                          mainCategory: { type: ['string', 'null'] },
-                          businessModel: { type: ['string', 'null'] },
-                          isSpikeInSales: { type: ['boolean', 'null'] },
-                          spikeSalesAverageVolume: { type: ['number', 'null'] },
-                          spikeTransactionNumber: { type: ['number', 'null'] },
-                          spikeOfVolumeInRegion: { type: ['string', 'null'] },
-                        },
-                        oneOf: [
-                          {
-                            required: [
-                              'monthlySalesVolume',
-                              'monthlyTransactions',
-                              'averageTicketAmount',
-                              'isSpikeInSales',
-                              'spikeSalesAverageVolume',
-                              'spikeTransactionNumber',
-                              'spikeOfVolumeInRegion',
-                              'mainCategory',
-                              'businessModel',
-                            ],
-                            errorMessage: {
-                              monthlySalesVolume: 'Monthly Sales Volume is required.',
-                              monthlyTransactions: 'Monthly Transactions are required.',
-                              averageTicketAmount: 'Average Ticket Amount is required.',
-                              mainCategory: 'Main Category is required.',
-                              businessModel: 'Business Model is required.',
-                              isSpikeInSales: 'Is Spike In Sales is required.',
-                              spikeSalesAverageVolume: 'Spike Sales Average Volume is required.',
-                              spikeTransactionNumber: 'Spike Transaction Number is required.',
-                              spikeOfVolumeInRegion: 'Spike Of Volume In Region is required.',
-                            }
-                          },
-                          {
-                            required: [
-                              'monthlySalesVolume',
-                              'monthlyTransactions',
-                              'averageTicketAmount',
-                              'mainCategory',
-                              'businessModel',
-                            ],
-                            errorMessage: {
-                              monthlySalesVolume: 'Monthly Sales Volume is required.',
-                              monthlyTransactions: 'Monthly Transactions are required.',
-                              averageTicketAmount: 'Average Ticket Amount is required.',
-                              mainCategory: 'Main Category is required.',
-                              businessModel: 'Business Model is required.',
-                            }
-                          },
-                        ],
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      required: ['data'],
+      properties: {
+        data: {
+          type: 'object',
+          required: ['additionalInfo'],
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['store'],
+              properties: {
+                store: {
+                  type: 'object',
+                  required: ['processingDetails'],
+                  properties: {
+                    processingDetails: {
+                      type: 'object',
+                      properties: {
+                        monthlySalesVolume: { type: ['number', 'null'] },
+                        monthlyTransactions: { type: ['number', 'null'] },
+                        averageTicketAmount: { type: ['number', 'null'] },
+                        mainCategory: { type: ['string', 'null'] },
+                        businessModel: { type: ['string', 'null'] },
+                        isSpikeInSales: { type: ['boolean', 'null'] },
+                        spikeSalesAverageVolume: { type: ['number', 'null'] },
+                        spikeTransactionNumber: { type: ['number', 'null'] },
+                        spikeOfVolumeInRegion: { type: ['string', 'null'] },
                       },
+                      oneOf: [
+                        {
+                          required: [
+                            'monthlySalesVolume',
+                            'monthlyTransactions',
+                            'averageTicketAmount',
+                            'isSpikeInSales',
+                            'spikeSalesAverageVolume',
+                            'spikeTransactionNumber',
+                            'spikeOfVolumeInRegion',
+                            'mainCategory',
+                            'businessModel',
+                          ],
+                          errorMessage: {
+                            monthlySalesVolume: 'Monthly Sales Volume is required.',
+                            monthlyTransactions: 'Monthly Transactions are required.',
+                            averageTicketAmount: 'Average Ticket Amount is required.',
+                            mainCategory: 'Main Category is required.',
+                            businessModel: 'Business Model is required.',
+                            isSpikeInSales: 'Is Spike In Sales is required.',
+                            spikeSalesAverageVolume: 'Spike Sales Average Volume is required.',
+                            spikeTransactionNumber: 'Spike Transaction Number is required.',
+                            spikeOfVolumeInRegion: 'Spike Of Volume In Region is required.',
+                          },
+                        },
+                        {
+                          required: [
+                            'monthlySalesVolume',
+                            'monthlyTransactions',
+                            'averageTicketAmount',
+                            'mainCategory',
+                            'businessModel',
+                          ],
+                          errorMessage: {
+                            monthlySalesVolume: 'Monthly Sales Volume is required.',
+                            monthlyTransactions: 'Monthly Transactions are required.',
+                            averageTicketAmount: 'Average Ticket Amount is required.',
+                            mainCategory: 'Main Category is required.',
+                            businessModel: 'Business Model is required.',
+                          },
+                        },
+                      ],
                     },
                   },
                 },
@@ -82,8 +81,9 @@ const validationSchema = {
         },
       },
     },
-    required: ['entity'],
-  };
+  },
+  required: ['entity'],
+};
 
 const isSpikeInSaleVisibility = {
   '==': [{ var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales' }, true],
@@ -100,7 +100,7 @@ export const ProcessingDetails = {
   name: 'Processing Details',
   pageValidator: {
     type: 'json-schema',
-    value: validationSchema
+    value: validationSchema,
   },
   elements: [
     {
@@ -395,7 +395,7 @@ export const ProcessingDetails = {
             uiDefinition: {
               classNames: ['align-right', 'padding-top-10'],
             },
-            text: 'PREVIOUS',
+            text: 'Previous',
           },
         },
         {

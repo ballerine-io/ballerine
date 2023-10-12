@@ -93,7 +93,7 @@ export const ContactsPage = {
             uiDefinition: {
               classNames: ['align-right', 'padding-top-10'],
             },
-            text: 'PREVIOUS',
+            text: 'Previous',
           },
         },
         {
