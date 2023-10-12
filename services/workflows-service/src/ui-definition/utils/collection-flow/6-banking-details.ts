@@ -2,15 +2,19 @@ import { currencyCodes } from '../schema-utils/currency-codes';
 
 const validationSchema = {
   type: 'object',
+  required: ['entity'],
   properties: {
     entity: {
       type: 'object',
+      required: ['data'],
       properties: {
         data: {
           type: 'object',
+          required: ['additionalInfo'],
           properties: {
             additionalInfo: {
               type: 'object',
+              required: ['bank'],
               properties: {
                 bank: {
                   type: 'object',
@@ -105,7 +109,6 @@ const validationSchema = {
       },
     },
   },
-  required: ['entity'],
 };
 export const BankingDetailsPage = {
   type: 'page',
