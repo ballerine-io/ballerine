@@ -1,5 +1,12 @@
 # @ballerine/workflow-core
 
+## 0.5.10
+
+### Patch Changes
+
+- e51852fe: Bump
+- Version bump
+
 ## 0.5.9
 
 ### Patch Changes

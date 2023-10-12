@@ -1,5 +1,13 @@
 # @ballerine/ui
 
+## 0.3.4
+
+### Patch Changes
+
+- e51852fe: Bump
+- e51852fe: Bump
+- Version bump
+
 ## 0.3.3
 
 ### Patch Changes
