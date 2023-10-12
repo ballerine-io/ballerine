@@ -16,6 +16,10 @@ export interface JSONLogicRule extends BaseRule {
   value: AnyObject;
 }
 
+export interface JMESPathRule extends BaseRule {
+  value: string;
+}
+
 export interface IRule extends BaseRule {
   value: string;
   persistStateRule?: boolean;
@@ -34,7 +38,7 @@ export interface Action<TParams = AnyObject> {
   params: TParams;
 }
 
-export type Rule = JSONLogicRule;
+export type Rule = JSONLogicRule | JMESPathRule;
 
 export type UIElementDestination = string;
 
