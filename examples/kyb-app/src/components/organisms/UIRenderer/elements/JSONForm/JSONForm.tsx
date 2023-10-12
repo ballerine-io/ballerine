@@ -5,7 +5,7 @@ import { UIElementComponent } from '@app/components/organisms/UIRenderer/types';
 
 import { DynamicForm } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import set from 'lodash/set';
 import get from 'lodash/get';
 import { AnyObject } from '../../../../../../../../packages/ui/dist';
