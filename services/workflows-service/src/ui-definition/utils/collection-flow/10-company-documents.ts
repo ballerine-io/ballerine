@@ -353,8 +353,8 @@ export const CompanyDocuments = {
                       type: 'boolean',
                     },
                   },
-                }
-              ]
+                },
+              ],
             },
             {
               type: 'description',
@@ -370,7 +370,7 @@ export const CompanyDocuments = {
             uiDefinition: {
               classNames: ['align-right', 'padding-top-10'],
             },
-            text: 'PREVIOUS',
+            text: 'Previous',
           },
         },
         {

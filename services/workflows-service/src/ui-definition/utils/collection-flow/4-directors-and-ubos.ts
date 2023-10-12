@@ -306,7 +306,7 @@ export const DirectorsAndUbosPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.ubos.firstName', //entity.data.additionalInfo.ubos[0].firstName
               options: {
-                label: 'Name',
+                label: 'Legal Name',
                 hint: 'First Name',
                 jsonFormDefinition: {
                   type: 'string',
@@ -334,6 +334,17 @@ export const DirectorsAndUbosPage = {
                 hint: 'Chinese',
                 jsonFormDefinition: {
                   type: 'string',
+                  oneOf: [
+                    // Nationality title value
+                    { const: 'Afghan', title: 'Afghan' },
+                    { const: 'Albanian', title: 'Albanian' },
+                    { const: 'Algerian', title: 'Algerian' },
+                    { const: 'American', title: 'American' },
+                    { const: 'Andorran', title: 'Andorran' },
+                    { const: 'Angolan', title: 'Angolan' },
+                    { const: 'Antiguans', title: 'Antiguans' },
+                    { const: 'Chinese', title: 'Chinese' },
+                  ],
                 },
               },
             },
@@ -479,7 +490,7 @@ export const DirectorsAndUbosPage = {
                     jsonFormDefinition: {
                       type: 'string',
                     },
-                    label: 'Name',
+                    label: 'Legal Name',
                     hint: 'First Name',
                   },
                 },
@@ -511,7 +522,7 @@ export const DirectorsAndUbosPage = {
                         { const: 'Andorran', title: 'Andorran' },
                         { const: 'Angolan', title: 'Angolan' },
                         { const: 'Antiguans', title: 'Antiguans' },
-                        { const: 'Chinese', title: 'Cinese' },
+                        { const: 'Chinese', title: 'Chinese' },
                       ],
                     },
                     label: 'Nationality',
@@ -566,7 +577,7 @@ export const DirectorsAndUbosPage = {
             uiDefinition: {
               classNames: ['align-right', 'padding-top-10'],
             },
-            text: 'PREVIOUS',
+            text: 'Previous',
           },
         },
         {
