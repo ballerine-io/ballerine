@@ -7,7 +7,8 @@ import { useCallback } from 'react';
 export const Navigation = () => {
   const { state } = useDynamicUIContext();
   const { stateApi } = useStateManagerContext();
-  const isDisabled = state.isLoading;
+  const isFirstStep = !stateApi.getNextEvents()?.includes('PREVIOUS');
+  const isDisabled = state.isLoading || isFirstStep;
   const onPrevious = useCallback(() => {
     return stateApi.sendEvent('PREVIOUS');
   }, [stateApi]);
