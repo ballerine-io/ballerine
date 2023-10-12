@@ -47,30 +47,21 @@ export const CompanyDocuments = {
           elements: [
             {
               type: 'h1',
-              value: 'Company Documents',
+              options: {
+                text: 'Company Documents'
+              },
             },
             {
               type: 'h3',
-              value: 'Merchant Company Documents',
+              options: {
+                text: 'Merchant Company Documents'
+              },
             },
           ],
         },
         {
           type: 'json-form',
           options: {
-            jsonFormDefinition: {
-              required: [
-                'document-certificates-of-incorporation',
-                'document-business-registration-certificate',
-                'document-corporate-tax-certificate',
-                'document-certificate-of-good-standing',
-                'document-certificate-of-directors-and-shareholders',
-                'document-picture-of-company-seal',
-                'document-website-pictures',
-                'document-transaction-data-last-months',
-                'confirmation-checkbox',
-              ],
-            },
           },
           elements: [
             {
@@ -239,9 +230,40 @@ export const CompanyDocuments = {
               },
             },
             {
-              type: 'h3',
-              label: 'Website Documents',
+              type: 'json-form',
+              elements: [
+                {
+                  name: 'confirmation-checkbox',
+                  type: 'checkbox',
+                  valueDestination: 'entity.data.additionalInfo.signature.isConfirmed',
+                  options: {
+                    label: 'I Confirm',
+                    jsonFormDefinition: {
+                      type: 'boolean',
+                    },
+                  },
+                },
+              ],
             },
+            {
+              type: 'description',
+              label:
+                "By click 'Next', an email containing an identity verification link will be sent to shareholders listed.",
+            },
+          ],
+        },
+        {
+          type: 'h3',
+          name: 'office-pictures-title',
+          options: {
+            text: 'Office Pictures'
+          }
+        },
+        {
+          type: 'json-form',
+          name: 'office-pictures-form',
+          options: {},
+          elements: [
             {
               name: 'document-website-pictures',
               type: 'document',
@@ -263,10 +285,6 @@ export const CompanyDocuments = {
                   documentPage: 0,
                 },
               },
-            },
-            {
-              type: 'h3',
-              label: 'Office Pictures',
             },
             {
               name: 'document-office-front-door-pictures',
@@ -322,6 +340,20 @@ export const CompanyDocuments = {
                 },
               },
             },
+          ]
+        },
+        {
+          type: 'h3',
+          name: 'financial-docs-title',
+          options: {
+            text: 'Financial Documents'
+          }
+        },
+        {
+          type: 'json-form',
+          name: 'docs-form-2',
+          options: {},
+          elements: [
             {
               name: 'document-transaction-data-last-months',
               type: 'document',
@@ -350,58 +382,77 @@ export const CompanyDocuments = {
                 },
               },
             },
-            {
-              type: 'h3',
-              label: 'Declaration of Accuracy and Authenticity',
-            },
-            {
-              type: 'description',
-              label:
-                'By checking the checkbox below, I/we hereby declare that the information which was submitted in the attached Merchant application is truthful and genuine in regards to my/our business, legal status and registration, business practice and all other submitted information.',
-            },
-            {
-              type: 'json-form',
-              elements: [
-                {
-                  name: 'confirmation-checkbox',
-                  type: 'checkbox',
-                  valueDestination: 'entity.data.additionalInfo.signature.isConfirmed',
-                  options: {
-                    label: 'I Confirm',
-                    jsonFormDefinition: {
-                      type: 'boolean',
-                    },
-                  },
-                },
-              ],
-            },
-            {
-              type: 'description',
-              label:
-                "By click 'Next', an email containing an identity verification link will be sent to shareholders listed.",
-            },
-          ],
+          ]
         },
         {
-          name: 'next-page-button',
-          type: 'json-form:button',
+          type: 'h3',
+          name: 'accuracy-title',
           options: {
-            uiDefinition: {
-              classNames: ['align-right', 'padding-top-10'],
-            },
-            text: 'Finish',
-          },
-          availableOn: [
-            {
-              type: 'json-schema',
-              value: validationSchema,
-            },
-            {
-              type: 'jmespath',
-              value: '!contains(uiState.elements.*.isLoading,`true`)'
-            }
-          ],
+            text: 'Declaration of Accuracy and Authenticity'
+          }
         },
+        {
+          type: 'description',
+          name: 'accuracy-description',
+          options: {
+            descriptionRaw: 'By checking the checkbox below I/we hereby declare that the information which was submitted in the attached Merchant application is truthful and genuine in regards to my/our business, legal status and registration, business practices and all other submitted information.'
+          }
+        },
+        {
+          type: 'json-form',
+          name: 'confirmation-form',
+          options: {},
+          elements: [
+            {
+              type: 'checkbox',
+              name: 'confirmation-checkbox',
+              valueDestination: 'entity.data.additionalInfo.mainRepresentative.hasConfirmed',
+              options: {
+                jsonFormDefinition: {
+                  type: 'boolean',
+                  default: false,
+                },
+                label: 'I confirm',
+                uiSchema: {
+                  'ui:label': false,
+                },
+              }
+            }
+          ]
+        },
+        {
+          name: 'controls-container',
+          type: 'container',
+          options: {
+            align: 'right',
+          },
+          elements: [
+            {
+              name: 'next-page-button',
+              type: 'json-form:button',
+              options: {
+                uiDefinition: {
+                  classNames: ['align-right', 'padding-top-10'],
+                },
+                text: 'Finish',
+              },
+              availableOn: [
+                {
+                  type: 'json-schema',
+                  value: validationSchema,
+                },
+                {
+                  type: 'jmespath',
+                  value: '!contains(uiState.elements.*.isLoading,`true`)'
+                },
+                {
+                  type: 'json-logic',
+                  value: {'==': [{var: 'entity.data.additionalInfo.mainRepresentative.hasConfirmed'}, true, false]}
+                }
+              ],
+            },
+          ]
+        }
       ],
     },
   ],

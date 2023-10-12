@@ -9,5 +9,5 @@ export interface TitleProps {
 export const Title = ({ options = { text: '' } }: TitleProps) => {
   const { text = '' } = options;
 
-  return <p className="text-xl">{text}</p>;
+  return <h1 className="text-2xl pb-6 font-bold">{text}</h1>;
 };

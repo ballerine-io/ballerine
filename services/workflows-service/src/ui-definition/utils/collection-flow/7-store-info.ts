@@ -205,6 +205,9 @@ export const StoreInfoPage = {
                   type: 'boolean',
                 },
                 label: 'I have mobile application',
+                uiSchema: {
+                  'ui:label': false,
+                },
               },
             },
           ],
@@ -254,26 +257,45 @@ export const StoreInfoPage = {
                   type: 'boolean',
                 },
                 label: "I declare that the website's business activity does not require a license",
+                uiSchema: {
+                  'ui:label': false,
+                },
               },
             },
           ],
         },
         {
-          name: 'next-page-button',
-          type: 'json-form:button',
+          type: 'description',
+          name: 'description-1',
           options: {
-            uiDefinition: {
-              classNames: ['align-right', 'padding-top-10'],
-            },
-            text: 'Continue',
-          },
-          availableOn: [
-            {
-              type: 'json-schema',
-              value: validationSchema,
-            },
-          ],
+            descriptionRaw: "Leaving the last checkbox 'Unchecked' will require providing extra licenses documents"
+          }
         },
+        {
+          name: 'controls-container',
+          type: 'container',
+          options: {
+            align: 'right',
+          },
+          elements: [
+            {
+              name: 'next-page-button',
+              type: 'json-form:button',
+              options: {
+                uiDefinition: {
+                  classNames: ['align-right', 'padding-top-10'],
+                },
+                text: 'Continue',
+              },
+              availableOn: [
+                {
+                  type: 'json-schema',
+                  value: validationSchema,
+                },
+              ],
+            },
+          ]
+        }
       ],
     },
   ],

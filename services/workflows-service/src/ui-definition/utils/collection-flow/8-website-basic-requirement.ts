@@ -112,6 +112,13 @@ export const WebsiteBasicRequirement = {
                 text: 'Website Basic Requirement',
               },
             },
+            {
+              type: 'description',
+              name: 'heading-description',
+              options: {
+                descriptionRaw: 'This list is intended only as a basic pre-entry check of the<br /> websites and does not refer to specific product<br /> application requirements.'
+              }
+            }
           ],
         },
         {
@@ -253,21 +260,30 @@ export const WebsiteBasicRequirement = {
           ],
         },
         {
-          name: 'next-page-button',
-          type: 'json-form:button',
+          name: 'controls-container',
+          type: 'container',
           options: {
-            uiDefinition: {
-              classNames: ['align-right', 'padding-top-10'],
-            },
-            text: 'Continue',
+            align: 'right',
           },
-          availableOn: [
+          elements: [
             {
-              type: 'json-schema',
-              value: validationSchema,
+              name: 'next-page-button',
+              type: 'json-form:button',
+              options: {
+                uiDefinition: {
+                  classNames: ['align-right', 'padding-top-10'],
+                },
+                text: 'Continue',
+              },
+              availableOn: [
+                {
+                  type: 'json-schema',
+                  value: validationSchema,
+                },
+              ],
             },
-          ],
-        },
+          ]
+        }
       ],
     },
   ],

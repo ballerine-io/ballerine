@@ -397,21 +397,30 @@ export const BusinessAddressInfoPage = {
           ],
         },
         {
-          name: 'next-page-button',
-          type: 'json-form:button',
-          availableOn: [
-            {
-              type: 'json-schema',
-              value: validationSchema,
-            },
-          ],
+          name: 'controls-container',
+          type: 'container',
           options: {
-            uiDefinition: {
-              classNames: ['align-right', 'padding-top-10'],
-            },
-            text: 'Continue',
+            align: 'right',
           },
-        },
+          elements: [
+            {
+              name: 'next-page-button',
+              type: 'json-form:button',
+              options: {
+                uiDefinition: {
+                  classNames: ['align-right', 'padding-top-10'],
+                },
+                text: 'Continue',
+              },
+              availableOn: [
+                {
+                  type: 'json-schema',
+                  value: validationSchema,
+                },
+              ],
+            },
+          ]
+        }
       ],
     },
   ],
