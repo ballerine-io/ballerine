@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@ballerine/blocks": "0.1.10",
-    "@ballerine/workflow-browser-sdk": "link:../../sdks/workflow-browser-sdk",
+    "@ballerine/workflow-browser-sdk": "0.5.10",
     "@ballerine/ui": "0.3.4",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-icons": "^1.3.0",
