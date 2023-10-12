@@ -9,9 +9,25 @@ const validationSchema = {
           properties: {
             additionalInfo: {
               type: 'object',
+              required: ['store'],
               properties: {
                 store: {
                   type: 'object',
+                  if: {
+                    properties: {
+                      hasMobileApp: {
+                        const: true
+                      },
+                    }
+                  },
+                  then: {
+                    required: ['mobileAppName'],
+                    errorMessage: {
+                      required: {
+                        mobileAppName: 'Mobile App Name should not be empty.'
+                      }
+                    }
+                  },
                   properties: {
                     websiteUrls: {
                       type: 'string',
@@ -35,20 +51,10 @@ const validationSchema = {
                     hasMobileApp: {
                       type: 'boolean',
                       errorMessage: 'Has Mobile App should be either true or false.',
+                      default: false,
                     },
                     mobileAppName: {
                       type: 'string',
-                      if: {
-                        properties: { hasMobileApp: { enum: [true] } },
-                      },
-                      then: {
-                        not: { enum: [''] },
-                        errorMessage: 'Mobile App Name should not be empty.',
-                      },
-                      else: {
-                        enum: [''],
-                        errorMessage: 'Mobile App Name should be empty if no mobile app exists.',
-                      },
                     },
                   },
                   required: ['websiteUrls', 'dba', 'products', 'established', 'hasMobileApp'],

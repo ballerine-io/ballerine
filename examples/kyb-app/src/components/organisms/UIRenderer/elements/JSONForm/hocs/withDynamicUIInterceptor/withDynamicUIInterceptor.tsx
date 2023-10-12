@@ -43,7 +43,7 @@ export const withDynamicUIInterceptor = (
     const { name, onChange } = props;
     const { payload } = useStateManagerContext();
     const { currentPage } = usePageResolverContext();
-    const { errors } = usePageContext();
+    const { errors, pageErrors } = usePageContext();
 
     const baseDefinition = useMemo(() => {
       const definition = findDefinitionByName(name, currentPage.elements);
@@ -84,6 +84,31 @@ export const withDynamicUIInterceptor = (
       [payload, definition],
     );
 
+    const error = useMemo(() => {
+      const validationError = errors[definition.valueDestination]?.message;
+
+      if (validationError) return { message: validationError };
+
+      const revisionResult = pageErrors[currentPage.stateName];
+
+      if (!revisionResult) return null;
+
+      const revisionMessage = revisionResult[definition.valueDestination]?.message;
+
+      if (revisionMessage) {
+        return {
+          type: 'warning',
+          message: revisionMessage,
+        };
+      }
+
+      return null;
+    }, [errors, pageErrors, currentPage, definition]);
+
+    console.log('destination', definition.valueDestination);
+    console.log('ctx', payload);
+    console.log('value', value);
+
     return (
       <div>
         <Component
@@ -93,10 +118,8 @@ export const withDynamicUIInterceptor = (
           definition={definition}
           onChange={handleChange}
         />
-        {isTouched || value ? (
-          <p className="text-destructive text-[0.8rem] pl-1 pt-1">
-            {errors[definition.valueDestination]?.message}
-          </p>
+        {isTouched || value || error?.type === 'warning' ? (
+          <p className="text-destructive text-[0.8rem] pl-1 pt-1">{error?.message}</p>
         ) : null}
       </div>
     );

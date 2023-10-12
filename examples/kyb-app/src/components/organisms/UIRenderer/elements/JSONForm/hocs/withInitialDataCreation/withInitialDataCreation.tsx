@@ -49,7 +49,6 @@ export function withInitialDataCreation<TElementParams>(
 
     const dataCreationExecutionResult = useRuleExecutor(payload, insertRules, definition, state);
     const dataDeletionExectuionResult = useRuleExecutor(payload, deleteRules, definition, state);
-    console.log({ dataDeletionExectuionResult });
 
     const isCanCreateInitialData = useMemo(() => {
       if (!dataCreation) return true;

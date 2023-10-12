@@ -20,3 +20,23 @@ export const findDefinitionByName = (
 
   return undefined;
 };
+
+export const findDefinitionByDestinationPath = (
+  destination: string,
+  elements: UIElement<AnyObject>[],
+): UIElement<AnyObject> | undefined => {
+  for (const element of elements) {
+    if (element.valueDestination === destination) {
+      return element;
+    }
+
+    if (element.elements) {
+      const foundInChildren = findDefinitionByDestinationPath(destination, element.elements);
+      if (foundInChildren) {
+        return foundInChildren;
+      }
+    }
+  }
+
+  return undefined;
+};

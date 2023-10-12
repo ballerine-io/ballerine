@@ -3,7 +3,7 @@ import { useUIElementToolsLogic } from '@app/components/organisms/DynamicUI/hook
 import { Document, UIElement } from '@app/domains/collection-flow';
 import { fetchFile, uploadFile } from '@app/domains/storage/storage.api';
 import { AnyObject, FileInputAdapter, RJSVInputProps } from '@ballerine/ui';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import set from 'lodash/set';
 import get from 'lodash/get';
 import { collectionFlowFileStorage } from '@app/pages/CollectionFlow/collection-flow.file-storage';
@@ -24,37 +24,32 @@ export const DocumentField = (
   const { stateApi } = useStateManagerContext();
   const { options } = definition;
   const { documentIndex, documentPage } = options?.mappingParams || {};
+  const [fileItem, setFile] = useState<File | null>(null);
 
   const { toggleElementLoading } = useUIElementToolsLogic(definition.name);
 
   useEffect(() => {
-    if (!formData || formData instanceof File) return;
+    if (!formData) return;
+
     const fileId = formData as string;
 
-    const persistedFileById = collectionFlowFileStorage.getFileById(fileId as string);
+    const persistedFile = collectionFlowFileStorage.getFileById(fileId);
 
-    if (!persistedFileById) {
+    if (persistedFile) {
+      setFile(persistedFile);
+    } else {
       toggleElementLoading();
       void fetchFile(fileId).then(file => {
-        const existingFile = new File([''], file.fileNameInBucket || file.fileNameOnDisk, {
+        const createdFile = new File([''], file.fileNameInBucket || file.fileNameOnDisk, {
           type: 'text/plain',
         });
 
-        collectionFlowFileStorage.registerFile(fileId, existingFile);
+        collectionFlowFileStorage.registerFile(fileId, createdFile);
         toggleElementLoading();
-        onChange(existingFile);
+        setFile(createdFile);
       });
     }
-    //@ts-ignore
-  }, []);
-
-  const inputValue = useMemo(() => {
-    if (typeof formData === 'string' && formData) {
-      return collectionFlowFileStorage.getFileById(formData) || formData;
-    }
-
-    return formData as unknown;
-  }, [formData]);
+  }, [formData, toggleElementLoading]);
 
   const handleChange = useCallback(
     async (file: File) => {
@@ -71,6 +66,7 @@ export const DocumentField = (
       const uploadResult = await uploadFile({ file });
 
       collectionFlowFileStorage.registerFile(uploadResult.id, file);
+      setFile(file);
 
       onChange(uploadResult.id);
 
@@ -81,5 +77,5 @@ export const DocumentField = (
 
   if (documentIndex === undefined || documentPage === undefined) return null;
 
-  return <FileInputAdapter {...restProps} formData={inputValue as File} onChange={handleChange} />;
+  return <FileInputAdapter {...restProps} formData={fileItem} onChange={handleChange} />;
 };
