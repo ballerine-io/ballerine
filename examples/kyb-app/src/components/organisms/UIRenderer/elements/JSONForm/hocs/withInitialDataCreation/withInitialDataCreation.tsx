@@ -49,6 +49,7 @@ export function withInitialDataCreation<TElementParams>(
 
     const dataCreationExecutionResult = useRuleExecutor(payload, insertRules, definition, state);
     const dataDeletionExectuionResult = useRuleExecutor(payload, deleteRules, definition, state);
+    console.log({ dataDeletionExectuionResult });
 
     const isCanCreateInitialData = useMemo(() => {
       if (!dataCreation) return true;
@@ -64,7 +65,9 @@ export function withInitialDataCreation<TElementParams>(
     const isShouldDeleteData = useMemo(() => {
       if (!dataCreation || !dataCreation.deleteRules?.length) return false;
 
-      return dataDeletionExectuionResult.every(rule => rule.isValid);
+      return dataDeletionExectuionResult.length
+        ? dataDeletionExectuionResult.every(rule => rule.isValid)
+        : false;
     }, [dataDeletionExectuionResult, dataCreation]);
 
     useEffect(() => {
