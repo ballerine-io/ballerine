@@ -204,7 +204,7 @@ export const BankingDetailsPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Swift Code',
+                label: 'SWIFT Code',
                 hint: 'BBBBCCDDXXX',
               },
             },
