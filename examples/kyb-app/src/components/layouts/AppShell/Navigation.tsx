@@ -3,11 +3,13 @@ import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/u
 import clsx from 'clsx';
 import { ArrowLeft } from 'lucide-react';
 import { useCallback } from 'react';
+import { usePageResolverContext } from '@app/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 
 export const Navigation = () => {
   const { state } = useDynamicUIContext();
   const { stateApi } = useStateManagerContext();
-  const isFirstStep = !stateApi.getNextEvents()?.includes('PREVIOUS');
+  const { currentPage, pages } = usePageResolverContext();
+  const isFirstStep = currentPage?.number === pages?.[0]?.number;
   const isDisabled = state.isLoading || isFirstStep;
   const onPrevious = useCallback(() => {
     return stateApi.sendEvent('PREVIOUS');

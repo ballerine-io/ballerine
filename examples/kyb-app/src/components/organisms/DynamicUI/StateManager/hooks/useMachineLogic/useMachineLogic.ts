@@ -8,7 +8,6 @@ export interface StateMachineAPI {
   setContext: (newContext: AnyObject) => AnyObject;
   getContext: () => AnyObject;
   getState: () => string;
-  getNextEvents: () => Array<string>;
 }
 
 export const useMachineLogic = (
@@ -64,7 +63,6 @@ export const useMachineLogic = (
       setContext,
       getContext: () => machine.getSnapshot().context as AnyObject,
       getState: () => machine.getSnapshot().value as string,
-      getNextEvents: () => machine.getSnapshot().nextEvents as Array<string>,
     }),
     [invokePlugin, sendEvent, setContext, machine],
   );

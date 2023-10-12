@@ -92,8 +92,6 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
 
   const getState = useCallback(() => machineApi.getState(), [machineApi]);
 
-  const getNextEvents = useCallback(() => machineApi.getNextEvents(), [machineApi]);
-
   return {
     contextPayload: contextPayload.payload,
     state: contextPayload.machineState,
@@ -102,6 +100,5 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
     sendEvent,
     getContext,
     getState,
-    getNextEvents,
   };
 };
