@@ -10,13 +10,17 @@ import {
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from '../useEntity/utils';
-import { getDocumentsByCountry, StateTag } from '@ballerine/common';
+import {
+  CommonWorkflowEvent,
+  CommonWorkflowStates,
+  getDocumentsByCountry,
+  StateTag,
+} from '@ballerine/common';
 import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
 import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
 import { X } from 'lucide-react';
-import { useRevisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { MotionBadge } from '../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
@@ -25,6 +29,7 @@ import { WarningFilledSvg } from '../../../../common/components/atoms/icons';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { toTitleCase } from 'string-ts';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
+import { useRemoveDecisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -32,6 +37,12 @@ const motionProps: ComponentProps<typeof MotionBadge> = {
   transition: { type: 'spring', bounce: 0.3 },
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
 };
+
+function getPostUpdateEventName(workflow: TWorkflowById): string | undefined {
+  if (!workflow?.workflowDefinition?.config?.workflowLevelResolution) {
+    return CommonWorkflowEvent.RETURN_TO_REVIEW;
+  }
+}
 
 export const useTasks = ({
   workflow,
@@ -56,13 +67,18 @@ export const useTasks = ({
   const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
+  const postUpdateEventName = getPostUpdateEventName(workflow);
+  // const deliverEvent = workflow?.workflowDefinition?.config?.deliverEvent;
   const docsData = useStorageFilesQuery(
     workflow?.context?.documents?.flatMap(({ pages }) =>
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
   const { noAction } = useCaseDecision();
-  const { mutate: mutateRevisionTaskById } = useRevisionTaskByIdMutation(workflow?.id);
+  const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(
+    workflow?.id,
+    postUpdateEventName,
+  );
 
   const results: Array<Array<string>> = [];
   workflow?.context?.documents?.forEach((document, docIndex) => {
@@ -134,7 +150,7 @@ export const useTasks = ({
         const isDoneWithRevision =
           decision?.status === 'revised' && parentMachine?.status === 'completed';
         const isDocumentRevision =
-          decision?.status === 'revision' && (!isDoneWithRevision || noAction);
+          decision?.status === CommonWorkflowStates.REVISION && (!isDoneWithRevision || noAction);
 
         const isLegacyReject = workflow?.workflowDefinition?.config?.isLegacyReject;
         const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {
@@ -161,7 +177,7 @@ export const useTasks = ({
                         Re-upload needed
                         <X
                           className="h-4 w-4 cursor-pointer"
-                          onClick={() => mutateRevisionTaskById({ documentId: id, decision: null })}
+                          onClick={() => removeDecisionById({ documentId: id })}
                         />
                       </React.Fragment>
                     ),
@@ -1108,6 +1124,6 @@ export const useTasks = ({
     pluginsOutputKeys,
     results,
     noAction,
-    mutateRevisionTaskById,
+    removeDecisionById,
   ]);
 };

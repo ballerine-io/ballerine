@@ -1,5 +1,17 @@
 # @ballerine/common
 
+## 0.7.12
+
+### Patch Changes
+
+- Bump minor version
+
+## 0.7.11
+
+### Patch Changes
+
+- Version minor bump
+
 ## 0.7.10
 
 ### Patch Changes
