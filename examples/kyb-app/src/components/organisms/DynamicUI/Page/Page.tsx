@@ -8,6 +8,7 @@ import { PageContext } from '@app/components/organisms/DynamicUI/Page/types';
 import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
 import { pageContext } from './page.context';
 import { usePageErrors } from '@app/components/organisms/DynamicUI/Page/hooks/usePageErrors';
+import { usePageResolverContext } from '@app/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 
 const { Provider } = pageContext;
 
@@ -17,6 +18,7 @@ export interface PageProps {
 }
 
 export const Page = ({ page, children }: PageProps) => {
+  const { pages } = usePageResolverContext();
   const definition = useMemo(() => {
     const definition: UIElement<AnyObject> = {
       type: 'page',
@@ -32,23 +34,33 @@ export const Page = ({ page, children }: PageProps) => {
   const { payload } = useStateManagerContext();
   const { state } = useDynamicUIContext();
   const rulesResult = useRuleExecutor(payload, rules, definition, state);
-  const documentErrors = usePageErrors(payload);
+  const fieldErrors = useMemo(
+    () => rulesResult.reduce((errors, item) => errors.concat(item.errors), [] as ErrorField[]),
+    [rulesResult],
+  );
+
+  const pageErrors = usePageErrors(payload, pages);
 
   const context = useMemo(() => {
     const ctx: PageContext = {
-      errors: rulesResult
-        .reduce((errors, item) => errors.concat(item.errors), [] as ErrorField[])
-        .concat(documentErrors)
-        .reduce((map, item) => {
-          if (!item.fieldId) return map;
+      errors: fieldErrors.reduce((map, item) => {
+        if (!item.fieldId) return map;
 
-          map[item.fieldId] = item;
+        map[item.fieldId] = item;
+        return map;
+      }, {} as PageContext['errors']),
+      pageErrors: pageErrors.reduce((map, pageError) => {
+        map[pageError.stateName] = pageError.errors.reduce((map, error) => {
+          map[error.fieldId] = error;
           return map;
-        }, {} as PageContext['errors']),
+        }, {});
+
+        return map;
+      }, {}),
     };
 
     return ctx;
-  }, [rulesResult, documentErrors]);
+  }, [fieldErrors, pageErrors]);
 
   return <Provider value={context}>{children}</Provider>;
 };
