@@ -8,8 +8,8 @@ import { usePageResolverContext } from '@app/components/organisms/DynamicUI/Page
 export const Navigation = () => {
   const { state } = useDynamicUIContext();
   const { stateApi } = useStateManagerContext();
-  const { currentPage, pages } = usePageResolverContext();
-  const isFirstStep = currentPage?.number === pages?.[0]?.number;
+  const { currentPage } = usePageResolverContext();
+  const isFirstStep = currentPage?.number === 1;
   const isDisabled = state.isLoading || isFirstStep;
   const onPrevious = useCallback(() => {
     return stateApi.sendEvent('PREVIOUS');
