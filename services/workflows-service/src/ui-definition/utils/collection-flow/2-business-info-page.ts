@@ -267,12 +267,7 @@ export const BusinessInfoPage = {
                 label: 'Corporate type',
                 jsonFormDefinition: {
                   type: 'string',
-                },
-                uiSchema: {
-                  'ui:placeholder': 'Corporation',
-                  'ui:field': 'AutocompleteInput',
-                  'ui:label': true,
-                  options: [
+                  oneOf: [
                     { title: 'Corporation', const: 'corporation' },
                     { title: 'Limited Liability Company', const: 'limited_liability_company' },
                     { title: 'Partnership', const: 'partnership' },
@@ -281,6 +276,9 @@ export const BusinessInfoPage = {
                     { title: 'Government', const: 'government' },
                     { title: 'Other', const: 'other' },
                   ],
+                },
+                uiSchema: {
+                  'ui:label': true,
                 },
               },
             },
