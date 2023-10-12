@@ -600,7 +600,6 @@ export const DirectorsAndUbosPage = {
     },
   ],
   actions: [
-
     {
       type: 'definitionEvent',
       params: {

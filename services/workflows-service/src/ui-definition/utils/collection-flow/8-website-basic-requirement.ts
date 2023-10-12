@@ -288,7 +288,6 @@ export const WebsiteBasicRequirement = {
     },
   ],
   actions: [
-
     {
       type: 'definitionEvent',
       params: {

@@ -418,7 +418,6 @@ export const ProcessingDetails = {
     },
   ],
   actions: [
-
     {
       type: 'definitionEvent',
       params: {

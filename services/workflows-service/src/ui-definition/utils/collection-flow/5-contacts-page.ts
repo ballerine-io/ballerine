@@ -110,7 +110,6 @@ export const ContactsPage = {
     },
   ],
   actions: [
-
     {
       type: 'definitionEvent',
       params: {
