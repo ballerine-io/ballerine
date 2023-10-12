@@ -3,6 +3,7 @@ import {
   JSONFormElementParams,
 } from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
 import { UIElement } from '@app/domains/collection-flow';
+import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 
 export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormElementParams>) => {
@@ -51,6 +52,9 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
       properties: {},
     };
 
+    //@ts-ignore
+    uiSchema.items = {} as AnyObject;
+
     (formElement.elements as UIElement<JSONFormElementBaseParams>[])?.forEach(uiElement => {
       if (!uiElement.options?.jsonFormDefinition) return;
 
@@ -69,7 +73,8 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
         'ui:placeholder': uiElement?.options?.hint,
       };
 
-      uiSchema[uiElement.name] = elementUISchema;
+      //@ts-nocheck
+      uiSchema.items[uiElement.name] = elementUISchema;
     });
   }
 
