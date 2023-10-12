@@ -15,11 +15,14 @@ export const BallerineImage = forwardRef<HTMLImageElement, IBallerineImageProps>
     const [error, setError] = useState(false);
     const isError = !src || error;
     const isPlaceholder = withPlaceholder && isError;
+
     const handleError: ReactEventHandler<HTMLImageElement> = useCallback(
       e => {
         setError(true);
 
-        if (!isFunction(onError)) return;
+        if (!isFunction(onError)) {
+          return;
+        }
 
         onError(e);
       },
@@ -27,7 +30,9 @@ export const BallerineImage = forwardRef<HTMLImageElement, IBallerineImageProps>
     );
 
     useEffect(() => {
-      if (!error || !src) return;
+      if (!error || !src) {
+        return;
+      }
 
       setError(false);
     }, [src]);
@@ -38,7 +43,7 @@ export const BallerineImage = forwardRef<HTMLImageElement, IBallerineImageProps>
           className={ctw(
             {
               'animate-pulse bg-gray-200 theme-dark:bg-neutral-focus': isLoading,
-              'd-full bg-neutral text-center': !isLoading && isPlaceholder,
+              'd-full bg-muted text-center': !isLoading && isPlaceholder,
             },
             'rounded-md',
             className,
@@ -46,13 +51,13 @@ export const BallerineImage = forwardRef<HTMLImageElement, IBallerineImageProps>
           title={alt}
           {...rest}
         >
-          {isLoading
-            ? null
-            : placeholder || (
-                <div className={`d-full grid place-content-center`}>
-                  <PhotoSvg className={`d-8`} />
-                </div>
-              )}
+          {isLoading ? null : placeholder ? (
+            <div className="d-full flex items-center justify-center">{placeholder}</div>
+          ) : (
+            <div className={`d-full flex items-center justify-center`}>
+              <PhotoSvg className={`w-[70%]`} />
+            </div>
+          )}
         </div>
       );
     }

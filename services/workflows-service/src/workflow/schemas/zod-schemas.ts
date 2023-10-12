@@ -10,6 +10,7 @@ const SubscriptionSchema = z
 
 export const ConfigSchema = z
   .object({
+    isLegacyReject: z.boolean().optional(),
     subscriptions: z.array(SubscriptionSchema).optional(),
     completedWhenTasksResolved: z.boolean().optional(),
     workflowLevelResolution: z.boolean().optional(),

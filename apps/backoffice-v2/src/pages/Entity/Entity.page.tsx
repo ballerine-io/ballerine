@@ -26,7 +26,7 @@ export const Entity = () => {
         {Array.isArray(tasks) &&
           tasks?.length > 0 &&
           tasks?.map((task, index) => {
-            if (!Array.isArray(task.cells) || !task?.cells.length) return;
+            if (!Array.isArray(task?.cells) || !task?.cells?.length) return;
 
             return (
               <Card

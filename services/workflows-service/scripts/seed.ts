@@ -9,7 +9,7 @@ import {
   generateBusiness,
   generateEndUser,
 } from './generate-end-user';
-import { defaultContextSchema, StateTag } from '@ballerine/common';
+import { CommonWorkflowStates, defaultContextSchema } from '@ballerine/common';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
@@ -18,6 +18,9 @@ import { generateKybDefintion } from './workflows';
 import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
 import { generateParentKybWithSessionKycs } from './workflows/parent-kyb-kyc-session-workflow';
 import { env } from '../src/env';
+import { generateBaseTaskLevelStates } from './workflows/generate-base-task-level-states';
+import { generateBaseCaseLevelStates } from './workflows/generate-base-case-level-states';
+import { InputJsonValue } from '../src/types';
 
 seed(10).catch(error => {
   console.error(error);
@@ -83,6 +86,7 @@ async function createProject(client: PrismaClient, customer: Customer, id: strin
   });
 }
 
+const DEFAULT_INITIAL_STATE = CommonWorkflowStates.MANUAL_REVIEW;
 async function seed(bcryptSalt: string | number) {
   console.info('Seeding database...');
   const client = new PrismaClient();
@@ -108,6 +112,7 @@ async function seed(bcryptSalt: string | number) {
       lastName: faker.name.lastName(),
       password: await hash('admin', bcryptSalt),
       roles: ['user'],
+      avatarUrl: faker.image.people(200, 200, true),
       userToProjects: {
         create: { projectId: project1.id },
       },
@@ -118,6 +123,7 @@ async function seed(bcryptSalt: string | number) {
       lastName: faker.name.lastName(),
       password: await hash('agent1', bcryptSalt),
       roles: ['user'],
+      avatarUrl: faker.image.people(200, 200, true),
       userToProjects: {
         create: { projectId: project2.id },
       },
@@ -128,6 +134,7 @@ async function seed(bcryptSalt: string | number) {
       lastName: faker.name.lastName(),
       password: await hash('agent2', bcryptSalt),
       roles: ['user'],
+      avatarUrl: faker.image.people(200, 200, true),
       userToProjects: {
         create: { projectId: project2.id },
       },
@@ -138,6 +145,7 @@ async function seed(bcryptSalt: string | number) {
       lastName: faker.name.lastName(),
       password: await hash('agent3', bcryptSalt),
       roles: ['user'],
+      avatarUrl: null,
       userToProjects: {
         create: { projectId: project1.id },
       },
@@ -477,88 +485,35 @@ async function seed(bcryptSalt: string | number) {
       },
       definition: {
         id: 'risk-score-improvement',
-        initial: 'idle',
-        states: {
-          review: {
-            tags: [StateTag.MANUAL_REVIEW],
-            on: {
-              idle: {
-                target: 'review',
-              },
-              review: {
-                target: ['rejected', 'approved', 'revision'],
-              },
-              revision: {
-                target: ['rejected', 'approved', 'review'],
-              },
-            },
-          },
-          idle: {},
-          approved: {
-            tags: [StateTag.APPROVED],
-            type: 'final',
-          },
-          rejected: {
-            tags: [StateTag.REJECTED],
-            type: 'final',
-          },
-          revision: {
-            tags: [StateTag.REVISION],
-          },
-        },
+        initial: DEFAULT_INITIAL_STATE,
+        states: generateBaseTaskLevelStates(),
       },
       projectId: project1.id,
     },
   });
 
-  const baseManualReviewDefinition = {
-    name: 'manual_review',
-    version: manualMachineVersion,
-    definitionType: 'statechart-json',
-    definition: {
-      id: 'Manual Review',
-      initial: 'review',
-      states: {
-        review: {
-          tags: [StateTag.MANUAL_REVIEW],
-          on: {
-            approve: {
-              target: 'approved',
-            },
-            reject: {
-              target: 'rejected',
-            },
-            revision: {
-              target: 'revision',
-            },
-          },
-        },
-        approved: {
-          tags: [StateTag.APPROVED],
-          type: 'final',
-        },
-        rejected: {
-          tags: [StateTag.REJECTED],
-          type: 'final',
-        },
-        revision: {
-          tags: [StateTag.REVISION],
-          on: {
-            review: {
-              target: 'review',
-            },
-          },
-        },
+  const baseReviewDefinition = (stateDefinition: InputJsonValue) =>
+    ({
+      name: DEFAULT_INITIAL_STATE,
+      version: manualMachineVersion,
+      definitionType: 'statechart-json',
+      config: {
+        isLegacyReject: true,
+        workflowLevelResolution: true,
       },
-    },
-    persistStates: [],
-    submitStates: [],
-  } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
+      definition: {
+        id: 'Manual Review',
+        initial: DEFAULT_INITIAL_STATE,
+        states: stateDefinition,
+      },
+      persistStates: [],
+      submitStates: [],
+    } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput);
 
   // KYC Manual Review (workflowLevelResolution false)
   await client.workflowDefinition.create({
     data: {
-      ...baseManualReviewDefinition,
+      ...baseReviewDefinition(generateBaseTaskLevelStates()),
       id: kycManualMachineId,
       config: {
         workflowLevelResolution: false,
@@ -571,7 +526,7 @@ async function seed(bcryptSalt: string | number) {
   // KYB Manual Review (workflowLevelResolution true)
   await client.workflowDefinition.create({
     data: {
-      ...baseManualReviewDefinition,
+      ...baseReviewDefinition(generateBaseCaseLevelStates()),
       id: kybManualMachineId,
       config: {
         workflowLevelResolution: true,
@@ -804,6 +759,7 @@ async function seed(bcryptSalt: string | number) {
             id: true,
             firstName: true,
             lastName: true,
+            avatarUrl: true,
           },
         },
       },
@@ -859,6 +815,7 @@ async function seed(bcryptSalt: string | number) {
             id: true,
             firstName: true,
             lastName: true,
+            avatarUrl: true,
           },
         },
       },
@@ -885,44 +842,11 @@ async function seed(bcryptSalt: string | number) {
       definition: {
         id: 'kyb_onboarding',
         predictableActionArguments: true,
-        initial: 'review',
-
+        initial: DEFAULT_INITIAL_STATE,
         context: {
           documents: [],
         },
-
-        states: {
-          review: {
-            tags: [StateTag.MANUAL_REVIEW],
-            on: {
-              approve: {
-                target: 'approved',
-              },
-              reject: {
-                target: 'rejected',
-              },
-              revision: {
-                target: 'revision',
-              },
-            },
-          },
-          approved: {
-            tags: [StateTag.APPROVED],
-            type: 'final',
-          },
-          rejected: {
-            tags: [StateTag.REJECTED],
-            type: 'final',
-          },
-          revision: {
-            tags: [StateTag.REVISION],
-            on: {
-              review: {
-                target: 'review',
-              },
-            },
-          },
-        },
+        states: generateBaseCaseLevelStates(),
       },
     },
   });
@@ -942,44 +866,11 @@ async function seed(bcryptSalt: string | number) {
       definition: {
         id: 'kyb_risk_score',
         predictableActionArguments: true,
-        initial: 'review',
-
+        initial: DEFAULT_INITIAL_STATE,
         context: {
           documents: [],
         },
-
-        states: {
-          review: {
-            tags: [StateTag.MANUAL_REVIEW],
-            on: {
-              approve: {
-                target: 'approved',
-              },
-              reject: {
-                target: 'rejected',
-              },
-              revision: {
-                target: 'revision',
-              },
-            },
-          },
-          approved: {
-            tags: [StateTag.APPROVED],
-            type: 'final',
-          },
-          rejected: {
-            tags: [StateTag.REJECTED],
-            type: 'final',
-          },
-          revision: {
-            tags: [StateTag.REVISION],
-            on: {
-              review: {
-                target: 'review',
-              },
-            },
-          },
-        },
+        states: generateBaseTaskLevelStates(),
       },
     },
   });
@@ -1028,6 +919,7 @@ async function seed(bcryptSalt: string | number) {
             id: true,
             firstName: true,
             lastName: true,
+            avatarUrl: true,
           },
         },
       },
@@ -1089,6 +981,7 @@ async function seed(bcryptSalt: string | number) {
             id: true,
             firstName: true,
             lastName: true,
+            avatarUrl: true,
           },
         },
       },
@@ -1150,6 +1043,7 @@ async function seed(bcryptSalt: string | number) {
             id: true,
             firstName: true,
             lastName: true,
+            avatarUrl: true,
           },
         },
         childWorkflowsRuntimeData: true,
@@ -1172,6 +1066,7 @@ async function seed(bcryptSalt: string | number) {
             workflowDefinitionId: kycManualMachineId,
             workflowDefinitionVersion: manualMachineVersion,
             context: await createMockEndUserContextData(id, index + 1),
+            state: DEFAULT_INITIAL_STATE,
           },
           projectId: project1.id,
         }),
@@ -1186,6 +1081,7 @@ async function seed(bcryptSalt: string | number) {
         workflowDefinitionVersion: 1,
         context: await createMockBusinessContextData(id, index + 1),
         createdAt: faker.date.recent(2),
+        state: DEFAULT_INITIAL_STATE,
         projectId: project1.id,
       });
 
@@ -1204,6 +1100,7 @@ async function seed(bcryptSalt: string | number) {
         workflowDefinitionVersion: manualMachineVersion,
         // Would not display data in the backoffice UI
         context: {},
+        state: DEFAULT_INITIAL_STATE,
         createdAt: faker.date.recent(2),
       };
 

@@ -4,24 +4,32 @@ import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/quer
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../../../Case/hooks/useCaseState/useCaseState';
 import toast from 'react-hot-toast';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useApproveTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { useRevisionTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
+import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
+import { CommonWorkflowEvent } from '@ballerine/common';
 
+const getPostUpdateEventNameEvent = (workflow: TWorkflowById) => {
+  if (!workflow?.workflowDefinition?.config?.workflowLevelResolution) {
+    return CommonWorkflowEvent.TASK_REVIEWED;
+  }
+};
 export const useCallToActionLogic = () => {
   const { entityId } = useParams();
   const filterId = useFilterId();
   const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
+  const postUpdateEventName = getPostUpdateEventNameEvent(workflow);
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
-    useApproveTaskByIdMutation(workflow?.id);
+    useApproveTaskByIdMutation(workflow?.id, postUpdateEventName);
   const { mutate: mutateRejectTaskById, isLoading: isLoadingRejectTaskById } =
-    useRejectTaskByIdMutation(workflow?.id);
+    useRejectTaskByIdMutation(workflow?.id, postUpdateEventName);
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingRevisionTaskById } =
-    useRevisionTaskByIdMutation(workflow?.id);
+    useRevisionTaskByIdMutation(workflow?.id, postUpdateEventName);
 
   const revisionReasons =
     workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
@@ -109,6 +117,10 @@ export const useCallToActionLogic = () => {
   const workflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??
     workflow?.context?.entity?.type === 'business';
+
+  useEffect(() => {
+    setReason(reasons?.[0] ?? '');
+  }, [action, reasons]);
 
   return {
     isLoadingTaskDecisionById,

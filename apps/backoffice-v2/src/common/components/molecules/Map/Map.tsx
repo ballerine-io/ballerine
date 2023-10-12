@@ -3,8 +3,6 @@ import L, { LatLngTuple } from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
-
-import { AlertDescription } from '../../atoms/Alert/Alert.Description';
 import { IMapProps } from './interfaces';
 
 export const Map: FunctionComponent<IMapProps> = ({
@@ -13,10 +11,6 @@ export const Map: FunctionComponent<IMapProps> = ({
   popupContent,
   className,
 }) => {
-  if (!latitude || !longitude) {
-    return <AlertDescription>Invalid coordinates.</AlertDescription>;
-  }
-
   const position: LatLngTuple = [latitude, longitude];
 
   L.Marker.prototype.options.icon = L.icon({

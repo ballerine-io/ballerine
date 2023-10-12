@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { AnyRecord, DefaultContextSchema } from '@ballerine/common';
+import { AnyRecord } from '@ballerine/common';
 import { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
@@ -9,6 +9,7 @@ import fs from 'fs';
 import { CustomerService } from '@/customer/customer.service';
 import { TProjectId, TProjectIds } from '@/types';
 import { TDocumentsWithoutPageType } from '@/common/types';
+import { fromBuffer } from 'file-type';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -23,7 +24,6 @@ export class HookCallbackHandlerService {
     data,
     resultDestinationPath,
     processName,
-    projectIds,
     currentProjectId,
   }: {
     workflowRuntime: WorkflowRuntimeData;
@@ -65,10 +65,16 @@ export class HookCallbackHandlerService {
     const entity = this.formatEntityData(data);
     const issuer = this.formatIssuerData(kycDocument);
     const documentProperties = this.formatDocumentProperties(data, kycDocument);
-    const pages = this.formatPages(data);
+    const pages = await this.formatPages(data);
     const decision = this.formatDecision(data);
     const documentCategory = kycDocument.type as string;
-    const documents = this.formatDocuments(documentCategory, pages, issuer, documentProperties);
+    const documents = this.formatDocuments(
+      documentCategory,
+      pages,
+      issuer,
+      documentProperties,
+      kycDocument,
+    );
     const customer = await this.customerService.getByProjectId(currentProjectId);
     const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
       documents as TDocumentsWithoutPageType,
@@ -97,6 +103,7 @@ export class HookCallbackHandlerService {
     pages: any[],
     issuer: AnyRecord,
     documentProperties: AnyRecord,
+    kycDocument: AnyRecord,
   ) {
     const documents = [
       {
@@ -105,6 +112,7 @@ export class HookCallbackHandlerService {
         pages: pages,
         issuer: issuer,
         properties: documentProperties,
+        issuingVersion: kycDocument['issueNumber'],
       },
     ];
 
@@ -153,27 +161,29 @@ export class HookCallbackHandlerService {
       firstIssue: kycDocument['firstIssue'],
     };
     const issuer = {
-      additionalDetails: additionalIssuerInfor,
+      additionalInfo: additionalIssuerInfor,
       country: kycDocument['country'],
       name: kycDocument['issuedBy'],
-      issuingVersion: kycDocument['issueNumber'],
       city: kycDocument['placeOfIssue'],
     };
     return issuer;
   }
 
-  formatPages(data: AnyRecord) {
+  async formatPages(data: AnyRecord) {
     const documentImages: AnyRecord[] = [];
     for (const image of data.images as { context?: string; content: string }[]) {
       const tmpFile = tmp.fileSync().name;
       const base64ImageContent = image.content.split(',')[1];
-      const data = Buffer.from(base64ImageContent as string, 'base64');
-      fs.writeFileSync(tmpFile, data);
+      const buffer = Buffer.from(base64ImageContent as string, 'base64');
+      const fileType = await fromBuffer(buffer);
+      const fileExtension = fileType?.ext ? `.${fileType?.ext}` : '';
+      const fileWithExtension = `${tmpFile}${fileExtension}`;
+      fs.writeFileSync(fileWithExtension, buffer);
 
       documentImages.push({
-        uri: tmpFile,
-        provider: 'base64',
-        type: 'image/png',
+        uri: `file://${fileWithExtension}`,
+        provider: 'file-system',
+        type: fileType?.mime,
         metadata: {
           side: image.context?.replace('document-', ''),
         },

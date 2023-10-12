@@ -128,6 +128,7 @@ export const createMockParentWithChildWorkflow = async ({
     workflow: {
       workflowDefinitionId: parentRuntimeInformation.workflowDefinitionId,
       workflowDefinitionVersion: parentRuntimeInformation.workflowDefinitionVersion,
+      state: 'manual_review',
       context: parentRuntimeInformation.context as unknown as Prisma.InputJsonValue,
     },
   });
@@ -151,6 +152,7 @@ export const createMockParentWithChildWorkflow = async ({
         workflowDefinitionVersion: childWorkflowRuntimeInformation.workflowDefinitionVersion,
         context: childWorkflowRuntimeInformation.context as unknown as Prisma.InputJsonValue,
         parentRuntimeId: businessRecord.workflowRuntimeData[0]!.id,
+        state: 'manual_review',
       },
       projectId: projectId,
     });
@@ -297,7 +299,7 @@ export const createKycRuntime = ({
           metadata: {
             side: 'face',
           },
-          provider: 'base64',
+          provider: 'file-system',
           ballerineFileId: faker.random.alphaNumeric(20),
         },
         {
@@ -306,7 +308,7 @@ export const createKycRuntime = ({
           metadata: {
             side: 'front',
           },
-          provider: 'base64',
+          provider: 'file-system',
           ballerineFileId: faker.random.alphaNumeric(20),
         },
         ...(ubo.passport.back
@@ -328,7 +330,7 @@ export const createKycRuntime = ({
         name: null,
         country: ubo.passport.issuerCountryCode,
         issuingVersion: null,
-        additionalDetails: {
+        additionalInfo: {
           validFrom: faker.date.past().toISOString(),
           validUntil: faker.date.future().toISOString(),
           firstIssue: null,

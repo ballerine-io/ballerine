@@ -29,12 +29,13 @@ export const fetchWorkflows = async (params: {
           createdAt: z.string().datetime(),
           entity: ObjectWithIdSchema.extend({
             name: z.string(),
-            avatarUrl: z.string().nullable(),
+            avatarUrl: z.string().nullable().optional(),
             approvalState: z.enum(States),
           }),
           assignee: ObjectWithIdSchema.extend({
             firstName: z.string(),
             lastName: z.string(),
+            avatarUrl: z.string().nullable().optional(),
           }).nullable(),
         }),
       ),
@@ -72,7 +73,7 @@ export const BaseWorkflowByIdSchema = z.object({
   }),
   entity: ObjectWithIdSchema.extend({
     name: z.string(),
-    avatarUrl: z.string().nullable(),
+    avatarUrl: z.string().nullable().optional(),
     approvalState: z.enum(States),
   }),
   assignee: ObjectWithIdSchema.extend({
@@ -123,6 +124,24 @@ export const fetchUpdateWorkflowById = async ({
   return handleZodError(error, workflow);
 };
 
+export const updateWorkflowDocumentById = async ({
+  workflowId,
+  documentId,
+  body,
+}: IWorkflowId & {
+  documentId: string;
+  body: Record<PropertyKey, unknown>;
+}) => {
+  const [workflow, error] = await apiClient({
+    endpoint: `workflows/${workflowId}/documents/${documentId}`,
+    method: Method.PATCH,
+    body,
+    schema: z.any(),
+  });
+
+  return handleZodError(error, workflow);
+};
+
 export const updateWorkflowSetAssignById = async ({
   workflowId,
   body,
@@ -163,7 +182,7 @@ export const fetchWorkflowEvent = async ({
   return handleZodError(error, workflow);
 };
 
-export const fetchWorkflowDecision = async ({
+export const updateWorkflowDecision = async ({
   workflowId,
   documentId,
   body,
@@ -172,13 +191,16 @@ export const fetchWorkflowDecision = async ({
   body: {
     decision: string | null;
     reason?: string;
+    postUpdateEventName?: string;
   };
 }) => {
   const [workflow, error] = await apiClient({
     endpoint: `workflows/${workflowId}/decision/${documentId}`,
     method: Method.PATCH,
     body,
-    schema: WorkflowByIdSchema,
+    schema: WorkflowByIdSchema.pick({
+      context: true,
+    }),
   });
 
   return handleZodError(error, workflow);
