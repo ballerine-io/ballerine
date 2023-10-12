@@ -1,3 +1,5 @@
+import { languages } from './languages';
+
 const validationSchema = {
   type: 'object',
   properties: {
@@ -266,6 +268,7 @@ export const WebsiteBasicRequirement = {
               options: {
                 jsonFormDefinition: {
                   type: 'string',
+                  oneOf: languages,
                 },
                 label: 'Website Language',
                 hint: 'English',
