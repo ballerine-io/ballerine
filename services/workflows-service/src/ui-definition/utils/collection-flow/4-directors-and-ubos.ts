@@ -81,10 +81,10 @@ const validationSchema = {
                       },
                       percentageOfOwnership: {
                         type: 'number',
-                        minimum: 0,
+                        minimum: 25,
                         maximum: 100,
                         errorMessage: {
-                          minimum: 'Percentage of ownership must be 0 or greater.',
+                          minimum: 'Percentage of ownership must be 25 or greater.',
                           maximum: 'Percentage of ownership must not exceed 100.',
                         },
                       },
