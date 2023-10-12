@@ -105,15 +105,12 @@ export const StoreInfoPage = {
           options: {
             jsonFormDefinition: {
               required: [
-                'card-holder-name-input',
-                'resident-address-input',
-                'account-number-input',
-                'iban-input',
-                'swift-code-input',
-                'bank-name-input',
-                'bank-address-input',
-                'bank-sub-branch-input',
-                'account-currency-input',
+                'store-website-urls-input',
+                'store-dba-input',
+                'store-industry-input',
+                'store-products-input',
+                'store-established-input',
+                'store-has-mobile-checkbox'
               ],
             },
           },
@@ -208,6 +205,11 @@ export const StoreInfoPage = {
         },
         {
           type: 'json-form',
+          options: {
+            jsonFormDefinition: {
+              required: ['store-mobile-app-name-input']
+            }
+          },
           visibleOn: [
             {
               type: 'json-logic',
@@ -231,6 +233,11 @@ export const StoreInfoPage = {
         },
         {
           type: 'json-form',
+          options: {
+            jsonFormDefinition: {
+              required: ['active-store-website-checkbox']
+            }
+          },
           elements: [
             {
               name: 'active-store-website-checkbox',
