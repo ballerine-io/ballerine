@@ -81,7 +81,7 @@ export const fetchCustomer = async (): Promise<TCustomer> => {
   return result;
 };
 
-export const fetchFlowContext = async (): Promise<AnyObject> => {
+export const fetchFlowContext = async (): Promise<{ context: AnyObject; state: string }> => {
   const result = await request.get('collection-flow/context');
 
   return result.json();

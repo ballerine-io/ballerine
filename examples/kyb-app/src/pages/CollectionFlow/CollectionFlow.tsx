@@ -14,6 +14,9 @@ import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessio
 import { useUISchemasQuery } from '@app/hooks/useUISchemasQuery';
 import { ProgressBar } from '@app/pages/CollectionFlow/components/organisms/KYBView/components/ProgressBar';
 import { StepperProgress } from '@app/pages/CollectionFlow/components/organisms/KYBView/components/StepperProgress';
+import { Approved } from '@app/pages/CollectionFlow/components/pages/Approved';
+import { Rejected } from '@app/pages/CollectionFlow/components/pages/Rejected';
+import { Success } from '@app/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
@@ -38,6 +41,9 @@ export const CollectionFlowDumb = () => {
     return prepareInitialUIState(elements || [], context?.context || {});
   }, [elements, context]);
 
+  if (context.state === 'approved') return <Approved />;
+  if (context.state == 'rejected') return <Rejected />;
+
   return definition && context?.context ? (
     <DynamicUI initialState={initialUIState}>
       <DynamicUI.StateManager
@@ -47,87 +53,91 @@ export const CollectionFlowDumb = () => {
         extensions={schema?.definition.extensions}
         definition={definition as State}
       >
-        {({ state, stateApi }) => (
-          <DynamicUI.PageResolver state={state} pages={elements}>
-            {({ currentPage }) => {
-              return currentPage ? (
-                <DynamicUI.Page page={currentPage}>
-                  <DynamicUI.TransitionListener
-                    onNext={(tools, prevState) => {
-                      tools.setElementCompleted(prevState, true);
-                    }}
-                  >
-                    <DynamicUI.ActionsHandler actions={currentPage.actions} stateApi={stateApi}>
-                      <AppShell>
-                        <AppShell.Sidebar>
-                          <div className="flex flex-col h-full">
-                            <div className="flex-1">
-                              <div className="pb-10">
-                                <AppShell.Navigation />
-                              </div>
-                              <div className="pb-10">
-                                <AppShell.Logo
-                                  logoSrc={customer.logoImageUri}
-                                  appName={customer.displayName}
-                                />
-                              </div>
-                              <div className="h-full max-h-[460px] pb-10">
-                                <StepperUI />
-                              </div>
-                            </div>
-                            <div>
-                              <div>
-                                <div className="border-b pb-12">
-                                  Contact {customer.displayName || 'PayLynk'} for support <br />{' '}
-                                  example@example.com (000) 123-4567
+        {({ state, stateApi }) =>
+          state === 'finish' ? (
+            <Success />
+          ) : (
+            <DynamicUI.PageResolver state={state} pages={elements}>
+              {({ currentPage }) => {
+                return currentPage ? (
+                  <DynamicUI.Page page={currentPage}>
+                    <DynamicUI.TransitionListener
+                      onNext={(tools, prevState) => {
+                        tools.setElementCompleted(prevState, true);
+                      }}
+                    >
+                      <DynamicUI.ActionsHandler actions={currentPage.actions} stateApi={stateApi}>
+                        <AppShell>
+                          <AppShell.Sidebar>
+                            <div className="flex flex-col h-full">
+                              <div className="flex-1">
+                                <div className="pb-10">
+                                  <AppShell.Navigation />
                                 </div>
-                                <img src={'/poweredby.svg'} className="mt-6" />
+                                <div className="pb-10">
+                                  <AppShell.Logo
+                                    logoSrc={customer.logoImageUri}
+                                    appName={customer.displayName}
+                                  />
+                                </div>
+                                <div className="h-full max-h-[460px] pb-10">
+                                  <StepperUI />
+                                </div>
                               </div>
-                            </div>
-                          </div>
-                        </AppShell.Sidebar>
-                        <AppShell.Content>
-                          <AppShell.FormContainer>
-                            {localStorage.getItem('devmode') ? (
-                              <div className="flex flex-col gap-4">
-                                DEBUG
+                              <div>
                                 <div>
-                                  {currentPage
-                                    ? currentPage.stateName
-                                    : 'Page not found and state ' + state}
+                                  <div className="border-b pb-12">
+                                    Contact {customer.displayName || 'PayLynk'} for support <br />{' '}
+                                    example@example.com (000) 123-4567
+                                  </div>
+                                  <img src={'/poweredby.svg'} className="mt-6" />
                                 </div>
-                                <div className="flex gap-4">
-                                  <button onClick={() => stateApi.sendEvent('PREVIOUS')}>
-                                    prev
-                                  </button>
-                                  <button onClick={() => stateApi.sendEvent('NEXT')}>next</button>
-                                </div>
-                              </div>
-                            ) : null}
-                            <div className="flex flex-col">
-                              <div className="pb-7 flex gap-3 items-center">
-                                <StepperProgress
-                                  currentStep={
-                                    elements.findIndex(page => page.stateName === state) + 1
-                                  }
-                                  totalSteps={elements.length}
-                                />
-                                <ProgressBar />
-                              </div>
-                              <div>
-                                <UIRenderer elements={elems} schema={currentPage.elements} />
                               </div>
                             </div>
-                          </AppShell.FormContainer>
-                        </AppShell.Content>
-                      </AppShell>
-                    </DynamicUI.ActionsHandler>
-                  </DynamicUI.TransitionListener>
-                </DynamicUI.Page>
-              ) : null;
-            }}
-          </DynamicUI.PageResolver>
-        )}
+                          </AppShell.Sidebar>
+                          <AppShell.Content>
+                            <AppShell.FormContainer>
+                              {localStorage.getItem('devmode') ? (
+                                <div className="flex flex-col gap-4">
+                                  DEBUG
+                                  <div>
+                                    {currentPage
+                                      ? currentPage.stateName
+                                      : 'Page not found and state ' + state}
+                                  </div>
+                                  <div className="flex gap-4">
+                                    <button onClick={() => stateApi.sendEvent('PREVIOUS')}>
+                                      prev
+                                    </button>
+                                    <button onClick={() => stateApi.sendEvent('NEXT')}>next</button>
+                                  </div>
+                                </div>
+                              ) : null}
+                              <div className="flex flex-col">
+                                <div className="pb-7 flex gap-3 items-center">
+                                  <StepperProgress
+                                    currentStep={
+                                      elements.findIndex(page => page.stateName === state) + 1
+                                    }
+                                    totalSteps={elements.length}
+                                  />
+                                  <ProgressBar />
+                                </div>
+                                <div>
+                                  <UIRenderer elements={elems} schema={currentPage.elements} />
+                                </div>
+                              </div>
+                            </AppShell.FormContainer>
+                          </AppShell.Content>
+                        </AppShell>
+                      </DynamicUI.ActionsHandler>
+                    </DynamicUI.TransitionListener>
+                  </DynamicUI.Page>
+                ) : null;
+              }}
+            </DynamicUI.PageResolver>
+          )
+        }
       </DynamicUI.StateManager>
     </DynamicUI>
   ) : null;
