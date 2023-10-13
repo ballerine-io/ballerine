@@ -8,6 +8,7 @@ import { useStateManagerContext } from '@app/components/organisms/DynamicUI/Stat
 import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
 import { UIElement } from '@app/domains/collection-flow';
 import { usePageContext } from '@app/components/organisms/DynamicUI/Page';
+import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 
 const findLastDigit = (str: string) => {
   const digitRegex = /\d+/g;
@@ -44,6 +45,7 @@ export const withDynamicUIInterceptor = (
     const { payload } = useStateManagerContext();
     const { currentPage } = usePageResolverContext();
     const { errors, pageErrors } = usePageContext();
+    const { state } = useDynamicUIContext();
 
     const baseDefinition = useMemo(() => {
       const definition = findDefinitionByName(name, currentPage.elements);
@@ -109,7 +111,7 @@ export const withDynamicUIInterceptor = (
       <div>
         <Component
           {...props}
-          disabled={disabled || props.disabled}
+          disabled={disabled || props.disabled || state.isLoading}
           formData={value}
           definition={definition}
           onChange={handleChange}

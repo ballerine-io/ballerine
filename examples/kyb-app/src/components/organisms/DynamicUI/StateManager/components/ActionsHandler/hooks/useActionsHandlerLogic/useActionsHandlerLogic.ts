@@ -24,9 +24,14 @@ export const useActionsHandlerLogic = (
 
   const { setLoading: setUILoading } = helpers;
 
-  const dispatchAction = useCallback((action: Action) => {
-    setPendingActions(prev => [...prev, action]);
+  const _dispatchAction = useCallback((action: Action) => {
+    setPendingActions(prev => [
+      ...prev.filter(actionInQueue => JSON.stringify(actionInQueue) !== JSON.stringify(action)),
+      action,
+    ]);
   }, []);
+
+  const dispatchAction = useMemo(() => debounce(_dispatchAction, 1000), [_dispatchAction]);
 
   const _processActions = useCallback(
     async (actions: Action[]) => {
@@ -38,7 +43,6 @@ export const useActionsHandlerLogic = (
         let context = stateApi.getContext();
 
         console.log('Processing actions', actions);
-
         for (const action of actions) {
           const actionHandler = actionHandlerManager.getActionHandler(action.type);
           if (!actionHandler) throw new Error(`Action ${action.type} is not supported`);
@@ -58,7 +62,7 @@ export const useActionsHandlerLogic = (
     [actionHandlers, stateApi, setUILoading],
   );
 
-  const processActions = useMemo(() => debounce(_processActions, 100), [_processActions]);
+  const processActions = useMemo(() => debounce(_processActions, 1000), [_processActions]);
 
   useEffect(() => {
     if (!pendingActions.length || isProcessingActions) return;
