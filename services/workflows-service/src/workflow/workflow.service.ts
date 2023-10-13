@@ -1456,10 +1456,12 @@ export class WorkflowService {
       );
       newWorkflowCreated = true;
     } else {
-      contextToInsert.documents = updateDocuments(
-        existingWorkflowRuntimeData.context.documents,
-        context.documents,
-      );
+      console.log('existing documents', existingWorkflowRuntimeData.context.documents);
+      console.log('documents', contextToInsert.documents);
+      // contextToInsert.documents = updateDocuments(
+      //   existingWorkflowRuntimeData.context.documents,
+      //   context.documents,
+      // );
       const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
         contextToInsert?.documents,
         entityId,

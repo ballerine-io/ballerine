@@ -267,7 +267,7 @@ export class CollectionFlowService {
     const { state, ...resetContext } = payload.data.context as Record<string, any>;
 
     resetContext.documents = await this.__persistFileUrlsToDocuments(
-      (payload.data.context as any).documents,
+      (payload.data.context as any).documents.filter(Boolean),
       [tokenScope.projectId],
     );
 
