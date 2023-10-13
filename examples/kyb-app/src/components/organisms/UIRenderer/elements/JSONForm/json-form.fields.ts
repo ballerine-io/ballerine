@@ -1,4 +1,5 @@
 import { DocumentField } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField';
+import { NationalityPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/NationalityPicker';
 import { withDynamicUIInterceptor } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withDynamicUIInterceptor/withDynamicUIInterceptor';
 import {
   TextInputAdapter,
@@ -20,4 +21,5 @@ export const jsonFormFields = {
   PhoneInput: withDynamicUIInterceptor(PhoneInputAdapter),
   AutocompleteInput: withDynamicUIInterceptor(AutocompleteTextInputAdapter),
   DocumentInput: withDynamicUIInterceptor(DocumentField),
+  NationalityPicker: withDynamicUIInterceptor(NationalityPicker),
 };

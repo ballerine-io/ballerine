@@ -340,19 +340,11 @@ export const DirectorsAndUbosPage = {
                 label: 'Nationality',
                 hint: 'Chinese',
                 jsonFormDefinition: {
-                  type: 'string',
-                  oneOf: [
-                    // Nationality title value
-                    { const: 'Afghan', title: 'Afghan' },
-                    { const: 'Albanian', title: 'Albanian' },
-                    { const: 'Algerian', title: 'Algerian' },
-                    { const: 'American', title: 'American' },
-                    { const: 'Andorran', title: 'Andorran' },
-                    { const: 'Angolan', title: 'Angolan' },
-                    { const: 'Antiguans', title: 'Antiguans' },
-                    { const: 'Chinese', title: 'Chinese' },
-                  ],
+                  type: 'string'
                 },
+                uiSchema: {
+                  'ui:field': 'NationalityPicker'
+                }
               },
             },
             {
@@ -527,17 +519,9 @@ export const DirectorsAndUbosPage = {
                   options: {
                     jsonFormDefinition: {
                       type: 'string',
-                      oneOf: [
-                        // Nationality title value
-                        { const: 'Afghan', title: 'Afghan' },
-                        { const: 'Albanian', title: 'Albanian' },
-                        { const: 'Algerian', title: 'Algerian' },
-                        { const: 'American', title: 'American' },
-                        { const: 'Andorran', title: 'Andorran' },
-                        { const: 'Angolan', title: 'Angolan' },
-                        { const: 'Antiguans', title: 'Antiguans' },
-                        { const: 'Chinese', title: 'Chinese' },
-                      ],
+                    },
+                    uiSchema: {
+                      'ui:field': 'NationalityPicker'
                     },
                     label: 'Nationality',
                     hint: 'Chinese',
