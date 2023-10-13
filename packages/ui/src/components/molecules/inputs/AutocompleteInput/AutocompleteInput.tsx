@@ -25,7 +25,7 @@ export interface AutocompleteInputProps {
 
 export const AutocompleteInput = ({
   options,
-  value,
+  value = '',
   placeholder,
   name,
   disabled,
