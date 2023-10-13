@@ -398,6 +398,9 @@ export const DirectorsAndUbosPage = {
           ],
         },
         {
+          type: 'divider',
+        },
+        {
           type: 'h3',
           options: {
             text: 'Directors',
@@ -564,6 +567,9 @@ export const DirectorsAndUbosPage = {
                 },
               ],
             },
+            {
+              type: 'divider',
+            }
           ],
         },
         {

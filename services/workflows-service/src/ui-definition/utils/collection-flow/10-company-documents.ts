@@ -12,31 +12,31 @@ const validationSchema = {
                   store: {
                     properties: {
                       hasActiveWebsite: {
-                        const: true
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                        const: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   then: {
     properties: {
       documents: {
-        minItems: 11
-      }
-    }
+        minItems: 11,
+      },
+    },
   },
   else: {
     properties: {
       documents: {
-        minItems: 10
-      }
-    }
+        minItems: 10,
+      },
+    },
   },
   properties: {
     documents: {
@@ -53,13 +53,13 @@ const validationSchema = {
               properties: {
                 ballerineFileId: {
                   type: 'string',
-                  minLength: 1
-                }
-              }
-            }
-          }
-        }
-      }
+                  minLength: 1,
+                },
+              },
+            },
+          },
+        },
+      },
     },
     entity: {
       type: 'object',
@@ -78,22 +78,21 @@ const validationSchema = {
                   properties: {
                     hasActiveWebsite: {
                       type: 'boolean',
-                      default: false
-                    }
+                      default: false,
+                    },
                   },
                   default: {
-                    hasActiveWebsite: false
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+                    hasActiveWebsite: false,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 };
-
 
 export const CompanyDocuments = {
   type: 'page',
@@ -114,21 +113,20 @@ export const CompanyDocuments = {
             {
               type: 'h1',
               options: {
-                text: 'Company Documents'
+                text: 'Company Documents',
               },
             },
             {
               type: 'h3',
               options: {
-                text: 'Merchant Company Documents'
+                text: 'Merchant Company Documents',
               },
             },
           ],
         },
         {
           type: 'json-form',
-          options: {
-          },
+          options: {},
           elements: [
             {
               name: 'document-certificates-of-incorporation',
@@ -322,8 +320,8 @@ export const CompanyDocuments = {
           type: 'h3',
           name: 'website-documents-title',
           options: {
-            text: 'Website documents'
-          }
+            text: 'Website documents',
+          },
         },
         {
           type: 'json-form',
@@ -351,7 +349,7 @@ export const CompanyDocuments = {
                 },
               },
             },
-          ]
+          ],
         },
         {
           type: 'json-form',
@@ -383,16 +381,18 @@ export const CompanyDocuments = {
           visibleOn: [
             {
               type: 'json-logic',
-              value: {'==': [{var: 'entity.data.additionalInfo.store.hasActiveWebsite'}, true ,false]}
-            }
-          ]
+              value: {
+                '==': [{ var: 'entity.data.additionalInfo.store.hasActiveWebsite' }, true, false],
+              },
+            },
+          ],
         },
         {
           type: 'h3',
           name: 'office-pictures-title',
           options: {
-            text: 'Office Pictures'
-          }
+            text: 'Office Pictures',
+          },
         },
         {
           type: 'json-form',
@@ -453,14 +453,14 @@ export const CompanyDocuments = {
                 },
               },
             },
-          ]
+          ],
         },
         {
           type: 'h3',
           name: 'financial-docs-title',
           options: {
-            text: 'Financial Documents'
-          }
+            text: 'Financial Documents',
+          },
         },
         {
           type: 'json-form',
@@ -495,21 +495,22 @@ export const CompanyDocuments = {
                 },
               },
             },
-          ]
+          ],
         },
         {
           type: 'h3',
           name: 'accuracy-title',
           options: {
-            text: 'Declaration of Accuracy and Authenticity'
-          }
+            text: 'Declaration of Accuracy and Authenticity',
+          },
         },
         {
           type: 'description',
           name: 'accuracy-description',
           options: {
-            descriptionRaw: 'By checking the checkbox below I/we hereby declare that the information which was submitted in the attached Merchant application is truthful and genuine in regards to my/our business, legal status and registration, business practices and all other submitted information.'
-          }
+            descriptionRaw:
+              'By checking the checkbox below I/we hereby declare that the information which was submitted in the attached Merchant application is truthful and genuine in regards to my/our business, legal status and registration, business practices and all other submitted information.',
+          },
         },
         {
           type: 'json-form',
@@ -529,9 +530,9 @@ export const CompanyDocuments = {
                 uiSchema: {
                   'ui:label': false,
                 },
-              }
-            }
-          ]
+              },
+            },
+          ],
         },
         {
           name: 'controls-container',
@@ -556,16 +557,22 @@ export const CompanyDocuments = {
                 },
                 {
                   type: 'jmespath',
-                  value: '!contains(uiState.elements.*.isLoading,`true`)'
+                  value: '!contains(uiState.elements.*.isLoading,`true`)',
                 },
                 {
                   type: 'json-logic',
-                  value: {'==': [{var: 'entity.data.additionalInfo.hasConfirmed'}, true, false]}
-                }
+                  value: {
+                    '==': [{ var: 'entity.data.additionalInfo.hasConfirmed' }, true, false],
+                  },
+                },
+                {
+                  type: 'json-logic',
+                  value: { '!==': [{ var: 'uiState.isLoading' }, true, false] },
+                },
               ],
             },
-          ]
-        }
+          ],
+        },
       ],
     },
   ],

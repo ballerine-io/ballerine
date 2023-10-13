@@ -243,6 +243,9 @@ export const ProcessingDetails = {
                 jsonFormDefinition: {
                   type: 'boolean',
                 },
+                uiSchema: {
+                  'ui:label': false,
+                },
               },
             },
           ],
