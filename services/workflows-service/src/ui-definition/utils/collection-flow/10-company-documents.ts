@@ -405,7 +405,7 @@ export const CompanyDocuments = {
           elements: [
             {
               type: 'checkbox',
-              name: 'confirmation-checkbox',
+              name: 'documents-confirmation-checkbox',
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.hasConfirmed',
               options: {
                 jsonFormDefinition: {
