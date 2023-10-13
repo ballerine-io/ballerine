@@ -41,7 +41,13 @@ export const useRuleExecutor = (
           rules?.map(rule => {
             const engine = rulesManager.getEngine(rule.type);
 
-            return engine.test(context, rule, definition, uiState);
+            const ctx = { ...context };
+            //@ts-nocheck
+            //This hack is neeeded to filter out `empty`
+            //TO DO: Find solution on how to define array items in schemas
+            ctx.documents = ctx?.documents.filter(Boolean);
+
+            return engine.test(ctx, rule, definition, uiState);
           }) || [];
 
         setExecutionResult(executionResult);

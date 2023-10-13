@@ -1,10 +1,46 @@
 const validationSchema = {
   type: 'object',
-  required: ['documents'],
+  required: ['documents', 'entity'],
+  if: {
+    properties: {
+      entity: {
+        properties: {
+          data: {
+            properties: {
+              additionalInfo: {
+                properties: {
+                  store: {
+                    properties: {
+                      hasActiveWebsite: {
+                        const: true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  then: {
+    properties: {
+      documents: {
+        minItems: 11
+      }
+    }
+  },
+  else: {
+    properties: {
+      documents: {
+        minItems: 10
+      }
+    }
+  },
   properties: {
     documents: {
       type: 'array',
-      minItems: 10,
       items: {
         type: 'object',
         required: ['pages'],
@@ -18,6 +54,36 @@ const validationSchema = {
                 ballerineFileId: {
                   type: 'string',
                   minLength: 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    entity: {
+      type: 'object',
+      required: ['data'],
+      properties: {
+        data: {
+          type: 'object',
+          required: ['additionalInfo'],
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['store'],
+              properties: {
+                store: {
+                  type: 'object',
+                  properties: {
+                    hasActiveWebsite: {
+                      type: 'boolean',
+                      default: false
+                    }
+                  },
+                  default: {
+                    hasActiveWebsite: false
+                  }
                 }
               }
             }
@@ -125,7 +191,7 @@ export const CompanyDocuments = {
               type: 'document',
               valueDestination: 'documents[2].pages[0].ballerineFileId',
               options: {
-                label: 'Business Registration Certificate',
+                label: 'Corporate Tax Certificate',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -254,18 +320,17 @@ export const CompanyDocuments = {
         },
         {
           type: 'h3',
-          name: 'office-pictures-title',
+          name: 'website-documents-title',
           options: {
-            text: 'Office Pictures'
+            text: 'Website documents'
           }
         },
         {
           type: 'json-form',
-          name: 'office-pictures-form',
-          options: {},
+          name: 'website-documents-form-p1',
           elements: [
             {
-              name: 'document-website-pictures',
+              name: 'document-website-pictures-domain-certificate',
               type: 'document',
               valueDestination: 'documents[6].pages[0].ballerineFileId',
               options: {
@@ -286,10 +351,58 @@ export const CompanyDocuments = {
                 },
               },
             },
+          ]
+        },
+        {
+          type: 'json-form',
+          name: 'website-documents-form-p2',
+          elements: [
+            {
+              name: 'document-website-pictures-website-business',
+              type: 'document',
+              valueDestination: 'documents[7].pages[0].ballerineFileId',
+              options: {
+                label: 'Business activity license for website’s business',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+                uiSchema: {
+                  'ui:field': 'DocumentInput',
+                },
+                documentData: {
+                  category: 'website_picture',
+                  type: 'business_registration',
+                },
+                mappingParams: {
+                  documentIndex: 7,
+                  documentPage: 0,
+                },
+              },
+            },
+          ],
+          visibleOn: [
+            {
+              type: 'json-logic',
+              value: {'==': [{var: 'entity.data.additionalInfo.store.hasActiveWebsite'}, true ,false]}
+            }
+          ]
+        },
+        {
+          type: 'h3',
+          name: 'office-pictures-title',
+          options: {
+            text: 'Office Pictures'
+          }
+        },
+        {
+          type: 'json-form',
+          name: 'office-pictures-form',
+          options: {},
+          elements: [
             {
               name: 'document-office-front-door-pictures',
               type: 'document',
-              valueDestination: 'documents[7].pages[0].ballerineFileId',
+              valueDestination: 'documents[8].pages[0].ballerineFileId',
               options: {
                 label: 'Front door photo showing the company name',
                 jsonFormDefinition: {
@@ -308,7 +421,7 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                 },
                 mappingParams: {
-                  documentIndex: 7,
+                  documentIndex: 8,
                   documentPage: 0,
                 },
               },
@@ -316,7 +429,7 @@ export const CompanyDocuments = {
             {
               name: 'document-office-interior-pictures',
               type: 'document',
-              valueDestination: 'documents[8].pages[0].ballerineFileId',
+              valueDestination: 'documents[9].pages[0].ballerineFileId',
               options: {
                 label: 'Photo showing interior of the office',
                 jsonFormDefinition: {
@@ -335,7 +448,7 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                 },
                 mappingParams: {
-                  documentIndex: 8,
+                  documentIndex: 9,
                   documentPage: 0,
                 },
               },
@@ -357,7 +470,7 @@ export const CompanyDocuments = {
             {
               name: 'document-transaction-data-last-months',
               type: 'document',
-              valueDestination: 'documents[9].pages[0].ballerineFileId',
+              valueDestination: 'documents[10].pages[0].ballerineFileId',
               options: {
                 label: 'Transaction data for the last 3-6 months',
                 description: 'All electric documents must be complete and legible.',
@@ -377,7 +490,7 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                 },
                 mappingParams: {
-                  documentIndex: 9,
+                  documentIndex: 10,
                   documentPage: 0,
                 },
               },
