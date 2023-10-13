@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.5-3e08f108.3
+
+### Patch Changes
+
+- Added default value to Autocomplete
+
 ## 0.3.5-3e08f108.2
 
 ### Patch Changes
