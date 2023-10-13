@@ -23,7 +23,6 @@ const validationSchema = {
                   },
                   then: {
                     required: [
-                      'searchAddress',
                       'street',
                       'streetNumber',
                       'city',
@@ -32,10 +31,9 @@ const validationSchema = {
                     ],
                   },
                   else: {
-                    required: ['searchAddress', 'street', 'streetNumber', 'city', 'country'],
+                    required: [ 'street', 'streetNumber', 'city', 'country'],
                     errorMessage: {
                       required: {
-                        searchAddress: 'Search address is required.',
                         street: 'Street is required.',
                         streetNumber: 'Street number is required.',
                         city: 'City is required.',
@@ -47,16 +45,6 @@ const validationSchema = {
                   properties: {
                     isDifferentFromPhysical: {
                       type: 'boolean',
-                    },
-                    searchAddress: {
-                      type: 'string',
-                      // Product of street, street number, city and country
-                      minLength: 8,
-                      maxLength: 162,
-                      errorMessage: {
-                        minLength: 'Search address should be at least 3 characters long.',
-                        maxLength: 'Search address should not exceed 100 characters.',
-                      },
                     },
                     street: {
                       type: 'string',
@@ -98,10 +86,9 @@ const validationSchema = {
                     },
                     physical: {
                       type: 'object',
-                      required: ['searchAddress', 'street', 'streetNumber', 'city', 'country'],
+                      required: ['street', 'streetNumber', 'city', 'country'],
                       errorMessage: {
                         required: {
-                          searchAddress: 'Search address is required.',
                           street: 'Street is required.',
                           streetNumber: 'Street number is required.',
                           city: 'City is required.',
@@ -111,16 +98,6 @@ const validationSchema = {
                         },
                       },
                       properties: {
-                        searchAddress: {
-                          type: 'string',
-                          // Product of street, street number, city and country
-                          minLength: 8,
-                          maxLength: 162,
-                          errorMessage: {
-                            minLength: 'Search address should be at least 8 characters long.',
-                            maxLength: 'Search address should not exceed 162 characters.',
-                          },
-                        },
                         street: {
                           type: 'string',
                           minLength: 3,
@@ -223,18 +200,6 @@ export const BusinessAddressInfoPage = {
           },
           elements: [
             {
-              name: 'search-address-input',
-              type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.headquarters.searchAddress',
-              options: {
-                jsonFormDefinition: {
-                  type: 'string',
-                },
-                label: 'Search Address',
-                hint: '10 Downing Street, London, UK, SW1A 2AA',
-              },
-            },
-            {
               name: 'street-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.street',
@@ -326,18 +291,6 @@ export const BusinessAddressInfoPage = {
             },
           ],
           elements: [
-            {
-              name: 'physical-search-address-input',
-              type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.headquarters.physical.searchAddress',
-              options: {
-                label: 'Search Address',
-                hint: '10 Downing Street, London, UK, SW1A 2AA',
-                jsonFormDefinition: {
-                  type: 'string',
-                },
-              },
-            },
             {
               name: 'physical-street-input',
               type: 'json-form:text',

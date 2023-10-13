@@ -280,10 +280,9 @@ export const DirectorsAndUbosPage = {
               createWhenHidden: true,
               destination: 'entity.data.additionalInfo.ubos',
               schema: {
-                'entity.data.additionalInfo.ubos[0].firstName':
-                  'entity.data.additionalInfo.mainRepresentative.firstName',
-                'entity.data.additionalInfo.ubos[0].lastName':
-                  'entity.data.additionalInfo.mainRepresentative.lastName',
+                'entity.data.additionalInfo.ubos[0].firstName': 'entity.data.additionalInfo.mainRepresentative.firstName',
+                'entity.data.additionalInfo.ubos[0].lastName': 'entity.data.additionalInfo.mainRepresentative.lastName',
+                'entity.data.additionalInfo.ubos[0].email': 'entity.data.additionalInfo.mainRepresentative.email',
               },
               insertRules: [
                 {
@@ -468,10 +467,9 @@ export const DirectorsAndUbosPage = {
                   destination: 'entity.data.additionalInfo.directors',
                   createWhenHidden: true,
                   schema: {
-                    'entity.data.additionalInfo.directors[0].firstName':
-                      'entity.data.additionalInfo.mainRepresentative.firstName',
-                    'entity.data.additionalInfo.directors[0].lastName':
-                      'entity.data.additionalInfo.mainRepresentative.lastName',
+                    'entity.data.additionalInfo.directors[0].firstName': 'entity.data.additionalInfo.mainRepresentative.firstName',
+                    'entity.data.additionalInfo.directors[0].lastName': 'entity.data.additionalInfo.mainRepresentative.lastName',
+                    'entity.data.additionalInfo.directors[0].email': 'entity.data.additionalInfo.mainRepresentative.email',
                   },
                   insertRules: [
                     {

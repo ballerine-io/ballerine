@@ -326,6 +326,9 @@ export class WorkflowControllerExternal {
           data: {
             additionalInfo: {
               endUserId: endUser.id,
+              mainRepresentative: {
+                email: body.email
+              }
             },
           },
         },
