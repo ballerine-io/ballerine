@@ -31,7 +31,6 @@ export const StateManager = ({
   const { machineApi } = useMachineLogic(machine);
   const { contextPayload, state, sendEvent, invokePlugin, setContext, getContext, getState } =
     useStateLogic(machineApi, initialContext);
-
   const context: StateManagerContext = useMemo(() => {
     const ctx: StateManagerContext = {
       stateApi: {
@@ -44,7 +43,7 @@ export const StateManager = ({
       state,
       payload: contextPayload,
     };
-
+    console.log("context", contextPayload)
     return ctx;
   }, [state, contextPayload, getState, sendEvent, invokePlugin, setContext, getContext]);
 
