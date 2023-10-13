@@ -22,8 +22,8 @@ import { useMemo } from 'react';
 
 const elems = {
   h1: Title,
-  h3: (props: AnyObject) => <h3 className="text-xl font-bold pb-1">{props?.options?.text}</h3>,
-  h4: (props: AnyObject) => <h4 className="text-base font-bold pb-1">{props?.options?.text}</h4>,
+  h3: (props: AnyObject) => <h3 className="text-xl font-bold pb-2">{props?.options?.text}</h3>,
+  h4: (props: AnyObject) => <h4 className="text-base font-bold pb-2">{props?.options?.text}</h4>,
   description: (props: AnyObject) => (
     <p
       className="text-sm font-inter pb-2 text-slate-500"

@@ -1,3 +1,4 @@
+import { CheckboxList } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/CheckboxList';
 import { DocumentField } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField';
 import { NationalityPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/NationalityPicker';
 import { withDynamicUIInterceptor } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withDynamicUIInterceptor/withDynamicUIInterceptor';
@@ -22,4 +23,5 @@ export const jsonFormFields = {
   AutocompleteInput: withDynamicUIInterceptor(AutocompleteTextInputAdapter),
   DocumentInput: withDynamicUIInterceptor(DocumentField),
   NationalityPicker: withDynamicUIInterceptor(NationalityPicker),
+  CheckboxList: withDynamicUIInterceptor(CheckboxList),
 };
