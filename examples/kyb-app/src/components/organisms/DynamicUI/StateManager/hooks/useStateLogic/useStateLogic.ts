@@ -20,13 +20,15 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
 
   const contextRef = useRef<ContextPayload>(contextPayload);
   const { helpers } = useDynamicUIContext();
+  const host = new URL(import.meta.env.VITE_API_URL as string).host;
+  const protocol = new URL(import.meta.env.VITE_API_URL as string).protocol;
 
   useEffect(() => {
     machineApi.setContext({
       ...machineApi.getContext(),
       ...initialContext,
       flowConfig: {
-        apiUrl: `http://${new URL(import.meta.env.VITE_API_URL as string).host}`,
+        apiUrl: `${protocol}//${host}`,
         tokenId: getAccessToken(),
       },
     });
