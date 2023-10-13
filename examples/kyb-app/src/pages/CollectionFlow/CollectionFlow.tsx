@@ -3,6 +3,7 @@ import { DynamicUI, State } from '@app/components/organisms/DynamicUI';
 import { UIRenderer } from '@app/components/organisms/UIRenderer';
 import { ButtonUIElement } from '@app/components/organisms/UIRenderer/elements/ButtonUI';
 import { Cell } from '@app/components/organisms/UIRenderer/elements/Cell';
+import { Divider } from '@app/components/organisms/UIRenderer/elements/Divider';
 import { JSONForm } from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
 import { withInitialDataCreation } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withInitialDataCreation';
 import { StepperUI } from '@app/components/organisms/UIRenderer/elements/StepperUI';
@@ -35,6 +36,7 @@ const elems = {
   mainContainer: Cell,
   'json-form:button': ButtonUIElement,
   stepper: StepperUI,
+  divider: Divider,
 };
 
 export const CollectionFlowDumb = () => {
