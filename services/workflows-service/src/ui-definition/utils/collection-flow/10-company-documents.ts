@@ -535,6 +535,15 @@ export const CompanyDocuments = {
           ],
         },
         {
+          type: 'divider'
+        },
+        {
+          type: 'description',
+          options: {
+            descriptionRaw: "By clicking 'Next', an email containing an identity verification link will be sent to the shareholders listed."
+          }
+        },
+        {
           name: 'controls-container',
           type: 'container',
           options: {
