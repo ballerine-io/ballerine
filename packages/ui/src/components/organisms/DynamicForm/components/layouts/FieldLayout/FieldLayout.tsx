@@ -37,7 +37,9 @@ export const FieldLayout = ({
           type="warning"
         />
       ) : null}
-      <span className="font-inter text-muted-foreground text-sm">{description}</span>
+      {description && description?.props?.description ? (
+        <span className="font-inter text-muted-foreground text-sm">{description}</span>
+      ) : null}
     </div>
   );
 };
