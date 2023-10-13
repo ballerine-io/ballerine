@@ -38,14 +38,12 @@ export const DocumentField = (
     if (persistedFile) {
       setFile(persistedFile);
     } else {
-      toggleElementLoading();
       void fetchFile(fileId).then(file => {
         const createdFile = new File([''], file.fileNameInBucket || file.fileNameOnDisk, {
           type: 'text/plain',
         });
 
         collectionFlowFileStorage.registerFile(fileId, createdFile);
-        toggleElementLoading();
         setFile(createdFile);
       });
     }

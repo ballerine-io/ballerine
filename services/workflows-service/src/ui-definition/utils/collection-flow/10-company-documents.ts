@@ -406,7 +406,7 @@ export const CompanyDocuments = {
             {
               type: 'checkbox',
               name: 'documents-confirmation-checkbox',
-              valueDestination: 'entity.data.additionalInfo.mainRepresentative.hasConfirmed',
+              valueDestination: 'entity.data.additionalInfo.hasConfirmed',
               options: {
                 jsonFormDefinition: {
                   type: 'boolean',
@@ -447,7 +447,7 @@ export const CompanyDocuments = {
                 },
                 {
                   type: 'json-logic',
-                  value: {'==': [{var: 'entity.data.additionalInfo.mainRepresentative.hasConfirmed'}, true, false]}
+                  value: {'==': [{var: 'entity.data.additionalInfo.hasConfirmed'}, true, false]}
                 }
               ],
             },
