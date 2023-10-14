@@ -15,6 +15,8 @@ export interface IWebhookPayload {
   workflowResolvedAt: WorkflowRuntimeData['resolvedAt'];
   workflowDefinitionId: string;
   workflowRuntimeId: string;
+  workflowStatus: string;
+  workflowFinalState: string;
   ballerineEntityId: string;
   correlationId: string;
   environment: string | undefined;
