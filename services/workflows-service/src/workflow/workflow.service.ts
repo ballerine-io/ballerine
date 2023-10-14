@@ -988,17 +988,6 @@ export class WorkflowService {
     const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
     const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
 
-    if (isResolved) {
-      this.logger.log('Workflow resolved', { id: workflowRuntimeId });
-
-      this.workflowEventEmitter.emit('workflow.completed', {
-        runtimeData,
-        state: currentState ?? runtimeData.state,
-        entityId: runtimeData.businessId || runtimeData.endUserId,
-        correlationId,
-      });
-    }
-
     const documentToRevise = data.context?.documents?.find(
       ({ decision }: { decision: DefaultContextSchema['documents'][number]['decision'] }) =>
         decision?.status === 'revision',
@@ -1060,7 +1049,7 @@ export class WorkflowService {
         },
         projectId,
       );
-    } else {
+    } else {   
       updatedResult = await this.workflowRuntimeDataRepository.updateById(
         workflowRuntimeId,
         {
@@ -1071,6 +1060,17 @@ export class WorkflowService {
         },
         projectId,
       );
+    }
+
+    if (isResolved) {
+      this.logger.log('Workflow resolved', { id: workflowRuntimeId });
+
+      this.workflowEventEmitter.emit('workflow.completed', {
+        runtimeData: updatedResult,
+        state: currentState ?? updatedResult.state,
+        entityId: updatedResult.businessId || updatedResult.endUserId,
+        correlationId,
+      });
     }
 
     if (contextHasChanged) {
