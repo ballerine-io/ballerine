@@ -50,9 +50,7 @@ export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] 
     pagesWithErrors.forEach(pageError => {
       pageError.errors = (context.documents as Document[])
         .filter((document, index) => {
-          if (
-            !(document.decision?.status == 'revision' || document.decision?.status == 'rejected')
-          ) {
+          if (!(document?.decision?.status == 'revision' || document?.decision?.status == 'rejected')) {
             return false;
           }
 
@@ -62,7 +60,7 @@ export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] 
         })
         .map((document, index) => {
           const documentPath = `documents[${index}].pages[0].ballerineFileId`;
-          const message = document.decision.revisionReason;
+          const message = document?.decision?.revisionReason;
 
           return {
             fieldId: documentPath,
