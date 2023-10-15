@@ -38,8 +38,15 @@ export const useMachineLogic = (
 
       if (nextTransitionState) {
         const nextStateName = nextTransitionState.target;
+        const context = machine.getSnapshot().context as AnyObject;
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        machine.overrideContext({ ...machine.getSnapshot().context, state: nextStateName });
+        machine.overrideContext({
+          ...context,
+          flowConfig: {
+            ...(context.flowConfig as AnyObject),
+            appState: nextStateName,
+          },
+        });
       }
 
       await machine.sendEvent({ type: eventName });

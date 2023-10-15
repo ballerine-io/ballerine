@@ -9,6 +9,8 @@ import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/us
 import { UIElement } from '@app/domains/collection-flow';
 import { usePageContext } from '@app/components/organisms/DynamicUI/Page';
 import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
+import { ErrorsList } from '@ballerine/ui';
 
 const findLastDigit = (str: string) => {
   const digitRegex = /\d+/g;
@@ -33,7 +35,7 @@ const injectIndexToDestinationIfNeeded = (destination: string, index: number | n
   return pathElements.join('.').replace(`.${indexPath}.`, indexPath);
 };
 
-export const withDynamicUIInterceptor = (
+export const withDynamicUIInput = (
   Component: React.ComponentType<
     RJSVInputProps | (RJSVInputProps & { definition?: UIElement<AnyObject> })
   >,
@@ -44,7 +46,7 @@ export const withDynamicUIInterceptor = (
     const { name, onChange } = props;
     const { payload } = useStateManagerContext();
     const { currentPage } = usePageResolverContext();
-    const { errors, pageErrors } = usePageContext();
+    const { pageErrors } = usePageContext();
     const { state } = useDynamicUIContext();
 
     const baseDefinition = useMemo(() => {
@@ -78,6 +80,9 @@ export const withDynamicUIInterceptor = (
       };
       onChangeHandler(evt as React.ChangeEvent<any>);
       onChange(value);
+    }, []);
+
+    const handleBlur = useCallback(() => {
       setTouched(true);
     }, []);
 
@@ -86,39 +91,20 @@ export const withDynamicUIInterceptor = (
       [payload, definition],
     );
 
-    const error = useMemo(() => {
-      const validationError = errors[definition.valueDestination]?.message;
-
-      if (validationError) return { message: validationError };
-
-      const revisionResult = pageErrors[currentPage.stateName];
-
-      if (!revisionResult) return null;
-
-      const revisionMessage = revisionResult[definition.valueDestination]?.message;
-
-      if (revisionMessage) {
-        return {
-          type: 'warning',
-          message: revisionMessage,
-        };
-      }
-
-      return null;
-    }, [errors, pageErrors, currentPage, definition]);
+    const { validationErrors, warnings } = useUIElementErrors(definition);
 
     return (
-      <div>
+      <div className="flex flex-col gap-2">
         <Component
           {...props}
           disabled={disabled || props.disabled || state.isLoading}
           formData={value}
           definition={definition}
           onChange={handleChange}
+          onBlur={handleBlur}
         />
-        {isTouched || value || error?.type === 'warning' ? (
-          <p className="text-destructive text-[0.8rem] pl-1 pt-1">{error?.message}</p>
-        ) : null}
+        {warnings.length ? <ErrorsList errors={warnings.map(err => err.message)} /> : null}
+        {isTouched ? <ErrorsList errors={validationErrors.map(error => error.message)} /> : null}
       </div>
     );
   }

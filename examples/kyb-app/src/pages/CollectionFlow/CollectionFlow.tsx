@@ -47,28 +47,36 @@ export const CollectionFlowDumb = () => {
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
-  const pageErrors = usePageErrors(context?.context ?? {}, elements);
+  const pageErrors = usePageErrors(context ?? {}, elements);
   const filteredNonEmptyErrors = pageErrors?.filter(pageError => !!pageError.errors.length);
-  const initialContext = {
-    ...context,
-    context: {
-      ...context?.context,
-      state: filteredNonEmptyErrors?.[0]?.stateName ?? context?.state,
-    },
-    state: filteredNonEmptyErrors?.[0]?.stateName ?? context?.state,
-  };
+  const initialContext = useMemo(() => {
+    const appState =
+      context?.flowConfig?.appState ||
+      filteredNonEmptyErrors?.[0]?.stateName ||
+      elements?.at(-1).stateName;
+    if (!appState) return null;
+
+    return {
+      ...context,
+      flowConfig: {
+        ...context.flowConfig,
+        appState,
+      },
+      state: appState,
+    };
+  }, []);
 
   const initialUIState = useMemo(() => {
-    return prepareInitialUIState(elements || [], initialContext?.context || {});
+    return prepareInitialUIState(elements || [], context || {});
   }, [elements, context]);
 
-  if (initialContext.state === 'approved') return <Approved />;
-  if (initialContext.state == 'rejected') return <Rejected />;
+  if (initialContext.flowConfig?.appState === 'approved') return <Approved />;
+  if (initialContext.flowConfig?.appState == 'rejected') return <Rejected />;
 
-  return definition && initialContext?.context ? (
+  return definition && context ? (
     <DynamicUI initialState={initialUIState}>
       <DynamicUI.StateManager
-        initialContext={initialContext.context}
+        initialContext={context}
         workflowId="1"
         definitionType={schema?.definition.definitionType}
         extensions={schema?.definition.extensions}

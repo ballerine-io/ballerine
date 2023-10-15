@@ -16,9 +16,11 @@ const validationSchema = {
                 store: {
                   type: 'object',
                   required: ['website'],
+                  default: {},
                   properties: {
                     website: {
                       type: 'object',
+                      default: {},
                       required: [
                         'mainWebsite',
                         'contactDetails',

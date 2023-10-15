@@ -1,8 +1,14 @@
-import { RJSFSchema, RJSFValidationError, RegistryFieldsType, UiSchema } from '@rjsf/utils';
+import {
+  RJSFSchema,
+  RJSFValidationError,
+  RegistryFieldsType,
+  TemplatesType,
+  UiSchema,
+} from '@rjsf/utils';
 import Form, { IChangeEvent } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import { fields as baseFields } from './fields';
-import { templates } from './templates';
+import { layouts as baseLayouts } from './layouts';
 import { forwardRef, useCallback, useMemo } from 'react';
 import { Provider, WarningsContext } from './warnings.context';
 import { RJSVInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters';
@@ -22,6 +28,7 @@ interface Props<TFormData> {
   warnings?: InputsWarnings;
   disabled?: boolean;
   fields?: Record<keyof RegistryFieldsType, RJSVInputAdapter<any>>;
+  layouts?: Partial<TemplatesType>;
   liveValidate?: boolean;
   transformErrors?: (errors: RJSFValidationError[], uiSchema: UiSchema) => RJSFValidationError[];
   onChange?: (formData: TFormData) => void;
@@ -39,6 +46,7 @@ export const DynamicForm = forwardRef(
       disabled,
       fields = baseFields,
       liveValidate = false,
+      layouts,
       transformErrors,
       onChange,
       onSubmit,
@@ -67,6 +75,10 @@ export const DynamicForm = forwardRef(
       return ctx;
     }, [warnings]);
 
+    const _fields = useMemo(() => ({ ...baseFields, ...fields }), [fields]);
+
+    const _layouts = useMemo(() => ({ ...baseLayouts, ...layouts }), []);
+
     return (
       <Provider value={warningsContext}>
         <Form
@@ -77,9 +89,9 @@ export const DynamicForm = forwardRef(
           onSubmit={handleSubmit}
           onChange={handleChange}
           validator={validator}
-          fields={fields as unknown as RegistryFieldsType}
+          fields={_fields as unknown as RegistryFieldsType}
           autoComplete="on"
-          templates={templates}
+          templates={_layouts}
           showErrorList={false}
           disabled={disabled}
           liveValidate={liveValidate}

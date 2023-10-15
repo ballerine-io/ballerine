@@ -10,6 +10,7 @@ export const TextField = ({
   disabled,
   schema,
   onChange,
+  onBlur,
 }: FieldProps<string | number>) => {
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -25,6 +26,10 @@ export const TextField = ({
     [onChange, schema],
   );
 
+  const handleBlur = useCallback(() => {
+    onBlur && onBlur(id, formData);
+  }, [id, onBlur, formData]);
+
   const inputProps = {
     id,
     name,
@@ -32,6 +37,7 @@ export const TextField = ({
     placeholder: uiSchema['ui:placeholder'],
     disabled,
     onChange: handleChange,
+    onBlur: handleBlur,
   };
 
   return uiSchema['ui:widget'] === 'textarea' ? (

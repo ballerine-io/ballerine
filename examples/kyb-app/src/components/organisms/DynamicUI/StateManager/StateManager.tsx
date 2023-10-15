@@ -17,14 +17,19 @@ export const StateManager = ({
   initialContext,
 }: StateManagerProps) => {
   const machine = useMemo(() => {
+    const initialMachineState = {
+      ...initialContext,
+      state: initialContext?.flowConfig?.appState,
+    };
+
     const machine = createStateMachine(
       workflowId,
       definition,
       definitionType,
       extensions,
-      initialContext,
+      initialMachineState,
     );
-    machine.overrideContext(initialContext);
+    machine.overrideContext(initialMachineState);
     return machine;
   }, []);
 
@@ -43,7 +48,7 @@ export const StateManager = ({
       state,
       payload: contextPayload,
     };
-    console.log("context", contextPayload)
+    console.log('context', contextPayload);
     return ctx;
   }, [state, contextPayload, getState, sendEvent, invokePlugin, setContext, getContext]);
 

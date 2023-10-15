@@ -14,6 +14,7 @@ const validationSchema = {
                 mainContact: {
                   type: 'object',
                   required: ['firstName', 'lastName', 'email', 'phone'],
+                  default: {},
                   errorMessage: {
                     required: {
                       firstName: 'First name is required.',

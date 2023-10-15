@@ -15,9 +15,12 @@ const validationSchema = {
             additionalInfo: {
               type: 'object',
               required: ['bank'],
+              default: {},
               properties: {
                 bank: {
                   type: 'object',
+                  default: {},
+                  required: ['holderName','holderFullAddress', 'accountNumber', 'iban', 'swiftCode', 'bankName', 'bankAddress', 'currency'],
                   properties: {
                     holderName: {
                       type: 'string',
@@ -89,6 +92,12 @@ const validationSchema = {
                         pattern: 'Sub-branch should contain only numbers.',
                       },
                     },
+                    currency: {
+                      type: "string",
+                      errorMessage: {
+                        minLength: 'Account currency is required'
+                      }
+                    }
                   },
                   errorMessage: {
                     required: {
@@ -99,6 +108,7 @@ const validationSchema = {
                       swiftCode: 'SWIFT code is required.',
                       bankName: 'Bank name is required.',
                       bankAddress: 'Bank address is required.',
+                      currency: 'Account currency is required'
                     },
                   },
                 },

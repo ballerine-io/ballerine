@@ -17,9 +17,11 @@ const validationSchema = {
                 store: {
                   type: 'object',
                   required: ['processingDetails'],
+                  default: {},
                   properties: {
                     processingDetails: {
                       type: 'object',
+                      default: {},
                       required: [
                         'monthlySalesVolume',
                         'monthlyTransactions',
@@ -40,17 +42,20 @@ const validationSchema = {
                         monthlySalesVolume: {
                           type: 'number',
                           minimum: 1,
-                          errorMessage: 'Monthly Sales Volume must be positive.'
+                          errorMessage: 'Monthly Sales Volume must be positive.',
+                          default: 0,
                         },
                         monthlyTransactions: {
                           type: 'number',
                           minimum: 1,
-                          errorMessage: 'Monthly Number Of Transactions must be positive.'
+                          errorMessage: 'Monthly Number Of Transactions must be positive.',
+                          default: 0,
                         },
                         averageTicketAmount: {
                           type: 'number',
                           minimum: 1,
-                          errorMessage: 'Average Ticket Amount must be positive.'
+                          errorMessage: 'Average Ticket Amount must be positive.',
+                          default: 0,
                         },
                         mainCategory: {
                           type: 'array',
@@ -70,7 +75,7 @@ const validationSchema = {
                         spikeSalesAverageVolume: {
                           type: 'number',
                           minimum: 1,
-                          errorMessage: 'Monthly Sales Volume must be positive.'
+                          errorMessage: 'Monthly Sales Volume must be positive.',
                         },
                         spikeTransactionNumber: {
                           type: 'number',
@@ -107,6 +112,14 @@ const validationSchema = {
                             businessModel: 'Website Business Model is required.',
                           },
                         },
+                        properties: {
+                          spikeOfVolumeInRegion: {
+                            default: 0
+                          },
+                          spikeTransactionNumber: {
+                            default: 0
+                          }
+                        }
                       },
                     },
                   },

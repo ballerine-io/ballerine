@@ -10,9 +10,11 @@ const validationSchema = {
             additionalInfo: {
               type: 'object',
               required: ['store'],
+              default: {},
               properties: {
                 store: {
                   type: 'object',
+                  default: {},
                   if: {
                     properties: {
                       hasMobileApp: {
@@ -60,8 +62,15 @@ const validationSchema = {
                     mobileAppName: {
                       type: 'string',
                     },
+                    industry: {
+                      type: 'string',
+                      minLength: 1,
+                      errorMessage: {
+                        minLength: 'Industry is required.'
+                      }
+                    }
                   },
-                  required: ['websiteUrls', 'dba', 'products', 'established', 'hasMobileApp'],
+                  required: ['websiteUrls', 'dba', 'products', 'established', 'hasMobileApp', 'industry'],
                   errorMessage: {
                     required: {
                       websiteUrls: 'Website URL(s) is required.',
@@ -69,6 +78,7 @@ const validationSchema = {
                       products: 'Products information is required.',
                       established: 'Establishment date is required.',
                       hasMobileApp: 'Information on mobile app availability is required.',
+                      industry: 'Industry is required.'
                     },
                   },
                 },

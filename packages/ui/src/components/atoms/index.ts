@@ -11,3 +11,4 @@ export * from './Paper';
 export * from './Popover';
 export * from './ScrollArea';
 export * from './Table';
+export * from './ErrorMessage';

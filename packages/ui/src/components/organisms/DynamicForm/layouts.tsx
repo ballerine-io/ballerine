@@ -6,7 +6,7 @@ import { SubmitLayout } from '@components/organisms/DynamicForm/components/layou
 
 const Filler = () => <div>Not Implemented</div>;
 
-export const templates: Partial<TemplatesType> = {
+export const layouts: Partial<TemplatesType> = {
   FieldTemplate: FieldLayout,
   TitleFieldTemplate: TitleLayout,
   ArrayFieldTemplate: ArrayFieldsLayout,

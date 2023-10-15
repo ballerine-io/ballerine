@@ -3,15 +3,19 @@ import { createFormSchemaFromUIElements } from '@app/components/organisms/UIRend
 import { createInitialFormData } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/createInitialFormData';
 import { UIElementComponent } from '@app/components/organisms/UIRenderer/types';
 
-import { AnyObject, DynamicForm } from '@ballerine/ui';
+import { AnyObject, DynamicForm, ErrorsList } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { useCallback, useMemo, useRef } from 'react';
 import set from 'lodash/set';
 import get from 'lodash/get';
-import { jsonFormFields } from '@app/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
+import {
+  jsonFormFields,
+  jsonFormLayouts,
+} from '@app/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
 import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
 import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
 import { DataCreationParams } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withInitialDataCreation';
+import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
 
 export interface JSONFormElementBaseParams extends DataCreationParams {
   jsonFormDefinition: RJSFSchema;
@@ -57,17 +61,23 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
 
   const handleSubmit = useCallback(() => {}, []);
 
+  const { validationErrors } = useUIElementErrors(definition);
+
   return hidden ? null : (
-    <DynamicForm
-      schema={formSchema}
-      uiSchema={uiSchema}
-      fields={jsonFormFields}
-      formData={formData}
-      ref={formRef}
-      transformErrors={transformRJSFErrors}
-      onChange={handleArrayInputChange}
-      onSubmit={handleSubmit}
-    />
+    <div className="flex flex-col gap-2">
+      <DynamicForm
+        schema={formSchema}
+        uiSchema={uiSchema}
+        fields={jsonFormFields}
+        layouts={jsonFormLayouts}
+        formData={formData}
+        ref={formRef}
+        transformErrors={transformRJSFErrors}
+        onChange={handleArrayInputChange}
+        onSubmit={handleSubmit}
+      />
+      {validationErrors ? <ErrorsList errors={validationErrors.map(err => err.message)} /> : null}
+    </div>
   );
 };
 
