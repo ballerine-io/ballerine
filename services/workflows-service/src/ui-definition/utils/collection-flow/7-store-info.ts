@@ -30,9 +30,13 @@ const validationSchema = {
                   },
                   properties: {
                     websiteUrls: {
-                      type: 'string',
-                      not: { enum: [''] },
-                      errorMessage: 'Website URL(s) should not be empty.',
+                      type: "string",
+                      pattern: "^\\s*https?://[^,\\s]+(\\s*,\\s*https?://[^,\\s]+)*\\s*$",
+                      minLength: 1,
+                      errorMessage: {
+                        minLength: 'Website URL(s) should not be empty.',
+                        pattern: 'Website URL(s) should be a valid URL(s) separated by comma.',
+                      },
                     },
                     dba: {
                       type: 'string',

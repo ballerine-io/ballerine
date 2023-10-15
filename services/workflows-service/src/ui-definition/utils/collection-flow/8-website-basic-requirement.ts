@@ -29,7 +29,10 @@ const validationSchema = {
                       properties: {
                         mainWebsite: {
                           type: 'string',
-                          errorMessage: 'Main website URL should not be empty.',
+                          format: 'uri',
+                          errorMessage: {
+                            format: 'Website URL should be a valid URL.',
+                          },
                         },
                         contactDetails: {
                           type: 'string',
@@ -37,15 +40,24 @@ const validationSchema = {
                         },
                         returnPolicyUrl: {
                           type: 'string',
-                          errorMessage: 'Return policy URL should not be empty.',
+                          format: 'uri',
+                          errorMessage: {
+                            format: 'Return policy URL should be a valid URL.',
+                          },
                         },
                         shippingPolicyUrl: {
                           type: 'string',
-                          errorMessage: 'Shipping policy URL should not be empty.',
+                          format: 'uri',
+                          errorMessage: {
+                            format: 'Shipping policy URL should be a valid URL.',
+                          },
                         },
                         aboutUsUrl: {
                           type: 'string',
-                          errorMessage: 'About us URL should not be empty.',
+                          format: 'uri',
+                          errorMessage: {
+                            format: 'About us URL should be a valid URL.',
+                          },
                         },
                         productQuantity: {
                           type: 'number',
