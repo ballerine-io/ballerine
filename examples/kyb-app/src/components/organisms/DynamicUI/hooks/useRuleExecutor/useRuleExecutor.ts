@@ -59,7 +59,7 @@ export const useRuleExecutor = (
     executeRules(context, rules, definition, uiStateRef.current);
   }, [context, rules, uiStateRef, definition, executeRules]);
 
-  console.log('rules', executionResult);
+  console.log('RULESW', executionResult);
 
   return executionResult;
 };

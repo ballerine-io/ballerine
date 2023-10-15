@@ -12,9 +12,21 @@ const validationSchema = {
             additionalInfo: {
               type: 'object',
               required: ['headquarters'],
+              default: {},
               properties: {
                 headquarters: {
                   type: 'object',
+                  default: {},
+                  required: [ 'street', 'streetNumber', 'city', 'country'],
+                  errorMessage: {
+                    required: {
+                      street: 'Street is required.',
+                      streetNumber: 'Street number is required.',
+                      city: 'City is required.',
+                      country: 'Country is required.',
+                      isDifferentFromPhysical: 'This field is required.',
+                    },
+                  },
                   if: {
                     properties: {
                       isDifferentFromPhysical: { const: true },
@@ -29,18 +41,6 @@ const validationSchema = {
                       'country',
                       'physical',
                     ],
-                  },
-                  else: {
-                    required: [ 'street', 'streetNumber', 'city', 'country'],
-                    errorMessage: {
-                      required: {
-                        street: 'Street is required.',
-                        streetNumber: 'Street number is required.',
-                        city: 'City is required.',
-                        country: 'Country is required.',
-                        isDifferentFromPhysical: 'This field is required.',
-                      },
-                    },
                   },
                   properties: {
                     isDifferentFromPhysical: {

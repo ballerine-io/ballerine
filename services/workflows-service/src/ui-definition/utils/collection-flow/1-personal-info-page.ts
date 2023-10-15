@@ -15,7 +15,7 @@ const validationSchema = {
                 "properties": {
                   "mainRepresentative": {
                     "type": "object",
-                    "required": ["phone", "dateOfBirth", "firstName", "lastName", "additionalInfo", "jobTitle", "jobInfo"],
+                    "required": ["phone", "dateOfBirth", "firstName", "lastName", "additionalInfo"],
                     errorMessage: {
                       required: {
                         phone: 'A valid phone number is required.',
@@ -53,7 +53,7 @@ const validationSchema = {
                           "minLength": "Last name must be at least 2 characters long."
                         }
                       },
-                      "jobInfo": {
+                      "additionalInfo": {
                         "type": "object",
                         "required": ["jobTitle"],
                         "default": {},
@@ -150,7 +150,7 @@ export const PersonalInfoPage = {
               name: 'job-title-input',
               type: 'json-form:text',
               valueDestination:
-                'entity.data.additionalInfo.mainRepresentative.jobInfo.jobTitle',
+                'entity.data.additionalInfo.mainRepresentative.additionalInfo.jobTitle',
               options: {
                 label: 'Title',
                 hint: 'CEO / Manager / Partner',
