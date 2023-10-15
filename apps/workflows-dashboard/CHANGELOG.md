@@ -1,5 +1,11 @@
 # @ballerine/workflows-dashboard
 
+## 0.1.4-3e08f108.3
+
+### Patch Changes
+
+- Pre bump
+
 ## 0.1.4-3e08f108.2
 
 ### Patch Changes
