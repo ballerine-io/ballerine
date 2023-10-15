@@ -9,6 +9,9 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 RUN mv /app/.env.example /app/.env
+
+ARG VITE_API_URL="http://localhost:3000/api/v1"
+
 RUN npm run build
 
 ENV PATH="$PATH:./node_modules/.bin"
