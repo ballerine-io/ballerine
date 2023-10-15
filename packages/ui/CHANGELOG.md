@@ -1,5 +1,67 @@
 # @ballerine/ui
 
+## 0.3.5-3e08f108.5
+
+### Patch Changes
+
+- Pre release
+
+## 0.3.5-3e08f108.4
+
+### Patch Changes
+
+- Bump
+
+## 0.3.5-3e08f108.3
+
+### Patch Changes
+
+- Added default value to Autocomplete
+
+## 0.3.5-3e08f108.2
+
+### Patch Changes
+
+- pre
+
+## 0.3.5-3e08f108.1
+
+### Patch Changes
+
+- pre
+
+## 0.3.5-3e08f108.0
+
+### Patch Changes
+
+- Prerelease
+
+## 0.3.4
+
+### Patch Changes
+
+- e51852fe: Bump
+- e51852fe: Bump
+- Version bump
+
+## 0.3.3
+
+### Patch Changes
+
+- Bump minor version
+
+## 0.3.2
+
+### Patch Changes
+
+- Version minor bump
+
+## 0.3.1
+
+### Patch Changes
+
+- Version bump
+
 ## 0.3.0
 
 ### Minor Changes

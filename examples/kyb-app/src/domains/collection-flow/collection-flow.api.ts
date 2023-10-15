@@ -7,8 +7,10 @@ import {
   TFlowConfiguration,
   TFlowStep,
   TUser,
+  UISchema,
   UpdateFlowDto,
 } from '@app/domains/collection-flow/types';
+import { AnyObject } from '@ballerine/ui';
 
 export const fetchUser = async (): Promise<TUser> => {
   const result = await request.get('collection-flow/user').json<TUser>();
@@ -34,6 +36,18 @@ export const fetchCollectionFlowSchema = async (): Promise<{
     steps: result.steps,
     documentConfigurations: result.documentConfigurations,
   };
+};
+
+export const fetchUISchema = async (): Promise<UISchema> => {
+  const result = await request
+    .get('collection-flow/configuration', {
+      searchParams: {
+        uiContext: 'collection_flow',
+      },
+    })
+    .json<UISchema>();
+
+  return result;
 };
 
 export const fetchActiveWorkflow = async (dto: GetActiveWorkflowDto): Promise<FlowData> => {
@@ -65,4 +79,10 @@ export const fetchCustomer = async (): Promise<TCustomer> => {
   const result = await request.get('collection-flow/customer').json<TCustomer>();
 
   return result;
+};
+
+export const fetchFlowContext = async (): Promise<{ context: AnyObject; state: string }> => {
+  const result = await request.get('collection-flow/context');
+
+  return result.json();
 };

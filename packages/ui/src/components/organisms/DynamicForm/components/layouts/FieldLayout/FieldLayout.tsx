@@ -22,7 +22,7 @@ export const FieldLayout = ({
   const errors = useMemo(() => Array.from(new Set(rawErrors)), [rawErrors]);
 
   return (
-    <div className="flex flex-col gap-2 py-1">
+    <div className="flex flex-col gap-3 py-1">
       {isLabelEnabled ? (
         <Label htmlFor={id}>
           {label}
@@ -37,7 +37,9 @@ export const FieldLayout = ({
           type="warning"
         />
       ) : null}
-      <span className="font-inter text-muted-foreground text-sm">{description}</span>
+      {description && description?.props?.description ? (
+        <span className="font-inter text-muted-foreground text-sm">{description}</span>
+      ) : null}
     </div>
   );
 };

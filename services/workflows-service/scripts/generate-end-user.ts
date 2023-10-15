@@ -98,13 +98,15 @@ export const generateBusiness = ({
     financialStatement: string;
   };
   workflow: {
+    runtimeId?: string;
     workflowDefinitionId: string;
     workflowDefinitionVersion: number;
     context: Prisma.InputJsonValue;
+    state: string;
   };
   projectId: string;
 }): Prisma.BusinessCreateInput => {
-  const { workflowDefinitionId, workflowDefinitionVersion, context } = workflow;
+  const { runtimeId, workflowDefinitionId, workflowDefinitionVersion, context, state } = workflow;
 
   return {
     id,
@@ -128,11 +130,13 @@ export const generateBusiness = ({
     approvalState: 'PROCESSING',
     workflowRuntimeData: {
       create: {
+        id: runtimeId,
         workflowDefinitionVersion,
         context,
         workflowDefinitionId,
         createdAt: faker.date.recent(2),
         projectId: projectId,
+        state: state,
         tags: [StateTag.MANUAL_REVIEW],
       },
     },
@@ -164,10 +168,11 @@ export const generateEndUser = ({
     workflowDefinitionVersion: number;
     context: Prisma.InputJsonValue;
     parentRuntimeId?: string;
+    state: string;
   };
   projectId: string;
 }): Prisma.EndUserCreateInput => {
-  const { workflowDefinitionId, workflowDefinitionVersion, context } = workflow;
+  const { workflowDefinitionId, workflowDefinitionVersion, context, state } = workflow;
   let res: Prisma.EndUserCreateInput = {
     id,
     correlationId,
@@ -190,6 +195,7 @@ export const generateEndUser = ({
           createdAt: faker.date.recent(2),
           projectId: projectId,
           parentRuntimeDataId: workflow.parentRuntimeId,
+          state: state,
           tags: [StateTag.MANUAL_REVIEW],
         },
       },

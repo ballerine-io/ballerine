@@ -10,12 +10,19 @@ export const TextField = ({
   disabled,
   schema,
   onChange,
-}: FieldProps<string>) => {
+}: FieldProps<string | number>) => {
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      onChange(event.target.value);
+      const serializedValue =
+        schema.type === 'integer' || schema.type === 'number'
+          ? event.target.value
+            ? Number(event.target.value)
+            : undefined
+          : event.target.value;
+
+      onChange(serializedValue);
     },
-    [onChange],
+    [onChange, schema],
   );
 
   const inputProps = {

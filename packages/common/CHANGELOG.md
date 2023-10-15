@@ -1,5 +1,42 @@
 # @ballerine/common
 
+## 0.7.13-3e08f108.2
+
+### Patch Changes
+
+- Pre release
+
+## 0.7.13-3e08f108.1
+
+### Patch Changes
+
+- pre
+
+## 0.7.13-3e08f108.0
+
+### Patch Changes
+
+- pre
+
+## 0.7.12
+
+### Patch Changes
+
+- Bump minor version
+
+## 0.7.11
+
+### Patch Changes
+
+- Version minor bump
+
+## 0.7.10
+
+### Patch Changes
+
+- efedc9cb: Update document schemas
+- Version bump
+
 ## 0.7.5
 
 ### Patch Changes

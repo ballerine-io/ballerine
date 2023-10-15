@@ -1,3 +1,4 @@
+import { Action, Rule, UIElement } from '@app/domains/collection-flow/types/ui-schema.types';
 import { Workflow } from '@app/domains/workflows/types';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
@@ -130,3 +131,27 @@ export interface TCustomer {
   country: string;
   language: string;
 }
+
+export interface UIPage {
+  type: 'page';
+  name: string;
+  number: number;
+  stateName: string;
+  elements: UIElement<AnyObject>[];
+  actions: Action[];
+  pageValidator?: Rule;
+}
+
+export interface UISchema {
+  id: string;
+  uiSchema: {
+    elements: UIPage[];
+  };
+  definition: {
+    definitionType: string;
+    definition: AnyObject;
+    extensions: AnyObject;
+  };
+}
+
+export * from './ui-schema.types';

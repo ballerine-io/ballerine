@@ -3,7 +3,11 @@ import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { Stepper } from '@app/components/atoms/Stepper';
 import { Item } from '@app/components/atoms/Stepper/Item';
 import { VerticalLayout } from '@app/components/atoms/Stepper/layouts/Vertical';
+import { Content } from '@app/components/layouts/AppShell/Content';
 import { FormContainer } from '@app/components/layouts/AppShell/FormContainer';
+import { Logo } from '@app/components/layouts/AppShell/Logo';
+import { Navigation } from '@app/components/layouts/AppShell/Navigation';
+import { Sidebar } from '@app/components/layouts/AppShell/Sidebar';
 import { useCustomer } from '@app/components/providers/CustomerProvider';
 import { AnyChildren } from '@ballerine/ui';
 
@@ -21,8 +25,7 @@ export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }:
 
   return (
     <div className="w-ful flex h-screen flex-nowrap">
-      <div className="bg-primary col-span-2 w-[24%] max-w-[418px] px-14 pb-4 pt-14">
-        <div className="font-inter flex h-full flex-col">
+      {/* <div className="font-inter flex h-full flex-col">
           <div className="flex flex-1 flex-col pb-16">
             <div onClick={onBackButtonClick}>{backButton}</div>
             <div className="pb-16 pt-24">
@@ -59,10 +62,14 @@ export const AppShell = ({ children, backButton, isLoading, onBackButtonClick }:
             <img src={'/poweredby.svg'} className="mt-6" />
           </div>
         </div>
-      </div>
-      <div className="col-span-8 h-full w-[100%] overflow-auto bg-[#F2F5FF] p-4">{children}</div>
+      </div> */}
+      {children}
     </div>
   );
 };
 
 AppShell.FormContainer = FormContainer;
+AppShell.Sidebar = Sidebar;
+AppShell.Content = Content;
+AppShell.Logo = Logo;
+AppShell.Navigation = Navigation;
