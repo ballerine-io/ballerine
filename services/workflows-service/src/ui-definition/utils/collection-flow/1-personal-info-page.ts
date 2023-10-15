@@ -15,7 +15,7 @@ const validationSchema = {
                 "properties": {
                   "mainRepresentative": {
                     "type": "object",
-                    "required": ["phone", "dateOfBirth", "firstName", "lastName", "additionalInfo"],
+                    "required": ["phone", "dateOfBirth", "firstName", "lastName", "additionalInfo", "jobTitle", "jobInfo"],
                     errorMessage: {
                       required: {
                         phone: 'A valid phone number is required.',
@@ -39,13 +39,6 @@ const validationSchema = {
                           "type": "Date of birth must be a string."
                         }
                       },
-                      "jobTitle": {
-                        "type": "string",
-                        "minLength": 3,
-                        "errorMessage": {
-                          "minLength": "Job title must be at least 3 characters long."
-                        }
-                      },
                       "firstName": {
                         "type": "string",
                         "minLength": 2,
@@ -60,9 +53,10 @@ const validationSchema = {
                           "minLength": "Last name must be at least 2 characters long."
                         }
                       },
-                      "additionalInfo": {
+                      "jobInfo": {
                         "type": "object",
                         "required": ["jobTitle"],
+                        "default": {},
                         "errorMessage": {
                           required: {
                             jobTitle: 'Job title is a required',
@@ -156,7 +150,7 @@ export const PersonalInfoPage = {
               name: 'job-title-input',
               type: 'json-form:text',
               valueDestination:
-                'entity.data.additionalInfo.mainRepresentative.additionalInfo.jobTitle',
+                'entity.data.additionalInfo.mainRepresentative.jobInfo.jobTitle',
               options: {
                 label: 'Title',
                 hint: 'CEO / Manager / Partner',
