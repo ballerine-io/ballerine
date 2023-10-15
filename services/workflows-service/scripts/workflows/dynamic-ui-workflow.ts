@@ -28,7 +28,7 @@ export const dynamicUiWorkflowDefinition = {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
           EMAIL_SENT_TO_UBOS: [{ target: 'pending_kyc_response_to_finish' }],
-          FAILED_EMAIL_SENT_TO_UBOS: [{ target: 'failed' }],
+          FAILED_EMAIL_SENT_TO_UBOS: [{ target: 'auto_reject' }],
         },
       },
       pending_kyc_response_to_finish: {
