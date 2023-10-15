@@ -1049,7 +1049,7 @@ export class WorkflowService {
         },
         projectId,
       );
-    } else {   
+    } else {
       updatedResult = await this.workflowRuntimeDataRepository.updateById(
         workflowRuntimeId,
         {
