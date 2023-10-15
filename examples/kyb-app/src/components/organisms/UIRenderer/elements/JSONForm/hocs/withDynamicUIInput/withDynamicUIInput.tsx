@@ -32,7 +32,7 @@ const injectIndexToDestinationIfNeeded = (destination: string, index: number | n
   const pathElements = destination.split('.');
   pathElements.splice(pathElements.length - 1, 0, indexPath);
 
-  return pathElements.join('.').replace(`.${indexPath}.`, indexPath);
+  return pathElements.join('.').replace(`.${indexPath}.`, `${indexPath}.`);
 };
 
 export const withDynamicUIInput = (

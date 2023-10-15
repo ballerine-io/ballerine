@@ -27,6 +27,36 @@ export const DocumentField = (
   const [fileItem, setFile] = useState<File | null>(null);
 
   const { toggleElementLoading } = useUIElementToolsLogic(definition.name);
+  //@ts-nocheck
+  const documentPath = useMemo(
+    () => `documents[${definition.options?.mappingParams?.documentIndex}]`,
+    [definition],
+  );
+  const documentValue = useMemo(() => {
+    const document = get(stateApi.getContext(), documentPath) as Document;
+
+    return document ? document : null;
+  }, [documentPath, definition]);
+
+  useEffect(() => {
+    if (documentValue) return;
+
+    const documentFullPath = `documents[${definition.options?.mappingParams?.documentIndex}].pages[${definition.options?.mappingParams?.documentPage}]`;
+
+    const ctx = stateApi.getContext();
+
+    set(ctx, documentPath, definition.options.documentData);
+
+    set(ctx, documentFullPath, {});
+
+    stateApi.setContext(ctx);
+
+    return () => {
+      if (!documentValue) {
+        set(ctx, documentPath, undefined);
+      }
+    };
+  }, [documentValue]);
 
   useEffect(() => {
     if (!formData) return;
@@ -74,6 +104,8 @@ export const DocumentField = (
   );
 
   if (documentIndex === undefined || documentPage === undefined) return null;
+
+  console.log('context', stateApi.getContext());
 
   return <FileInputAdapter {...restProps} formData={fileItem} onChange={handleChange} />;
 };

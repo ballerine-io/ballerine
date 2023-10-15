@@ -48,7 +48,6 @@ export const StateManager = ({
       state,
       payload: contextPayload,
     };
-    console.log('context', contextPayload);
     return ctx;
   }, [state, contextPayload, getState, sendEvent, invokePlugin, setContext, getContext]);
 

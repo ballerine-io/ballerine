@@ -31,25 +31,24 @@ const validationSchema = {
       },
     },
   },
-  else: {
-    properties: {
-      documents: {
-        minItems: 10,
-      },
-    },
-  },
   properties: {
     documents: {
       type: 'array',
+      minItems: 10,
+      default: [],
       items: {
         type: 'object',
         required: ['pages'],
         properties: {
           pages: {
             type: 'array',
+            minItems: 1,
             items: {
               type: 'object',
               required: ['ballerineFileId'],
+              errorMessage: {
+                required: 'Document is required.'
+              },
               properties: {
                 ballerineFileId: {
                   type: 'string',
@@ -126,7 +125,11 @@ export const CompanyDocuments = {
         },
         {
           type: 'json-form',
-          options: {},
+          options: {
+            jsonFormDefinition: {
+              required: ['document-certificates-of-incorporation']
+            }
+          },
           elements: [
             {
               name: 'document-certificates-of-incorporation',

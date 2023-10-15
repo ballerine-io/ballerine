@@ -99,7 +99,8 @@ const validationSchema = {
                           'spikeOfVolumeInRegion',
                           'spikeTransactionNumber',
                           'mainCategory',
-                          'businessModel'
+                          'businessModel',
+                          'spikeSalesAverageVolume'
                         ],
                         errorMessage: {
                           required: {
