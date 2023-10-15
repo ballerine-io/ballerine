@@ -20,14 +20,15 @@ import { Rejected } from '@app/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@app/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
+import { usePageErrors } from '@app/components/organisms/DynamicUI/Page/hooks/usePageErrors';
 
 const elems = {
   h1: Title,
-  h3: (props: AnyObject) => <h3 className="text-xl font-bold pb-3">{props?.options?.text}</h3>,
-  h4: (props: AnyObject) => <h4 className="text-base font-bold pb-3">{props?.options?.text}</h4>,
+  h3: (props: AnyObject) => <h3 className="pb-3 text-xl font-bold">{props?.options?.text}</h3>,
+  h4: (props: AnyObject) => <h4 className="pb-3 text-base font-bold">{props?.options?.text}</h4>,
   description: (props: AnyObject) => (
     <p
-      className="text-sm font-inter pb-2 text-slate-500"
+      className="font-inter pb-2 text-sm text-slate-500"
       dangerouslySetInnerHTML={{ __html: props.options.descriptionRaw as string }}
     ></p>
   ),
@@ -46,17 +47,28 @@ export const CollectionFlowDumb = () => {
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
+  const pageErrors = usePageErrors(context?.context ?? {}, elements);
+  const filteredNonEmptyErrors = pageErrors?.filter(pageError => !!pageError.errors.length);
+  const initialContext = {
+    ...context,
+    context: {
+      ...context?.context,
+      state: filteredNonEmptyErrors?.[0]?.stateName ?? context?.state,
+    },
+    state: filteredNonEmptyErrors?.[0]?.stateName ?? context?.state,
+  };
+
   const initialUIState = useMemo(() => {
-    return prepareInitialUIState(elements || [], context?.context || {});
+    return prepareInitialUIState(elements || [], initialContext?.context || {});
   }, [elements, context]);
 
-  if (context.state === 'approved') return <Approved />;
-  if (context.state == 'rejected') return <Rejected />;
+  if (initialContext.state === 'approved') return <Approved />;
+  if (initialContext.state == 'rejected') return <Rejected />;
 
-  return definition && context?.context ? (
+  return definition && initialContext?.context ? (
     <DynamicUI initialState={initialUIState}>
       <DynamicUI.StateManager
-        initialContext={context.context}
+        initialContext={initialContext.context}
         workflowId="1"
         definitionType={schema?.definition.definitionType}
         extensions={schema?.definition.extensions}
@@ -78,7 +90,7 @@ export const CollectionFlowDumb = () => {
                       <DynamicUI.ActionsHandler actions={currentPage.actions} stateApi={stateApi}>
                         <AppShell>
                           <AppShell.Sidebar>
-                            <div className="flex flex-col h-full">
+                            <div className="flex h-full flex-col">
                               <div className="flex-1">
                                 <div className="pb-10">
                                   <AppShell.Navigation />
@@ -123,7 +135,7 @@ export const CollectionFlowDumb = () => {
                                 </div>
                               ) : null}
                               <div className="flex flex-col">
-                                <div className="pb-3 flex gap-3 items-center">
+                                <div className="flex items-center gap-3 pb-3">
                                   <StepperProgress
                                     currentStep={
                                       elements.findIndex(page => page.stateName === state) + 1

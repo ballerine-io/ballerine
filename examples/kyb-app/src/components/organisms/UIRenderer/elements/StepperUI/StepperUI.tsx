@@ -6,15 +6,41 @@ import { usePageResolverContext } from '@app/components/organisms/DynamicUI/Page
 import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useMemo } from 'react';
+import { usePageContext } from '@app/components/organisms/DynamicUI/Page';
+import { UIPage } from '@app/domains/collection-flow';
+import { UIElementState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
+import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
 
 export const StepperUI = () => {
   const { state: uiState } = useDynamicUIContext();
   const { pages, currentPage } = usePageResolverContext();
   const { state } = useStateManagerContext();
+  const { pageErrors } = usePageContext();
+  const computeStepStatus = ({
+    uiElement,
+    page,
+    pageError,
+    currentPage,
+  }: {
+    uiElement: UIElementState;
+    page: UIPage;
+    pageError: Record<string, ErrorField>;
+    currentPage: UIPage;
+  }) => {
+    if (!!Object.keys(pageError).length && currentPage.number === page.number) return 'warning';
+    if (uiElement?.isCompleted) return 'completed';
+
+    return 'idle';
+  };
 
   const steps: Step[] = useMemo(() => {
     return pages.map(page => {
-      const stepStatus = uiState.elements[page.stateName]?.isCompleted ? 'completed' : 'idle';
+      const stepStatus = computeStepStatus({
+        uiElement: uiState.elements[page.stateName],
+        page,
+        pageError: pageErrors?.[page.stateName],
+        currentPage,
+      });
 
       const step: Step = {
         index: page.number - 1,
@@ -27,7 +53,7 @@ export const StepperUI = () => {
 
       return step;
     });
-  }, [pages, currentPage, uiState]);
+  }, [pages, uiState.elements, pageErrors, currentPage]);
 
   return (
     <Stepper>
