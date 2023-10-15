@@ -24,47 +24,60 @@ const validationSchema = {
                         'monthlySalesVolume',
                         'monthlyTransactions',
                         'averageTicketAmount',
+                        'mainCategory',
+                        'businessModel',
                       ],
-                      // errorMessage: {
-                      //   minLength: {
-                      //     monthlySalesVolume: 'Monthly Sales Volume is required.',
-                      //     monthlyTransactions: 'Monthly Transactions are required.',
-                      //     averageTicketAmount: 'Average Ticket Amount is required.',
-                      //     mainCategory: 'Main Category is required.',
-                      //     businessModel: 'Business Model is required.',
-                      //   }
-                      // },
-                      // errorMessage: {
-                      //   minLength: {
-                      //     monthlySalesVolume: 'Monthly Sales Volume is required.',
-                      //     monthlyTransactions: 'Monthly Transactions are required.',
-                      //     averageTicketAmount: 'Average Ticket Amount is required.',
-                      //     mainCategory: 'Main Category is required.',
-                      //     businessModel: 'Business Model is required.',
-                      //     isSpikeInSales: 'Is Spike In Sales is required.',
-                      //     spikeSalesAverageVolume: 'Spike Sales Average Volume is required.',
-                      //     spikeTransactionNumber: 'Spike Transaction Number is required.',
-                      //     spikeOfVolumeInRegion: 'Spike Of Volume In Region is required.',
-                      //   }
-                      // },
+                      errorMessage: {
+                        required: {
+                          monthlySalesVolume: 'Monthly Sales Volume is required.',
+                          monthlyTransactions: 'Monthly Number Of Transactions is required.',
+                          averageTicketAmount: 'Average Ticket Amount is required.',
+                          mainCategory: 'Customer Category is required.',
+                          businessModel: 'Website Business Model is required.',
+                        },
+                      },
                       properties: {
-                        monthlySalesVolume: { type: 'number', minimum: 1 },
-                        monthlyTransactions: { type: 'number', minimum: 1 },
-                        averageTicketAmount: { type: 'number', minimum: 1 },
-                        mainCategory: { type: 'array', items: { type: 'string' }, default: [] },
+                        monthlySalesVolume: {
+                          type: 'number',
+                          minimum: 1,
+                          errorMessage: 'Monthly Sales Volume must be positive.'
+                        },
+                        monthlyTransactions: {
+                          type: 'number',
+                          minimum: 1,
+                          errorMessage: 'Monthly Number Of Transactions must be positive.'
+                        },
+                        averageTicketAmount: {
+                          type: 'number',
+                          minimum: 1,
+                          errorMessage: 'Average Ticket Amount must be positive.'
+                        },
+                        mainCategory: {
+                          type: 'array',
+                          items: {type: 'string'},
+                          minItems: 1,
+                          errorMessage: 'Customer Category is required.',
+                          default: []
+                        },
                         businessModel: {
                           type: 'array',
-                          items: {
-                            type: 'string',
-                          },
+                          items: {type: 'string'},
+                          minItems: 1,
+                          errorMessage: 'Business Model is required.',
                           default: [],
                         },
-                        isSpikeInSales: { type: 'boolean', default: false },
-                        spikeSalesAverageVolume: { type: 'number', minimum: 1 },
-                        spikeTransactionNumber: { type: 'number', minimum: 1 },
-                        spikeOfVolumeInRegion: { type: 'string', minLength: 1 },
+                        isSpikeInSales: {type: 'boolean', default: false},
+                        spikeSalesAverageVolume: {
+                          type: 'number',
+                          minimum: 1,
+                          errorMessage: 'Monthly Sales Volume must be positive.'
+                        },
+                        spikeTransactionNumber: {
+                          type: 'number',
+                          minimum: 1,
+                          errorMessage: 'Monthly Sales Volume must be positive.'
+                        },
                       },
-                      errorMessage: 'This field is required.',
                       if: {
                         properties: {
                           isSpikeInSales: {
@@ -78,10 +91,22 @@ const validationSchema = {
                           'monthlyTransactions',
                           'averageTicketAmount',
                           'isSpikeInSales',
-                          'spikeSalesAverageVolume',
                           'spikeOfVolumeInRegion',
                           'spikeTransactionNumber',
+                          'mainCategory',
+                          'businessModel'
                         ],
+                        errorMessage: {
+                          required: {
+                            monthlySalesVolume: 'Monthly Sales Volume is required.',
+                            monthlyTransactions: 'Monthly Number Of Transactions is required.',
+                            averageTicketAmount: 'Average Ticket Amount is required.',
+                            spikeSalesAverageVolume: 'Spike Sales Average Volume is required.',
+                            spikeTransactionNumber: 'Spike Transaction Number is required.',
+                            mainCategory: 'Customer Category is required.',
+                            businessModel: 'Website Business Model is required.',
+                          },
+                        },
                       },
                     },
                   },
@@ -96,15 +121,15 @@ const validationSchema = {
 };
 
 const isSpikeInSaleVisibility = {
-  '==': [{ var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales' }, true],
+  '==': [{var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales'}, true],
 };
 
 const notSpikeInSaleVisibility = {
-  '!==': [{ var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales' }, true],
+  '!==': [{var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales'}, true],
 };
 
 const isCustomBusinessModel = {
-  in: ['Other', { var: 'entity.data.additionalInfo.store.processingDetails.businessModel' }],
+  in: ['Other', {var: 'entity.data.additionalInfo.store.processingDetails.businessModel'}],
 };
 
 export const ProcessingDetails = {
@@ -298,7 +323,7 @@ export const ProcessingDetails = {
               name: 'spike-split-of-volume-in-region',
               type: 'json-form:text',
               valueDestination:
-                'entity.data.additionalInfo.store.processingDetails.spikeOfVolumeInRegion',
+                'entity.data.additionalInfo.store.processingDetails.volumeInRegion',
               options: {
                 label: 'Split of volume by regions in % (divided by comma)',
                 hint: 'Asia 70%, Europe 30%',
@@ -323,7 +348,7 @@ export const ProcessingDetails = {
               name: 'spike-split-of-volume-in-region',
               type: 'json-form:text',
               valueDestination:
-                'entity.data.additionalInfo.store.processingDetails.spikeOfVolumeInRegion',
+                'entity.data.additionalInfo.store.processingDetails.volumeInRegion',
               options: {
                 label: 'Split of volume by regions in % (divided by comma)',
                 hint: 'Asia 70%, Europe 30%',
@@ -474,7 +499,7 @@ export const ProcessingDetails = {
         eventName: 'PREVIOUS',
       },
       dispatchOn: {
-        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
+        uiEvents: [{event: 'onClick', uiElementName: 'previous-page-button'}],
       },
     },
     {
@@ -483,7 +508,7 @@ export const ProcessingDetails = {
         eventName: 'NEXT',
       },
       dispatchOn: {
-        uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
+        uiEvents: [{event: 'onClick', uiElementName: 'next-page-button'}],
         rules: [
           {
             type: 'json-schema',

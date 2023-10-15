@@ -1,72 +1,34 @@
 import { PrismaClient } from '@prisma/client';
 import { kycEmailSessionDefinition } from './kyc-email-process-example';
-import {
-  defaultPersonalInformationData,
-  personalInformationSchema,
-  personalInformationUISchema,
-} from './schemas/personal-information.schema';
-import {
-  companyInformationSchema,
-  companyInformationUISchema,
-  defaultCompanyInformationData,
-} from './schemas/company-information.schema';
-import {
-  defaultHeadquartersData,
-  headquartersSchema,
-  headquartersUISchema,
-} from './schemas/headquarters.schema';
-import { companyActivitySchema, companyActivityUISchema } from './schemas/company-activity.schema';
-import {
-  bankInformationSchema,
-  bankInformationUISchema,
-  defaultBankInformationData,
-} from './schemas/bank-information.schema';
-import {
-  defaultShareholdersData,
-  shareholdersSchema,
-  shareholdersUISchema,
-} from './schemas/shareholders.schema';
-import {
-  companyDocumentsSchema,
-  companyDocumentsUISchema,
-  defaultCompanyDocumentsData,
-} from './schemas/company-documents.schema';
 import { env } from '../../src/env';
 
 import { defaultContextSchema, StateTag } from '@ballerine/common';
+import { generateDynamicUiTest } from './ui-definition/ui-kyb-parent-dynamic-example';
 
-export const parentKybWithSessionWorkflowDefinition = {
-  id: 'kyb_parent_kyc_session_example',
-  name: 'kyb_parent_kyc_session_example',
+export const dynamicUiWorkflowDefinition = {
+  id: 'kyb_dynamic_ui_session_example',
+  name: 'kyb_dynamic_ui_session_example',
   version: 1,
   definitionType: 'statechart-json',
   definition: {
-    id: 'kyb_parent_kyc_session_example_v1',
+    id: 'kyb_dynamic_ui_session_example_v1',
     predictableActionArguments: true,
-    initial: 'data_collection',
+    initial: 'collection_flow',
     context: {
       documents: [],
     },
     states: {
-      data_collection: {
+      collection_flow: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
-          start: 'run_ubos',
+          COLLECTION_FLOW_FINISHED: 'run_ubos',
         },
       },
       run_ubos: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
-          CONTINUE: [{ target: 'run_kyb_enrichment' }],
-          FAILED: [{ target: 'auto_reject' }],
-        },
-      },
-      run_kyb_enrichment: {
-        tags: [StateTag.COLLECTION_FLOW],
-        on: {
-          KYB_DONE: [{ target: 'pending_kyc_response_to_finish' }],
-          // TODO: add 404 handling
-          FAILED: [{ target: 'auto_reject' }],
+          EMAIL_SENT_TO_UBOS: [{ target: 'pending_kyc_response_to_finish' }],
+          FAILED_EMAIL_SENT_TO_UBOS: [{ target: 'failed' }],
         },
       },
       pending_kyc_response_to_finish: {
@@ -84,17 +46,6 @@ export const parentKybWithSessionWorkflowDefinition = {
             },
           ],
         },
-        always: [
-          {
-            target: 'manual_review',
-            cond: {
-              type: 'jmespath',
-              options: {
-                rule: 'entity.data.additionalInfo.ubos == null || length(entity.data.additionalInfo.ubos) == `0`',
-              },
-            },
-          },
-        ],
       },
       manual_review: {
         tags: [StateTag.MANUAL_REVIEW],
@@ -104,23 +55,15 @@ export const parentKybWithSessionWorkflowDefinition = {
           revision: 'revision',
         },
       },
-      pending_resubmission: {
-        tags: [StateTag.REVISION],
-        on: {
-          RESUBMITTED: 'manual_review',
-        },
-      },
       approved: {
         tags: [StateTag.APPROVED],
         type: 'final' as const,
       },
       revision: {
         tags: [StateTag.REVISION],
-        always: [
-          {
-            target: 'pending_resubmission',
-          },
-        ],
+        on: {
+          RESUBMITTED: 'manual_review',
+        },
       },
       rejected: {
         tags: [StateTag.REJECTED],
@@ -140,18 +83,16 @@ export const parentKybWithSessionWorkflowDefinition = {
         url: `${env.UNIFIED_API_URL}/companies`,
         method: 'GET',
         stateNames: ['run_kyb_enrichment'],
-        successAction: 'KYB_DONE',
-        errorAction: 'KYB_DONE',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
             {
               transformer: 'jmespath',
               mapping: `{
-              countryOfIncorporation: entity.data.countryOfIncorporation,
-              companyNumber: entity.data.registrationNumber,
-              state: entity.data.dynamicInfo.companyInformation.state
-              vendor: 'open-corporates'
+                countryOfIncorporation: entity.data.countryOfIncorporation,
+                companyNumber: entity.data.registrationNumber,
+                state: entity.data.additionalInfo.company.state
+                vendor: 'open-corporates'
               }`, // jmespath
             },
           ],
@@ -226,8 +167,8 @@ export const parentKybWithSessionWorkflowDefinition = {
             mapping: 'entity.data.additionalInfo.ubos',
           },
         ],
-        successAction: 'CONTINUE',
-        errorAction: 'FAILED',
+        successAction: 'EMAIL_SENT_TO_UBOS',
+        errorAction: 'FAILED_EMAIL_SENT_TO_UBOS',
       },
     ],
   },
@@ -253,8 +194,18 @@ export const parentKybWithSessionWorkflowDefinition = {
   },
   isPublic: true,
 };
-export const generateParentKybWithSessionKycs = async (prismaClient: PrismaClient) => {
-  return await prismaClient.workflowDefinition.create({
-    data: { ...parentKybWithSessionWorkflowDefinition },
+export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, projectId?: string) => {
+  const kybDynamicExample = {
+    ...dynamicUiWorkflowDefinition,
+    isPublic: projectId ? false : true,
+    projectId: projectId,
+  };
+
+  const workflow = await prismaClient.workflowDefinition.create({
+    data: kybDynamicExample,
   });
+
+  await generateDynamicUiTest(prismaClient, workflow.id, projectId || workflow.projectId);
+
+  return workflow;
 };
