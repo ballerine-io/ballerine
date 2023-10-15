@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.5-3e08f108.8
+
+### Patch Changes
+
+- Pre bump
+
 ## 0.3.5-3e08f108.7
 
 ### Patch Changes
