@@ -1,5 +1,17 @@
 # @ballerine/ui
 
+## 0.3.5-3e08f108.7
+
+### Patch Changes
+
+- Updated exports & Renamed vars
+
+## 0.3.5-3e08f108.6
+
+### Patch Changes
+
+- Added blur handlers to Dynamic Form inputs
+
 ## 0.3.5-3e08f108.5
 
 ### Patch Changes

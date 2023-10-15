@@ -1,5 +1,5 @@
 import { Label } from '@components/atoms';
-import { ErrorsList } from '@components/organisms/DynamicForm/components/molecules/ErrorsList';
+import { ErrorsList } from '@components/molecules/ErrorsList';
 import { useWarnings } from '@components/organisms/DynamicForm/hooks/useWarnings/useWarnings';
 import { FieldTemplateProps } from '@rjsf/utils';
 import { useMemo } from 'react';

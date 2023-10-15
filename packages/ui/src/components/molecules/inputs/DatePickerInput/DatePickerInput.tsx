@@ -1,7 +1,7 @@
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { useCallback, useMemo, useState } from 'react';
+import { FocusEvent, useCallback, useMemo, useState } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import dayjs, { Dayjs } from 'dayjs';
 import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
@@ -22,6 +22,7 @@ export interface DatePickerProps {
   name?: string;
   disabled?: boolean;
   onChange: (event: DatePickerChangeEvent) => void;
+  onBlur?: (event: FocusEvent<any>) => void;
 }
 
 export const DatePickerInput = ({
@@ -29,6 +30,7 @@ export const DatePickerInput = ({
   name,
   disabled = false,
   onChange,
+  onBlur,
 }: DatePickerProps) => {
   const [isFocused, setFocused] = useState(false);
 
@@ -74,7 +76,7 @@ export const DatePickerInput = ({
           }}
           onBlur={e => {
             setFocused(false);
-            props.onBlur && props.onBlur(e);
+            onBlur && onBlur(e);
           }}
           error={!isFocused ? props.error : false}
           FormHelperTextProps={{
@@ -99,7 +101,7 @@ export const DatePickerInput = ({
         />
       );
     },
-    [isFocused],
+    [isFocused, onBlur],
   );
 
   return (
