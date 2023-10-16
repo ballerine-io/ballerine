@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { env } from '../../src/env';
-import { defaultContextSchema, StateTag } from '@ballerine/common';
+import { StateTag } from '@ballerine/common';
 
 export const kycEmailSessionDefinition = {
   id: 'kyc_email_session_example',
@@ -149,10 +149,6 @@ export const kycEmailSessionDefinition = {
       ],
       deliverEvent: 'KYC_DONE',
     },
-  },
-  contextSchema: {
-    type: 'json-schema',
-    schema: defaultContextSchema,
   },
   isPublic: true,
 };
