@@ -1,5 +1,3 @@
-import { getCountriesList } from '../schema-utils/countries';
-
 const validationSchema = {
   type: 'object',
   properties: {
@@ -202,7 +200,7 @@ export const BusinessInfoPage = {
             },
             {
               name: 'country-picker-input',
-              type: 'country-picker',
+              type: 'json-form:country-picker',
               valueDestination: 'entity.data.country',
               options: {
                 label: 'Country',
@@ -210,14 +208,11 @@ export const BusinessInfoPage = {
                 jsonFormDefinition: {
                   type: 'string',
                   minLength: 1,
-                  oneOf: [
-                    // Line below should removed in case when field is required.
-                    // { const: '', title: '' },
-                    ...getCountriesList().map(countryData => ({
-                      const: countryData.isoCode,
-                      title: countryData.fullName,
-                    })),
-                  ],
+                },
+                uiSchema: {
+                  'ui:field': 'CountryPicker',
+                  'ui:label': true,
+                  'ui:placeholder': 'Hong Kong',
                 },
               },
             },
