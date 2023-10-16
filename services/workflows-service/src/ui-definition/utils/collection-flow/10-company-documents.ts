@@ -337,8 +337,8 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'website_picture',
-                  type: 'business_registration',
+                  category: 'proof_of_business_compliance',
+                  type: 'permitted_sales_license',
                   issuer: {
                     country: 'GH',
                   },
