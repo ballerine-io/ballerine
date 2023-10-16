@@ -205,13 +205,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'registration_document',
+                  category: 'proof_of_registration',
                   type: 'certificate_of_incorporation',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 0,
@@ -233,13 +234,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'registration_document',
-                  type: 'business_registration',
+                  category: 'proof_of_registration',
+                  type: 'business_registration_certificate',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 1,
@@ -260,13 +262,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'corporate_tax_certificate',
-                  type: 'business_registration',
+                  category: 'financial_information',
+                  type: 'corporate_tax_certificate',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 2,
@@ -288,13 +291,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'certificate_of_good_standing',
-                  type: 'business_registration',
+                  category: 'proof_of_good_standing',
+                  type: 'certificate_of_good_standing',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 3,
@@ -315,14 +319,15 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'certificate_of_directors_and_shareholders',
-                  type: 'business_registration',
+                  category: 'proof_of_ownership',
+                  type: 'certificate_of_directors_and_shareholders',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
-                },
+                  properties: {}
+                 },
                 mappingParams: {
                   documentIndex: 4,
                   documentPage: 0,
@@ -342,13 +347,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'picture_of_company_seal',
-                  type: 'business_registration',
+                  category: 'proof_of_identity',
+                  type: 'company_seal',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 5,
@@ -387,8 +393,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'website_picture',
-                  type: 'business_registration',
+                  category: 'proof_of_domain_ownership',
+                  type: 'domain_purchase_record',
+                  issuer: {
+                    country: 'GH',
+                  },
+                  version: '1',
+                  issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 6,
@@ -422,6 +434,12 @@ export const CompanyDocuments = {
                 documentData: {
                   category: 'website_picture',
                   type: 'business_registration',
+                  issuer: {
+                    country: 'GH',
+                  },
+                  version: '1',
+                  issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 7,
@@ -464,13 +482,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'office_picture_front_door',
-                  type: 'business_registration',
+                  category: 'proof_of_location',
+                  type: 'front_door_photo',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 8,
@@ -479,7 +498,7 @@ export const CompanyDocuments = {
               },
             },
             {
-              name: 'document-office-interior-pictures-1',
+              name: 'document-office-interior-pictures',
               type: 'document',
               valueDestination: 'documents[9].pages[0].ballerineFileId',
               options: {
@@ -491,13 +510,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'office_interior_picture',
-                  type: 'business_registration',
+                  category: 'proof_of_location',
+                  type: 'interior_office_photo',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 9,
@@ -518,13 +538,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'office_interior_picture',
-                  type: 'business_registration',
+                  category: 'proof_of_location',
+                  type: 'interior_office_photo',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 10,
@@ -564,13 +585,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'office_transactions_last_months',
-                  type: 'business_registration',
+                  category: 'financial_information',
+                  type: 'transaction_data_last_3_6_months',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 11,
