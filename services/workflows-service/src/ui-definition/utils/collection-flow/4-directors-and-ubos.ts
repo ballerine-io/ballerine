@@ -256,8 +256,9 @@ export const DirectorsAndUbosPage = {
           type: 'description',
           name: 'checkbox-description-1',
           options: {
-            descriptionRaw: 'Add all of the natural persons that own or control, <br /><b>directly or indirectly</b> more than 25% of the company.'
-          }
+            descriptionRaw:
+              'Add all of the natural persons that own or control, <br /><b>directly or indirectly</b> more than 25% of the company.',
+          },
         },
         {
           type: 'json-form',
@@ -280,9 +281,12 @@ export const DirectorsAndUbosPage = {
               createWhenHidden: true,
               destination: 'entity.data.additionalInfo.ubos',
               schema: {
-                'entity.data.additionalInfo.ubos[0].firstName': 'entity.data.additionalInfo.mainRepresentative.firstName',
-                'entity.data.additionalInfo.ubos[0].lastName': 'entity.data.additionalInfo.mainRepresentative.lastName',
-                'entity.data.additionalInfo.ubos[0].email': 'entity.data.additionalInfo.mainRepresentative.email',
+                'entity.data.additionalInfo.ubos[0].firstName':
+                  'entity.data.additionalInfo.mainRepresentative.firstName',
+                'entity.data.additionalInfo.ubos[0].lastName':
+                  'entity.data.additionalInfo.mainRepresentative.lastName',
+                'entity.data.additionalInfo.ubos[0].email':
+                  'entity.data.additionalInfo.mainRepresentative.email',
               },
               insertRules: [
                 {
@@ -337,13 +341,13 @@ export const DirectorsAndUbosPage = {
               valueDestination: 'entity.data.additionalInfo.ubos.nationality',
               options: {
                 label: 'Nationality',
-                hint: 'Chinese',
+                hint: 'Choose',
                 jsonFormDefinition: {
-                  type: 'string'
+                  type: 'string',
                 },
                 uiSchema: {
-                  'ui:field': 'NationalityPicker'
-                }
+                  'ui:field': 'NationalityPicker',
+                },
               },
             },
             {
@@ -438,8 +442,8 @@ export const DirectorsAndUbosPage = {
               type: 'description',
               name: 'checkbox-description-2',
               options: {
-                descriptionRaw: 'Add all of the directors of the company.'
-              }
+                descriptionRaw: 'Add all of the directors of the company.',
+              },
             },
             {
               name: 'directors-component',
@@ -462,9 +466,12 @@ export const DirectorsAndUbosPage = {
                   destination: 'entity.data.additionalInfo.directors',
                   createWhenHidden: true,
                   schema: {
-                    'entity.data.additionalInfo.directors[0].firstName': 'entity.data.additionalInfo.mainRepresentative.firstName',
-                    'entity.data.additionalInfo.directors[0].lastName': 'entity.data.additionalInfo.mainRepresentative.lastName',
-                    'entity.data.additionalInfo.directors[0].email': 'entity.data.additionalInfo.mainRepresentative.email',
+                    'entity.data.additionalInfo.directors[0].firstName':
+                      'entity.data.additionalInfo.mainRepresentative.firstName',
+                    'entity.data.additionalInfo.directors[0].lastName':
+                      'entity.data.additionalInfo.mainRepresentative.lastName',
+                    'entity.data.additionalInfo.directors[0].email':
+                      'entity.data.additionalInfo.mainRepresentative.email',
                   },
                   insertRules: [
                     {
@@ -522,10 +529,10 @@ export const DirectorsAndUbosPage = {
                       type: 'string',
                     },
                     uiSchema: {
-                      'ui:field': 'NationalityPicker'
+                      'ui:field': 'NationalityPicker',
                     },
                     label: 'Nationality',
-                    hint: 'Chinese',
+                    hint: 'Choose',
                   },
                 },
                 {
@@ -569,7 +576,7 @@ export const DirectorsAndUbosPage = {
             },
             {
               type: 'divider',
-            }
+            },
           ],
         },
         {
@@ -595,8 +602,8 @@ export const DirectorsAndUbosPage = {
                 },
               ],
             },
-          ]
-        }
+          ],
+        },
       ],
     },
   ],

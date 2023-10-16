@@ -11,6 +11,7 @@ import { UserAvatar } from '../../../../common/components/atoms/UserAvatar/UserA
 import { createInitials } from '../../../../common/utils/create-initials/create-initials';
 import { useEllipsesWithTitle } from '../../../../common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import dayjs from 'dayjs';
+import { StateTag } from '@ballerine/common';
 
 /**
  * @description To be used by {@link Cases}, and be wrapped by {@link Cases.List}. Uses li element with default styling to display a single case's data. Navigates to the selected entity on click by setting the entity id into the path param.
@@ -25,7 +26,7 @@ import dayjs from 'dayjs';
  * @param props.createdAt - Expects an ISO date string to calculate the waiting time using {@link getTimePastFromNow}.
  * @param props.assignee - Which operator is now on the entity's case.
  * @param props.entityAvatarUrl - The entity's image url to pass into {@link Avatar} and ${@Link UserAvatar}.
- * @param props.status - Whether the entity is approved or rejected.
+ * @param props.tags - Whether the case is approved or rejected.
  *
  * @constructor
  */
@@ -34,14 +35,15 @@ export const Item: FunctionComponent<IItemProps> = ({
   fullName,
   createdAt,
   assignee,
-  status,
+  tags,
   entityAvatarUrl,
 }) => {
   const entityInitials = createInitials(fullName);
   const { ref, styles } = useEllipsesWithTitle<HTMLDivElement>();
   const { search } = useLocation();
-
   const rgb = useMemo(() => stringToRGB(fullName), [fullName]);
+  const isApproved = tags?.includes(StateTag.APPROVED);
+  const isRejected = tags?.includes(StateTag.REJECTED);
 
   return (
     <li className="h-[64px] w-full px-4">
@@ -58,18 +60,19 @@ export const Item: FunctionComponent<IItemProps> = ({
       >
         <div className={`indicator`}>
           <motion.div
-            key={status}
+            key={tags?.join('-')}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
             className={ctw(`indicator-center indicator-item indicator-middle`, {
-              hidden: status !== 'REJECTED' && status !== 'APPROVED',
-              'text-success': status === 'APPROVED',
-              'text-error': status === 'REJECTED',
+              hidden: !isRejected && !isApproved,
+              'text-success': isApproved,
+              'text-error': isRejected,
             })}
           >
-            {status === 'REJECTED' && <RejectedSvg />}
-            {status === 'APPROVED' && <ApprovedSvg />}
+            {/*  Early tell if a state has invalids tags and includes both `REJECTED` and `APPROVED` */}
+            {isRejected && <RejectedSvg />}
+            {isApproved && <ApprovedSvg />}
           </motion.div>
           <Avatar
             src={entityAvatarUrl}
