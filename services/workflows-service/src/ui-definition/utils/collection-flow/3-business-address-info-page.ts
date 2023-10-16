@@ -1,5 +1,3 @@
-import { getCountriesList } from '../schema-utils/countries';
-
 const validationSchema = {
   type: 'object',
   properties: {
@@ -17,7 +15,7 @@ const validationSchema = {
                 headquarters: {
                   type: 'object',
                   default: {},
-                  required: [ 'street', 'streetNumber', 'city', 'country'],
+                  required: ['street', 'streetNumber', 'city', 'country'],
                   errorMessage: {
                     required: {
                       street: 'Street is required.',
@@ -34,13 +32,7 @@ const validationSchema = {
                     required: ['isDifferentFromPhysical'],
                   },
                   then: {
-                    required: [
-                      'street',
-                      'streetNumber',
-                      'city',
-                      'country',
-                      'physical',
-                    ],
+                    required: ['street', 'streetNumber', 'city', 'country', 'physical'],
                   },
                   properties: {
                     isDifferentFromPhysical: {
@@ -237,21 +229,18 @@ export const BusinessAddressInfoPage = {
             },
             {
               name: 'country-input',
-              type: 'country-picker',
+              type: 'json-form:country-picker',
               valueDestination: 'entity.data.additionalInfo.headquarters.country',
               options: {
                 label: 'Country',
                 hint: 'United Kingdom',
                 jsonFormDefinition: {
                   type: 'string',
-                  oneOf: [
-                    // Line below should removed in case when field is required.
-                    // { const: '', title: '' },
-                    ...getCountriesList().map(countryData => ({
-                      const: countryData.isoCode,
-                      title: countryData.fullName,
-                    })),
-                  ],
+                },
+                uiSchema: {
+                  'ui:field': 'CountryPicker',
+                  'ui:label': true,
+                  'ui:placeholder': 'Hong Kong',
                 },
               },
             },
@@ -329,21 +318,18 @@ export const BusinessAddressInfoPage = {
             },
             {
               name: 'physical-country-input',
-              type: 'country-picker',
+              type: 'json-form:country-picker',
               valueDestination: 'entity.data.additionalInfo.headquarters.physical.country',
               options: {
                 label: 'Country',
                 hint: 'United Kingdom',
                 jsonFormDefinition: {
                   type: 'string',
-                  oneOf: [
-                    // Line below should removed in case when field is required.
-                    // { const: '', title: '' },
-                    ...getCountriesList().map(countryData => ({
-                      const: countryData.isoCode,
-                      title: countryData.fullName,
-                    })),
-                  ],
+                },
+                uiSchema: {
+                  'ui:field': 'CountryPicker',
+                  'ui:label': true,
+                  'ui:placeholder': 'Hong Kong',
                 },
               },
             },
@@ -372,8 +358,8 @@ export const BusinessAddressInfoPage = {
                 },
               ],
             },
-          ]
-        }
+          ],
+        },
       ],
     },
   ],
