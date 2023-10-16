@@ -54,9 +54,9 @@ export const DocumentField = (
       toggleElementLoading();
 
       const context = stateApi.getContext();
-      let documentIndex = (context.documents as Document[]).findIndex(
-        doc => doc.id === definition.options.documentData.id,
-      );
+      let documentIndex = (context.documents as Document[])
+        .filter(Boolean)
+        .findIndex(doc => doc.id === definition.options.documentData.id);
       if (documentIndex === -1) {
         documentIndex = definition.options.mappingParams.documentIndex;
       }
