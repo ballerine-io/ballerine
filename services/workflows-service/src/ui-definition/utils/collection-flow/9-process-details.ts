@@ -333,45 +333,20 @@ export const ProcessingDetails = {
                 },
               },
             },
-            {
-              name: 'spike-split-of-volume-in-region',
-              type: 'json-form:text',
-              valueDestination:
-                'entity.data.additionalInfo.store.processingDetails.volumeInRegion',
-              options: {
-                label: 'Split of volume by regions in % (divided by comma)',
-                hint: 'Asia 70%, Europe 30%',
-                jsonFormDefinition: {
-                  type: 'string',
-                },
-              },
-            },
           ],
         },
         {
-          type: 'json-form',
-          name: 'split-volume-region-form',
-          visibleOn: [
-            {
-              type: 'json-logic',
-              value: notSpikeInSaleVisibility,
+          name: 'volume-in-region',
+          type: 'json-form:text',
+          valueDestination:
+            'entity.data.additionalInfo.store.processingDetails.volumeInRegion',
+          options: {
+            label: 'Split of volume by regions in % (divided by comma)',
+            hint: 'Asia 70%, Europe 30%',
+            jsonFormDefinition: {
+              type: 'string',
             },
-          ],
-          elements: [
-            {
-              name: 'spike-split-of-volume-in-region',
-              type: 'json-form:text',
-              valueDestination:
-                'entity.data.additionalInfo.store.processingDetails.volumeInRegion',
-              options: {
-                label: 'Split of volume by regions in % (divided by comma)',
-                hint: 'Asia 70%, Europe 30%',
-                jsonFormDefinition: {
-                  type: 'string',
-                },
-              },
-            },
-          ],
+          },
         },
         {
           type: 'h3',
