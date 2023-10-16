@@ -1,98 +1,7 @@
 const validationSchema = {
-    "type": "object",
-    "required": ["documents", "entity"],
-    "if": {
-      "properties": {
-        "entity": {
-          "properties": {
-            "data": {
-              "properties": {
-                "additionalInfo": {
-                  "properties": {
-                    "store": {
-                      "properties": {
-                        "hasActiveWebsite": {
-                          "const": true
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "then": {
-      "properties": {
-        "documents": {
-          "type": "array",
-          "minItems": 11
-        }
-      }
-    },
-    "properties": {
-      "documents": {
-        "type": "array",
-        "minItems": 10,
-        "default": [],
-        "items": {
-          "type": "object",
-          "required": ["pages"],
-          "properties": {
-            "pages": {
-              "type": "array",
-              "minItems": 1,
-              "items": {
-                "type": "object",
-                "required": ["ballerineFileId"],
-                "errorMessage": {
-                  "required": "Document is required."
-                },
-                "properties": {
-                  "ballerineFileId": {
-                    "type": "string",
-                    "minLength": 1
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "entity": {
-        "type": "object",
-        "required": ["data"],
-        "properties": {
-          "data": {
-            "type": "object",
-            "required": ["additionalInfo"],
-            "properties": {
-              "additionalInfo": {
-                "type": "object",
-                "required": ["store"],
-                "properties": {
-                  "store": {
-                    "type": "object",
-                    "properties": {
-                      "hasActiveWebsite": {
-                        "type": "boolean",
-                        "default": false
-                      }
-                    },
-                    "default": {
-                      "hasActiveWebsite": false
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  };
+  validationContext: 'document',
+  requiredDocuments: ['documents[0].pages[0].ballerineFileId'],
+};
 
 export const CompanyDocuments = {
   type: 'page',
@@ -658,7 +567,7 @@ export const CompanyDocuments = {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
           {
-            type: 'json-logic',
+            type: 'custom',
             value: validationSchema,
           },
         ],
