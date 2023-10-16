@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 const validationSchema = [
   {
     destination: 'documents[0].pages[0].ballerineFileId',
@@ -110,6 +112,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
+                  id: randomUUID(),
                   category: 'proof_of_registration',
                   type: 'certificate_of_incorporation',
                   issuer: {
@@ -139,6 +142,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
+                  id: randomUUID(),
                   category: 'proof_of_registration',
                   type: 'business_registration_certificate',
                   issuer: {
@@ -167,6 +171,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
+                  id: randomUUID(),
                   category: 'financial_information',
                   type: 'corporate_tax_certificate',
                   issuer: {
@@ -196,6 +201,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
+                  id: randomUUID(),
                   category: 'proof_of_good_standing',
                   type: 'certificate_of_good_standing',
                   issuer: {
@@ -224,6 +230,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
+                  id: randomUUID(),
                   category: 'proof_of_ownership',
                   type: 'certificate_of_directors_and_shareholders',
                   issuer: {
@@ -252,6 +259,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
+                  id: randomUUID(),
                   category: 'proof_of_identity',
                   type: 'company_seal',
                   issuer: {
@@ -298,6 +306,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
+                  id: randomUUID(),
                   category: 'proof_of_domain_ownership',
                   type: 'domain_purchase_record',
                   issuer: {
@@ -337,6 +346,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
+                  id: randomUUID(),
                   category: 'proof_of_business_compliance',
                   type: 'permitted_sales_license',
                   issuer: {
@@ -387,6 +397,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
+                  id: randomUUID(),
                   category: 'proof_of_location',
                   type: 'front_door_photo',
                   issuer: {
@@ -415,6 +426,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
+                  id: randomUUID(),
                   category: 'proof_of_location',
                   type: 'interior_office_photo',
                   issuer: {
@@ -443,6 +455,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
+                  id: randomUUID(),
                   category: 'proof_of_location',
                   type: 'interior_office_photo',
                   issuer: {
@@ -490,6 +503,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
+                  id: randomUUID(),
                   category: 'financial_information',
                   type: 'transaction_data_last_3_6_months',
                   issuer: {

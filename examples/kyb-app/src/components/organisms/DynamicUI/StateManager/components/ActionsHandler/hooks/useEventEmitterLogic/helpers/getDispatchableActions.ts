@@ -4,6 +4,8 @@ import { Action, UIElement } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
 import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
+import { DestinationRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/destination.rule-engine';
+import { JmespathRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
 
 export const getDispatchableActions = (
   context: AnyObject,
@@ -15,9 +17,13 @@ export const getDispatchableActions = (
     const engineManager = new EngineManager([
       new JsonLogicRuleEngine(),
       new JsonSchemaRuleEngine(),
+      new DestinationRuleEngine(),
+      new JmespathRuleEngine(),
     ]);
 
     if (!action.dispatchOn.rules) return true;
+
+    console.log('rules', action.dispatchOn?.rules);
 
     return (
       action.dispatchOn?.rules?.length &&
