@@ -1,12 +1,14 @@
 import { z } from 'zod';
 
-const SubscriptionSchema = z
-  .object({
-    type: z.enum(['webhook', 'slack']),
-    url: z.string().url().optional(),
-    events: z.array(z.string()),
-  })
-  .strict();
+export const SubscriptionSchema = z.discriminatedUnion('type', [
+  z
+    .object({
+      type: z.literal('webhook'),
+      url: z.string().url(),
+      events: z.array(z.string().nonempty()),
+    })
+    .strict(),
+]);
 
 export const ConfigSchema = z
   .object({
