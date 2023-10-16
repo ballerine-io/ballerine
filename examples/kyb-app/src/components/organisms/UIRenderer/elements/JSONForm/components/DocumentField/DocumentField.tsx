@@ -32,7 +32,7 @@ export const DocumentField = (
   useEffect(() => {
     if (!formData) return;
 
-    const fileId = definition.options.documentData.id;
+    const fileId = formData as string;
     const persistedFile = collectionFlowFileStorage.getFileById(fileId);
 
     if (persistedFile) {
