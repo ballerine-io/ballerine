@@ -11,6 +11,7 @@ import {
   PhoneInputAdapter,
   TextInputAdapter,
 } from '@ballerine/ui';
+import { LocalePicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/LocalePicker';
 import { CountryPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/CountryPicker';
 
 export const jsonFormFields = {
@@ -25,6 +26,7 @@ export const jsonFormFields = {
   AutocompleteInput: withDynamicUIInput(AutocompleteTextInputAdapter),
   DocumentInput: withDynamicUIInput(DocumentField),
   NationalityPicker: withDynamicUIInput(NationalityPicker),
+  LocalePicker: withDynamicUIInput(LocalePicker),
   CountryPicker: withDynamicUIInput(CountryPicker),
   CheckboxList: withDynamicUIInput(CheckboxList),
 };
