@@ -22,6 +22,7 @@ import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 import { usePageErrors } from '@app/components/organisms/DynamicUI/Page/hooks/usePageErrors';
 import { SubmitButton } from '@app/components/organisms/UIRenderer/elements/SubmitButton';
+import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
 
 const elems = {
   h1: Title,
@@ -50,11 +51,11 @@ export const CollectionFlowDumb = () => {
 
   const pageErrors = usePageErrors(context ?? {}, elements);
   const filteredNonEmptyErrors = pageErrors?.filter(pageError => !!pageError.errors.length);
-  const initialContext = useMemo(() => {
+  const initialContext: CollectionFlowContext = useMemo(() => {
     const appState =
-      context?.flowConfig?.appState ||
       filteredNonEmptyErrors?.[0]?.stateName ||
-      elements?.at(-1).stateName;
+      context?.flowConfig?.appState ||
+      elements?.at(0).stateName;
     if (!appState) return null;
 
     return {
@@ -77,7 +78,7 @@ export const CollectionFlowDumb = () => {
   return definition && context ? (
     <DynamicUI initialState={initialUIState}>
       <DynamicUI.StateManager
-        initialContext={context}
+        initialContext={initialContext}
         workflowId="1"
         definitionType={schema?.definition.definitionType}
         extensions={schema?.definition.extensions}

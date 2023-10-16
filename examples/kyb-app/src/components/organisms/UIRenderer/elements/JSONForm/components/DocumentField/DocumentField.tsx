@@ -7,9 +7,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import set from 'lodash/set';
 import get from 'lodash/get';
 import { collectionFlowFileStorage } from '@app/pages/CollectionFlow/collection-flow.file-storage';
+import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
 
 interface DocumentFieldParams {
-  documentData: AnyObject;
+  documentData: AnyObject & { id: string };
   mappingParams: {
     documentIndex: number;
     documentPage: number;
@@ -23,15 +24,15 @@ export const DocumentField = (
   const { formData, onChange } = restProps;
   const { stateApi } = useStateManagerContext();
   const { options } = definition;
-  const { documentIndex, documentPage } = options?.mappingParams || {};
   const [fileItem, setFile] = useState<File | null>(null);
 
   const { toggleElementLoading } = useUIElementToolsLogic(definition.name);
+  const { state } = useUIElementState(definition);
 
   useEffect(() => {
     if (!formData) return;
 
-    const fileId = formData as string;
+    const fileId = definition.options.documentData.id;
     const persistedFile = collectionFlowFileStorage.getFileById(fileId);
 
     if (persistedFile) {
@@ -52,10 +53,17 @@ export const DocumentField = (
     async (file: File) => {
       toggleElementLoading();
 
-      const documentPath = `documents[${documentIndex}]`;
-
       const context = stateApi.getContext();
+      let documentIndex = (context.documents as Document[]).findIndex(
+        doc => doc.id === definition.options.documentData.id,
+      );
+      if (documentIndex === -1) {
+        documentIndex = definition.options.mappingParams.documentIndex;
+      }
+
+      const documentPath = `documents[${documentIndex}]`;
       const currentDocumentValue = get(context, documentPath) as Document;
+
       if (!currentDocumentValue) {
         set(context, documentPath, options.documentData);
       }
@@ -69,12 +77,17 @@ export const DocumentField = (
 
       toggleElementLoading();
     },
-    [stateApi, documentIndex, options, onChange, toggleElementLoading],
+    [stateApi, options, onChange, toggleElementLoading],
   );
-
-  if (documentIndex === undefined || documentPage === undefined) return null;
 
   console.log('context', stateApi.getContext());
 
-  return <FileInputAdapter {...restProps} formData={fileItem} onChange={handleChange} />;
+  return (
+    <FileInputAdapter
+      {...restProps}
+      disabled={state.isLoading || restProps.disabled}
+      formData={fileItem}
+      onChange={handleChange}
+    />
+  );
 };
