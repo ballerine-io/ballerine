@@ -18,22 +18,22 @@ const validationSchema = {
                   if: {
                     properties: {
                       hasMobileApp: {
-                        const: true
+                        const: true,
                       },
-                    }
+                    },
                   },
                   then: {
                     required: ['mobileAppName'],
                     errorMessage: {
                       required: {
-                        mobileAppName: 'Mobile App Name should not be empty.'
-                      }
-                    }
+                        mobileAppName: 'Mobile App Name should not be empty.',
+                      },
+                    },
                   },
                   properties: {
                     websiteUrls: {
-                      type: "string",
-                      pattern: "^\\s*https?://[^,\\s]+(\\s*,\\s*https?://[^,\\s]+)*\\s*$",
+                      type: 'string',
+                      pattern: '^\\s*https?://[^,\\s]+(\\s*,\\s*https?://[^,\\s]+)*\\s*$',
                       minLength: 1,
                       errorMessage: {
                         minLength: 'Website URL(s) should not be empty.',
@@ -66,11 +66,18 @@ const validationSchema = {
                       type: 'string',
                       minLength: 1,
                       errorMessage: {
-                        minLength: 'Industry is required.'
-                      }
-                    }
+                        minLength: 'Industry is required.',
+                      },
+                    },
                   },
-                  required: ['websiteUrls', 'dba', 'products', 'established', 'hasMobileApp', 'industry'],
+                  required: [
+                    'websiteUrls',
+                    'dba',
+                    'products',
+                    'established',
+                    'hasMobileApp',
+                    'industry',
+                  ],
                   errorMessage: {
                     required: {
                       websiteUrls: 'Website URL(s) is required.',
@@ -78,7 +85,7 @@ const validationSchema = {
                       products: 'Products information is required.',
                       established: 'Establishment date is required.',
                       hasMobileApp: 'Information on mobile app availability is required.',
-                      industry: 'Industry is required.'
+                      industry: 'Industry is required.',
                     },
                   },
                 },
@@ -130,7 +137,7 @@ export const StoreInfoPage = {
                 'store-industry-input',
                 'store-products-input',
                 'store-established-input',
-                'store-has-mobile-checkbox'
+                'store-has-mobile-checkbox',
               ],
             },
           },
@@ -165,7 +172,7 @@ export const StoreInfoPage = {
               valueDestination: 'entity.data.additionalInfo.store.industry',
               options: {
                 label: 'Industry',
-                hint: 'Food & Beverage',
+                hint: 'Choose',
                 jsonFormDefinition: {
                   type: 'string',
                   oneOf: [
@@ -230,8 +237,8 @@ export const StoreInfoPage = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: ['store-mobile-app-name-input']
-            }
+              required: ['store-mobile-app-name-input'],
+            },
           },
           visibleOn: [
             {
@@ -258,8 +265,8 @@ export const StoreInfoPage = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: ['active-store-website-checkbox']
-            }
+              required: ['active-store-website-checkbox'],
+            },
           },
           elements: [
             {
@@ -282,8 +289,9 @@ export const StoreInfoPage = {
           type: 'description',
           name: 'description-1',
           options: {
-            descriptionRaw: "Leaving the last checkbox 'Unchecked' will require providing extra licenses documents"
-          }
+            descriptionRaw:
+              "Leaving the last checkbox 'Unchecked' will require providing extra licenses documents",
+          },
         },
         {
           name: 'controls-container',
@@ -308,8 +316,8 @@ export const StoreInfoPage = {
                 },
               ],
             },
-          ]
-        }
+          ],
+        },
       ],
     },
   ],

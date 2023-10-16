@@ -265,13 +265,13 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:dropdown',
               valueDestination: 'entity.data.additionalInfo.store.website.websiteLanguage',
               options: {
-                hint: 'English',
+                hint: 'Choose',
                 label: 'Website Language',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:placeholder': 'English',
+                  'ui:placeholder': 'Choose',
                   'ui:field': 'LocalePicker',
                   'ui:label': true,
                 },
