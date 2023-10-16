@@ -22,9 +22,11 @@ export class JsonSchemaRuleEngine implements RuleEngine {
     const validationResult = validator.validate(rule.value, context);
     if (!validationResult) {
       const validationErrorMessage = this.__extractErrorsWithFields(validator, definition);
+      console.log('validationErrorMessage', validationErrorMessage);
 
       return { isValid: false, errors: validationErrorMessage.flat() };
     }
+    console.log('valid', 'valid');
 
     return { isValid: true, errors: [] };
   }
@@ -50,7 +52,6 @@ export class JsonSchemaRuleEngine implements RuleEngine {
               error.params.errors[0]?.params.missingProperty,
           );
         }
-
         return {
           fieldId: fieldId.join('.').replaceAll(/\.(\d+)\./g, '[$1].'),
           message: error.message,
