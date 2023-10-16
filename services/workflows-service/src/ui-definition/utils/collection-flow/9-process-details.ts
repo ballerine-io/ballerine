@@ -43,44 +43,39 @@ const validationSchema = {
                           type: 'number',
                           minimum: 1,
                           errorMessage: 'Monthly Sales Volume must be positive.',
-                          default: 0,
                         },
                         monthlyTransactions: {
                           type: 'number',
                           minimum: 1,
                           errorMessage: 'Monthly Number Of Transactions must be positive.',
-                          default: 0,
                         },
                         averageTicketAmount: {
                           type: 'number',
                           minimum: 1,
                           errorMessage: 'Average Ticket Amount must be positive.',
-                          default: 0,
                         },
                         mainCategory: {
                           type: 'array',
                           items: {type: 'string'},
                           minItems: 1,
                           errorMessage: 'Customer Category is required.',
-                          default: []
                         },
                         businessModel: {
                           type: 'array',
                           items: {type: 'string'},
                           minItems: 1,
                           errorMessage: 'Business Model is required.',
-                          default: [],
                         },
                         isSpikeInSales: {type: 'boolean', default: false},
                         spikeSalesAverageVolume: {
                           type: 'number',
                           minimum: 1,
-                          errorMessage: 'Monthly Sales Volume must be positive.',
+                          errorMessage: 'Spike Sales Volume must be positive.',
                         },
                         spikeTransactionNumber: {
                           type: 'number',
                           minimum: 1,
-                          errorMessage: 'Monthly Sales Volume must be positive.'
+                          errorMessage: 'Spike Transaction Number must be positive.'
                         },
                       },
                       if: {
@@ -113,14 +108,6 @@ const validationSchema = {
                             businessModel: 'Website Business Model is required.',
                           },
                         },
-                        properties: {
-                          spikeSalesAverageVolume: {
-                            default: 0
-                          },
-                          spikeTransactionNumber: {
-                            default: 0
-                          }
-                        }
                       },
                     },
                   },
