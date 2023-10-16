@@ -92,12 +92,12 @@ export const ContactsPage = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: ['first-name-input', 'last-name-input', 'email-input', 'phone-number-input'],
+              required: ['contact-first-name-input', 'contact-last-name-input', 'contact-email-input', 'contact-phone-number-input'],
             },
           },
           elements: [
             {
-              name: 'first-name-input',
+              name: 'contact-first-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainContact.firstName',
               options: {
@@ -109,7 +109,7 @@ export const ContactsPage = {
               },
             },
             {
-              name: 'last-name-input',
+              name: 'contact-last-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainContact.lastName',
               options: {
@@ -120,7 +120,7 @@ export const ContactsPage = {
               },
             },
             {
-              name: 'email-input',
+              name: 'contact-email-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainContact.email',
               options: {
@@ -133,7 +133,7 @@ export const ContactsPage = {
               },
             },
             {
-              name: 'phone-number-input',
+              name: 'contact-phone-number-input',
               type: 'international-phone-number',
               valueDestination: 'entity.data.additionalInfo.mainContact.phone',
               options: {
@@ -150,7 +150,7 @@ export const ContactsPage = {
           ],
         },
         {
-          name: 'controls-container',
+          name: 'contact-controls-container',
           type: 'container',
           options: {
             align: 'right',
