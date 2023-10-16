@@ -212,7 +212,7 @@ export const BusinessInfoPage = {
                 uiSchema: {
                   'ui:field': 'CountryPicker',
                   'ui:label': true,
-                  'ui:placeholder': 'Hong Kong',
+                  'ui:placeholder': 'Choose',
                 },
               },
             },

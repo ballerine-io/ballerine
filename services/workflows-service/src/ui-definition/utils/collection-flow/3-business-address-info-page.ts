@@ -240,7 +240,7 @@ export const BusinessAddressInfoPage = {
                 uiSchema: {
                   'ui:field': 'CountryPicker',
                   'ui:label': true,
-                  'ui:placeholder': 'Hong Kong',
+                  'ui:placeholder': 'Choose',
                 },
               },
             },
@@ -329,7 +329,7 @@ export const BusinessAddressInfoPage = {
                 uiSchema: {
                   'ui:field': 'CountryPicker',
                   'ui:label': true,
-                  'ui:placeholder': 'Hong Kong',
+                  'ui:placeholder': 'Choose',
                 },
               },
             },
