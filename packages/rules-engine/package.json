@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/rules-engine-lib",
   "author": "Ballerine <dev@ballerine.com>",
-  "version": "0.4.16-3e08f108.3",
+  "version": "0.4.16-3e08f108.5",
   "description": "rules-engine-lib",
   "module": "./dist/esm/index.js",
   "main": "./dist/cjs/index.js",
