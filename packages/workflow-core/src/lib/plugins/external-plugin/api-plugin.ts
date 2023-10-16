@@ -14,6 +14,7 @@ export class ApiPlugin {
   response?: IApiPluginParams['response'];
   successAction?: string;
   errorAction?: string;
+  persistResponseDestination?: string;
 
   constructor(pluginParams: IApiPluginParams) {
     this.name = pluginParams.name;
@@ -28,10 +29,11 @@ export class ApiPlugin {
     this.response = pluginParams.response;
     this.successAction = pluginParams.successAction;
     this.errorAction = pluginParams.errorAction;
+    this.persistResponseDestination = pluginParams.persistResponseDestination;
   }
   async invoke(context: TContext) {
     try {
-      const requestPayload = await this.transformData(this.request.transformers, context);
+            const requestPayload = await this.transformData(this.request.transformers, context);
       const { isValidRequest, errorMessage } = await this.validateContent(
         this.request.schemaValidator,
         requestPayload,
@@ -97,7 +99,7 @@ export class ApiPlugin {
       headers: headers,
     };
 
-    if (this.method.toUpperCase() === 'POST') {
+    if (this.method.toUpperCase() === 'POST' || this.method.toUpperCase() === 'PUT' ) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       requestParams.body = JSON.stringify(payload);

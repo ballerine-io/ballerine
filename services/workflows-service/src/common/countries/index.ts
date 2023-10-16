@@ -1247,3 +1247,4 @@ const countries = [
 ] as const;
 
 export const countryCodes = countries.map(country => country['alpha-2']);
+export type CountryCode = (typeof countryCodes)[number];

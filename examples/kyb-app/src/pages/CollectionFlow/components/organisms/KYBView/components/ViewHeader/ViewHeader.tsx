@@ -12,7 +12,7 @@ export const ViewHeader = ({ progressBar = true }: Props) => {
   return (
     <div className="flex items-center gap-4">
       <StepperProgress totalSteps={stepper.totalSteps} currentStep={stepper.currentStep} />
-      {progressBar ? <ProgressBar isLoading={isLoading} className="w-36" /> : null}
+      {/* {progressBar ? <ProgressBar isLoading={isLoading} className="w-36" /> : null} */}
     </div>
   );
 };

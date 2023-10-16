@@ -1,10 +1,8 @@
 import { BusinessService } from '@/business/business.service';
-import { UpdateFlowPayload } from '@/collection-flow/dto/update-flow-input.dto';
+import { UpdateFlowDto } from '@/collection-flow/dto/update-flow-input.dto';
 import { recursiveMerge } from '@/collection-flow/helpers/recursive-merge';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
-import { FlowStepModel } from '@/collection-flow/models/flow-step.model';
-import { IWorkflowAdapter } from '@/collection-flow/workflow-adapters/abstract-workflow-adapter';
-import { KYBParentKYCSessionExampleFlowData } from '@/collection-flow/workflow-adapters/kyb_parent_kyc_session_example/kyb_parent_kyc_session_example.model';
+import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-step.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
 import { NotFoundException } from '@/errors';
@@ -13,12 +11,15 @@ import { TProjectId, TProjectIds } from '@/types';
 import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { TDocument } from '@ballerine/common';
+import { DefaultContextSchema, TDocument } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
-import { Customer, EndUser } from '@prisma/client';
-import { File } from '@prisma/client';
+import { Customer, EndUser, File, UiDefinitionContext } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import keyBy from 'lodash/keyBy';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { ITokenScope } from '@/common/decorators/token-scope.decorator';
+
+type OptionalUiDefDefiniton = UiDefDefinition | null;
 
 @Injectable()
 export class CollectionFlowService {
@@ -28,6 +29,7 @@ export class CollectionFlowService {
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowService: WorkflowService,
     protected readonly businessService: BusinessService,
+    protected readonly uiDefinitionService: UiDefinitionService,
     protected readonly customerService: CustomerService,
     protected readonly storageService: StorageService,
   ) {}
@@ -46,20 +48,25 @@ export class CollectionFlowService {
       projectIds,
     );
 
-    return plainToClass(FlowConfigurationModel, {
+    const uiDefintion = await this.uiDefinitionService.getByWorkflowDefinitionId(
+      workflowDefinition.id,
+      'collection_flow' as keyof typeof UiDefinitionContext,
+      projectIds,
+      {},
+    );
+
+    return {
       id: workflowDefinition.id,
-      steps:
-        workflowDefinition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm
-          ?.steps || [],
-      documentConfigurations:
-        workflowDefinition.definition?.states?.data_collection?.metadata?.uiSettings.multiForm
-          .documents || [],
-    });
+      uiSchema: uiDefintion.uiSchema as unknown as UiSchemaStep[],
+      definition: uiDefintion.definition
+        ? (uiDefintion.definition as unknown as UiDefDefinition)
+        : undefined,
+    };
   }
 
   async updateFlowConfiguration(
     configurationId: string,
-    steps: FlowStepModel[],
+    steps: UiSchemaStep[],
     projectIds: TProjectIds,
     projectId: TProjectId,
   ): Promise<FlowConfigurationModel> {
@@ -132,54 +139,54 @@ export class CollectionFlowService {
     return workflowData ? workflowData : null;
   }
 
-  async updateFlow(
-    adapter: IWorkflowAdapter,
-    updatePayload: UpdateFlowPayload,
-    flowId: string,
-    projectId: TProjectId,
-    customer: Customer,
-  ) {
-    const workflow = await this.workflowRuntimeDataRepository.findById(flowId, {}, [
-      projectId,
-    ] as TProjectIds);
-
-    if (!workflow) throw new NotFoundException();
-
-    const flowData = plainToClass(KYBParentKYCSessionExampleFlowData, {
-      id: flowId,
-      state: updatePayload.flowState,
-      flowData: updatePayload.dynamicData,
-      mainRepresentative: updatePayload.mainRepresentative,
-      documents: updatePayload.documents,
-      ubos: updatePayload.ubos,
-      flowState: updatePayload.flowState,
-      businessData: updatePayload.businessData,
-    });
-
-    const workflowData = adapter.deserialize(flowData as any, workflow, customer);
-
-    workflowData.context.documents = await this.__persistFileUrlsToDocuments(
-      workflowData.context.documents,
-      [projectId],
-    );
-
-    await this.businessService.updateById(
-      workflow.businessId,
-      {
-        data: updatePayload.businessData,
-      },
-      projectId,
-    );
-
-    await this.workflowService.createOrUpdateWorkflowRuntime({
-      workflowDefinitionId: workflowData.workflowDefinitionId,
-      context: workflowData.context,
-      projectIds: [projectId] as TProjectIds,
-      currentProjectId: projectId,
-    });
-
-    return flowData;
-  }
+  // async updateFlow(
+  //   adapter: IWorkflowAdapter,
+  //   updatePayload: UpdateFlowPayload,
+  //   flowId: string,
+  //   projectId: TProjectId,
+  //   customer: Customer,
+  // ) {
+  //   const workflow = await this.workflowRuntimeDataRepository.findById(flowId, {}, [
+  //     projectId,
+  //   ] as TProjectIds);
+  //
+  //   if (!workflow) throw new NotFoundException();
+  //
+  //   const flowData = plainToClass(KYBParentKYCSessionExampleFlowData, {
+  //     id: flowId,
+  //     state: updatePayload.flowState,
+  //     flowData: updatePayload.dynamicData,
+  //     mainRepresentative: updatePayload.mainRepresentative,
+  //     documents: updatePayload.documents,
+  //     ubos: updatePayload.ubos,
+  //     flowState: updatePayload.flowState,
+  //     businessData: updatePayload.businessData,
+  //   });
+  //
+  //   const workflowData = adapter.deserialize(flowData as any, workflow, customer);
+  //
+  //   workflowData.context.documents = await this.__persistFileUrlsToDocuments(
+  //     workflowData.context.documents,
+  //     [projectId],
+  //   );
+  //
+  //   await this.businessService.updateById(
+  //     workflow.businessId,
+  //     {
+  //       data: updatePayload.businessData,
+  //     },
+  //     projectId,
+  //   );
+  //
+  //   await this.workflowService.createOrUpdateWorkflowRuntime({
+  //     workflowDefinitionId: workflowData.workflowDefinitionId,
+  //     context: workflowData.context,
+  //     projectIds: [projectId] as TProjectIds,
+  //     currentProjectId: projectId,
+  //   });
+  //
+  //   return flowData;
+  // }
 
   private async __persistFileUrlsToDocuments(
     documents: TDocument[] = [],
@@ -226,27 +233,78 @@ export class CollectionFlowService {
     return updatedDocuments;
   }
 
+  async updateWorkflowRuntimeData(payload: UpdateFlowDto, tokenScope: ITokenScope) {
+    const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
+      tokenScope.workflowRuntimeDataId,
+      {},
+      [tokenScope.projectId] as TProjectIds,
+    );
+
+    if (payload.data.endUser) {
+      await this.endUserService.updateById(
+        tokenScope.endUserId,
+        { data: payload.data.endUser },
+        tokenScope.projectId,
+      );
+    }
+
+    if (payload.data.ballerineEntityId && payload.data.business) {
+      await this.businessService.updateById(
+        payload.data.ballerineEntityId,
+        { data: payload.data.business },
+        tokenScope.projectId,
+      );
+    }
+
+    const { state, ...resetContext } = payload.data.context as Record<string, any>;
+
+    resetContext.documents = await this.__persistFileUrlsToDocuments(
+      (payload.data.context as any).documents.filter(Boolean),
+      [tokenScope.projectId],
+    );
+
+    const updateResult = await this.workflowService.createOrUpdateWorkflowRuntime({
+      workflowDefinitionId: workflowRuntime.workflowDefinitionId,
+      context: resetContext as DefaultContextSchema,
+      config: workflowRuntime.config,
+      parentWorkflowId: undefined,
+      projectIds: [tokenScope.projectId],
+      currentProjectId: tokenScope.projectId,
+    });
+
+    return updateResult;
+  }
+
+  async syncWorkflow(payload: UpdateFlowDto, tokenScope: ITokenScope) {
+    if (payload.data.endUser) {
+      await this.endUserService.updateById(
+        tokenScope.endUserId,
+        { data: payload.data.endUser },
+        tokenScope.projectId,
+      );
+    }
+
+    if (payload.data.ballerineEntityId && payload.data.business) {
+      await this.businessService.updateById(
+        payload.data.ballerineEntityId,
+        { data: payload.data.business },
+        tokenScope.projectId,
+      );
+    }
+
+    return await this.workflowService.syncContextById(
+      tokenScope.workflowRuntimeDataId,
+      payload.data.context as DefaultContextSchema,
+      tokenScope.projectId,
+    );
+  }
+
   async finishFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
     await this.workflowService.event({ id: flowId, name: 'start' }, projectIds, currentProjectId);
 
     const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
       flowId,
       {},
-      projectIds,
-    );
-
-    return await this.workflowService.updateContextById(
-      workflowRuntimeData.id,
-      {
-        ...workflowRuntimeData.context,
-        entity: {
-          ...workflowRuntimeData.context.entity,
-          data: {
-            ...workflowRuntimeData.context.entity.data,
-            __isFinished: true,
-          },
-        },
-      },
       projectIds,
     );
   }

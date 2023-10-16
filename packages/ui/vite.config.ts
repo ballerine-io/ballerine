@@ -31,6 +31,10 @@ const entities = files
 const entries = Object.fromEntries(entities);
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    port: 5201,
+    open: './dev.tsx',
+  },
   plugins: [react(), dts({ copyDtsFiles: true }), tailwindcss()],
   resolve: {
     alias: {

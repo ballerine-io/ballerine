@@ -128,6 +128,7 @@ export const createMockParentWithChildWorkflow = async ({
     workflow: {
       workflowDefinitionId: parentRuntimeInformation.workflowDefinitionId,
       workflowDefinitionVersion: parentRuntimeInformation.workflowDefinitionVersion,
+      state: 'manual_review',
       context: parentRuntimeInformation.context as unknown as Prisma.InputJsonValue,
     },
   });
@@ -151,6 +152,7 @@ export const createMockParentWithChildWorkflow = async ({
         workflowDefinitionVersion: childWorkflowRuntimeInformation.workflowDefinitionVersion,
         context: childWorkflowRuntimeInformation.context as unknown as Prisma.InputJsonValue,
         parentRuntimeId: businessRecord.workflowRuntimeData[0]!.id,
+        state: 'manual_review',
       },
       projectId: projectId,
     });

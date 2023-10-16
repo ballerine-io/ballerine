@@ -12,8 +12,6 @@ import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
-import { UserData } from '@/user/user-data.decorator';
-import { UserInfo } from '@/user/user-info';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
@@ -142,7 +140,7 @@ export class WorkflowControllerInternal {
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<void> {
-    return await this.service.event(
+    await this.service.event(
       {
         ...data,
         id: params.id,
@@ -244,6 +242,7 @@ export class WorkflowControllerInternal {
         },
         projectIds,
         currentProjectId,
+        data.postUpdateEventName,
       );
     } catch (error) {
       if (isRecordNotFoundError(error)) {

@@ -7,7 +7,6 @@ import {
   ApprovalState,
   Business,
   EndUser,
-  File,
   Prisma,
   WorkflowDefinition,
   WorkflowRuntimeData,
@@ -72,7 +71,6 @@ import { CustomerService } from '@/customer/customer.service';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
-import keyBy from 'lodash/keyBy';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 
 type TEntityId = string;
@@ -684,6 +682,7 @@ export class WorkflowService {
     },
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
+    postUpdateEventName?: string,
   ) {
     const workflow = await this.workflowRuntimeDataRepository.findById(workflowId, {}, projectIds);
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
@@ -699,33 +698,6 @@ export class WorkflowService {
       revised: 'revised',
     } as const;
     const status = decision.status ? Status[decision.status] : null;
-
-    this.__validateWorkflowDefinitionContext(workflowDefinition, {
-      ...workflow?.context,
-      documents: workflow?.context?.documents?.map(
-        ({
-          // @ts-ignore
-          // Validating the context should be done without the propertiesSchema
-          propertiesSchema: _propertiesSchema,
-          ...document
-        }: DefaultContextSchema['documents'][number]) => {
-          const updatedStatus = documentId === document.id ? status : document?.decision?.status;
-
-          return {
-            ...document,
-            decision: {
-              ...document?.decision,
-              status: updatedStatus === null ? undefined : updatedStatus,
-            },
-            type:
-              document?.type === 'unknown' && updatedStatus === 'approved'
-                ? undefined
-                : document?.type,
-          };
-        },
-      ),
-    });
-
     const newDecision = (() => {
       if (!status || status === 'approved') {
         return {
@@ -751,6 +723,29 @@ export class WorkflowService {
       throw new BadRequestException(`Invalid decision status: ${status}`);
     })();
 
+    const context = {
+      ...workflow?.context,
+      documents: workflow?.context?.documents?.map(
+        (document: DefaultContextSchema['documents'][number]) => {
+          const updatedStatus = documentId === document.id ? status : document?.decision?.status;
+
+          return {
+            ...document,
+            decision: {
+              ...document?.decision,
+              status: updatedStatus === null ? undefined : updatedStatus,
+            },
+            type:
+              document?.type === 'unknown' && updatedStatus === 'approved'
+                ? undefined
+                : document?.type,
+          };
+        },
+      ),
+    };
+
+    this.__validateWorkflowDefinitionContext(workflowDefinition, context);
+
     const document = workflow?.context?.documents?.find(
       (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
     );
@@ -763,12 +758,21 @@ export class WorkflowService {
         status,
       },
     };
-    const checkRequiredFields = status === 'approved' ? true : false;
+    const checkRequiredFields = status === 'approved';
+
     const updatedWorkflow = await this.updateDocumentById(
       { workflowId, documentId, checkRequiredFields },
       documentWithDecision as unknown as DefaultContextSchema['documents'][number],
       projectIds![0]!,
     );
+
+    if (postUpdateEventName) {
+      return await this.event(
+        { id: workflowId, name: postUpdateEventName },
+        projectIds,
+        currentProjectId,
+      );
+    }
 
     return updatedWorkflow;
   }
@@ -829,6 +833,7 @@ export class WorkflowService {
       },
       [projectId],
     );
+    this.__validateWorkflowDefinitionContext(workflowDef, updatedWorkflow.context);
     const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow, [projectId]);
 
     if (
@@ -895,11 +900,19 @@ export class WorkflowService {
     return updatedRuntimeData;
   }
 
+  async syncContextById(
+    id: string,
+    context: WorkflowRuntimeData['context'],
+    projectId: TProjectId,
+  ) {
+    return this.workflowRuntimeDataRepository.updateById(id, { data: { context } }, projectId);
+  }
+
   async updateWorkflowRuntimeData(
     workflowRuntimeId: string,
     data: WorkflowDefinitionUpdateInput,
     projectId: TProjectId,
-  ) {
+  ): Promise<WorkflowRuntimeData> {
     const projectIds: TProjectIds = projectId ? [projectId] : null;
 
     const runtimeData = await this.workflowRuntimeDataRepository.findById(
@@ -921,19 +934,9 @@ export class WorkflowService {
       contextHasChanged = !isEqual(data.context, runtimeData.context);
       mergedContext = merge({}, runtimeData.context, data.context);
 
-      const context = {
-        ...mergedContext,
-        // @ts-ignore
-        documents: mergedContext?.documents?.map(
-          // @ts-ignore
-          // Validating the context should be done without the propertiesSchema
-          ({ propertiesSchema: _propertiesSchema, ...document }) => document,
-        ),
-      };
-
       this.__validateWorkflowDefinitionContext(workflowDef, {
-        ...context,
-        documents: context?.documents?.map(
+        ...mergedContext,
+        documents: mergedContext?.documents?.map(
           (document: DefaultContextSchema['documents'][number]) => ({
             ...document,
             decision: {
@@ -985,32 +988,7 @@ export class WorkflowService {
     // @ts-ignore
     // TODO: Use snapshot.done instead
     const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
-    if (
-      ['active'].includes(data.status! || runtimeData.status) &&
-      workflowDef.config?.completedWhenTasksResolved
-    ) {
-      // TODO: Check against `contextSchema` or a policy if the length of documents is equal to the number of tasks defined.
-      const allDocumentsResolved =
-        data.context?.documents?.length &&
-        data.context?.documents?.every((document: DefaultContextSchema['documents'][number]) => {
-          return ['approved', 'rejected'].includes(document?.decision?.status as string);
-        });
-
-      data.status = allDocumentsResolved ? 'completed' : data.status! || runtimeData.status;
-    }
-
     const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
-
-    if (isResolved) {
-      this.logger.log('Workflow resolved', { id: workflowRuntimeId });
-
-      this.workflowEventEmitter.emit('workflow.completed', {
-        runtimeData,
-        state: currentState ?? runtimeData.state,
-        entityId: runtimeData.businessId || runtimeData.endUserId,
-        correlationId,
-      });
-    }
 
     const documentToRevise = data.context?.documents?.find(
       ({ decision }: { decision: DefaultContextSchema['documents'][number]['decision'] }) =>
@@ -1086,6 +1064,17 @@ export class WorkflowService {
       );
     }
 
+    if (isResolved) {
+      this.logger.log('Workflow resolved', { id: workflowRuntimeId });
+
+      this.workflowEventEmitter.emit('workflow.completed', {
+        runtimeData: updatedResult,
+        state: currentState ?? updatedResult.state,
+        entityId: updatedResult.businessId || updatedResult.endUserId,
+        correlationId,
+      });
+    }
+
     if (contextHasChanged) {
       this.workflowEventEmitter.emit('workflow.context.changed', {
         oldRuntimeData: runtimeData,
@@ -1103,6 +1092,14 @@ export class WorkflowService {
       await this.handleRuntimeFinalState(runtimeData, data.context, workflowDef);
     }
 
+    if (data.postUpdateEventName) {
+      return await this.event(
+        { name: data.postUpdateEventName, id: workflowRuntimeId },
+        projectIds,
+        projectId,
+      );
+    }
+
     return updatedResult;
   }
 
@@ -1117,15 +1114,11 @@ export class WorkflowService {
       {},
       projectIds,
     );
-    const hasDecision =
-      workflowRuntimeData?.context?.documents?.length &&
-      workflowRuntimeData?.context?.documents?.every(
-        (document: DefaultContextSchema['documents'][number]) => !!document?.decision?.status,
-      );
+    const workflowCompleted = workflowRuntimeData.status === 'completed' || workflowRuntimeData.state === 'failed';
 
-    if (hasDecision) {
+    if (workflowCompleted) {
       throw new BadRequestException(
-        `Workflow with the id of "${workflowRuntimeId}" already has a decision`,
+       `Workflow ${workflowRuntimeId} is already completed or failed, cannot assign to user`
       );
     }
 
@@ -1426,12 +1419,14 @@ export class WorkflowService {
         ...contextToInsert,
         documents: this.omitTypeFromDocumentsPages(contextToInsert.documents),
       };
+
       const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
         contextWithoutDocumentPageType?.documents,
         entityId,
         currentProjectId,
         customer.name,
       );
+
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
         {
           data: {
@@ -1505,10 +1500,12 @@ export class WorkflowService {
 
       newWorkflowCreated = true;
     } else {
-      contextToInsert.documents = updateDocuments(
-        existingWorkflowRuntimeData.context.documents,
-        context.documents,
-      );
+      console.log('existing documents', existingWorkflowRuntimeData.context.documents);
+      console.log('documents', contextToInsert.documents);
+      // contextToInsert.documents = updateDocuments(
+      //   existingWorkflowRuntimeData.context.documents,
+      //   context.documents,
+      // );
       const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
         contextToInsert?.documents,
         entityId,
@@ -1671,7 +1668,17 @@ export class WorkflowService {
     if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
 
     const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
-    const isValid = validate(context);
+    const isValid = validate({
+      ...context,
+      // Validation should not include the documents' 'propertiesSchema' prop.
+      documents: context?.documents?.map(
+        ({
+          // @ts-ignore
+          propertiesSchema: _propertiesSchema,
+          ...document
+        }) => document,
+      ),
+    });
 
     if (isValid) return;
 
@@ -1778,7 +1785,7 @@ export class WorkflowService {
     });
 
     if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
-      return;
+      return updatedRuntimeData;
     }
 
     const approvalState = ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState];
@@ -1814,6 +1821,7 @@ export class WorkflowService {
         currentProjectId,
       );
     }
+    return updatedRuntimeData;
   }
 
   async persistChildWorkflowToParent(

@@ -18,6 +18,8 @@ export interface Workflow {
   subscribe: (callback: (event: WorkflowEvent) => void) => void;
   sendEvent: (event: Omit<WorkflowEvent, 'state'>) => Promise<void>;
   getSnapshot: () => Record<PropertyKey, any>;
+  invokePlugin: (pluginName: string) => Promise<void>;
+  overrideContext: (context: any) => any;
 }
 
 export interface WorkflowEvent {

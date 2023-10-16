@@ -1,7 +1,7 @@
 import { AnyObject } from '@common/types';
 import { AutocompleteInput } from '@components/molecules';
 import { RJSVInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export const AutocompleteTextInputAdapter: RJSVInputAdapter = ({
   id,
@@ -10,6 +10,7 @@ export const AutocompleteTextInputAdapter: RJSVInputAdapter = ({
   placeholder,
   uiSchema,
   onChange,
+  onBlur,
 }) => {
   const options = useMemo(() => {
     return uiSchema.options && Array.isArray(uiSchema.options)
@@ -19,6 +20,10 @@ export const AutocompleteTextInputAdapter: RJSVInputAdapter = ({
       : [];
   }, [uiSchema]);
 
+  const handleBlur = useCallback(() => {
+    onBlur && onBlur(id, formData);
+  }, [id, onBlur, formData]);
+
   return (
     <AutocompleteInput
       name={id}
@@ -27,6 +32,7 @@ export const AutocompleteTextInputAdapter: RJSVInputAdapter = ({
       options={options}
       placeholder={placeholder}
       onChange={event => void onChange(event.target.value || '')}
+      onBlur={handleBlur}
     />
   );
 };

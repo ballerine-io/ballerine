@@ -52,7 +52,7 @@ export const TableCell = forwardRef(
                     {...value?.props?.head}
                     className={ctw(
                       value?.props?.head?.className,
-                      '!h-[unset] pb-2 pt-0 text-sm font-medium leading-none text-foreground',
+                      '!h-[unset] pb-2 pt-0 text-sm font-medium leading-none text-foreground [&:first-of-type]:!pl-3.5',
                     )}
                   >
                     {!header.isPlaceholder &&
@@ -75,7 +75,7 @@ export const TableCell = forwardRef(
                   <TableCellComponent
                     key={cell.id}
                     {...value?.props?.cell}
-                    className={ctw(value?.props?.cell?.className, '!py-px')}
+                    className={ctw(value?.props?.cell?.className, '!py-px !pl-3.5')}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCellComponent>
@@ -90,7 +90,7 @@ export const TableCell = forwardRef(
               <TableCellComponent
                 colSpan={value?.columns?.length}
                 {...value?.props?.cell}
-                className={ctw(value?.props?.cell?.className, 'h-24 text-center')}
+                className={ctw(value?.props?.cell?.className, '!py-px !pl-3.5')}
               >
                 No results.
               </TableCellComponent>

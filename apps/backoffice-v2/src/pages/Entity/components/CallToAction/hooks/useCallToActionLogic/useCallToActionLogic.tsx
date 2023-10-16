@@ -8,20 +8,28 @@ import { useCallback, useEffect, useState } from 'react';
 import { useApproveTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { useRevisionTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
+import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
+import { CommonWorkflowEvent } from '@ballerine/common';
 
+const getPostUpdateEventNameEvent = (workflow: TWorkflowById) => {
+  if (!workflow?.workflowDefinition?.config?.workflowLevelResolution) {
+    return CommonWorkflowEvent.TASK_REVIEWED;
+  }
+};
 export const useCallToActionLogic = () => {
   const { entityId } = useParams();
   const filterId = useFilterId();
   const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
+  const postUpdateEventName = getPostUpdateEventNameEvent(workflow);
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
-    useApproveTaskByIdMutation(workflow?.id);
+    useApproveTaskByIdMutation(workflow?.id, postUpdateEventName);
   const { mutate: mutateRejectTaskById, isLoading: isLoadingRejectTaskById } =
-    useRejectTaskByIdMutation(workflow?.id);
+    useRejectTaskByIdMutation(workflow?.id, postUpdateEventName);
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingRevisionTaskById } =
-    useRevisionTaskByIdMutation(workflow?.id);
+    useRevisionTaskByIdMutation(workflow?.id, postUpdateEventName);
 
   const revisionReasons =
     workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(

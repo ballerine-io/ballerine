@@ -1,5 +1,66 @@
 # @ballerine/workflow-core
 
+## 0.5.11-3e08f108.4
+
+### Patch Changes
+
+- Pre bump
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.3
+
+## 0.5.11-3e08f108.3
+
+### Patch Changes
+
+- Pre release
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.2
+
+## 0.5.11-3e08f108.2
+
+### Patch Changes
+
+- pre
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.1
+
+## 0.5.11-3e08f108.1
+
+### Patch Changes
+
+- pre
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.0
+
+## 0.5.11-3e08f108.0
+
+### Patch Changes
+
+- Prerelease
+
+## 0.5.10
+
+### Patch Changes
+
+- e51852fe: Bump
+- Version bump
+
+## 0.5.9
+
+### Patch Changes
+
+- Bump minor version
+- Updated dependencies
+  - @ballerine/common@0.7.12
+
+## 0.5.8
+
+### Patch Changes
+
+- Version minor bump
+- Updated dependencies
+  - @ballerine/common@0.7.11
+
 ## 0.5.7
 
 ### Patch Changes

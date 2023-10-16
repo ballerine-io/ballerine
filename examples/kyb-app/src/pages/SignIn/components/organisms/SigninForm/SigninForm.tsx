@@ -11,7 +11,7 @@ interface Props {
 
 export const SigninForm = ({ isLoading, onSubmit }: Props) => {
   return (
-    <DynamicForm<SigninFormValues>
+    <DynamicForm
       className="max-w-[384px]"
       schema={signinSchema}
       uiSchema={signinUISchema}
