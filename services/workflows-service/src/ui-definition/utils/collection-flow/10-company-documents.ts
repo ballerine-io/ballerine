@@ -605,9 +605,15 @@ export const CompanyDocuments = {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
           {
-            type: 'json-logic',
+            type: 'destination-engine',
             value: validationSchema,
           },
+          {
+            type: 'json-logic',
+            value: {
+              '==': [{var: 'entity.data.additionalInfo.hasConfirmed'}, true, false],
+            },
+          }
         ],
       },
     },
