@@ -20,7 +20,16 @@ const validationSchema = {
                 bank: {
                   type: 'object',
                   default: {},
-                  required: ['holderName','holderFullAddress', 'accountNumber', 'iban', 'swiftCode', 'bankName', 'bankAddress', 'currency'],
+                  required: [
+                    'holderName',
+                    'holderFullAddress',
+                    'accountNumber',
+                    'iban',
+                    'swiftCode',
+                    'bankName',
+                    'bankAddress',
+                    'currency',
+                  ],
                   properties: {
                     holderName: {
                       type: 'string',
@@ -93,11 +102,11 @@ const validationSchema = {
                       },
                     },
                     currency: {
-                      type: "string",
+                      type: 'string',
                       errorMessage: {
-                        minLength: 'Account currency is required'
-                      }
-                    }
+                        minLength: 'Account currency is required',
+                      },
+                    },
                   },
                   errorMessage: {
                     required: {
@@ -108,7 +117,7 @@ const validationSchema = {
                       swiftCode: 'SWIFT code is required.',
                       bankName: 'Bank name is required.',
                       bankAddress: 'Bank address is required.',
-                      currency: 'Account currency is required'
+                      currency: 'Account currency is required',
                     },
                   },
                 },
@@ -273,7 +282,7 @@ export const BankingDetailsPage = {
                   ],
                 },
                 label: 'Account Currency',
-                hint: 'in Chinese Yuan',
+                hint: 'Choose',
               },
             },
           ],
@@ -301,8 +310,8 @@ export const BankingDetailsPage = {
                 },
               ],
             },
-          ]
-        }
+          ],
+        },
       ],
     },
   ],

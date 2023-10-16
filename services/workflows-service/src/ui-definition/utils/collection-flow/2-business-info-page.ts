@@ -1,5 +1,3 @@
-import { getCountriesList } from '../schema-utils/countries';
-
 const validationSchema = {
   type: 'object',
   properties: {
@@ -202,22 +200,19 @@ export const BusinessInfoPage = {
             },
             {
               name: 'country-picker-input',
-              type: 'country-picker',
+              type: 'json-form:country-picker',
               valueDestination: 'entity.data.country',
               options: {
                 label: 'Country',
-                hint: 'Hong Kong',
+                hint: 'Choose',
                 jsonFormDefinition: {
                   type: 'string',
                   minLength: 1,
-                  oneOf: [
-                    // Line below should removed in case when field is required.
-                    // { const: '', title: '' },
-                    ...getCountriesList().map(countryData => ({
-                      const: countryData.isoCode,
-                      title: countryData.fullName,
-                    })),
-                  ],
+                },
+                uiSchema: {
+                  'ui:field': 'CountryPicker',
+                  'ui:label': true,
+                  'ui:placeholder': 'Choose',
                 },
               },
             },
@@ -263,21 +258,39 @@ export const BusinessInfoPage = {
               type: 'json-form:dropdown',
               valueDestination: 'entity.data.businessType',
               options: {
-                hint: 'Corporation',
+                hint: 'Choose',
                 label: 'Corporate type',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:placeholder': 'Corporation',
+                  'ui:placeholder': 'Choose',
                   'ui:field': 'AutocompleteInput',
                   'ui:label': true,
                   options: [
-                    { title: 'Corporation', const: 'corporation' },
-                    { title: 'Limited Liability Company', const: 'limited_liability_company' },
-                    { title: 'Partnership', const: 'partnership' },
                     { title: 'Sole Proprietorship', const: 'sole_proprietorship' },
-                    { title: 'Non-Profit', const: 'non_profit' },
+                    { title: 'Partnership', const: 'partnership' },
+                    { title: 'Corporation', const: 'corporation' },
+                    {
+                      title: 'Limited Liability Company (LLC)',
+                      const: 'limited_liability_company_(llc)',
+                    },
+                    { title: 'Limited Partnership (LP)', const: 'limited_partnership_(lp)' },
+                    {
+                      title: 'Limited Liability Partnership (LLP)',
+                      const: 'limited_liability_partnership_(llp)',
+                    },
+                    {
+                      title: 'Public Limited Company (PLC)',
+                      const: 'public_limited_company_(plc)',
+                    },
+                    {
+                      title: 'Private Limited Company (Ltd)',
+                      const: 'private_limited_company_(ltd)',
+                    },
+                    { title: 'Non-Profit Organization', const: 'non-profit_organization' },
+                    { title: 'Cooperative', const: 'cooperative' },
+                    { title: 'Trust', const: 'trust' },
                     { title: 'Government', const: 'government' },
                     { title: 'Other', const: 'other' },
                   ],
@@ -322,8 +335,8 @@ export const BusinessInfoPage = {
                 },
               ],
             },
-          ]
-        }
+          ],
+        },
       ],
     },
   ],

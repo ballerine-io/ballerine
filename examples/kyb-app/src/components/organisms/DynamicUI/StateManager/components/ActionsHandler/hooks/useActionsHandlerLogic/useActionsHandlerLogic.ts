@@ -31,7 +31,7 @@ export const useActionsHandlerLogic = (
     ]);
   }, []);
 
-  const dispatchAction = useMemo(() => debounce(_dispatchAction, 1000), [_dispatchAction]);
+  const dispatchAction = useMemo(() => debounce(_dispatchAction, 50), [_dispatchAction]);
 
   const _processActions = useCallback(
     async (actions: Action[]) => {
@@ -62,7 +62,7 @@ export const useActionsHandlerLogic = (
     [actionHandlers, stateApi, setUILoading],
   );
 
-  const processActions = useMemo(() => debounce(_processActions, 1000), [_processActions]);
+  const processActions = useMemo(() => debounce(_processActions, 50), [_processActions]);
 
   useEffect(() => {
     if (!pendingActions.length || isProcessingActions) return;

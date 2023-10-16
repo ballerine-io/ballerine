@@ -35,7 +35,6 @@ import addFormats from 'ajv-formats';
 import addKeywords from 'ajv-keywords';
 import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
-import { updateDocuments } from '@/workflow/update-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
@@ -453,6 +452,7 @@ export class WorkflowService {
               avatarUrl: workflow?.assignee?.avatarUrl,
             }
           : null,
+        tags: workflow?.tags,
       };
     });
   }
@@ -1114,11 +1114,12 @@ export class WorkflowService {
       {},
       projectIds,
     );
-    const workflowCompleted = workflowRuntimeData.status === 'completed' || workflowRuntimeData.state === 'failed';
+    const workflowCompleted =
+      workflowRuntimeData.status === 'completed' || workflowRuntimeData.state === 'failed';
 
     if (workflowCompleted) {
       throw new BadRequestException(
-       `Workflow ${workflowRuntimeId} is already completed or failed, cannot assign to user`
+        `Workflow ${workflowRuntimeId} is already completed or failed, cannot assign to user`,
       );
     }
 

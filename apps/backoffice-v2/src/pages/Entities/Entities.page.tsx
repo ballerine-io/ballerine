@@ -55,7 +55,7 @@ export const Entities: FunctionComponent = () => {
                           } as Assignee)
                         : null
                     }
-                    status={case_.entity.approvalState}
+                    tags={case_.tags}
                     entityAvatarUrl={case_.entity?.avatarUrl}
                   />
                 ))}

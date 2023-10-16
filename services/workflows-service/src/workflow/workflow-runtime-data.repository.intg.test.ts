@@ -79,7 +79,13 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       PrismaModule,
     ])) as unknown as PrismaService;
 
-    const customer = await createCustomer(prismaService, '1', 'secret', '');
+    const customer = await createCustomer(
+      prismaService,
+      '1',
+      'secret',
+      '',
+      'webhook-shared-secret',
+    );
     project = await createProject(prismaService, customer, '5');
   });
 
