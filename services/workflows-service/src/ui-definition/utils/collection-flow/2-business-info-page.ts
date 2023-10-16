@@ -204,7 +204,7 @@ export const BusinessInfoPage = {
               valueDestination: 'entity.data.country',
               options: {
                 label: 'Country',
-                hint: 'Hong Kong',
+                hint: 'Choose',
                 jsonFormDefinition: {
                   type: 'string',
                   minLength: 1,
@@ -212,7 +212,7 @@ export const BusinessInfoPage = {
                 uiSchema: {
                   'ui:field': 'CountryPicker',
                   'ui:label': true,
-                  'ui:placeholder': 'Hong Kong',
+                  'ui:placeholder': 'Choose',
                 },
               },
             },
@@ -258,13 +258,13 @@ export const BusinessInfoPage = {
               type: 'json-form:dropdown',
               valueDestination: 'entity.data.businessType',
               options: {
-                hint: 'Corporation',
+                hint: 'Choose',
                 label: 'Corporate type',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:placeholder': 'Corporation',
+                  'ui:placeholder': 'Choose',
                   'ui:field': 'AutocompleteInput',
                   'ui:label': true,
                   options: [

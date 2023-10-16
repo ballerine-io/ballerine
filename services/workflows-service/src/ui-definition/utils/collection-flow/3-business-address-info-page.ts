@@ -233,14 +233,14 @@ export const BusinessAddressInfoPage = {
               valueDestination: 'entity.data.additionalInfo.headquarters.country',
               options: {
                 label: 'Country',
-                hint: 'United Kingdom',
+                hint: 'Choose',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
                   'ui:field': 'CountryPicker',
                   'ui:label': true,
-                  'ui:placeholder': 'Hong Kong',
+                  'ui:placeholder': 'Choose',
                 },
               },
             },
@@ -322,14 +322,14 @@ export const BusinessAddressInfoPage = {
               valueDestination: 'entity.data.additionalInfo.headquarters.physical.country',
               options: {
                 label: 'Country',
-                hint: 'United Kingdom',
+                hint: 'Choose',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
                   'ui:field': 'CountryPicker',
                   'ui:label': true,
-                  'ui:placeholder': 'Hong Kong',
+                  'ui:placeholder': 'Choose',
                 },
               },
             },
