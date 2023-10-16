@@ -49,7 +49,7 @@ export type Rule = JSONLogicRule | JMESPathRule | DocumentsValidatorRule;
 
 export type UIElementDestination = string;
 
-export interface UIElement<TElementParams> {
+export interface UIElement<TElementParams = AnyObject> {
   name: string;
   type: UIElementType;
   availableOn?: Rule[];

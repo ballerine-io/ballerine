@@ -61,5 +61,11 @@ export const useRuleExecutor = (
     executeRules(context, rules, definition, uiStateRef.current);
   }, [context, rules, uiStateRef, definition, executeRules]);
 
+  if (import.meta.env.MODE === 'development') {
+    if (executionResult.length && executionResult.every(r => !r.isValid && r.errors.length)) {
+      console.log('res', executionResult);
+    }
+  }
+
   return executionResult;
 };
