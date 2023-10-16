@@ -1,97 +1,98 @@
 const validationSchema = {
-  type: 'object',
-  required: ['documents', 'entity'],
-  if: {
-    properties: {
-      entity: {
-        properties: {
-          data: {
-            properties: {
-              additionalInfo: {
-                properties: {
-                  store: {
-                    properties: {
-                      hasActiveWebsite: {
-                        const: true,
-                      },
+    "type": "object",
+    "required": ["documents", "entity"],
+    "if": {
+      "properties": {
+        "entity": {
+          "properties": {
+            "data": {
+              "properties": {
+                "additionalInfo": {
+                  "properties": {
+                    "store": {
+                      "properties": {
+                        "hasActiveWebsite": {
+                          "const": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "then": {
+      "properties": {
+        "documents": {
+          "type": "array",
+          "minItems": 11
+        }
+      }
+    },
+    "properties": {
+      "documents": {
+        "type": "array",
+        "minItems": 10,
+        "default": [],
+        "items": {
+          "type": "object",
+          "required": ["pages"],
+          "properties": {
+            "pages": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["ballerineFileId"],
+                "errorMessage": {
+                  "required": "Document is required."
+                },
+                "properties": {
+                  "ballerineFileId": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "entity": {
+        "type": "object",
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "type": "object",
+            "required": ["additionalInfo"],
+            "properties": {
+              "additionalInfo": {
+                "type": "object",
+                "required": ["store"],
+                "properties": {
+                  "store": {
+                    "type": "object",
+                    "properties": {
+                      "hasActiveWebsite": {
+                        "type": "boolean",
+                        "default": false
+                      }
                     },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
-  then: {
-    properties: {
-      documents: {
-        minItems: 11,
-      },
-    },
-  },
-  properties: {
-    documents: {
-      type: 'array',
-      minItems: 10,
-      default: [],
-      items: {
-        type: 'object',
-        required: ['pages'],
-        properties: {
-          pages: {
-            type: 'array',
-            minItems: 1,
-            items: {
-              type: 'object',
-              required: ['ballerineFileId'],
-              errorMessage: {
-                required: 'Document is required.'
-              },
-              properties: {
-                ballerineFileId: {
-                  type: 'string',
-                  minLength: 1,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    entity: {
-      type: 'object',
-      required: ['data'],
-      properties: {
-        data: {
-          type: 'object',
-          required: ['additionalInfo'],
-          properties: {
-            additionalInfo: {
-              type: 'object',
-              required: ['store'],
-              properties: {
-                store: {
-                  type: 'object',
-                  properties: {
-                    hasActiveWebsite: {
-                      type: 'boolean',
-                      default: false,
-                    },
-                  },
-                  default: {
-                    hasActiveWebsite: false,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  },
-};
+                    "default": {
+                      "hasActiveWebsite": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  };
 
 export const CompanyDocuments = {
   type: 'page',
@@ -127,7 +128,17 @@ export const CompanyDocuments = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: ['document-certificates-of-incorporation']
+              required: [
+                'document-certificates-of-incorporation',
+                'document-business-registration-certificate',
+                'document-corporate-tax-certificate',
+                'document-certificate-of-good-standing',
+                'document-certificate-of-directors-and-shareholders',
+                'document-picture-of-company-seal',
+                'document-website-pictures-domain-certificate',
+                'document-website-pictures-website-business',
+                'document-transaction-data-last-months',
+              ],
             }
           },
           elements: [
@@ -145,13 +156,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'registration_document',
+                  category: 'proof_of_registration',
                   type: 'certificate_of_incorporation',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 0,
@@ -173,13 +185,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'registration_document',
-                  type: 'business_registration',
+                  category: 'proof_of_registration',
+                  type: 'business_registration_certificate',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 1,
@@ -200,13 +213,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'corporate_tax_certificate',
-                  type: 'business_registration',
+                  category: 'financial_information',
+                  type: 'corporate_tax_certificate',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 2,
@@ -228,13 +242,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'certificate_of_good_standing',
-                  type: 'business_registration',
+                  category: 'proof_of_good_standing',
+                  type: 'certificate_of_good_standing',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 3,
@@ -255,14 +270,15 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'certificate_of_directors_and_shareholders',
-                  type: 'business_registration',
+                  category: 'proof_of_ownership',
+                  type: 'certificate_of_directors_and_shareholders',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
-                },
+                  properties: {}
+                 },
                 mappingParams: {
                   documentIndex: 4,
                   documentPage: 0,
@@ -282,13 +298,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'picture_of_company_seal',
-                  type: 'business_registration',
+                  category: 'proof_of_identity',
+                  type: 'company_seal',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 5,
@@ -343,8 +360,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'website_picture',
-                  type: 'business_registration',
+                  category: 'proof_of_domain_ownership',
+                  type: 'domain_purchase_record',
+                  issuer: {
+                    country: 'GH',
+                  },
+                  version: '1',
+                  issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 6,
@@ -373,6 +396,12 @@ export const CompanyDocuments = {
                 documentData: {
                   category: 'website_picture',
                   type: 'business_registration',
+                  issuer: {
+                    country: 'GH',
+                  },
+                  version: '1',
+                  issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 7,
@@ -415,13 +444,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'office_picture_front_door',
-                  type: 'business_registration',
+                  category: 'proof_of_location',
+                  type: 'front_door_photo',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 8,
@@ -434,7 +464,7 @@ export const CompanyDocuments = {
               type: 'document',
               valueDestination: 'documents[9].pages[0].ballerineFileId',
               options: {
-                label: 'Photo showing interior of the office',
+                label: 'Photo showing interior of the office - #1',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -442,13 +472,14 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'office_interior_picture',
-                  type: 'business_registration',
+                  category: 'proof_of_location',
+                  type: 'interior_office_photo',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
                   documentIndex: 9,
@@ -456,6 +487,34 @@ export const CompanyDocuments = {
                 },
               },
             },
+            {
+              name: 'document-office-interior-pictures-2',
+              type: 'document',
+              valueDestination: 'documents[10].pages[0].ballerineFileId',
+              options: {
+                label: 'Photo showing interior of the office - #2',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+                uiSchema: {
+                  'ui:field': 'DocumentInput',
+                },
+                documentData: {
+                  category: 'proof_of_location',
+                  type: 'interior_office_photo',
+                  issuer: {
+                    country: 'GH',
+                  },
+                  version: '1',
+                  issuingVersion: 1,
+                  properties: {}
+                },
+                mappingParams: {
+                  documentIndex: 10,
+                  documentPage: 0,
+                },
+              },
+            }
           ],
         },
         {
@@ -473,7 +532,7 @@ export const CompanyDocuments = {
             {
               name: 'document-transaction-data-last-months',
               type: 'document',
-              valueDestination: 'documents[10].pages[0].ballerineFileId',
+              valueDestination: 'documents[11].pages[0].ballerineFileId',
               options: {
                 label: 'Transaction data for the last 3-6 months',
                 description: 'All electric documents must be complete and legible.',
@@ -484,16 +543,17 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  category: 'office_transactions_last_months',
-                  type: 'business_registration',
+                  category: 'financial_information',
+                  type: 'transaction_data_last_3_6_months',
                   issuer: {
                     country: 'GH',
                   },
                   version: '1',
                   issuingVersion: 1,
+                  properties: {}
                 },
                 mappingParams: {
-                  documentIndex: 10,
+                  documentIndex: 11,
                   documentPage: 0,
                 },
               },
