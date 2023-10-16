@@ -13,6 +13,7 @@ const validationSchema = {
               properties: {
                 ubos: {
                   type: 'array',
+                  minItems: 1,
                   items: {
                     type: 'object',
                     required: [
@@ -24,7 +25,6 @@ const validationSchema = {
                       'fullAddress',
                       'percentageOfOwnership',
                     ],
-                    minItems: 1,
                     properties: {
                       firstName: {
                         type: 'string',
