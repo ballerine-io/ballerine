@@ -1,5 +1,6 @@
 import { TDocument } from '@/schemas';
 import { Type } from '@sinclair/typebox';
+import { TypeStringEnum } from './utils';
 
 export const getUgandaDocuments = (): TDocument[] => {
   const TypeAlphanumericString = Type.String({ pattern: '^[a-zA-Z0-9]*$' });
@@ -7,11 +8,7 @@ export const getUgandaDocuments = (): TDocument[] => {
     format: 'date',
     formatMaximum: new Date().toISOString().split('T')[0],
   });
-  const TypeStringEnum = <T extends string[]>(values: [...T]) =>
-    Type.Unsafe<T[number]>({
-      type: 'string',
-      enum: values,
-    });
+
   const TypeStringAtLeastOneWord = Type.String({ minLength: 1 });
   const TypeUgandaMobileNumber = Type.String({ pattern: '^256[0-9]{9}$' });
 
