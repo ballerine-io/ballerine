@@ -39,6 +39,7 @@ export const DocumentField = (
   }, [documentPath, definition]);
 
   useEffect(() => {
+    debugger;
     if (documentValue) return;
 
     const documentFullPath = `documents[${definition.options?.mappingParams?.documentIndex}].pages[${definition.options?.mappingParams?.documentPage}]`;
@@ -46,7 +47,7 @@ export const DocumentField = (
     const ctx = stateApi.getContext();
 
     set(ctx, documentPath, definition.options.documentData);
-
+    debugger;
     set(ctx, documentFullPath, {});
 
     stateApi.setContext(ctx);
@@ -62,7 +63,7 @@ export const DocumentField = (
     if (!formData) return;
 
     const fileId = formData as string;
-
+    debugger;
     const persistedFile = collectionFlowFileStorage.getFileById(fileId);
 
     if (persistedFile) {
