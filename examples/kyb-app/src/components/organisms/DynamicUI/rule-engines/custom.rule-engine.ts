@@ -9,7 +9,7 @@ export class CustomRuleEngine implements RuleEngine {
   public readonly ENGINE_NAME = 'custom';
 
   test(context: unknown, rule: CustomRule, definition: UIElement<AnyObject>) {
-    if (rule.value.validationContext == '') {
+    if (rule.value.validationContext == 'document') {
       const invalidDocumentsErrors = this.__validateDocuments(definition, context);
 
       return { isValid: invalidDocumentsErrors.length == 0, errors: invalidDocumentsErrors };
