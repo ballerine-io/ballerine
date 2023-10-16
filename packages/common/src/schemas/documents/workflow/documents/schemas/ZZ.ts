@@ -128,5 +128,20 @@ export const getUniveralDocuments = (): TDocument[] => {
         imageUrl: Type.String(),
       }),
     },
+    {
+      category: 'proof_of_business_compliance',
+      type: 'permitted_sales_license',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        websiteUrl: Type.String(),
+        licenseNumber: TypeAlphanumericString,
+        issueDate: TypePastDate,
+        expiryDate: Type.String({ format: 'date' }),
+        permittedProductsOrServices: Type.Array(Type.String()),
+      }),
+    },
   ];
 };
