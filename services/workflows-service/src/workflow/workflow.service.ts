@@ -1112,11 +1112,12 @@ export class WorkflowService {
       {},
       projectIds,
     );
-    const workflowCompleted = workflowRuntimeData.status === 'completed' || workflowRuntimeData.state === 'failed';
+    const workflowCompleted =
+      workflowRuntimeData.status === 'completed' || workflowRuntimeData.state === 'failed';
 
     if (workflowCompleted) {
       throw new BadRequestException(
-       `Workflow ${workflowRuntimeId} is already completed or failed, cannot assign to user`
+        `Workflow ${workflowRuntimeId} is already completed or failed, cannot assign to user`,
       );
     }
 

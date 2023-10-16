@@ -130,9 +130,10 @@ export const WebsiteBasicRequirement = {
               type: 'description',
               name: 'heading-description',
               options: {
-                descriptionRaw: 'This list is intended only as a basic pre-entry check of the<br /> websites and does not refer to specific product<br /> application requirements.'
-              }
-            }
+                descriptionRaw:
+                  'This list is intended only as a basic pre-entry check of the<br /> websites and does not refer to specific product<br /> application requirements.',
+              },
+            },
           ],
         },
         {
@@ -240,7 +241,7 @@ export const WebsiteBasicRequirement = {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:widget': 'textarea'
+                  'ui:widget': 'textarea',
                 },
                 label: 'Adequate Product/Service Description',
                 hint: 'offers a range of organic skincare products, including moisturizers, serums, and cleansers. Each product is made using natural ingredients sourced sustainably.',
@@ -264,11 +265,16 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:dropdown',
               valueDestination: 'entity.data.additionalInfo.store.website.websiteLanguage',
               options: {
+                hint: 'English',
+                label: 'Website Language',
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Website Language',
-                hint: 'English',
+                uiSchema: {
+                  'ui:placeholder': 'English',
+                  'ui:field': 'LocalePicker',
+                  'ui:label': true,
+                },
               },
             },
           ],
@@ -296,8 +302,8 @@ export const WebsiteBasicRequirement = {
                 },
               ],
             },
-          ]
-        }
+          ],
+        },
       ],
     },
   ],
