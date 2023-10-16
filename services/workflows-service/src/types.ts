@@ -18,6 +18,5 @@ export type CustomerWithProjects = Partial<Customer & { projects: Array<Project>
 export type AuthenticatedEntity = {
   user?: Partial<User>;
   customer?: Partial<Customer>;
-  projectIds: TProjectIds;
   type: 'user' | 'customer' | 'admin';
 };

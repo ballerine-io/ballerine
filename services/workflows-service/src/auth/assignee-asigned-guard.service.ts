@@ -25,7 +25,7 @@ export class WorkflowAssigneeGuard implements CanActivate {
           },
         },
       },
-      (request.user as unknown as AuthenticatedEntity).projectIds,
+      (request.user as unknown as AuthenticatedEntity & { projectIds: string[] | null }).projectIds,
     );
 
     return (
