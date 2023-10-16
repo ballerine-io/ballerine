@@ -9,15 +9,18 @@ export type EventRuleValue = {
 };
 
 export interface BaseRule {
-  type: 'json-logic' | 'jmespath' | 'event';
+  type: 'json-logic' | 'jmespath' | 'event' | 'documents-validator';
 }
 
 export interface JSONLogicRule extends BaseRule {
   value: AnyObject;
 }
-
-export interface CustomRule extends BaseRule {
-  value: AnyObject;
+export interface DocumentsValidatorRule extends BaseRule {
+  value: {
+    destination: string;
+    required: boolean | Rule;
+    errorMessage: string;
+  }[];
 }
 
 export interface JMESPathRule extends BaseRule {
@@ -42,7 +45,7 @@ export interface Action<TParams = AnyObject> {
   params: TParams;
 }
 
-export type Rule = JSONLogicRule | JMESPathRule | CustomRule;
+export type Rule = JSONLogicRule | JMESPathRule | DocumentsValidatorRule;
 
 export type UIElementDestination = string;
 

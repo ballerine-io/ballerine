@@ -9,6 +9,7 @@ import { Rule, UIElement } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { JmespathRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
+import { DestinationRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/destination.rule-engine';
 
 export const useRuleExecutor = (
   context: AnyObject,
@@ -30,6 +31,7 @@ export const useRuleExecutor = (
         new JsonLogicRuleEngine(),
         new JsonSchemaRuleEngine(),
         new JmespathRuleEngine(),
+        new DestinationRuleEngine(),
       ]),
     [],
   );
@@ -45,7 +47,7 @@ export const useRuleExecutor = (
             //@ts-nocheck
             //This hack is neeeded to filter out `empty`
             //TO DO: Find solution on how to define array items in schemas
-            ctx.documents = ctx?.documents.filter(Boolean);
+            // ctx.documents = ctx?.documents.filter(Boolean);
 
             return engine.test(ctx, rule, definition, uiState);
           }) || [];
