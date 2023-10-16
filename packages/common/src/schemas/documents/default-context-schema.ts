@@ -56,9 +56,9 @@ export const defaultContextSchema = Type.Object({
           Type.Object(
             {
               status: Type.Optional(
-                Type.String({
+                Type.Union([Type.String({
                   enum: ['new', 'pending', 'revision', 'approved', 'rejected'],
-                }),
+                }), Type.Null()]),
               ),
               rejectionReason: Type.Optional(
                 Type.Union([
