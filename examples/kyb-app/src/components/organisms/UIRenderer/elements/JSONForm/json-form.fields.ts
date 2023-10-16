@@ -3,14 +3,15 @@ import { DocumentField } from '@app/components/organisms/UIRenderer/elements/JSO
 import { NationalityPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/NationalityPicker';
 import { withDynamicUIInput } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withDynamicUIInput';
 import {
-  TextInputAdapter,
-  BooleanFieldAdapter,
-  FileInputAdapter,
-  DateInputAdater,
-  PhoneInputAdapter,
   AutocompleteTextInputAdapter,
   baseLayouts,
+  BooleanFieldAdapter,
+  DateInputAdater,
+  FileInputAdapter,
+  PhoneInputAdapter,
+  TextInputAdapter,
 } from '@ballerine/ui';
+import { CountryPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/CountryPicker';
 
 export const jsonFormFields = {
   // Component with suffix Field is an overriding of internal RSJV components
@@ -24,6 +25,7 @@ export const jsonFormFields = {
   AutocompleteInput: withDynamicUIInput(AutocompleteTextInputAdapter),
   DocumentInput: withDynamicUIInput(DocumentField),
   NationalityPicker: withDynamicUIInput(NationalityPicker),
+  CountryPicker: withDynamicUIInput(CountryPicker),
   CheckboxList: withDynamicUIInput(CheckboxList),
 };
 
