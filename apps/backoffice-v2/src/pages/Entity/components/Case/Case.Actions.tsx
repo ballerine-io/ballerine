@@ -7,10 +7,7 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { IActionsProps } from './interfaces';
 import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import {
-  AssignDropdown,
-  Assignee,
-} from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
+import { AssignDropdown } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
 import { Button } from '../../../../common/components/atoms/Button/Button';
 import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
 import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';

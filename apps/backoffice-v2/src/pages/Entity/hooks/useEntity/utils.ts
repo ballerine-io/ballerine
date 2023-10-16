@@ -1,5 +1,5 @@
 import { TDropdownOption } from '../../components/EditableDetails/types';
-import { AnyArray } from '../../../../common/types';
+import { AnyArray, TypesafeOmit } from '../../../../common/types';
 import { TDocument } from '@ballerine/common';
 import { TWorkflowById } from '../../../../domains/workflows/fetchers';
 
@@ -77,10 +77,18 @@ export const extractCountryCodeFromWorkflow = (workflow: TWorkflowById) => {
   })?.issuer?.country;
 };
 
-export const omitPropsFromObject = (obj, ...props) => {
+export const omitPropsFromObject = <
+  TObj extends Record<PropertyKey, unknown>,
+  TProps extends Array<keyof TObj>,
+>(
+  obj: TObj,
+  ...props: TProps
+): TypesafeOmit<TObj, TProps[number]> => {
   const result = { ...obj };
+
   props.forEach(function (prop) {
     delete result[prop];
   });
+
   return result;
 };

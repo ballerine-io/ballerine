@@ -31,7 +31,7 @@ export const CompanyDocumentsView = () => {
 
   return (
     <AppShell.FormContainer header={<ViewHeader />}>
-      <DynamicForm<DocumentsContext>
+      <DynamicForm
         className="max-w-[384px]"
         schema={formSchema}
         formData={context.flowData[state] as DocumentsContext}

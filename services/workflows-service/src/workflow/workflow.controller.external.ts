@@ -74,7 +74,6 @@ export class WorkflowControllerExternal {
   @common.Get('/workflow-definition/:id')
   @ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @UseCustomerAuthGuard()
   async getWorkflowDefinition(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @ProjectIds() projectIds: TProjectIds,
@@ -324,13 +323,15 @@ export class WorkflowControllerExternal {
           ballerineEntityId: endUser.businesses.at(-1)?.id,
           type: 'business',
           data: {
-            additionalInformation: {
+            additionalInfo: {
               endUserId: endUser.id,
+              mainRepresentative: {
+                email: body.email,
+              },
             },
           },
         },
         documents: [],
-        projectId: currentProjectId,
       },
       projectIds: [currentProjectId],
       currentProjectId: currentProjectId,

@@ -1,5 +1,5 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { APP_INTERCEPTOR, APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { UserModule } from './user/user.module';
 import { WorkflowModule } from './workflow/workflow.module';
 import { ACLModule } from '@/common/access-control/acl.module';
@@ -32,6 +32,7 @@ import { AdminKeyMiddleware } from '@/common/middlewares/admin-key.middleware';
 import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
 import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 import { SalesforceModule } from '@/salesforce/salesforce.module';
+import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
 
 @Module({
   controllers: [MetricsController],
@@ -46,6 +47,7 @@ import { SalesforceModule } from '@/salesforce/salesforce.module';
     EventEmitterModule.forRoot(),
     UserModule,
     WorkflowModule,
+    UiDefinitionModule,
     StorageModule,
     EndUserModule,
     CustomerModule,

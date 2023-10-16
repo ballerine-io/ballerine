@@ -15,9 +15,9 @@ export const BankInformationView = () => {
 
   return (
     <AppShell.FormContainer header={<ViewHeader />}>
-      <DynamicForm<BankInformationContext>
+      <DynamicForm
         className="max-w-[384px]"
-        formData={context.flowData.bankInformation}
+        formData={context.flowData.bankInformation as BankInformationContext}
         schema={formSchema}
         uiSchema={uiSchema}
         onSubmit={next}

@@ -26,6 +26,7 @@ export interface IApiPluginParams {
   headers?: HeadersInit;
   successAction?: string;
   errorAction?: string;
+  persistResponseDestination?: string;
 
   invoke?(...args: Array<any>): any;
 }

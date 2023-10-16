@@ -1,5 +1,100 @@
 # @ballerine/backoffice-v2
 
+## 0.5.11-3e08f108.8
+
+### Patch Changes
+
+- Pre bump
+- Updated dependencies
+  - @ballerine/workflow-browser-sdk@0.5.11-3e08f108.4
+  - @ballerine/workflow-node-sdk@0.5.11-3e08f108.4
+  - @ballerine/common@0.7.13-3e08f108.3
+  - @ballerine/ui@0.3.5-3e08f108.8
+
+## 0.5.11-3e08f108.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.3.5-3e08f108.7
+
+## 0.5.11-3e08f108.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.3.5-3e08f108.6
+
+## 0.5.11-3e08f108.5
+
+### Patch Changes
+
+- Pre release
+- Updated dependencies
+  - @ballerine/workflow-browser-sdk@0.5.11-3e08f108.3
+  - @ballerine/workflow-node-sdk@0.5.11-3e08f108.3
+  - @ballerine/common@0.7.13-3e08f108.2
+  - @ballerine/ui@0.3.5-3e08f108.5
+
+## 0.5.11-3e08f108.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.3.5-3e08f108.4
+
+## 0.5.11-3e08f108.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.3.5-3e08f108.3
+
+## 0.5.11-3e08f108.2
+
+### Patch Changes
+
+- pre
+- Updated dependencies
+  - @ballerine/workflow-browser-sdk@0.5.11-3e08f108.2
+  - @ballerine/workflow-node-sdk@0.5.11-3e08f108.2
+  - @ballerine/common@0.7.13-3e08f108.1
+  - @ballerine/ui@0.3.5-3e08f108.2
+
+## 0.5.11-3e08f108.1
+
+### Patch Changes
+
+- pre
+- Updated dependencies
+  - @ballerine/workflow-browser-sdk@0.5.11-3e08f108.1
+  - @ballerine/workflow-node-sdk@0.5.11-3e08f108.1
+  - @ballerine/ui@0.3.5-3e08f108.1
+  - @ballerine/common@0.7.13-3e08f108.0
+
+## 0.5.11-3e08f108.0
+
+### Patch Changes
+
+- Prerelease
+- Updated dependencies
+  - @ballerine/workflow-browser-sdk@0.5.11-3e08f108.0
+  - @ballerine/workflow-node-sdk@0.5.11-3e08f108.0
+  - @ballerine/ui@0.3.5-3e08f108.0
+
+## 0.5.10
+
+### Patch Changes
+
+- e51852fe: Bump
+- Version bump
+- Updated dependencies [e51852fe]
+- Updated dependencies [e51852fe]
+- Updated dependencies
+  - @ballerine/ui@0.3.4
+  - @ballerine/workflow-browser-sdk@0.5.10
+  - @ballerine/workflow-node-sdk@0.5.10
+
 ## 0.5.9
 
 ### Patch Changes
@@ -26,6 +121,8 @@
 
 ### Patch Changes
 
+- Updated dependencies
+  - @ballerine/ui@0.3.1
 - Version bump
 - Updated dependencies [efedc9cb]
 - Updated dependencies

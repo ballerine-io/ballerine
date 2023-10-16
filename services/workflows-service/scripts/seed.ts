@@ -13,7 +13,6 @@ import { CommonWorkflowStates, defaultContextSchema } from '@ballerine/common';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
-import { generateParentKybWithKycs } from './workflows/parent-kyb-workflow';
 import { generateKybDefintion } from './workflows';
 import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
 import { generateParentKybWithSessionKycs } from './workflows/parent-kyb-kyc-session-workflow';
@@ -21,6 +20,7 @@ import { env } from '../src/env';
 import { generateBaseTaskLevelStates } from './workflows/generate-base-task-level-states';
 import { generateBaseCaseLevelStates } from './workflows/generate-base-case-level-states';
 import { InputJsonValue } from '../src/types';
+import { generateDynamicUiWorkflow } from './workflows/dynamic-ui-workflow';
 
 seed(10).catch(error => {
   console.error(error);
@@ -1053,7 +1053,7 @@ async function seed(bcryptSalt: string | number) {
         childWorkflowsRuntimeData: true,
       },
       where: {
-        workflowDefinitionId: 'kyb_parent_kyc_session_example',
+        workflowDefinitionId: 'dynamic_kyb_parent_example',
         businessId: { not: null },
       },
     },
@@ -1081,6 +1081,7 @@ async function seed(bcryptSalt: string | number) {
   await client.$transaction(async tx => {
     businessRiskIds.map(async (id, index) => {
       const riskWf = async () => ({
+        runtimeId: `test-workflow-risk-id-${index}`,
         workflowDefinitionId: riskScoreMachineKybId,
         workflowDefinitionVersion: 1,
         context: await createMockBusinessContextData(id, index + 1),
@@ -1145,6 +1146,6 @@ async function seed(bcryptSalt: string | number) {
   await generateKycSessionDefinition(client);
   await generateParentKybWithSessionKycs(client);
   await generateKycForE2eTest(client);
-  await generateParentKybWithKycs(client);
+  await generateDynamicUiWorkflow(client, project1.id);
   console.info('Seeded database successfully');
 }

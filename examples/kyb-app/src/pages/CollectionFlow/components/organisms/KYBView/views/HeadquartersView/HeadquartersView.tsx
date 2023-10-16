@@ -17,11 +17,11 @@ export const HeadquartersView = () => {
 
   return (
     <AppShell.FormContainer header={<ViewHeader />}>
-      <DynamicForm<HeadquartersContext>
+      <DynamicForm
         className="max-w-[384px]"
         schema={schema}
         uiSchema={uiSchema}
-        formData={context.flowData.headquarters}
+        formData={context.flowData.headquarters as HeadquartersContext}
         onSubmit={next}
         transformErrors={transformRJSFErrors}
       />

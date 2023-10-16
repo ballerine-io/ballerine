@@ -99,6 +99,8 @@ export class WorkflowCompletedWebhookCaller {
         workflowResolvedAt: resolvedAt,
         workflowDefinitionId,
         workflowRuntimeId: runtimeDataId,
+        workflowStatus: data.runtimeData.status,
+        workflowFinalState: data.runtimeData.state,
         ballerineEntityId: entityId,
         correlationId,
         environment,

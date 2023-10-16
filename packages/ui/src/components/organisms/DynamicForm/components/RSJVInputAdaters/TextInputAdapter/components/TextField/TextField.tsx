@@ -10,13 +10,25 @@ export const TextField = ({
   disabled,
   schema,
   onChange,
-}: FieldProps<string>) => {
+  onBlur,
+}: FieldProps<string | number>) => {
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      onChange(event.target.value);
+      const serializedValue =
+        schema.type === 'integer' || schema.type === 'number'
+          ? event.target.value
+            ? Number(event.target.value)
+            : undefined
+          : event.target.value;
+
+      onChange(serializedValue);
     },
-    [onChange],
+    [onChange, schema],
   );
+
+  const handleBlur = useCallback(() => {
+    onBlur && onBlur(id, formData);
+  }, [id, onBlur, formData]);
 
   const inputProps = {
     id,
@@ -25,6 +37,7 @@ export const TextField = ({
     placeholder: uiSchema['ui:placeholder'],
     disabled,
     onChange: handleChange,
+    onBlur: handleBlur,
   };
 
   return uiSchema['ui:widget'] === 'textarea' ? (

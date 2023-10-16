@@ -757,6 +757,7 @@ export class WorkflowService {
       },
     };
     const checkRequiredFields = status === 'approved';
+
     const updatedWorkflow = await this.updateDocumentById(
       { workflowId, documentId, checkRequiredFields },
       documentWithDecision as unknown as DefaultContextSchema['documents'][number],
@@ -897,6 +898,14 @@ export class WorkflowService {
     return updatedRuntimeData;
   }
 
+  async syncContextById(
+    id: string,
+    context: WorkflowRuntimeData['context'],
+    projectId: TProjectId,
+  ) {
+    return this.workflowRuntimeDataRepository.updateById(id, { data: { context } }, projectId);
+  }
+
   async updateWorkflowRuntimeData(
     workflowRuntimeId: string,
     data: WorkflowDefinitionUpdateInput,
@@ -979,17 +988,6 @@ export class WorkflowService {
     const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
     const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
 
-    if (isResolved) {
-      this.logger.log('Workflow resolved', { id: workflowRuntimeId });
-
-      this.workflowEventEmitter.emit('workflow.completed', {
-        runtimeData,
-        state: currentState ?? runtimeData.state,
-        entityId: runtimeData.businessId || runtimeData.endUserId,
-        correlationId,
-      });
-    }
-
     const documentToRevise = data.context?.documents?.find(
       ({ decision }: { decision: DefaultContextSchema['documents'][number]['decision'] }) =>
         decision?.status === 'revision',
@@ -1064,6 +1062,17 @@ export class WorkflowService {
       );
     }
 
+    if (isResolved) {
+      this.logger.log('Workflow resolved', { id: workflowRuntimeId });
+
+      this.workflowEventEmitter.emit('workflow.completed', {
+        runtimeData: updatedResult,
+        state: currentState ?? updatedResult.state,
+        entityId: updatedResult.businessId || updatedResult.endUserId,
+        correlationId,
+      });
+    }
+
     if (contextHasChanged) {
       this.workflowEventEmitter.emit('workflow.context.changed', {
         oldRuntimeData: runtimeData,
@@ -1103,15 +1112,11 @@ export class WorkflowService {
       {},
       projectIds,
     );
-    const hasDecision =
-      workflowRuntimeData?.context?.documents?.length &&
-      workflowRuntimeData?.context?.documents?.every(
-        (document: DefaultContextSchema['documents'][number]) => !!document?.decision?.status,
-      );
+    const workflowCompleted = workflowRuntimeData.status === 'completed' || workflowRuntimeData.state === 'failed';
 
-    if (hasDecision) {
+    if (workflowCompleted) {
       throw new BadRequestException(
-        `Workflow with the id of "${workflowRuntimeId}" already has a decision`,
+       `Workflow ${workflowRuntimeId} is already completed or failed, cannot assign to user`
       );
     }
 
@@ -1411,12 +1416,14 @@ export class WorkflowService {
         ...contextToInsert,
         documents: this.omitTypeFromDocumentsPages(contextToInsert.documents),
       };
+
       const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
         contextWithoutDocumentPageType?.documents,
         entityId,
         currentProjectId,
         customer.name,
       );
+
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
         {
           data: {
@@ -1445,10 +1452,12 @@ export class WorkflowService {
       );
       newWorkflowCreated = true;
     } else {
-      contextToInsert.documents = updateDocuments(
-        existingWorkflowRuntimeData.context.documents,
-        context.documents,
-      );
+      console.log('existing documents', existingWorkflowRuntimeData.context.documents);
+      console.log('documents', contextToInsert.documents);
+      // contextToInsert.documents = updateDocuments(
+      //   existingWorkflowRuntimeData.context.documents,
+      //   context.documents,
+      // );
       const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
         contextToInsert?.documents,
         entityId,
