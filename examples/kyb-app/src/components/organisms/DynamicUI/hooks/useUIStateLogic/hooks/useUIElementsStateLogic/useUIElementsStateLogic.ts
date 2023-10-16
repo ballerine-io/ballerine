@@ -2,6 +2,7 @@ import {
   UIElementState,
   UIElementStateSetter,
   UIElementsState,
+  UIElementsStateSetter,
 } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
 import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
 import { useCallback, useState } from 'react';
@@ -13,8 +14,13 @@ export const useUIElementsStateLogic = (initialState?: UIState['elements']) => {
     setUIElementsState(prev => ({ ...prev, [elementId]: { ...prev[elementId], ...state } }));
   }, []);
 
+  const overrideState: UIElementsStateSetter = useCallback((state: UIElementsState) => {
+    setUIElementsState(state);
+  }, []);
+
   return {
     uiElementsState,
     setState,
+    overrideState,
   };
 };

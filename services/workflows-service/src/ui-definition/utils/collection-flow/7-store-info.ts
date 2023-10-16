@@ -302,7 +302,7 @@ export const StoreInfoPage = {
           elements: [
             {
               name: 'next-page-button',
-              type: 'json-form:button',
+              type: 'submit-button',
               options: {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],

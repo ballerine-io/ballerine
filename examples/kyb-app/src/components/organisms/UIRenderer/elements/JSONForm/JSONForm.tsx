@@ -16,6 +16,7 @@ import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organi
 import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
 import { DataCreationParams } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withInitialDataCreation';
 import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
+import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
 
 export interface JSONFormElementBaseParams extends DataCreationParams {
   jsonFormDefinition: RJSFSchema;
@@ -31,6 +32,7 @@ export interface JSONFormElementParams {
 }
 
 export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition, actions }) => {
+  const { state: elementState } = useUIElementState(definition);
   const { hidden } = useUIElementProps(definition);
   const { formSchema, uiSchema } = useMemo(
     () => createFormSchemaFromUIElements(definition),
@@ -76,7 +78,9 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
         onChange={handleArrayInputChange}
         onSubmit={handleSubmit}
       />
-      {validationErrors ? <ErrorsList errors={validationErrors.map(err => err.message)} /> : null}
+      {validationErrors && elementState.isTouched ? (
+        <ErrorsList errors={validationErrors.map(err => err.message)} />
+      ) : null}
     </div>
   );
 };

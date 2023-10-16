@@ -21,6 +21,7 @@ import { Success } from '@app/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 import { usePageErrors } from '@app/components/organisms/DynamicUI/Page/hooks/usePageErrors';
+import { SubmitButton } from '@app/components/organisms/UIRenderer/elements/SubmitButton';
 
 const elems = {
   h1: Title,
@@ -35,7 +36,7 @@ const elems = {
   'json-form': withInitialDataCreation(JSONForm),
   container: Cell,
   mainContainer: Cell,
-  'json-form:button': ButtonUIElement,
+  'submit-button': SubmitButton,
   stepper: StepperUI,
   divider: Divider,
 };
