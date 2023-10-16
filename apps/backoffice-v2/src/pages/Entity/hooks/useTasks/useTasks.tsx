@@ -1099,7 +1099,6 @@ export const useTasks = ({
           ...entityInfoBlock,
           ...registryInfoBlock,
           ...companySanctionsBlock,
-          ...taskBlocks,
           ...directorsUserProvidedBlock,
           ...directorsRegistryProvidedBlock,
           ...ubosBlock,
@@ -1110,6 +1109,7 @@ export const useTasks = ({
           ...mainContactBlock,
           ...mainRepresentativeBlock,
           ...mapBlock,
+          ...taskBlocks,
         ]
       : [];
   }, [
