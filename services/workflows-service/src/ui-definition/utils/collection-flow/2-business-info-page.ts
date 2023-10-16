@@ -1,5 +1,3 @@
-import { getCountriesList } from '../schema-utils/countries';
-
 const validationSchema = {
   type: 'object',
   properties: {
@@ -202,22 +200,19 @@ export const BusinessInfoPage = {
             },
             {
               name: 'country-picker-input',
-              type: 'country-picker',
+              type: 'json-form:country-picker',
               valueDestination: 'entity.data.country',
               options: {
                 label: 'Country',
-                hint: 'Hong Kong',
+                hint: 'Choose',
                 jsonFormDefinition: {
                   type: 'string',
                   minLength: 1,
-                  oneOf: [
-                    // Line below should removed in case when field is required.
-                    // { const: '', title: '' },
-                    ...getCountriesList().map(countryData => ({
-                      const: countryData.isoCode,
-                      title: countryData.fullName,
-                    })),
-                  ],
+                },
+                uiSchema: {
+                  'ui:field': 'CountryPicker',
+                  'ui:label': true,
+                  'ui:placeholder': 'Choose',
                 },
               },
             },
@@ -263,13 +258,13 @@ export const BusinessInfoPage = {
               type: 'json-form:dropdown',
               valueDestination: 'entity.data.businessType',
               options: {
-                hint: 'Corporation',
+                hint: 'Choose',
                 label: 'Corporate type',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:placeholder': 'Corporation',
+                  'ui:placeholder': 'Choose',
                   'ui:field': 'AutocompleteInput',
                   'ui:label': true,
                   options: [
@@ -322,8 +317,8 @@ export const BusinessInfoPage = {
                 },
               ],
             },
-          ]
-        }
+          ],
+        },
       ],
     },
   ],

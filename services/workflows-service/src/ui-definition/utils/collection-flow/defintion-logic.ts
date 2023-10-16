@@ -108,6 +108,7 @@ export const definition = {
           'store_info',
           'website_basic_requirement',
           'processing_details',
+          'company_documents'
         ],
         headers: { Authorization: 'Bearer {flowConfig.tokenId}' },
         request: {

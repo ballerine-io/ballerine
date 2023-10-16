@@ -114,7 +114,7 @@ const validationSchema = {
                           },
                         },
                         properties: {
-                          spikeOfVolumeInRegion: {
+                          spikeSalesAverageVolume: {
                             default: 0
                           },
                           spikeTransactionNumber: {
@@ -138,13 +138,13 @@ const isSpikeInSaleVisibility = {
   '==': [{var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales'}, true],
 };
 
-const notSpikeInSaleVisibility = {
-  '!==': [{var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales'}, true],
-};
-
 const isCustomBusinessModel = {
   in: ['Other', {var: 'entity.data.additionalInfo.store.processingDetails.businessModel'}],
 };
+const isCustomMainCateogry = {
+  in: ['Other', {var: 'entity.data.additionalInfo.store.processingDetails.mainCategory'}],
+};
+
 
 export const ProcessingDetails = {
   type: 'page',
@@ -295,8 +295,7 @@ export const ProcessingDetails = {
             jsonFormDefinition: {
               required: [
                 'spike-sales-volume-input',
-                'split-of-volume-in-region',
-                'spike-sales-transaction-number-input',
+                'volume-in-region',
               ],
             },
           },
@@ -333,33 +332,18 @@ export const ProcessingDetails = {
                 },
               },
             },
-            {
-              name: 'spike-split-of-volume-in-region',
-              type: 'json-form:text',
-              valueDestination:
-                'entity.data.additionalInfo.store.processingDetails.volumeInRegion',
-              options: {
-                label: 'Split of volume by regions in % (divided by comma)',
-                hint: 'Asia 70%, Europe 30%',
-                jsonFormDefinition: {
-                  type: 'string',
-                },
-              },
-            },
           ],
         },
         {
           type: 'json-form',
-          name: 'split-volume-region-form',
-          visibleOn: [
-            {
-              type: 'json-logic',
-              value: notSpikeInSaleVisibility,
+          options: {
+            jsonFormDefinition: {
+              required: [],
             },
-          ],
+          },
           elements: [
             {
-              name: 'spike-split-of-volume-in-region',
+              name: 'volume-in-region',
               type: 'json-form:text',
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.volumeInRegion',
@@ -417,6 +401,36 @@ export const ProcessingDetails = {
           ],
         },
         {
+          type: 'json-form',
+          options: {
+            jsonFormDefinition: {
+              required: [
+                'other-main-category-input',
+              ],
+            },
+          },
+          visibleOn: [
+            {
+              type: 'json-logic',
+              value: isCustomMainCateogry,
+            },
+          ],
+          elements: [
+            {
+              name: 'other-main-category-input',
+              type: 'json-form:text',
+              valueDestination:
+                'entity.data.additionalInfo.store.processingDetails.otherMainCategory',
+              options: {
+                label: 'Main Category',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+              },
+            },
+          ],
+        },
+        {
           type: 'h3',
           options: {
             text: 'Website Business Model',
@@ -457,6 +471,13 @@ export const ProcessingDetails = {
         },
         {
           type: 'json-form',
+          options: {
+            jsonFormDefinition: {
+              required: [
+                'other-business-model-input',
+              ],
+            },
+          },
           visibleOn: [
             {
               type: 'json-logic',
