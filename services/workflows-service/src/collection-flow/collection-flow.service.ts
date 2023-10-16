@@ -5,6 +5,7 @@ import { FlowConfigurationModel } from '@/collection-flow/models/flow-configurat
 import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-step.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
+import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
 import { StorageService } from '@/storage/storage.service';
 import { TProjectId, TProjectIds } from '@/types';
@@ -25,6 +26,7 @@ type OptionalUiDefDefiniton = UiDefDefinition | null;
 export class CollectionFlowService {
   constructor(
     protected readonly logger: AppLoggerService,
+    protected readonly endUserService: EndUserService,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowService: WorkflowService,
@@ -36,6 +38,12 @@ export class CollectionFlowService {
 
   async getCustomerDetails(projectId: TProjectId): Promise<Customer> {
     return this.customerService.getByProjectId(projectId);
+  }
+
+  async getUser(endUserId: string, projectId: TProjectId): Promise<EndUser> {
+    const endUser = await this.endUserService.getById(endUserId, {}, [projectId]);
+
+    return endUser;
   }
 
   async getFlowConfiguration(
