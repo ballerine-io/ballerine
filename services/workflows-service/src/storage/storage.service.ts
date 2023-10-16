@@ -12,19 +12,16 @@ export class StorageService {
   async createFileLink({
     uri,
     fileNameOnDisk,
-    userId = '', // @TODO: Check the circumstances
+    userId,
     fileNameInBucket,
     projectId,
     mimeType,
-  }: SetOptional<
-    Pick<
-      Prisma.FileCreateInput,
-      'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket' | 'mimeType'
-    > & {
-      projectId: TProjectId;
-    },
-    'userId'
-  >) {
+  }: Pick<
+    Prisma.FileCreateInput,
+    'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket' | 'mimeType'
+  > & {
+    projectId: TProjectId;
+  }) {
     const file = await this.fileRepository.create(
       {
         data: {

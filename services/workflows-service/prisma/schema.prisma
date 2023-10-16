@@ -73,8 +73,9 @@ model EndUser {
   businesses           Business[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id])
+  projectId                String?
+  project                  Project?                   @relation(fields: [projectId], references: [id])
+  WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
 
   @@index([endUserType])
   @@index([approvalState])
@@ -362,6 +363,8 @@ model WorkflowRuntimeDataToken {
   token                 String              @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   workflowRuntimeDataId String
   workflowRuntimeData   WorkflowRuntimeData @relation(fields: [workflowRuntimeDataId], references: [id])
+  endUserId             String
+  endUser               EndUser             @relation(fields: [endUserId], references: [id])
   projectId             String
   project               Project             @relation(fields: [projectId], references: [id])
   createdAt             DateTime            @default(now())

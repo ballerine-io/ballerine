@@ -173,6 +173,7 @@ export const dynamicUiWorkflowDefinition = {
     ],
   },
   config: {
+    createCollectionFlowToken: true,
     childCallbackResults: [
       {
         definitionId: kycEmailSessionDefinition.name,

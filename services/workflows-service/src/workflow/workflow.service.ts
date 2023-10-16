@@ -1453,10 +1453,25 @@ export class WorkflowService {
         currentProjectId,
       );
 
-      if (workflowRuntimeData.config.createCollectionFlowToken) {
+      if (
+        workflowRuntimeData.config.createCollectionFlowToken &&
+        workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative
+      ) {
+        const endUser = await this.endUserService.createWithBusiness(
+          {
+            firstName:
+              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.firstName,
+            lastName:
+              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.lastName,
+            email: workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.email,
+            companyName: workflowRuntimeData.context.entity.data.companyName,
+          },
+          currentProjectId,
+        );
         const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         const workflowToken = await this.workflowTokenService.create(currentProjectId, {
           workflowRuntimeDataId: workflowRuntimeData.id,
+          endUserId: endUser.id,
           expiresAt: nowPlus30Days,
         });
 
