@@ -382,7 +382,11 @@ export const useTasks = ({
                     ...Object.entries(
                       omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {},
                     ),
-                    ...Object.entries(entityDataAdditionalInfo ?? {}),
+                    ...Object.entries(
+                      workflow?.childWorkflows?.length
+                        ? omitPropsFromObject(entityDataAdditionalInfo ?? {}, 'ubos')
+                        : entityDataAdditionalInfo ?? {},
+                    ),
                   ]
                     ?.map(([title, value]) => ({
                       title,
