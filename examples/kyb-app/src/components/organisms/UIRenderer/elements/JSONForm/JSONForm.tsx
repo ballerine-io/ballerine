@@ -5,7 +5,7 @@ import { UIElementComponent } from '@app/components/organisms/UIRenderer/types';
 
 import { AnyObject, DynamicForm, ErrorsList } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import set from 'lodash/set';
 import get from 'lodash/get';
 import {
@@ -46,6 +46,26 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
 
   const formRef = useRef<any>(null);
 
+  useEffect(() => {
+    const elementValue = get(payload, definition.valueDestination);
+
+    // TO DO: ADD this logic to jmespath @blokh
+    if (definition.options?.jsonFormDefinition?.type === 'array' && Array.isArray(elementValue)) {
+      //@ts-ignore
+      set(
+        payload,
+        definition.valueDestination,
+        elementValue.map(obj => ({
+          ...obj,
+          additionalInfo: {
+            customerCompany: get(payload, 'entity.data.companyName') as string,
+            companyName: (payload as CollectionFlowContext).flowConfig.companyName,
+          },
+        })),
+      );
+    }
+  }, [payload]);
+
   const handleArrayInputChange = useCallback(
     (values: AnyObject[]) => {
       if (definition.options?.jsonFormDefinition?.type === 'array') {
@@ -53,30 +73,7 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
         const currentValue = get(prevContext, definition.valueDestination);
 
         if (Array.isArray(currentValue) && currentValue.length !== values.length) {
-          set(
-            prevContext,
-            definition.valueDestination,
-            values.map(obj => ({
-              ...obj,
-              customerCompany: get(payload, 'entity.data.companyName') as string,
-              companyName: (payload as CollectionFlowContext).flowConfig.companyName,
-            })),
-          );
-
-          stateApi.setContext(prevContext);
-        } else {
-          // TO DO: ADD this logic to jmespath @blokh
-          set(
-            prevContext,
-            definition.valueDestination,
-            //@ts-nocheck
-            get(stateApi.getContext(), definition.valueDestination).map(obj => ({
-              ...obj,
-              customerCompany: get(payload, 'entity.data.companyName') as string,
-              companyName: (payload as CollectionFlowContext).flowConfig.companyName,
-            })),
-          );
-
+          set(prevContext, definition.valueDestination, values);
           stateApi.setContext(prevContext);
         }
       }
