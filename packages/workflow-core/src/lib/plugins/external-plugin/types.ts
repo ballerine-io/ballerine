@@ -60,7 +60,7 @@ export interface IterativePluginParams {
 
 export interface ISerializableChildPluginParams
   extends Omit<ChildWorkflowPluginParams, 'action' | 'transformers' | 'parentWorkflowRuntimeId'> {
-  transformers: Omit<SerializableValidatableTransformer, 'schema'>;
+  transformers: Omit<SerializableValidatableTransformer, 'schema'>['transform'];
 
   invoke?(...args: Array<any>): Promise<any>;
 }
