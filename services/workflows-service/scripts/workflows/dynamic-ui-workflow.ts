@@ -149,7 +149,7 @@ export const dynamicUiWorkflowDefinition = {
         transformers: [
           {
             transformer: 'jmespath',
-            mapping: `{entity: merge(@, {type: 'endUser'})}`,
+            mapping: `{entity: {data: @, type: 'endUser'}}`,
           },
         ],
         initEvent: 'start',

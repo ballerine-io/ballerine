@@ -17,6 +17,7 @@ import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/us
 import { DataCreationParams } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withInitialDataCreation';
 import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
 import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
+import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
 
 export interface JSONFormElementBaseParams extends DataCreationParams {
   jsonFormDefinition: RJSFSchema;
@@ -52,13 +53,35 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
         const currentValue = get(prevContext, definition.valueDestination);
 
         if (Array.isArray(currentValue) && currentValue.length !== values.length) {
-          set(prevContext, definition.valueDestination, values);
+          set(
+            prevContext,
+            definition.valueDestination,
+            values.map(obj => ({
+              ...obj,
+              customerCompany: get(payload, 'entity.data.companyName') as string,
+              companyName: (payload as CollectionFlowContext).flowConfig.companyName,
+            })),
+          );
+
+          stateApi.setContext(prevContext);
+        } else {
+          // TO DO: ADD this logic to jmespath @blokh
+          set(
+            prevContext,
+            definition.valueDestination,
+            //@ts-nocheck
+            get(stateApi.getContext(), definition.valueDestination).map(obj => ({
+              ...obj,
+              customerCompany: get(payload, 'entity.data.companyName') as string,
+              companyName: (payload as CollectionFlowContext).flowConfig.companyName,
+            })),
+          );
 
           stateApi.setContext(prevContext);
         }
       }
     },
-    [definition, stateApi],
+    [definition, stateApi, payload],
   );
 
   const handleSubmit = useCallback(() => {}, []);

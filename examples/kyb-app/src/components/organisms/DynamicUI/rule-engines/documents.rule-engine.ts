@@ -6,15 +6,15 @@ import {
   ErrorField,
   RuleEngine,
 } from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
-import { DocumentsValidatorRule, Rule, UIElement } from '@app/domains/collection-flow';
+import { Document, DocumentsValidatorRule, Rule, UIElement } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import get from 'lodash/get';
 
-export class DestinationRuleEngine implements RuleEngine {
+export class DocumentsRuleEngine implements RuleEngine {
   public readonly ENGINE_NAME = 'destination-engine';
   private ruleManager = new EngineManager([new JmespathRuleEngine(), new JsonLogicRuleEngine()]);
 
-  test(context: unknown, rule: unknown, definition: UIElement<AnyObject>, state: UIState) {
+  test(context: AnyObject, rule: unknown, definition: UIElement<AnyObject>, state: UIState) {
     if (this.isDestinationValidatorRule(rule)) {
       const errors: ErrorField[] = [];
 
@@ -25,11 +25,14 @@ export class DestinationRuleEngine implements RuleEngine {
               .test(context, params.required, definition, state).isValid
           : params.required;
 
-        const value = get(context, params.destination) as unknown;
+        const document = ((context.documents || []) as Document[]).find(
+          doc => doc && doc.id === params.documentId,
+        );
+        const value = document ? (get(document, params.destination) as unknown) : undefined;
 
         if (isRequired && value === undefined) {
           const error: ErrorField = {
-            fieldId: params.destination,
+            fieldId: `document-error-${params.documentId}`,
             message: params.errorMessage,
             type: 'error',
           };
