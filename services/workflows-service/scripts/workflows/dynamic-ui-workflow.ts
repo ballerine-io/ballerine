@@ -21,7 +21,60 @@ export const dynamicUiWorkflowDefinition = {
       collection_flow: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
-          COLLECTION_FLOW_FINISHED: 'run_ubos',
+          COLLECTION_FLOW_FINISHED: [
+            {
+              target: 'run_cn_kyb',
+              cond: {
+                type: 'jmespath',
+                options: {
+                  rule: 'entity.data.additionalInfo.country == `cn`', // @TODO: Work out entity.data.additionalInfo.country with Daniel
+                },
+              },
+            },
+            {
+              target: 'run_hk_kyb',
+              cond: {
+                type: 'jmespath',
+                options: {
+                  rule: 'entity.data.additionalInfo.country == `hk`', // @TODO: Work out entity.data.additionalInfo.country with Daniel
+                },
+              },
+            },
+            {
+              target: 'auto_reject',
+            },
+          ],
+        },
+      },
+      run_cn_kyb: {
+        tags: [StateTag.COLLECTION_FLOW],
+        on: {
+          CN_KYB_DONE: [{ target: 'run_vendor_data' }],
+          CN_KYB_FAIL: [{ target: 'failure' }],
+        },
+      },
+      run_hk_kyb: {
+        tags: [StateTag.COLLECTION_FLOW],
+        on: {
+          HK_KYB_HOOK_RESPONDED: [{ target: 'run_vendor_data' }],
+          HK_KYB_HOOK_FAILED: [{ target: 'failure' }],
+        },
+      },
+      run_vendor_data: {
+        tags: [StateTag.COLLECTION_FLOW],
+        on: {
+          VENDOR_DATA_COLLECTION_DONE: [
+            {
+              target: 'run_ubos',
+              cond: {
+                type: 'jmespath',
+                options: {
+                  rule: 'pluginsOutput.ubo && pluginsOutput.aml', // @TODO: Work out pluginsOutput.ubo and pluginsOutput.aml (AML does not have resultDestination as it is not async)
+                },
+              },
+            },
+          ],
+          VENDOR_DATA_COLLECTION_FAIL: [{ target: 'failure' }],
         },
       },
       run_ubos: {
@@ -69,6 +122,10 @@ export const dynamicUiWorkflowDefinition = {
         tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
+      failure: {
+        tags: [StateTag.REJECTED],
+        type: 'final' as const,
+      },
       auto_reject: {
         tags: [StateTag.REJECTED],
         type: 'final' as const,
@@ -78,21 +135,109 @@ export const dynamicUiWorkflowDefinition = {
   extensions: {
     apiPlugins: [
       {
-        name: 'open_corporates',
+        name: 'asia_verify_cn_kyb',
         pluginKind: 'kyb',
-        url: `${env.UNIFIED_API_URL}/companies`,
+        url: `${env.UNIFIED_API_URL}/companies-v2`,
         method: 'GET',
-        stateNames: ['run_kyb_enrichment'],
+        stateNames: ['run_cn_kyb'],
+        successAction: 'CN_KYB_DONE',
+        errorAction: 'CN_KYB_FAIL',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
             {
+              // @TODO: Work out "entity.data.registrationNumber" with Daniel
               transformer: 'jmespath',
               mapping: `{
-                countryOfIncorporation: entity.data.countryOfIncorporation,
                 companyNumber: entity.data.registrationNumber,
-                state: entity.data.additionalInfo.company.state
-                vendor: 'open-corporates'
+                countryOfIncorporation: 'cn',
+                vendor: 'asia-verify'
+              }`, // jmespath
+            },
+          ],
+        },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '@', // jmespath
+            },
+          ],
+        },
+      },
+      {
+        // @TODO: handle callback
+        name: 'asia_verify_hk_kyb',
+        pluginKind: 'api',
+        url: `${env.UNIFIED_API_URL}/companies-v2`,
+        method: 'GET',
+        stateNames: ['run_hk_kyb'],
+        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+        request: {
+          transform: [
+            {
+              // @TODO: Work out "entity.data.registrationNumber" with Daniel
+              transformer: 'jmespath',
+              mapping: `{
+                companyNumber: entity.data.registrationNumber,
+                countryOfIncorporation: 'hk',
+                vendor: 'asia-verify'
+                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/HK_KYB_HOOK_RESPONDED','?resultDestination=pluginsOutput.kyb.result']),
+              }`, // jmespath
+            },
+          ],
+        },
+      },
+      {
+        name: 'asia_verify_aml',
+        pluginKind: 'api',
+        url: `{secret.UNIFIED_API_URL}/companies/{entity.data.additionalInfo.country}/{entity.data.companyName}/aml`,
+        method: 'GET',
+        stateNames: ['run_vendor_data'],
+        successAction: 'VENDOR_DATA_COLLECTION_DONE',
+        errorAction: 'VENDOR_DATA_COLLECTION_FAIL',
+        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+        request: {
+          transform: [
+            {
+              // @TODO: Work out "entity.data.companyName" and "entity.data.additionalInfo.country" with Daniel
+              transformer: 'jmespath',
+              mapping: `{
+                companyName: entity.data.companyName,
+                countryOfIncorporation: entity.data.additionalInfo.country,
+                vendor: 'asia-verify'
+              }`, // jmespath
+            },
+          ],
+        },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '@', // jmespath
+            },
+          ],
+        },
+      },
+      {
+        name: 'asia_verify_ubo',
+        pluginKind: 'api',
+        url: `{secret.UNIFIED_API_URL}/companies/{entity.data.additionalInfo.country}/{entity.data.companyName}/ubo`,
+        method: 'GET',
+        stateNames: ['run_vendor_data'],
+        successAction: 'VENDOR_DATA_COLLECTION_DONE',
+        errorAction: 'VENDOR_DATA_COLLECTION_FAIL',
+        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
+        request: {
+          transform: [
+            {
+              // @TODO: Work out "entity.data.companyName" and "entity.data.additionalInfo.country" with Daniel
+              transformer: 'jmespath',
+              mapping: `{
+                companyNumber: entity.data.companyNumber,
+                countryOfIncorporation: entity.data.additionalInfo.country,
+                vendor: 'asia-verify',
+                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/UBO_HOOK_RESPONDED','?resultDestination=pluginsOutput.ubo.result']),
               }`, // jmespath
             },
           ],
@@ -197,7 +342,7 @@ export const dynamicUiWorkflowDefinition = {
 export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, projectId?: string) => {
   const kybDynamicExample = {
     ...dynamicUiWorkflowDefinition,
-    isPublic: projectId ? false : true,
+    isPublic: !projectId,
     projectId: projectId,
   };
 
