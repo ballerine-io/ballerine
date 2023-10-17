@@ -9,7 +9,7 @@ import { Rule, UIElement } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { JmespathRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
-import { DestinationRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/destination.rule-engine';
+import { DocumentsRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/documents.rule-engine';
 
 export const useRuleExecutor = (
   context: AnyObject,
@@ -31,7 +31,7 @@ export const useRuleExecutor = (
         new JsonLogicRuleEngine(),
         new JsonSchemaRuleEngine(),
         new JmespathRuleEngine(),
-        new DestinationRuleEngine(),
+        new DocumentsRuleEngine(),
       ]),
     [],
   );
@@ -63,7 +63,7 @@ export const useRuleExecutor = (
 
   if (import.meta.env.MODE === 'development') {
     if (executionResult.length && executionResult.every(r => !r.isValid && r.errors.length)) {
-      console.log('res', executionResult);
+      console.log('Rules execution result', executionResult);
     }
   }
 

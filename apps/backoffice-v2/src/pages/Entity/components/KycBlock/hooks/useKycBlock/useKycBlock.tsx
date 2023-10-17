@@ -118,13 +118,15 @@ export const useKycBlock = ({
       ) ?? []
     : [];
 
-  const details = Object.entries(childWorkflow?.context?.entity?.data).map(([title, value]) => ({
-    title,
-    value,
-    pattern: '',
-    isEditable: true,
-    dropdownOptions: undefined,
-  }));
+  const details = Object.entries(childWorkflow?.context?.entity?.data ?? {}).map(
+    ([title, value]) => ({
+      title,
+      value,
+      pattern: '',
+      isEditable: true,
+      dropdownOptions: undefined,
+    }),
+  );
   const documents = childWorkflow?.context?.documents?.flatMap(
     (document, docIndex) =>
       document?.pages?.map(({ type, metadata, data }, pageIndex) => ({
