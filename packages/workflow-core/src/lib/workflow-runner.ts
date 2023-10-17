@@ -163,9 +163,7 @@ export class WorkflowRunner {
     callbackAction?: ChildWorkflowPluginParams['action'],
   ) {
     return childPluginSchemas?.map(childPluginSchema => {
-      const transformers = this.fetchTransformers(
-        childPluginSchema.transformers['transform'] || [],
-      );
+      const transformers = this.fetchTransformers(childPluginSchema.transformers) || [];
 
       const childWorkflowPlugin = new ChildWorkflowPlugin({
         name: childPluginSchema.name,

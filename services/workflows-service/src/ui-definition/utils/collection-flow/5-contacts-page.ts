@@ -20,7 +20,7 @@ const validationSchema = {
                       firstName: 'First name is required.',
                       lastName: 'Last name is required.',
                       phone: 'Phone is required.',
-                      email: 'Email is required'
+                      email: 'Email is required',
                     },
                   },
                   properties: {
@@ -34,18 +34,19 @@ const validationSchema = {
                     },
                     phone: {
                       type: 'string',
-                      pattern: "^[+]?[0-9]{10,15}$",
+                      pattern: '^[+]?[0-9]{10,15}$',
                       errorMessage: {
-                        pattern: "Phone number must be 10 to 15 digits long and may start with a +."
-                      }
+                        pattern:
+                          'Phone number must be 10 to 15 digits long and may start with a +.',
+                      },
                     },
                     email: {
                       type: 'string',
                       format: 'email',
-                      errorMessage: 'Please enter valid email address.'
-                    }
+                      errorMessage: 'Please enter valid email address.',
+                    },
                   },
-                }
+                },
               },
             },
           },
@@ -56,7 +57,6 @@ const validationSchema = {
   required: ['entity'],
 };
 
-
 export const ContactsPage = {
   type: 'page',
   number: 5,
@@ -64,7 +64,7 @@ export const ContactsPage = {
   name: 'Contacts',
   pageValidator: {
     type: 'json-schema',
-    value: validationSchema
+    value: validationSchema,
   },
   elements: [
     {
@@ -92,7 +92,12 @@ export const ContactsPage = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: ['contact-first-name-input', 'contact-last-name-input', 'contact-email-input', 'contact-phone-number-input'],
+              required: [
+                'contact-first-name-input',
+                'contact-last-name-input',
+                'contact-email-input',
+                'contact-phone-number-input',
+              ],
             },
           },
           elements: [
@@ -172,8 +177,8 @@ export const ContactsPage = {
                 },
               ],
             },
-          ]
-        }
+          ],
+        },
       ],
     },
   ],
@@ -185,6 +190,12 @@ export const ContactsPage = {
       },
       dispatchOn: {
         uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
+        rules: [
+          {
+            type: 'json-schema',
+            value: validationSchema,
+          },
+        ],
       },
     },
   ],
