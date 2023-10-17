@@ -5,6 +5,7 @@ import { StateMachineAPI } from '@app/components/organisms/DynamicUI/StateManage
 import { getAccessToken } from '@app/helpers/get-access-token.helper';
 import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
+import { useCustomer } from '@app/components/providers/CustomerProvider';
 
 interface State {
   machineState: string;
@@ -21,6 +22,7 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
   const { helpers } = useDynamicUIContext();
   const host = new URL(import.meta.env.VITE_API_URL as string).host;
   const protocol = new URL(import.meta.env.VITE_API_URL as string).protocol;
+  const { customer } = useCustomer();
 
   useEffect(() => {
     const ctx = machineApi.getContext();
@@ -32,6 +34,7 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
         ...ctx?.flowConfig,
         apiUrl: `${protocol}//${host}`,
         tokenId: getAccessToken(),
+        companyName: customer.displayName,
       } as CollectionFlowContext['flowConfig'],
     } as CollectionFlowContext);
 
