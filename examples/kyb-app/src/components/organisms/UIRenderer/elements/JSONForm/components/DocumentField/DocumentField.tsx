@@ -43,11 +43,11 @@ export const DocumentField = (
     if (!Array.isArray(payload.documents)) return null;
 
     const document = payload.documents.find((document: Document) => {
-      document?.id === definition.options.documentData.id;
+      return document.id === definition.options.documentData.id;
     }) as Document;
 
     const fileId =
-      document && document.pages.length
+      document && document.pages?.length
         ? document.pages[definition.options.mappingParams.documentPage]?.ballerineFileId
         : null;
 
@@ -83,7 +83,7 @@ export const DocumentField = (
       );
       if (!document) {
         document = options.documentData as Document;
-        (context.documents as Document[]).push(document);
+        context.documents = [...(context.documents as Document[]), document];
         set(context, 'documents', context.documents);
       }
 

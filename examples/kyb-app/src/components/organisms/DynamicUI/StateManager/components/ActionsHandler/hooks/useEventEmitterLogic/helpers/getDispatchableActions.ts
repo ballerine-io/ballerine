@@ -23,11 +23,9 @@ export const getDispatchableActions = (
 
     if (!action.dispatchOn.rules) return true;
 
-    console.log('rules', action.dispatchOn?.rules);
-
     return (
       action.dispatchOn?.rules?.length &&
-      action.dispatchOn?.rules?.some(
+      action.dispatchOn?.rules?.every(
         rule => engineManager.getEngine(rule.type).test(context, rule, definition, state).isValid,
       )
     );

@@ -456,7 +456,7 @@ export const CompanyDocuments = {
               },
             },
             {
-              name: 'document-office-interior-pictures-2',
+              name: 'document-office-interior-pictures-3',
               type: 'document',
               valueDestination: 'documents[10].pages[0].ballerineFileId',
               options: {
@@ -468,7 +468,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  id: 'document-office-interior-pictures-2',
+                  id: 'document-office-interior-pictures-3',
                   category: 'proof_of_location',
                   type: 'interior_office_photo',
                   issuer: {
