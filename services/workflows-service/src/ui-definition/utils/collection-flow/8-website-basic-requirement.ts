@@ -32,7 +32,7 @@ const validationSchema = {
                         mainWebsite: {
                           type: 'string',
                           pattern:
-                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)*$',
+                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)?(\\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?(#[a-zA-Z0-9_]+)?$',
                           minLength: 1,
                           errorMessage: {
                             minLength: 'Main Website should not be empty.',
@@ -46,7 +46,7 @@ const validationSchema = {
                         returnPolicyUrl: {
                           type: 'string',
                           pattern:
-                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)*$',
+                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)?(\\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?(#[a-zA-Z0-9_]+)?$',
                           minLength: 1,
                           errorMessage: {
                             minLength: 'Return Policy URL should not be empty.',
@@ -56,7 +56,7 @@ const validationSchema = {
                         shippingPolicyUrl: {
                           type: 'string',
                           pattern:
-                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)*$',
+                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)?(\\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?(#[a-zA-Z0-9_]+)?$',
                           minLength: 1,
                           errorMessage: {
                             minLength: 'Shipping Policy URL should not be empty.',
@@ -66,7 +66,7 @@ const validationSchema = {
                         aboutUsUrl: {
                           type: 'string',
                           pattern:
-                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)*$',
+                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)?(\\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?(#[a-zA-Z0-9_]+)?$',
                           minLength: 1,
                           errorMessage: {
                             minLength: 'About Us URL should not be empty.',
