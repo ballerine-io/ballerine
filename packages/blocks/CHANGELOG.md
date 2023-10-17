@@ -1,5 +1,13 @@
 # @ballerine/blocks
 
+## 0.1.11-3e08f108.7
+
+### Patch Changes
+
+- Pre ver
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.6
+
 ## 0.1.11-3e08f108.6
 
 ### Patch Changes
