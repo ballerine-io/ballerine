@@ -1405,6 +1405,7 @@ export class WorkflowService {
       );
 
     let contextToInsert = structuredClone(context);
+    contextToInsert.entity.ballerineEntityId ||= entityId;
 
     const entityConnect = {
       [`${entityType}Id`]: entityId,
