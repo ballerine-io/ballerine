@@ -56,17 +56,17 @@ const validationSchema = {
                         },
                         mainCategory: {
                           type: 'array',
-                          items: {type: 'string'},
+                          items: { type: 'string' },
                           minItems: 1,
                           errorMessage: 'Customer Category is required.',
                         },
                         businessModel: {
                           type: 'array',
-                          items: {type: 'string'},
+                          items: { type: 'string' },
                           minItems: 1,
                           errorMessage: 'Business Model is required.',
                         },
-                        isSpikeInSales: {type: 'boolean', default: false},
+                        isSpikeInSales: { type: 'boolean', default: false },
                         spikeSalesAverageVolume: {
                           type: 'number',
                           minimum: 1,
@@ -75,7 +75,7 @@ const validationSchema = {
                         spikeTransactionNumber: {
                           type: 'number',
                           minimum: 1,
-                          errorMessage: 'Spike Transaction Number must be positive.'
+                          errorMessage: 'Spike Transaction Number must be positive.',
                         },
                       },
                       if: {
@@ -91,11 +91,11 @@ const validationSchema = {
                           'monthlyTransactions',
                           'averageTicketAmount',
                           'isSpikeInSales',
-                          'spikeOfVolumeInRegion',
+                          'volumeInRegion',
                           'spikeTransactionNumber',
                           'mainCategory',
                           'businessModel',
-                          'spikeSalesAverageVolume'
+                          'spikeSalesAverageVolume',
                         ],
                         errorMessage: {
                           required: {
@@ -122,16 +122,15 @@ const validationSchema = {
 };
 
 const isSpikeInSaleVisibility = {
-  '==': [{var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales'}, true],
+  '==': [{ var: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales' }, true],
 };
 
 const isCustomBusinessModel = {
-  in: ['Other', {var: 'entity.data.additionalInfo.store.processingDetails.businessModel'}],
+  in: ['Other', { var: 'entity.data.additionalInfo.store.processingDetails.businessModel' }],
 };
 const isCustomMainCateogry = {
-  in: ['Other', {var: 'entity.data.additionalInfo.store.processingDetails.mainCategory'}],
+  in: ['Other', { var: 'entity.data.additionalInfo.store.processingDetails.mainCategory' }],
 };
-
 
 export const ProcessingDetails = {
   type: 'page',
@@ -280,10 +279,7 @@ export const ProcessingDetails = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: [
-                'spike-sales-volume-input',
-                'volume-in-region',
-              ],
+              required: ['spike-sales-volume-input', 'volume-in-region'],
             },
           },
           visibleOn: [
@@ -332,8 +328,7 @@ export const ProcessingDetails = {
             {
               name: 'volume-in-region',
               type: 'json-form:text',
-              valueDestination:
-                'entity.data.additionalInfo.store.processingDetails.volumeInRegion',
+              valueDestination: 'entity.data.additionalInfo.store.processingDetails.volumeInRegion',
               options: {
                 label: 'Split of volume by regions in % (divided by comma)',
                 hint: 'Asia 70%, Europe 30%',
@@ -391,9 +386,7 @@ export const ProcessingDetails = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: [
-                'other-main-category-input',
-              ],
+              required: ['other-main-category-input'],
             },
           },
           visibleOn: [
@@ -460,9 +453,7 @@ export const ProcessingDetails = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: [
-                'other-business-model-input',
-              ],
+              required: ['other-business-model-input'],
             },
           },
           visibleOn: [
@@ -521,7 +512,7 @@ export const ProcessingDetails = {
         eventName: 'PREVIOUS',
       },
       dispatchOn: {
-        uiEvents: [{event: 'onClick', uiElementName: 'previous-page-button'}],
+        uiEvents: [{ event: 'onClick', uiElementName: 'previous-page-button' }],
       },
     },
     {
@@ -530,7 +521,7 @@ export const ProcessingDetails = {
         eventName: 'NEXT',
       },
       dispatchOn: {
-        uiEvents: [{event: 'onClick', uiElementName: 'next-page-button'}],
+        uiEvents: [{ event: 'onClick', uiElementName: 'next-page-button' }],
         rules: [
           {
             type: 'json-schema',
