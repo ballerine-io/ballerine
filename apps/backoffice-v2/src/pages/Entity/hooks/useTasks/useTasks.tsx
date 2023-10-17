@@ -63,6 +63,7 @@ export const useTasks = ({
     directors: directorsUserProvided,
     mainRepresentative,
     mainContact,
+    ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
   const { data: session } = useAuthenticatedUserQuery();
@@ -381,7 +382,7 @@ export const useTasks = ({
                     ...Object.entries(
                       omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {},
                     ),
-                    ...Object.entries(entity?.data?.additionalInfo ?? {}),
+                    ...Object.entries(omitPropsFromObject(entityDataAdditionalInfo ?? {}, 'ubos')),
                   ]
                     ?.map(([title, value]) => ({
                       title,
@@ -1099,7 +1100,6 @@ export const useTasks = ({
           ...entityInfoBlock,
           ...registryInfoBlock,
           ...companySanctionsBlock,
-          ...taskBlocks,
           ...directorsUserProvidedBlock,
           ...directorsRegistryProvidedBlock,
           ...ubosBlock,
@@ -1110,6 +1110,7 @@ export const useTasks = ({
           ...mainContactBlock,
           ...mainRepresentativeBlock,
           ...mapBlock,
+          ...taskBlocks,
         ]
       : [];
   }, [
