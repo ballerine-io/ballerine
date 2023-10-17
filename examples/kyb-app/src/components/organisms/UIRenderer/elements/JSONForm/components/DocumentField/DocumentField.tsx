@@ -2,12 +2,12 @@ import { useStateManagerContext } from '@app/components/organisms/DynamicUI/Stat
 import { useUIElementToolsLogic } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/hooks/useUIElementToolsLogic';
 import { Document, UIElement } from '@app/domains/collection-flow';
 import { fetchFile, uploadFile } from '@app/domains/storage/storage.api';
-import { AnyObject, FileInputAdapter, RJSVInputProps } from '@ballerine/ui';
+import { AnyObject, ErrorsList, FileInputAdapter, RJSVInputProps } from '@ballerine/ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import set from 'lodash/set';
-import get from 'lodash/get';
 import { collectionFlowFileStorage } from '@app/pages/CollectionFlow/collection-flow.file-storage';
 import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
+import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
 
 interface DocumentFieldParams {
   documentData: AnyObject & { id: string };
@@ -21,18 +21,42 @@ export const DocumentField = (
   props: RJSVInputProps & { definition: UIElement<DocumentFieldParams> },
 ) => {
   const { definition, ...restProps } = props;
-  const { formData, onChange } = restProps;
+  const { onChange } = restProps;
   const { stateApi } = useStateManagerContext();
+  const { payload } = useStateManagerContext();
   const { options } = definition;
   const [fileItem, setFile] = useState<File | null>(null);
 
   const { toggleElementLoading } = useUIElementToolsLogic(definition.name);
-  const { state } = useUIElementState(definition);
+  const { state: elementState } = useUIElementState(definition);
+  const documentDefinition = useMemo(
+    () => ({
+      ...definition,
+      valueDestination: `document-error-${definition.options.documentData.id}`,
+    }),
+    [definition],
+  );
+  const { validationErrors, warnings } = useUIElementErrors(documentDefinition);
+  const { isTouched } = elementState;
+
+  const fileId = useMemo(() => {
+    if (!Array.isArray(payload.documents)) return null;
+
+    const document = payload.documents.find((document: Document) => {
+      document?.id === definition.options.documentData.id;
+    }) as Document;
+
+    const fileId =
+      document && document.pages.length
+        ? document.pages[definition.options.mappingParams.documentPage]?.ballerineFileId
+        : null;
+
+    return fileId;
+  }, [payload.documents, definition]);
 
   useEffect(() => {
-    if (!formData) return;
+    if (!fileId) return;
 
-    const fileId = formData as string;
     const persistedFile = collectionFlowFileStorage.getFileById(fileId);
 
     if (persistedFile) {
@@ -47,47 +71,47 @@ export const DocumentField = (
         setFile(createdFile);
       });
     }
-  }, [formData, toggleElementLoading]);
+  }, [fileId, toggleElementLoading]);
 
   const handleChange = useCallback(
     async (file: File) => {
       toggleElementLoading();
 
       const context = stateApi.getContext();
-      let documentIndex = (context.documents as Document[])
-        .filter(Boolean)
-        .findIndex(doc => doc.id === definition.options.documentData.id);
-      if (documentIndex === -1) {
-        documentIndex = definition.options.mappingParams.documentIndex;
+      let document = (context.documents as Document[]).find(
+        document => document && document.id === definition.options.documentData.id,
+      );
+      if (!document) {
+        document = options.documentData as Document;
+        (context.documents as Document[]).push(document);
+        set(context, 'documents', context.documents);
       }
 
-      const documentPath = `documents[${documentIndex}]`;
-      const currentDocumentValue = get(context, documentPath) as Document;
-
-      if (!currentDocumentValue) {
-        set(context, documentPath, options.documentData);
-      }
-
+      const pagePath = definition.valueDestination.replace(/documents\[\d+\]\./g, '');
       const uploadResult = await uploadFile({ file });
+
+      set(document, pagePath, uploadResult.id);
+
+      stateApi.setContext(context);
 
       collectionFlowFileStorage.registerFile(uploadResult.id, file);
       setFile(file);
-
-      onChange(uploadResult.id);
 
       toggleElementLoading();
     },
     [stateApi, options, onChange, toggleElementLoading],
   );
 
-  console.log('context', stateApi.getContext());
-
   return (
-    <FileInputAdapter
-      {...restProps}
-      disabled={state.isLoading || restProps.disabled}
-      formData={fileItem}
-      onChange={handleChange}
-    />
+    <div className="flex flex-col gap-2">
+      <FileInputAdapter
+        {...restProps}
+        disabled={elementState.isLoading || restProps.disabled}
+        formData={fileItem}
+        onChange={handleChange}
+      />
+      {warnings.length ? <ErrorsList errors={warnings.map(err => err.message)} /> : null}
+      {isTouched ? <ErrorsList errors={validationErrors.map(error => error.message)} /> : null}
+    </div>
   );
 };

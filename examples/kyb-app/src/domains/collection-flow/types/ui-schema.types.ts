@@ -17,6 +17,7 @@ export interface JSONLogicRule extends BaseRule {
 }
 export interface DocumentsValidatorRule extends BaseRule {
   value: {
+    documentId: string;
     destination: string;
     required: boolean | Rule;
     errorMessage: string;

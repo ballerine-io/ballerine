@@ -73,6 +73,7 @@ export interface Document {
     revisionReason?: string;
     rejectionReason?: string;
   };
+  pages?: { ballerineFileId: string }[];
 }
 
 export interface UBO {

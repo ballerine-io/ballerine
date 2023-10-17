@@ -1,57 +1,70 @@
-import { randomUUID } from 'crypto';
-
 const validationSchema = [
   {
-    destination: 'documents[0].pages[0].ballerineFileId',
+    documentId: 'document-certificates-of-incorporation',
+    destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required'
+    errorMessage: 'This field is required',
   },
   {
-    destination: 'documents[1].pages[0].ballerineFileId',
+    documentId: 'document-business-registration-certificate',
+    destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required'
+    errorMessage: 'This field is required',
   },
   {
-    destination: 'documents[2].pages[0].ballerineFileId',
+    documentId: 'document-corporate-tax-certificate',
+    destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required'
+    errorMessage: 'This field is required',
   },
   {
-    destination: 'documents[3].pages[0].ballerineFileId',
+    documentId: 'document-corporate-tax-certificate',
+    destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required'
+    errorMessage: 'This field is required',
   },
   {
-    destination: 'documents[4].pages[0].ballerineFileId',
+    documentId: 'document-certificate-of-good-standing',
+    destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required'
+    errorMessage: 'This field is required',
   },
   {
-    destination: 'documents[5].pages[0].ballerineFileId',
+    documentId: 'document-certificate-of-directors-and-shareholders',
+    destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required'
+    errorMessage: 'This field is required',
   },
   {
-    destination: 'documents[6].pages[0].ballerineFileId',
+    documentId: 'document-picture-of-company-seal',
+    destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required'
+    errorMessage: 'This field is required',
   },
   {
-    destination: 'documents[7].pages[0].ballerineFileId',
+    documentId: 'document-website-pictures-domain-certificate',
+    destination: 'pages[0].ballerineFileId',
+    required: true,
+    errorMessage: 'This field is required',
+  },
+  {
+    documentId: 'document-website-pictures-website-business',
+    destination: 'pages[0].ballerineFileId',
     required: {
       type: 'json-logic',
       value: {
         '==': [{ var: 'entity.data.additionalInfo.store.hasActiveWebsite' }, true, false],
       },
     },
-    errorMessage: 'This field is required'
+    errorMessage: 'This field is required',
   },
   {
-    destination: 'documents[11].pages[0].ballerineFileId',
+    documentId: 'document-transaction-data-last-months',
+    destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required'
-  }
-]
+    errorMessage: 'This field is required',
+  },
+];
 
 export const CompanyDocuments = {
   type: 'page',
@@ -93,9 +106,9 @@ export const CompanyDocuments = {
                 'document-corporate-tax-certificate',
                 'document-certificate-of-good-standing',
                 'document-certificate-of-directors-and-shareholders',
-                'document-picture-of-company-seal'
-              ]
-            }
+                'document-picture-of-company-seal',
+              ],
+            },
           },
           elements: [
             {
@@ -112,7 +125,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  id: randomUUID(),
+                  id: 'document-certificates-of-incorporation',
                   category: 'proof_of_registration',
                   type: 'certificate_of_incorporation',
                   issuer: {
@@ -120,7 +133,7 @@ export const CompanyDocuments = {
                   },
                   version: '1',
                   issuingVersion: 1,
-                  properties: {}
+                  properties: {},
                 },
                 mappingParams: {
                   documentIndex: 0,
@@ -142,7 +155,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  id: randomUUID(),
+                  id: 'document-business-registration-certificate',
                   category: 'proof_of_registration',
                   type: 'business_registration_certificate',
                   issuer: {
@@ -150,7 +163,7 @@ export const CompanyDocuments = {
                   },
                   version: '1',
                   issuingVersion: 1,
-                  properties: {}
+                  properties: {},
                 },
                 mappingParams: {
                   documentIndex: 1,
@@ -171,7 +184,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  id: randomUUID(),
+                  id: 'document-corporate-tax-certificate',
                   category: 'financial_information',
                   type: 'corporate_tax_certificate',
                   issuer: {
@@ -179,7 +192,7 @@ export const CompanyDocuments = {
                   },
                   version: '1',
                   issuingVersion: 1,
-                  properties: {}
+                  properties: {},
                 },
                 mappingParams: {
                   documentIndex: 2,
@@ -201,7 +214,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  id: randomUUID(),
+                  id: 'document-certificate-of-good-standing',
                   category: 'proof_of_good_standing',
                   type: 'certificate_of_good_standing',
                   issuer: {
@@ -209,7 +222,7 @@ export const CompanyDocuments = {
                   },
                   version: '1',
                   issuingVersion: 1,
-                  properties: {}
+                  properties: {},
                 },
                 mappingParams: {
                   documentIndex: 3,
@@ -230,7 +243,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  id: randomUUID(),
+                  id: 'document-certificate-of-directors-and-shareholders',
                   category: 'proof_of_ownership',
                   type: 'certificate_of_directors_and_shareholders',
                   issuer: {
@@ -238,8 +251,8 @@ export const CompanyDocuments = {
                   },
                   version: '1',
                   issuingVersion: 1,
-                  properties: {}
-                 },
+                  properties: {},
+                },
                 mappingParams: {
                   documentIndex: 4,
                   documentPage: 0,
@@ -259,7 +272,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  id: randomUUID(),
+                  id: 'document-picture-of-company-seal',
                   category: 'proof_of_identity',
                   type: 'company_seal',
                   issuer: {
@@ -267,7 +280,7 @@ export const CompanyDocuments = {
                   },
                   version: '1',
                   issuingVersion: 1,
-                  properties: {}
+                  properties: {},
                 },
                 mappingParams: {
                   documentIndex: 5,
@@ -289,7 +302,7 @@ export const CompanyDocuments = {
           name: 'website-documents-form-p1',
           options: {
             jsonFormDefinition: {
-              required: ['document-website-pictures-domain-certificate']
+              required: ['document-website-pictures-domain-certificate'],
             },
           },
           elements: [
@@ -306,7 +319,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  id: randomUUID(),
+                  id: 'document-website-pictures-domain-certificate',
                   category: 'proof_of_domain_ownership',
                   type: 'domain_purchase_record',
                   issuer: {
@@ -314,7 +327,7 @@ export const CompanyDocuments = {
                   },
                   version: '1',
                   issuingVersion: 1,
-                  properties: {}
+                  properties: {},
                 },
                 mappingParams: {
                   documentIndex: 6,
@@ -329,7 +342,7 @@ export const CompanyDocuments = {
           name: 'website-documents-form-p2',
           options: {
             jsonFormDefinition: {
-              required: ['document-website-pictures-website-business']
+              required: ['document-website-pictures-website-business'],
             },
           },
           elements: [
@@ -346,7 +359,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  id: randomUUID(),
+                  id: 'document-website-pictures-website-business',
                   category: 'proof_of_business_compliance',
                   type: 'permitted_sales_license',
                   issuer: {
@@ -354,7 +367,7 @@ export const CompanyDocuments = {
                   },
                   version: '1',
                   issuingVersion: 1,
-                  properties: {}
+                  properties: {},
                 },
                 mappingParams: {
                   documentIndex: 7,
@@ -385,7 +398,7 @@ export const CompanyDocuments = {
           options: {},
           elements: [
             {
-              name: 'document-office-front-door-pictures',
+              name: 'document-office-front-door-pictures-1',
               type: 'document',
               valueDestination: 'documents[8].pages[0].ballerineFileId',
               options: {
@@ -397,7 +410,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  id: randomUUID(),
+                  id: 'document-office-front-door-pictures-1',
                   category: 'proof_of_location',
                   type: 'front_door_photo',
                   issuer: {
@@ -405,7 +418,7 @@ export const CompanyDocuments = {
                   },
                   version: '1',
                   issuingVersion: 1,
-                  properties: {}
+                  properties: {},
                 },
                 mappingParams: {
                   documentIndex: 8,
@@ -414,7 +427,7 @@ export const CompanyDocuments = {
               },
             },
             {
-              name: 'document-office-interior-pictures',
+              name: 'document-office-interior-pictures-2',
               type: 'document',
               valueDestination: 'documents[9].pages[0].ballerineFileId',
               options: {
@@ -426,7 +439,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  id: randomUUID(),
+                  id: 'document-office-interior-pictures-2',
                   category: 'proof_of_location',
                   type: 'interior_office_photo',
                   issuer: {
@@ -434,7 +447,7 @@ export const CompanyDocuments = {
                   },
                   version: '1',
                   issuingVersion: 1,
-                  properties: {}
+                  properties: {},
                 },
                 mappingParams: {
                   documentIndex: 9,
@@ -455,7 +468,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  id: randomUUID(),
+                  id: 'document-office-interior-pictures-2',
                   category: 'proof_of_location',
                   type: 'interior_office_photo',
                   issuer: {
@@ -463,7 +476,7 @@ export const CompanyDocuments = {
                   },
                   version: '1',
                   issuingVersion: 1,
-                  properties: {}
+                  properties: {},
                 },
                 mappingParams: {
                   documentIndex: 10,
@@ -485,8 +498,8 @@ export const CompanyDocuments = {
           name: 'docs-form-2',
           options: {
             jsonFormDefinition: {
-              required: ['document-transaction-data-last-months']
-            }
+              required: ['document-transaction-data-last-months'],
+            },
           },
           elements: [
             {
@@ -503,7 +516,7 @@ export const CompanyDocuments = {
                   'ui:field': 'DocumentInput',
                 },
                 documentData: {
-                  id: randomUUID(),
+                  id: 'document-transaction-data-last-months',
                   category: 'financial_information',
                   type: 'transaction_data_last_3_6_months',
                   issuer: {
@@ -511,7 +524,7 @@ export const CompanyDocuments = {
                   },
                   version: '1',
                   issuingVersion: 1,
-                  properties: {}
+                  properties: {},
                 },
                 mappingParams: {
                   documentIndex: 11,
@@ -559,13 +572,14 @@ export const CompanyDocuments = {
           ],
         },
         {
-          type: 'divider'
+          type: 'divider',
         },
         {
           type: 'description',
           options: {
-            descriptionRaw: "By clicking 'Next', an email containing an identity verification link will be sent to the shareholders listed."
-          }
+            descriptionRaw:
+              "By clicking 'Next', an email containing an identity verification link will be sent to the shareholders listed.",
+          },
         },
         {
           name: 'controls-container',
@@ -625,9 +639,9 @@ export const CompanyDocuments = {
           {
             type: 'json-logic',
             value: {
-              '==': [{var: 'entity.data.additionalInfo.hasConfirmed'}, true, false],
+              '==': [{ var: 'entity.data.additionalInfo.hasConfirmed' }, true, false],
             },
-          }
+          },
         ],
       },
     },

@@ -13,11 +13,12 @@ import { ErrorsList } from '@ballerine/ui';
 import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
 
 const findLastDigit = (str: string) => {
-  const digitRegex = /\d+/g;
-  const matches = str.match(digitRegex);
+  const digitRegex = /_(\d+)_/g;
+  const matches = digitRegex.exec(str);
 
   if (matches && matches.length > 0) {
-    return parseInt(matches[matches.length - 1]);
+    const result = parseInt(matches[matches.length - 1]);
+    return result;
   }
 
   return null;
@@ -32,7 +33,9 @@ const injectIndexToDestinationIfNeeded = (destination: string, index: number | n
   const pathElements = destination.split('.');
   pathElements.splice(pathElements.length - 1, 0, indexPath);
 
-  return pathElements.join('.').replace(`.${indexPath}.`, `${indexPath}.`);
+  const result = pathElements.join('.').replace(`.${indexPath}.`, `${indexPath}.`);
+
+  return result;
 };
 
 export const withDynamicUIInput = (
@@ -45,8 +48,7 @@ export const withDynamicUIInput = (
     const { name, onChange } = props;
     const { payload } = useStateManagerContext();
     const { currentPage } = usePageResolverContext();
-    const { state, helpers } = useDynamicUIContext();
-    const { setUIElementState } = helpers;
+    const { state } = useDynamicUIContext();
 
     const baseDefinition = useMemo(() => {
       const definition = findDefinitionByName(name, currentPage.elements);
