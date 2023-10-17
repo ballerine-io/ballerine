@@ -33,11 +33,12 @@ const validationSchema = {
                   properties: {
                     websiteUrls: {
                       type: 'string',
-                      pattern: '^\\s*https?://[^,\\s]+(\\s*,\\s*https?://[^,\\s]+)*\\s*$',
+                      pattern:
+                        '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)*(, *((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)*)*$',
                       minLength: 1,
                       errorMessage: {
                         minLength: 'Website URL(s) should not be empty.',
-                        pattern: 'Website URL(s) should be a valid URL(s) separated by comma.',
+                        pattern: 'Website URL(s) should be valid URL(s) separated by comma.',
                       },
                     },
                     dba: {
