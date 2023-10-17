@@ -83,7 +83,7 @@ export const kycEmailSessionDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              endUserId: join('__',[entity.id || || entity.data.identityNumber,pluginsOutput.kyc_session.kyc_session_1.result.metadata.id || '']),
+              endUserId: join('__',[entity.ballerineEntityId || entity.data.id || entity.data.identityNumber,pluginsOutput.kyc_session.kyc_session_1.result.metadata.id || '']),
               firstName: entity.data.firstName,
               lastName: entity.data.lastName,
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/KYC_HOOK_RESPONDED','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result']),
