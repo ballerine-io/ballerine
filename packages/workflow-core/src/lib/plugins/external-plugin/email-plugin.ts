@@ -8,7 +8,6 @@ export class EmailPlugin extends ApiPlugin {
   constructor(pluginParams: IApiPluginParams) {
     super(pluginParams);
   }
-
   async makeApiRequest(
     url: string,
     method: ApiPlugin['method'],

@@ -1596,6 +1596,8 @@ export class WorkflowService {
   ): Promise<TEntityId | null> {
     if (entity.ballerineEntityId) {
       return entity.ballerineEntityId as TEntityId;
+    } else if (!entity.id){
+      return null;
     } else {
       if (entity.type === 'business') {
         const res = await this.businessRepository.findByCorrelationId(

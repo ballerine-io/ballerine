@@ -19,11 +19,8 @@ const validationSchema = {
                     required: [
                       'firstName',
                       'lastName',
-                      'nationality',
-                      'identityNumber',
+                      'nationalId',
                       'email',
-                      'fullAddress',
-                      'percentageOfOwnership',
                     ],
                     properties: {
                       firstName: {
@@ -44,23 +41,6 @@ const validationSchema = {
                           maxLength: 'Last name should not exceed 50 characters.',
                         },
                       },
-                      nationality: {
-                        type: 'string',
-                        minLength: 1,
-                        errorMessage: {
-                          minLength:
-                            'Invalid nationality. Please select from the available options.',
-                        },
-                      },
-                      identityNumber: {
-                        type: 'string',
-                        minLength: 5,
-                        maxLength: 20,
-                        errorMessage: {
-                          minLength: 'Identity number should be at least 5 characters long.',
-                          maxLength: 'Identity number should not exceed 20 characters.',
-                        },
-                      },
                       email: {
                         type: 'string',
                         format: 'email',
@@ -70,31 +50,65 @@ const validationSchema = {
                           maxLength: 'Email should not exceed 100 characters.',
                         },
                       },
-                      fullAddress: {
+                      nationalId: {
                         type: 'string',
-                        minLength: 10,
-                        maxLength: 200,
+                        minLength: 5,
+                        maxLength: 20,
                         errorMessage: {
-                          minLength: 'Full address should be at least 10 characters long.',
-                          maxLength: 'Full address should not exceed 200 characters.',
+                          minLength: 'Identity number should be at least 5 characters long.',
+                          maxLength: 'Identity number should not exceed 20 characters.',
                         },
                       },
-                      percentageOfOwnership: {
-                        type: 'number',
-                        minimum: 25,
-                        maximum: 100,
+                      additionalInfo: {
+                        type: 'object',
+                        required: [
+                          'nationality',
+                          'fullAddress',
+                          'percentageOfOwnership',
+                        ],
                         errorMessage: {
-                          minimum: 'Percentage of ownership must be 25 or greater.',
-                          maximum: 'Percentage of ownership must not exceed 100.',
+                          required: {
+                            nationality: 'Nationality is required.',
+                            fullAddress: 'Full address is required.',
+                            percentageOfOwnership: 'Percentage of ownership is required.',
+                          },
                         },
-                      },
+                        properties: {
+                          nationality: {
+                            type: 'string',
+                            minLength: 1,
+                            errorMessage: {
+                              minLength:
+                                'Invalid nationality. Please select from the available options.',
+                            },
+                          },
+                          fullAddress: {
+                            type: 'string',
+                            minLength: 10,
+                            maxLength: 200,
+                            errorMessage: {
+                              minLength: 'Full address should be at least 10 characters long.',
+                              maxLength: 'Full address should not exceed 200 characters.',
+                            },
+                          },
+                          percentageOfOwnership: {
+                            type: 'number',
+                            minimum: 25,
+                            maximum: 100,
+                            errorMessage: {
+                              minimum: 'Percentage of ownership must be 25 or greater.',
+                              maximum: 'Percentage of ownership must not exceed 100.',
+                            },
+                          },
+                        }
+                      }
                     },
                     errorMessage: {
                       required: {
                         firstName: 'First name is required.',
                         lastName: 'Last name is required.',
                         nationality: 'Nationality is required.',
-                        identityNumber: 'Identity number is required.',
+                        nationalId: 'Identity number is required.',
                         email: 'Email is required.',
                         fullAddress: 'Full address is required.',
                         percentageOfOwnership: 'Percentage of ownership is required.',
@@ -111,7 +125,7 @@ const validationSchema = {
                       'firstName',
                       'lastName',
                       'nationality',
-                      'identityNumber',
+                      'nationalId',
                       'email',
                       'fullAddress',
                     ],
@@ -142,7 +156,7 @@ const validationSchema = {
                             'Invalid nationality. Please select from the available options.',
                         },
                       },
-                      identityNumber: {
+                      nationalId: {
                         type: 'string',
                         minLength: 5,
                         maxLength: 20,
@@ -175,7 +189,7 @@ const validationSchema = {
                         firstName: 'First name is required.',
                         lastName: 'Last name is required.',
                         nationality: 'Nationality is required.',
-                        identityNumber: 'Identity number is required.',
+                        nationalId: 'Identity number is required.',
                         email: 'Email is required.',
                         fullAddress: 'Full address is required.',
                       },
@@ -282,12 +296,9 @@ export const DirectorsAndUbosPage = {
               createWhenHidden: true,
               destination: 'entity.data.additionalInfo.ubos',
               schema: {
-                'entity.data.additionalInfo.ubos[0].firstName':
-                  'entity.data.additionalInfo.mainRepresentative.firstName',
-                'entity.data.additionalInfo.ubos[0].lastName':
-                  'entity.data.additionalInfo.mainRepresentative.lastName',
-                'entity.data.additionalInfo.ubos[0].email':
-                  'entity.data.additionalInfo.mainRepresentative.email',
+                'entity.data.additionalInfo.ubos[0].firstName': 'entity.data.additionalInfo.mainRepresentative.firstName',
+                'entity.data.additionalInfo.ubos[0].lastName': 'entity.data.additionalInfo.mainRepresentative.lastName',
+                'entity.data.additionalInfo.ubos[0].email': 'entity.data.additionalInfo.mainRepresentative.email',
               },
               insertRules: [
                 {
@@ -339,7 +350,7 @@ export const DirectorsAndUbosPage = {
             {
               name: 'ubos:nationality-input',
               type: 'nationality-picker',
-              valueDestination: 'entity.data.additionalInfo.ubos.nationality',
+              valueDestination: 'entity.data.additionalInfo.ubos.additionalInfo.nationality',
               options: {
                 label: 'Nationality',
                 hint: 'Choose',
@@ -354,7 +365,7 @@ export const DirectorsAndUbosPage = {
             {
               name: 'ubos:identity-number-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.ubos.identityNumber',
+              valueDestination: 'entity.data.additionalInfo.ubos.nationalId',
               options: {
                 label: 'Identity Number',
                 hint: '11010219820519759X',
@@ -379,7 +390,7 @@ export const DirectorsAndUbosPage = {
             {
               name: 'ubos:address-of-residence-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.ubos.fullAddress',
+              valueDestination: 'entity.data.additionalInfo.ubos.additionalInfo.fullAddress',
               options: {
                 label: 'Address of Residence',
                 hint: '22, Choyangmen, Chaoyang District, Beijing, China',
@@ -391,7 +402,7 @@ export const DirectorsAndUbosPage = {
             {
               name: 'ubos:ownership-percentage-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.ubos.percentageOfOwnership',
+              valueDestination: 'entity.data.additionalInfo.ubos.additionalInfo.percentageOfOwnership',
               options: {
                 jsonFormDefinition: {
                   type: 'number',
@@ -539,7 +550,7 @@ export const DirectorsAndUbosPage = {
                 {
                   name: 'directors:identity-number-input',
                   type: 'json-form:text',
-                  valueDestination: 'entity.data.additionalInfo.directors.identityNumber',
+                  valueDestination: 'entity.data.additionalInfo.directors.nationalId',
                   options: {
                     jsonFormDefinition: {
                       type: 'string',
