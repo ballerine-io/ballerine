@@ -50,7 +50,7 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
     const elementValue = get(payload, definition.valueDestination);
 
     // TO DO: ADD this logic to jmespath @blokh
-    if (definition.options?.jsonFormDefinition?.type === 'ubo' && Array.isArray(elementValue)) {
+    if (definition.options?.jsonFormDefinition?.type === 'array' && Array.isArray(elementValue)) {
       const payload = stateApi.getContext();
       //@ts-ignore
       set(
@@ -61,7 +61,8 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
           additionalInfo: {
             ...obj.additionalInfo,
             companyName: get(payload, 'entity.data.companyName') as string,
-            customerCompany: (payload as CollectionFlowContext).flowConfig.customerCompany as string
+            customerCompany: (payload as CollectionFlowContext).flowConfig
+              .customerCompany as string,
           },
         })),
       );
@@ -80,7 +81,7 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
         }
       }
     },
-    [definition, stateApi, payload],
+    [definition, stateApi],
   );
 
   const handleSubmit = useCallback(() => {}, []);
