@@ -14,6 +14,7 @@ import { ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorat
 import { WorkflowService } from '@/workflow/workflow.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { BusinessService } from '@/business/business.service';
+import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
 
 @Public()
 @UseTokenAuthGuard()
@@ -108,10 +109,7 @@ export class ColectionFlowController {
   }
 
   @common.Post('/send-event')
-  async finishFlow(
-    @TokenScope() tokenScope: ITokenScope,
-    @common.Body() body: { eventName: string },
-  ) {
+  async finishFlow(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
     return await this.workflowService.event(
       {
         id: tokenScope.workflowRuntimeDataId,
