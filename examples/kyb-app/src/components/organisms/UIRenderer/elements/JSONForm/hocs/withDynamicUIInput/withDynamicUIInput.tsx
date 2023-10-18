@@ -29,11 +29,9 @@ const getInputIndex = (inputId: string) => findLastDigit(inputId);
 const injectIndexToDestinationIfNeeded = (destination: string, index: number | null): string => {
   if (index === null) return destination;
 
-  const indexPath = `[${index}]`;
-  const pathElements = destination.split('.');
-  pathElements.splice(pathElements.length - 1, 0, indexPath);
+  const result = destination.replace(`{INDEX}`, `${index}`);
 
-  const result = pathElements.join('.').replace(`.${indexPath}.`, `${indexPath}.`);
+  console.log('result', result, index);
 
   return result;
 };
