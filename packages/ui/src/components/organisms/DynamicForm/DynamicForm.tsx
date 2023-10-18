@@ -1,7 +1,7 @@
 import {
+  RegistryFieldsType,
   RJSFSchema,
   RJSFValidationError,
-  RegistryFieldsType,
   TemplatesType,
   UiSchema,
 } from '@rjsf/utils';
@@ -36,7 +36,7 @@ interface Props<TFormData> {
 }
 
 export const DynamicForm = forwardRef(
-  <TFormData extends object>(
+  <TFormData extends Record<string, unknown>>(
     {
       schema,
       uiSchema,
@@ -75,9 +75,9 @@ export const DynamicForm = forwardRef(
       return ctx;
     }, [warnings]);
 
-    const _fields = useMemo(() => ({ ...baseFields, ...fields }), [fields]);
+    const fieldsWithBaseFields = useMemo(() => ({ ...baseFields, ...fields }), [fields]);
 
-    const _layouts = useMemo(() => ({ ...baseLayouts, ...layouts }), []);
+    const layoutsWithBaseLayouts = useMemo(() => ({ ...baseLayouts, ...layouts }), []);
 
     return (
       <Provider value={warningsContext}>
@@ -89,9 +89,9 @@ export const DynamicForm = forwardRef(
           onSubmit={handleSubmit}
           onChange={handleChange}
           validator={validator}
-          fields={_fields as unknown as RegistryFieldsType}
+          fields={fieldsWithBaseFields as unknown as RegistryFieldsType}
           autoComplete="on"
-          templates={_layouts}
+          templates={layoutsWithBaseLayouts}
           showErrorList={false}
           disabled={disabled}
           liveValidate={liveValidate}

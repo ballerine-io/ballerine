@@ -18,8 +18,8 @@ export class AuthKeyMiddleware implements NestMiddleware {
 
       if (customer) {
         req.user = {
-          // @ts-ignore
           customer: customerWithoutProjects,
+          // @ts-expect-error `User`'s type does not match the `Customer`'s type
           projectIds: customer.projects?.map(project => project.id),
           type: 'customer',
         };

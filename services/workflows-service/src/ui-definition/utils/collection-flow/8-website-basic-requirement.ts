@@ -31,9 +31,12 @@ const validationSchema = {
                       properties: {
                         mainWebsite: {
                           type: 'string',
-                          format: 'uri',
+                          pattern:
+                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)?(\\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?(#[a-zA-Z0-9_]+)?$',
+                          minLength: 1,
                           errorMessage: {
-                            format: 'Website URL should be a valid URL.',
+                            minLength: 'Main Website should not be empty.',
+                            pattern: 'Main Website should be a valid URL.',
                           },
                         },
                         contactDetails: {
@@ -42,23 +45,32 @@ const validationSchema = {
                         },
                         returnPolicyUrl: {
                           type: 'string',
-                          format: 'uri',
+                          pattern:
+                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)?(\\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?(#[a-zA-Z0-9_]+)?$',
+                          minLength: 1,
                           errorMessage: {
-                            format: 'Return policy URL should be a valid URL.',
+                            minLength: 'Return Policy URL should not be empty.',
+                            pattern: 'Return Policy URL should be a valid URL.',
                           },
                         },
                         shippingPolicyUrl: {
                           type: 'string',
-                          format: 'uri',
+                          pattern:
+                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)?(\\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?(#[a-zA-Z0-9_]+)?$',
+                          minLength: 1,
                           errorMessage: {
-                            format: 'Shipping policy URL should be a valid URL.',
+                            minLength: 'Shipping Policy URL should not be empty.',
+                            pattern: 'Shipping Policy URL should be a valid URL.',
                           },
                         },
                         aboutUsUrl: {
                           type: 'string',
-                          format: 'uri',
+                          pattern:
+                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)?(\\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?(#[a-zA-Z0-9_]+)?$',
+                          minLength: 1,
                           errorMessage: {
-                            format: 'About us URL should be a valid URL.',
+                            minLength: 'About Us URL should not be empty.',
+                            pattern: 'About Us URL should be a valid URL.',
                           },
                         },
                         productQuantity: {
