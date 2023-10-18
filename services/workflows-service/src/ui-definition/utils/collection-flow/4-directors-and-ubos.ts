@@ -535,7 +535,7 @@ export const DirectorsAndUbosPage = {
                 {
                   name: 'directors:nationality-input',
                   type: 'nationality-picker',
-                  valueDestination: 'entity.data.additionalInfo.directors.nationality',
+                  valueDestination: 'entity.data.additionalInfo.directors.additionalInfo.nationality',
                   options: {
                     jsonFormDefinition: {
                       type: 'string',
@@ -562,7 +562,7 @@ export const DirectorsAndUbosPage = {
                 {
                   name: 'directors:address-of-residence-input',
                   type: 'json-form:text',
-                  valueDestination: 'entity.data.additionalInfo.directors.fullAddress',
+                  valueDestination: 'entity.data.additionalInfo.directors.additionalInfo.fullAddress',
                   options: {
                     jsonFormDefinition: {
                       type: 'string',
