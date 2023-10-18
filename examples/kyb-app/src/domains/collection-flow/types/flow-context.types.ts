@@ -2,7 +2,7 @@ export interface FlowConfig {
   apiUrl: string;
   tokenId: string;
   appState: string;
-  companyName: string;
+  customerCompany: string;
 }
 
 export type CollectionFlowContext = Record<string, unknown> & {

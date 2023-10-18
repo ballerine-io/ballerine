@@ -61,6 +61,7 @@ const validationSchema = {
                       },
                       additionalInfo: {
                         type: 'object',
+                        default: {},
                         required: [
                           'nationality',
                           'fullAddress',
@@ -107,11 +108,8 @@ const validationSchema = {
                       required: {
                         firstName: 'First name is required.',
                         lastName: 'Last name is required.',
-                        nationality: 'Nationality is required.',
                         nationalId: 'Identity number is required.',
                         email: 'Email is required.',
-                        fullAddress: 'Full address is required.',
-                        percentageOfOwnership: 'Percentage of ownership is required.',
                       },
                     },
                   },
@@ -289,6 +287,7 @@ export const DirectorsAndUbosPage = {
                 'ubos:nationality-input',
                 'ubos:identity-number-input',
                 'ubos:email-input',
+                'ubos:ownership-percentage-input',
                 'ubos:address-of-residence-input',
               ],
             },
