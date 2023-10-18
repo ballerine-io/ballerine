@@ -40,16 +40,14 @@ export const DropdownInput = ({
 
     const hasBeenClosed = state === false;
 
-    if (hasBeenClosed) {
-      onBlur &&
-        //@ts-nocheck
-        onBlur({
-          target: {
-            name: name,
-            value: value,
-          },
-        } as FocusEvent<any>);
-    }
+    if (!hasBeenClosed || !onBlur) return;
+
+    onBlur({
+      target: {
+        name: name,
+        value: value,
+      },
+    } as FocusEvent<any>);
   }, []);
 
   return (
