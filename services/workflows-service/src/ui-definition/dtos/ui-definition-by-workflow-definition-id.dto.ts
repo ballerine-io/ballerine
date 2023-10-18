@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 import { UiDefinitionContext } from '@prisma/client';
 import { oneOf } from '@/common/decorators/one-of.decorator';
+import { ObjectValues } from '@/types';
 
 export const uiDefinitionContextValues = Object.values(UiDefinitionContext);
 
@@ -19,5 +20,5 @@ export class UiDefinitionByWorkflowDefinitionIdDto {
   })
   @oneOf(uiDefinitionContextValues, { each: true })
   @IsString()
-  uiContext!: keyof typeof UiDefinitionContext;
+  uiContext!: ObjectValues<typeof UiDefinitionContext>;
 }
