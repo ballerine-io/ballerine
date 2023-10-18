@@ -16,12 +16,7 @@ const validationSchema = {
                   minItems: 1,
                   items: {
                     type: 'object',
-                    required: [
-                      'firstName',
-                      'lastName',
-                      'nationalId',
-                      'email',
-                    ],
+                    required: ['firstName', 'lastName', 'nationalId', 'email'],
                     properties: {
                       firstName: {
                         type: 'string',
@@ -61,11 +56,7 @@ const validationSchema = {
                       },
                       additionalInfo: {
                         type: 'object',
-                        required: [
-                          'nationality',
-                          'fullAddress',
-                          'percentageOfOwnership',
-                        ],
+                        required: ['nationality', 'fullAddress', 'percentageOfOwnership'],
                         errorMessage: {
                           required: {
                             nationality: 'Nationality is required.',
@@ -100,8 +91,8 @@ const validationSchema = {
                               maximum: 'Percentage of ownership must not exceed 100.',
                             },
                           },
-                        }
-                      }
+                        },
+                      },
                     },
                     errorMessage: {
                       required: {
@@ -296,9 +287,12 @@ export const DirectorsAndUbosPage = {
               createWhenHidden: true,
               destination: 'entity.data.additionalInfo.ubos',
               schema: {
-                'entity.data.additionalInfo.ubos[0].firstName': 'entity.data.additionalInfo.mainRepresentative.firstName',
-                'entity.data.additionalInfo.ubos[0].lastName': 'entity.data.additionalInfo.mainRepresentative.lastName',
-                'entity.data.additionalInfo.ubos[0].email': 'entity.data.additionalInfo.mainRepresentative.email',
+                'entity.data.additionalInfo.ubos[0].firstName':
+                  'entity.data.additionalInfo.mainRepresentative.firstName',
+                'entity.data.additionalInfo.ubos[0].lastName':
+                  'entity.data.additionalInfo.mainRepresentative.lastName',
+                'entity.data.additionalInfo.ubos[0].email':
+                  'entity.data.additionalInfo.mainRepresentative.email',
               },
               insertRules: [
                 {
@@ -402,7 +396,8 @@ export const DirectorsAndUbosPage = {
             {
               name: 'ubos:ownership-percentage-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.ubos.additionalInfo.percentageOfOwnership',
+              valueDestination:
+                'entity.data.additionalInfo.ubos.additionalInfo.percentageOfOwnership',
               options: {
                 jsonFormDefinition: {
                   type: 'number',
@@ -535,7 +530,8 @@ export const DirectorsAndUbosPage = {
                 {
                   name: 'directors:nationality-input',
                   type: 'nationality-picker',
-                  valueDestination: 'entity.data.additionalInfo.directors.additionalInfo.nationality',
+                  valueDestination:
+                    'entity.data.additionalInfo.directors.additionalInfo.nationality',
                   options: {
                     jsonFormDefinition: {
                       type: 'string',
@@ -562,7 +558,8 @@ export const DirectorsAndUbosPage = {
                 {
                   name: 'directors:address-of-residence-input',
                   type: 'json-form:text',
-                  valueDestination: 'entity.data.additionalInfo.directors.additionalInfo.fullAddress',
+                  valueDestination:
+                    'entity.data.additionalInfo.directors.additionalInfo.fullAddress',
                   options: {
                     jsonFormDefinition: {
                       type: 'string',
