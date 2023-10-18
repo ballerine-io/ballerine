@@ -1,5 +1,5 @@
 import { RJSVInputProps, TextInputAdapter } from '@ballerine/ui';
-import locale from 'i18n-nationality/langs/en.json';
+import locale from './langs/en.json';
 import { useMemo } from 'react';
 
 export const NationalityPicker = (props: RJSVInputProps) => {
