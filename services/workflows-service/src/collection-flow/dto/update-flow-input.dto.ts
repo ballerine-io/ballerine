@@ -1,17 +1,11 @@
-import { IsNullable } from '@/common/decorators/is-nullable.decorator';
-import { Type } from 'class-transformer';
 import {
-  IsArray,
-  IsDate,
   IsEmail,
   IsNotEmpty,
-  IsNumber,
   IsObject,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { BusinessUpdateDto } from '@/business/dtos/business.update';
 
 export class MainRepresentative {
   @IsString()
@@ -47,7 +41,7 @@ export class CompanyDocument {
   fileId!: string;
 
   @IsObject()
-  properties!: object;
+  properties!: Record<string, unknown>;
 
   @IsString()
   @IsNotEmpty()
@@ -89,16 +83,16 @@ export class UBOShareholder {
 
 export class UpdateFlowPayload {
   @IsObject()
-  business?: object;
+  business?: Record<string, unknown>;
 
   @IsString()
   ballerineEntityId?: string;
 
   @IsObject()
-  endUser?: object;
+  endUser?: Record<string, unknown>;
 
   @IsObject()
-  context!: object;
+  context!: Record<string, unknown>;
 }
 
 export class UpdateFlowDto {
