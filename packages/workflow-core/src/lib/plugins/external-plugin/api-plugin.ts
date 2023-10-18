@@ -99,7 +99,8 @@ export class ApiPlugin {
       headers: headers,
     };
 
-    if (this.method.toUpperCase() === 'POST' || this.method.toUpperCase() === 'PUT' ) {
+    // @TODO: Use an enum over string literals for HTTP methods
+    if (this.method.toUpperCase() !== 'GET' && payload) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       requestParams.body = JSON.stringify(payload);
