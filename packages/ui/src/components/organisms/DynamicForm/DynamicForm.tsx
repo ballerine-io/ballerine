@@ -36,7 +36,7 @@ interface Props<TFormData> {
 }
 
 export const DynamicForm = forwardRef(
-  <TFormData extends Record<string, unknown>>(
+  <TFormData extends Record<string, any>>(
     {
       schema,
       uiSchema,
