@@ -34,7 +34,7 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
         ...ctx?.flowConfig,
         apiUrl: `${protocol}//${host}`,
         tokenId: getAccessToken(),
-        companyName: customer.displayName,
+        customerCompany: customer.displayName,
       } as CollectionFlowContext['flowConfig'],
     } as CollectionFlowContext);
 
