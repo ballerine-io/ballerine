@@ -1,87 +1,88 @@
 const validationSchema = {
-    "type": "object",
-    "required": ["entity"],
-    "properties": {
-      "entity": {
-        "type": "object",
-        "properties": {
-          "data": {
-            "type": "object",
-            "required": ["additionalInfo"],
-            "properties": {
-              "additionalInfo": {
-                "type": "object",
-                "required": ["mainRepresentative"],
-                "properties": {
-                  "mainRepresentative": {
-                    "type": "object",
-                    "required": ["phone", "dateOfBirth", "firstName", "lastName", "additionalInfo"],
-                    errorMessage: {
-                      required: {
-                        phone: 'A valid phone number is required.',
-                        dateOfBirth: 'Date of birth is required.',
-                        firstName: 'First name is required.',
-                        lastName: 'Last name is required.',
-                        additionalInfo: 'Additional information is required.'
-                      }
+  type: 'object',
+  required: ['entity'],
+  properties: {
+    entity: {
+      type: 'object',
+      properties: {
+        data: {
+          type: 'object',
+          required: ['additionalInfo'],
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['mainRepresentative'],
+              properties: {
+                mainRepresentative: {
+                  type: 'object',
+                  required: ['phone', 'dateOfBirth', 'firstName', 'lastName', 'additionalInfo'],
+                  errorMessage: {
+                    required: {
+                      phone: 'A valid phone number is required.',
+                      dateOfBirth: 'Date of birth is required.',
+                      firstName: 'First name is required.',
+                      lastName: 'Last name is required.',
+                      additionalInfo: 'Additional information is required.',
                     },
-                    "properties": {
-                      "phone": {
-                        "type": "string",
-                        "pattern": "^[+]?[0-9]{10,15}$",
-                        "errorMessage": {
-                          "pattern": "Phone number must be 10 to 15 digits long and may start with a +."
-                        }
+                  },
+                  properties: {
+                    phone: {
+                      type: 'string',
+                      pattern: '^[+]?[0-9]{10,15}$',
+                      errorMessage: {
+                        pattern:
+                          'Phone number must be 10 to 15 digits long and may start with a +.',
                       },
-                      "dateOfBirth": {
-                        "type": "string",
-                        "errorMessage": {
-                          "type": "Date of birth must be a string."
-                        }
+                    },
+                    dateOfBirth: {
+                      type: 'string',
+                      errorMessage: {
+                        type: 'Date of birth must be a string.',
                       },
-                      "firstName": {
-                        "type": "string",
-                        "minLength": 2,
-                        "errorMessage": {
-                          "minLength": "First name must be at least 2 characters long."
-                        }
+                    },
+                    firstName: {
+                      type: 'string',
+                      minLength: 2,
+                      errorMessage: {
+                        minLength: 'First name must be at least 2 characters long.',
                       },
-                      "lastName": {
-                        "type": "string",
-                        "minLength": 2,
-                        "errorMessage": {
-                          "minLength": "Last name must be at least 2 characters long."
-                        }
+                    },
+                    lastName: {
+                      type: 'string',
+                      minLength: 2,
+                      errorMessage: {
+                        minLength: 'Last name must be at least 2 characters long.',
                       },
-                      "additionalInfo": {
-                        "type": "object",
-                        "required": ["jobTitle"],
-                        "default": {},
-                        "errorMessage": {
-                          required: {
-                            jobTitle: 'Job title is a required',
-                          }
+                    },
+                    additionalInfo: {
+                      type: 'object',
+                      required: ['jobTitle'],
+                      default: {},
+                      errorMessage: {
+                        required: {
+                          jobTitle: 'Job title is a required',
                         },
-                        "properties": {
-                          "jobTitle": {
-                            "type": "string",
-                            "minLength": 2,
-                            "errorMessage": {
-                              "minLength": "Job title must be at least 2 characters long."
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  };
+                      },
+                      properties: {
+                        jobTitle: {
+                          type: 'string',
+                          minLength: 2,
+                          errorMessage: {
+                            minLength: 'Job title must be at least 2 characters long.',
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
 
 export const PersonalInfoPage = {
   type: 'page',
@@ -90,7 +91,7 @@ export const PersonalInfoPage = {
   stateName: 'personal_details',
   pageValidator: {
     type: 'json-schema',
-    value: validationSchema
+    value: validationSchema,
   },
   elements: [
     {
@@ -113,8 +114,14 @@ export const PersonalInfoPage = {
           name: 'json-form:personal-information',
           options: {
             jsonFormDefinition: {
-              required: ['first-name-input', 'last-name-input', 'job-title-input', 'date-of-birth-input', 'phone-number-input']
-            }
+              required: [
+                'first-name-input',
+                'last-name-input',
+                'job-title-input',
+                'date-of-birth-input',
+                'phone-number-input',
+              ],
+            },
           },
           availableOn: [
             {
@@ -215,8 +222,8 @@ export const PersonalInfoPage = {
                 },
               ],
             },
-          ]
-        }
+          ],
+        },
       ],
     },
   ],
