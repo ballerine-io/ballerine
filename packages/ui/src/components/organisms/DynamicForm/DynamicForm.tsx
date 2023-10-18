@@ -1,7 +1,7 @@
 import {
+  RegistryFieldsType,
   RJSFSchema,
   RJSFValidationError,
-  RegistryFieldsType,
   TemplatesType,
   UiSchema,
 } from '@rjsf/utils';
@@ -36,7 +36,7 @@ interface Props<TFormData> {
 }
 
 export const DynamicForm = forwardRef(
-  <TFormData extends object>(
+  <TFormData extends Record<string, unknown>>(
     {
       schema,
       uiSchema,
