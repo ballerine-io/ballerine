@@ -45,7 +45,7 @@ export const useTasks = ({
     directors: directorsUserProvided,
     mainRepresentative,
     mainContact,
-    openCorporate,
+    openCorporate: _openCorporate,
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
