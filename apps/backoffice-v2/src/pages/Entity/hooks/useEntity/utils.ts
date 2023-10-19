@@ -2,12 +2,8 @@ import { TDropdownOption } from '../../components/EditableDetails/types';
 import { AnyArray, TypesafeOmit } from '../../../../common/types';
 import { TDocument } from '@ballerine/common';
 import { TWorkflowById } from '../../../../domains/workflows/fetchers';
+import { toTitleCase } from 'string-ts';
 
-export const convertSnakeCaseToTitleCase = (input: string): string =>
-  input
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
 const composeDataFormCell = (
   cellName: string,
   categoryDropdownOptions: TDropdownOption[],
@@ -45,7 +41,7 @@ export const composePickableCategoryType = (
     if (category) {
       documentCategoryDropdownOptions.push({
         value: category,
-        label: convertSnakeCaseToTitleCase(category),
+        label: toTitleCase(category),
       });
     }
     const type = document.type;
@@ -54,7 +50,7 @@ export const composePickableCategoryType = (
         dependantOn: 'category',
         dependantValue: category,
         value: type,
-        label: convertSnakeCaseToTitleCase(type),
+        label: toTitleCase(type),
       });
     }
   });
