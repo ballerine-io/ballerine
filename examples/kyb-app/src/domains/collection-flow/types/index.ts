@@ -131,7 +131,7 @@ export interface TCustomer {
   customerStatus: string;
   country: string;
   language: string;
-  customerWebsiteUrl: string;
+  websiteUrl: string;
 }
 
 export interface UIPage {

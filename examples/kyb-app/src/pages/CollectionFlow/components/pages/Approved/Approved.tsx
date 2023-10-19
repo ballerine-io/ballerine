@@ -25,7 +25,7 @@ export const Approved = withSessionProtected(() => {
           <Button
             variant="secondary"
             onClick={() => {
-              location.href = customer.customerWebsiteUrl;
+              location.href = customer.websiteUrl;
             }}
           >
             Back to {customer?.displayName} Portal
