@@ -48,14 +48,16 @@ export class CustomerRepository {
     return this.prisma.customer.findFirstOrThrow({
       where: { projects: { some: { id: projectId } } },
       ...(args || {
-        id: true,
-        name: true,
-        displayName: true,
-        logoImageUri: true,
-        country: true,
-        language: true,
-        websiteUrl: true,
-        projects: true,
+        select: {
+          id: true,
+          name: true,
+          displayName: true,
+          logoImageUri: true,
+          country: true,
+          language: true,
+          websiteUrl: true,
+          projects: true,
+        },
       }),
     });
   }

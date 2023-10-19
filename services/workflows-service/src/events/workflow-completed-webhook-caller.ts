@@ -10,7 +10,6 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
 import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhooks, Webhook } from '@/events/get-webhooks';
-import { IWebhookPayload } from '@/events/types';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
 import { StateTag } from '@ballerine/common';
@@ -59,7 +58,11 @@ export class WorkflowCompletedWebhookCaller {
       'workflow.completed',
     );
 
-    const customer = await this.customerService.getByProjectId(data.runtimeData.projectId);
+    const customer = await this.customerService.getByProjectId(data.runtimeData.projectId, {
+      select: {
+        authenticationConfiguration: true,
+      },
+    });
 
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;
