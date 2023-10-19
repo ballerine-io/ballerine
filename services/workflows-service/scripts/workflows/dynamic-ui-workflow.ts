@@ -21,6 +21,7 @@ export const dynamicUiWorkflowDefinition = {
       collection_invite: {
         on: {
           INVIATION_SENT: 'collection_flow',
+          INVIATION_FAILURE: 'auto_reject',
         },
       },
       collection_flow: {
@@ -137,6 +138,8 @@ export const dynamicUiWorkflowDefinition = {
         name: 'collection_invite_email',
         pluginKind: 'email',
         url: `{secret.EMAIL_API_URL}`,
+        successAction: 'INVIATION_SENT',
+        errorAction: 'KYB_DONE',
         method: 'POST',
         stateNames: ['collection_invite'],
         headers: {
