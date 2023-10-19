@@ -25,7 +25,20 @@ export const kycEmailSessionDefinition = {
           API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],
         },
       },
+      get_kyc_session_revision: {
+        tags: [StateTag.REVISION],
+        on: {
+          SEND_EMAIL: [{ target: 'revision_email_sent' }],
+          API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],
+        },
+      },
       email_sent: {
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }],
+        },
+      },
+      revision_email_sent: {
         tags: [StateTag.REVISION],
         on: {
           KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }],
@@ -74,7 +87,7 @@ export const kycEmailSessionDefinition = {
         pluginKind: 'kyc-session',
         url: `${env.UNIFIED_API_URL}/individual-verification-sessions`,
         method: 'POST',
-        stateNames: ['get_kyc_session'],
+        stateNames: ['get_kyc_session', 'get_kyc_session_revision'],
         successAction: 'SEND_EMAIL',
         errorAction: 'API_CALL_ERROR',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
@@ -106,7 +119,7 @@ export const kycEmailSessionDefinition = {
         pluginKind: 'email',
         url: `{secret.EMAIL_API_URL}`,
         method: 'POST',
-        stateNames: ['email_sent'],
+        stateNames: ['email_sent', 'revision_email_sent'],
         headers: {
           Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
           'Content-Type': 'application/json',
