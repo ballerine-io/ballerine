@@ -90,7 +90,11 @@ export class DocumentChangedWebhookCaller {
       delete doc.propertiesSchema;
     });
 
-    const customer = await this.customerService.getByProjectId(data.updatedRuntimeData.projectId);
+    const customer = await this.customerService.getByProjectId(data.updatedRuntimeData.projectId, {
+      select: {
+        authenticationConfiguration: true,
+      },
+    });
 
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;

@@ -52,7 +52,11 @@ export class WorkflowStateChangedWebhookCaller {
       'workflow.state.changed',
     );
 
-    const customer = await this.customerService.getByProjectId(data.runtimeData.projectId);
+    const customer = await this.customerService.getByProjectId(data.runtimeData.projectId, {
+      select: {
+        authenticationConfiguration: true,
+      },
+    });
 
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;

@@ -56,4 +56,11 @@ export class CustomerCreateDto {
   })
   @IsString()
   projectName?: string;
+
+  @ApiProperty({
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  websiteUrl?: string;
 }
