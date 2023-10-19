@@ -16,8 +16,8 @@ import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dia
 import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
 import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
 import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
-import { convertSnakeCaseToTitleCase } from '../../hooks/useEntity/utils';
 import { tagToBadgeData } from './consts';
+import { toTitleCase } from 'string-ts';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -90,7 +90,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                   'bg-violet-500/20 text-violet-500': tag === StateTag.COLLECTION_FLOW,
                 })}
               >
-                {convertSnakeCaseToTitleCase(tagToBadgeData[tag].text)}
+                {toTitleCase(tagToBadgeData[tag].text)}
               </Badge>
             </div>
           )}

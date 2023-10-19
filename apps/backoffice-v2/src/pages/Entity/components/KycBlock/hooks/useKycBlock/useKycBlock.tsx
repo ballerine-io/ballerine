@@ -3,13 +3,12 @@ import { isObject, safeEvery, StateTag, TStateTags } from '@ballerine/common';
 
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import {
-  convertSnakeCaseToTitleCase,
-  omitPropsFromObject,
-} from '../../../../hooks/useEntity/utils';
+import { omitPropsFromObject } from '../../../../hooks/useEntity/utils';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 import { useCaseDecision } from '../../../Case/hooks/useCaseDecision/useCaseDecision';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
+import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
+import { toTitleCase } from 'string-ts';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -130,8 +129,8 @@ export const useKycBlock = ({
   const documents = childWorkflow?.context?.documents?.flatMap(
     (document, docIndex) =>
       document?.pages?.map(({ type, metadata, data }, pageIndex) => ({
-        title: `${convertSnakeCaseToTitleCase(document?.category)} - ${convertSnakeCaseToTitleCase(
-          document?.type,
+        title: `${valueOrNA(toTitleCase(document?.category ?? ''))} - ${valueOrNA(
+          toTitleCase(document?.type ?? ''),
         )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
         imageUrl: results[docIndex][pageIndex],
         fileType: type,
@@ -233,7 +232,9 @@ export const useKycBlock = ({
     value: [
       {
         type: 'heading',
-        value: `${childWorkflow?.context?.entity?.data?.firstName} ${childWorkflow?.context?.entity?.data?.lastName}`,
+        value: `${valueOrNA(childWorkflow?.context?.entity?.data?.firstName)} ${valueOrNA(
+          childWorkflow?.context?.entity?.data?.lastName,
+        )}`,
       },
       {
         id: 'actions',

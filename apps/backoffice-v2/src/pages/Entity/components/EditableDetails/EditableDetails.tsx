@@ -1,8 +1,6 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Form } from '../../../../common/components/organisms/Form/Form';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
-import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { Button, buttonVariants } from '../../../../common/components/atoms/Button/Button';
 import React, { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
@@ -27,6 +25,7 @@ import { useUpdateDocumentByIdMutation } from '../../../../domains/workflows/hoo
 import { isValidDate } from '../../../../common/utils/is-valid-date';
 import { isValidIsoDate } from '../../../../common/utils/is-valid-iso-date/is-valid-iso-date';
 import { JsonDialog } from '@ballerine/ui';
+import { toTitleCase } from 'string-ts';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -231,7 +230,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
                     return (
                       <FormItem>
-                        <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
+                        <FormLabel>{toTitleCase(title)}</FormLabel>
                         {(isObject(value) || Array.isArray(value)) && (
                           <div
                             className={`flex items-end justify-start`}
