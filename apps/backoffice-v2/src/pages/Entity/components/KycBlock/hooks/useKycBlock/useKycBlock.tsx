@@ -122,7 +122,7 @@ export const useKycBlock = ({
       title,
       value,
       pattern: '',
-      isEditable: true,
+      isEditable: false,
       dropdownOptions: undefined,
     }),
   );
