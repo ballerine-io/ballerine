@@ -16,24 +16,6 @@ export interface PageError {
 }
 
 export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] => {
-  // const { documents } = context;
-
-  // const pageErrors = useMemo(() => {
-  //   const errors: ErrorField[] = [];
-
-  //   (documents as Document[])?.forEach((document, index) => {
-  //     if (!(document.decision?.status == 'revision' || document.decision?.status == 'rejected')) {
-  //       return;
-  //     }
-  //     const fieldId = `documents[${index}].pages[0].ballerineFileId`;
-  //     const message = document.decision.revisionReason;
-
-  //     errors.push({ fieldId, message, type: 'warning', fieldDestination: fieldId });
-  //   });
-
-  //   return errors;
-  // }, [documents]);
-
   const pageErrors = useMemo(() => {
     const pagesWithErrors: PageError[] = pages.map(page => {
       const pageErrorBase: PageError = {
@@ -48,27 +30,17 @@ export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] 
     });
 
     pagesWithErrors.forEach(pageError => {
-      pageError.errors = (context.documents as Document[])
-        .filter((document, index) => {
-          if (!(document?.decision?.status == 'revision' || document?.decision?.status == 'rejected')) {
-            return false;
-          }
+      pageError.errors = (context.documents as Document[]).map(document => {
+        const documentPath = `document-error-${document.id}`;
+        const message = document?.decision?.revisionReason;
 
-          const documentPath = `documents[${index}].pages[0].ballerineFileId`;
-
-          return Boolean(findDefinitionByDestinationPath(documentPath, pageError._elements));
-        })
-        .map((document, index) => {
-          const documentPath = `documents[${index}].pages[0].ballerineFileId`;
-          const message = document?.decision?.revisionReason;
-
-          return {
-            fieldId: documentPath,
-            fieldDestination: documentPath,
-            message,
-            type: 'warning',
-          };
-        });
+        return {
+          fieldId: documentPath,
+          fieldDestination: documentPath,
+          message,
+          type: 'warning',
+        };
+      });
     });
 
     return pagesWithErrors;
