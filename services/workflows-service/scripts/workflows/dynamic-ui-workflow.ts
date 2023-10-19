@@ -13,11 +13,16 @@ export const dynamicUiWorkflowDefinition = {
   definition: {
     id: 'kyb_dynamic_ui_session_example_v1',
     predictableActionArguments: true,
-    initial: 'collection_flow',
+    initial: 'collection_invite',
     context: {
       documents: [],
     },
     states: {
+      collection_invite: {
+        on: {
+          INVIATION_SENT: 'collection_flow',
+        },
+      },
       collection_flow: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
@@ -104,6 +109,37 @@ export const dynamicUiWorkflowDefinition = {
               mapping: '@', // jmespath
             },
           ],
+        },
+      },
+      {
+        name: 'collection_invite_email',
+        pluginKind: 'email',
+        url: `{secret.EMAIL_API_URL}`,
+        method: 'POST',
+        stateNames: ['collection_invite'],
+        headers: {
+          Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
+          'Content-Type': 'application/json',
+        },
+        request: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: `{
+              companyName: entity.data.companyName,
+              customerName: metadata.customerName,
+              firstName: entity.data.additionalInfo.mainRepresentative.firstName,
+              collectionFlowUrl: join('',['https://','{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token]),
+              from: 'no-reply@ballerine.com',
+              receivers: [entity.data.additionalInfo.mainRepresentative.email],
+              templateId: 'd-8949519316074e03909042cfc5eb4f02',
+              adapter: '{secret.MAIL_ADAPTER}'
+              }`, // jmespath
+            },
+          ],
+        },
+        response: {
+          transform: [],
         },
       },
       {

@@ -1416,7 +1416,12 @@ export class WorkflowService {
 
     let workflowRuntimeData: WorkflowRuntimeData, newWorkflowCreated: boolean;
 
-    if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
+    const mergedConfig: WorkflowConfig = merge(
+      workflowDefinition.config,
+      validatedConfig || {},
+    ) as InputJsonValue;
+
+    if (!existingWorkflowRuntimeData || mergedConfig?.allowMultipleActiveWorkflows) {
       const contextWithoutDocumentPageType = {
         ...contextToInsert,
         documents: this.omitTypeFromDocumentsPages(contextToInsert.documents),
@@ -1438,7 +1443,7 @@ export class WorkflowService {
               ...contextToInsert,
               documents: documentsWithPersistedImages,
             } as InputJsonValue,
-            config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
+            config: mergedConfig as InputJsonValue,
             status: 'active',
             workflowDefinitionId: workflowDefinition.id,
             ...(parentWorkflowId &&
@@ -1455,7 +1460,8 @@ export class WorkflowService {
       );
 
       if (
-        workflowRuntimeData.config.createCollectionFlowToken &&
+        // @ts-ignore
+        mergedConfig.createCollectionFlowToken &&
         workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative
       ) {
         const endUser = await this.endUserService.createWithBusiness(
@@ -1466,6 +1472,7 @@ export class WorkflowService {
               workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.lastName,
             email: workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.email,
             companyName: workflowRuntimeData.context.entity.data.companyName,
+            isContactPerson: true,
           },
           currentProjectId,
         );
@@ -1482,7 +1489,7 @@ export class WorkflowService {
             data: {
               context: {
                 ...workflowRuntimeData.context,
-                token: workflowToken.token,
+                metadata: { customerName: customer.displayName, token: workflowToken.token },
               } as InputJsonValue,
             },
           },
