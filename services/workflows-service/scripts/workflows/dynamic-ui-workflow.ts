@@ -178,12 +178,13 @@ export const dynamicUiWorkflowDefinition = {
           transform: [
             {
               transformer: 'jmespath',
+              // #TODO: create new token (new using old one)
               mapping: `{
               kybCompanyName: entity.data.companyName,
               customerCompanyName: entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              resubmissionLink: join('',['https://',entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'.demo.ballerine.app','/workflowRuntimeId=',workflowRuntimeId,'?resubmitEvent=COLLECTION_FLOW_FINISHED']),
-              supportEmail: join('',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'@support.com']),
+              resubmissionLink: join('',['https://','{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token]),
+              supportEmail: join('',['support@',entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,'.com']),
               from: 'no-reply@ballerine.com',
               name: join(' ',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,'Team']),
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
