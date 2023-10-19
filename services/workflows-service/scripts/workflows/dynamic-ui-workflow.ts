@@ -45,6 +45,8 @@ export const dynamicUiWorkflowDefinition = {
               },
             },
           ],
+          reject: 'rejected',
+          revision: 'revision',
         },
       },
       manual_review: {
