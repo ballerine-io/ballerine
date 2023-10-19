@@ -1025,10 +1025,19 @@ export const useTasks = ({
                     },
                   ],
                   data: directorsUserProvided?.map(
-                    ({ firstName, lastName, fullAddress: address, ...rest }) => ({
-                      name: `${firstName} ${lastName}`,
-                      address,
+                    ({
+                      firstName,
+                      lastName,
+                      nationalId: identityNumber,
+                      additionalInfo,
+                      ...rest
+                    }) => ({
                       ...rest,
+                      name: `${firstName} ${lastName}`,
+                      address: additionalInfo?.fullAddress,
+                      nationality: additionalInfo?.nationality,
+                      identityNumber,
+                      ...omitPropsFromObject(additionalInfo, 'fullAddress', 'nationality'),
                     }),
                   ),
                 },
