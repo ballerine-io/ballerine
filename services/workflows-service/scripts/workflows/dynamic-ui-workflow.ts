@@ -64,7 +64,7 @@ export const dynamicUiWorkflowDefinition = {
       revision: {
         tags: [StateTag.REVISION],
         on: {
-          RESUBMITTED: 'manual_review',
+          COLLECTION_FLOW_FINISHED: 'manual_review',
         },
       },
       rejected: {
@@ -126,7 +126,7 @@ export const dynamicUiWorkflowDefinition = {
               kybCompanyName: entity.data.companyName,
               customerCompanyName: entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              resubmissionLink: join('',['https://',entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'.demo.ballerine.app','/workflowRuntimeId=',workflowRuntimeId,'?resubmitEvent=RESUBMITTED']),
+              resubmissionLink: join('',['https://',entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'.demo.ballerine.app','/workflowRuntimeId=',workflowRuntimeId,'?resubmitEvent=COLLECTION_FLOW_FINISHED']),
               supportEmail: join('',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'@support.com']),
               from: 'no-reply@ballerine.com',
               name: join(' ',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,'Team']),
