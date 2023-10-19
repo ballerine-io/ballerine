@@ -176,16 +176,9 @@ export const StoreInfoPage = {
                 hint: 'Choose',
                 jsonFormDefinition: {
                   type: 'string',
-                  oneOf: [
-                    { const: 'Food & Beverage', title: 'Food & Beverage' },
-                    { const: 'Retail', title: 'Retail' },
-                    { const: 'Travel', title: 'Travel' },
-                    { const: 'Entertainment', title: 'Entertainment' },
-                    { const: 'Education', title: 'Education' },
-                    { const: 'Healthcare', title: 'Healthcare' },
-                    { const: 'Professional Services', title: 'Professional Services' },
-                    { const: 'Other', title: 'Other' },
-                  ],
+                },
+                uiSchema: {
+                  'ui:field': 'IndustriesPicker',
                 },
               },
             },
