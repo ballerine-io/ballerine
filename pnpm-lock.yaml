@@ -64,7 +64,7 @@ importers:
         specifier: 0.7.13-3e08f108.6
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.3.5-3e08f108.11
+        specifier: 0.3.5-3e08f108.12
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.5.11-3e08f108.7
@@ -634,7 +634,7 @@ importers:
         specifier: 0.1.11-3e08f108.7
         version: link:../../packages/blocks
       '@ballerine/ui':
-        specifier: 0.3.5-3e08f108.11
+        specifier: 0.3.5-3e08f108.12
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.5.11-3e08f108.7
@@ -36732,5 +36732,4 @@ packages:
   file:services/workflows-service/plugins/verify-repository-project-scoped:
     resolution: {directory: services/workflows-service/plugins/verify-repository-project-scoped, type: directory}
     name: eslint-plugin-ballerine
-    version: 1.0.0
     dev: true

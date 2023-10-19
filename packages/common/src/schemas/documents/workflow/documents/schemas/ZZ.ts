@@ -1,12 +1,14 @@
 import { TDocument } from '../types';
 import { Type } from '@sinclair/typebox';
 
-export const getUniveralDocuments = (): TDocument[] => {
-  const TypeAlphanumericString = Type.String({ pattern: '^[a-zA-Z0-9]*$' });
-  const TypePastDate = Type.String({
-    format: 'date',
-    formatMaximum: new Date().toISOString().split('T')[0],
-  });
+export const getUniversalDocuments = (): TDocument[] => {
+  const OptionalTypeAlphanumericString = Type.Optional(Type.String({ pattern: '^[a-zA-Z0-9]*$' }));
+  const OptionalTypePastDate = Type.Optional(
+    Type.String({
+      format: 'date',
+      formatMaximum: new Date().toISOString().split('T')[0],
+    }),
+  );
 
   return [
     {
@@ -16,9 +18,9 @@ export const getUniveralDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        businessName: Type.String(),
-        registrationNumber: TypeAlphanumericString,
-        issueDate: TypePastDate,
+        businessName: Type.Optional(Type.String()),
+        registrationNumber: OptionalTypeAlphanumericString,
+        issueDate: OptionalTypePastDate,
       }),
     },
     {
@@ -28,9 +30,9 @@ export const getUniveralDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        businessName: Type.String(),
-        registrationNumber: TypeAlphanumericString,
-        issueDate: TypePastDate,
+        businessName: Type.Optional(Type.String()),
+        registrationNumber: OptionalTypeAlphanumericString,
+        issueDate: OptionalTypePastDate,
       }),
     },
     {
@@ -40,9 +42,9 @@ export const getUniveralDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        businessName: Type.String(),
-        taxIdNumber: Type.String(),
-        issueDate: TypePastDate,
+        businessName: Type.Optional(Type.String()),
+        taxIdNumber: Type.Optional(Type.String()),
+        issueDate: OptionalTypePastDate,
       }),
     },
     {
@@ -52,8 +54,8 @@ export const getUniveralDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        businessName: Type.String(),
-        issueDate: TypePastDate,
+        businessName: Type.Optional(Type.String()),
+        issueDate: OptionalTypePastDate,
       }),
     },
     {
@@ -63,10 +65,10 @@ export const getUniveralDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        businessName: Type.String(),
-        directors: Type.Array(Type.String()),
-        shareholders: Type.Array(Type.String()),
-        issueDate: TypePastDate,
+        businessName: Type.Optional(Type.String()),
+        directors: Type.Optional(Type.Array(Type.String())),
+        shareholders: Type.Optional(Type.Array(Type.String())),
+        issueDate: OptionalTypePastDate,
       }),
     },
     {
@@ -76,8 +78,8 @@ export const getUniveralDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        businessName: Type.String(),
-        imageUrl: Type.String(),
+        businessName: Type.Optional(Type.String()),
+        imageUrl: Type.Optional(Type.String()),
       }),
     },
     {
@@ -87,10 +89,10 @@ export const getUniveralDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        domainName: Type.String(),
-        ownerName: Type.String(),
-        purchaseDate: TypePastDate,
-        expiryDate: Type.String({ format: 'date' }),
+        domainName: Type.Optional(Type.String()),
+        ownerName: Type.Optional(Type.String()),
+        purchaseDate: OptionalTypePastDate,
+        expiryDate: Type.Optional(Type.String({ format: 'date' })),
       }),
     },
     {
@@ -100,9 +102,9 @@ export const getUniveralDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        businessName: Type.String(),
-        from: Type.String({ format: 'date' }),
-        to: Type.String({ format: 'date' }),
+        businessName: Type.Optional(Type.String()),
+        from: Type.Optional(Type.String({ format: 'date' })),
+        to: Type.Optional(Type.String({ format: 'date' })),
         totalTransactions: Type.Number(),
       }),
     },
@@ -113,8 +115,8 @@ export const getUniveralDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        businessName: Type.String(),
-        imageUrl: Type.String(),
+        businessName: Type.Optional(Type.String()),
+        imageUrl: Type.Optional(Type.String()),
       }),
     },
     {
@@ -124,8 +126,8 @@ export const getUniveralDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        businessName: Type.String(),
-        imageUrl: Type.String(),
+        businessName: Type.Optional(Type.String()),
+        imageUrl: Type.Optional(Type.String()),
       }),
     },
     {
@@ -135,12 +137,12 @@ export const getUniveralDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        businessName: Type.String(),
-        websiteUrl: Type.String(),
-        licenseNumber: TypeAlphanumericString,
-        issueDate: TypePastDate,
-        expiryDate: Type.String({ format: 'date' }),
-        permittedProductsOrServices: Type.Array(Type.String()),
+        businessName: Type.Optional(Type.String()),
+        websiteUrl: Type.Optional(Type.String()),
+        licenseNumber: OptionalTypeAlphanumericString,
+        issueDate: OptionalTypePastDate,
+        expiryDate: Type.Optional(Type.String({ format: 'date' })),
+        permittedProductsOrServices: Type.Optional(Type.Array(Type.String())),
       }),
     },
   ];

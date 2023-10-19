@@ -3,14 +3,14 @@ import { TDocument } from '../types';
 import { countryCodes } from '@/countries';
 import { DefaultContextSchema } from '@/schemas';
 import { getCanadaDocuments } from './CA';
-import { getUniveralDocuments } from './ZZ';
+import { getUniversalDocuments } from './ZZ';
 import { getUgandaDocuments } from '@/schemas/documents/workflow/documents/schemas/UG';
 
 const documentIdsByCountry: Partial<Record<(typeof countryCodes)[number], () => TDocument[]>> = {
   GH: getGhanaDocuments,
   CA: getCanadaDocuments,
   UG: getUgandaDocuments,
-  ZZ: getUniveralDocuments,
+  ZZ: getUniversalDocuments,
 } as Partial<Record<(typeof countryCodes)[number] | 'ZZ', () => TDocument[]>>;
 
 export const getDocumentsByCountry = (countryCode: (typeof countryCodes)[number]): TDocument[] => {
