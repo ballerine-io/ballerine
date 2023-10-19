@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.5-3e08f108.12
+
+### Patch Changes
+
+- Fixed missing AutocompleteAdapter placeholder
+
 ## 0.3.5-3e08f108.11
 
 ### Patch Changes
