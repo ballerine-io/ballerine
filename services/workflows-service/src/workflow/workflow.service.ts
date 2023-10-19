@@ -1421,6 +1421,7 @@ export class WorkflowService {
       validatedConfig || {},
     ) as InputJsonValue;
 
+    // Creating new workflow
     if (!existingWorkflowRuntimeData || mergedConfig?.allowMultipleActiveWorkflows) {
       const contextWithoutDocumentPageType = {
         ...contextToInsert,
@@ -1497,14 +1498,15 @@ export class WorkflowService {
         );
       }
 
-      await this.event(
-        {
-          id: workflowRuntimeData.id,
-          name: workflowDefinition.definition.initial,
-        },
-        projectIds,
-        currentProjectId,
-      );
+      mergedConfig?.initialEvent &&
+        (await this.event(
+          {
+            id: workflowRuntimeData.id,
+            name: mergedConfig?.initialEvent,
+          },
+          projectIds,
+          currentProjectId,
+        ));
       workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
         workflowRuntimeData.id,
         {},
@@ -1524,6 +1526,7 @@ export class WorkflowService {
 
       newWorkflowCreated = true;
     } else {
+      // Updating existing workflow
       console.log('existing documents', existingWorkflowRuntimeData.context.documents);
       console.log('documents', contextToInsert.documents);
       // contextToInsert.documents = updateDocuments(

@@ -13,15 +13,20 @@ export const dynamicUiWorkflowDefinition = {
   definition: {
     id: 'kyb_dynamic_ui_session_example_v1',
     predictableActionArguments: true,
-    initial: 'collection_invite',
+    initial: 'idle',
     context: {
       documents: [],
     },
     states: {
+      idle: {
+        on: {
+          START: 'collection_invite',
+        },
+      },
       collection_invite: {
         on: {
           INVIATION_SENT: 'collection_flow',
-          INVIATION_FAILURE: 'auto_reject',
+          INVIATION_FAILURE: 'collection_flow',
         },
       },
       collection_flow: {
@@ -139,7 +144,7 @@ export const dynamicUiWorkflowDefinition = {
         pluginKind: 'email',
         url: `{secret.EMAIL_API_URL}`,
         successAction: 'INVIATION_SENT',
-        errorAction: 'KYB_DONE',
+        errorAction: 'INVIATION_SENT',
         method: 'POST',
         stateNames: ['collection_invite'],
         headers: {
@@ -184,12 +189,12 @@ export const dynamicUiWorkflowDefinition = {
               // #TODO: create new token (new using old one)
               mapping: `{
               kybCompanyName: entity.data.companyName,
-              customerCompanyName: entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,
+              customerCompanyName: metadata.customerName,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
               resubmissionLink: join('',['https://','{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token]),
-              supportEmail: join('',['support@',entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,'.com']),
+              supportEmail: join('',['support@',metadata.customerName,'.com']),
               from: 'no-reply@ballerine.com',
-              name: join(' ',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,'Team']),
+              name: join(' ',[metadata.customerName,'Team']),
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
               templateId: 'd-7305991b3e5840f9a14feec767ea7301',
               revisionReason: documents[].decision[].revisionReason | [0],
@@ -235,6 +240,7 @@ export const dynamicUiWorkflowDefinition = {
     ],
   },
   config: {
+    initialEvent: 'START',
     createCollectionFlowToken: true,
     childCallbackResults: [
       {

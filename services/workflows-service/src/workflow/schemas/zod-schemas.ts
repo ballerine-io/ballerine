@@ -17,6 +17,7 @@ export const ConfigSchema = z
     completedWhenTasksResolved: z.boolean().optional(),
     workflowLevelResolution: z.boolean().optional(),
     allowMultipleActiveWorkflows: z.boolean().optional(),
+    initialEvent: z.string().optional(),
     callbackResult: z
       .object({
         transformers: z.array(z.any()),

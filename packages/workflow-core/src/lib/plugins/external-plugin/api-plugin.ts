@@ -109,7 +109,9 @@ export class ApiPlugin {
       url = `${url}?${queryParams}`;
     }
 
-    return await fetch(url, requestParams);
+    const res = await fetch(url, requestParams);
+
+    return res;
   }
 
   async transformData(transformers: Transformers, record: AnyRecord) {
