@@ -325,6 +325,7 @@ export const UserSelectSchema = z.object({
   firstName: z.boolean().optional(),
   lastName: z.boolean().optional(),
   email: z.boolean().optional(),
+  avatarUrl: z.boolean().optional(),
   phone: z.boolean().optional(),
   roles: z.boolean().optional(),
   createdAt: z.boolean().optional(),

@@ -92,7 +92,6 @@ export const getGhanaDocuments = (): TDocument[] => {
         accountNumber: Type.Optional(Type.String()),
       }),
     },
-
     // Proof of Address
     {
       category: 'proof_of_address',
