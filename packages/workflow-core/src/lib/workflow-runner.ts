@@ -163,9 +163,7 @@ export class WorkflowRunner {
     callbackAction?: ChildWorkflowPluginParams['action'],
   ) {
     return childPluginSchemas?.map(childPluginSchema => {
-      const transformers = this.fetchTransformers(
-        childPluginSchema.transformers['transform'] || [],
-      );
+      const transformers = this.fetchTransformers(childPluginSchema.transformers) || [];
 
       const childWorkflowPlugin = new ChildWorkflowPlugin({
         name: childPluginSchema.name,
@@ -524,7 +522,13 @@ export class WorkflowRunner {
   private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
     const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(this.#__context);
-    if (!this.isPluginWithCallbackAction(apiPlugin)) return;
+    if (error) {
+      console.error('Error invoking plugin: ', apiPlugin.name, this.#__context, error);
+    }
+    if (!this.isPluginWithCallbackAction(apiPlugin)) {
+      console.log('Plugin does not have callback action: ', apiPlugin.name);
+      return;
+    }
 
     if (apiPlugin.persistResponseDestination && responseBody) {
       this.#__context = this.mergeToContext(

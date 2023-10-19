@@ -4,7 +4,7 @@ import { DynamicUIContext } from '@app/components/organisms/DynamicUI/types';
 import { useMemo } from 'react';
 
 export const useDynamicUIContextComposer = (initialState?: UIState): DynamicUIContext => {
-  const { uiState, setUIElementState, setLoading } = useUIStateLogic(initialState);
+  const { uiState, setUIElementState, setLoading, overrideUIState } = useUIStateLogic(initialState);
 
   const context: DynamicUIContext = useMemo(() => {
     const ctx: DynamicUIContext = {
@@ -12,11 +12,12 @@ export const useDynamicUIContextComposer = (initialState?: UIState): DynamicUICo
       helpers: {
         setUIElementState,
         setLoading,
+        overrideState: overrideUIState,
       },
     };
 
     return ctx;
-  }, [uiState, setUIElementState, setLoading]);
+  }, [uiState, setUIElementState, setLoading, overrideUIState]);
 
   return context;
 };

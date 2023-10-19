@@ -2,22 +2,23 @@ import { usePageResolverContext } from '@app/components/organisms/DynamicUI/Page
 import { findDefinitionByName } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
 import { useUIElementHandlers } from '@app/components/organisms/UIRenderer/hooks/useUIElementHandlers';
 import { RJSVInputProps, AnyObject } from '@ballerine/ui';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import get from 'lodash/get';
 import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
 import { UIElement } from '@app/domains/collection-flow';
-import { usePageContext } from '@app/components/organisms/DynamicUI/Page';
 import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
 import { ErrorsList } from '@ballerine/ui';
+import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
 
 const findLastDigit = (str: string) => {
-  const digitRegex = /\d+/g;
-  const matches = str.match(digitRegex);
+  const digitRegex = /_(\d+)_/g;
+  const matches = digitRegex.exec(str);
 
   if (matches && matches.length > 0) {
-    return parseInt(matches[matches.length - 1]);
+    const result = parseInt(matches[matches.length - 1]);
+    return result;
   }
 
   return null;
@@ -28,11 +29,11 @@ const getInputIndex = (inputId: string) => findLastDigit(inputId);
 const injectIndexToDestinationIfNeeded = (destination: string, index: number | null): string => {
   if (index === null) return destination;
 
-  const indexPath = `[${index}]`;
-  const pathElements = destination.split('.');
-  pathElements.splice(pathElements.length - 1, 0, indexPath);
+  const result = destination.replace(`{INDEX}`, `${index}`);
 
-  return pathElements.join('.').replace(`.${indexPath}.`, `${indexPath}.`);
+  console.log('result', result, index);
+
+  return result;
 };
 
 export const withDynamicUIInput = (
@@ -42,11 +43,9 @@ export const withDynamicUIInput = (
 ) => {
   function Wrapper(props: RJSVInputProps) {
     const inputId = (props.idSchema as AnyObject)?.$id as string;
-    const [isTouched, setTouched] = useState(false);
     const { name, onChange } = props;
     const { payload } = useStateManagerContext();
     const { currentPage } = usePageResolverContext();
-    const { pageErrors } = usePageContext();
     const { state } = useDynamicUIContext();
 
     const baseDefinition = useMemo(() => {
@@ -66,6 +65,17 @@ export const withDynamicUIInput = (
         ),
       };
     }, [baseDefinition, inputId]);
+
+    const { state: elementState, setState: setElementState } = useUIElementState(definition);
+
+    const isTouched = elementState.isTouched;
+
+    const setTouched = useCallback(
+      (touched: boolean) => {
+        setElementState(definition.name, { ...elementState, isTouched: touched });
+      },
+      [definition, elementState, setElementState],
+    );
 
     const { disabled } = useUIElementProps(baseDefinition);
 
@@ -87,7 +97,7 @@ export const withDynamicUIInput = (
     }, []);
 
     const value = useMemo(
-      () => get(payload, definition.valueDestination) as any,
+      () => get(payload, definition.valueDestination) as unknown,
       [payload, definition],
     );
 

@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { env } from '../../src/env';
-import { defaultContextSchema, StateTag } from '@ballerine/common';
+import { StateTag } from '@ballerine/common';
 
 export const kycEmailSessionDefinition = {
   id: 'kyc_email_session_example',
@@ -83,7 +83,7 @@ export const kycEmailSessionDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              endUserId: join('__',[entity.id,pluginsOutput.kyc_session.kyc_session_1.result.metadata.id || '']),
+              endUserId: join('__',[entity.ballerineEntityId || entity.data.id || entity.data.identityNumber, pluginsOutput.kyc_session.kyc_session_1.result.metadata.id || '']),
               firstName: entity.data.firstName,
               lastName: entity.data.lastName,
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/KYC_HOOK_RESPONDED','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result']),
@@ -127,7 +127,7 @@ export const kycEmailSessionDefinition = {
               preheader: 'Verify your identity for Happy Home Goods activation with {customerCompanyName}.',
               templateId: (documents[].decision[].revisionReason | [0])!=null && 'd-7305991b3e5840f9a14feec767ea7301' || 'd-61c568cfa5b145b5916ff89790fe2065',
               revisionReason: documents[].decision[].revisionReason | [0],
-              supportEmail: join('',[entity.data.additionalInfo.companyName,'@support.com'])
+              supportEmail: join('',[entity.data.additionalInfo.companyName,'@support.com']),
               adapter: '${env.MAIL_ADAPTER}'
               }`, // jmespath
             },
@@ -149,10 +149,6 @@ export const kycEmailSessionDefinition = {
       ],
       deliverEvent: 'KYC_DONE',
     },
-  },
-  contextSchema: {
-    type: 'json-schema',
-    schema: defaultContextSchema,
   },
   isPublic: true,
 };

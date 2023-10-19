@@ -29,6 +29,7 @@ export const StateManager = ({
       extensions,
       initialMachineState,
     );
+
     machine.overrideContext(initialMachineState);
     return machine;
   }, []);

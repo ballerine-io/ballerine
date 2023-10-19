@@ -11,10 +11,6 @@ export const router = createBrowserRouter([
     path: '/',
     Component: withTokenProtected(SignIn),
   },
-  // {
-  //   path: '/signin',
-  //   Component: withTokenProtected(SignIn),
-  // },
   {
     path: '/collection-flow',
     Component: withTokenProtected(CollectionFlow),

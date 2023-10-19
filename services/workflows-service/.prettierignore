@@ -3,4 +3,3 @@ dist/
 prisma/migrations/
 package-lock.json
 coverage/
-src/ui-definition/utils
