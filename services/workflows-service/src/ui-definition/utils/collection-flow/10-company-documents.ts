@@ -129,7 +129,7 @@ export const CompanyDocuments = {
                   category: 'proof_of_registration',
                   type: 'certificate_of_incorporation',
                   issuer: {
-                    country: 'GH',
+                    country: 'ZZ',
                   },
                   version: '1',
                   issuingVersion: 1,
@@ -159,7 +159,7 @@ export const CompanyDocuments = {
                   category: 'proof_of_registration',
                   type: 'business_registration_certificate',
                   issuer: {
-                    country: 'GH',
+                    country: 'ZZ',
                   },
                   version: '1',
                   issuingVersion: 1,
@@ -188,7 +188,7 @@ export const CompanyDocuments = {
                   category: 'financial_information',
                   type: 'corporate_tax_certificate',
                   issuer: {
-                    country: 'GH',
+                    country: 'ZZ',
                   },
                   version: '1',
                   issuingVersion: 1,
@@ -218,7 +218,7 @@ export const CompanyDocuments = {
                   category: 'proof_of_good_standing',
                   type: 'certificate_of_good_standing',
                   issuer: {
-                    country: 'GH',
+                    country: 'ZZ',
                   },
                   version: '1',
                   issuingVersion: 1,
@@ -247,7 +247,7 @@ export const CompanyDocuments = {
                   category: 'proof_of_ownership',
                   type: 'certificate_of_directors_and_shareholders',
                   issuer: {
-                    country: 'GH',
+                    country: 'ZZ',
                   },
                   version: '1',
                   issuingVersion: 1,
@@ -276,7 +276,7 @@ export const CompanyDocuments = {
                   category: 'proof_of_identity',
                   type: 'company_seal',
                   issuer: {
-                    country: 'GH',
+                    country: 'ZZ',
                   },
                   version: '1',
                   issuingVersion: 1,
@@ -323,7 +323,7 @@ export const CompanyDocuments = {
                   category: 'proof_of_domain_ownership',
                   type: 'domain_purchase_record',
                   issuer: {
-                    country: 'GH',
+                    country: 'ZZ',
                   },
                   version: '1',
                   issuingVersion: 1,
@@ -363,7 +363,7 @@ export const CompanyDocuments = {
                   category: 'proof_of_business_compliance',
                   type: 'permitted_sales_license',
                   issuer: {
-                    country: 'GH',
+                    country: 'ZZ',
                   },
                   version: '1',
                   issuingVersion: 1,
@@ -414,7 +414,7 @@ export const CompanyDocuments = {
                   category: 'proof_of_location',
                   type: 'front_door_photo',
                   issuer: {
-                    country: 'GH',
+                    country: 'ZZ',
                   },
                   version: '1',
                   issuingVersion: 1,
@@ -443,7 +443,7 @@ export const CompanyDocuments = {
                   category: 'proof_of_location',
                   type: 'interior_office_photo',
                   issuer: {
-                    country: 'GH',
+                    country: 'ZZ',
                   },
                   version: '1',
                   issuingVersion: 1,
@@ -472,7 +472,7 @@ export const CompanyDocuments = {
                   category: 'proof_of_location',
                   type: 'interior_office_photo',
                   issuer: {
-                    country: 'GH',
+                    country: 'ZZ',
                   },
                   version: '1',
                   issuingVersion: 1,
@@ -520,7 +520,7 @@ export const CompanyDocuments = {
                   category: 'financial_information',
                   type: 'transaction_data_last_3_6_months',
                   issuer: {
-                    country: 'GH',
+                    country: 'ZZ',
                   },
                   version: '1',
                   issuingVersion: 1,
