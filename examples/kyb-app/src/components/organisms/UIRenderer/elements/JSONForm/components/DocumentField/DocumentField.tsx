@@ -87,10 +87,11 @@ export const DocumentField = (
         set(context, 'documents', context.documents);
       }
 
-      const pagePath = definition.valueDestination.replace(/documents\[\d+\]\./g, '');
+      const fileIdPath = definition.valueDestination.replace(/documents\[\d+\]\./g, '');
       const uploadResult = await uploadFile({ file });
 
-      set(document, pagePath, uploadResult.id);
+      set(document, fileIdPath, uploadResult.id);
+      set(document, 'decision', {});
 
       stateApi.setContext(context);
 
