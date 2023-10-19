@@ -1055,6 +1055,15 @@ async function seed(bcryptSalt: string | number) {
       where: {
         workflowDefinitionId: 'kyb_dynamic_ui_session_example',
         businessId: { not: null },
+        state: {
+          in: [
+            'manual_review',
+            'approved',
+            'revision',
+            'rejected',
+            'pending_kyc_response_to_finish',
+          ],
+        },
       },
     },
     project1.id,
