@@ -30,17 +30,29 @@ export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] 
     });
 
     pagesWithErrors.forEach(pageError => {
-      pageError.errors = (context.documents as Document[]).map(document => {
-        const documentPath = `document-error-${document.id}`;
-        const message = document?.decision?.revisionReason;
+      pageError.errors = (context.documents as Document[])
+        .filter((document, index) => {
+          if (
+            !(document?.decision?.status == 'revision' || document?.decision?.status == 'rejected')
+          ) {
+            return false;
+          }
 
-        return {
-          fieldId: documentPath,
-          fieldDestination: documentPath,
-          message,
-          type: 'warning',
-        };
-      });
+          const documentPath = `documents[${index}].pages[0].ballerineFileId`;
+
+          return Boolean(findDefinitionByDestinationPath(documentPath, pageError._elements));
+        })
+        .map(document => {
+          const documentPath = `document-error-${document.id}`;
+          const message = document?.decision?.revisionReason;
+
+          return {
+            fieldId: documentPath,
+            fieldDestination: documentPath,
+            message,
+            type: 'warning',
+          };
+        });
     });
 
     return pagesWithErrors;
