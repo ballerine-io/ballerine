@@ -262,7 +262,11 @@ export const BusinessInfoPage = {
                 label: 'Corporate type',
                 jsonFormDefinition: {
                   type: 'string',
-                  oneOf: [
+                },
+                uiSchema: {
+                  'ui:field': 'AutocompleteInput',
+                  'ui:label': true,
+                  options: [
                     { title: 'Sole Proprietorship', const: 'sole_proprietorship' },
                     { title: 'Partnership', const: 'partnership' },
                     { title: 'Corporation', const: 'corporation' },

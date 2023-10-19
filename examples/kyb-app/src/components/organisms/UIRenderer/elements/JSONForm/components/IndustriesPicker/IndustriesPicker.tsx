@@ -1,13 +1,13 @@
 import { RJSVInputProps, TextInputAdapter } from '@ballerine/ui';
-import locale from './langs/en.json';
 import { useMemo } from 'react';
+import { industries } from '@app/common/static/industries';
 
-export const NationalityPicker = (props: RJSVInputProps) => {
+export const IndustriesPicker = (props: RJSVInputProps) => {
   const options = useMemo(
     () =>
-      Object.entries(locale.nationalities).map(([alpha2Code, nationality]) => ({
-        const: alpha2Code,
-        title: nationality,
+      industries.map(industry => ({
+        const: industry,
+        title: industry,
       })),
     [],
   );
