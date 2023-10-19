@@ -78,7 +78,7 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
     const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
       documents as TDocumentsWithoutPageType,
-      context.entity.id,
+      context.entity.id || context.entity.ballerineEntityId,
       currentProjectId,
       customer.name,
     );

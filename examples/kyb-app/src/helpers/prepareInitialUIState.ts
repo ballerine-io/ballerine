@@ -15,6 +15,7 @@ export const prepareInitialUIState = (pages: UIPage[], context: AnyObject): UISt
     if (index <= currentPageIndex) {
       initialUIState.elements[page.stateName] = {
         isLoading: false,
+        isTouched: false,
         isCompleted: true,
       };
     }

@@ -5,7 +5,7 @@ import { UIElementComponent } from '@app/components/organisms/UIRenderer/types';
 
 import { AnyObject, DynamicForm, ErrorsList } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import set from 'lodash/set';
 import get from 'lodash/get';
 import {
@@ -16,6 +16,8 @@ import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organi
 import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
 import { DataCreationParams } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withInitialDataCreation';
 import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
+import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
+import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
 
 export interface JSONFormElementBaseParams extends DataCreationParams {
   jsonFormDefinition: RJSFSchema;
@@ -31,6 +33,7 @@ export interface JSONFormElementParams {
 }
 
 export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition, actions }) => {
+  const { state: elementState } = useUIElementState(definition);
   const { hidden } = useUIElementProps(definition);
   const { formSchema, uiSchema } = useMemo(
     () => createFormSchemaFromUIElements(definition),
@@ -43,6 +46,29 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
 
   const formRef = useRef<any>(null);
 
+  useEffect(() => {
+    const elementValue = get(payload, definition.valueDestination);
+
+    // TO DO: ADD this logic to jmespath @blokh
+    if (definition.options?.jsonFormDefinition?.type === 'array' && Array.isArray(elementValue)) {
+      const payload = stateApi.getContext();
+      //@ts-ignore
+      set(
+        payload,
+        definition.valueDestination,
+        elementValue.map(obj => ({
+          ...obj,
+          additionalInfo: {
+            ...obj.additionalInfo,
+            companyName: get(payload, 'entity.data.companyName') as string,
+            customerCompany: (payload as CollectionFlowContext).flowConfig
+              .customerCompany as string,
+          },
+        })),
+      );
+    }
+  }, [payload]);
+
   const handleArrayInputChange = useCallback(
     (values: AnyObject[]) => {
       if (definition.options?.jsonFormDefinition?.type === 'array') {
@@ -51,7 +77,6 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
 
         if (Array.isArray(currentValue) && currentValue.length !== values.length) {
           set(prevContext, definition.valueDestination, values);
-
           stateApi.setContext(prevContext);
         }
       }
@@ -76,7 +101,9 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
         onChange={handleArrayInputChange}
         onSubmit={handleSubmit}
       />
-      {validationErrors ? <ErrorsList errors={validationErrors.map(err => err.message)} /> : null}
+      {validationErrors && elementState.isTouched ? (
+        <ErrorsList errors={validationErrors.map(err => err.message)} />
+      ) : null}
     </div>
   );
 };

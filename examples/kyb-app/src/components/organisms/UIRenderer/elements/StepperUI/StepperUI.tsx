@@ -5,7 +5,7 @@ import { VerticalLayout } from '@app/components/atoms/Stepper/layouts/Vertical';
 import { usePageResolverContext } from '@app/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { usePageContext } from '@app/components/organisms/DynamicUI/Page';
 import { UIPage } from '@app/domains/collection-flow';
 import { UIElementState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
@@ -16,6 +16,9 @@ export const StepperUI = () => {
   const { pages, currentPage } = usePageResolverContext();
   const { state } = useStateManagerContext();
   const { pageErrors } = usePageContext();
+
+  const initialPageNumber = useRef(currentPage.number);
+
   const computeStepStatus = ({
     uiElement,
     page,
@@ -28,7 +31,7 @@ export const StepperUI = () => {
     currentPage: UIPage;
   }) => {
     if (!!Object.keys(pageError).length && currentPage.number === page.number) return 'warning';
-    if (uiElement?.isCompleted) return 'completed';
+    if (uiElement?.isCompleted || page.number <= initialPageNumber.current) return 'completed';
 
     return 'idle';
   };

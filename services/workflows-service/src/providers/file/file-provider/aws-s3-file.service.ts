@@ -7,6 +7,7 @@ import {
   GetObjectCommand,
   HeadObjectCommand,
   PutObjectCommand,
+  PutObjectCommandInput,
   S3Client,
   S3ClientConfig,
 } from '@aws-sdk/client-s3';
@@ -15,6 +16,7 @@ import fs, { createReadStream } from 'fs';
 import { isErrorWithName } from '@ballerine/common';
 import { Upload } from '@aws-sdk/lib-storage';
 import { IStreamableFileProvider } from '../types/interfaces';
+import { MimeType } from 'file-type';
 
 export class AwsS3FileService implements IStreamableFileProvider {
   protected client;
@@ -75,12 +77,14 @@ export class AwsS3FileService implements IStreamableFileProvider {
   async upload(
     localFilePath: TLocalFilePath,
     remoteFileConfig: TRemoteFileConfig,
+    mimeType: MimeType | undefined,
   ): Promise<TS3BucketConfig> {
     const ts3BucketConfig = remoteFileConfig as TS3BucketConfig;
     const { remoteFileName, isPrivate, putObjectCommand } = this._initiatePutObject(
       ts3BucketConfig,
       ts3BucketConfig.fileNameInBucket,
       createReadStream(localFilePath),
+      mimeType,
     );
 
     return await this._uploadFileViaClient(putObjectCommand, isPrivate, remoteFileName);
@@ -105,6 +109,10 @@ export class AwsS3FileService implements IStreamableFileProvider {
       ts3BucketConfig,
       ts3BucketConfig.fileNameInBucket,
       fileStream,
+      /**
+       * uploadStream is not currently in use.
+       */
+      undefined,
     );
 
     return this._uploadFileViaClient(putObjectCommand, isPrivate, remoteFileName);
@@ -143,6 +151,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
     remoteFileConfig: TS3BucketConfig,
     fileName: string,
     readableStream: Readable,
+    mimeType: MimeType | undefined,
   ) {
     const s3FileConfig = remoteFileConfig;
     const getObjectCommandInput = this.__fetchBucketPath(s3FileConfig);
@@ -152,7 +161,8 @@ export class AwsS3FileService implements IStreamableFileProvider {
       ...getObjectCommandInput,
       Body: readableStream,
       Key: fileName,
-    };
+      ContentType: mimeType,
+    } satisfies PutObjectCommandInput;
 
     const putObjectCommand = new PutObjectCommand(putObjectParams);
 
