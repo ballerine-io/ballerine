@@ -88,6 +88,8 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
 
   const { validationErrors } = useUIElementErrors(definition);
 
+  console.log('schema', uiSchema);
+
   return hidden ? null : (
     <div className="flex flex-col gap-2">
       <DynamicForm

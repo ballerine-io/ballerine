@@ -30,7 +30,7 @@ export const AutocompleteTextInputAdapter: RJSVInputAdapter = ({
       disabled={disabled}
       value={formData}
       options={options}
-      placeholder={placeholder}
+      placeholder={placeholder || uiSchema['ui:placeholder']}
       onChange={event => void onChange(event.target.value || '')}
       onBlur={handleBlur}
     />
