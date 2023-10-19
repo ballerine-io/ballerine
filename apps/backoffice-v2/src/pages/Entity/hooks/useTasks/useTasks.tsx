@@ -45,7 +45,7 @@ export const useTasks = ({
     directors: directorsUserProvided,
     mainRepresentative,
     mainContact,
-    openCorporate,
+    openCorporate: _openCorporate,
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
@@ -87,10 +87,15 @@ export const useTasks = ({
   const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
 
   const registryInfoBlock =
-    Object.keys(openCorporate ?? {}).length === 0
+    Object.keys(filteredPluginsOutput ?? {}).length === 0
       ? []
-      : [
-          {
+      : pluginsOutputKeys
+          ?.filter(
+            key =>
+              !!Object.keys(filteredPluginsOutput[key] ?? {})?.length &&
+              !('error' in filteredPluginsOutput[key]),
+          )
+          ?.map((key, index, collection) => ({
             cells: [
               {
                 type: 'container',
@@ -108,17 +113,16 @@ export const useTasks = ({
               },
               {
                 type: 'details',
-                hideSeparator: true,
+                hideSeparator: index === collection.length - 1,
                 value: {
-                  data: Object.entries(openCorporate ?? {})?.map(([title, value]) => ({
+                  data: Object.entries(filteredPluginsOutput[key] ?? {})?.map(([title, value]) => ({
                     title,
                     value,
                   })),
                 },
               },
             ],
-          },
-        ];
+          }));
 
   const taskBlocks =
     documents?.map(

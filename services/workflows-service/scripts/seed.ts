@@ -17,6 +17,7 @@ import { generateKybDefintion } from './workflows';
 import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
 import { generateParentKybWithSessionKycs } from './workflows/parent-kyb-kyc-session-workflow';
 import { env } from '../src/env';
+import { generateKybKycWorkflowDefinition } from './workflows/kyb-kyc-workflow-definition';
 import { generateBaseTaskLevelStates } from './workflows/generate-base-task-level-states';
 import { generateBaseCaseLevelStates } from './workflows/generate-base-case-level-states';
 import { InputJsonValue } from '../src/types';
@@ -1154,7 +1155,8 @@ async function seed(bcryptSalt: string | number) {
   await generateKybDefintion(client);
   await generateKycSessionDefinition(client);
   await generateParentKybWithSessionKycs(client);
+  await generateKybKycWorkflowDefinition(client);
   await generateKycForE2eTest(client);
-  await generateDynamicUiWorkflow(client, project1.id);
+  await generateDynamicUiWorkflow(client);
   console.info('Seeded database successfully');
 }

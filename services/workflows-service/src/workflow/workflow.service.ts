@@ -70,6 +70,7 @@ import { CustomerService } from '@/customer/customer.service';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 
 type TEntityId = string;
 
@@ -129,6 +130,7 @@ export class WorkflowService {
     private readonly projectScopeService: ProjectScopeService,
     private readonly userService: UserService,
     private readonly salesforceService: SalesforceService,
+    private readonly workflowTokenService: WorkflowTokenService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
@@ -1386,6 +1388,8 @@ export class WorkflowService {
     } catch (error) {
       throw new BadRequestException(error);
     }
+    const customer = await this.customerService.getByProjectId(projectIds![0]!);
+    context.customerName = customer.displayName;
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
     const entityId = await this.__findOrPersistEntityInformation(
       context,
@@ -1393,7 +1397,6 @@ export class WorkflowService {
       currentProjectId,
     );
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
-    const customer = await this.customerService.getByProjectId(projectIds![0]!);
     const existingWorkflowRuntimeData =
       await this.workflowRuntimeDataRepository.findActiveWorkflowByEntity(
         {
@@ -1413,7 +1416,12 @@ export class WorkflowService {
 
     let workflowRuntimeData: WorkflowRuntimeData, newWorkflowCreated: boolean;
 
-    if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
+    const mergedConfig: WorkflowConfig = merge(
+      workflowDefinition.config,
+      validatedConfig || {},
+    ) as InputJsonValue;
+
+    if (!existingWorkflowRuntimeData || mergedConfig?.allowMultipleActiveWorkflows) {
       const contextWithoutDocumentPageType = {
         ...contextToInsert,
         documents: this.omitTypeFromDocumentsPages(contextToInsert.documents),
@@ -1435,10 +1443,8 @@ export class WorkflowService {
               ...contextToInsert,
               documents: documentsWithPersistedImages,
             } as InputJsonValue,
-            config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
+            config: mergedConfig as InputJsonValue,
             status: 'active',
-            state: workflowDefinition.definition.initial,
-            tags: workflowDefinition.definition.states[workflowDefinition.definition.initial]?.tags,
             workflowDefinitionId: workflowDefinition.id,
             ...(parentWorkflowId &&
               ({
@@ -1452,6 +1458,70 @@ export class WorkflowService {
         },
         currentProjectId,
       );
+
+      if (
+        // @ts-ignore
+        mergedConfig.createCollectionFlowToken &&
+        workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative
+      ) {
+        const endUser = await this.endUserService.createWithBusiness(
+          {
+            firstName:
+              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.firstName,
+            lastName:
+              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.lastName,
+            email: workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.email,
+            companyName: workflowRuntimeData.context.entity.data.companyName,
+            isContactPerson: true,
+          },
+          currentProjectId,
+        );
+        const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        const workflowToken = await this.workflowTokenService.create(currentProjectId, {
+          workflowRuntimeDataId: workflowRuntimeData.id,
+          endUserId: endUser.id,
+          expiresAt: nowPlus30Days,
+        });
+
+        workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
+          workflowRuntimeData.id,
+          {
+            data: {
+              context: {
+                ...workflowRuntimeData.context,
+                metadata: { customerName: customer.displayName, token: workflowToken.token },
+              } as InputJsonValue,
+            },
+          },
+          currentProjectId,
+        );
+      }
+
+      await this.event(
+        {
+          id: workflowRuntimeData.id,
+          name: workflowDefinition.definition.initial,
+        },
+        projectIds,
+        currentProjectId,
+      );
+      workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+        workflowRuntimeData.id,
+        {},
+        projectIds,
+      );
+
+      if ('salesforceObjectName' in salesforceData && salesforceData.salesforceObjectName) {
+        await this.updateSalesforceRecord({
+          workflowRuntimeData: workflowRuntimeData[0].workflowRuntimeData,
+          data: {
+            KYB_Started_At__c: workflowRuntimeData[0].workflowRuntimeData.createdAt,
+            KYB_Status__c: 'In Progress',
+            KYB_Assigned_Agent__c: '',
+          },
+        });
+      }
+
       newWorkflowCreated = true;
     } else {
       console.log('existing documents', existingWorkflowRuntimeData.context.documents);
