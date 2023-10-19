@@ -21,7 +21,13 @@ export const dynamicUiWorkflowDefinition = {
       collection_flow: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
-          COLLECTION_FLOW_FINISHED: 'run_ubos',
+          COLLECTION_FLOW_FINISHED: 'run_kyb_enrichment',
+        },
+      },
+      run_kyb_enrichment: {
+        on: {
+          KYB_DONE: [{ target: 'run_ubos' }],
+          FAILED: [{ target: 'run_ubos' }],
         },
       },
       run_ubos: {
@@ -64,7 +70,19 @@ export const dynamicUiWorkflowDefinition = {
       revision: {
         tags: [StateTag.REVISION],
         on: {
-          COLLECTION_FLOW_FINISHED: 'manual_review',
+          COLLECTION_FLOW_FINISHED: [
+            {
+              target: 'manual_review',
+              cond: {
+                type: 'jmespath',
+                options: {
+                  rule: 'length(childWorkflows.kyc_email_session_example.*.[result.vendorResult.decision][]) == length(childWorkflows.kyc_email_session_example.*[])',
+                },
+              },
+            },
+            { target: 'pending_kyc_response_to_finish' },
+          ],
+          RESUBMITTED: 'manual_review',
         },
       },
       rejected: {
@@ -85,15 +103,17 @@ export const dynamicUiWorkflowDefinition = {
         url: `${env.UNIFIED_API_URL}/companies`,
         method: 'GET',
         stateNames: ['run_kyb_enrichment'],
+        successAction: 'KYB_DONE',
+        errorAction: 'KYB_DONE',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
             {
               transformer: 'jmespath',
               mapping: `{
-                countryOfIncorporation: entity.data.countryOfIncorporation,
+                countryOfIncorporation: entity.data.country,
                 companyNumber: entity.data.registrationNumber,
-                state: entity.data.additionalInfo.company.state
+                state: entity.data.additionalInfo.state,
                 vendor: 'open-corporates'
               }`, // jmespath
             },
