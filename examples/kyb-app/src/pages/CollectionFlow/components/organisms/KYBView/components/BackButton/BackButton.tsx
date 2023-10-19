@@ -22,7 +22,7 @@ export const BackButton = () => {
         !isExit
           ? prev
           : () => {
-              location.href = customer.customerWebsiteUrl;
+              location.href = customer.websiteUrl;
             }
       }
     >
