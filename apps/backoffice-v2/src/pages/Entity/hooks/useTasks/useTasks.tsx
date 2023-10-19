@@ -4,24 +4,16 @@ import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseSt
 import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import {
   composePickableCategoryType,
-  convertSnakeCaseToTitleCase,
   extractCountryCodeFromWorkflow,
   getIsEditable,
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from '../useEntity/utils';
-import {
-  CommonWorkflowEvent,
-  CommonWorkflowStates,
-  getDocumentsByCountry,
-  StateTag,
-} from '@ballerine/common';
+import { CommonWorkflowStates, getDocumentsByCountry, StateTag } from '@ballerine/common';
 import * as React from 'react';
-import { ComponentProps, useMemo } from 'react';
-import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
+import { useMemo } from 'react';
 import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
 import { X } from 'lucide-react';
-import { MotionBadge } from '../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
 import { Badge } from '@ballerine/ui';
@@ -30,19 +22,9 @@ import { ctw } from '../../../../common/utils/ctw/ctw';
 import { toTitleCase } from 'string-ts';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import { useRemoveDecisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
-
-const motionProps: ComponentProps<typeof MotionBadge> = {
-  exit: { opacity: 0, transition: { duration: 0.2 } },
-  initial: { y: 10, opacity: 0 },
-  transition: { type: 'spring', bounce: 0.3 },
-  animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
-};
-
-function getPostUpdateEventName(workflow: TWorkflowById): string | undefined {
-  if (!workflow?.workflowDefinition?.config?.workflowLevelResolution) {
-    return CommonWorkflowEvent.RETURN_TO_REVIEW;
-  }
-}
+import { getPostUpdateEventName } from './get-post-update-event-name';
+import { motionProps } from './motion-props';
+import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
 
 export const useTasks = ({
   workflow,
@@ -245,8 +227,8 @@ export const useTasks = ({
           value: [
             {
               type: 'heading',
-              value: `${convertSnakeCaseToTitleCase(category)} - ${convertSnakeCaseToTitleCase(
-                docType,
+              value: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
+                toTitleCase(docType ?? ''),
               )}`,
             },
             {
@@ -330,8 +312,8 @@ export const useTasks = ({
             isLoading: docsData?.some(({ isLoading }) => isLoading),
             data:
               documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
-                title: `${convertSnakeCaseToTitleCase(category)} - ${convertSnakeCaseToTitleCase(
-                  docType,
+                title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
+                  toTitleCase(docType ?? ''),
                 )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
                 imageUrl: results[docIndex][pageIndex],
                 fileType: type,
@@ -361,7 +343,7 @@ export const useTasks = ({
                 value: [
                   {
                     type: 'heading',
-                    value: `${toStartCase(entity?.type)} Information`,
+                    value: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,
                   },
                   {
                     type: 'subheading',
@@ -374,7 +356,7 @@ export const useTasks = ({
                 type: 'details',
                 hideSeparator: true,
                 value: {
-                  title: `${toStartCase(entity?.type)} Information`,
+                  title: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,
                   data: [
                     ...Object.entries(
                       omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {},
@@ -412,13 +394,13 @@ export const useTasks = ({
                     {
                       id: 'header',
                       type: 'heading',
-                      value: `${toStartCase(entity?.type)} Address`,
+                      value: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Address`,
                     },
                     {
                       type: 'details',
                       hideSeparator: true,
                       value: {
-                        title: `${toStartCase(entity?.type)} Address`,
+                        title: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Address`,
                         data:
                           typeof address === 'string'
                             ? [

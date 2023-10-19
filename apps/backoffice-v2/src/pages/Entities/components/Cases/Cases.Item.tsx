@@ -12,6 +12,7 @@ import { createInitials } from '../../../../common/utils/create-initials/create-
 import { useEllipsesWithTitle } from '../../../../common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import dayjs from 'dayjs';
 import { StateTag } from '@ballerine/common';
+import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
 
 /**
  * @description To be used by {@link Cases}, and be wrapped by {@link Cases.List}. Uses li element with default styling to display a single case's data. Navigates to the selected entity on click by setting the entity id into the path param.
@@ -87,7 +88,7 @@ export const Item: FunctionComponent<IItemProps> = ({
         </div>
         <div className={`max-w-[115px]`}>
           <div ref={ref} className={`mb-[2px] text-sm font-bold`} style={styles}>
-            {fullName || 'N/A'}
+            {valueOrNA(fullName)}
           </div>
           <div className={`text-xs opacity-60`}>
             {dayjs(new Date(createdAt)).format('D MMM YYYY HH:mm')}
