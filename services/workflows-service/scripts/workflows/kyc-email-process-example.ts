@@ -62,7 +62,7 @@ export const kycEmailSessionDefinition = {
         tags: [StateTag.REVISION],
         always: [
           {
-            target: 'get_kyc_session',
+            target: 'get_kyc_session_revision',
           },
         ],
       },
