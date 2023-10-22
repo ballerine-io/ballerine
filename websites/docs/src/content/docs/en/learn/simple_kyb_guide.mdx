@@ -1,0 +1,315 @@
+---
+title: KYB Workflow with External Integrations
+description: Learn how to create a KYC flow, customize its UI, and deploy it
+
+---
+
+import PackageManagersTabs from '../../../../components/PackageManagersTabs/PackageManagersTabs.astro';
+import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
+
+This guide will walk you through implementing a Know Your Business (KYB) workflow using Ballerine's system.
+
+The capabilities that will be showcased can be utilized to:
+1. Create decisioning workflows.
+2. Create and configure rules inside a workflow.
+3. Use external sources as part of a workflow.
+
+We'll start with a simple onboarding workflow for a company, enriching its data using an external source, and send it to a manual review in Ballerine's back office. Then, we'll show you how to adjust the rules for automatic approval, skipping the manual approval step.
+
+
+## Preparing Your Environment
+
+Before we proceed with the workflow execution, we need to set up our environment.
+
+Please follow the [installation guide](/en/learn/installation) to install all the project dependencies.
+This guide will walk you through all the necessary steps to get your system ready for running the Ballerine projects.
+
+Once you've installed all the dependencies, run the following command to start both the workflow service and the backoffice (case management project):
+
+<PackageManagersTabs code={`run api-flow-example`} />
+
+The `api-flow-example` is a script that runs two essential services:
+
+1. **Workflow service**: Handles the main business logic for workflows, from execution to transitioning between different states.
+
+2. **Backoffice**: Acts as the case management system where you can manually review cases, approve or reject them based on the information provided.
+It will run at [http://localhost:5137/](http://localhost:5137/).
+To log in, use the following credentials:
+
+ * **Username:**
+<CodeBlock lang={`shell`} code={`admin@admin.com`}/>
+
+ * **Password:**
+<CodeBlock lang={`shell`} code={`admin`}/>
+
+With your environment set up and both services running, you're ready to implement and run the KYB workflow.
+Let's proceed to the next section.
+
+## Workflow Definition
+
+The workflow we're going to use is predefined, meaning it is already inserted into the database during the seeding process.
+
+This workflow is defined using a statechart definition implemented under the hood with [XState](https://xstate.js.org/docs/).
+If you're unfamiliar with state machines or XState, we recommend reviewing the XState documentation for a detailed explanation.
+
+Here is the complete workflow definition:
+(See the full file on GitHub [Seed Workflow](https://github.com/ballerine-io/ballerine/blob/dev/services/workflows-service/scripts/workflows/e2e-dynamic-url-example.ts))
+
+<CodeBlock lang={`json`} code={`{
+  "id": "dynamic_external_request_example",
+  "name": "dynamic_external_request_example",
+  "version": 1,
+  "definitionType": "statechart-json",
+  "definition": {
+    "id": "kyb_example_v1",
+    "initial": "idle",
+    "states": {
+      "idle": {
+        "on": {
+          "start": "check_business_details"
+        }
+      },
+      "check_business_details": { ... },
+      "manual_review": { ... },
+      "auto_approve": { ... },
+      "auto_reject": { ... },
+      "reject": { ... },
+      "approve": { ... },
+      "revision": { ... }
+    }
+  },
+  "extensions": { ... }
+}`}/>
+
+Here is the workflow vizualztion in xState visualizer:
+![Alt text](https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/649444bcd7842ad7ce6c126b_Screenshot%202023-06-22%20at%2015.52.05.png "a title")
+
+Let's break down some crucial parts:
+
+1. **State Machine Definition**: The core of our workflow is a state machine that defines various states and the conditions for transitions between them.
+This definition is based on the XState library.
+
+<CodeBlock lang={`json`} code={`"definition": {
+  "id": 'kyb_example_v1',
+  "predictableActionArguments": true,
+  "initial": 'idle',
+  ...
+},`}/>
+
+2. **Check Business Details State**: This state is responsible for making an external call to enrich business data and calculate a fuzziness score for the company name.
+
+<CodeBlock lang={`json`} code={`{
+  "check_business_details": {
+    "target": "auto_approve",
+    "cond": {
+      "type": "json-logic",
+      "rule": {
+        "or": [
+          {
+            "==": [
+              {
+                "var": "context.entity.companyName"
+              },
+              {
+                "var": "response.data.registered_name"
+              }
+            ]
+          },
+          {
+            ">=": [
+              {
+                "var": "context.external_request_example.data.name_fuzziness_score"
+              },
+              0.8
+            ]
+          }
+        ]
+      }
+    }
+  }
+}`}/>
+
+3. **API Plugins**: API plugins allow the workflow to interact with external services. For example, `business_data_vendor` plugin fetches business data from an external URL.
+
+<CodeBlock lang={`json`} code={`{
+    "apiPlugins": [
+        {
+            "name": "business_data_vendor",
+            "url": "https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/{api_url}.json",
+            ...
+        },
+        ...
+    ]
+}`}/>
+
+
+## Running the KYB Workflow
+
+### Creating a New Workflow Instance
+
+To create a new workflow instance, execute the following `curl` command:
+
+<CodeBlock lang={`shell`} code={`curl -X POST --location 'http://localhost:3000/api/v1/external/workflows/run' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer secret' \
+--data '{
+  "workflowId": "dynamic_external_request_example",
+  "context": {
+    "entity": {
+      "id": "company_id_22113243",
+      "data": {
+        "companyName": "ABC Company",
+        "registrationNumber": "123456789",
+        "legalForm": "Business Services",
+        "countryOfIncorporation": "United States",
+        "dateOfIncorporation": "2003-05-12T14:36:24.173Z",
+        "address": "123 Main Street",
+        "phoneNumber": "+1 (555) 123-4567",
+        "email": "info@abccompany.com",
+        "website": "http://www.abccompany.com",
+        "industry": "Innovative Solutions",
+        "taxIdentificationNumber": "987654321012",
+        "vatNumber": "123456789",
+        "numberOfEmployees": 250,
+        "businessPurpose": "Cutting-edge Technology",
+        "approvalState": "NEW",
+        "additionalInfo": {
+          "customParam": "customValue"
+        }
+      },
+      "type": "business"
+    },
+    "documents": [
+      {
+        "category": "proof_of_address",
+        "type": "water_bill",
+        "issuer": {
+          "country": "GH"
+        },
+        "pages": [
+          {
+            "provider": "http",
+            "uri": "https://www.africau.edu/images/default/sample.pdf",
+            "metadata": {
+              "side": "front",
+              "pageNumber": "1"
+            },
+            "type": "pdf"
+          }
+        ],
+        "properties": {
+          "docNumber": "1234",
+          "userAddress": "Turkey, buhgdawe"
+        },
+        "version": "1",
+        "issuingVersion": 1
+      }
+    ],
+    "api_config": {
+      "url": "business_test_eu",
+      "special_header": "very_special"
+    }
+  }
+}'`}
+/>
+
+This command creates a new workflow instance, which upon successful execution, provides you with a response containing `workflowDefinitionId`, `workflowRuntimeId`, and `ballerineEntityId`.
+An example of the response:
+
+<CodeBlock lang={`json`} code={`{
+    "workflowDefinitionId":"dynamic_external_request_example",
+    "workflowRuntimeId":"[TAKE THIS VALUE TO THE THE FOLLOWING REQUEST]",
+    "ballerineEntityId":"clj6uxa650006ruhvbcfvvhgh"
+}`}/>
+
+### Sending Event to a Workflow
+
+To initiate the workflow, send the `start` event.
+This action triggers the data enrichment process.
+
+<CodeBlock lang={`shell`} code={`curl -X POST 'http://localhost:3000/api/v1/external/workflows/[WORKFLOW RUNTIME ID HERE]/send-event' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer secret' \
+--data '{"name": "start"}'`}/>
+
+## What Happens Next?
+
+After you send the `start` event to the workflow, the system moves the workflow to the `check_business_details` state.
+In this state, it triggers the `external_request_example` plugin, which makes a GET request to an external URL to enrich the business data.
+The plugin also calculates a fuzziness score between the registered business name and the one provided in the input.
+
+The workflow then evaluates several conditions based on the fuzziness score.
+Let's take a closer look at one of them:
+
+<CodeBlock lang={`json`} code={`{
+  "target": "manual_review",
+  "cond": {
+    "type": "json-logic",
+    "options": {
+      "rule": {
+        ">": [
+          { "var": "pluginsOutput.external_request_example.name_fuzziness_score" },
+          0.5
+        ]
+      },
+      "onFailed": { "manualReviewReason": "name not matching ... " }
+    }
+  }
+}`}/>
+
+Here, the workflow checks whether the fuzziness score is above 0.5.
+If the score is above this threshold, the workflow moves to the `manual_review` state, and the reason for manual review is set to "name not matching ...".
+
+In case the workflow move to the `manual_review` state, you can then proceed to the backoffice (http://localhost:5137/) using your login credentials (admin@admin.com, admin).
+There, you will see the case awaiting your review.
+You have the power to either approve or reject it based on the information provided.
+Once you make your decision, the system will notify you of the outcome via a webhook event.
+
+Let's learn more about how to customize the workflow to suit your specific needs in the next section.
+# Adjusting the Workflow
+
+Let's tweak the workflow for automatic approval and for sending updates to your backend on workflow completion.
+
+### Setting Up Webhooks
+
+Visit [Webhook.site](https://webhook.site) to get your webhook URLs. Replace the `url` field under the `finish_webhook` and `fail_webhook` plugins in your workflow definition with your webhook URLs.
+
+## Changing Approval Threshold
+
+By default, the rule we discussed in the Workflow Definition section will auto-approve the business if the fuzziness score is 0.8 or higher. However, you might want to adjust this threshold to be stricter or more lenient based on your needs.
+
+Let's make the fuzziness score threshold stricter.
+Change the second condition in the `API_CALL_SUCCESS` rule from 0.8 to 0.9:
+
+<CodeBlock lang={`json`} code={`{
+  "target": "auto_approve",
+  "cond": {
+    "type": "json-logic",
+    "rule": {
+      "or": [
+        {
+          "==": [
+            { "var": "context.entity.companyName" },
+            { "var": "response.data.registered_name" }
+          ]
+        },
+        {
+          ">=": [
+            { "var": "context.external_request_example.data.name_fuzziness_score" },
+            0.9
+          ]
+        }
+      ]
+    }
+  }
+}`}/>
+
+With this change, the rule now reads: auto-approve the business if either the company name provided matches the registered name, or if the fuzziness score is 0.9 or higher.
+This makes the approval criteria more stringent, requiring a higher match level between the provided company name and the registered name.
+
+Remember to save the changes you've made to the workflow definition.
+Once the changes are saved, you'll need to restart the services to reflect these changes. Run the command `pnpm api-flow-example` again in your terminal.
+
+Now, when you send a start event to a new workflow instance, it will follow the updated approval criteria. If the new criteria are met, the workflow will proceed to auto-approval and a webhook will be sent to notify about this decision. This allows for quick notifications of automated decisions, improving the speed of your KYB process.
+
+In the next section, we'll guide you on how to set up a webhook and receive notifications about workflow state changes.

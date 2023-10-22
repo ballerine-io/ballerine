@@ -99,7 +99,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           )}
         </div>
         {showResolutionButtons && (
-          <div className={`flex items-center space-x-4 self-start pe-[3.35rem]`}>
+          <div className={`pe-[3.35rem] flex items-center space-x-4 self-start`}>
             <Dialog>
               <DialogTrigger asChild>
                 <Button

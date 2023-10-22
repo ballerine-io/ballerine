@@ -62,7 +62,7 @@ export const Item: FunctionComponent<IItemProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className={ctw(`indicator-center indicator-item indicator-middle`, {
+            className={ctw(`indicator-center indicator-middle indicator-item`, {
               hidden: status !== 'REJECTED' && status !== 'APPROVED',
               'text-success': status === 'APPROVED',
               'text-error': status === 'REJECTED',

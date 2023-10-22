@@ -1,0 +1,38 @@
+---
+title: Embedded Flows
+description: Embedded flows documentation
+
+---
+
+import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
+
+CDN:
+Add this code to your index.html header
+
+<CodeBlock lang={`typescript`} code={`// 1. Add script (see installtion)
+// 2. Initialize SDK & flows (see configuration)
+BallerineSDK.flows.init({...}).then(() => {
+	console.log('flows ready');
+	// 3. Mount selected flow on an element
+	BallerineSDK.flows.mount({
+        flowName: 'my-kyc-flow',
+        elementId: 'kyc-container',
+        useModal: true,
+	});
+});
+// 4. Listen to finish event (see events)
+BallerineSDK.flows.on('finish', doSomethingFn)`}/>
+
+Package Manager:
+
+<CodeBlock lang={`typescript`} code={`import { flows as ballerineFlows } from '@ballerine/web-ui-sdk';
+
+await ballerineFlows.init({...}).then(() => console.log('flows ready'));
+// 3. Mount selected flow on an element
+ballerineFlows.mount({
+    flowName: 'my-kyc-flow',
+    elementId: 'kyc-container',
+    useModal: true,
+});
+// 4. Listen to finish event (see events)
+ballerineFlows.on('finish', doSomethingFn)`}/>
