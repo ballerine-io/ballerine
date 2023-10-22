@@ -1,36 +1,40 @@
 ---
 title: Deployment
-description: 
+description:
 layout: '../../../layouts/MainLayout.astro'
 ---
+
 ## Deployment Guide
 
 ### Docker Compose Deployment
 
 1. **Clone the project**: Use Git to clone the Ballerine repository to your local machine:
-    ```shell
-    git clone https://github.com/ballerine-io/ballerine.git && cd ballerine
-    ```
+
+   ```shell
+   git clone https://github.com/ballerine-io/ballerine.git && cd ballerine
+   ```
 
 2. **Switch to the main branch**: After cloning, switch to the main branch (or the branch you wish to deploy):
-    ```shell
-    git checkout main
-    ```
+
+   ```shell
+   git checkout main
+   ```
 
 3. **Run Docker Compose**: Now, you can start all services using Docker Compose:
-    ```shell
-    docker-compose up -d
-    ```
+   ```shell
+   docker-compose up -d
+   ```
 
-The application should now be running at the ports defined in your Docker Compose configuration. 
+The application should now be running at the ports defined in your Docker Compose configuration.
 
 ### Kubernetes Deployment (Helm)
+
 # Install ballerine using helm chart
 
 Ballerine is a collection of services like workflow-service, backendoffice.
 In values.yaml we have sections to enable/disable them based on the necessity like below
 
-``` bash
+```bash
 workflowService:
   enabled: true
 ```
@@ -87,6 +91,7 @@ postgresql:
     BCRYPT_SALT: "10"
     JWT_SECRET_KEY: "secret"
     JWT_EXPIRATION: "10d"
+    ENENVIRONMENT_NAME: "<production|development>"
     DB_URL: "<Managed DB_URL with databasename>"
     DB_USER: "<Managed DB_USER>"
     DB_PASSWORD: "<Managed DB_PASSWORD>"
@@ -95,7 +100,7 @@ postgresql:
 
 ### Installing Ballerine helm chart
 
-``` bash
+```bash
 helm install ballerine . -n ballerine --create-namespace -f values.yaml
 ```
 
@@ -117,6 +122,4 @@ kubectl logs <pod> -n ballerine
 kubectl port-forward svc/<service> -n ballerine 3000:3000
 ```
 
-
 Always refer to the official documentation of Ballerine for more specific configuration and deployment details.
-

@@ -19,9 +19,6 @@ data:
   {{- if (eq "WORKFLOW_DASHBOARD_CORS_ORIGIN" $key) }}
   {{ $key }} : workflows-dashboard.{{ $namespace }}.svc.cluster.local:80
   {{- end }}
-  {{- if (eq "HEADLESS_EXAMPLE_CORS_ORIGIN" $key) }}
-  {{ $key }} : headlessexample.{{ $namespace }}.svc.cluster.local:80
-  {{- end }}
   {{- if $.Values.postgresql.enabled }}  
   {{- if (eq "DB_URL" $key) }}
   {{ $key }}: postgres://{{ $postgresqlUser }}:{{ $postgresqlPassword }}@{{ $name }}-postgresql.{{ $namespace }}.svc.cluster.local:5432/{{ $postgresqlDatabase }}
