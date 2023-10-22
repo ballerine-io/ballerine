@@ -8,7 +8,7 @@ description: FlowsMountOptions interface documentation
 
 ### callbacks
 
-• `Optional` **callbacks**: [`FlowsEventsConfig`](../flows_events_config)
+• `Optional` **callbacks**: [`FlowsEventsConfig`](/en/api/sdk/flows_events_config/)
 
 #### Defined in
 
