@@ -89,7 +89,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
                 <button
                   type={`button`}
                   className={ctw(
-                    `btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary`,
+                    `btn-ghost btn-sm btn-circle btn bg-base-300/70 text-[0.688rem] focus:outline-primary`,
                   )}
                   onClick={onRotateDocument}
                 >

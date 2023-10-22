@@ -49,7 +49,7 @@ Watch a brief video explaining what we're building.
 ## Features
 View each component's current state in the [roadmap](#roadmap) below.
 ####  Released  - 🎉
-- [**Back office**](https://github.com/ballerine-io/ballerine/blob/dev/websites/docs/src/pages/en/learn/back-office.md) - Case management dashboard for manual decision-making.
+- [**Back office**](https://github.com/ballerine-io/ballerine/blob/dev/websites/docs/src/pages/en/learn/back_office.mdx) - Case management dashboard for manual decision-making.
 
 - **Workflow engine** - Orchestrates and automates the different system's parts.
 
@@ -87,7 +87,7 @@ We believe in enabling companies to manage user  identity  and risk according to
 4. A simple JSON containing **Risk Rules** that are checked during the flow.
 
 **Parts of the system you might look for but are not in THIS demo:**
-- Advanced Back Office - To try it out go to our [Case management back office page](https://github.com/ballerine-io/ballerine/blob/dev/websites/docs/src/pages/en/learn/back-office.md).
+- Advanced Back Office - To try it out go to our [Case management back office page](https://github.com/ballerine-io/ballerine/blob/dev/websites/docs/src/pages/en/learn/back_office.mdx).
 - KYC/KYB UI flows - To try it out go to our  [Community driven building blocks page](https://github.com/ballerine-io/ballerine/blob/dev/websites/docs/src/pages/en/learn/kit.md).
 - Our Plugin System and Rule Engine are still under construction and will soon be released.
 
