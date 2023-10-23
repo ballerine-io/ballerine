@@ -420,12 +420,19 @@ export class WorkflowRunner {
 
     const service = interpret(workflow)
       .start(this.#__currentState)
-      .onTransition(state => {
+      .onTransition((state, context) => {
         if (state.changed) {
           console.log('Transitioned into', state.value);
 
           if (state.done) {
             console.log('Reached final state');
+          }
+
+          if (state.tags.has('failure')) {
+            console.log('Reached failure state', {
+              correlationId: context?.entity?.id,
+              ballerineEntityId: context?.entity?.ballerineEntityId,
+            });
           }
 
           if (this.#__callback) {

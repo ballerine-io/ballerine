@@ -1463,7 +1463,8 @@ export class WorkflowService {
       if (
         // @ts-ignore
         mergedConfig.createCollectionFlowToken &&
-        workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative
+        workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative &&
+        entityType === 'business'
       ) {
         const endUser = await this.endUserService.createWithBusiness(
           {
@@ -1476,6 +1477,7 @@ export class WorkflowService {
             isContactPerson: true,
           },
           currentProjectId,
+          entityId,
         );
         const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         const workflowToken = await this.workflowTokenService.create(currentProjectId, {
