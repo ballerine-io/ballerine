@@ -26,7 +26,7 @@ export const dynamicUiWorkflowDefinition = {
       collection_invite: {
         on: {
           INVIATION_SENT: 'collection_flow',
-          INVIATION_FAILURE: 'collection_flow',
+          INVIATION_FAILURE: 'failed',
         },
       },
       collection_flow: {
@@ -37,15 +37,15 @@ export const dynamicUiWorkflowDefinition = {
       },
       run_kyb_enrichment: {
         on: {
-          KYB_DONE: [{ target: 'run_ubos' }],
-          FAILED: [{ target: 'run_ubos' }],
+          KYB_DONE: 'run_ubos',
+          FAILED: 'run_ubos',
         },
       },
       run_ubos: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
           EMAIL_SENT_TO_UBOS: [{ target: 'pending_kyc_response_to_finish' }],
-          FAILED_EMAIL_SENT_TO_UBOS: [{ target: 'pending_kyc_response_to_finish' }],
+          FAILED_EMAIL_SENT_TO_UBOS: [{ target: 'failed' }],
         },
       },
       pending_kyc_response_to_finish: {
@@ -63,7 +63,7 @@ export const dynamicUiWorkflowDefinition = {
             },
           ],
           reject: 'rejected',
-          revision: 'revision',
+          revision: 'pending_resubmission',
         },
       },
       manual_review: {
@@ -71,8 +71,19 @@ export const dynamicUiWorkflowDefinition = {
         on: {
           approve: 'approved',
           reject: 'rejected',
-          revision: 'revision',
+          revision: 'pending_resubmission',
         },
+      },
+      pending_resubmission: {
+        tags: [StateTag.REVISION],
+        on: {
+          EMAIL_SENT: 'revision',
+          EMAIL_FAILURE: 'failed',
+        },
+      },
+      failed: {
+        tags: [StateTag.FAILURE],
+        type: 'final' as const,
       },
       approved: {
         tags: [StateTag.APPROVED],
@@ -115,7 +126,7 @@ export const dynamicUiWorkflowDefinition = {
         method: 'GET',
         stateNames: ['run_kyb_enrichment'],
         successAction: 'KYB_DONE',
-        errorAction: 'KYB_DONE',
+        errorAction: 'FAILED',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
@@ -144,7 +155,7 @@ export const dynamicUiWorkflowDefinition = {
         pluginKind: 'email',
         url: `{secret.EMAIL_API_URL}`,
         successAction: 'INVIATION_SENT',
-        errorAction: 'INVIATION_SENT',
+        errorAction: 'INVIATION_FAILURE',
         method: 'POST',
         stateNames: ['collection_invite'],
         headers: {
@@ -177,6 +188,8 @@ export const dynamicUiWorkflowDefinition = {
         pluginKind: 'email',
         url: `{secret.EMAIL_API_URL}`,
         method: 'POST',
+        successAction: 'EMAIL_SENT',
+        errorAction: 'EMAIL_FAILURE',
         stateNames: ['pending_resubmission'],
         headers: {
           Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',

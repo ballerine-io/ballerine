@@ -31,6 +31,7 @@ export class EndUserService {
   async createWithBusiness(
     endUser: EndUserCreateDto,
     projectId: TProjectId,
+    businessId?: string,
   ): Promise<EndUser & { businesses: Business[] }> {
     const { companyName = '', ...userData } = endUser;
 
@@ -39,7 +40,12 @@ export class EndUserService {
         data: {
           ...userData,
           businesses: {
-            create: { companyName, projectId: projectId },
+            connectOrCreate: {
+              where: {
+                id: businessId,
+              },
+              create: { companyName, projectId: projectId },
+            },
           },
         },
         include: {

@@ -23,6 +23,7 @@ export class ApiPlugin {
     this.method = pluginParams.method;
     this.headers = {
       'Content-Type': 'application/json',
+      accept: 'application/json',
       ...(pluginParams.headers || {}),
     } as HeadersInit;
     this.request = pluginParams.request;
@@ -110,6 +111,13 @@ export class ApiPlugin {
     }
 
     const res = await fetch(url, requestParams);
+    if ([204, 202].includes(res.status)) {
+      return {
+        ok: true,
+        json: () => Promise.resolve({ statusCode: res.status }),
+        statusText: 'OK',
+      };
+    }
 
     return res;
   }
