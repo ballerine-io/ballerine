@@ -58,6 +58,7 @@ async function createCustomer(
   id: string,
   apiKey: string,
   logoImageUri: string,
+  faviconImageUri: string,
   webhookSharedSecret: string,
 ) {
   return await client.customer.create({
@@ -73,6 +74,7 @@ async function createCustomer(
         webhookSharedSecret,
       },
       logoImageUri: logoImageUri,
+      faviconImageUri,
       country: 'GB',
       language: 'en',
     },
@@ -99,6 +101,7 @@ async function seed(bcryptSalt: string | number) {
     '1',
     env.API_KEY,
     'https://assets-global.website-files.com/62827cf4fe5eb528708511d4/645511cb3d3dd84ee28fe04d_CyberAgent.svg',
+    '',
     `webhook-shared-secret-${env.API_KEY}`,
   );
   const customer2 = await createCustomer(
@@ -106,6 +109,7 @@ async function seed(bcryptSalt: string | number) {
     '2',
     `${env.API_KEY}2`,
     'https://assets-global.website-files.com/62827cf4fe5eb528708511d4/645d26f285bd18467470e7cd_zenhub-logo.svg',
+    '',
     `webhook-shared-secret-${env.API_KEY}2`,
   );
   const project1 = await createProject(client, customer, '1');

@@ -67,6 +67,7 @@ describe('UserSessionAuditMiddleware', () => {
       String(Date.now()),
       'secret',
       '',
+      '',
       'webhookSharedSecret',
     );
     project = await createProject(prismaService, customer, '3');

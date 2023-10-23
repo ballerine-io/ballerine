@@ -271,6 +271,7 @@ model Customer {
   name                        String           @unique
   displayName                 String
   logoImageUri                String
+  faviconImageUri             String           @default("") // TODO: remove default value after data migration
   customerStatus              CustomerStatuses @default(onboarding)
   authenticationConfiguration Json?
   country                     String?

@@ -1,9 +1,9 @@
 import * as common from '@nestjs/common';
+import { Request, UseGuards } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { CustomerService } from '@/customer/customer.service';
 import { Customer, Prisma } from '@prisma/client';
 import { CustomerCreateDto } from '@/customer/dtos/customer-create';
-import { Request, UseGuards } from '@nestjs/common';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { CustomerModel } from '@/customer/customer.model';
 import { AuthenticatedEntity } from '@/types';
@@ -38,6 +38,7 @@ export class CustomerControllerExternal {
         name: true,
         displayName: true,
         logoImageUri: true,
+        faviconImageUri: true,
         country: true,
         language: true,
         customerStatus: true,
