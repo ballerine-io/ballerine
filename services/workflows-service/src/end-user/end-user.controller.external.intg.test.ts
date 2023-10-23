@@ -83,6 +83,7 @@ describe('#EndUserControllerExternal', () => {
       String(Date.now()),
       'secret2',
       '',
+      '',
       'webhook-shared-secret',
     );
     project = await createProject(await app.get(PrismaService), customer, '1');
