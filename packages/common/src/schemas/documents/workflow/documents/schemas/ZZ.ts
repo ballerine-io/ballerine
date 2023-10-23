@@ -66,8 +66,8 @@ export const getUniversalDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object({
         businessName: Type.Optional(Type.String()),
-        directors: Type.Optional(Type.Array(Type.String())),
-        shareholders: Type.Optional(Type.Array(Type.String())),
+        directors: Type.Optional(Type.String()),
+        shareholders: Type.Optional(Type.String()),
         issueDate: OptionalTypePastDate,
       }),
     },
@@ -142,7 +142,7 @@ export const getUniversalDocuments = (): TDocument[] => {
         licenseNumber: OptionalTypeAlphanumericString,
         issueDate: OptionalTypePastDate,
         expiryDate: Type.Optional(Type.String({ format: 'date' })),
-        permittedProductsOrServices: Type.Optional(Type.Array(Type.String())),
+        permittedProductsOrServices: Type.Optional(Type.String()),
       }),
     },
   ];
