@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "spellcheck": "cspell \"*\"",
-    "dev": "vite --host",
+    "dev": "vite --host --port 5202",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
