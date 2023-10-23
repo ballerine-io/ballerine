@@ -111,10 +111,6 @@ export const dynamicUiWorkflowDefinition = {
         tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
-      auto_reject: {
-        tags: [StateTag.REJECTED],
-        type: 'final' as const,
-      },
     },
   },
   extensions: {
