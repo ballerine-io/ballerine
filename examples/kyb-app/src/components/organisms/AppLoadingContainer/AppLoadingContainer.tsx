@@ -4,7 +4,7 @@ import { AnyChildren } from '@ballerine/ui';
 import { useMemo } from 'react';
 
 interface Props {
-  dependencies: AppDependency[];
+  dependencies: ReadonlyArray<AppDependency>;
   children: AnyChildren;
 }
 

@@ -128,6 +128,7 @@ export interface TCustomer {
   name: string;
   displayName: string;
   logoImageUri: string;
+  faviconImageUri: string;
   customerStatus: string;
   country: string;
   language: string;
