@@ -151,6 +151,7 @@ describe('WorkflowService', () => {
       configService as unknown as ConfigService,
       eventEmitter as any,
       testingModule.get(AppLoggerService),
+      customerService,
     );
 
     service = new WorkflowService(
