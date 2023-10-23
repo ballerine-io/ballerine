@@ -93,6 +93,7 @@ describe('WorkflowService', () => {
   let endUserRepo;
   let entityRepo;
   let userService;
+  let workflowTokenService;
   let salesforceService;
   const numbUserInfo = Symbol();
   let fakeHttpService;
@@ -122,6 +123,7 @@ describe('WorkflowService', () => {
     customerService = new FakeEntityRepo();
     userService = new FakeEntityRepo();
     salesforceService = new FakeEntityRepo();
+    workflowTokenService = new FakeEntityRepo();
 
     fakeHttpService = {
       requests: [],
@@ -151,7 +153,7 @@ describe('WorkflowService', () => {
       configService as unknown as ConfigService,
       eventEmitter as any,
       testingModule.get(AppLoggerService),
-      customerService,
+      customerService
     );
 
     service = new WorkflowService(
@@ -169,6 +171,7 @@ describe('WorkflowService', () => {
       projectScopeService,
       userService,
       salesforceService,
+      workflowTokenService
     );
   });
 
