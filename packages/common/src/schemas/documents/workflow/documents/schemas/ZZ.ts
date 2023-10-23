@@ -105,7 +105,7 @@ export const getUniversalDocuments = (): TDocument[] => {
         businessName: Type.Optional(Type.String()),
         from: Type.Optional(Type.String({ format: 'date' })),
         to: Type.Optional(Type.String({ format: 'date' })),
-        totalTransactions: Type.Number(),
+        totalTransactions: Type.Optional(Type.Number()),
       }),
     },
     {
