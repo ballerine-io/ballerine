@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.13-3e08f108.8
+
+### Patch Changes
+
+- Bump
+
 ## 0.7.13-3e08f108.7
 
 ### Patch Changes
