@@ -8,7 +8,6 @@ import { LoadingScreen } from '@app/common/components/molecules/LoadingScreen';
 import { CustomerProviderFallback } from '@app/components/molecules/CustomerProviderFallback';
 import { RouterProvider } from 'react-router-dom';
 import { router } from '@app/router';
-import { Helmet } from 'react-helmet';
 
 export const App = () => {
   const dependancyQueries = [
@@ -20,12 +19,6 @@ export const App = () => {
   return (
     <AppLoadingContainer dependencies={dependancyQueries}>
       <CustomerProvider loadingPlaceholder={<LoadingScreen />} fallback={CustomerProviderFallback}>
-        <Helmet>
-          <link
-            rel="icon"
-            href={dependancyQueries[0]?.customer?.faviconImageUri || '/favicon.ico'}
-          />
-        </Helmet>
         <RouterProvider router={router} />
       </CustomerProvider>
     </AppLoadingContainer>

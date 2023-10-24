@@ -1,5 +1,5 @@
 import { ComponentProps } from 'react';
-import { isObject, safeEvery, StateTag, TStateTags } from '@ballerine/common';
+import { isObject, StateTag, TStateTags } from '@ballerine/common';
 
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
@@ -137,9 +137,7 @@ export const useKycBlock = ({
       })) ?? [],
   );
 
-  const hasDecision =
-    safeEvery(childWorkflow?.context?.documents, document => !!document?.decision?.status) ||
-    noAction;
+  const isDisabled = !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW) || noAction;
 
   const getDecisionStatusOrAction = (tags?: TStateTags) => {
     const badgeClassNames = 'text-sm font-bold';
@@ -208,7 +206,7 @@ export const useKycBlock = ({
           parentWorkflowId: parentWorkflowId,
           childWorkflowId: childWorkflow?.id,
           childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
-          disabled: hasDecision,
+          disabled: isDisabled,
           approvalStatus: 'rejected',
         },
       },
@@ -219,7 +217,7 @@ export const useKycBlock = ({
           parentWorkflowId: parentWorkflowId,
           childWorkflowId: childWorkflow?.id,
           childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
-          disabled: hasDecision,
+          disabled: isDisabled,
           approvalStatus: 'approved',
         },
       },
