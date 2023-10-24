@@ -1,7 +1,6 @@
 import { AppShell } from '@app/components/layouts/AppShell';
 import { DynamicUI, State } from '@app/components/organisms/DynamicUI';
 import { UIRenderer } from '@app/components/organisms/UIRenderer';
-import { ButtonUIElement } from '@app/components/organisms/UIRenderer/elements/ButtonUI';
 import { Cell } from '@app/components/organisms/UIRenderer/elements/Cell';
 import { Divider } from '@app/components/organisms/UIRenderer/elements/Divider';
 import { JSONForm } from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
@@ -13,8 +12,6 @@ import { prepareInitialUIState } from '@app/helpers/prepareInitialUIState';
 import { useFlowContextQuery } from '@app/hooks/useFlowContextQuery';
 import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
 import { useUISchemasQuery } from '@app/hooks/useUISchemasQuery';
-import { ProgressBar } from '@app/pages/CollectionFlow/components/organisms/KYBView/components/ProgressBar';
-import { StepperProgress } from '@app/pages/CollectionFlow/components/organisms/KYBView/components/StepperProgress';
 import { Approved } from '@app/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@app/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@app/pages/CollectionFlow/components/pages/Success';
@@ -23,6 +20,8 @@ import { useMemo } from 'react';
 import { usePageErrors } from '@app/components/organisms/DynamicUI/Page/hooks/usePageErrors';
 import { SubmitButton } from '@app/components/organisms/UIRenderer/elements/SubmitButton';
 import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
+import { StepperProgress } from '@app/common/components/atoms/StepperProgress';
+import { ProgressBar } from '@app/common/components/molecules/ProgressBar';
 
 const elems = {
   h1: Title,

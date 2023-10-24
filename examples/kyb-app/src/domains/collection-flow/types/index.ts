@@ -1,5 +1,4 @@
 import { Action, Rule, UIElement } from '@app/domains/collection-flow/types/ui-schema.types';
-import { Workflow } from '@app/domains/workflows/types';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 
@@ -15,20 +14,6 @@ export interface TUser {
   id: string;
   email: string;
   businessId: string;
-}
-
-export interface GetActiveWorkflowDto {
-  endUserId: string;
-}
-
-export interface FlowData {
-  id: string;
-  flowState: string | null;
-  status: 'approve' | 'reject';
-  isFinished: boolean;
-  flowData: AnyObject;
-  documents: Document[];
-  workflow?: Workflow;
 }
 
 export interface TFlowStep {

@@ -1,8 +1,8 @@
 import { DynamicForm } from '@ballerine/ui';
 import { signinSchema } from './signin.schema';
 import { signinUISchema } from './signin.ui-schema';
-import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
 import { SigninFormValues } from '@app/pages/SignIn/components/organisms/SigninForm/types';
+import { transformRJSFErrors } from '@app/helpers/transform-errors';
 
 interface Props {
   isLoading?: boolean;

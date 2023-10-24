@@ -1,5 +1,4 @@
 import { withTokenProtected } from '@app/hocs/withTokenProtected';
-import { AccessRestricted } from '@app/pages/AccessRestricted';
 import { CollectionFlow } from '@app/pages/CollectionFlow';
 import { Approved } from '@app/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@app/pages/CollectionFlow/components/pages/Rejected';
@@ -22,9 +21,5 @@ export const router = createBrowserRouter([
   {
     path: 'approved',
     Component: withTokenProtected(Approved),
-  },
-  {
-    path: 'restricted',
-    element: <AccessRestricted />,
   },
 ]);

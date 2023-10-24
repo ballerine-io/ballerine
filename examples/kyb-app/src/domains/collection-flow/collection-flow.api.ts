@@ -1,8 +1,6 @@
 import { request } from '@app/common/utils/request';
 import {
   DocumentConfiguration,
-  FlowData,
-  GetActiveWorkflowDto,
   TCustomer,
   TFlowConfiguration,
   TFlowStep,
@@ -11,7 +9,6 @@ import {
   UpdateFlowDto,
 } from '@app/domains/collection-flow/types';
 import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
-import { AnyObject } from '@ballerine/ui';
 
 export const fetchUser = async (): Promise<TUser> => {
   const result = await request.get('collection-flow/user').json<TUser>();
@@ -49,19 +46,6 @@ export const fetchUISchema = async (): Promise<UISchema> => {
     .json<UISchema>();
 
   return result;
-};
-
-export const fetchActiveWorkflow = async (dto: GetActiveWorkflowDto): Promise<FlowData> => {
-  const result = await request
-    .get('collection-flow/active-flow', {
-      searchParams: {
-        endUserId: dto.endUserId,
-        flowType: import.meta.env.VITE_KYB_DEFINITION_ID as string,
-      },
-    })
-    .json<{ result: FlowData }>();
-
-  return result.result;
 };
 
 export const updateFlow = async (dto: UpdateFlowDto) => {

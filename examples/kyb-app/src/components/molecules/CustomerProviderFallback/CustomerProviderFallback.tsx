@@ -1,7 +1,7 @@
 import { AppErrorScreen } from '@app/common/components/molecules/AppErrorScreen';
 import { FallbackComponent } from '@app/components/providers/CustomerProvider';
 
-export const CustomerProviderFallback: FallbackComponent = ({ errorMessage }) => {
+export const CustomerProviderFallback: FallbackComponent = () => {
   return (
     <AppErrorScreen
       title={`Failed to load application information.`}

@@ -12,12 +12,12 @@ import {
   jsonFormFields,
   jsonFormLayouts,
 } from '@app/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
-import { transformRJSFErrors } from '@app/pages/CollectionFlow/components/organisms/KYBView/helpers/transform-errors';
 import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
 import { DataCreationParams } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withInitialDataCreation';
 import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
 import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
 import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
+import { transformRJSFErrors } from '@app/helpers/transform-errors';
 
 export interface JSONFormElementBaseParams extends DataCreationParams {
   jsonFormDefinition: RJSFSchema;
@@ -109,6 +109,3 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
     </div>
   );
 };
-
-//@ts-nocheck
-// JSONForm.Documents = Documents;
