@@ -251,7 +251,7 @@ describe('WorkflowService', () => {
     });
   });
 
-  describe.only('.updateWorkflowRuntimeData', () => {
+  describe('.updateWorkflowRuntimeData', () => {
     it('sends a webbhook only for changed documents', async () => {
       const initialRuntimeData = {
         id: '2',
