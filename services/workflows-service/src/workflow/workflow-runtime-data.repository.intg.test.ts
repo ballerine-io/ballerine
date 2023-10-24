@@ -65,7 +65,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       PasswordService,
       WorkflowTokenService,
       WorkflowTokenRepository,
-      WorkflowRuntimeDataRepository
+      WorkflowRuntimeDataRepository,
     ];
 
     workflowRuntimeRepository = (await fetchServiceFromModule(
@@ -352,7 +352,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       expect(updatedContext).toEqual(expectedContext);
     });
   });
-it('should merge nested objects in the context', async () => {
+  it('should merge nested objects in the context', async () => {
     const createRes = await workflowRuntimeRepository.create(
       {
         data: {

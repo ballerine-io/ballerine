@@ -65,7 +65,7 @@ describe('#EndUserControllerExternal', () => {
       PasswordService,
       WorkflowTokenService,
       WorkflowTokenRepository,
-      WorkflowRuntimeDataRepository
+      WorkflowRuntimeDataRepository,
     ];
     endUserService = (await fetchServiceFromModule(EndUserService, servicesProviders, [
       PrismaModule,
