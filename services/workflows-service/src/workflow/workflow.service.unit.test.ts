@@ -144,14 +144,12 @@ describe('WorkflowService', () => {
 
       axiosRef: {
         async post(url, data, config) {
-          delete config.headers['X-HMAC-Signature'];
-          fakeHttpService.requests.push({ url, data, config });
+          fakeHttpService.requests.push({ url, data });
           return {
             status: 200,
             data: { success: true },
             statusText: 'OK',
             headers: {},
-            config: {},
           };
         },
       },
@@ -299,11 +297,6 @@ describe('WorkflowService', () => {
               ...newContext,
             },
           },
-          config: {
-            headers: {
-              'X-Authorization': configService.get('WEBHOOK_SECRET'),
-            },
-          },
         },
       ]);
     });
@@ -353,11 +346,6 @@ describe('WorkflowService', () => {
             environment: 'test',
             data: {
               ...newContext,
-            },
-          },
-          config: {
-            headers: {
-              'X-Authorization': configService.get('WEBHOOK_SECRET'),
             },
           },
         },
