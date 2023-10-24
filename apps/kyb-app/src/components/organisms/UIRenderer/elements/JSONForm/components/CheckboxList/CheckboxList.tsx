@@ -19,7 +19,7 @@ export const CheckboxList = (props: RJSVInputProps) => {
       {options.map(option => (
         <div className="flex items-center gap-2" key={option.value}>
           <Checkbox
-            className="border-secondary bg-white data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground"
+            className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground bg-white"
             color="primary"
             value={option.value}
             checked={Array.isArray(formData) && formData.includes(option.value) ? true : false}
@@ -35,7 +35,7 @@ export const CheckboxList = (props: RJSVInputProps) => {
               onChange(value);
             }}
           />
-          <span className="text-sm font-inter">{option.title}</span>
+          <span className="font-inter text-sm">{option.title}</span>
         </div>
       ))}
     </div>
