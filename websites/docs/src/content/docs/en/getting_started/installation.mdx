@@ -1,0 +1,48 @@
+---
+title: Ballerine Installation Guide
+description: his guide provides a step-by-step process for setting up and running the Ballerine stack on your local environment.
+---
+
+import {TabItem, Tabs} from "@astrojs/starlight/components";
+
+import PackageManagersTabs from '../../../../components/PackageManagersTabs/PackageManagersTabs.astro';
+import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
+
+## Prerequisites
+Before you can install and use Ballerine, you will need the following:
+### Install prerequisites
+   - Node.js (Minimum version 18) (you can install node via NVM: [Install NVM](https://github.com/nvm-sh/nvm))
+   - Latest PNPM version (Minimum version 8.0) ([Install PNPM](https://pnpm.io/installation))
+   - Docker and docker compose ([Docker](https://docs.docker.com/desktop), [Docker Compose](https://docs.docker.com/compose/install))
+
+### Installation Steps
+
+1. **Clone the project**: Use Git to clone the Ballerine repository to your local machine:
+<CodeBlock lang={`shell`}  code={`git clone https://github.com/ballerine-io/ballerine.git && cd ballerine`}/>
+
+2. **Switch to the dev branch**: After cloning, switch to the development branch:
+<CodeBlock lang={`shell`}  code={`git checkout dev`}/>
+
+3. **Install dependencies**: Use pnpm to install all the required dependencies:
+<PackageManagersTabs code={`install`} />
+
+4. **Initialize the monorepo**: The project is set up as a monorepo. Initialize it using the following command:
+
+<PackageManagersTabs code={`run monorepo:init`}/>
+
+
+## Run one of the examples, or follow a guide from the [guide sections](https://docs.ballerine.com/en/learn/simple_kyb_guide/)
+
+**Start the KYC example**: To start the example API, use the following command:
+
+<PackageManagersTabs code={`run kyc-manual-review-example`}/>
+
+After performing these steps, the backoffice should be running on http://localhost:5137/, and the workflow service will be accepting calls at http://localhost:3000/.
+
+The default username and password for the backoffice are:
+
+**Username:**
+<CodeBlock lang={`shell`}  code={`admin@admin.com`}/>
+
+**Password:**
+<CodeBlock lang={`shell`}  code={`admin`}/>
