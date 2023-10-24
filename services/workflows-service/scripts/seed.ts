@@ -1161,6 +1161,6 @@ async function seed(bcryptSalt: string | number) {
   await generateParentKybWithSessionKycs(client);
   await generateKybKycWorkflowDefinition(client);
   await generateKycForE2eTest(client);
-  await generateDynamicUiWorkflow(client);
+  await generateDynamicUiWorkflow(client, project1.id);
   console.info('Seeded database successfully');
 }
