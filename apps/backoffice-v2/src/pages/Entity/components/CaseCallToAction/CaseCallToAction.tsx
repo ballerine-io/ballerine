@@ -54,7 +54,7 @@ export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ va
         </DialogTrigger>
         <DialogContent className={`mb-96`}>
           <DialogHeader>
-            <DialogTitle className={`text-2xl`}>Ask for all re-uploads</DialogTitle>
+            <DialogTitle className={`text-2xl`}>Ask to re-upload</DialogTitle>
             <DialogDescription>
               <span className="mb-[10px] block">
                 By clicking the button below, an email with a link will be sent to the customer,
