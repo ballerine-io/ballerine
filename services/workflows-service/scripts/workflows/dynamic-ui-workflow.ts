@@ -118,7 +118,7 @@ export const dynamicUiWorkflowDefinition = {
       {
         name: 'open_corporates',
         pluginKind: 'kyb',
-        url: `${env.UNIFIED_API_URL}/companies`,
+        url: `{secret.UNIFIED_API_URL}/companies`,
         method: 'GET',
         stateNames: ['run_kyb_enrichment'],
         successAction: 'KYB_DONE',
