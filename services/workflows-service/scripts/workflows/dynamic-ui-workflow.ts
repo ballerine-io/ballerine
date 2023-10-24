@@ -104,7 +104,6 @@ export const dynamicUiWorkflowDefinition = {
             },
             { target: 'pending_kyc_response_to_finish' },
           ],
-          RESUBMITTED: 'manual_review',
         },
       },
       rejected: {
