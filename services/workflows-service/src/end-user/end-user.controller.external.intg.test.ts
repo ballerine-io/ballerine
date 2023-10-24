@@ -29,6 +29,8 @@ import { SalesforceService } from '@/salesforce/salesforce.service';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { UserRepository } from '@/user/user.repository';
 import { PasswordService } from '@/auth/password/password.service';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
@@ -61,6 +63,9 @@ describe('#EndUserControllerExternal', () => {
       SalesforceService,
       SalesforceIntegrationRepository,
       PasswordService,
+      WorkflowTokenService,
+      WorkflowTokenRepository,
+      WorkflowRuntimeDataRepository
     ];
     endUserService = (await fetchServiceFromModule(EndUserService, servicesProviders, [
       PrismaModule,
