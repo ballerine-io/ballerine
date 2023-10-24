@@ -31,6 +31,7 @@ const corsOrigins =
         env.KYB_EXAMPLE_CORS_ORIGIN,
         /\.ballerine\.dev$/,
         /\.ballerine\.app$/,
+        /\.ballerine\.io$/,
         /^http:\/\/localhost:\d+$/,
       ];
 
