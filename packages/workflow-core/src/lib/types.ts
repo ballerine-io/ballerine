@@ -1,5 +1,5 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
-import { HttpPlugins, CommonPlugins, StatePlugins } from './plugins/types';
+import { CommonPlugins, HttpPlugins, StatePlugins } from './plugins/types';
 import {
   ISerializableChildPluginParams,
   ISerializableHttpPluginParams,
@@ -37,7 +37,6 @@ export interface WorkflowExtensions {
 }
 export interface ChildWorkflowCallback {
   transformers?: Array<SerializableTransformer>;
-  action: 'append';
   persistenceStates?: Array<string>;
   deliverEvent?: string;
 }

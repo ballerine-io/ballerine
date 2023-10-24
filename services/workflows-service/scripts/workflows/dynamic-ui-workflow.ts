@@ -72,6 +72,7 @@ export const dynamicUiWorkflowDefinition = {
           approve: 'approved',
           reject: 'rejected',
           revision: 'pending_resubmission',
+          KYC_REVISION: 'revision',
         },
       },
       pending_resubmission: {
@@ -103,6 +104,17 @@ export const dynamicUiWorkflowDefinition = {
               },
             },
             { target: 'pending_kyc_response_to_finish' },
+          ],
+          KYC_RESPONDED: [
+            {
+              target: 'manual_review',
+              cond: {
+                type: 'jmespath',
+                options: {
+                  rule: 'length(childWorkflows.kyc_email_session_example.*.[result.vendorResult.decision][]) == length(childWorkflows.kyc_email_session_example.*[])',
+                },
+              },
+            },
           ],
         },
       },
@@ -262,6 +274,11 @@ export const dynamicUiWorkflowDefinition = {
         ],
         persistenceStates: ['kyc_manual_review'],
         deliverEvent: 'KYC_RESPONDED',
+      },
+      {
+        definitionId: kycEmailSessionDefinition.name,
+        persistenceStates: ['revision_email_sent'],
+        deliverEvent: 'KYC_REVISION',
       },
     ],
   },

@@ -1017,7 +1017,9 @@ export class WorkflowService {
         {
           data: {
             status: 'active',
-            state: parentMachine?.workflowDefinition?.definition?.initial as string,
+            state:
+              parentMachine?.state ||
+              (parentMachine?.workflowDefinition?.definition?.initial as string),
             context: {
               ...parentMachine?.context,
               documents: parentMachine?.context?.documents?.map((document: any) => {
@@ -1987,7 +1989,7 @@ export class WorkflowService {
     parentWorkflowContext['childWorkflows'] ||= {};
     parentWorkflowContext['childWorkflows'][definitionId] ||= {};
 
-    parentWorkflowContext['childWorkflows'][definitionId] = contextToPersist;
+    parentWorkflowContext['childWorkflows'][definitionId] ||= contextToPersist;
     return parentWorkflowContext;
   }
 
