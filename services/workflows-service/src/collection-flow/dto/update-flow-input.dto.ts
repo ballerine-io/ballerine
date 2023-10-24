@@ -1,11 +1,6 @@
-import { IsNullable } from '@/common/decorators/is-nullable.decorator';
-import { Type } from 'class-transformer';
 import {
-  IsArray,
-  IsDate,
   IsEmail,
   IsNotEmpty,
-  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -46,7 +41,7 @@ export class CompanyDocument {
   fileId!: string;
 
   @IsObject()
-  properties!: object;
+  properties!: Record<string, unknown>;
 
   @IsString()
   @IsNotEmpty()
@@ -87,34 +82,21 @@ export class UBOShareholder {
 }
 
 export class UpdateFlowPayload {
-  @ValidateNested()
-  @Type(() => MainRepresentative)
-  mainRepresentative!: MainRepresentative;
-
-  @ValidateNested()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CompanyDocument)
-  documents!: CompanyDocument[];
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  ubos!: UBOShareholder[];
-
   @IsObject()
-  dynamicData!: object;
+  business?: Record<string, unknown>;
 
-  @IsNullable()
   @IsString()
-  flowState!: string | null;
+  ballerineEntityId?: string;
 
   @IsObject()
-  businessData!: object;
+  endUser?: Record<string, unknown>;
+
+  @IsObject()
+  context!: Record<string, unknown>;
 }
 
 export class UpdateFlowDto {
   @ValidateNested()
   @IsNotEmpty()
-  @Type(() => UpdateFlowPayload)
-  payload!: UpdateFlowPayload;
+  data!: UpdateFlowPayload;
 }

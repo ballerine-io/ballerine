@@ -1,7 +1,7 @@
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { Paper } from '@components/atoms/Paper';
-import { useCallback, useMemo } from 'react';
+import { FocusEvent, useCallback, useMemo } from 'react';
 import { ThemeProvider } from '@mui/material';
 import { muiTheme } from '@common/mui-theme';
 
@@ -21,15 +21,17 @@ export interface AutocompleteInputProps {
   name?: string;
   disabled?: boolean;
   onChange: (event: AutocompleteChangeEvent) => void;
+  onBlur?: (event: FocusEvent<any>) => void;
 }
 
 export const AutocompleteInput = ({
   options,
-  value,
+  value = '',
   placeholder,
   name,
   disabled,
   onChange,
+  onBlur,
 }: AutocompleteInputProps) => {
   const optionLabels = useMemo(() => options.map(option => option.value), [options]);
 
@@ -79,6 +81,7 @@ export const AutocompleteInput = ({
             size="small"
             placeholder={placeholder}
             disabled={disabled}
+            onBlur={onBlur}
             //@ts-nocheck
             InputProps={{
               ...params.InputProps,

@@ -1,7 +1,7 @@
 import { AnyObject } from '@common/types';
 import { DropdownInput, DropdownOption } from '@components/molecules';
 import { FieldProps } from '@rjsf/utils';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export const SelectField = ({
   id,
@@ -10,6 +10,7 @@ export const SelectField = ({
   formData,
   uiSchema,
   disabled,
+  onBlur,
 }: FieldProps<string>) => {
   const options = useMemo((): DropdownOption[] => {
     if (!Array.isArray(schema.oneOf)) return [];
@@ -22,6 +23,10 @@ export const SelectField = ({
     }) as DropdownOption[];
   }, [schema.oneOf]);
 
+  const handleBlur = useCallback(() => {
+    onBlur && onBlur(id, formData);
+  }, [id, onBlur, formData]);
+
   return (
     <DropdownInput
       placeholdersParams={{ placeholder: uiSchema['ui:placeholder'] }}
@@ -31,6 +36,7 @@ export const SelectField = ({
       value={formData}
       disabled={disabled}
       onChange={onChange}
+      onBlur={handleBlur}
     />
   );
 };

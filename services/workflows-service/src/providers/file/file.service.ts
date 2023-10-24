@@ -115,8 +115,12 @@ export class FileService {
       sourceRemoteFileConfig,
       tmpFile.name,
     );
-    const remoteFilePath = await targetServiceProvider.upload(localFilePath, targetFileConfig);
     const fileType = await fromFile(localFilePath);
+    const remoteFilePath = await targetServiceProvider.upload(
+      localFilePath,
+      targetFileConfig,
+      fileType?.mime,
+    );
 
     fs.unlinkSync(localFilePath);
 

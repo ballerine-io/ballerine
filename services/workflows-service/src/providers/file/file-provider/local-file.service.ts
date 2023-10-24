@@ -51,6 +51,6 @@ export class LocalFileService implements IFileProvider {
   }
 
   private __removeFilePrefix(fileName: string): string {
-    return fileName.replace('file://', '');
+    return fileName?.replace('file://', '');
   }
 }

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString } from 'class-validator';
+import { TProjectId } from '@/types';
 
 export class FilterCreateDto {
   @ApiProperty({
@@ -20,4 +21,11 @@ export class FilterCreateDto {
     required: true,
   })
   query!: Record<string, any>;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  projectId!: TProjectId;
 }

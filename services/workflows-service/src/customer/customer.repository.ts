@@ -47,7 +47,19 @@ export class CustomerRepository {
   ): Promise<Customer> {
     return this.prisma.customer.findFirstOrThrow({
       where: { projects: { some: { id: projectId } } },
-      ...args,
+      ...(args || {
+        select: {
+          id: true,
+          name: true,
+          displayName: true,
+          logoImageUri: true,
+          faviconImageUri: true,
+          country: true,
+          language: true,
+          websiteUrl: true,
+          projects: true,
+        },
+      }),
     });
   }
 
@@ -77,6 +89,7 @@ export class CustomerRepository {
         authenticationConfiguration: true,
         displayName: true,
         logoImageUri: true,
+        faviconImageUri: true,
         customerStatus: true,
         country: true,
         language: true,

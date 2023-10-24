@@ -1,15 +1,14 @@
 import { ComponentProps } from 'react';
-import { isObject, safeEvery, StateTag, TStateTags } from '@ballerine/common';
+import { isObject, StateTag, TStateTags } from '@ballerine/common';
 
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import {
-  convertSnakeCaseToTitleCase,
-  omitPropsFromObject,
-} from '../../../../hooks/useEntity/utils';
+import { omitPropsFromObject } from '../../../../hooks/useEntity/utils';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
 import { useCaseDecision } from '../../../Case/hooks/useCaseDecision/useCaseDecision';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
+import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
+import { toTitleCase } from 'string-ts';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -118,27 +117,27 @@ export const useKycBlock = ({
       ) ?? []
     : [];
 
-  const details = Object.entries(childWorkflow?.context?.entity?.data).map(([title, value]) => ({
-    title,
-    value,
-    pattern: '',
-    isEditable: true,
-    dropdownOptions: undefined,
-  }));
+  const details = Object.entries(childWorkflow?.context?.entity?.data ?? {}).map(
+    ([title, value]) => ({
+      title,
+      value,
+      pattern: '',
+      isEditable: false,
+      dropdownOptions: undefined,
+    }),
+  );
   const documents = childWorkflow?.context?.documents?.flatMap(
     (document, docIndex) =>
       document?.pages?.map(({ type, metadata, data }, pageIndex) => ({
-        title: `${convertSnakeCaseToTitleCase(document?.category)} - ${convertSnakeCaseToTitleCase(
-          document?.type,
+        title: `${valueOrNA(toTitleCase(document?.category ?? ''))} - ${valueOrNA(
+          toTitleCase(document?.type ?? ''),
         )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
         imageUrl: results[docIndex][pageIndex],
         fileType: type,
       })) ?? [],
   );
 
-  const hasDecision =
-    safeEvery(childWorkflow?.context?.documents, document => !!document?.decision?.status) ||
-    noAction;
+  const isDisabled = !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW) || noAction;
 
   const getDecisionStatusOrAction = (tags?: TStateTags) => {
     const badgeClassNames = 'text-sm font-bold';
@@ -207,7 +206,7 @@ export const useKycBlock = ({
           parentWorkflowId: parentWorkflowId,
           childWorkflowId: childWorkflow?.id,
           childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
-          disabled: hasDecision,
+          disabled: isDisabled,
           approvalStatus: 'rejected',
         },
       },
@@ -218,7 +217,7 @@ export const useKycBlock = ({
           parentWorkflowId: parentWorkflowId,
           childWorkflowId: childWorkflow?.id,
           childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
-          disabled: hasDecision,
+          disabled: isDisabled,
           approvalStatus: 'approved',
         },
       },
@@ -231,7 +230,9 @@ export const useKycBlock = ({
     value: [
       {
         type: 'heading',
-        value: `${childWorkflow?.context?.entity?.data?.firstName} ${childWorkflow?.context?.entity?.data?.lastName}`,
+        value: `${valueOrNA(childWorkflow?.context?.entity?.data?.firstName)} ${valueOrNA(
+          childWorkflow?.context?.entity?.data?.lastName,
+        )}`,
       },
       {
         id: 'actions',

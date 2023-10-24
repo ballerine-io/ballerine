@@ -14,6 +14,7 @@ export class ApiPlugin {
   response?: IApiPluginParams['response'];
   successAction?: string;
   errorAction?: string;
+  persistResponseDestination?: string;
 
   constructor(pluginParams: IApiPluginParams) {
     this.name = pluginParams.name;
@@ -22,12 +23,14 @@ export class ApiPlugin {
     this.method = pluginParams.method;
     this.headers = {
       'Content-Type': 'application/json',
+      accept: 'application/json',
       ...(pluginParams.headers || {}),
     } as HeadersInit;
     this.request = pluginParams.request;
     this.response = pluginParams.response;
     this.successAction = pluginParams.successAction;
     this.errorAction = pluginParams.errorAction;
+    this.persistResponseDestination = pluginParams.persistResponseDestination;
   }
   async invoke(context: TContext) {
     try {
@@ -97,7 +100,8 @@ export class ApiPlugin {
       headers: headers,
     };
 
-    if (this.method.toUpperCase() === 'POST') {
+    // @TODO: Use an enum over string literals for HTTP methods
+    if (this.method.toUpperCase() !== 'GET' && payload) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       requestParams.body = JSON.stringify(payload);
@@ -106,7 +110,16 @@ export class ApiPlugin {
       url = `${url}?${queryParams}`;
     }
 
-    return await fetch(url, requestParams);
+    const res = await fetch(url, requestParams);
+    if ([204, 202].includes(res.status)) {
+      return {
+        ok: true,
+        json: () => Promise.resolve({ statusCode: res.status }),
+        statusText: 'OK',
+      };
+    }
+
+    return res;
   }
 
   async transformData(transformers: Transformers, record: AnyRecord) {
