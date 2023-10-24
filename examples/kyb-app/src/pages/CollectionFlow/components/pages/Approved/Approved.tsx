@@ -1,17 +1,15 @@
 import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Button, Card } from '@ballerine/ui';
 import { useCustomer } from '@app/components/providers/CustomerProvider';
-import { useSignin } from '@app/hooks/useSignin';
 
 export const Approved = withSessionProtected(() => {
   const { customer } = useCustomer();
-  const { logout } = useSignin();
 
   return (
     <div className="flex h-full items-center justify-center">
       <Card className="w-full max-w-[646px] p-12">
         <div className="mb-9 flex flex-col items-center gap-9">
-          <img src="/app-logo.svg" className="h-[40px] w-[95px]" />
+          <img src={customer.logoImageUri} className="h-[40px] w-[95px]" />
           <img src="/success-circle.svg" className="h-[156px] w-[156px]" />
         </div>
         <div className="mb-10">
@@ -24,8 +22,13 @@ export const Approved = withSessionProtected(() => {
           </p>
         </div>
         <div className="flex justify-center">
-          <Button variant="secondary" onClick={logout}>
-            Go back to {customer?.displayName} Portal
+          <Button
+            variant="secondary"
+            onClick={() => {
+              location.href = customer.websiteUrl;
+            }}
+          >
+            Back to {customer?.displayName} Portal
           </Button>
         </div>
       </Card>

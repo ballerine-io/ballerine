@@ -1,12 +1,14 @@
 import { z } from 'zod';
 
-const SubscriptionSchema = z
-  .object({
-    type: z.enum(['webhook', 'slack']),
-    url: z.string().url().optional(),
-    events: z.array(z.string()),
-  })
-  .strict();
+export const SubscriptionSchema = z.discriminatedUnion('type', [
+  z
+    .object({
+      type: z.literal('webhook'),
+      url: z.string().url(),
+      events: z.array(z.string().nonempty()),
+    })
+    .strict(),
+]);
 
 export const ConfigSchema = z
   .object({
@@ -15,6 +17,7 @@ export const ConfigSchema = z
     completedWhenTasksResolved: z.boolean().optional(),
     workflowLevelResolution: z.boolean().optional(),
     allowMultipleActiveWorkflows: z.boolean().optional(),
+    initialEvent: z.string().optional(),
     callbackResult: z
       .object({
         transformers: z.array(z.any()),
@@ -35,6 +38,18 @@ export const ConfigSchema = z
           .optional(),
       )
       .optional(),
+    createCollectionFlowToken: z
+      .boolean()
+      .optional()
+      .describe('Whether to create a collection flow token as part of the workflow'),
+    mainRepresentative: z
+      .object({
+        fullName: z.string(),
+        email: z.string().email(),
+      })
+      .optional()
+      .describe('Main representative of the company'),
+    customerName: z.string().optional().describe('The customer (tenant) display name'),
   })
   .strict()
   .optional();

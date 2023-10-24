@@ -30,8 +30,12 @@ export const env = createEnv({
     AWS_S3_BUCKET_SECRET: z.string().optional(),
     API_KEY: z.string(),
     SENTRY_DSN: z.string().nullable().optional(),
-    WEBHOOK_URL: z.string().url().optional(),
-    WEBHOOK_SECRET: z.string().optional(),
+    WEBHOOK_SECRET: z
+      .string()
+      .optional()
+      .describe(
+        'Deprecated. Should use `customer.authenticationConfiguration.webhookSharedSecret` instead.',
+      ),
     ADMIN_API_KEY: z.string().optional(),
     MAIL_ADAPTER: z
       .enum(['sendgrid', 'log'])

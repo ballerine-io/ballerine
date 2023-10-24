@@ -1,3 +1,5 @@
+import { FocusEvent } from 'react';
+
 export interface DropdownOption {
   label: string;
   value: string;
@@ -17,4 +19,5 @@ export interface DropdownInputProps {
   searchable?: boolean;
   disabled?: boolean;
   onChange: (value: string, inputName: string) => void;
+  onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
 }

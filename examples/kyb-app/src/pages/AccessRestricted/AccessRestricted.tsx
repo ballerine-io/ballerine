@@ -4,7 +4,11 @@ export const AccessRestricted = () => {
   return (
     <AppErrorScreen
       title={`Access token is required to proceed.`}
-      subtitle={'Contact support@example.com for more information'}
+      description={
+        <p className="text-muted-foreground opacity-70">
+          Contact support@example.com for more information
+        </p>
+      }
       actionButton={null}
     />
   );

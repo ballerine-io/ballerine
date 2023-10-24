@@ -14,12 +14,12 @@ export const updateDocuments = (
     documentsToUpdate = assignIdToDocuments(documentsToUpdate);
   }
 
-  // @ts-ignore
   existingDocuments?.forEach(document => {
+    if (!document) return;
+
     updatedDocumentsMap.set(document.id!, document);
   });
 
-  // @ts-ignore
   documentsToUpdate?.forEach(document => {
     updatedDocumentsMap.set(document.id!, document);
   });

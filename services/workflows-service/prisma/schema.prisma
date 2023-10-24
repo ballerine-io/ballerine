@@ -162,6 +162,7 @@ model WorkflowDefinition {
   createdBy           String                @default("SYSTEM")
   project             Project?              @relation(fields: [projectId], references: [id])
   workflowRuntimeData WorkflowRuntimeData[]
+  uiDefinitions       UiDefinition[]
 
   @@unique([name, version, projectId, definitionType])
   @@index([projectId, name, definitionType])
@@ -270,10 +271,12 @@ model Customer {
   name                        String           @unique
   displayName                 String
   logoImageUri                String
+  faviconImageUri             String           @default("") // TODO: remove default value after data migration
   customerStatus              CustomerStatuses @default(onboarding)
   authenticationConfiguration Json?
   country                     String?
   language                    String?
+  websiteUrl                  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -300,6 +303,7 @@ model Project {
   files                    File[]
   SalesforceIntegration    SalesforceIntegration?
   workflowDefinitions      WorkflowDefinition[]
+  uiDefinitions            UiDefinition[]
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
 
   @@unique([name, customerId])
@@ -331,6 +335,29 @@ model SalesforceIntegration {
   userId              String   @db.VarChar(500)
   organizationId      String   @db.VarChar(500)
   idUrl               String   @db.VarChar(500)
+}
+
+enum UiDefinitionContext {
+  back_office
+  collection_flow
+}
+
+model UiDefinition {
+  id                   String              @id @default(cuid())
+  workflowDefinitionId String
+  uiContext            UiDefinitionContext
+
+  page  Int?
+  state String?
+
+  definition    Json? // Frontend UI xstate definition
+  uiSchema      Json // JSON schmea of how to render UI
+  schemaOptions Json? // Document Schemas, rejectionReasons: {}, documenTypes: {}, documenCateogries: {}
+  uiOptions     Json? // how the view will look, overall
+
+  projectId          String?
+  project            Project?           @relation(fields: [projectId], references: [id])
+  workflowDefinition WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
 }
 
 model WorkflowRuntimeDataToken {

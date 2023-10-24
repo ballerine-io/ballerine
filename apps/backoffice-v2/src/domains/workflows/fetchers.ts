@@ -37,6 +37,7 @@ export const fetchWorkflows = async (params: {
             lastName: z.string(),
             avatarUrl: z.string().nullable().optional(),
           }).nullable(),
+          tags: z.array(z.string()).nullable().optional(),
         }),
       ),
       meta: z.object({

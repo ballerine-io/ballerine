@@ -32,6 +32,13 @@ export class CustomerCreateDto {
   logoImageUri!: string;
 
   @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  faviconImageUri!: string;
+
+  @ApiProperty({
     type: String,
   })
   @IsString()
@@ -56,4 +63,11 @@ export class CustomerCreateDto {
   })
   @IsString()
   projectName?: string;
+
+  @ApiProperty({
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  websiteUrl?: string;
 }

@@ -13,6 +13,8 @@ export const fetchCustomer = async () => {
         name: z.string(),
         displayName: z.string(),
         logoImageUri: z.union([z.string(), z.null()]).optional(),
+        // Remove default once data migration is done
+        faviconImageUri: z.string().default(''),
         customerStatus: z.string().optional(),
         country: z.union([z.string(), z.null()]).optional(),
         language: z.union([z.string(), z.null()]).optional(),

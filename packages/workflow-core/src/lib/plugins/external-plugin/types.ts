@@ -26,6 +26,7 @@ export interface IApiPluginParams {
   headers?: HeadersInit;
   successAction?: string;
   errorAction?: string;
+  persistResponseDestination?: string;
 
   invoke?(...args: Array<any>): any;
 }
@@ -59,7 +60,7 @@ export interface IterativePluginParams {
 
 export interface ISerializableChildPluginParams
   extends Omit<ChildWorkflowPluginParams, 'action' | 'transformers' | 'parentWorkflowRuntimeId'> {
-  transformers: Omit<SerializableValidatableTransformer, 'schema'>;
+  transformers: Omit<SerializableValidatableTransformer, 'schema'>['transform'];
 
   invoke?(...args: Array<any>): Promise<any>;
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsObject, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
 import { DefaultContextSchema } from '@ballerine/common';
 
 export class WorkflowRunDto {
@@ -25,4 +25,20 @@ export class WorkflowRunDto {
   @IsObject()
   @IsOptional()
   config?: Record<string, unknown>;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  salesforceObjectName?: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsOptional()
+  @IsString()
+  salesforceRecordId?: string;
 }

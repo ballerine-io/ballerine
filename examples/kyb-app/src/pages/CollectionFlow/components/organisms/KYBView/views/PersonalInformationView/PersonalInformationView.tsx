@@ -18,9 +18,9 @@ export const PersonalInformationView = () => {
 
   return (
     <AppShell.FormContainer header={<ViewHeader />}>
-      <DynamicForm<PersonalInformationContext>
+      <DynamicForm
         className="max-w-[384px]"
-        formData={context.flowData.personalInformation}
+        formData={context.flowData.personalInformation as PersonalInformationContext}
         uiSchema={uiSchema}
         schema={formSchema}
         transformErrors={transformRJSFErrors}

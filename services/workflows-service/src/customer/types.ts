@@ -3,4 +3,5 @@ export type TAuthenticationConfiguration = {
   authValue: string;
   validUntil?: string;
   isValid: boolean;
+  webhookSharedSecret: string;
 };

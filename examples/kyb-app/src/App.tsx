@@ -1,15 +1,20 @@
 import '@ballerine/ui/dist/style.css';
-import { RouterProvider } from 'react-router-dom';
-import { router } from '@app/router';
 import { AppLoadingContainer } from '@app/components/organisms/AppLoadingContainer';
-import { useCollectionFlowSchemaQuery } from '@app/hooks/useCollectionFlowSchemaQuery';
+import { useCustomerQuery } from '@app/hooks/useCustomerQuery';
+import { useUISchemasQuery } from '@app/hooks/useUISchemasQuery';
+import { useFlowContextQuery } from '@app/hooks/useFlowContextQuery';
 import { CustomerProvider } from '@app/components/providers/CustomerProvider';
 import { LoadingScreen } from '@app/common/components/molecules/LoadingScreen';
 import { CustomerProviderFallback } from '@app/components/molecules/CustomerProviderFallback';
-import { useCustomerQuery } from '@app/hooks/useCustomerQuery';
+import { RouterProvider } from 'react-router-dom';
+import { router } from '@app/router';
 
 export const App = () => {
-  const dependancyQueries = [useCollectionFlowSchemaQuery(), useCustomerQuery()];
+  const dependancyQueries = [
+    useCustomerQuery(),
+    useUISchemasQuery(),
+    useFlowContextQuery(),
+  ] as const;
 
   return (
     <AppLoadingContainer dependencies={dependancyQueries}>
@@ -18,4 +23,13 @@ export const App = () => {
       </CustomerProvider>
     </AppLoadingContainer>
   );
+};
+
+(window as any).toggleDevmode = () => {
+  const key = 'devmode';
+  const isDebug = localStorage.getItem(key);
+
+  isDebug ? localStorage.removeItem(key) : localStorage.setItem(key, 'true');
+
+  location.reload();
 };

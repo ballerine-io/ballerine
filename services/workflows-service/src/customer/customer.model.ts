@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDate, IsString, IsArray, IsOptional } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CustomerModel {
   @ApiProperty({
@@ -35,6 +35,13 @@ export class CustomerModel {
   })
   @IsString()
   logoImageUri!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  faviconImageUri!: string;
 
   @ApiProperty({
     type: String,

@@ -1,13 +1,11 @@
 import { useViewState } from '@app/common/providers/ViewStateProvider';
 import { useCustomer } from '@app/components/providers/CustomerProvider';
-import { useSignin } from '@app/hooks/useSignin';
 import clsx from 'clsx';
 import { ArrowLeft } from 'lucide-react';
 import { useMemo } from 'react';
 
 export const BackButton = () => {
   const { isFinished, steps, activeView, prev } = useViewState();
-  const { logout } = useSignin();
   const { customer } = useCustomer();
 
   const isExit = useMemo(() => steps[0]?.dataAlias === activeView.key, [steps, activeView]);
@@ -20,7 +18,13 @@ export const BackButton = () => {
       className={clsx('select-none', {
         'pointer-events-none opacity-50': isFinished || isDisabled,
       })}
-      onClick={!isExit ? prev : () => logout()}
+      onClick={
+        !isExit
+          ? prev
+          : () => {
+              location.href = customer.websiteUrl;
+            }
+      }
     >
       <ArrowLeft className="inline" />
       <span className="cursor-pointer pl-2 align-middle text-sm font-bold">

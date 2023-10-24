@@ -35,7 +35,6 @@ import addFormats from 'ajv-formats';
 import addKeywords from 'ajv-keywords';
 import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
-import { updateDocuments } from '@/workflow/update-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
@@ -71,6 +70,7 @@ import { CustomerService } from '@/customer/customer.service';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 
 type TEntityId = string;
 
@@ -130,6 +130,7 @@ export class WorkflowService {
     private readonly projectScopeService: ProjectScopeService,
     private readonly userService: UserService,
     private readonly salesforceService: SalesforceService,
+    private readonly workflowTokenService: WorkflowTokenService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
@@ -451,6 +452,7 @@ export class WorkflowService {
               avatarUrl: workflow?.assignee?.avatarUrl,
             }
           : null,
+        tags: workflow?.tags,
       };
     });
   }
@@ -757,6 +759,7 @@ export class WorkflowService {
       },
     };
     const checkRequiredFields = status === 'approved';
+
     const updatedWorkflow = await this.updateDocumentById(
       { workflowId, documentId, checkRequiredFields },
       documentWithDecision as unknown as DefaultContextSchema['documents'][number],
@@ -897,6 +900,14 @@ export class WorkflowService {
     return updatedRuntimeData;
   }
 
+  async syncContextById(
+    id: string,
+    context: WorkflowRuntimeData['context'],
+    projectId: TProjectId,
+  ) {
+    return this.workflowRuntimeDataRepository.updateById(id, { data: { context } }, projectId);
+  }
+
   async updateWorkflowRuntimeData(
     workflowRuntimeId: string,
     data: WorkflowDefinitionUpdateInput,
@@ -979,17 +990,6 @@ export class WorkflowService {
     const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
     const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
 
-    if (isResolved) {
-      this.logger.log('Workflow resolved', { id: workflowRuntimeId });
-
-      this.workflowEventEmitter.emit('workflow.completed', {
-        runtimeData,
-        state: currentState ?? runtimeData.state,
-        entityId: runtimeData.businessId || runtimeData.endUserId,
-        correlationId,
-      });
-    }
-
     const documentToRevise = data.context?.documents?.find(
       ({ decision }: { decision: DefaultContextSchema['documents'][number]['decision'] }) =>
         decision?.status === 'revision',
@@ -1064,6 +1064,17 @@ export class WorkflowService {
       );
     }
 
+    if (isResolved) {
+      this.logger.log('Workflow resolved', { id: workflowRuntimeId });
+
+      this.workflowEventEmitter.emit('workflow.completed', {
+        runtimeData: updatedResult,
+        state: currentState ?? updatedResult.state,
+        entityId: updatedResult.businessId || updatedResult.endUserId,
+        correlationId,
+      });
+    }
+
     if (contextHasChanged) {
       this.workflowEventEmitter.emit('workflow.context.changed', {
         oldRuntimeData: runtimeData,
@@ -1103,15 +1114,12 @@ export class WorkflowService {
       {},
       projectIds,
     );
-    const hasDecision =
-      workflowRuntimeData?.context?.documents?.length &&
-      workflowRuntimeData?.context?.documents?.every(
-        (document: DefaultContextSchema['documents'][number]) => !!document?.decision?.status,
-      );
+    const workflowCompleted =
+      workflowRuntimeData.status === 'completed' || workflowRuntimeData.state === 'failed';
 
-    if (hasDecision) {
+    if (workflowCompleted) {
       throw new BadRequestException(
-        `Workflow with the id of "${workflowRuntimeId}" already has a decision`,
+        `Workflow ${workflowRuntimeId} is already completed or failed, cannot assign to user`,
       );
     }
 
@@ -1380,6 +1388,8 @@ export class WorkflowService {
     } catch (error) {
       throw new BadRequestException(error);
     }
+    const customer = await this.customerService.getByProjectId(projectIds![0]!);
+    context.customerName = customer.displayName;
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
     const entityId = await this.__findOrPersistEntityInformation(
       context,
@@ -1387,7 +1397,6 @@ export class WorkflowService {
       currentProjectId,
     );
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
-    const customer = await this.customerService.getByProjectId(projectIds![0]!);
     const existingWorkflowRuntimeData =
       await this.workflowRuntimeDataRepository.findActiveWorkflowByEntity(
         {
@@ -1399,6 +1408,7 @@ export class WorkflowService {
       );
 
     let contextToInsert = structuredClone(context);
+    contextToInsert.entity.ballerineEntityId ||= entityId;
 
     const entityConnect = {
       [`${entityType}Id`]: entityId,
@@ -1406,17 +1416,25 @@ export class WorkflowService {
 
     let workflowRuntimeData: WorkflowRuntimeData, newWorkflowCreated: boolean;
 
-    if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
+    const mergedConfig: WorkflowConfig = merge(
+      workflowDefinition.config,
+      validatedConfig || {},
+    ) as InputJsonValue;
+
+    // Creating new workflow
+    if (!existingWorkflowRuntimeData || mergedConfig?.allowMultipleActiveWorkflows) {
       const contextWithoutDocumentPageType = {
         ...contextToInsert,
         documents: this.omitTypeFromDocumentsPages(contextToInsert.documents),
       };
+
       const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
         contextWithoutDocumentPageType?.documents,
         entityId,
         currentProjectId,
         customer.name,
       );
+
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
         {
           data: {
@@ -1426,10 +1444,8 @@ export class WorkflowService {
               ...contextToInsert,
               documents: documentsWithPersistedImages,
             } as InputJsonValue,
-            config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
+            config: mergedConfig as InputJsonValue,
             status: 'active',
-            state: workflowDefinition.definition.initial,
-            tags: workflowDefinition.definition.states[workflowDefinition.definition.initial]?.tags,
             workflowDefinitionId: workflowDefinition.id,
             ...(parentWorkflowId &&
               ({
@@ -1443,12 +1459,80 @@ export class WorkflowService {
         },
         currentProjectId,
       );
+
+      if (
+        // @ts-ignore
+        mergedConfig.createCollectionFlowToken &&
+        workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative
+      ) {
+        const endUser = await this.endUserService.createWithBusiness(
+          {
+            firstName:
+              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.firstName,
+            lastName:
+              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.lastName,
+            email: workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.email,
+            companyName: workflowRuntimeData.context.entity.data.companyName,
+            isContactPerson: true,
+          },
+          currentProjectId,
+        );
+        const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        const workflowToken = await this.workflowTokenService.create(currentProjectId, {
+          workflowRuntimeDataId: workflowRuntimeData.id,
+          endUserId: endUser.id,
+          expiresAt: nowPlus30Days,
+        });
+
+        workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
+          workflowRuntimeData.id,
+          {
+            data: {
+              context: {
+                ...workflowRuntimeData.context,
+                metadata: { customerName: customer.displayName, token: workflowToken.token },
+              } as InputJsonValue,
+            },
+          },
+          currentProjectId,
+        );
+      }
+
+      mergedConfig?.initialEvent &&
+        (await this.event(
+          {
+            id: workflowRuntimeData.id,
+            name: mergedConfig?.initialEvent,
+          },
+          projectIds,
+          currentProjectId,
+        ));
+      workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+        workflowRuntimeData.id,
+        {},
+        projectIds,
+      );
+
+      if ('salesforceObjectName' in salesforceData && salesforceData.salesforceObjectName) {
+        await this.updateSalesforceRecord({
+          workflowRuntimeData: workflowRuntimeData[0].workflowRuntimeData,
+          data: {
+            KYB_Started_At__c: workflowRuntimeData[0].workflowRuntimeData.createdAt,
+            KYB_Status__c: 'In Progress',
+            KYB_Assigned_Agent__c: '',
+          },
+        });
+      }
+
       newWorkflowCreated = true;
     } else {
-      contextToInsert.documents = updateDocuments(
-        existingWorkflowRuntimeData.context.documents,
-        context.documents,
-      );
+      // Updating existing workflow
+      console.log('existing documents', existingWorkflowRuntimeData.context.documents);
+      console.log('documents', contextToInsert.documents);
+      // contextToInsert.documents = updateDocuments(
+      //   existingWorkflowRuntimeData.context.documents,
+      //   context.documents,
+      // );
       const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
         contextToInsert?.documents,
         entityId,
@@ -1585,6 +1669,8 @@ export class WorkflowService {
   ): Promise<TEntityId | null> {
     if (entity.ballerineEntityId) {
       return entity.ballerineEntityId as TEntityId;
+    } else if (!entity.id) {
+      return null;
     } else {
       if (entity.type === 'business') {
         const res = await this.businessRepository.findByCorrelationId(

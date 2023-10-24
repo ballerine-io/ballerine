@@ -9,7 +9,7 @@ export const Rejected = withSessionProtected(() => {
     <div className="flex h-full items-center justify-center">
       <Card className="w-full max-w-[646px] p-12">
         <div className="mb-9 flex flex-col items-center gap-9">
-          <img src="/app-logo.svg" className="h-[40px] w-[95px]" />
+          <img src={customer.logoImageUri} className="h-[40px] w-[95px]" />
           <img src="/failed-circle.svg" className="h-[156px] w-[156px]" />
         </div>
         <div className="mb-10">
