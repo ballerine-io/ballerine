@@ -47,6 +47,20 @@ class FakeEntityRepo extends BaseFakeRepository {
   }
 }
 
+class FakeCustomerRepo extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+
+  async getByProjectId() {
+    return {
+      authenticationConfiguration: {
+        webhookSharedSecret: 'webhook_secret',
+      },
+    };
+  }
+}
+
 function buildWorkflowDeifintion(sequenceNum) {
   return {
     id: sequenceNum.toString(),
@@ -120,7 +134,7 @@ describe('WorkflowService', () => {
     businessRepo = new FakeBusinessRepo();
     endUserRepo = new FakeEndUserRepo();
     entityRepo = new FakeEntityRepo();
-    customerService = new FakeEntityRepo();
+    customerService = new FakeCustomerRepo();
     userService = new FakeEntityRepo();
     salesforceService = new FakeEntityRepo();
     workflowTokenService = new FakeEntityRepo();
@@ -130,7 +144,15 @@ describe('WorkflowService', () => {
 
       axiosRef: {
         async post(url, data, config) {
+          delete config.headers['X-HMAC-Signature'];
           fakeHttpService.requests.push({ url, data, config });
+          return {
+            status: 200,
+            data: { success: true },
+            statusText: 'OK',
+            headers: {},
+            config: {},
+          };
         },
       },
     };
@@ -241,8 +263,8 @@ describe('WorkflowService', () => {
           subscriptions: [
             {
               type: 'webhook',
-              url: 'https://webhook.site/b58610f1-93fc-4922-96c6-87d259f245b8',
-              events: ['workflow.completed'],
+              url: 'https://example.com',
+              events: ['workflow.context.document.changed'],
             },
           ],
         },
@@ -293,6 +315,15 @@ describe('WorkflowService', () => {
         context: {
           documents: [buildDocument('a', 'pending')],
         },
+        config: {
+          subscriptions: [
+            {
+              type: 'webhook',
+              url: 'https://example.com',
+              events: ['workflow.context.document.changed'],
+            },
+          ],
+        },
       };
       await workflowRuntimeDataRepo.create({
         data: initialRuntimeData,
@@ -341,6 +372,15 @@ describe('WorkflowService', () => {
             buildDocument('willBeRemoved', 'pending'),
             buildDocument('a', 'pending'),
             buildDocument('b', 'pending'),
+          ],
+        },
+        config: {
+          subscriptions: [
+            {
+              type: 'webhook',
+              url: 'https://example.com',
+              events: ['workflow.context.document.changed'],
+            },
           ],
         },
       };
