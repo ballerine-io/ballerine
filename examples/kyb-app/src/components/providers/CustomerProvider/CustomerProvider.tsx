@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 
 const { Provider } = customerContext;
 
-export type FallbackComponent = React.ComponentType<{ errorMessage: string }>;
+export type FallbackComponent = React.ComponentType<{ errorMessage: string; statusCode: number }>;
 
 interface Props {
   children: AnyChildren;
@@ -33,7 +33,7 @@ export const CustomerProvider = ({
 
   if (error)
     return FallbackComponent ? (
-      <FallbackComponent errorMessage={error.message} />
+      <FallbackComponent errorMessage={error.message} statusCode={error.response.status} />
     ) : (
       <>Failed to load customer.Reason {error.message}</>
     );

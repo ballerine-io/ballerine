@@ -1,5 +1,6 @@
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as common from '@nestjs/common';
+import { UseGuards, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import * as errors from '../errors';
 import { plainToClass } from 'class-transformer';
@@ -10,15 +11,13 @@ import { FilterFindManyArgs } from '@/filter/dtos/filter-find-many-args';
 import { FilterModel } from '@/filter/filter.model';
 import { FilterWhereUniqueInput } from '@/filter/dtos/filter-where-unique-input';
 import { FilterService } from '@/filter/filter.service';
-import { UseGuards, UsePipes } from '@nestjs/common';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { FilterCreateDto } from '@/filter/dtos/filter-create';
 import { FilterCreateSchema } from '@/filter/dtos/temp-zod-schemas';
-import { InputJsonValue, TProjectId, TProjectIds } from '@/types';
-import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
+import { InputJsonValue, TProjectIds } from '@/types';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 
 @swagger.ApiTags('external/filters')
 @common.Controller('external/filters')
@@ -62,23 +61,19 @@ export class FilterControllerExternal {
   }
 
   @common.Post()
-  @UseGuards(CustomerAuthGuard)
+  @UseGuards(AdminAuthGuard)
   @swagger.ApiCreatedResponse({ type: FilterModel })
   @swagger.ApiForbiddenResponse()
   @UsePipes(new ZodValidationPipe(FilterCreateSchema, 'body'))
-  async createFilter(
-    @CurrentProject() currentProjectId: TProjectId,
-    @common.Body() data: FilterCreateDto,
-  ) {
+  async createFilter(@common.Body() data: FilterCreateDto) {
     return await this.service.create(
       {
         data: {
           ...data,
-          query: data?.query as InputJsonValue,
-          projectId: currentProjectId,
+          query: data.query as InputJsonValue,
         },
       },
-      currentProjectId,
+      data.projectId,
     );
   }
 }
