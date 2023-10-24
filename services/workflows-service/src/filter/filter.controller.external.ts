@@ -70,10 +70,10 @@ export class FilterControllerExternal {
       {
         data: {
           ...data,
-          query: data?.query as InputJsonValue,
+          query: data.query as InputJsonValue,
         },
       },
-      data?.projectId,
+      data.projectId,
     );
   }
 }
