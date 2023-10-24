@@ -153,7 +153,7 @@ describe('WorkflowService', () => {
       configService as unknown as ConfigService,
       eventEmitter as any,
       testingModule.get(AppLoggerService),
-      customerService
+      customerService,
     );
 
     service = new WorkflowService(
@@ -171,7 +171,7 @@ describe('WorkflowService', () => {
       projectScopeService,
       userService,
       salesforceService,
-      workflowTokenService
+      workflowTokenService,
     );
   });
 
@@ -229,13 +229,22 @@ describe('WorkflowService', () => {
     });
   });
 
-  describe('.updateWorkflowRuntimeData', () => {
+  describe.only('.updateWorkflowRuntimeData', () => {
     it('sends a webbhook only for changed documents', async () => {
       const initialRuntimeData = {
         id: '2',
         workflowDefinitionId: '2',
         context: {
           documents: [buildDocument('willBeRemoved', 'pending'), buildDocument('a', 'pending')],
+        },
+        config: {
+          subscriptions: [
+            {
+              type: 'webhook',
+              url: 'https://webhook.site/b58610f1-93fc-4922-96c6-87d259f245b8',
+              events: ['workflow.completed'],
+            },
+          ],
         },
       };
       await workflowRuntimeDataRepo.create({
