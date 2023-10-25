@@ -44,7 +44,7 @@
     "use-debounce": "^9.0.4",
     "uuid": "^9.0.0",
     "xstate": "^4.38.2",
-    "zod": "^3.21.4"
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "@types/jmespath": "^0.15.0",
