@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.6.7-hotfix.8
+
+### Patch Changes
+
+- c548fca7: businessName now may accept spaces
+
 ## 0.6.7
 
 ### Patch Changes
