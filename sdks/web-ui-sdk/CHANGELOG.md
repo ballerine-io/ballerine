@@ -1,5 +1,12 @@
 # web-ui-sdk
 
+## 1.4.12
+
+### Patch Changes
+
+- Updated dependencies [306ca466]
+  - @ballerine/common@0.7.15
+
 ## 1.4.11
 
 ### Patch Changes
