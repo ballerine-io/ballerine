@@ -3,13 +3,13 @@ import { AnyObject } from '@ballerine/ui';
 import ky from 'ky';
 import jmespath from 'jmespath';
 import set from 'lodash/set';
-import { Action, IRule } from '@app/domains/collection-flow';
+import { Action, BaseActionParams, IRule } from '@app/domains/collection-flow';
 import { EventEngine } from '@app/components/organisms/DynamicUI/rule-engines/event.engine';
 import { JsonLogicRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
 import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
 import { EngineManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
 
-export interface ApiActionParams {
+export interface ApiActionParams extends BaseActionParams {
   url: string;
   method: 'get' | 'post' | 'put' | 'patch' | 'delete';
   type: 'json' | 'form-data';
@@ -29,7 +29,7 @@ export class ApiActionHandler implements ActionHandler {
     new EventEngine(),
   ]);
 
-  async run<TContext>(context: TContext, action: Action<ApiActionParams>): Promise<TContext> {
+  async run<TContext>(context: TContext, action: Action<ApiActionParams>, _): Promise<TContext> {
     const isCanInvoke = this.canInvoke(context, action);
 
     if (!isCanInvoke) return Promise.resolve(context);

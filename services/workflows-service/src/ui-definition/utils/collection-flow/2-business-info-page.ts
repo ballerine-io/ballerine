@@ -131,6 +131,7 @@ const dispatchOpenCorporateRule = {
             registrationNumber: {
               type: 'string',
               minLength: 6,
+              maxLength: 20,
             },
             country: {
               type: 'string',
@@ -342,7 +343,7 @@ export const BusinessInfoPage = {
   actions: [
     {
       type: 'definitionPlugin',
-      params: { pluginName: 'fetch_company_information' },
+      params: { pluginName: 'fetch_company_information', runMethod: 'async', delay: 700 },
       dispatchOn: {
         uiEvents: [
           { event: 'onChange', uiElementName: 'registration-number-input' },
