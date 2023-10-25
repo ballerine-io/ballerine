@@ -1,5 +1,12 @@
 # @ballerine/blocks
 
+## 0.0.17-hotfix.0
+
+### Patch Changes
+
+- Updated dependencies [c548fca7]
+  - @ballerine/common@0.6.7-hotfix.8
+
 ## 0.0.16
 
 ### Patch Changes
