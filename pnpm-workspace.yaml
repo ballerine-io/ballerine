@@ -5,4 +5,4 @@ packages:
   - 'services/*'
   - 'websites/*'
   - 'examples/headless-example'
-  - 'examples/kyb-app'
+  - 'apps/kyb-app'

@@ -5,7 +5,7 @@ on:
   push:
     # Run this pipeline only if there are changes in specified path
     paths:
-      - "examples/kyb-app/**"
+      - 'apps/kyb-app/**'
     branches:
       - dev
       - test
@@ -42,7 +42,7 @@ jobs:
       - name: Get package version from package.json
         id: get_version
         run: |
-          PACKAGE_VERSION=$(jq -r '.version' examples/kyb-app/package.json)
+          PACKAGE_VERSION=$(jq -r '.version' apps/kyb-app/package.json)
           echo "::set-output name=version::$PACKAGE_VERSION"
 
       - name: Print the version
@@ -78,7 +78,7 @@ jobs:
         if: github.ref != 'refs/heads/prod'
         uses: docker/build-push-action@v4
         with:
-          context: examples/kyb-app
+          context: apps/kyb-app
           platforms: linux/amd64
           push: true
           cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
@@ -101,7 +101,7 @@ jobs:
         if: github.ref == 'refs/heads/prod'
         uses: docker/build-push-action@v4
         with:
-          context: examples/kyb-app
+          context: apps/kyb-app
           platforms: linux/amd64
           push: true
           cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
