@@ -1,5 +1,33 @@
 # @ballerine/ui
 
+## 0.3.6
+
+### Patch Changes
+
+- Bump
+
+## 0.3.5
+
+### Patch Changes
+
+- b1cebf50: pre
+- b1cebf50: Pre ver
+- b1cebf50: Prerelease
+- b1cebf50: bump pre
+- b1cebf50: Updated exports & Renamed vars
+- b1cebf50: Version bump pre
+- Bump
+- b1cebf50: Pre bump
+- b1cebf50: Pre bump
+- b1cebf50: Added default value to Autocomplete
+- b1cebf50: Bump
+- b1cebf50: pre
+- b1cebf50: Added blur handlers to Dynamic Form inputs
+- b1cebf50: Fixed missing AutocompleteAdapter placeholder
+- b1cebf50: Pre release
+- b1cebf50: Bumo
+- b1cebf50: Bump
+
 ## 0.3.5-3e08f108.15
 
 ### Patch Changes
