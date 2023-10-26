@@ -71,6 +71,7 @@ import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { logger } from 'nx/src/utils/logger';
 
 type TEntityId = string;
 
@@ -1766,6 +1767,14 @@ export class WorkflowService {
         }
       },
     });
+
+    const nextEvents = service.getSnapshot().nextEvents;
+    if (!nextEvents.include(type)) {
+      logger.warn(
+        `Event ${type} does not exist in for workflow ${workflowDefinition.id}'s state: ${workflowRuntimeData.state}`,
+      );
+      return workflowRuntimeData;
+    }
 
     await service.sendEvent({
       type,
