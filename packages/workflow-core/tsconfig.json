@@ -18,5 +18,5 @@
     "pretty": true
   },
   "files": ["src/index.ts"],
-  "include": ["src"],
+  "include": ["src"]
 }
