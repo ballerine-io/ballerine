@@ -38,8 +38,7 @@ export interface EventRule extends BaseRule {
 }
 
 export interface BaseActionParams {
-  runMethod?: 'async' | 'sync';
-  delay?: number;
+  debounce?: number;
 }
 
 export interface Action<TParams = BaseActionParams> {

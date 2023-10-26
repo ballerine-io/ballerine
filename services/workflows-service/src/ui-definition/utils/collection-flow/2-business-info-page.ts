@@ -343,7 +343,7 @@ export const BusinessInfoPage = {
   actions: [
     {
       type: 'definitionPlugin',
-      params: { pluginName: 'fetch_company_information', runMethod: 'async', delay: 700 },
+      params: { pluginName: 'fetch_company_information', debounce: 700 },
       dispatchOn: {
         uiEvents: [
           { event: 'onChange', uiElementName: 'registration-number-input' },

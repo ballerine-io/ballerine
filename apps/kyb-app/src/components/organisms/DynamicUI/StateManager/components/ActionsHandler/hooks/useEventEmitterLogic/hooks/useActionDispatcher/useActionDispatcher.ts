@@ -1,7 +1,7 @@
 import { ActionDispatcher } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/types';
 import { Action } from '@app/domains/collection-flow';
 import { useRefValue } from '@app/hooks/useRefValue';
-import debounce from 'lodash/debounce';
+import _debounce from 'lodash/debounce';
 import { useCallback, useMemo } from 'react';
 
 export type ActionDispatchers = Map<Action, ActionDispatcher>;
@@ -11,10 +11,10 @@ export const useActionDispatcher = (actions: Action[], dispatch: (action: Action
 
   const createDispatcher = useCallback(
     (action: Action) => {
-      const { runMethod = 'sync', delay = 500 } = action.params || {};
+      const { debounce } = action.params || {};
 
-      if (runMethod === 'async') {
-        return debounce(dispatchRef.current, delay);
+      if (debounce) {
+        return _debounce(dispatchRef.current, debounce);
       }
 
       return dispatchRef.current;

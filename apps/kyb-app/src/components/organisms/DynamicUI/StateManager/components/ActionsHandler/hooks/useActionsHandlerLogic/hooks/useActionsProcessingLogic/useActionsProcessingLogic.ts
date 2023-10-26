@@ -54,14 +54,14 @@ export const useActionsProcessingLogic = (
       const actionRunner = async () => {
         const context = apiRef.current.getContext();
 
-        if (action.params?.runMethod === 'async') {
+        if (action.params?.debounce) {
           toggleElementsLockState(relevantElementNames, true);
 
           await actionHandler.run(context, action, apiRef.current);
 
           toggleElementsLockState(relevantElementNames, false);
         } else {
-          actionHandler.run(context, action, apiRef.current);
+          await actionHandler.run(context, action, apiRef.current);
         }
       };
 
