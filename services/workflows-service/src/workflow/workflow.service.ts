@@ -1769,8 +1769,7 @@ export class WorkflowService {
       },
     });
 
-    const nextEvents = service.getSnapshot().nextEvents;
-    if (!nextEvents.include(type)) {
+    if (!service.getSnapshot().nextEvents.includes(type)) {
       this.logger.warn(
         `Event ${type} does not exist in for workflow ${workflowDefinition.id}'s state: ${workflowRuntimeData.state}`,
       );
