@@ -29,7 +29,7 @@ export class ApiActionHandler implements ActionHandler {
     new EventEngine(),
   ]);
 
-  async run<TContext>(context: TContext, action: Action<ApiActionParams>, _): Promise<TContext> {
+  async run<TContext>(context: TContext, action: Action<ApiActionParams>): Promise<TContext> {
     const isCanInvoke = this.canInvoke(context, action);
 
     if (!isCanInvoke) return Promise.resolve(context);
