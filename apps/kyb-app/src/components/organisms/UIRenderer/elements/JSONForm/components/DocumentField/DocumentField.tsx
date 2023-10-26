@@ -2,19 +2,17 @@ import { useStateManagerContext } from '@app/components/organisms/DynamicUI/Stat
 import { useUIElementToolsLogic } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/hooks/useUIElementToolsLogic';
 import { Document, UIElement } from '@app/domains/collection-flow';
 import { fetchFile, uploadFile } from '@app/domains/storage/storage.api';
-import { AnyObject, ErrorsList, FileInputAdapter, RJSVInputProps } from '@ballerine/ui';
+import { ErrorsList, FileInputAdapter, RJSVInputProps } from '@ballerine/ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import set from 'lodash/set';
+import get from 'lodash/get';
 import { collectionFlowFileStorage } from '@app/pages/CollectionFlow/collection-flow.file-storage';
 import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
 import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
+import { getDocumentFileIdPath } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/getDocumentFileIdPath';
 
 interface DocumentFieldParams {
-  documentData: AnyObject & { id: string };
-  mappingParams: {
-    documentIndex: number;
-    documentPage: number;
-  };
+  documentData: Partial<Document>;
 }
 
 export const DocumentField = (
@@ -46,10 +44,9 @@ export const DocumentField = (
       return document.id === definition.options.documentData.id;
     }) as Document;
 
-    const fileId =
-      document && document.pages?.length
-        ? document.pages[definition.options.mappingParams.documentPage]?.ballerineFileId
-        : null;
+    const fileIdPath = getDocumentFileIdPath(definition);
+
+    const fileId = get(document, fileIdPath) as string | null;
 
     return fileId;
   }, [payload.documents, definition]);
@@ -87,7 +84,7 @@ export const DocumentField = (
         set(context, 'documents', context.documents);
       }
 
-      const fileIdPath = definition.valueDestination.replace(/documents\[\d+\]\./g, '');
+      const fileIdPath = getDocumentFileIdPath(definition);
       const uploadResult = await uploadFile({ file });
 
       set(document, fileIdPath, uploadResult.id);
@@ -100,7 +97,7 @@ export const DocumentField = (
 
       toggleElementLoading();
     },
-    [stateApi, options, onChange, toggleElementLoading],
+    [stateApi, options, definition, toggleElementLoading],
   );
 
   return (

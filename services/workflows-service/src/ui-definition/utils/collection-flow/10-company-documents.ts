@@ -135,10 +135,6 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                   properties: {},
                 },
-                mappingParams: {
-                  documentIndex: 0,
-                  documentPage: 0,
-                },
               },
             },
             {
@@ -165,10 +161,6 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                   properties: {},
                 },
-                mappingParams: {
-                  documentIndex: 1,
-                  documentPage: 0,
-                },
               },
             },
             {
@@ -193,10 +185,6 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
-                },
-                mappingParams: {
-                  documentIndex: 2,
-                  documentPage: 0,
                 },
               },
             },
@@ -224,10 +212,6 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                   properties: {},
                 },
-                mappingParams: {
-                  documentIndex: 3,
-                  documentPage: 0,
-                },
               },
             },
             {
@@ -253,10 +237,6 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                   properties: {},
                 },
-                mappingParams: {
-                  documentIndex: 4,
-                  documentPage: 0,
-                },
               },
             },
             {
@@ -281,10 +261,6 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
-                },
-                mappingParams: {
-                  documentIndex: 5,
-                  documentPage: 0,
                 },
               },
             },
@@ -329,10 +305,6 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                   properties: {},
                 },
-                mappingParams: {
-                  documentIndex: 6,
-                  documentPage: 0,
-                },
               },
             },
           ],
@@ -368,10 +340,6 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
-                },
-                mappingParams: {
-                  documentIndex: 7,
-                  documentPage: 0,
                 },
               },
             },
@@ -420,10 +388,6 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                   properties: {},
                 },
-                mappingParams: {
-                  documentIndex: 8,
-                  documentPage: 0,
-                },
               },
             },
             {
@@ -449,10 +413,6 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                   properties: {},
                 },
-                mappingParams: {
-                  documentIndex: 9,
-                  documentPage: 0,
-                },
               },
             },
             {
@@ -477,10 +437,6 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
-                },
-                mappingParams: {
-                  documentIndex: 10,
-                  documentPage: 0,
                 },
               },
             },
