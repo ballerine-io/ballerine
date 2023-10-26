@@ -1,21 +1,5 @@
 import { defaultContextSchema, StateTag } from '@ballerine/common';
-
-export const UNIFIED_API_URL = 'https://test-unified.com' as const;
-export const EMAIL_API_URL = 'https://test-email.com' as const;
-export const WEBH00K_URL = 'https://test-webhook.com' as const;
-export const COLLECTION_FLOW_URL = 'https://test-collection-flow.com' as const;
-export const Event = {
-  START: 'START',
-  INVITATION_SENT: 'INVITATION_SENT',
-  INVIATION_FAILURE: 'INVIATION_FAILURE',
-  COLLECTION_FLOW_FINISHED: 'COLLECTION_FLOW_FINISHED',
-} as const;
-export const State = {
-  COLLECTION_INVITE: 'collection_invite',
-  COLLECTION_FLOW: 'collection_flow',
-  FAILED: 'failed',
-  RUN_KYB_ENRICHMENT: 'run_kyb_enrichment',
-} as const;
+import { COLLECTION_FLOW_URL, EMAIL_API_URL, Event, State, UNIFIED_API_URL } from './constants';
 
 export const dynamicUiWorkflowDefinition = {
   id: 'kyb_dynamic_ui_session_example',
@@ -44,26 +28,26 @@ export const dynamicUiWorkflowDefinition = {
       [State.COLLECTION_FLOW]: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
-          COLLECTION_FLOW_FINISHED: 'run_kyb_enrichment',
+          COLLECTION_FLOW_FINISHED: State.RUN_KYB_ENRICHMENT,
         },
       },
-      run_kyb_enrichment: {
+      [State.RUN_KYB_ENRICHMENT]: {
         on: {
-          KYB_DONE: 'run_ubos',
-          FAILED: 'run_ubos',
+          KYB_DONE: State.RUN_UBOS,
+          FAILED: State.RUN_UBOS,
         },
       },
-      run_ubos: {
+      [State.RUN_UBOS]: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
-          EMAIL_SENT_TO_UBOS: [{ target: 'pending_kyc_response_to_finish' }],
+          EMAIL_SENT_TO_UBOS: [{ target: State.PENDING_KYC_RESPONSE_TO_FINISH }],
           FAILED_EMAIL_SENT_TO_UBOS: [{ target: 'failed' }],
         },
       },
-      pending_kyc_response_to_finish: {
+      [State.PENDING_KYC_RESPONSE_TO_FINISH]: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          KYC_RESPONDED: [
+          [Event.KYC_RESPONDED]: [
             {
               target: 'manual_review',
               cond: {
@@ -114,7 +98,7 @@ export const dynamicUiWorkflowDefinition = {
                 },
               },
             },
-            { target: 'pending_kyc_response_to_finish' },
+            { target: State.PENDING_KYC_RESPONSE_TO_FINISH },
           ],
         },
       },
@@ -131,7 +115,7 @@ export const dynamicUiWorkflowDefinition = {
         pluginKind: 'kyb',
         url: `${UNIFIED_API_URL}/companies`,
         method: 'GET',
-        stateNames: ['run_kyb_enrichment'],
+        stateNames: [State.RUN_KYB_ENRICHMENT],
         successAction: 'KYB_DONE',
         errorAction: 'FAILED',
         headers: { Authorization: 'Bearer 123' },
@@ -247,7 +231,7 @@ export const dynamicUiWorkflowDefinition = {
         pluginKind: 'iterative',
         name: 'ubos_iterractive',
         actionPluginName: 'veriff_kyc_child_plugin',
-        stateNames: ['run_ubos'],
+        stateNames: [State.RUN_UBOS],
         iterateOn: [
           {
             transformer: 'jmespath',
@@ -273,7 +257,7 @@ export const dynamicUiWorkflowDefinition = {
           },
         ],
         persistenceStates: ['kyc_manual_review'],
-        deliverEvent: 'KYC_RESPONDED',
+        deliverEvent: Event.KYC_RESPONDED,
       },
     ],
   },
