@@ -16,20 +16,23 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
-import { IntentResponse, WorkflowService } from './workflow.service';
+import { WorkflowService } from './workflow.service';
 import { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
-import { UseKeyAuthGuard } from '@/common/decorators/use-key-auth-guard.decorator';
-import { UseKeyAuthInDevGuard } from '@/common/decorators/use-key-auth-in-dev-guard.decorator';
 import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
 import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
 import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
-import { Public } from '@/common/decorators/public.decorator';
 import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
-import { GetActiveFlowDto } from '@/workflow/dtos/get-active-workflow-input.dto';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { TProjectId, TProjectIds } from '@/types';
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { EndUserService } from '@/end-user/end-user.service';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { Public } from '@/common/decorators/public.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -40,7 +43,10 @@ export class WorkflowControllerExternal {
     protected readonly normalizeService: HookCallbackHandlerService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    private readonly endUserService: EndUserService,
+    private readonly workflowTokenService: WorkflowTokenService,
   ) {}
+
   // GET /workflows
   @common.Get('/')
   @swagger.ApiOkResponse({ type: [GetWorkflowsRuntimeOutputDto] })
@@ -48,14 +54,18 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   async listWorkflowRuntimeData(
     @Query() query: GetWorkflowsRuntimeInputDto,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<GetWorkflowsRuntimeOutputDto> {
-    const results = await this.service.listRuntimeData({
-      page: query.page,
-      size: query.limit,
-      status: query.status,
-      orderBy: query.orderBy,
-      orderDirection: query.orderDirection,
-    });
+    const results = await this.service.listRuntimeData(
+      {
+        page: query.page,
+        size: query.limit,
+        status: query.status,
+        orderBy: query.orderBy,
+        orderDirection: query.orderDirection,
+      },
+      projectIds,
+    );
 
     return plainToClass(GetWorkflowsRuntimeOutputDto, results);
   }
@@ -63,38 +73,35 @@ export class WorkflowControllerExternal {
   @common.Get('/workflow-definition/:id')
   @ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async getWorkflowDefinition(@common.Param() params: WorkflowDefinitionWhereUniqueInput) {
-    return await this.service.getWorkflowDefinitionById(params.id);
-  }
-
-  @common.Get('/active-flow')
-  @UseKeyAuthGuard()
-  async getActiveFlow(@common.Query() query: GetActiveFlowDto) {
-    const activeWorkflow = await this.service.getLastActiveFlow({
-      email: query.email,
-      workflowRuntimeDefinitionId: query.workflowRuntimeDefinitionId,
-    });
-
-    return {
-      result: activeWorkflow,
-    };
+  async getWorkflowDefinition(
+    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
+    return await this.service.getWorkflowDefinitionById(params.id, {}, projectIds);
   }
 
   @common.Get('/:id')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseKeyAuthInDevGuard()
+  @UseCustomerAuthGuard()
   async getRunnableWorkflowDataById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<RunnableWorkflowData> {
-    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(params.id);
+    const workflowRuntimeData = await this.service.getWorkflowRuntimeDataById(
+      params.id,
+      {},
+      projectIds,
+    );
     if (!workflowRuntimeData) {
       throw new NotFoundException(`No resource with id [${params.id}] was found`);
     }
 
     const workflowDefinition = await this.service.getWorkflowDefinitionById(
       workflowRuntimeData.workflowDefinitionId,
+      {},
+      projectIds,
     );
 
     return {
@@ -108,13 +115,14 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseKeyAuthInDevGuard()
+  @UseCustomerAuthGuard()
   async updateById(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @common.Body() data: WorkflowDefinitionUpdateInput,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.updateWorkflowRuntimeData(params.id, data);
+      return await this.service.updateWorkflowRuntimeData(params.id, data, currentProjectId);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
@@ -128,21 +136,33 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseKeyAuthInDevGuard()
-  async intent(@common.Body() { intentName, entityId }: IntentDto): Promise<IntentResponse> {
+  @UseCustomerAuthGuard()
+  async intent(
+    @common.Body() { intentName, entityId }: IntentDto,
+    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
     // Rename to intent or getRunnableWorkflowDataByIntent?
     const entityType = intentName === 'kycSignup' ? 'endUser' : 'business';
-    return await this.service.resolveIntent(intentName, entityId, entityType);
+    return await this.service.resolveIntent(
+      intentName,
+      entityId,
+      entityType,
+      projectIds,
+      currentProjectId,
+    );
   }
 
   @common.Post('/run')
   @swagger.ApiOkResponse()
-  @UseKeyAuthGuard()
+  @UseCustomerAuthGuard()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createWorkflowRuntimeData(
     @common.Body() body: WorkflowRunDto,
     @Res() res: Response,
+    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<any> {
     const { workflowId, context, config } = body;
     const { entity } = context;
@@ -150,10 +170,19 @@ export class WorkflowControllerExternal {
     if (!entity.id && !entity.ballerineEntityId)
       throw new common.BadRequestException('Entity id is required');
 
+    const hasSalesforceRecord =
+      Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
+
     const actionResult = await this.service.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: workflowId,
       context,
       config,
+      projectIds,
+      currentProjectId,
+      ...(hasSalesforceRecord && {
+        salesforceObjectName: body.salesforceObjectName,
+        salesforceRecordId: body.salesforceRecordId,
+      }),
     });
 
     return res.json({
@@ -172,38 +201,54 @@ export class WorkflowControllerExternal {
     @UserData() _userInfo: UserInfo,
     @common.Param('id') id: string,
     @common.Body() data: WorkflowEventInput,
+    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
   ): Promise<void> {
-    return await this.service.event({
-      ...data,
-      id,
-    });
+    await this.service.event(
+      {
+        ...data,
+        id,
+      },
+      projectIds,
+      currentProjectId,
+    );
   }
 
   // POST /event
   @common.Post('/:id/send-event')
   @swagger.ApiOkResponse()
-  @UseKeyAuthGuard()
+  @UseCustomerAuthGuard()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async sendEvent(
     @UserData() _userInfo: UserInfo,
     @common.Param('id') id: string,
     @common.Body() data: WorkflowEventInput,
-  ): Promise<void> {
-    return await this.service.event({
-      ...data,
-      id,
-    });
+    @ProjectIds() projectIds: TProjectIds,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    return await this.service.event(
+      {
+        ...data,
+        id,
+      },
+      projectIds,
+      currentProjectId,
+    );
   }
+
   // curl -X GET -H "Content-Type: application/json" http://localhost:3000/api/v1/external/workflows/:id/context
   @common.Get('/:id/context')
-  @UseKeyAuthGuard()
+  @UseCustomerAuthGuard()
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async getWorkflowRuntimeDataContext(@common.Param('id') id: string) {
+  async getWorkflowRuntimeDataContext(
+    @common.Param('id') id: string,
+    @ProjectIds() projectIds: TProjectIds,
+  ) {
     try {
-      const context = await this.service.getWorkflowRuntimeDataContext(id);
+      const context = await this.service.getWorkflowRuntimeDataContext(id, projectIds);
 
       return { context };
     } catch (err) {
@@ -219,6 +264,7 @@ export class WorkflowControllerExternal {
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @Public()
   @VerifyUnifiedApiSignatureDecorator()
   async hook(
     @common.Param() params: WorkflowIdWithEventInput,
@@ -226,24 +272,30 @@ export class WorkflowControllerExternal {
     @common.Body() hookResponse: any,
   ): Promise<void> {
     try {
-      const workflowRuntime = await this.service.getWorkflowRuntimeDataById(params.id);
+      const workflowRuntime = await this.service.getWorkflowRuntimeDataByIdUnscoped(params.id);
       await this.normalizeService.handleHookResponse({
         workflowRuntime: workflowRuntime,
         data: hookResponse,
         resultDestinationPath: query.resultDestination || 'hookResponse',
         processName: query.processName,
+        projectIds: [workflowRuntime.projectId],
+        currentProjectId: workflowRuntime.projectId,
       });
+
+      await this.service.event(
+        {
+          id: params.id,
+          name: params.event,
+        },
+        [workflowRuntime.projectId],
+        workflowRuntime.projectId,
+      );
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
       throw error;
     }
-
-    return await this.service.event({
-      id: params.id,
-      name: params.event,
-    });
 
     return;
   }

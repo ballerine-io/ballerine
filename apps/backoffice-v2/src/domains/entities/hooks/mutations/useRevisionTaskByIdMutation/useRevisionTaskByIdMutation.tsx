@@ -1,24 +1,34 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { fetchWorkflowDecision, TWorkflowById } from '../../../../workflows/fetchers';
+import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
-import { Action } from '../../../../../common/enums';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
+import { Action } from '../../../../../common/enums';
+import { TObjectValues } from '../../../../../common/types';
 
-export const useRevisionTaskByIdMutation = (workflowId: string) => {
+export const useRevisionTaskByIdMutation = (workflowId: string, postUpdateEventName?: string) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
   const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
 
   return useMutation({
-    mutationFn: ({ documentId, reason }: { documentId: string; reason?: string }) =>
-      fetchWorkflowDecision({
+    mutationFn: ({
+      documentId,
+      decision,
+      reason,
+    }: {
+      documentId: string;
+      decision: TObjectValues<typeof Action> | null;
+      reason?: string;
+    }) =>
+      updateWorkflowDecision({
         workflowId,
         documentId,
         body: {
-          decision: Action.REVISION.toLowerCase(),
+          decision,
           reason,
+          postUpdateEventName,
         },
       }),
     onMutate: async ({ documentId, reason }) => {
@@ -53,14 +63,19 @@ export const useRevisionTaskByIdMutation = (workflowId: string) => {
 
       return { previousWorkflow };
     },
-    onSuccess: () => {
+    onSuccess: (_, { decision }) => {
       // workflowsQueryKeys._def is the base key for all workflows queries
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
-      toast.success(t('toast:ask_revision_document.success'));
+      toast.success(t(`toast:${decision ? 'ask_revision_document' : 'revert_revision'}.success`));
     },
     onError: (_error, _variables, context) => {
-      toast.error(t('toast:ask_revision_document.error', { errorMessage: _error.message }));
+      toast.error(
+        t(`toast:${_variables.decision ? 'ask_revision_document' : 'revert_revision'}.error`, {
+          errorMessage: _error.message,
+        }),
+      );
+
       queryClient.setQueryData(workflowById.queryKey, context.previousWorkflow);
     },
   });

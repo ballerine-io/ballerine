@@ -14,12 +14,22 @@ import { StorageService } from '@/storage/storage.service';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { EntityRepository } from '@/common/entity/entity.repository';
+import { ProjectScopeService } from '@/project/project-scope.service';
 import { HttpModule } from '@nestjs/axios';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { EndUserService } from '@/end-user/end-user.service';
+import { ProjectModule } from '@/project/project.module';
+import { CustomerModule } from '@/customer/customer.module';
+import { UserService } from '@/user/user.service';
+import { UserRepository } from '@/user/user.repository';
+import { PasswordService } from '@/auth/password/password.service';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 
 @Module({
-  imports: [HttpModule, AppLoggerModule],
+  imports: [HttpModule, AppLoggerModule, ProjectModule, CustomerModule],
   controllers: [BusinessControllerInternal, BusinessControllerExternal],
   providers: [
     BusinessRepository,
@@ -30,12 +40,20 @@ import { EndUserService } from '@/end-user/end-user.service';
     FileRepository,
     FileService,
     StorageService,
+    ProjectScopeService,
     EndUserRepository,
     EndUserService,
     WorkflowEventEmitterService,
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
     WorkflowService,
+    UserService,
+    UserRepository,
+    PasswordService,
+    SalesforceService,
+    SalesforceIntegrationRepository,
+    WorkflowTokenService,
+    WorkflowTokenRepository,
   ],
 })
 export class BusinessModule {}

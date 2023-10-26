@@ -12,7 +12,7 @@ services:
     restart: on-failure
   ballerine-kyb-app:
     build:
-      context: ../examples/kyb-app
+      context: ../apps/kyb-app
       args:
         NPM_LOG_LEVEL: notice
     ports:
@@ -55,13 +55,13 @@ services:
       PORT: ${WORKFLOW_SVC_PORT}
       KYB_EXAMPLE_CORS_ORIGIN: http://localhost:${KYB_APP_PORT}
       IS_DEMO: true
-      KYB_API_URL: 'https://unified-api-test.eu.ballerine.app'
       WEBHOOK_SECRET: webhook_secret
-      KYC_API_URL: https://unified-api-test.eu.ballerine.app
       APP_API_URL: https://alon.ballerine.dev
       EMAIL_API_TOKEN: ''
       EMAIL_API_URL: https://api.sendgrid.com/v3/mail/send
-      UNIFIED_API_TOKEN: ""
+      UNIFIED_API_URL: 'https://unified-api-test.eu.ballerine.app'
+      UNIFIED_API_TOKEN: ''
+      UNIFIED_API_SHARED_SECRET: ''
     depends_on:
       ballerine-postgres:
         condition: service_healthy

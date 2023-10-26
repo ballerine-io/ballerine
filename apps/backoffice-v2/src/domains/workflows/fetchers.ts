@@ -29,13 +29,15 @@ export const fetchWorkflows = async (params: {
           createdAt: z.string().datetime(),
           entity: ObjectWithIdSchema.extend({
             name: z.string(),
-            avatarUrl: z.string().nullable(),
+            avatarUrl: z.string().nullable().optional(),
             approvalState: z.enum(States),
           }),
           assignee: ObjectWithIdSchema.extend({
             firstName: z.string(),
             lastName: z.string(),
+            avatarUrl: z.string().nullable().optional(),
           }).nullable(),
+          tags: z.array(z.string()).nullable().optional(),
         }),
       ),
       meta: z.object({
@@ -53,7 +55,9 @@ export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
 export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
   status: z.string(),
+  state: z.string().nullable(),
   nextEvents: z.array(z.any()),
+  tags: z.array(z.string()).nullable().optional(),
   workflowDefinition: ObjectWithIdSchema.extend({
     name: z.string(),
     contextSchema: z.record(z.any(), z.any()).nullable(),
@@ -70,7 +74,7 @@ export const BaseWorkflowByIdSchema = z.object({
   }),
   entity: ObjectWithIdSchema.extend({
     name: z.string(),
-    avatarUrl: z.string().nullable(),
+    avatarUrl: z.string().nullable().optional(),
     approvalState: z.enum(States),
   }),
   assignee: ObjectWithIdSchema.extend({
@@ -179,22 +183,25 @@ export const fetchWorkflowEvent = async ({
   return handleZodError(error, workflow);
 };
 
-export const fetchWorkflowDecision = async ({
+export const updateWorkflowDecision = async ({
   workflowId,
   documentId,
   body,
 }: IWorkflowId & {
   documentId: string;
   body: {
-    decision: string;
+    decision: string | null;
     reason?: string;
+    postUpdateEventName?: string;
   };
 }) => {
   const [workflow, error] = await apiClient({
     endpoint: `workflows/${workflowId}/decision/${documentId}`,
     method: Method.PATCH,
     body,
-    schema: WorkflowByIdSchema,
+    schema: WorkflowByIdSchema.pick({
+      context: true,
+    }),
   });
 
   return handleZodError(error, workflow);

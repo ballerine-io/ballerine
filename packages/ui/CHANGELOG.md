@@ -1,5 +1,197 @@
 # @ballerine/ui
 
+## 0.3.6
+
+### Patch Changes
+
+- Bump
+
+## 0.3.5
+
+### Patch Changes
+
+- b1cebf50: pre
+- b1cebf50: Pre ver
+- b1cebf50: Prerelease
+- b1cebf50: bump pre
+- b1cebf50: Updated exports & Renamed vars
+- b1cebf50: Version bump pre
+- Bump
+- b1cebf50: Pre bump
+- b1cebf50: Pre bump
+- b1cebf50: Added default value to Autocomplete
+- b1cebf50: Bump
+- b1cebf50: pre
+- b1cebf50: Added blur handlers to Dynamic Form inputs
+- b1cebf50: Fixed missing AutocompleteAdapter placeholder
+- b1cebf50: Pre release
+- b1cebf50: Bumo
+- b1cebf50: Bump
+
+## 0.3.5-3e08f108.15
+
+### Patch Changes
+
+- Version bump pre
+
+## 0.3.5-3e08f108.14
+
+### Patch Changes
+
+- Bump
+
+## 0.3.5-3e08f108.13
+
+### Patch Changes
+
+- Bumo
+
+## 0.3.5-3e08f108.12
+
+### Patch Changes
+
+- Fixed missing AutocompleteAdapter placeholder
+
+## 0.3.5-3e08f108.11
+
+### Patch Changes
+
+- Pre ver
+
+## 0.3.5-3e08f108.10
+
+### Patch Changes
+
+- Pre bump
+
+## 0.3.5-3e08f108.9
+
+### Patch Changes
+
+- bump pre
+
+## 0.3.5-3e08f108.8
+
+### Patch Changes
+
+- Pre bump
+
+## 0.3.5-3e08f108.7
+
+### Patch Changes
+
+- Updated exports & Renamed vars
+
+## 0.3.5-3e08f108.6
+
+### Patch Changes
+
+- Added blur handlers to Dynamic Form inputs
+
+## 0.3.5-3e08f108.5
+
+### Patch Changes
+
+- Pre release
+
+## 0.3.5-3e08f108.4
+
+### Patch Changes
+
+- Bump
+
+## 0.3.5-3e08f108.3
+
+### Patch Changes
+
+- Added default value to Autocomplete
+
+## 0.3.5-3e08f108.2
+
+### Patch Changes
+
+- pre
+
+## 0.3.5-3e08f108.1
+
+### Patch Changes
+
+- pre
+
+## 0.3.5-3e08f108.0
+
+### Patch Changes
+
+- Prerelease
+
+## 0.3.4
+
+### Patch Changes
+
+- e51852fe: Bump
+- e51852fe: Bump
+- Version bump
+
+## 0.3.3
+
+### Patch Changes
+
+- Bump minor version
+
+## 0.3.2
+
+### Patch Changes
+
+- Version minor bump
+
+## 0.3.1
+
+### Patch Changes
+
+- Version bump
+
+## 0.3.0
+
+### Minor Changes
+
+- Fixes
+
+## 0.2.16
+
+### Patch Changes
+
+- Added toogling of checkbox by clicking on label in BooleanField
+
+## 0.2.15
+
+### Patch Changes
+
+- DatePicker now shows warning on blur
+
+## 0.2.14
+
+### Patch Changes
+
+- Update file input adapter to work with File
+
+## 0.2.13
+
+### Patch Changes
+
+- b8dedaaf: Enabled search on phone number in DynamicForm & BooleanFieldAdapter fix
+
+## 0.2.12
+
+### Patch Changes
+
+- Updated DatePicker error text styles & removed errors text capitalization from DynamicForm
+
+## 0.2.11
+
+### Patch Changes
+
+- Fixed date picker date serialization & added incorrect date hint & removed controls from number inputs
+
 ## 0.2.10
 
 ### Patch Changes

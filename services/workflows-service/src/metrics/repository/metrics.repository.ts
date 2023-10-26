@@ -39,6 +39,7 @@ import { aggregateApprovalRateQuery } from '@/metrics/repository/sql/aggregate-a
 import { aggregateAverageAssignmentTimeQuery } from '@/metrics/repository/sql/aggregate-average-assignment-time.sql';
 import { AverageAssignmentTimeModel } from '@/metrics/repository/models/average-assignment-time.model';
 import { aggregateAverageReviewTimeQuery } from '@/metrics/repository/sql/aggregate-average-review-time.sql';
+import { TProjectIds } from '@/types';
 
 @Injectable()
 export class MetricsRepository {
@@ -46,10 +47,15 @@ export class MetricsRepository {
 
   async getRuntimeStatusCaseCount(
     params: GetRuntimeStatusCaseCountParams,
+    projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeStatusCaseCountModel> {
     const results = await this.prismaService.$queryRawUnsafe<
       IAggregateWorkflowRuntimeStatusCaseCount[]
-    >(aggregateWorkflowRuntimeStatusCaseCountQuery, params.fromDate);
+    >(
+      aggregateWorkflowRuntimeStatusCaseCountQuery,
+      params.fromDate,
+      projectIds ? projectIds.join(',') : 'null',
+    );
 
     return plainToClass(
       WorkflowRuntimeStatusCaseCountModel,
@@ -57,9 +63,10 @@ export class MetricsRepository {
     );
   }
 
-  async findRuntimeStatistic(): Promise<WorkflowRuntimeStatisticModel[]> {
+  async findRuntimeStatistic(projectIds: TProjectIds): Promise<WorkflowRuntimeStatisticModel[]> {
     const results = await this.prismaService.$queryRawUnsafe<IAggregateWorkflowRuntimeStatistic[]>(
       aggregateWorkflowRuntimeStatisticQuery,
+      projectIds ? projectIds.join(',') : 'null',
     );
 
     return results.map(result =>
@@ -75,10 +82,12 @@ export class MetricsRepository {
 
   async findUsersAssignedCasesStatistic(
     params: FindUsersAssignedCasesStatisticParams,
+    projectIds: TProjectIds,
   ): Promise<UserAssignedCasesStatisticModel[]> {
     const results = await this.prismaService.$queryRawUnsafe<IAggregateUsersWithCasesCount[]>(
       aggregateUsersAssignedCasesStatisticQuery,
       params.fromDate,
+      projectIds ? projectIds.join(',') : 'null',
     );
 
     return results.map(result => plainToClass(UserAssignedCasesStatisticModel, result));
@@ -86,10 +95,15 @@ export class MetricsRepository {
 
   async findUsersResolvedCasesStatistic(
     params: FindUsersResolvedCasesStatisticParams,
+    projectIds: TProjectIds,
   ): Promise<UserResolvedCasesStatisticModel[]> {
     const results = await this.prismaService.$queryRawUnsafe<
       IAggregateUserResolvedCasesStatistic[]
-    >(aggregateUsersResolvedCasesStatisticQuery, params.fromDate);
+    >(
+      aggregateUsersResolvedCasesStatisticQuery,
+      params.fromDate,
+      projectIds ? projectIds.join(',') : 'null',
+    );
 
     return results.map(result =>
       plainToClass(UserResolvedCasesStatisticModel, {
@@ -102,10 +116,14 @@ export class MetricsRepository {
     );
   }
 
-  async getUserApprovalRate(params: GetUserApprovalRateParams): Promise<ApprovalRateModel | null> {
+  async getUserApprovalRate(
+    params: GetUserApprovalRateParams,
+    projectIds: TProjectIds,
+  ): Promise<ApprovalRateModel | null> {
     const results = await this.prismaService.$queryRawUnsafe<IAggregateApprovalRate[]>(
       aggregateApprovalRateQuery,
       params.fromDate,
+      projectIds ? projectIds.join(',') : 'null',
     );
 
     return results.length
@@ -115,10 +133,12 @@ export class MetricsRepository {
 
   async getUserAverageResolutionTime(
     params: GetUserAverageResolutionTimeParams,
+    projectIds: TProjectIds,
   ): Promise<AverageResolutionTimeModel | null> {
     const results = await this.prismaService.$queryRawUnsafe<IAggregateAverageResolutionTime[]>(
       aggregateAverageResolutionTimeQuery,
       params.fromDate,
+      projectIds ? projectIds.join(',') : 'null',
     );
 
     return results.length
@@ -128,10 +148,12 @@ export class MetricsRepository {
 
   async getUserAverageAssignmentTime(
     params: GetUserAverageAssignmentTimeParams,
+    projectIds: TProjectIds,
   ): Promise<AverageAssignmentTimeModel | null> {
     const results = await this.prismaService.$queryRawUnsafe<IAggregateAverageAssignmentTime[]>(
       aggregateAverageAssignmentTimeQuery,
       params.fromDate,
+      projectIds ? projectIds.join(',') : 'null',
     );
 
     return results.length
@@ -141,10 +163,12 @@ export class MetricsRepository {
 
   async getUserAverageReviewTime(
     params: GetUserAverageReviewTimeParams,
+    projectIds: TProjectIds,
   ): Promise<AverageReviewTimeModel | null> {
     const results = await this.prismaService.$queryRawUnsafe<IAggregateAverageReviewTime[]>(
       aggregateAverageReviewTimeQuery,
       params.fromDate,
+      projectIds ? projectIds.join(',') : 'null',
     );
 
     return results.length
@@ -154,11 +178,13 @@ export class MetricsRepository {
 
   async listCasesResolvedDaily(
     params: ListUserCasesResolvedDailyParams,
+    projectIds: TProjectIds,
   ): Promise<CasesResolvedInDay[]> {
     const results = await this.prismaService.$queryRawUnsafe<IAggregateCasesResolvedDaily[]>(
       aggregateDailyCasesResolvedQuery,
       params.fromDate,
       params.userId,
+      projectIds ? projectIds.join(',') : 'null',
     );
 
     if (!results.length) return [];
@@ -171,9 +197,10 @@ export class MetricsRepository {
     );
   }
 
-  async listUsers(): Promise<MetricsUserModel[]> {
+  async listUsers(projectIds: TProjectIds): Promise<MetricsUserModel[]> {
     const results = await this.prismaService.$queryRawUnsafe<ISelectActiveUser[]>(
       selectActiveUsersQuery,
+      projectIds ? projectIds.join(',') : 'null',
     );
 
     return results.map(result => plainToClass(MetricsUserModel, result));

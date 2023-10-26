@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,6 +10,14 @@
   #root {
     height: 100%;
     @apply font-inter;
+  }
+
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number'] {
+    -webkit-appearance: none;
+    margin: 0;
+    -moz-appearance: textfield !important;
   }
 
   :root {
@@ -36,11 +45,17 @@
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 359 86% 63%;
-    --destructive-foreground: 359 86% 93%;
+    --destructive: 1 78% 60%;
+    --destructive-foreground: 1 78% 60%;
 
-    --success: 152 51% 54%;
-    --success-foreground: 152 51% 84%;
+    --success: 148 100% 37%;
+    --success-foreground: 148 100% 37%;
+
+    --in: 211 100% 50%;
+    --in-foreground: 211 100% 50%;
+
+    --warning: 32 100% 68%;
+    --warning-foreground: 32 100% 98%;
 
     --ring: 215 20.2% 65.1%;
 

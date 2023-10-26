@@ -1,4 +1,5 @@
 const plugin = require('tailwindcss/plugin');
+const { fontFamily } = require('tailwindcss/defaultTheme');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -13,6 +14,10 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['var(--font-sans)', ...fontFamily.sans],
+        inter: ['Inter', 'sans-serif'],
+      },
       colors: {
         'ballerine-black': '#4D4D4D',
         'ballerine-blue': '#3F77FF',
@@ -37,6 +42,10 @@ module.exports = {
         success: {
           DEFAULT: 'hsl(var(--success))',
           foreground: 'hsl(var(--success-foreground))',
+        },
+        warning: {
+          DEFAULT: 'hsl(var(--warning))',
+          foreground: 'hsl(var(--warning-foreground))',
         },
         muted: {
           DEFAULT: 'hsl(var(--muted))',

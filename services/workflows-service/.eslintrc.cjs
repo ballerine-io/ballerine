@@ -33,6 +33,8 @@ module.exports = {
     '@typescript-eslint/no-unsafe-return': 'off',
     '@typescript-eslint/no-unsafe-assignment': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
+    'ballerine/verify-repository-project-scoped': 'error',
   },
   ignorePatterns: ['.eslintrc.cjs'],
+  plugins: ['ballerine'],
 };

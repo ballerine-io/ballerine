@@ -11,6 +11,10 @@ import { WorkflowService } from './workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
+import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
+import { CustomerService } from '@/customer/customer.service';
+import { EndUserService } from '@/end-user/end-user.service';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 
 const acGuard = {
   canActivate: () => {
@@ -55,6 +59,14 @@ describe('Workflow (external)', () => {
           provide: HookCallbackHandlerService,
           useValue: {} as HookCallbackHandlerService,
         },
+        {
+          provide: EndUserService,
+          useValue: {} as EndUserService,
+        },
+        {
+          provide: WorkflowTokenService,
+          useValue: {} as WorkflowTokenService,
+        },
       ],
       controllers: [WorkflowControllerExternal],
       imports: [ACLModule],
@@ -68,6 +80,15 @@ describe('Workflow (external)', () => {
       .compile();
 
     app = moduleRef.createNestApplication();
+
+    app.use((req, res, next) => {
+      req.user = {
+        // @ts-ignore
+        type: 'customer',
+      };
+      next();
+    });
+
     await app.init();
   });
 
@@ -101,6 +122,7 @@ describe('Workflow (external)', () => {
 
     await request(app.getHttpServer())
       .get(`/external/workflows/abcde`)
+      .set('authorization', 'Bearer secret')
       .expect(HttpStatus.NOT_FOUND)
       .expect({
         statusCode: 404,
@@ -122,6 +144,7 @@ describe('Workflow (external)', () => {
     );
     await request(app.getHttpServer())
       .get(`${'/external/workflows'}/abcde`)
+      .set('authorization', 'Bearer secret')
       .expect(HttpStatus.OK)
       .expect({
         workflowDefinition: { id: 'a' },

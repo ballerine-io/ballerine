@@ -20,14 +20,25 @@ export class KybPlugin extends ApiPlugin {
       companyNumber = '',
       vendor = 'open-corporates',
     } = payload;
-
-    const countryCode = countries.getAlpha2Code(countryOfIncorporation as string, 'en');
+    let countryCode: string;
+    if (
+      typeof countryOfIncorporation === 'string' &&
+      countryOfIncorporation.length === 2 &&
+      countryOfIncorporation === countryOfIncorporation.toUpperCase()
+    ) {
+      countryCode = countryOfIncorporation;
+    } else {
+      countryCode = countries.getAlpha2Code(countryOfIncorporation as string, 'en');
+    }
 
     if (typeof countryCode !== 'string')
       throw new Error('Invalid countryOfIncorporation for KYB process');
     if (typeof companyNumber !== 'string') throw new Error('Invalid companyNumber for KYB process');
 
-    const jurisdictionCode = stateCode ? `${countryCode}-${stateCode as string}` : countryCode;
+    const jurisdictionCode =
+      stateCode && typeof stateCode == 'string' && stateCode.length == 2
+        ? `${countryCode}-${stateCode}`
+        : countryCode;
     const formattedUrl = `${url}/${jurisdictionCode}/${companyNumber}`;
 
     return await super.makeApiRequest(formattedUrl, method, { vendor: vendor }, headers);

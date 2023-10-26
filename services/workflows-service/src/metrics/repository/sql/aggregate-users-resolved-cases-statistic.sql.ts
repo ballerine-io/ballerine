@@ -14,6 +14,7 @@ inner join (
   from
     "WorkflowRuntimeData"
   where "resolvedAt" >= $1
+  AND "projectId" in ($2)
   group by "assigneeId"
 ) as agent_workflow_runtime on
 agent_workflow_runtime."assigneeId" = "id"

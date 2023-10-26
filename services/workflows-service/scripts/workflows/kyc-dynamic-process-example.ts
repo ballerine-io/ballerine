@@ -1,4 +1,6 @@
 import { PrismaClient } from '@prisma/client';
+import { env } from '../../src/env';
+import { StateTag } from '@ballerine/common';
 
 export const kycDynamicExample = {
   id: 'dynamic_kyc_example',
@@ -25,20 +27,25 @@ export const kycDynamicExample = {
         },
       },
       pending_kyc_response: {
+        tags: [StateTag.PENDING_PROCESS],
         on: {
           KYC_RESPONDED: [{ target: 'kyc_manual_review' }],
         },
       },
       kyc_manual_review: {
+        tags: [StateTag.MANUAL_REVIEW],
         type: 'final' as const,
       },
       kyc_auto_reject: {
+        tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
       reject: {
+        tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
       approve: {
+        tags: [StateTag.APPROVED],
         type: 'final' as const,
       },
     },
@@ -48,7 +55,7 @@ export const kycDynamicExample = {
       {
         name: 'request_kyc',
         pluginKind: 'kyc',
-        url: `{secret.KYC_API_URL}/individual-verifications`,
+        url: `${env.UNIFIED_API_URL}/individual-verifications`,
         method: 'POST',
         stateNames: ['run_kyc'],
         successAction: 'PENDING_KYC',
@@ -60,7 +67,7 @@ export const kycDynamicExample = {
               transformer: 'jmespath',
               mapping: `{
               endUserId: entity.id,
-              callbackUrl: join('',['http://localhost:3000/api/v1/internal/workflows/',workflowRuntimeId,'/hook/KYC_RESPONDED']),
+              callbackUrl: join('',['http://localhost:3000/api/v1/internal/workflows/',workflowRuntimeId,'/hook/KYC_RESPONDED?&projectId=',projectId]),
               person: {
                firstName: entity.data.firstName,
                lastName: entity.data.lastName,
@@ -134,6 +141,7 @@ export const kycDynamicExample = {
       deliverEvent: 'KYC_DONE',
     },
   },
+  isPublic: true,
 };
 export const generateKycForE2eTest = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({

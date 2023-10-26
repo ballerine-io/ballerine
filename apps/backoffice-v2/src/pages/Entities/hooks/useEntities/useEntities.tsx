@@ -1,10 +1,11 @@
 import { useSearch } from '../../../../common/hooks/useSearch/useSearch';
-import { ChangeEventHandler, useCallback } from 'react';
+import { ChangeEventHandler, useCallback, useMemo } from 'react';
 import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
 import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
 import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
 import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
+import { useUsersQuery } from '../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
 
 export const useEntities = () => {
   const [{ filterId, filter, sortBy, sortDir, page, pageSize }, setSearchParams] =
@@ -20,13 +21,17 @@ export const useEntities = () => {
 
   const {
     meta: { totalPages },
-    data: cases,
+    data: workflows,
   } = data || { meta: { totalPages: 0 }, data: [] };
   const entity = useEntityType();
   const individualsSearchOptions = ['entity.name', 'entity.email'];
   const businessesSearchOptions = ['entity.name'];
-  const { searched, onSearch, search } = useSearch({
-    data: cases,
+  const {
+    searched: cases,
+    onSearch,
+    search,
+  } = useSearch({
+    data: workflows,
     searchBy: entity === 'individuals' ? individualsSearchOptions : businessesSearchOptions,
   });
 
@@ -93,7 +98,8 @@ export const useEntities = () => {
     onSortBy: onSortByChange,
     onSortDirToggle,
     search,
-    cases: searched,
+    cases,
+    caseCount: data?.meta?.totalItems,
     isLoading,
     page,
     totalPages,

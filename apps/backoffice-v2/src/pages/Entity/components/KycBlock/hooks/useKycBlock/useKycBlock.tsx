@@ -1,13 +1,21 @@
+import { ComponentProps } from 'react';
+import { isObject, StateTag, TStateTags } from '@ballerine/common';
+
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import {
-  convertSnakeCaseToTitleCase,
-  omitPropsFromObject,
-} from '../../../../hooks/useEntity/utils';
-import { octetToFileType } from '../../../../../../common/octet-to-file-type/octet-to-file-type';
+import { omitPropsFromObject } from '../../../../hooks/useEntity/utils';
 import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
-import { safeEvery } from '@ballerine/common';
 import { useCaseDecision } from '../../../Case/hooks/useCaseDecision/useCaseDecision';
+import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
+import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
+import { toTitleCase } from 'string-ts';
+
+const motionProps: ComponentProps<typeof MotionBadge> = {
+  exit: { opacity: 0, transition: { duration: 0.2 } },
+  initial: { y: 10, opacity: 0 },
+  transition: { type: 'spring', bounce: 0.3 },
+  animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
+};
 
 export const useKycBlock = ({
   parentWorkflowId,
@@ -17,12 +25,14 @@ export const useKycBlock = ({
   parentWorkflowId: string;
 }) => {
   const { noAction } = useCaseDecision();
+  const results: Array<Array<string>> = [];
+
   const docsData = useStorageFilesQuery(
     childWorkflow?.context?.documents?.flatMap(({ pages }) =>
       pages?.map(({ ballerineFileId }) => ballerineFileId),
     ),
   );
-  const results: Array<Array<string>> = [];
+
   childWorkflow?.context?.documents?.forEach((document, docIndex) => {
     document?.pages?.forEach((page, pageIndex: number) => {
       if (!results[docIndex]) {
@@ -31,217 +41,284 @@ export const useKycBlock = ({
       results[docIndex][pageIndex] = docsData?.shift()?.data;
     });
   });
+
   const decision = Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.length
     ? Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.flatMap(key => [
         {
           title: 'Verified With',
           value: capitalize(childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.vendor),
-          type: 'text',
-          format: 'text',
           pattern: '',
           isEditable: false,
           dropdownOptions: undefined,
         },
         {
           title: 'Result',
-          value:
-            childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.decision
-              ?.decision,
-          type: 'text',
-          format: 'text',
+          value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.decision?.status,
           pattern: '',
           isEditable: false,
           dropdownOptions: undefined,
         },
         {
           title: 'Issues',
-          value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.decision?.decision
-            ?.riskLabels?.length
-            ? childWorkflow?.context?.pluginsOutput?.kyc_session[
-                key
-              ]?.decision?.decision?.riskLabels?.join(', ')
+          value: childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.decision?.riskLabels
+            ?.length
+            ? childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.decision?.riskLabels?.join(
+                ', ',
+              )
             : 'none',
-          type: 'text',
-          format: 'text',
           pattern: '',
           isEditable: false,
           dropdownOptions: undefined,
         },
-        {
-          title: 'Full report',
-          value: childWorkflow?.context?.pluginsOutput?.kyc_session[key],
-          type: 'text',
-          format: 'text',
-          pattern: '',
-          isEditable: false,
-          dropdownOptions: undefined,
-        },
+        ...(isObject(childWorkflow?.context?.pluginsOutput?.kyc_session[key])
+          ? [
+              {
+                title: 'Full report',
+                value: childWorkflow?.context?.pluginsOutput?.kyc_session[key],
+                pattern: '',
+                isEditable: false,
+                dropdownOptions: undefined,
+              },
+            ]
+          : []),
       ]) ?? []
     : [];
+
   const documentExtractedData = Object.keys(
     childWorkflow?.context?.pluginsOutput?.kyc_session ?? {},
   )?.length
-    ? Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.map(key => ({
-        id: 'decision',
-        type: 'details',
-        value: {
-          id: childWorkflow?.id,
-          title: `Details`,
-          data: Object.entries({
-            ...childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.entity?.data,
-            ...omitPropsFromObject(
-              childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
-                ?.properties,
-              'issuer',
-            ),
-            issuer:
-              childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
-                ?.issuer?.country,
-          })?.map(([title, value]) => ({
-            title,
-            value,
-            type: 'text',
-            format: 'text',
-            pattern: '',
-            isEditable: false,
-            dropdownOptions: undefined,
-          })),
-        },
-      })) ?? []
+    ? Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.map(
+        (key, index, collection) => ({
+          id: 'decision',
+          type: 'details',
+          value: {
+            id: childWorkflow?.id,
+            title: `Details`,
+            hideSeparator: index === collection.length - 1,
+            data: Object.entries({
+              ...childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.entity?.data,
+              ...omitPropsFromObject(
+                childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
+                  ?.properties,
+                'issuer',
+              ),
+              issuer:
+                childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
+                  ?.issuer?.country,
+            })?.map(([title, value]) => ({
+              title,
+              value,
+              pattern: '',
+              isEditable: false,
+              dropdownOptions: undefined,
+            })),
+          },
+        }),
+      ) ?? []
     : [];
-  const details = Object.entries(childWorkflow?.context?.entity?.data).map(([title, value]) => ({
-    title,
-    value,
-    type: 'text',
-    format: 'text',
-    pattern: '',
-    isEditable: true,
-    dropdownOptions: undefined,
-  }));
+
+  const details = Object.entries(childWorkflow?.context?.entity?.data ?? {}).map(
+    ([title, value]) => ({
+      title,
+      value,
+      pattern: '',
+      isEditable: false,
+      dropdownOptions: undefined,
+    }),
+  );
   const documents = childWorkflow?.context?.documents?.flatMap(
     (document, docIndex) =>
       document?.pages?.map(({ type, metadata, data }, pageIndex) => ({
-        title: `${convertSnakeCaseToTitleCase(document?.category)} - ${convertSnakeCaseToTitleCase(
-          document?.type,
+        title: `${valueOrNA(toTitleCase(document?.category ?? ''))} - ${valueOrNA(
+          toTitleCase(document?.type ?? ''),
         )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-        imageUrl:
-          type === 'pdf'
-            ? octetToFileType(results[docIndex][pageIndex], `application/${type}`)
-            : results[docIndex][pageIndex],
+        imageUrl: results[docIndex][pageIndex],
         fileType: type,
       })) ?? [],
   );
-  const hasDecision =
-    safeEvery(childWorkflow?.context?.documents, document => !!document?.decision?.status) ||
-    noAction;
 
-  return [
-    [
+  const isDisabled = !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW) || noAction;
+
+  const getDecisionStatusOrAction = (tags?: TStateTags) => {
+    const badgeClassNames = 'text-sm font-bold';
+
+    if (tags?.includes(StateTag.REVISION)) {
+      return [
+        {
+          type: 'badge',
+          value: 'Pending re-upload',
+          props: {
+            ...motionProps,
+            variant: 'warning',
+            className: badgeClassNames,
+          },
+        },
+      ];
+    }
+
+    if (tags?.includes(StateTag.APPROVED)) {
+      return [
+        {
+          type: 'badge',
+          value: 'Approved',
+          props: {
+            ...motionProps,
+            variant: 'success',
+            className: `${badgeClassNames} bg-success/20`,
+          },
+        },
+      ];
+    }
+
+    if (tags?.includes(StateTag.REJECTED)) {
+      return [
+        {
+          type: 'badge',
+          value: 'Rejected',
+          props: {
+            ...motionProps,
+            variant: 'destructive',
+            className: `${badgeClassNames}`,
+          },
+        },
+      ];
+    }
+
+    if (tags?.includes(StateTag.PENDING_PROCESS)) {
+      return [
+        {
+          type: 'badge',
+          value: 'Pending ID verification',
+          props: {
+            ...motionProps,
+            variant: 'warning',
+            className: `${badgeClassNames}`,
+          },
+        },
+      ];
+    }
+
+    return [
       {
-        id: 'header',
-        type: 'container',
-        value: [
-          {
-            type: 'heading',
-            value: `${childWorkflow?.context?.entity?.data?.firstName} ${childWorkflow?.context?.entity?.data?.lastName}`,
-          },
-          {
-            id: 'actions',
-            type: 'container',
-            value: [
-              {
-                type: 'caseCallToAction',
-                value: 'Reject',
-                data: {
-                  parentWorkflowId: parentWorkflowId,
-                  childWorkflowId: childWorkflow?.id,
-                  childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
-                  disabled: hasDecision,
-                  approvalStatus: 'rejected',
-                },
-              },
-              {
-                type: 'caseCallToAction',
-                value: 'Approve',
-                data: {
-                  parentWorkflowId: parentWorkflowId,
-                  childWorkflowId: childWorkflow?.id,
-                  childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
-                  disabled: hasDecision,
-                  approvalStatus: 'approved',
-                },
-              },
-            ],
-          },
-        ],
+        type: 'caseCallToAction',
+        value: 'Re-upload needed',
+        data: {
+          parentWorkflowId: parentWorkflowId,
+          childWorkflowId: childWorkflow?.id,
+          childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
+          disabled: isDisabled,
+          approvalStatus: 'rejected',
+        },
       },
       {
-        id: 'kyc-block',
+        type: 'caseCallToAction',
+        value: 'Approve',
+        data: {
+          parentWorkflowId: parentWorkflowId,
+          childWorkflowId: childWorkflow?.id,
+          childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
+          disabled: isDisabled,
+          approvalStatus: 'approved',
+        },
+      },
+    ];
+  };
+
+  const headerCell = {
+    id: 'header',
+    type: 'container',
+    value: [
+      {
+        type: 'heading',
+        value: `${valueOrNA(childWorkflow?.context?.entity?.data?.firstName)} ${valueOrNA(
+          childWorkflow?.context?.entity?.data?.lastName,
+        )}`,
+      },
+      {
+        id: 'actions',
         type: 'container',
-        value: [
-          {
-            type: 'container',
-            value: [
-              {
-                type: 'container',
-                value: [
-                  {
-                    id: 'header',
-                    type: 'heading',
-                    value: 'Details',
-                  },
-                  {
-                    id: 'decision',
-                    type: 'details',
-                    value: {
-                      id: 1,
-                      title: `Details`,
-                      data: details,
-                    },
-                  },
-                ],
-              },
-              {
-                type: 'container',
-                value: [
-                  {
-                    id: 'header',
-                    type: 'heading',
-                    value: 'Document Extracted Data',
-                  },
-                  ...documentExtractedData,
-                ],
-              },
-              {
-                type: 'container',
-                value: [
-                  {
-                    id: 'header',
-                    type: 'heading',
-                    value: 'Document Verification Results',
-                  },
-                  {
-                    id: 'decision',
-                    type: 'details',
-                    value: {
-                      id: 1,
-                      title: `Decision`,
-                      data: decision,
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            type: 'multiDocuments',
-            value: {
-              isLoading: docsData?.some(({ isLoading }) => isLoading),
-              data: documents,
-            },
-          },
-        ],
+        value: getDecisionStatusOrAction(childWorkflow?.tags),
       },
     ],
-  ];
+  };
+
+  return {
+    className:
+      childWorkflow.state === 'revision'
+        ? `shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning`
+        : '',
+    cells: [
+      [
+        headerCell,
+        {
+          id: 'kyc-block',
+          type: 'container',
+          value: [
+            {
+              type: 'container',
+              value: [
+                {
+                  type: 'container',
+                  value: [
+                    {
+                      id: 'header',
+                      type: 'heading',
+                      value: 'Details',
+                    },
+                    {
+                      id: 'decision',
+                      type: 'details',
+                      value: {
+                        id: 1,
+                        title: `Details`,
+                        data: details,
+                      },
+                    },
+                  ],
+                },
+                {
+                  type: 'container',
+                  value: [
+                    {
+                      id: 'header',
+                      type: 'heading',
+                      value: 'Document Extracted Data',
+                    },
+                    ...documentExtractedData,
+                  ],
+                },
+                {
+                  type: 'container',
+                  value: [
+                    {
+                      id: 'header',
+                      type: 'heading',
+                      value: 'Document Verification Results',
+                    },
+                    {
+                      id: 'decision',
+                      type: 'details',
+                      hideSeparator: true,
+                      value: {
+                        id: 1,
+                        title: `Decision`,
+                        data: decision,
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              type: 'multiDocuments',
+              value: {
+                isLoading: docsData?.some(({ isLoading }) => isLoading),
+                data: documents,
+              },
+            },
+          ],
+        },
+      ],
+    ],
+  };
 };

@@ -9,7 +9,8 @@ export const useNominatimQuery = (
         city: string;
         street: string;
       }
-    | string,
+    | string
+    | undefined,
 ) => {
   const enabled =
     typeof address === 'string'

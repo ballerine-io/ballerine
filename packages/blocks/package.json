@@ -2,7 +2,7 @@
   "private": false,
   "name": "@ballerine/blocks",
   "author": "Ballerine <dev@ballerine.com>",
-  "version": "0.0.17-hotfix.0",
+  "version": "0.1.13",
   "description": "blocks",
   "module": "./dist/esm/index.js",
   "main": "./dist/cjs/index.js",

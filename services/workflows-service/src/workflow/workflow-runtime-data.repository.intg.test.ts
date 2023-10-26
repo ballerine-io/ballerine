@@ -1,5 +1,5 @@
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
-import { fetchServiceFromModule, initiateNestApp } from '@/test/helpers/nest-app-helper';
+import { fetchServiceFromModule } from '@/test/helpers/nest-app-helper';
 import { PrismaModule } from 'nestjs-prisma';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { FilterService } from '@/filter/filter.service';
@@ -18,31 +18,54 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '@/prisma/prisma.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
+import { ProjectScopeService } from '@/project/project-scope.service';
 import { EndUserService } from '@/end-user/end-user.service';
+import { Project } from '@prisma/client';
+import { createCustomer } from '@/test/helpers/create-customer';
+import { createProject } from '@/test/helpers/create-project';
+import { UserService } from '@/user/user.service';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
+import { UserRepository } from '@/user/user.repository';
+import { PasswordService } from '@/auth/password/password.service';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { WorkflowModule } from './workflow.module';
+import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
   let workflowDefinitionRepository: WorkflowDefinitionRepository;
-  beforeEach(cleanupDatabase);
-  afterEach(tearDownDatabase);
+  let project: Project;
+  // beforeEach(cleanupDatabase);
+  // afterEach(tearDownDatabase);
 
   beforeAll(async () => {
+    await cleanupDatabase();
+
     const servicesProviders = [
       EndUserRepository,
       EndUserService,
       FilterService,
       FilterRepository,
+      ProjectScopeService,
       FileRepository,
       FileService,
       StorageService,
       WorkflowEventEmitterService,
       BusinessRepository,
       WorkflowDefinitionRepository,
-      WorkflowRuntimeDataRepository,
       WorkflowService,
       EventEmitter2,
       PrismaService,
       EntityRepository,
+      UserService,
+      UserRepository,
+      SalesforceService,
+      SalesforceIntegrationRepository,
+      PasswordService,
+      WorkflowTokenService,
+      WorkflowTokenRepository,
+      WorkflowRuntimeDataRepository,
     ];
 
     workflowRuntimeRepository = (await fetchServiceFromModule(
@@ -56,7 +79,27 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       servicesProviders,
       [PrismaModule],
     )) as unknown as WorkflowDefinitionRepository;
+
+    const prismaService = (await fetchServiceFromModule(PrismaService, servicesProviders, [
+      PrismaModule,
+    ])) as unknown as PrismaService;
+
+    const customer = await createCustomer(
+      prismaService,
+      '1',
+      'secret',
+      '',
+      '',
+      'webhook-shared-secret',
+    );
+    project = await createProject(prismaService, customer, '5');
   });
+
+  afterAll(async () => {
+    await cleanupDatabase();
+    await tearDownDatabase();
+  });
+
   describe('Workflow Runtime Data Repository: Jsonb Merge', () => {
     beforeAll(async () => {
       await workflowDefinitionRepository.create({
@@ -74,19 +117,22 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     it('updateById: Merge context with nested entities - will preserve "replacment" behaviour for merging arrays', async () => {
       // Set up initial data
 
-      const createRes = await workflowRuntimeRepository.create({
-        data: {
-          workflowDefinitionId: 'test-definition',
-          workflowDefinitionVersion: 1,
-          context: {
-            entity: {
-              id: '1',
-              name: 'TestEntity',
+      const createRes = await workflowRuntimeRepository.create(
+        {
+          data: {
+            workflowDefinitionId: 'test-definition',
+            workflowDefinitionVersion: 1,
+            context: {
+              entity: {
+                id: '1',
+                name: 'TestEntity',
+              },
+              documents: ['file1', 'file2'],
             },
-            documents: ['file1', 'file2'],
           },
         },
-      });
+        project.id,
+      );
 
       // Update the context with a new object
       const updatedContext = {
@@ -97,11 +143,15 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
         documents: ['file3'],
       };
 
-      const res = await workflowRuntimeRepository.updateById(createRes.id, {
-        data: {
-          context: updatedContext,
+      const res = await workflowRuntimeRepository.updateById(
+        createRes.id,
+        {
+          data: {
+            context: updatedContext,
+          },
         },
-      });
+        project.id,
+      );
 
       // The expected result should be the merged version of initial and updated context
       expect(res.context).toMatchObject({
@@ -114,28 +164,35 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     });
 
     it('updateById: Merge context with nested entities - will preserve "replacment" behaviour for merging objects', async () => {
-      const createRes = await workflowRuntimeRepository.create({
-        data: {
-          workflowDefinitionId: 'test-definition',
-          workflowDefinitionVersion: 1,
-          context: {
-            entity: {
-              id: '1',
+      const createRes = await workflowRuntimeRepository.create(
+        {
+          data: {
+            workflowDefinitionId: 'test-definition',
+            workflowDefinitionVersion: 1,
+            context: {
+              entity: {
+                id: '1',
+              },
             },
           },
         },
-      });
+        project.id,
+      );
 
-      const res = await workflowRuntimeRepository.updateById(createRes.id, {
-        data: {
-          context: {
-            entity: {
-              id: '2',
+      const res = await workflowRuntimeRepository.updateById(
+        createRes.id,
+        {
+          data: {
+            context: {
+              entity: {
+                id: '2',
+              },
+              documents: [],
             },
-            documents: [],
           },
         },
-      });
+        project.id,
+      );
 
       expect(res).toMatchObject({
         endUserId: null,
@@ -154,13 +211,16 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     });
 
     it('should merge the existing and new context data when updateContextById is called', async () => {
-      const createRes = await workflowRuntimeRepository.create({
-        data: {
-          workflowDefinitionId: 'test-definition',
-          workflowDefinitionVersion: 1,
-          context: { key1: 'value1', key2: 'value2', documents: [{ id: '1', name: 'doc1' }] },
+      const createRes = await workflowRuntimeRepository.create(
+        {
+          data: {
+            workflowDefinitionId: 'test-definition',
+            workflowDefinitionVersion: 1,
+            context: { key1: 'value1', key2: 'value2', documents: [{ id: '1', name: 'doc1' }] },
+          },
         },
-      });
+        project.id,
+      );
       const newContext = {
         key2: 'new-value',
         key3: 'value3',
@@ -171,9 +231,16 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       };
 
       const arrayMergeOption: ArrayMergeOption = 'by_id';
-      await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+      await workflowRuntimeRepository.updateContextById(
+        createRes.id,
+        newContext,
+        arrayMergeOption,
+        [project.id],
+      );
 
-      const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+      const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [
+        project.id,
+      ]);
 
       const expectedContext = {
         key1: 'value1',
@@ -187,19 +254,29 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       expect(updatedContext).toEqual(expectedContext);
     });
     it('should not change existing context when the new context is empty', async () => {
-      const createRes = await workflowRuntimeRepository.create({
-        data: {
-          workflowDefinitionId: 'test-definition',
-          workflowDefinitionVersion: 1,
-          context: { key1: 'value1', key2: 'value2', documents: [{ id: '1', name: 'doc1' }] },
+      const createRes = await workflowRuntimeRepository.create(
+        {
+          data: {
+            workflowDefinitionId: 'test-definition',
+            workflowDefinitionVersion: 1,
+            context: { key1: 'value1', key2: 'value2', documents: [{ id: '1', name: 'doc1' }] },
+          },
         },
-      });
+        project.id,
+      );
       const newContext = {};
 
       const arrayMergeOption: ArrayMergeOption = 'by_id';
-      await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+      await workflowRuntimeRepository.updateContextById(
+        createRes.id,
+        newContext,
+        arrayMergeOption,
+        [project.id],
+      );
 
-      const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+      const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [
+        project.id,
+      ]);
 
       const expectedContext = {
         key1: 'value1',
@@ -209,19 +286,29 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       expect(updatedContext).toEqual(expectedContext);
     });
     it('should add new key from the new context to the existing context', async () => {
-      const createRes = await workflowRuntimeRepository.create({
-        data: {
-          workflowDefinitionId: 'test-definition',
-          workflowDefinitionVersion: 1,
-          context: { key1: 'value1', key2: 'value2', documents: [{ id: '1', name: 'doc1' }] },
+      const createRes = await workflowRuntimeRepository.create(
+        {
+          data: {
+            workflowDefinitionId: 'test-definition',
+            workflowDefinitionVersion: 1,
+            context: { key1: 'value1', key2: 'value2', documents: [{ id: '1', name: 'doc1' }] },
+          },
         },
-      });
+        project.id,
+      );
       const newContext = { key3: 'value3' };
 
       const arrayMergeOption: ArrayMergeOption = 'by_id';
-      await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+      await workflowRuntimeRepository.updateContextById(
+        createRes.id,
+        newContext,
+        arrayMergeOption,
+        [project.id],
+      );
 
-      const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+      const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [
+        project.id,
+      ]);
 
       const expectedContext = {
         key1: 'value1',
@@ -233,19 +320,29 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     });
 
     it('should update the value of an existing key when the new context has a different value for that key', async () => {
-      const createRes = await workflowRuntimeRepository.create({
-        data: {
-          workflowDefinitionId: 'test-definition',
-          workflowDefinitionVersion: 1,
-          context: { key1: 'value1', key2: 'value2', documents: [{ id: '1', name: 'doc1' }] },
+      const createRes = await workflowRuntimeRepository.create(
+        {
+          data: {
+            workflowDefinitionId: 'test-definition',
+            workflowDefinitionVersion: 1,
+            context: { key1: 'value1', key2: 'value2', documents: [{ id: '1', name: 'doc1' }] },
+          },
         },
-      });
+        project.id,
+      );
       const newContext = { key2: 'new-value2' };
 
       const arrayMergeOption: ArrayMergeOption = 'by_id';
-      await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+      await workflowRuntimeRepository.updateContextById(
+        createRes.id,
+        newContext,
+        arrayMergeOption,
+        [project.id],
+      );
 
-      const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+      const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [
+        project.id,
+      ]);
 
       const expectedContext = {
         key1: 'value1',
@@ -256,23 +353,28 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     });
   });
   it('should merge nested objects in the context', async () => {
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: {
-          key1: 'value1',
-          key2: { nestedKey1: 'nestedValue1' },
-          documents: [{ id: '1', name: 'doc1' }],
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: {
+            key1: 'value1',
+            key2: { nestedKey1: 'nestedValue1' },
+            documents: [{ id: '1', name: 'doc1' }],
+          },
         },
       },
-    });
+      project.id,
+    );
     const newContext = { key2: { nestedKey2: 'nestedValue2' } };
 
     const arrayMergeOption: ArrayMergeOption = 'by_id';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
 
     const expectedContext = {
       key1: 'value1',
@@ -282,23 +384,28 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     expect(updatedContext).toEqual(expectedContext);
   });
   it('should update values in nested objects in the context', async () => {
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: {
-          key1: 'value1',
-          key2: { nestedKey1: 'nestedValue1' },
-          documents: [{ id: '1', name: 'doc1' }],
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: {
+            key1: 'value1',
+            key2: { nestedKey1: 'nestedValue1' },
+            documents: [{ id: '1', name: 'doc1' }],
+          },
         },
       },
-    });
+      project.id,
+    );
     const newContext = { key2: { nestedKey1: 'new-nestedValue1' } };
 
     const arrayMergeOption: ArrayMergeOption = 'by_id';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
 
     const expectedContext = {
       key1: 'value1',
@@ -308,19 +415,24 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     expect(updatedContext).toEqual(expectedContext);
   });
   it('should add a new element to an array in the context', async () => {
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: { key1: 'value1', key2: ['element1'], documents: [{ id: '1', name: 'doc1' }] },
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: { key1: 'value1', key2: ['element1'], documents: [{ id: '1', name: 'doc1' }] },
+        },
       },
-    });
+      project.id,
+    );
     const newContext = { key2: ['element2'] };
 
     const arrayMergeOption: ArrayMergeOption = 'concat';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
 
     const expectedContext = {
       key1: 'value1',
@@ -330,23 +442,28 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     expect(updatedContext).toEqual(expectedContext);
   });
   it('should replace an element from an array in the context when the new context have it on the same index', async () => {
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: {
-          key1: 'value1',
-          key2: ['element1', 'element2'],
-          documents: [{ id: '1', name: 'doc1' }],
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: {
+            key1: 'value1',
+            key2: ['element1', 'element2'],
+            documents: [{ id: '1', name: 'doc1' }],
+          },
         },
       },
-    });
+      project.id,
+    );
     const newContext = { key2: ['element3'] };
 
     const arrayMergeOption: ArrayMergeOption = 'by_index';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
 
     const expectedContext = {
       key1: 'value1',
@@ -360,24 +477,31 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
 
     const arrayMergeOption: ArrayMergeOption = 'by_id';
     await expect(
-      workflowRuntimeRepository.updateContextById('non-existing-id', newContext, arrayMergeOption),
+      workflowRuntimeRepository.updateContextById('non-existing-id', newContext, arrayMergeOption, [
+        project.id,
+      ]),
     ).rejects.toThrow();
   });
 
   it('should be able to handle large context objects', async () => {
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: { key1: 'value1', largeKey: new Array(1000).fill('value').join('') },
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: { key1: 'value1', largeKey: new Array(1000).fill('value').join('') },
+        },
       },
-    });
+      project.id,
+    );
     const newContext = { key2: 'value2' };
 
     const arrayMergeOption: ArrayMergeOption = 'by_id';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
 
     const expectedContext = {
       key1: 'value1',
@@ -387,25 +511,30 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     expect(updatedContext).toEqual(expectedContext);
   });
   it('should concatenate array in a nested object when array_merge_option is "concat"', async () => {
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: {
-          key1: 'value1',
-          key2: { nestedKey: ['value2'] },
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: {
+            key1: 'value1',
+            key2: { nestedKey: ['value2'] },
+          },
         },
       },
-    });
+      project.id,
+    );
 
     const newContext = {
       key2: { nestedKey: ['value3'] },
     };
 
     const arrayMergeOption: ArrayMergeOption = 'concat';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
 
     const expectedContext = {
       key1: 'value1',
@@ -414,25 +543,30 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     expect(updatedContext).toEqual(expectedContext);
   });
   it('should concatenate array of objects in a nested object when array_merge_option is "concat"', async () => {
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: {
-          key1: 'value1',
-          key2: { nestedKey: [{ id: '1', value: 'value2' }] },
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: {
+            key1: 'value1',
+            key2: { nestedKey: [{ id: '1', value: 'value2' }] },
+          },
         },
       },
-    });
+      project.id,
+    );
 
     const newContext = {
       key2: { nestedKey: [{ id: '2', value: 'value3' }] },
     };
 
     const arrayMergeOption: ArrayMergeOption = 'concat';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
 
     const expectedContext = {
       key1: 'value1',
@@ -446,25 +580,30 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     expect(updatedContext).toEqual(expectedContext);
   });
   it('should concatenate deeply nested arrays when array_merge_option is "concat"', async () => {
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: {
-          key1: 'value1',
-          key2: { nestedKey: { anotherNestedKey: ['value2'] } },
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: {
+            key1: 'value1',
+            key2: { nestedKey: { anotherNestedKey: ['value2'] } },
+          },
         },
       },
-    });
+      project.id,
+    );
 
     const newContext = {
       key2: { nestedKey: { anotherNestedKey: ['value3'] } },
     };
 
     const arrayMergeOption: ArrayMergeOption = 'concat';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
 
     const expectedContext = {
       key1: 'value1',
@@ -473,24 +612,29 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     expect(updatedContext).toEqual(expectedContext);
   });
   it('should correctly merge context data with high nesting level', async () => {
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: {
-          key1: { key2: { key3: { key4: { key5: 'value1' } } } },
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: {
+            key1: { key2: { key3: { key4: { key5: 'value1' } } } },
+          },
         },
       },
-    });
+      project.id,
+    );
 
     const newContext = {
       key1: { key2: { key3: { key4: { key5: 'value2', key6: 'value3' } } } },
     };
 
     const arrayMergeOption: ArrayMergeOption = 'concat';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
 
     const expectedContext = {
       key1: { key2: { key3: { key4: { key5: 'value2', key6: 'value3' } } } },
@@ -498,16 +642,19 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     expect(updatedContext).toEqual(expectedContext);
   });
   it('should correctly merge context data with mixed data types', async () => {
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: {
-          key1: 'value1',
-          key2: { nestedKey1: 'value2', nestedKey2: ['value3'] },
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: {
+            key1: 'value1',
+            key2: { nestedKey1: 'value2', nestedKey2: ['value3'] },
+          },
         },
       },
-    });
+      project.id,
+    );
 
     const newContext = {
       key1: { nestedKey1: 'new-value1' },
@@ -515,9 +662,11 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     };
 
     const arrayMergeOption: ArrayMergeOption = 'concat';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
 
     const expectedContext = {
       key1: { nestedKey1: 'new-value1' },
@@ -526,19 +675,24 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     expect(updatedContext).toEqual(expectedContext);
   });
   it('should correctly merge deeply nested arrays with the by_id strategy', async () => {
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: { key1: [{ id: '1', data: 'data1' }], key2: [{ id: '1', data: 'data1' }] },
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: { key1: [{ id: '1', data: 'data1' }], key2: [{ id: '1', data: 'data1' }] },
+        },
       },
-    });
+      project.id,
+    );
     const newContext = { key1: [{ id: '1', data: 'data2' }], key2: [{ id: '2', data: 'data2' }] };
 
     const arrayMergeOption: ArrayMergeOption = 'by_id';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
 
     const expectedContext = {
       key1: [{ id: '1', data: 'data2' }],
@@ -551,19 +705,24 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
   });
 
   it('should correctly merge deeply nested arrays with the by_index strategy', async () => {
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: { key1: ['element1', 'element2'], key2: ['element1', 'element2'] },
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: { key1: ['element1', 'element2'], key2: ['element1', 'element2'] },
+        },
       },
-    });
+      project.id,
+    );
     const newContext = { key1: ['element3'], key2: ['element3', 'element4'] };
 
     const arrayMergeOption: ArrayMergeOption = 'by_index';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
 
     const expectedContext = {
       key1: ['element3', 'element2'],
@@ -572,19 +731,24 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     expect(updatedContext).toEqual(expectedContext);
   });
   it('should correctly merge deeply nested arrays with the concat strategy', async () => {
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: { key1: ['element1', 'element2'], key2: ['element1', 'element2'] },
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: { key1: ['element1', 'element2'], key2: ['element1', 'element2'] },
+        },
       },
-    });
+      project.id,
+    );
     const newContext = { key1: ['element3'], key2: ['element3', 'element4'] };
 
     const arrayMergeOption: ArrayMergeOption = 'concat';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
 
     const expectedContext = {
       key1: ['element1', 'element2', 'element3'],
@@ -608,13 +772,16 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       documents: [],
     };
 
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: initialContext,
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: initialContext,
+        },
       },
-    });
+      project.id,
+    );
     const newContext = {
       entity: {
         data: {
@@ -628,7 +795,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     };
 
     const arrayMergeOption = 'concat';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
     const expectedContext = {
       entity: {
@@ -646,7 +815,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       documents: [],
     };
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
     expect(updatedContext).toEqual(expectedContext);
   });
   it('should merge the documents array by id when updateContextById is called', async () => {
@@ -663,13 +832,16 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
         },
       ],
     };
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: initialContext,
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: initialContext,
+        },
       },
-    });
+      project.id,
+    );
     const newContext = {
       documents: [
         {
@@ -681,7 +853,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     };
 
     const arrayMergeOption = 'by_id';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
     const expectedContext = {
       entity: {
@@ -697,7 +871,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       ],
     };
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
     expect(updatedContext).toEqual(expectedContext);
   });
   it('should merge nested arrays in additionalInfo when updateContextById is called', async () => {
@@ -723,13 +897,16 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
         },
       ],
     };
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: initialContext,
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: initialContext,
+        },
       },
-    });
+      project.id,
+    );
     const newContext = {
       entity: {
         data: {
@@ -752,7 +929,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     };
 
     const arrayMergeOption: ArrayMergeOption = 'concat';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
     const expectedContext = {
       entity: {
@@ -784,7 +963,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       ],
     };
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
     expect(updatedContext).toEqual(expectedContext);
   });
   it('should merge nested arrays in additionalInfo when updateContextById is called', async () => {
@@ -810,13 +989,16 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
         },
       ],
     };
-    const createRes = await workflowRuntimeRepository.create({
-      data: {
-        workflowDefinitionId: 'test-definition',
-        workflowDefinitionVersion: 1,
-        context: initialContext,
+    const createRes = await workflowRuntimeRepository.create(
+      {
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: initialContext,
+        },
       },
-    });
+      project.id,
+    );
     const newContext = {
       entity: {
         data: {
@@ -839,7 +1021,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     };
 
     const arrayMergeOption: ArrayMergeOption = 'replace';
-    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption);
+    await workflowRuntimeRepository.updateContextById(createRes.id, newContext, arrayMergeOption, [
+      project.id,
+    ]);
 
     const expectedContext = {
       entity: {
@@ -864,7 +1048,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       ],
     };
 
-    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id);
+    const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
     expect(updatedContext).toEqual(expectedContext);
   });
 });

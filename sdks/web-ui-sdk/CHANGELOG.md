@@ -1,5 +1,213 @@
 # web-ui-sdk
 
+## 1.4.12
+
+### Patch Changes
+
+- Updated dependencies [306ca466]
+  - @ballerine/common@0.7.15
+
+## 1.4.11
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.7.14
+
+## 1.4.10
+
+### Patch Changes
+
+- b1cebf50: pre
+- b1cebf50: Pre ver
+- b1cebf50: bump pre
+- b1cebf50: Version bump pre
+- Bump
+- b1cebf50: Pre bump
+- b1cebf50: Pre bump
+- b1cebf50: Bump
+- b1cebf50: pre
+- b1cebf50: Pre release
+- b1cebf50: Bumo
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+  - @ballerine/common@0.7.13
+
+## 1.4.10-3e08f108.9
+
+### Patch Changes
+
+- Version bump pre
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.9
+
+## 1.4.10-3e08f108.8
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.8
+
+## 1.4.10-3e08f108.7
+
+### Patch Changes
+
+- Bumo
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.7
+
+## 1.4.10-3e08f108.6
+
+### Patch Changes
+
+- Pre ver
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.6
+
+## 1.4.10-3e08f108.5
+
+### Patch Changes
+
+- Pre bump
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.5
+
+## 1.4.10-3e08f108.4
+
+### Patch Changes
+
+- bump pre
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.4
+
+## 1.4.10-3e08f108.3
+
+### Patch Changes
+
+- Pre bump
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.3
+
+## 1.4.10-3e08f108.2
+
+### Patch Changes
+
+- Pre release
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.2
+
+## 1.4.10-3e08f108.1
+
+### Patch Changes
+
+- pre
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.1
+
+## 1.4.10-3e08f108.0
+
+### Patch Changes
+
+- pre
+- Updated dependencies
+  - @ballerine/common@0.7.13-3e08f108.0
+
+## 1.4.9
+
+### Patch Changes
+
+- Bump minor version
+- Updated dependencies
+  - @ballerine/common@0.7.12
+
+## 1.4.8
+
+### Patch Changes
+
+- Version minor bump
+- Updated dependencies
+  - @ballerine/common@0.7.11
+
+## 1.4.7
+
+### Patch Changes
+
+- Version bump
+- Updated dependencies [efedc9cb]
+- Updated dependencies
+  - @ballerine/common@0.7.10
+
+## 1.4.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.5
+
+## 1.4.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.4
+
+## 1.4.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.3
+
+## 1.4.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.2
+
+## 1.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.1
+
+## 1.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.0
+
+## 1.4.0
+
+### Minor Changes
+
+- Fixes
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.6.0
+
+## 1.3.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.5.20
+
 ## 1.3.20
 
 ### Patch Changes

@@ -1,18 +1,19 @@
 import * as React from 'react';
-import { cva, type VariantProps } from 'class-variance-authority';
 import { ctw } from '@utils/ctw';
+import { cva, type VariantProps } from 'class-variance-authority';
 
-export const badgeVariants = cva(
-  'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+const badgeVariants = cva(
+  'inline-flex px-3 items-center justify-center rounded-full cursor-default transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 max-h-[24px]',
   {
     variants: {
       variant: {
-        default: 'border-transparent bg-primary text-primary-foreground hover:bg-primary/80',
-        secondary:
-          'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        destructive:
-          'border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80',
         outline: 'text-foreground',
+        default: 'bg-primary text-primary',
+        secondary: 'bg-secondary text-secondary',
+        info: 'bg-info/20 text-info',
+        success: 'bg-success/20 text-success',
+        warning: 'bg-warning/20 text-warning',
+        destructive: 'bg-destructive/20 text-destructive',
       },
     },
     defaultVariants: {
@@ -21,10 +22,20 @@ export const badgeVariants = cva(
   },
 );
 
-export interface BadgeProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {}
+export type BadgeVariantProps = VariantProps<typeof badgeVariants>;
 
-export const Badge = ({ className, variant, ...props }: BadgeProps) => {
-  return <div className={ctw(badgeVariants({ variant }), className)} {...props} />;
-};
+export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement>, BadgeVariantProps {
+  asChild?: boolean;
+}
+
+const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
+  ({ className, variant, children, ...props }, ref) => (
+    <div className={ctw(badgeVariants({ variant }), className)} {...props} ref={ref}>
+      {children}
+    </div>
+  ),
+);
+
+Badge.displayName = 'Badge';
+
+export { Badge, badgeVariants };

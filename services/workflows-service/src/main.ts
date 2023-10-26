@@ -26,13 +26,13 @@ const corsOrigins =
         /\.ballerine\.app$/,
       ]
     : [
-        env.BACKOFFICE_CORS_ORIGIN,
         env.HEADLESS_EXAMPLE_CORS_ORIGIN,
         env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
         env.KYB_EXAMPLE_CORS_ORIGIN,
         /\.ballerine\.dev$/,
         /\.ballerine\.app$/,
-        /\.+$/,
+        /\.ballerine\.io$/,
+        /^http:\/\/localhost:\d+$/,
       ];
 
 async function main() {
@@ -53,7 +53,7 @@ async function main() {
     cookieSession({
       name: 'session',
       keys: [env.SESSION_SECRET],
-      httpOnly: env.NODE_ENV === 'production' ? true : false,
+      httpOnly: env.NODE_ENV === 'production',
       secure: false,
       sameSite: env.NODE_ENV === 'production' ? 'strict' : false,
       maxAge: 1000 * 60 * 60 * 1, // 1 hour(s),

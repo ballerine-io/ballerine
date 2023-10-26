@@ -22,7 +22,7 @@ services:
     restart: on-failure
   ballerine-kyb-app:
     build:
-      context: ../examples/kyb-app
+      context: ../apps/kyb-app
       args:
         NPM_LOG_LEVEL: notice
     ports:

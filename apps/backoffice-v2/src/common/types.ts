@@ -35,3 +35,11 @@ export type TResource = TObjectValues<typeof Resource>;
 export type TAction = TObjectValues<typeof Action>;
 
 export type TKeyofArrayElement<TArray extends AnyArray> = keyof TArray[number];
+
+/**
+ * Creates a new object type that omits the specified properties from the original object type.
+ * Doing this ensures the result type is '{ example: string; }' instead of 'Omit<{ example: string; }, "example">'.
+ */
+export type TypesafeOmit<TObj extends Record<PropertyKey, unknown>, TProps extends keyof TObj> = {
+  [TKey in Exclude<keyof TObj, TProps>]: TObj[TKey];
+} & {};

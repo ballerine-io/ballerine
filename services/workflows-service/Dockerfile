@@ -26,6 +26,7 @@ COPY --from=dev /app/package.json ./package.json
 COPY --from=dev /app/dist ./dist
 COPY --from=dev /app/prisma ./prisma
 COPY --from=dev /app/scripts ./scripts
+COPY --from=dev /app/src ./src
 
 EXPOSE 3000
 

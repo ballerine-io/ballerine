@@ -1,4 +1,5 @@
 import { TWorkflowById } from '../../../../domains/workflows/fetchers';
+import { CommonWorkflowStates } from '@ballerine/common';
 
 export interface ICaseCallToActionProps {
   value: string;
@@ -7,6 +8,9 @@ export interface ICaseCallToActionProps {
     childWorkflowId: string;
     childWorkflowContextSchema: TWorkflowById['childWorkflows'][number]['workflowDefinition']['contextSchema'];
     disabled: boolean;
-    decision: 'rejected' | 'approved' | 'revision';
+    decision:
+      | CommonWorkflowStates.REJECTED
+      | CommonWorkflowStates.APPROVED
+      | CommonWorkflowStates.REVISION;
   };
 }

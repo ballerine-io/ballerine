@@ -15,6 +15,8 @@ import { UserWorkflowProcessingStatisticModel } from '@/metrics/service/models/u
 import * as common from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { TProjectIds } from '@/types';
 
 @ApiTags('/metrics')
 @Controller('/metrics')
@@ -24,8 +26,10 @@ export class MetricsController {
   @ApiOkResponse({ type: [WorkflowRuntimeStatisticModel] })
   @common.HttpCode(200)
   @common.Get('/workflows/runtimes-statistic')
-  async getRuntimesStatistic(): Promise<WorkflowRuntimeStatisticModel[]> {
-    return await this.metricsService.listRuntimesStatistic();
+  async getRuntimesStatistic(
+    @ProjectIds() projectIds: TProjectIds,
+  ): Promise<WorkflowRuntimeStatisticModel[]> {
+    return await this.metricsService.listRuntimesStatistic(projectIds);
   }
 
   @ApiOkResponse({ type: WorkflowRuntimeStatusCaseCountModel })
@@ -33,23 +37,30 @@ export class MetricsController {
   @common.Get('/workflows/runtimes-status-count')
   async getRuntimesStatusCount(
     @common.Query() query: GetWorkflowRuntimesStatusCountDto,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeStatusCaseCountModel> {
-    return await this.metricsService.getRuntimesStatusCaseCount(query);
+    return await this.metricsService.getRuntimesStatusCaseCount(query, projectIds);
   }
   @ApiOkResponse({ type: [UserAssignedCasesStatisticModel] })
   @ApiNotFoundResponse({ type: NotFoundException })
   @common.HttpCode(200)
   @common.Get('/users/users-assigned-cases-statistic')
-  async getUsersAssignedCasesStatistic(@common.Query() query: GetUsersAssignedCasesStatisticDto) {
-    return await this.metricsService.listUsersAssignedCasesStatistic(query);
+  async getUsersAssignedCasesStatistic(
+    @ProjectIds() projectIds: TProjectIds,
+    @common.Query() query: GetUsersAssignedCasesStatisticDto,
+  ) {
+    return await this.metricsService.listUsersAssignedCasesStatistic(query, projectIds);
   }
 
   @ApiOkResponse({ type: [UserResolvedCasesStatisticModel] })
   @ApiNotFoundResponse({ type: NotFoundException })
   @common.HttpCode(200)
   @common.Get('/users/users-resolved-cases-statistic')
-  async getUsersResolvedCasesStatistic(@common.Query() query: GetUsersResolvedCasesStatisticDto) {
-    return await this.metricsService.listUsersResolvedCasesStatistic(query);
+  async getUsersResolvedCasesStatistic(
+    @ProjectIds() projectIds: TProjectIds,
+    @common.Query() query: GetUsersResolvedCasesStatisticDto,
+  ) {
+    return await this.metricsService.listUsersResolvedCasesStatistic(query, projectIds);
   }
 
   @ApiOkResponse({ type: UserWorkflowProcessingStatisticModel })
@@ -59,10 +70,14 @@ export class MetricsController {
   @common.Get('/users/workflow-processing-statistic')
   async getUserWorkflowProcessingStatistic(
     @common.Query() query: GetUserWorkflowProcessingStatisticDto,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<UserWorkflowProcessingStatisticModel> {
-    return await this.metricsService.getUserWorkflowProcessingStatistic({
-      fromDate: query.fromDate,
-    });
+    return await this.metricsService.getUserWorkflowProcessingStatistic(
+      {
+        fromDate: query.fromDate,
+      },
+      projectIds,
+    );
   }
 
   @ApiOkResponse({ type: [CasesResolvedInDay] })
@@ -70,17 +85,21 @@ export class MetricsController {
   @common.Get('/users/cases-resolved-daily')
   async getUserCasesResolvedDaily(
     @common.Query() query: GetUserCasesResolvedDailyDto,
+    @ProjectIds() projectIds: TProjectIds,
   ): Promise<CasesResolvedInDay[]> {
-    return await this.metricsService.listUserCasesResolvedDaily({
-      fromDate: query.fromDate,
-      userId: query.userId,
-    });
+    return await this.metricsService.listUserCasesResolvedDaily(
+      {
+        fromDate: query.fromDate,
+        userId: query.userId,
+      },
+      projectIds,
+    );
   }
 
   @ApiOkResponse({ type: [MetricsUserModel] })
   @common.HttpCode(200)
   @common.Get('/users')
-  async getActiveUsers(): Promise<MetricsUserModel[]> {
-    return await this.metricsService.listActiveUsers();
+  async getActiveUsers(@ProjectIds() projectIds: TProjectIds): Promise<MetricsUserModel[]> {
+    return await this.metricsService.listActiveUsers(projectIds);
   }
 }

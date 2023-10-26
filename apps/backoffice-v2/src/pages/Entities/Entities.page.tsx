@@ -6,6 +6,7 @@ import { Case } from '../Entity/components/Case/Case';
 import { MotionScrollArea } from '../../common/components/molecules/MotionScrollArea/MotionScrollArea';
 import { FunctionComponent } from 'react';
 import { NoCasesSvg } from '../../common/components/atoms/icons';
+import { Assignee } from '../../common/components/atoms/AssignDropdown/AssignDropdown';
 
 export const Entities: FunctionComponent = () => {
   const {
@@ -19,8 +20,8 @@ export const Entities: FunctionComponent = () => {
     isLoading,
     page,
     totalPages,
+    caseCount,
     skeletonEntities,
-    entity,
   } = useEntities();
 
   return (
@@ -31,8 +32,9 @@ export const Entities: FunctionComponent = () => {
         onSortBy={onSortBy}
         onSortDirToggle={onSortDirToggle}
         search={search}
+        count={caseCount}
       >
-        <MotionScrollArea className={`h-[calc(100vh-210px)]`}>
+        <MotionScrollArea className="h-[calc(100vh-240px)]">
           <Cases.List>
             {isLoading
               ? skeletonEntities.map(index => (
@@ -43,11 +45,18 @@ export const Entities: FunctionComponent = () => {
                     key={case_.id}
                     id={case_.id}
                     fullName={case_.entity.name}
-                    avatarUrl={case_.entity.avatarUrl}
                     createdAt={case_.createdAt}
-                    assigneeId={case_.assignee?.id}
-                    assigneeFullName={`${case_.assignee?.firstName} ${case_.assignee?.lastName}`}
-                    status={case_.entity.approvalState}
+                    assignee={
+                      case_.assignee
+                        ? ({
+                            id: case_.assignee?.id,
+                            fullName: `${case_.assignee?.firstName} ${case_.assignee?.lastName}`,
+                            avatarUrl: case_.assignee?.avatarUrl,
+                          } as Assignee)
+                        : null
+                    }
+                    tags={case_.tags}
+                    entityAvatarUrl={case_.entity?.avatarUrl}
                   />
                 ))}
           </Cases.List>
@@ -71,7 +80,7 @@ export const Entities: FunctionComponent = () => {
         </Case>
       )}
       {Array.isArray(cases) && !cases.length && !isLoading ? (
-        <div className="flex items-center justify-center border-l-[1px] p-4">
+        <div className="mb-72 flex items-center justify-center border-l-[1px] p-4">
           <div className="inline-flex flex-col  items-start gap-4 rounded-md border-[1px] border-[#CBD5E1] p-6">
             <div className="flex w-[464px] items-center justify-center">
               <NoCasesSvg width={96} height={81} />

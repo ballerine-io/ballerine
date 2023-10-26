@@ -8,6 +8,7 @@ import {
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
 import { User } from '@sentry/node';
+import { TProjectIds } from '@/types';
 
 export interface RunnableWorkflowData {
   workflowDefinition: WorkflowDefinition;
@@ -34,6 +35,7 @@ export interface ListWorkflowsRuntimeParams {
   status?: WorkflowRuntimeDataStatus[];
   orderBy?: string;
   orderDirection?: SortOrder;
+  projectIds?: TProjectIds;
 }
 
 export interface ListRuntimeDataResult {
@@ -92,3 +94,49 @@ export type ExtractWorkflowEventData<TEvent extends TEventName> = Omit<
   >,
   'eventName'
 >;
+
+export interface KYBParentKYCSessionExampleContext {
+  entity: {
+    endUserId: string;
+    ballerineEntityId: string;
+    type: 'business';
+    data: {
+      website: string;
+      registrationNumber: number;
+      companyName: string;
+      companyDisplayName: string;
+      countryOfIncorporation: string;
+      address: {
+        text: string;
+      };
+      additionalInfo: {
+        mainRepresentative: {
+          firstName: string;
+          lastName: string;
+          phone: string;
+          dateOfBirth: string;
+          companyName: string;
+          email: string;
+          title: string;
+        };
+        ubos: {
+          entity: {
+            id: string;
+            type: string;
+            data: {
+              firstName: string;
+              lastName: string;
+              email: string;
+              dateOfBirth: string;
+              title: string;
+            };
+          };
+        }[];
+      };
+      dynamicInfo: Record<string, any>;
+      __stateKey: string;
+      __isFinished: boolean;
+    };
+  };
+  documents: any[];
+}

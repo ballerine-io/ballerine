@@ -1,13 +1,14 @@
+import React, { FunctionComponent } from 'react';
+import { useParams } from 'react-router-dom';
+
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { EditableDetails } from '../EditableDetails/EditableDetails';
 import { Separator } from '../../../../common/components/atoms/Separator/Separator';
-import React, { FunctionComponent } from 'react';
-import { useParams } from 'react-router-dom';
 import { IDetailsProps } from './interfaces';
 import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 
-export const Details: FunctionComponent<IDetailsProps> = ({ id, value }) => {
+export const Details: FunctionComponent<IDetailsProps> = ({ id, value, hideSeparator }) => {
   const { entityId } = useParams();
   const filterId = useFilterId();
   const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
@@ -28,7 +29,7 @@ export const Details: FunctionComponent<IDetailsProps> = ({ id, value }) => {
         title={value?.title}
         data={value?.data}
       />
-      <Separator className={`my-2`} />
+      {!hideSeparator && <Separator className={`my-2`} />}
     </div>
   );
 };

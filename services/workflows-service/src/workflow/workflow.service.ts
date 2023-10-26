@@ -16,7 +16,6 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import {
   ListRuntimeDataResult,
   ListWorkflowsRuntimeParams,
-  RunnableWorkflowData,
   TWorkflowWithRelations,
   WorkflowRuntimeListQueryResult,
 } from './types';
@@ -28,29 +27,19 @@ import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
-import { InputJsonValue, IObjectWithId } from '@/types';
+import { InputJsonValue, IObjectWithId, TProjectId, TProjectIds } from '@/types';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import addKeywords from 'ajv-keywords';
-import { TRemoteFileConfig, TS3BucketConfig } from '@/providers/file/types/files-types';
-import { z } from 'zod';
-import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
-import { LocalFileService } from '@/providers/file/file-provider/local-file.service';
-import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.service';
 import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
-import * as process from 'process';
-import * as crypto from 'crypto';
-import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
-import { TFileServiceProvider } from '@/providers/file/types';
-import { updateDocuments } from '@/workflow/update-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
-import { DefaultContextSchema, TDefaultSchemaDocumentPage } from '@ballerine/common';
+import { DefaultContextSchema } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import {
@@ -72,9 +61,16 @@ import {
   THelperFormatingLogic,
   Transformer,
 } from '@ballerine/workflow-core';
-import { FindLastActiveFlowParams, GetLastActiveFlowParams } from '@/workflow/types/params';
+import { ProjectScopeService } from '@/project/project-scope.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
+import { GetLastActiveFlowParams } from '@/workflow/types/params';
+import { TDocumentsWithoutPageType, TDocumentWithoutPageType } from '@/common/types';
+import { CustomerService } from '@/customer/customer.service';
+import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
+import { UserService } from '@/user/user.service';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 
 type TEntityId = string;
 
@@ -126,13 +122,18 @@ export class WorkflowService {
     protected readonly endUserService: EndUserService,
     protected readonly businessRepository: BusinessRepository,
     protected readonly entityRepository: EntityRepository,
+    protected readonly customerService: CustomerService,
     protected readonly storageService: StorageService,
     protected readonly fileService: FileService,
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
+    private readonly projectScopeService: ProjectScopeService,
+    private readonly userService: UserService,
+    private readonly salesforceService: SalesforceService,
+    private readonly workflowTokenService: WorkflowTokenService,
   ) {}
 
-  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
+  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
     const select = {
       id: true,
       name: true,
@@ -145,41 +146,92 @@ export class WorkflowService {
       submitStates: true,
       parentRuntimeDataId: true,
     };
-    return await this.workflowDefinitionRepository.create({ data, select });
+
+    if (data.isPublic) {
+      return await this.workflowDefinitionRepository.createUnscoped({ data, select });
+    }
+
+    return await this.workflowDefinitionRepository.create({ data, select }, projectId);
+  }
+
+  async cloneWorkflowDefinition(data: WorkflowDefinitionCloneDto, projectId: string) {
+    const select = {
+      reviewMachineId: true,
+      name: true,
+      version: true,
+      definitionType: true,
+      definition: true,
+      contextSchema: true,
+      config: true,
+      supportedPlatforms: true,
+      extensions: true,
+      backend: true,
+      persistStates: true,
+      submitStates: true,
+    };
+
+    const workflowDefinition = await this.workflowDefinitionRepository.findTemplateByIdUnscoped(
+      data.id,
+      { select },
+    );
+
+    return await this.workflowDefinitionRepository.create(
+      {
+        // @ts-expect-error - types of workflow definition does not propagate to the prisma creation type
+        data: { ...workflowDefinition, name: data.name, projectId: projectId, isPublic: false },
+        select,
+      },
+      [projectId],
+    );
   }
 
   async getWorkflowRuntimeDataById(
     id: string,
-    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    projectIds: TProjectIds,
   ) {
-    return await this.workflowRuntimeDataRepository.findById(id, args);
+    return await this.workflowRuntimeDataRepository.findById(id, args, projectIds);
+  }
+
+  async getWorkflowRuntimeDataByIdUnscoped(workflowRuntimeDataId: string) {
+    return await this.workflowRuntimeDataRepository.findByIdUnscoped(workflowRuntimeDataId);
   }
 
   async getWorkflowRuntimeWithChildrenDataById(
     id: string,
-    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    projectIds: TProjectIds,
   ) {
-    return await this.workflowRuntimeDataRepository.findById(id, {
-      ...args,
-    });
+    return await this.workflowRuntimeDataRepository.findById(
+      id,
+      {
+        ...args,
+      },
+      projectIds,
+    );
   }
 
   async getWorkflowByIdWithRelations(
     id: string,
-    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    projectIds: TProjectIds,
   ) {
     const allEntities = { endUser: true, business: true };
     const childWorkflowSelectArgs = {
       select: { ...args?.select, ...allEntities },
       include: args?.include,
     };
-    const workflow = (await this.workflowRuntimeDataRepository.findById(id, {
-      ...args,
-      select: {
-        ...(args?.select || {}),
-        childWorkflowsRuntimeData: { ...childWorkflowSelectArgs },
+    const workflow = (await this.workflowRuntimeDataRepository.findById(
+      id,
+      {
+        ...args,
+        select: {
+          ...(args?.select || {}),
+          childWorkflowsRuntimeData: { ...childWorkflowSelectArgs },
+        },
       },
-    })) as TWorkflowWithRelations;
+      projectIds,
+    )) as TWorkflowWithRelations;
 
     return this.formatWorkflow(workflow);
   }
@@ -235,17 +287,25 @@ export class WorkflowService {
     };
   }
 
-  async persistChildEvent(childPluginConfig: ChildPluginCallbackOutput) {
+  async persistChildEvent(
+    childPluginConfig: ChildPluginCallbackOutput,
+    projectIds: TProjectIds,
+    currentProjectId: TProjectId,
+  ) {
     const childWorkflow = (
       await this.createOrUpdateWorkflowRuntime({
         workflowDefinitionId: childPluginConfig.definitionId,
         context: childPluginConfig.initOptions.context as unknown as DefaultContextSchema,
         parentWorkflowId: childPluginConfig.parentWorkflowRuntimeId,
+        projectIds,
+        currentProjectId,
       })
     )[0];
 
     const parentWorkflowRuntime = await this.getWorkflowRuntimeDataById(
       childPluginConfig.parentWorkflowRuntimeId,
+      {},
+      projectIds,
     );
 
     if (childWorkflow) {
@@ -261,87 +321,101 @@ export class WorkflowService {
         contextToPersist,
       );
 
-      await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
+      await this.updateWorkflowRuntimeData(
+        parentWorkflowRuntime.id,
+        { context: parentContext },
+        currentProjectId,
+      );
     }
 
     return childWorkflow;
   }
   async getWorkflowRuntimeDataByCorrelationId(
     id: string,
-    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+    projectIds: TProjectIds,
   ) {
-    return await this.workflowRuntimeDataRepository.findById(id, args);
+    return await this.workflowRuntimeDataRepository.findById(id, args, projectIds);
   }
 
   async getWorkflowDefinitionById(
     id: string,
-    args?: Parameters<WorkflowDefinitionRepository['findById']>[1],
+    args: Parameters<WorkflowDefinitionRepository['findById']>[1],
+    projectIds: TProjectIds,
   ) {
-    return await this.workflowDefinitionRepository.findById(id, args);
+    return await this.workflowDefinitionRepository.findById(id, args, projectIds);
   }
 
-  async listActiveWorkflowsRuntimeStates() {
-    return await this.workflowRuntimeDataRepository.findMany({
-      select: {
-        state: true,
-        endUserId: true,
-        businessId: true,
-        assigneeId: true,
-        id: true,
-        status: true,
-        workflowDefinitionId: true,
+  async listActiveWorkflowsRuntimeStates(projectIds: TProjectIds) {
+    return await this.workflowRuntimeDataRepository.findMany(
+      {
+        select: {
+          state: true,
+          endUserId: true,
+          businessId: true,
+          assigneeId: true,
+          id: true,
+          status: true,
+          workflowDefinitionId: true,
+        },
       },
-    });
+      projectIds,
+    );
   }
 
-  async listWorkflowRuntimeDataWithRelations({
-    args,
-    entityType,
-    orderBy,
-    page,
-    filters,
-  }: {
-    args: Parameters<WorkflowRuntimeDataRepository['findMany']>[0];
-    entityType: 'individuals' | 'businesses';
-    orderBy: Parameters<typeof toPrismaOrderBy>[0];
-    page: {
-      number: number;
-      size: number;
-    };
-    filters?: {
-      assigneeId?: (string | null)[];
-      status?: WorkflowRuntimeDataStatus[];
-    };
-  }) {
-    const query = merge(
+  async listWorkflowRuntimeDataWithRelations(
+    {
       args,
-      {
-        orderBy: toPrismaOrderBy(orderBy, entityType),
-        where: filters ? toPrismaWhere(filters) : {},
-        skip: (page.number - 1) * page.size,
-        take: page.size,
-      },
-      {
-        where:
-          entityType === 'individuals'
-            ? {
-                endUserId: { not: null },
-              }
-            : {
-                businessId: { not: null },
-              },
-      },
+      entityType,
+      orderBy,
+      page,
+      filters,
+    }: {
+      args: Parameters<WorkflowRuntimeDataRepository['findMany']>[0];
+      entityType: 'individuals' | 'businesses';
+      orderBy: Parameters<typeof toPrismaOrderBy>[0];
+      page: {
+        number: number;
+        size: number;
+      };
+      filters?: {
+        assigneeId?: (string | null)[];
+        status?: WorkflowRuntimeDataStatus[];
+      };
+    },
+    projectIds: TProjectIds,
+  ) {
+    const query = this.projectScopeService.scopeFindMany(
+      merge(
+        args,
+        {
+          orderBy: toPrismaOrderBy(orderBy, entityType),
+          where: filters ? toPrismaWhere(filters) : {},
+          skip: (page.number - 1) * page.size,
+          take: page.size,
+        },
+        {
+          where:
+            entityType === 'individuals'
+              ? { endUserId: { not: null } }
+              : { businessId: { not: null } },
+        },
+      ),
+      projectIds,
     );
 
-    const totalWorkflowsCount = await this.workflowRuntimeDataRepository.count({
-      where: query.where,
-    });
+    const totalWorkflowsCount = await this.workflowRuntimeDataRepository.count(
+      {
+        where: query.where,
+      },
+      projectIds,
+    );
 
     if (page.number > 1 && totalWorkflowsCount < (page.number - 1) * page.size + 1) {
       throw new NotFoundException('Page not found');
     }
 
-    const workflows = await this.workflowRuntimeDataRepository.findMany(query);
+    const workflows = await this.workflowRuntimeDataRepository.findMany(query, projectIds);
 
     return {
       data: this.formatWorkflowsRuntimeData(workflows as unknown as TWorkflowWithRelations[]),
@@ -375,62 +449,76 @@ export class WorkflowService {
               id: workflow?.assigneeId,
               firstName: workflow?.assignee?.firstName,
               lastName: workflow?.assignee?.lastName,
+              avatarUrl: workflow?.assignee?.avatarUrl,
             }
           : null,
+        tags: workflow?.tags,
       };
     });
   }
 
-  async listWorkflowRuntimeDataByUserId(userId: string) {
-    return await this.workflowRuntimeDataRepository.findMany({
-      where: { endUserId: userId },
-    });
-  }
-
-  async listFullWorkflowDataByUserId({
-    entityId,
-    entity,
-  }: {
-    entityId: string;
-    entity: TEntityType;
-  }) {
-    return await this.workflowRuntimeDataRepository.findMany({
-      where: {
-        [`${entity}Id`]: entityId,
+  async listWorkflowRuntimeDataByUserId(userId: string, projectIds: TProjectIds) {
+    return await this.workflowRuntimeDataRepository.findMany(
+      {
+        where: { endUserId: userId },
       },
-      include: { workflowDefinition: true },
-    });
+      projectIds,
+    );
   }
 
-  async listRuntimeData({
-    page,
-    size,
-    status,
-    orderBy,
-    orderDirection,
-  }: ListWorkflowsRuntimeParams): Promise<ListRuntimeDataResult> {
+  async listFullWorkflowDataByUserId(
+    {
+      entityId,
+      entity,
+    }: {
+      entityId: string;
+      entity: TEntityType;
+    },
+    projectIds: TProjectIds,
+  ) {
+    return await this.workflowRuntimeDataRepository.findMany(
+      {
+        where: {
+          [`${entity}Id`]: entityId,
+        },
+        include: { workflowDefinition: true },
+      },
+      projectIds,
+    );
+  }
+
+  async listRuntimeData(
+    { page, size, status, orderBy, orderDirection }: ListWorkflowsRuntimeParams,
+    projectIds: TProjectIds,
+  ): Promise<ListRuntimeDataResult> {
     const query = {
       where: {
         ...(status ? { status: { in: status } } : undefined),
+        ...(projectIds ? { projectId: { in: projectIds } } : undefined),
       },
     };
 
     const [workflowsRuntimeCount, workflowsRuntime] = await Promise.all([
-      this.workflowRuntimeDataRepository.count(query),
-      this.workflowRuntimeDataRepository.findMany({
-        ...query,
-        skip: page && size ? (page - 1) * size : undefined,
-        take: size,
-        include: {
-          workflowDefinition: true,
-          assignee: true,
+      this.workflowRuntimeDataRepository.count(query, projectIds),
+      this.workflowRuntimeDataRepository.findMany(
+        {
+          ...query,
+          skip: page && size ? (page - 1) * size : undefined,
+          take: size,
+          include: {
+            workflowDefinition: true,
+            assignee: true,
+          },
+          orderBy: this._resolveOrderByParams(orderBy, orderDirection),
         },
-        orderBy: this._resolveOrderByParams(orderBy, orderDirection),
-      }),
+        projectIds,
+      ),
     ]);
 
     const result: ListRuntimeDataResult = {
-      results: this.workflowsRuntimeListItemsFactory(workflowsRuntime),
+      results: this.workflowsRuntimeListItemsFactory(
+        workflowsRuntime as unknown as WorkflowRuntimeListQueryResult[],
+      ),
       meta: {
         pages: size ? Math.max(Math.ceil(workflowsRuntimeCount / size)) : 0,
         total: workflowsRuntimeCount,
@@ -485,7 +573,7 @@ export class WorkflowService {
     });
   }
 
-  async listWorkflowDefinitions(args: WorkflowDefinitionFindManyArgs) {
+  async listWorkflowDefinitions(args: WorkflowDefinitionFindManyArgs, projectIds: TProjectIds) {
     const select = {
       id: true,
       name: true,
@@ -497,19 +585,25 @@ export class WorkflowService {
       persistStates: true,
       submitStates: true,
     };
-    return await this.workflowDefinitionRepository.findMany({ ...args, select });
+    return await this.workflowDefinitionRepository.findMany({ ...args, select }, projectIds);
   }
 
   async updateDecisionAndSendEvent({
     id,
     name,
     reason,
+    projectId,
   }: {
     id: string;
     name: string;
     reason?: string;
+    projectId: TProjectId;
   }) {
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(id);
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(
+      id,
+      {},
+      projectId ? [projectId] : null,
+    );
     // `name` is always `approve` and not `approved` etc.
     const Status = {
       approve: 'approved',
@@ -551,17 +645,25 @@ export class WorkflowService {
         },
       }),
     );
-    const updatedWorkflow = await this.updateWorkflowRuntimeData(id, {
-      context: {
-        ...runtimeData?.context,
-        documents: documentsWithDecision,
-      },
-    });
-
-    await this.event({
+    const updatedWorkflow = await this.updateWorkflowRuntimeData(
       id,
-      name,
-    });
+      {
+        context: {
+          ...runtimeData?.context,
+          documents: documentsWithDecision,
+        },
+      },
+      projectId,
+    );
+
+    await this.event(
+      {
+        id,
+        name,
+      },
+      projectId ? [projectId] : null,
+      projectId,
+    );
 
     return updatedWorkflow;
   }
@@ -575,20 +677,29 @@ export class WorkflowService {
       documentId: string;
     },
     decision: {
-      status: 'approve' | 'reject' | 'revision';
+      status: 'approve' | 'reject' | 'revision' | 'revised' | null;
       reason?: string;
     },
+    projectIds: TProjectIds,
+    currentProjectId: TProjectId,
+    postUpdateEventName?: string,
   ) {
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowId);
+    const workflow = await this.workflowRuntimeDataRepository.findById(workflowId, {}, projectIds);
+    const workflowDefinition = await this.workflowDefinitionRepository.findById(
+      workflow?.workflowDefinitionId,
+      {},
+      projectIds,
+    );
     // `name` is always `approve` and not `approved` etc.
     const Status = {
       approve: 'approved',
       reject: 'rejected',
       revision: 'revision',
+      revised: 'revised',
     } as const;
-    const status = Status[decision?.status];
+    const status = decision.status ? Status[decision.status] : null;
     const newDecision = (() => {
-      if (status === 'approved') {
+      if (!status || status === 'approved') {
         return {
           revisionReason: null,
           rejectionReason: null,
@@ -602,7 +713,7 @@ export class WorkflowService {
         };
       }
 
-      if (status === 'revision') {
+      if (['revision', 'revised'].includes(status)) {
         return {
           revisionReason: decision?.reason,
           rejectionReason: null,
@@ -611,7 +722,31 @@ export class WorkflowService {
 
       throw new BadRequestException(`Invalid decision status: ${status}`);
     })();
-    const document = runtimeData?.context?.documents?.find(
+
+    const context = {
+      ...workflow?.context,
+      documents: workflow?.context?.documents?.map(
+        (document: DefaultContextSchema['documents'][number]) => {
+          const updatedStatus = documentId === document.id ? status : document?.decision?.status;
+
+          return {
+            ...document,
+            decision: {
+              ...document?.decision,
+              status: updatedStatus === null ? undefined : updatedStatus,
+            },
+            type:
+              document?.type === 'unknown' && updatedStatus === 'approved'
+                ? undefined
+                : document?.type,
+          };
+        },
+      ),
+    };
+
+    this.__validateWorkflowDefinitionContext(workflowDefinition, context);
+
+    const document = workflow?.context?.documents?.find(
       (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
     );
 
@@ -623,11 +758,21 @@ export class WorkflowService {
         status,
       },
     };
-    const checkRequiredFields = status === 'approved' ? true : false;
+    const checkRequiredFields = status === 'approved';
+
     const updatedWorkflow = await this.updateDocumentById(
       { workflowId, documentId, checkRequiredFields },
       documentWithDecision as unknown as DefaultContextSchema['documents'][number],
+      projectIds![0]!,
     );
+
+    if (postUpdateEventName) {
+      return await this.event(
+        { id: workflowId, name: postUpdateEventName },
+        projectIds,
+        currentProjectId,
+      );
+    }
 
     return updatedWorkflow;
   }
@@ -646,6 +791,32 @@ export class WorkflowService {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowId);
     const workflowDef = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
+    );
+    const document = {
+      ...data,
+      id: documentId,
+    };
+
+  async updateDocumentById(
+    {
+      workflowId,
+      documentId,
+      checkRequiredFields = true,
+    }: {
+      workflowId: string;
+      documentId: string;
+      checkRequiredFields?: boolean;
+    },
+    data: DefaultContextSchema['documents'][number] & { propertiesSchema?: object },
+    projectId: TProjectId,
+  ) {
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowId, {}, [
+      projectId,
+    ]);
+    const workflowDef = await this.workflowDefinitionRepository.findById(
+      runtimeData.workflowDefinitionId,
+      {},
+      [projectId],
     );
     const document = {
       ...data,
@@ -675,10 +846,15 @@ export class WorkflowService {
       }
     }
 
-    const updatedWorkflow = await this.updateContextById(workflowId, {
-      documents: [newDocument],
-    });
-    const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow);
+    const updatedWorkflow = await this.updateContextById(
+      workflowId,
+      {
+        documents: [newDocument],
+      },
+      [projectId],
+    );
+    this.__validateWorkflowDefinitionContext(workflowDef, updatedWorkflow.context);
+    const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow, [projectId]);
 
     if (
       ['active'].includes(updatedWorkflow.status) &&
@@ -696,12 +872,16 @@ export class WorkflowService {
 
       if (allDocumentsResolved) {
         updatedWorkflow.status = allDocumentsResolved ? 'completed' : updatedWorkflow.status;
-        await this.workflowRuntimeDataRepository.updateById(workflowId, {
-          data: {
-            status: updatedWorkflow.status,
-            resolvedAt: new Date().toISOString(),
+        await this.workflowRuntimeDataRepository.updateById(
+          workflowId,
+          {
+            data: {
+              status: updatedWorkflow.status,
+              resolvedAt: new Date().toISOString(),
+            },
           },
-        });
+          projectId,
+        );
 
         this.workflowEventEmitter.emit('workflow.completed', {
           runtimeData: updatedWorkflow,
@@ -714,12 +894,19 @@ export class WorkflowService {
 
     return updatedWorkflow;
   }
-  async updateContextById(id: string, context: WorkflowRuntimeData['context']) {
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(id);
-    const correlationId = await this.getCorrelationIdFromWorkflow(runtimeData);
+
+  async updateContextById(
+    id: string,
+    context: WorkflowRuntimeData['context'],
+    projectIds: TProjectIds,
+  ) {
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(id, {}, projectIds);
+    const correlationId = await this.getCorrelationIdFromWorkflow(runtimeData, projectIds);
     const updatedRuntimeData = await this.workflowRuntimeDataRepository.updateContextById(
       id,
       context,
+      undefined,
+      projectIds,
     );
 
     this.workflowEventEmitter.emit('workflow.context.changed', {
@@ -733,13 +920,33 @@ export class WorkflowService {
     return updatedRuntimeData;
   }
 
-  async updateWorkflowRuntimeData(workflowRuntimeId: string, data: WorkflowDefinitionUpdateInput) {
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId);
+  async syncContextById(
+    id: string,
+    context: WorkflowRuntimeData['context'],
+    projectId: TProjectId,
+  ) {
+    return this.workflowRuntimeDataRepository.updateById(id, { data: { context } }, projectId);
+  }
+
+  async updateWorkflowRuntimeData(
+    workflowRuntimeId: string,
+    data: WorkflowDefinitionUpdateInput,
+    projectId: TProjectId,
+  ): Promise<WorkflowRuntimeData> {
+    const projectIds: TProjectIds = projectId ? [projectId] : null;
+
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(
+      workflowRuntimeId,
+      {},
+      projectIds,
+    );
     const workflowDef = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
+      {},
+      projectIds,
     );
 
-    const correlationId: string = await this.getCorrelationIdFromWorkflow(runtimeData);
+    const correlationId: string = await this.getCorrelationIdFromWorkflow(runtimeData, projectIds);
 
     let contextHasChanged, mergedContext;
     if (data.context) {
@@ -747,21 +954,15 @@ export class WorkflowService {
       contextHasChanged = !isEqual(data.context, runtimeData.context);
       mergedContext = merge({}, runtimeData.context, data.context);
 
-      const context = {
-        ...mergedContext,
-        // @ts-ignore
-        documents: mergedContext?.documents?.map(
-          // @ts-ignore
-          // Validating the context should be done without the propertiesSchema
-          ({ propertiesSchema: _propertiesSchema, ...document }) => document,
-        ),
-      };
-
       this.__validateWorkflowDefinitionContext(workflowDef, {
-        ...context,
-        documents: context?.documents?.map(
+        ...mergedContext,
+        documents: mergedContext?.documents?.map(
           (document: DefaultContextSchema['documents'][number]) => ({
             ...document,
+            decision: {
+              ...document?.decision,
+              status: document?.decision?.status === null ? undefined : document?.decision?.status,
+            },
             type:
               document?.type === 'unknown' && document?.decision?.status === 'approved'
                 ? undefined
@@ -807,32 +1008,7 @@ export class WorkflowService {
     // @ts-ignore
     // TODO: Use snapshot.done instead
     const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
-    if (
-      ['active'].includes(data.status! || runtimeData.status) &&
-      workflowDef.config?.completedWhenTasksResolved
-    ) {
-      // TODO: Check against `contextSchema` or a policy if the length of documents is equal to the number of tasks defined.
-      const allDocumentsResolved =
-        data.context?.documents?.length &&
-        data.context?.documents?.every((document: DefaultContextSchema['documents'][number]) => {
-          return ['approved', 'rejected'].includes(document?.decision?.status as string);
-        });
-
-      data.status = allDocumentsResolved ? 'completed' : data.status! || runtimeData.status;
-    }
-
     const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
-
-    if (isResolved) {
-      this.logger.log('Workflow resolved', { id: workflowRuntimeId });
-
-      this.workflowEventEmitter.emit('workflow.completed', {
-        runtimeData,
-        state: currentState ?? runtimeData.state,
-        entityId: runtimeData.businessId || runtimeData.endUserId,
-        correlationId,
-      });
-    }
 
     const documentToRevise = data.context?.documents?.find(
       ({ decision }: { decision: DefaultContextSchema['documents'][number]['decision'] }) =>
@@ -852,46 +1028,70 @@ export class WorkflowService {
             },
           },
         },
+        projectIds,
       );
 
       // Updates the collect documents workflow with the manual review workflow's decision.
-      await this.workflowRuntimeDataRepository.updateById(parentMachine?.id, {
-        data: {
-          status: 'active',
-          state: parentMachine?.workflowDefinition?.definition?.initial as string,
-          context: {
-            ...parentMachine?.context,
-            documents: parentMachine?.context?.documents?.map((document: any) => {
-              if (document.id !== documentToRevise.id) return document;
+      await this.workflowRuntimeDataRepository.updateById(
+        parentMachine?.id,
+        {
+          data: {
+            status: 'active',
+            state: parentMachine?.workflowDefinition?.definition?.initial as string,
+            context: {
+              ...parentMachine?.context,
+              documents: parentMachine?.context?.documents?.map((document: any) => {
+                if (document.id !== documentToRevise.id) return document;
 
-              return {
-                ...document,
-                decision: documentToRevise.decision,
-              };
-            }),
-          },
-        },
-      });
-
-      updatedResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
-        data: {
-          ...data,
-          context: {
-            ...data.context,
-            parentMachine: {
-              id: parentMachine?.id,
-              status: 'active',
+                return {
+                  ...document,
+                  decision: documentToRevise.decision,
+                };
+              }),
             },
           },
-          resolvedAt: isResolved ? new Date().toISOString() : null,
         },
-      });
+        projectId,
+      );
+
+      updatedResult = await this.workflowRuntimeDataRepository.updateById(
+        workflowRuntimeId,
+        {
+          data: {
+            ...data,
+            context: {
+              ...data.context,
+              parentMachine: {
+                id: parentMachine?.id,
+                status: 'active',
+              },
+            },
+            resolvedAt: isResolved ? new Date().toISOString() : null,
+          },
+        },
+        projectId,
+      );
     } else {
-      updatedResult = await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
-        data: {
-          ...data,
-          resolvedAt: isResolved ? new Date().toISOString() : null,
+      updatedResult = await this.workflowRuntimeDataRepository.updateById(
+        workflowRuntimeId,
+        {
+          data: {
+            ...data,
+            resolvedAt: isResolved ? new Date().toISOString() : null,
+          },
         },
+        projectId,
+      );
+    }
+
+    if (isResolved) {
+      this.logger.log('Workflow resolved', { id: workflowRuntimeId });
+
+      this.workflowEventEmitter.emit('workflow.completed', {
+        runtimeData: updatedResult,
+        state: currentState ?? updatedResult.state,
+        entityId: updatedResult.businessId || updatedResult.endUserId,
+        correlationId,
       });
     }
 
@@ -912,42 +1112,79 @@ export class WorkflowService {
       await this.handleRuntimeFinalState(runtimeData, data.context, workflowDef);
     }
 
+    if (data.postUpdateEventName) {
+      return await this.event(
+        { name: data.postUpdateEventName, id: workflowRuntimeId },
+        projectIds,
+        projectId,
+      );
+    }
+
     return updatedResult;
   }
 
-  async assignWorkflowToUser(workflowRuntimeId: string, { assigneeId }: WorkflowAssigneeId) {
+  async assignWorkflowToUser(
+    workflowRuntimeId: string,
+    { assigneeId }: WorkflowAssigneeId,
+    projectIds: TProjectIds,
+    currentProjectId: TProjectId,
+  ) {
     const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
       workflowRuntimeId,
+      {},
+      projectIds,
     );
-    const hasDecision =
-      workflowRuntimeData?.context?.documents?.length &&
-      workflowRuntimeData?.context?.documents?.every(
-        (document: DefaultContextSchema['documents'][number]) => !!document?.decision?.status,
-      );
+    const workflowCompleted =
+      workflowRuntimeData.status === 'completed' || workflowRuntimeData.state === 'failed';
 
-    if (hasDecision) {
+    if (workflowCompleted) {
       throw new BadRequestException(
-        `Workflow with the id of "${workflowRuntimeId}" already has a decision`,
+        `Workflow ${workflowRuntimeId} is already completed or failed, cannot assign to user`,
       );
     }
 
     const updatedWorkflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
       workflowRuntimeId,
-      { data: { assigneeId: assigneeId, assignedAt: new Date() } },
+      { data: { assigneeId, assignedAt: new Date() } },
+      currentProjectId,
     );
+
+    if (
+      updatedWorkflowRuntimeData.salesforceObjectName &&
+      updatedWorkflowRuntimeData.salesforceRecordId
+    ) {
+      let agentName = '';
+
+      if (assigneeId) {
+        const user = await this.userService.getById(assigneeId, {}, projectIds);
+        agentName = `${user.firstName} ${user.lastName}`;
+      }
+
+      await this.updateSalesforceRecord({
+        workflowRuntimeData: updatedWorkflowRuntimeData,
+        data: {
+          KYB_Assigned_Agent__c: agentName,
+        },
+      });
+    }
 
     return updatedWorkflowRuntimeData;
   }
 
-  private async getCorrelationIdFromWorkflow(runtimeData: WorkflowRuntimeData) {
+  private async getCorrelationIdFromWorkflow(
+    runtimeData: WorkflowRuntimeData,
+    projectIds: TProjectIds,
+  ) {
     let correlationId: string;
     if (runtimeData.businessId) {
       correlationId = (await this.businessRepository.getCorrelationIdById(
         runtimeData.businessId,
+        projectIds,
       )) as string;
     } else if (runtimeData.endUserId) {
       correlationId = (await this.endUserRepository.getCorrelationIdById(
         runtimeData.endUserId,
+        projectIds,
       )) as string;
     } else {
       correlationId = '';
@@ -959,15 +1196,18 @@ export class WorkflowService {
 
   async deleteWorkflowDefinitionById(
     id: string,
-    args?: Parameters<WorkflowDefinitionRepository['deleteById']>[1],
+    args: Parameters<WorkflowDefinitionRepository['deleteById']>[1],
+    projectIds: TProjectIds,
   ) {
-    return await this.workflowDefinitionRepository.deleteById(id, args);
+    return await this.workflowDefinitionRepository.deleteById(id, args, projectIds);
   }
 
   async handleRuntimeFinalState(
     runtime: WorkflowRuntimeData,
     context: Record<string, unknown>,
     workflow: WorkflowDefinition,
+    projectIds: TProjectIds,
+    currentProjectId: TProjectId,
   ) {
     // discuss error handling
     if (!workflow.reviewMachineId) {
@@ -976,17 +1216,25 @@ export class WorkflowService {
     const endUserId = runtime.endUserId;
     const businessId = runtime.businessId;
     endUserId &&
-      (await this.endUserRepository.updateById(endUserId, {
-        data: {
-          approvalState: ApprovalState.PROCESSING,
+      (await this.endUserRepository.updateById(
+        endUserId,
+        {
+          data: {
+            approvalState: ApprovalState.PROCESSING,
+          },
         },
-      }));
+        currentProjectId,
+      ));
     businessId &&
-      (await this.businessRepository.updateById(businessId, {
-        data: {
-          approvalState: ApprovalState.PROCESSING,
+      (await this.businessRepository.updateById(
+        businessId,
+        {
+          data: {
+            approvalState: ApprovalState.PROCESSING,
+          },
         },
-      }));
+        currentProjectId,
+      ));
 
     const entityId = endUserId || businessId;
 
@@ -996,7 +1244,7 @@ export class WorkflowService {
     });
 
     // will throw exception if review machine def is missing
-    await this.workflowDefinitionRepository.findById(workflow.reviewMachineId);
+    await this.workflowDefinitionRepository.findById(workflow.reviewMachineId, {}, projectIds);
 
     const entitySearch: { businessId?: string; endUserId?: string } = {};
 
@@ -1007,67 +1255,89 @@ export class WorkflowService {
       entitySearch.endUserId = runtime.endUserId as string;
     }
 
-    const manualReviewWorkflow = await this.workflowRuntimeDataRepository.findOne({
-      where: {
-        ...entitySearch,
-        context: {
-          path: ['parentMachine', 'id'],
-          equals: runtime.id,
+    const manualReviewWorkflow = await this.workflowRuntimeDataRepository.findOne(
+      {
+        where: {
+          ...entitySearch,
+          context: {
+            path: ['parentMachine', 'id'],
+            equals: runtime.id,
+          },
         },
       },
-    });
+      projectIds,
+    );
 
     if (!manualReviewWorkflow) {
-      await this.workflowRuntimeDataRepository.create({
-        data: {
-          ...entitySearch,
-          workflowDefinitionVersion: workflow.version,
-          workflowDefinitionId: workflow.reviewMachineId,
-          context: {
-            ...context,
-            parentMachine: {
-              id: runtime.id,
-              status: 'completed',
+      await this.workflowRuntimeDataRepository.create(
+        {
+          data: {
+            ...entitySearch,
+            workflowDefinitionVersion: workflow.version,
+            workflowDefinitionId: workflow.reviewMachineId,
+            context: {
+              ...context,
+              parentMachine: {
+                id: runtime.id,
+                status: 'completed',
+              },
             },
+            status: 'active',
           },
-          status: 'active',
         },
-      });
+        currentProjectId,
+      );
     } else {
       if (manualReviewWorkflow.state === 'revision') {
-        await this.event({
-          name: 'review',
-          id: manualReviewWorkflow.id,
-        });
+        await this.event(
+          {
+            name: 'review',
+            id: manualReviewWorkflow.id,
+          },
+          projectIds,
+          currentProjectId,
+        );
       }
 
-      await this.workflowRuntimeDataRepository.updateById(manualReviewWorkflow.id, {
-        data: {
-          context: {
-            ...manualReviewWorkflow.context,
-            parentMachine: {
-              id: runtime.id,
-              status: 'completed',
+      await this.workflowRuntimeDataRepository.updateById(
+        manualReviewWorkflow.id,
+        {
+          data: {
+            context: {
+              ...manualReviewWorkflow.context,
+              parentMachine: {
+                id: runtime.id,
+                status: 'completed',
+              },
             },
           },
         },
-      });
+        currentProjectId,
+      );
     }
 
-    await this.updateWorkflowRuntimeData(runtime.id, {
-      status: 'completed',
-    });
+    await this.updateWorkflowRuntimeData(
+      runtime.id,
+      {
+        status: 'completed',
+      },
+      currentProjectId,
+    );
   }
 
   async resolveIntent(
     intent: string,
     entityId: string,
     entityType: TEntityType,
-  ): Promise<RunnableWorkflowData[]> {
+    projectIds: TProjectIds,
+    currentProjectId: TProjectId,
+  ) {
     const workflowDefinitionResolver = policies[intent as keyof typeof policies];
     const entity = await (async () => {
-      if (entityType === 'business') return await this.businessRepository.findById(entityId);
-      if (entityType === 'endUser') return await this.endUserRepository.findById(entityId);
+      if (entityType === 'business')
+        return await this.businessRepository.findById(entityId, {}, projectIds);
+      if (entityType === 'endUser')
+        return await this.endUserRepository.findById(entityId, {}, projectIds);
 
       throw new BadRequestException(`Invalid entity type ${entityType}`);
     })();
@@ -1094,7 +1364,19 @@ export class WorkflowService {
       },
       documents: [],
     };
-    return this.createOrUpdateWorkflowRuntime({ workflowDefinitionId, context });
+    return this.createOrUpdateWorkflowRuntime({
+      workflowDefinitionId,
+      context,
+      projectIds,
+      currentProjectId,
+    });
+  }
+
+  omitTypeFromDocumentsPages(documents: DefaultContextSchema['documents']) {
+    return documents?.map(document => ({
+      ...document,
+      pages: document?.pages?.map(({ type: _type, ...page }) => page),
+    }));
   }
 
   async createOrUpdateWorkflowRuntime({
@@ -1102,71 +1384,189 @@ export class WorkflowService {
     context,
     config,
     parentWorkflowId,
+    projectIds,
+    currentProjectId,
+    ...salesforceData
   }: {
     workflowDefinitionId: string;
     context: DefaultContextSchema;
     config?: WorkflowConfig;
     parentWorkflowId?: string;
-  }): Promise<RunnableWorkflowData[]> {
+    projectIds: TProjectIds;
+    currentProjectId: TProjectId;
+    // eslint-disable-next-line @typescript-eslint/ban-types
+  } & ({ salesforceObjectName: string; salesforceRecordId: string } | {})) {
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowDefinitionId,
+      {},
+      projectIds,
     );
     config = merge(workflowDefinition.config, config);
-    console.log('config', config);
     let validatedConfig: WorkflowConfig;
     try {
       validatedConfig = ConfigSchema.parse(config);
     } catch (error) {
       throw new BadRequestException(error);
     }
+    const customer = await this.customerService.getByProjectId(projectIds![0]!);
+    context.customerName = customer.displayName;
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
-    const entityId = await this.__findOrPersistEntityInformation(context);
+    const entityId = await this.__findOrPersistEntityInformation(
+      context,
+      projectIds,
+      currentProjectId,
+    );
     const entityType = context.entity.type === 'business' ? 'business' : 'endUser';
-
     const existingWorkflowRuntimeData =
-      await this.workflowRuntimeDataRepository.findActiveWorkflowByEntity({
-        entityId,
-        entityType,
-        workflowDefinitionId: workflowDefinition.id,
-      });
+      await this.workflowRuntimeDataRepository.findActiveWorkflowByEntity(
+        {
+          entityId,
+          entityType,
+          workflowDefinitionId: workflowDefinition.id,
+        },
+        projectIds,
+      );
 
     let contextToInsert = structuredClone(context);
+    contextToInsert.entity.ballerineEntityId ||= entityId;
 
     const entityConnect = {
-      [entityType]: {
-        connect: { id: entityId },
-      },
+      [`${entityType}Id`]: entityId,
     };
 
     let workflowRuntimeData: WorkflowRuntimeData, newWorkflowCreated: boolean;
 
-    if (!existingWorkflowRuntimeData || config?.allowMultipleActiveWorkflows) {
-      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId);
-      workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
-        data: {
-          ...entityConnect,
-          workflowDefinitionVersion: workflowDefinition.version,
-          context: contextToInsert as InputJsonValue,
-          config: merge(workflowDefinition.config, validatedConfig || {}) as InputJsonValue,
-          status: 'active',
-          workflowDefinition: {
-            connect: {
-              id: workflowDefinition.id,
-            },
-          },
-          ...(parentWorkflowId && {
-            parentWorkflowRuntimeData: { connect: { id: parentWorkflowId } },
-          }),
-        },
-      });
-      newWorkflowCreated = true;
-    } else {
-      contextToInsert.documents = updateDocuments(
-        existingWorkflowRuntimeData.context.documents,
-        context.documents,
+    const mergedConfig: WorkflowConfig = merge(
+      workflowDefinition.config,
+      validatedConfig || {},
+    ) as InputJsonValue;
+
+    // Creating new workflow
+    if (!existingWorkflowRuntimeData || mergedConfig?.allowMultipleActiveWorkflows) {
+      const contextWithoutDocumentPageType = {
+        ...contextToInsert,
+        documents: this.omitTypeFromDocumentsPages(contextToInsert.documents),
+      };
+
+      const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
+        contextWithoutDocumentPageType?.documents,
+        entityId,
+        currentProjectId,
+        customer.name,
       );
 
-      contextToInsert = await this.copyFileAndCreate(contextToInsert, entityId);
+      workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
+        {
+          data: {
+            ...entityConnect,
+            workflowDefinitionVersion: workflowDefinition.version,
+            context: {
+              ...contextToInsert,
+              documents: documentsWithPersistedImages,
+            } as InputJsonValue,
+            config: mergedConfig as InputJsonValue,
+            status: 'active',
+            workflowDefinitionId: workflowDefinition.id,
+            ...(parentWorkflowId &&
+              ({
+                parentRuntimeDataId: parentWorkflowId,
+              } satisfies Omit<
+                Prisma.WorkflowRuntimeDataCreateArgs['data'],
+                'context' | 'workflowDefinitionVersion'
+              >)),
+            ...('salesforceObjectName' in salesforceData && salesforceData),
+          },
+        },
+        currentProjectId,
+      );
+
+      if (
+        // @ts-ignore
+        mergedConfig.createCollectionFlowToken &&
+        workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative &&
+        entityType === 'business'
+      ) {
+        const endUser = await this.endUserService.createWithBusiness(
+          {
+            firstName:
+              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.firstName,
+            lastName:
+              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.lastName,
+            email: workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.email,
+            companyName: workflowRuntimeData.context.entity.data.companyName,
+            isContactPerson: true,
+          },
+          currentProjectId,
+          entityId,
+        );
+        const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        const workflowToken = await this.workflowTokenService.create(currentProjectId, {
+          workflowRuntimeDataId: workflowRuntimeData.id,
+          endUserId: endUser.id,
+          expiresAt: nowPlus30Days,
+        });
+
+        workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
+          workflowRuntimeData.id,
+          {
+            data: {
+              context: {
+                ...workflowRuntimeData.context,
+                metadata: { customerName: customer.displayName, token: workflowToken.token },
+              } as InputJsonValue,
+            },
+          },
+          currentProjectId,
+        );
+      }
+
+      mergedConfig?.initialEvent &&
+        (await this.event(
+          {
+            id: workflowRuntimeData.id,
+            name: mergedConfig?.initialEvent,
+          },
+          projectIds,
+          currentProjectId,
+        ));
+      workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+        workflowRuntimeData.id,
+        {},
+        projectIds,
+      );
+
+      if ('salesforceObjectName' in salesforceData && salesforceData.salesforceObjectName) {
+        await this.updateSalesforceRecord({
+          workflowRuntimeData: workflowRuntimeData[0].workflowRuntimeData,
+          data: {
+            KYB_Started_At__c: workflowRuntimeData[0].workflowRuntimeData.createdAt,
+            KYB_Status__c: 'In Progress',
+            KYB_Assigned_Agent__c: '',
+          },
+        });
+      }
+
+      newWorkflowCreated = true;
+    } else {
+      // Updating existing workflow
+      console.log('existing documents', existingWorkflowRuntimeData.context.documents);
+      console.log('documents', contextToInsert.documents);
+      // contextToInsert.documents = updateDocuments(
+      //   existingWorkflowRuntimeData.context.documents,
+      //   context.documents,
+      // );
+      const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
+        contextToInsert?.documents,
+        entityId,
+        currentProjectId,
+        customer.name,
+      );
+
+      contextToInsert = {
+        ...contextToInsert,
+        documents: documentsWithPersistedImages as DefaultContextSchema['documents'],
+      };
+
       workflowRuntimeData = await this.workflowRuntimeDataRepository.updateById(
         existingWorkflowRuntimeData.id,
         {
@@ -1179,6 +1579,7 @@ export class WorkflowService {
             ) as InputJsonValue,
           },
         },
+        currentProjectId,
       );
       newWorkflowCreated = false;
     }
@@ -1196,71 +1597,40 @@ export class WorkflowService {
         workflowRuntimeData,
         ballerineEntityId: entityId,
       },
-    ];
+    ] as const;
   }
 
-  async copyFileAndCreate(
-    context: DefaultContextSchema,
-    entityId: TEntityId,
-  ): Promise<DefaultContextSchema> {
-    if (!context?.documents?.length) return context;
-
-    const documentsWithPersistedImages = await Promise.all(
-      context?.documents?.map(async document => ({
-        ...document,
-        pages: await this.__persistDocumentPagesFiles(document, entityId),
-      })),
-    );
-
-    return { ...context, documents: documentsWithPersistedImages };
-  }
   private async __persistDocumentPagesFiles(
-    document: DefaultContextSchema['documents'][number],
+    document: TDocumentWithoutPageType,
     entityId: string,
+    projectId: TProjectId,
+    customerName: string,
   ) {
     return await Promise.all(
       document?.pages?.map(async documentPage => {
-        const ballerineFileId =
-          documentPage.ballerineFileId ||
-          (await this.__copyFileToDestinationAndCraeteFile(document, entityId, documentPage));
+        if (documentPage.ballerineFileId && documentPage.uri) return documentPage;
 
-        return { ...documentPage, ballerineFileId };
+        const persistedFile = await this.fileService.copyToDestinationAndCreate(
+          document,
+          entityId,
+          documentPage,
+          projectId,
+          customerName,
+        );
+        const ballerineFileId = documentPage.ballerineFileId || persistedFile?.ballerineFileId;
+
+        return { ...documentPage, type: persistedFile?.mimeType, ballerineFileId };
       }),
     );
   }
 
-  private async __copyFileToDestinationAndCraeteFile(
-    document: DefaultContextSchema['documents'][number],
-    entityId: string,
-    documentPage: TDefaultSchemaDocumentPage,
+  private async __findOrPersistEntityInformation(
+    context: DefaultContextSchema,
+    projectIds: TProjectIds,
+    currentProjectId: TProjectId,
   ) {
-    const remoteFileName = `${document.id!}_${crypto.randomUUID()}.${documentPage.type}`;
-
-    const { fromServiceProvider, fromRemoteFileConfig } =
-      this.__fetchFromServiceProviders(documentPage);
-    const { toServiceProvider, toRemoteFileConfig, remoteFileNameInDirectory } =
-      this.__fetchToServiceProviders(entityId, remoteFileName);
-    const { remoteFilePath, fileNameInBucket } =
-      await this.fileService.copyFileFromSourceToDestination(
-        fromServiceProvider,
-        fromRemoteFileConfig,
-        toServiceProvider,
-        toRemoteFileConfig,
-      );
-    const userId = entityId;
-    const ballerineFileId = await this.storageService.createFileLink({
-      uri: remoteFileNameInDirectory,
-      fileNameOnDisk: remoteFileNameInDirectory,
-      userId,
-      fileNameInBucket,
-    });
-
-    return ballerineFileId;
-  }
-
-  private async __findOrPersistEntityInformation(context: DefaultContextSchema) {
     const { entity } = context;
-    const entityId = await this.__tryToFetchExistingEntityId(entity);
+    const entityId = await this.__tryToFetchExistingEntityId(entity, projectIds);
 
     if (entityId) {
       return entityId;
@@ -1271,50 +1641,72 @@ export class WorkflowService {
     }
 
     if (entity.type === 'individual') {
-      return await this.__persistEndUserInfo(entity, context);
+      return await this.__persistEndUserInfo(entity, context, currentProjectId);
     } else {
-      return await this.__persistBusinessInformation(entity, context);
+      return await this.__persistBusinessInformation(entity, context, projectIds, currentProjectId);
     }
   }
 
   private async __persistEndUserInfo(
     entity: { [p: string]: unknown },
     context: DefaultContextSchema,
+    projectId: TProjectId,
   ) {
-    const { id } = await this.endUserRepository.create({
-      data: {
-        correlationId: entity.id,
-        ...(context.entity.data as object),
-      } as Prisma.EndUserCreateInput,
-    });
+    const { id } = await this.endUserRepository.create(
+      {
+        data: {
+          correlationId: entity.id,
+          ...(context.entity.data as object),
+        } as Prisma.EndUserCreateInput,
+      },
+      projectId,
+    );
     return id;
   }
 
   private async __persistBusinessInformation(
     entity: { [p: string]: unknown },
     context: DefaultContextSchema,
+    projectIds: TProjectIds,
+    currentProjectId: TProjectId,
   ) {
-    const { id } = await this.businessRepository.create({
-      data: {
-        correlationId: entity.id,
-        ...(context.entity.data as object),
-      } as Prisma.BusinessCreateInput,
-    });
+    const { id } = await this.businessRepository.create(
+      {
+        data: {
+          correlationId: entity.id,
+          ...(context.entity.data as object),
+        } as Prisma.BusinessCreateInput,
+      },
+      currentProjectId,
+    );
 
     return id;
   }
 
-  private async __tryToFetchExistingEntityId(entity: {
-    [p: string]: unknown;
-  }): Promise<TEntityId | null> {
+  private async __tryToFetchExistingEntityId(
+    entity: {
+      [p: string]: unknown;
+    },
+    projectIds: TProjectIds,
+  ): Promise<TEntityId | null> {
     if (entity.ballerineEntityId) {
       return entity.ballerineEntityId as TEntityId;
+    } else if (!entity.id) {
+      return null;
     } else {
       if (entity.type === 'business') {
-        const res = await this.businessRepository.findByCorrelationId(entity.id as TEntityId);
+        const res = await this.businessRepository.findByCorrelationId(
+          entity.id as TEntityId,
+          {},
+          projectIds,
+        );
         return res && res.id;
       } else {
-        const res = await this.endUserRepository.findByCorrelationId(entity.id as TEntityId);
+        const res = await this.endUserRepository.findByCorrelationId(
+          entity.id as TEntityId,
+          {},
+          projectIds,
+        );
         return res && res.id;
       }
     }
@@ -1327,7 +1719,17 @@ export class WorkflowService {
     if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
 
     const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
-    const isValid = validate(context);
+    const isValid = validate({
+      ...context,
+      // Validation should not include the documents' 'propertiesSchema' prop.
+      documents: context?.documents?.map(
+        ({
+          // @ts-ignore
+          propertiesSchema: _propertiesSchema,
+          ...document
+        }) => document,
+      ),
+    });
 
     if (isValid) return;
 
@@ -1340,11 +1742,21 @@ export class WorkflowService {
     );
   }
 
-  async event({ name: type, id }: WorkflowEventInput & IObjectWithId) {
+  async event(
+    { name: type, id }: WorkflowEventInput & IObjectWithId,
+    projectIds: TProjectIds,
+    currentProjectId: TProjectId,
+  ) {
     this.logger.log('Workflow event received', { id, type });
-    const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(id);
+    const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+      id,
+      {},
+      projectIds,
+    );
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflowRuntimeData.workflowDefinitionId,
+      {} as any,
+      projectIds,
     );
 
     const service = createWorkflow({
@@ -1357,14 +1769,22 @@ export class WorkflowService {
       },
       extensions: workflowDefinition.extensions,
       invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
-        const runnableChildWorkflow = await this.persistChildEvent(childPluginConfiguration);
+        const runnableChildWorkflow = await this.persistChildEvent(
+          childPluginConfiguration,
+          projectIds,
+          currentProjectId,
+        );
 
         if (runnableChildWorkflow && childPluginConfiguration.initOptions.event) {
           // TODO: Review the issue if return child workflow id for parent and not "send event"
-          await this.event({
-            id: runnableChildWorkflow.workflowRuntimeData.id,
-            name: childPluginConfiguration.initOptions.event,
-          });
+          await this.event(
+            {
+              id: runnableChildWorkflow.workflowRuntimeData.id,
+              name: childPluginConfiguration.initOptions.event,
+            },
+            projectIds,
+            currentProjectId,
+          );
         }
       },
     });
@@ -1386,17 +1806,24 @@ export class WorkflowService {
       from: workflowRuntimeData.state,
       to: currentState,
     });
-    const updatedRuntimeData = await this.updateWorkflowRuntimeData(workflowRuntimeData.id, {
-      context,
-      state: currentState,
-      status: isFinal ? 'completed' : workflowRuntimeData.status,
-    });
+    const updatedRuntimeData = await this.updateWorkflowRuntimeData(
+      workflowRuntimeData.id,
+      {
+        context,
+        state: currentState,
+        tags: Array.from(snapshot.tags) as unknown as WorkflowDefinitionUpdateInput['tags'],
+        status: isFinal ? 'completed' : workflowRuntimeData.status,
+      },
+      currentProjectId,
+    );
 
     if (workflowRuntimeData.parentRuntimeDataId) {
       await this.persistChildWorkflowToParent(
         workflowRuntimeData,
         workflowDefinition,
         isFinal,
+        projectIds,
+        currentProjectId,
         currentState,
       );
     }
@@ -1409,7 +1836,7 @@ export class WorkflowService {
     });
 
     if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
-      return;
+      return updatedRuntimeData;
     }
 
     const approvalState = ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState];
@@ -1423,34 +1850,48 @@ export class WorkflowService {
     }
 
     if (entityType === 'endUser') {
-      await this.entityRepository[entityType].updateById(entityId, {
-        data: {
-          approvalState,
+      await this.entityRepository[entityType].updateById(
+        entityId,
+        {
+          data: {
+            approvalState,
+          },
         },
-      });
+        currentProjectId,
+      );
     }
 
     if (entityType === 'business') {
-      await this.entityRepository[entityType].updateById(entityId, {
-        data: {
-          approvalState,
+      await this.entityRepository[entityType].updateById(
+        entityId,
+        {
+          data: {
+            approvalState,
+          },
         },
-      });
+        currentProjectId,
+      );
     }
+    return updatedRuntimeData;
   }
 
   async persistChildWorkflowToParent(
     workflowRuntimeData: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
     isFinal: boolean,
+    projectIds: TProjectIds,
+    currentProjectId: TProjectId,
     childRuntimeState?: string,
   ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
       workflowRuntimeData.parentRuntimeDataId,
       { include: { childWorkflowsRuntimeData: true } },
+      projectIds,
     );
     const parentWorkflowDefinition = await this.getWorkflowDefinitionById(
       parentWorkflowRuntime.workflowDefinitionId,
+      {},
+      projectIds,
     );
 
     const callbackTransformation = (
@@ -1483,17 +1924,25 @@ export class WorkflowService {
       isPersistableState,
     );
 
-    await this.updateWorkflowRuntimeData(parentWorkflowRuntime.id, { context: parentContext });
+    await this.updateWorkflowRuntimeData(
+      parentWorkflowRuntime.id,
+      { context: parentContext },
+      currentProjectId,
+    );
 
     if (
       childWorkflowCallback.deliverEvent &&
       parentWorkflowRuntime.status !== 'completed' &&
       isPersistableState
     ) {
-      await this.event({
-        id: parentWorkflowRuntime.id,
-        name: childWorkflowCallback.deliverEvent,
-      });
+      await this.event(
+        {
+          id: parentWorkflowRuntime.id,
+          name: childWorkflowCallback.deliverEvent,
+        },
+        projectIds,
+        currentProjectId,
+      );
     }
   }
 
@@ -1520,7 +1969,10 @@ export class WorkflowService {
       let childContextToPersist = childWorkflow.context;
 
       for (const transformer of transformerInstance || []) {
-        childContextToPersist = await transformer.transform(childContextToPersist);
+        childContextToPersist = await transformer.transform({
+          ...childContextToPersist,
+          projectId: parentWorkflowRuntime.projectId,
+        });
       }
       contextToPersist[childWorkflow.id] = {
         entityId: childWorkflow.context.entity.id,
@@ -1559,87 +2011,18 @@ export class WorkflowService {
     return parentWorkflowContext;
   }
 
-  private __fetchFromServiceProviders(document: TDefaultSchemaDocumentPage): {
-    fromServiceProvider: TFileServiceProvider;
-    fromRemoteFileConfig: TRemoteFileConfig;
-  } {
-    if (document.provider == 'http' && z.string().parse(document.uri)) {
-      return { fromServiceProvider: new HttpFileService(), fromRemoteFileConfig: document.uri };
-    }
-    if (document.provider == 'aws_s3' && z.string().parse(document.uri)) {
-      const prefixConfigName = `REMOTE`;
-      const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env, prefixConfigName);
-      const s3BucketConfig = this.__fetchAwsConfigFor(document.uri);
-
-      return {
-        fromServiceProvider: new AwsS3FileService(s3ClientConfig),
-        fromRemoteFileConfig: s3BucketConfig,
-      };
-    }
-
-    return { fromServiceProvider: new LocalFileService(), fromRemoteFileConfig: document.uri };
-  }
-
-  private __fetchToServiceProviders(
-    entityId: string,
-    fileName: string,
-  ): {
-    toServiceProvider: TFileServiceProvider;
-    toRemoteFileConfig: TRemoteFileConfig;
-    remoteFileNameInDirectory: string;
-  } {
-    if (this.__fetchBucketName(process.env, false)) {
-      const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);
-      const awsFileService = new AwsS3FileService(s3ClientConfig);
-      const remoteFileNameInDocument = awsFileService.generateRemoteFilePath(fileName, entityId);
-      const awsConfigForClient = this.__fetchAwsConfigFor(remoteFileNameInDocument);
-      return {
-        toServiceProvider: awsFileService,
-        toRemoteFileConfig: awsConfigForClient,
-        remoteFileNameInDirectory: awsConfigForClient.fileNameInBucket,
-      };
-    }
-
-    const localFileService = new LocalFileService();
-    const toFileStoragePath = localFileService.generateRemoteFilePath(fileName);
-    return {
-      toServiceProvider: localFileService,
-      toRemoteFileConfig: toFileStoragePath,
-      remoteFileNameInDirectory: toFileStoragePath,
-    };
-  }
-
-  private __fetchAwsConfigFor(fileNameInBucket: string): TS3BucketConfig {
-    const bucketName = this.__fetchBucketName(process.env, true) as string;
-
-    return {
-      bucketName: bucketName,
-      fileNameInBucket: fileNameInBucket,
-      private: true,
-    };
-  }
-
-  private __fetchBucketName(processEnv: NodeJS.ProcessEnv, isThrowOnMissing = true) {
-    const bucketName = AwsS3FileConfig.fetchBucketName(processEnv);
-
-    if (isThrowOnMissing && !bucketName) {
-      throw new Error(`S3 Bucket name is not set`);
-    }
-
-    return bucketName;
-  }
-
-  async getWorkflowRuntimeDataContext(id: string) {
-    return this.workflowRuntimeDataRepository.findContext(id);
+  async getWorkflowRuntimeDataContext(id: string, projectIds: TProjectIds) {
+    return this.workflowRuntimeDataRepository.findContext(id, projectIds);
   }
 
   async getLastActiveFlow({
     email,
     workflowRuntimeDefinitionId,
+    projectIds,
   }: GetLastActiveFlowParams): Promise<WorkflowRuntimeData | null> {
-    const endUser = await this.endUserService.getByEmail(email);
+    const endUser = await this.endUserService.getByEmail(email, projectIds);
 
-    if (!endUser || !endUser.businesses.length) return null;
+    if (!endUser || !endUser?.businesses?.length) return null;
 
     const query = {
       endUserId: endUser.id,
@@ -1647,16 +2030,61 @@ export class WorkflowService {
         workflowDefinitionId: workflowRuntimeDefinitionId,
         businessId: endUser.businesses.at(-1)!.id,
       },
+      projectIds,
     };
 
     this.logger.log(`Getting last active workflow`, query);
 
-    const workflowData = await this.workflowRuntimeDataRepository.findLastActive(query);
+    const workflowData = await this.workflowRuntimeDataRepository.findLastActive(query, projectIds);
 
     this.logger.log('Last active workflow: ', {
       workflowId: workflowData ? workflowData.id : null,
     });
 
     return workflowData ? workflowData : null;
+  }
+
+  async copyDocumentsPagesFilesAndCreate(
+    documents: TDocumentsWithoutPageType,
+    entityId: string,
+    projectId: TProjectId,
+    customerName: string,
+  ) {
+    if (!documents?.length) return documents;
+
+    const documentsWithPersistedImages = await Promise.all(
+      documents?.map(async document => {
+        return {
+          ...document,
+          pages: await this.__persistDocumentPagesFiles(
+            document,
+            entityId,
+            projectId,
+            customerName,
+          ),
+        };
+      }),
+    );
+
+    return documentsWithPersistedImages;
+  }
+
+  async updateSalesforceRecord({
+    workflowRuntimeData,
+    data,
+  }: {
+    workflowRuntimeData: WorkflowRuntimeData;
+    data: {
+      KYB_Started_At__c?: Date;
+      KYB_Status__c?: 'Not Started' | 'In Progress' | 'Approved' | 'Rejected';
+      KYB_Assigned_Agent__c?: string;
+    };
+  }) {
+    return await this.salesforceService.updateRecord({
+      projectId: workflowRuntimeData.projectId,
+      objectName: workflowRuntimeData.salesforceObjectName,
+      recordId: workflowRuntimeData.salesforceRecordId,
+      data,
+    });
   }
 }

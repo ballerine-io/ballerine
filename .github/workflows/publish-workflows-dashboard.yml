@@ -72,8 +72,9 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: apps/workflows-dashboard
-          platforms: linux/amd64, linux/arm64
+          platforms: linux/amd64
           push: true
+          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
           tags: ${{ steps.branchmeta.outputs.tags }}
 
       - name: Extract metadata (tags, labels) for prod Docker images
@@ -94,6 +95,17 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: apps/workflows-dashboard
-          platforms: linux/amd64, linux/arm64
+          platforms: linux/amd64
           push: true
+          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
           tags: ${{ steps.prodmeta.outputs.tags }}
+
+      - name: Scan Docker Image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
+          format: 'table'
+          ignore-unfixed: true
+          exit-code: 1
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'

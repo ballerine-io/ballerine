@@ -18,7 +18,7 @@ export interface DefaultContextSchema {
       name?: string;
       country: string;
       city?: string;
-      additionalDetails?: {
+      additionalInfo?: {
         [k: string]: unknown;
       };
     };
@@ -47,7 +47,7 @@ export interface DefaultContextSchema {
     version?: number;
     pages: {
       ballerineFileId?: string;
-      provider: 'gcs' | 'http' | 'stream' | 'base64' | 'ftp' | 'aws_s3';
+      provider: 'gcs' | 'http' | 'stream' | 'file-system' | 'ftp' | 'aws_s3';
       uri: string;
       /**
        * Whether an effect is positive or negative

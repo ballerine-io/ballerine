@@ -9,6 +9,7 @@ export const UsersListSchema = z
       fullName: z.string().optional(),
       email: z.string(),
       phone: z.string().nullable(),
+      avatarUrl: z.string().nullable().optional(),
       createdAt: z.string(),
       updatedAt: z.string(),
     }).transform(({ firstName, lastName, ...rest }) => ({

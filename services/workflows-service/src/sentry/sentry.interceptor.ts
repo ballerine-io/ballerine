@@ -1,10 +1,10 @@
 import {
-  ExecutionContext,
-  Injectable,
-  NestInterceptor,
   CallHandler,
   ContextType,
+  ExecutionContext,
   HttpException,
+  Injectable,
+  NestInterceptor,
 } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import { catchError, throwError } from 'rxjs';
@@ -41,6 +41,7 @@ export class SentryInterceptor implements NestInterceptor {
     // @TODO: Add more information to the scope
 
     if (request.user) {
+      // @ts-expect-error `id` is not defined on `user`
       scope.setUser({ id: request.user.id });
     }
 

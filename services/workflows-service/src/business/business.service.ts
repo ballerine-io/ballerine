@@ -12,6 +12,7 @@ import { env } from '@/env';
 import { lastValueFrom } from 'rxjs';
 import { plainToClass } from 'class-transformer';
 import { AxiosError } from 'axios';
+import { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class BusinessService {
@@ -20,21 +21,29 @@ export class BusinessService {
     protected readonly logger: AppLoggerService,
     protected readonly httpService: HttpService,
   ) {}
-  async create(args: Parameters<BusinessRepository['create']>[0]) {
+  async create(args: Parameters<BusinessRepository['create']>[0], projectId: TProjectId) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return await this.repository.create(args);
+    return await this.repository.create(args, projectId);
   }
 
-  async list(args?: Parameters<BusinessRepository['findMany']>[0]) {
-    return await this.repository.findMany(args);
+  async list(args: Parameters<BusinessRepository['findMany']>[0], projectIds: TProjectIds) {
+    return await this.repository.findMany(args, projectIds);
   }
 
-  async getById(id: string, args?: Parameters<BusinessRepository['findById']>[1]) {
-    return await this.repository.findById(id, args);
+  async getById(
+    id: string,
+    args: Parameters<BusinessRepository['findById']>[1],
+    projectIds: TProjectIds,
+  ) {
+    return await this.repository.findById(id, args, projectIds);
   }
 
-  async updateById(id: string, args: Parameters<BusinessRepository['updateById']>[1]) {
-    return await this.repository.updateById(id, args);
+  async updateById(
+    id: string,
+    args: Parameters<BusinessRepository['updateById']>[1],
+    projectId: TProjectId,
+  ) {
+    return await this.repository.updateById(id, args, projectId);
   }
 
   async fetchCompanyInformation({
@@ -50,7 +59,7 @@ export class BusinessService {
 
     try {
       const request$ = this.httpService.get<TCompanyInformation>(
-        `${process.env.KYB_API_URL as string}/companies/${jurisdictionCode}/${registrationNumber}`,
+        `${env.UNIFIED_API_URL}/companies/${jurisdictionCode}/${registrationNumber}`,
         {
           params: { vendor },
           headers: {

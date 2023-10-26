@@ -3,6 +3,7 @@ import { env } from '../../../../common/env/env';
 import { workflows } from './workflows.data';
 import { createWorkflow } from '@ballerine/workflow-node-sdk';
 import { individuals } from '../../../individuals/mock-service-worker/individuals.data';
+import { CommonWorkflowStates } from '@ballerine/common';
 
 export const workflowsController = [
   // List
@@ -92,7 +93,8 @@ export const workflowsController = [
     const state = snapshot.value;
 
     individuals.updateById(entityId, {
-      approvalState: state === 'APPROVE' ? 'approved' : 'rejected',
+      approvalState:
+        state === 'APPROVE' ? CommonWorkflowStates.APPROVED : CommonWorkflowStates.REJECTED,
       workflows: endUser?.workflows?.map(workflow => {
         if (workflow.id !== id) return workflow;
 

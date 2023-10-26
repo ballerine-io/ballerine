@@ -80,6 +80,11 @@ describe('WorkflowControllerInternal', () => {
   let endUserRepo;
   let entityRepo;
   let eventEmitterSpy;
+  let customerService;
+  let scopeService;
+  let userService;
+  let salesforceService;
+  let workflowTokenService;
   const numbUserInfo = Symbol();
   let testingModule: TestingModule;
 
@@ -95,6 +100,11 @@ describe('WorkflowControllerInternal', () => {
     businessRepo = new FakeBusinessRepo();
     endUserRepo = new FakeEndUserRepo();
     entityRepo = new FakeEntityRepo();
+    scopeService = new FakeEntityRepo();
+    customerService = new FakeEntityRepo();
+    userService = new FakeEntityRepo();
+    salesforceService = new FakeEntityRepo();
+    workflowTokenService = new FakeEntityRepo();
 
     eventEmitterSpy = {
       emitted: [],
@@ -110,15 +120,20 @@ describe('WorkflowControllerInternal', () => {
       {} as any,
       businessRepo,
       entityRepo,
+      customerService,
       {} as any,
       {} as any,
       eventEmitterSpy,
       testingModule.get(AppLoggerService),
+      scopeService,
+      userService,
+      salesforceService,
+      workflowTokenService,
     );
     const filterService = {} as any;
     const rolesBuilder = {} as any;
 
-    controller = new WorkflowControllerInternal(service, filterService, rolesBuilder);
+    controller = new WorkflowControllerInternal(service, filterService, rolesBuilder, scopeService);
   });
 
   describe('.event', () => {
@@ -135,7 +150,7 @@ describe('WorkflowControllerInternal', () => {
           data: initialRuntimeData,
         });
 
-        await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDeifintion(2));
+        await controller.createWorkflowDefinition(buildWorkflowDeifintion(2));
         await controller.event({ id: '2' }, { name: 'COMPLETE' });
 
         const runtimeData = await workflowRuntimeDataRepo.findById('2');

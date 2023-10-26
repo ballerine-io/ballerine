@@ -1,3 +1,4 @@
+import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { DefaultContextSchema } from '@ballerine/common';
 
 type Documents = DefaultContextSchema['documents'];
@@ -9,12 +10,16 @@ export const updateDocuments = (
 ): Documents => {
   const updatedDocumentsMap = new Map<string, Document>();
 
-  // @ts-ignore
+  if (!existingDocuments?.length && documentsToUpdate?.every(doc => !doc.id)) {
+    documentsToUpdate = assignIdToDocuments(documentsToUpdate);
+  }
+
   existingDocuments?.forEach(document => {
+    if (!document) return;
+
     updatedDocumentsMap.set(document.id!, document);
   });
 
-  // @ts-ignore
   documentsToUpdate?.forEach(document => {
     updatedDocumentsMap.set(document.id!, document);
   });

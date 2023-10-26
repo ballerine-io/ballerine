@@ -1,24 +1,25 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { fetchWorkflowDecision, TWorkflowById } from '../../../../workflows/fetchers';
+import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { Action } from '../../../../../common/enums';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 
-export const useRejectTaskByIdMutation = (workflowId: string) => {
+export const useRejectTaskByIdMutation = (workflowId: string, postUpdateEventName?: string) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
   const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
 
   return useMutation({
     mutationFn: ({ documentId, reason }: { documentId: string; reason?: string }) =>
-      fetchWorkflowDecision({
+      updateWorkflowDecision({
         workflowId,
         documentId,
         body: {
-          decision: Action.REJECT.toLowerCase(),
+          decision: Action.REJECT,
           reason,
+          postUpdateEventName,
         },
       }),
     onMutate: async ({ documentId, reason }) => {

@@ -18,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) implements IAuthStra
 
   async validate(payload: UserInfo): Promise<UserInfo> {
     const { id } = payload;
-    const user = await this.userService.getById(id);
+    const user = await this.userService.getByIdUnscoped(id, {});
     if (!user) {
       throw new UnauthorizedException();
     }

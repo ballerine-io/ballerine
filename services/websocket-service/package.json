@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/websocket-service",
-  "version": "0.0.5",
+  "version": "0.0.10",
   "description": "websocket-service",
   "private": false,
   "scripts": {
@@ -31,7 +31,7 @@
     "dotenv": "^16.3.1",
     "rxjs": "^7.8.0",
     "ws": "^8.13.0",
-    "zod": "^3.21.4"
+    "zod": "^3.22.3"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.3.0",

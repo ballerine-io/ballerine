@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class WorkflowEventDecisionInput {
   @ApiProperty({
@@ -17,5 +17,6 @@ export class WorkflowEventDecisionInput {
     type: String,
   })
   @IsString()
+  @IsOptional()
   reason?: string;
 }

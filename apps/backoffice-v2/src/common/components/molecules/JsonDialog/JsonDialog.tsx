@@ -1,11 +1,11 @@
 import ReactJson from 'react-json-view';
 import { JsonDialogProps } from './interfaces';
+import { ctw } from '../../../utils/ctw/ctw';
 import { Dialog } from '../../organisms/Dialog/Dialog';
 import { DialogTrigger } from '../../organisms/Dialog/Dialog.Trigger';
 import { Button } from '../../atoms/Button/Button';
 import { DialogContent } from '../../organisms/Dialog/Dialog.Content';
 import { ScrollArea } from '../ScrollArea/ScrollArea';
-import { ctw } from '../../../utils/ctw/ctw';
 
 export const JsonDialog = ({
   json,

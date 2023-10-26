@@ -1,6 +1,39 @@
 import { PrismaClient } from '@prisma/client';
 import { kycEmailSessionDefinition } from './kyc-email-process-example';
+import {
+  defaultPersonalInformationData,
+  personalInformationSchema,
+  personalInformationUISchema,
+} from './schemas/personal-information.schema';
+import {
+  companyInformationSchema,
+  companyInformationUISchema,
+  defaultCompanyInformationData,
+} from './schemas/company-information.schema';
+import {
+  defaultHeadquartersData,
+  headquartersSchema,
+  headquartersUISchema,
+} from './schemas/headquarters.schema';
+import { companyActivitySchema, companyActivityUISchema } from './schemas/company-activity.schema';
+import {
+  bankInformationSchema,
+  bankInformationUISchema,
+  defaultBankInformationData,
+} from './schemas/bank-information.schema';
+import {
+  defaultShareholdersData,
+  shareholdersSchema,
+  shareholdersUISchema,
+} from './schemas/shareholders.schema';
+import {
+  companyDocumentsSchema,
+  companyDocumentsUISchema,
+  defaultCompanyDocumentsData,
+} from './schemas/company-documents.schema';
 import { env } from '../../src/env';
+
+import { defaultContextSchema, StateTag } from '@ballerine/common';
 
 export const parentKybWithSessionWorkflowDefinition = {
   id: 'kyb_parent_kyc_session_example',
@@ -10,23 +43,26 @@ export const parentKybWithSessionWorkflowDefinition = {
   definition: {
     id: 'kyb_parent_kyc_session_example_v1',
     predictableActionArguments: true,
-    initial: 'idle',
+    initial: 'data_collection',
     context: {
       documents: [],
     },
     states: {
-      idle: {
+      data_collection: {
+        tags: [StateTag.COLLECTION_FLOW],
         on: {
           start: 'run_ubos',
         },
       },
       run_ubos: {
+        tags: [StateTag.COLLECTION_FLOW],
         on: {
           CONTINUE: [{ target: 'run_kyb_enrichment' }],
           FAILED: [{ target: 'auto_reject' }],
         },
       },
       run_kyb_enrichment: {
+        tags: [StateTag.COLLECTION_FLOW],
         on: {
           KYB_DONE: [{ target: 'pending_kyc_response_to_finish' }],
           // TODO: add 404 handling
@@ -34,6 +70,7 @@ export const parentKybWithSessionWorkflowDefinition = {
         },
       },
       pending_kyc_response_to_finish: {
+        tags: [StateTag.PENDING_PROCESS],
         on: {
           KYC_RESPONDED: [
             {
@@ -60,6 +97,7 @@ export const parentKybWithSessionWorkflowDefinition = {
         ],
       },
       manual_review: {
+        tags: [StateTag.MANUAL_REVIEW],
         on: {
           approve: 'approved',
           reject: 'rejected',
@@ -67,14 +105,17 @@ export const parentKybWithSessionWorkflowDefinition = {
         },
       },
       pending_resubmission: {
+        tags: [StateTag.REVISION],
         on: {
           RESUBMITTED: 'manual_review',
         },
       },
       approved: {
+        tags: [StateTag.APPROVED],
         type: 'final' as const,
       },
       revision: {
+        tags: [StateTag.REVISION],
         always: [
           {
             target: 'pending_resubmission',
@@ -82,9 +123,11 @@ export const parentKybWithSessionWorkflowDefinition = {
         ],
       },
       rejected: {
+        tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
       auto_reject: {
+        tags: [StateTag.REJECTED],
         type: 'final' as const,
       },
     },
@@ -94,11 +137,11 @@ export const parentKybWithSessionWorkflowDefinition = {
       {
         name: 'open_corporates',
         pluginKind: 'kyb',
-        url: `{secret.KYB_API_URL}/companies`,
+        url: `${env.UNIFIED_API_URL}/companies`,
         method: 'GET',
         stateNames: ['run_kyb_enrichment'],
         successAction: 'KYB_DONE',
-        errorAction: 'FAILED',
+        errorAction: 'KYB_DONE',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
@@ -107,7 +150,7 @@ export const parentKybWithSessionWorkflowDefinition = {
               mapping: `{
               countryOfIncorporation: entity.data.countryOfIncorporation,
               companyNumber: entity.data.registrationNumber,
-              state: entity.data.additionalInfo.company.state
+              state: entity.data.dynamicInfo.companyInformation.state
               vendor: 'open-corporates'
               }`, // jmespath
             },
@@ -137,12 +180,13 @@ export const parentKybWithSessionWorkflowDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              kybCompanyName: 'PayLynk',
-              customerCompanyName: entity.data.companyName,
+              kybCompanyName: entity.data.companyName,
+              customerCompanyName: entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}/workflowRuntimeId=',workflowRuntimeId, '?resubmitEvent=RESUBMITTED']),
-              supportEmail: join('',['PayLynk','@support.com']),
+              resubmissionLink: join('',['https://',entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'.demo.ballerine.app','/workflowRuntimeId=',workflowRuntimeId,'?resubmitEvent=RESUBMITTED']),
+              supportEmail: join('',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.normalizedCustomerCompany,'@support.com']),
               from: 'no-reply@ballerine.com',
+              name: join(' ',[entity.data.additionalInfo.ubos[0].entity.data.additionalInfo.customerCompany,'Team']),
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
               templateId: 'd-7305991b3e5840f9a14feec767ea7301',
               revisionReason: documents[].decision[].revisionReason | [0],
@@ -203,9 +247,14 @@ export const parentKybWithSessionWorkflowDefinition = {
       },
     ],
   },
+  contextSchema: {
+    type: 'json-schema',
+    schema: defaultContextSchema,
+  },
+  isPublic: true,
 };
 export const generateParentKybWithSessionKycs = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({
-    data: parentKybWithSessionWorkflowDefinition,
+    data: { ...parentKybWithSessionWorkflowDefinition },
   });
 };

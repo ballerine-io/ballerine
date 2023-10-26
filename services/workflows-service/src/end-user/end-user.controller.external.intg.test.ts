@@ -20,18 +20,33 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '@/prisma/prisma.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { createCustomer } from '@/test/helpers/create-customer';
+import { Project } from '@prisma/client';
+import { createProject } from '@/test/helpers/create-project';
+import { UserService } from '@/user/user.service';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
+import { UserRepository } from '@/user/user.repository';
+import { PasswordService } from '@/auth/password/password.service';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
   let endUserService: EndUserService;
-  beforeEach(cleanupDatabase);
+  let project: Project;
+  beforeAll(cleanupDatabase);
   afterEach(tearDownDatabase);
 
   beforeAll(async () => {
+    await cleanupDatabase();
+
     const servicesProviders = [
       EndUserRepository,
       EntityRepository,
       FilterService,
+      ProjectScopeService,
       FilterRepository,
       FileRepository,
       FileService,
@@ -43,6 +58,14 @@ describe('#EndUserControllerExternal', () => {
       WorkflowService,
       EventEmitter2,
       PrismaService,
+      UserService,
+      UserRepository,
+      SalesforceService,
+      SalesforceIntegrationRepository,
+      PasswordService,
+      WorkflowTokenService,
+      WorkflowTokenRepository,
+      WorkflowRuntimeDataRepository,
     ];
     endUserService = (await fetchServiceFromModule(EndUserService, servicesProviders, [
       PrismaModule,
@@ -59,23 +82,37 @@ describe('#EndUserControllerExternal', () => {
       [EndUserControllerExternal],
       [PrismaModule],
     );
+
+    const customer = await createCustomer(
+      await app.get(PrismaService),
+      String(Date.now()),
+      'secret2',
+      '',
+      '',
+      'webhook-shared-secret',
+    );
+    project = await createProject(await app.get(PrismaService), customer, '1');
   });
 
   describe('POST /end-user', () => {
     it('creates an end-user', async () => {
-      expect(await endUserService.list({})).toHaveLength(0);
+      expect(await endUserService.list({}, [project.id])).toHaveLength(0);
 
-      const response = await request(app.getHttpServer()).post('/external/end-users').send({
-        correlationId: faker.datatype.uuid(),
-        endUserType: faker.random.word(),
-        approvalState: 'APPROVED',
-        firstName: 'test',
-        lastName: 'lastName',
-      });
+      const response = await request(app.getHttpServer())
+        .post('/external/end-users')
+        .send({
+          correlationId: faker.datatype.uuid(),
+          endUserType: faker.random.word(),
+          approvalState: 'APPROVED',
+          firstName: 'test',
+          lastName: 'lastName',
+        })
+        .set('authorization', 'Bearer secret2');
 
       expect(response.status).toBe(201);
-      const allEndUsers = await endUserService.list({});
-      expect(allEndUsers[0]).toMatchObject({
+
+      const createdUser = await endUserService.getById(response.body.id, {}, [project.id]);
+      expect(createdUser).toMatchObject({
         firstName: 'test',
         lastName: 'lastName',
       });

@@ -26,13 +26,11 @@ export const CaseStatuses = [CaseStatus.ACTIVE, CaseStatus.COMPLETED, CaseStatus
 export const States = [State.APPROVED, State.REJECTED, State.PROCESSING, State.NEW] as const;
 
 export const Action = {
-  REJECT: 'REJECT',
-  APPROVE: 'APPROVE',
-  ASSIGNED_TO_ME: 'ASSIGNED_TO_ME',
-  ASSIGNED_TO_OTHER: 'ASSIGNED_TO_OTHER',
-  REVISION: 'REVISION',
-  SIGN_IN: 'SIGN_IN',
-  SIGN_OUT: 'SIGN_OUT',
+  REJECT: 'reject',
+  APPROVE: 'approve',
+  REVISION: 'revision',
+  TASK_REVIEWED: 'TASK_REVIEWED',
+  CASE_REVIEWED: 'CASE_REVIEWED',
 } as const;
 export const Resource = {
   INDIVIDUAL: 'INDIVIDUAL',

@@ -1,5 +1,105 @@
 # @ballerine/rules-engine-lib
 
+## 0.4.17
+
+### Patch Changes
+
+- Bump
+
+## 0.4.16
+
+### Patch Changes
+
+- b1cebf50: pre
+- b1cebf50: Pre ver
+- b1cebf50: bump pre
+- b1cebf50: Version bump pre
+- Bump
+- b1cebf50: Pre bump
+- b1cebf50: Pre bump
+- b1cebf50: Bump
+- b1cebf50: pre
+- b1cebf50: Pre release
+- b1cebf50: Bumo
+
+## 0.4.16-3e08f108.9
+
+### Patch Changes
+
+- Version bump pre
+
+## 0.4.16-3e08f108.8
+
+### Patch Changes
+
+- Bump
+
+## 0.4.16-3e08f108.7
+
+### Patch Changes
+
+- Bumo
+
+## 0.4.16-3e08f108.6
+
+### Patch Changes
+
+- Pre ver
+
+## 0.4.16-3e08f108.5
+
+### Patch Changes
+
+- Pre bump
+
+## 0.4.16-3e08f108.4
+
+### Patch Changes
+
+- bump pre
+
+## 0.4.16-3e08f108.3
+
+### Patch Changes
+
+- Pre bump
+
+## 0.4.16-3e08f108.2
+
+### Patch Changes
+
+- Pre release
+
+## 0.4.16-3e08f108.1
+
+### Patch Changes
+
+- pre
+
+## 0.4.16-3e08f108.0
+
+### Patch Changes
+
+- pre
+
+## 0.4.15
+
+### Patch Changes
+
+- Bump minor version
+
+## 0.4.14
+
+### Patch Changes
+
+- Version minor bump
+
+## 0.4.13
+
+### Patch Changes
+
+- Version bump
+
 ## 0.4.12
 
 ### Patch Changes

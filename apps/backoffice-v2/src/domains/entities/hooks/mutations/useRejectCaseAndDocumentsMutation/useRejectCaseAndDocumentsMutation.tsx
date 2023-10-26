@@ -19,7 +19,7 @@ export const useRejectCaseAndDocumentsMutation = ({
       fetchWorkflowEventDecision({
         workflowId,
         body: {
-          name: Action.REJECT.toLowerCase(),
+          name: Action.REJECT,
           reason: rejectionReason,
         },
       }),

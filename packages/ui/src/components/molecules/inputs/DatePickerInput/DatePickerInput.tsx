@@ -1,7 +1,7 @@
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { useCallback, useMemo } from 'react';
+import { FocusEvent, useCallback, useMemo, useState } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import dayjs, { Dayjs } from 'dayjs';
 import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
@@ -10,7 +10,7 @@ import { Paper } from '@components/atoms';
 
 export interface DatePickerChangeEvent {
   target: {
-    value: number | null;
+    value: string | null;
     name?: string;
   };
 }
@@ -22,6 +22,7 @@ export interface DatePickerProps {
   name?: string;
   disabled?: boolean;
   onChange: (event: DatePickerChangeEvent) => void;
+  onBlur?: (event: FocusEvent<any>) => void;
 }
 
 export const DatePickerInput = ({
@@ -29,26 +30,15 @@ export const DatePickerInput = ({
   name,
   disabled = false,
   onChange,
+  onBlur,
 }: DatePickerProps) => {
-  const serializeValue = useCallback((value: Dayjs): number => {
-    return +value.toDate();
+  const [isFocused, setFocused] = useState(false);
+
+  const serializeValue = useCallback((value: Dayjs): string => {
+    return value.toISOString();
   }, []);
 
   const deserializeValue = useCallback((value: DatePickerValue) => {
-    if (value instanceof Date) {
-      return dayjs(value);
-    }
-
-    if (typeof value === 'string' && value) {
-      const timestamp = Number(value);
-
-      if (isNaN(timestamp)) {
-        return dayjs(value, ['YYYY-MM-DD', 'YYYY-DD-MM'], true);
-      }
-
-      return dayjs(+timestamp);
-    }
-
     return dayjs(value);
   }, []);
 
@@ -80,6 +70,21 @@ export const DatePickerInput = ({
           variant="standard"
           fullWidth
           size="small"
+          onFocus={e => {
+            setFocused(true);
+            props.onFocus && props.onFocus(e);
+          }}
+          onBlur={e => {
+            setFocused(false);
+            onBlur && onBlur(e);
+          }}
+          error={!isFocused ? props.error : false}
+          FormHelperTextProps={{
+            classes: {
+              root: 'pl-2 text-destructive font-inter text-[0.8rem]',
+            },
+          }}
+          helperText={!isFocused && props.error ? 'Please enter valid date.' : undefined}
           InputProps={{
             ...props.InputProps,
             classes: {
@@ -96,7 +101,7 @@ export const DatePickerInput = ({
         />
       );
     },
-    [],
+    [isFocused, onBlur],
   );
 
   return (

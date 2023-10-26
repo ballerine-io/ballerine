@@ -132,7 +132,7 @@ export const Info: FunctionComponent<IInfoProps> = ({ info, whitelist, isLoading
                   >
                     <div className={`flex w-full justify-between`}>
                       OCR & Given details mismatch
-                      <button className={`link-hover link rounded-md p-1`} onClick={onOcrMismatch}>
+                      <button className={`link link-hover rounded-md p-1`} onClick={onOcrMismatch}>
                         Resolve
                       </button>
                     </div>
@@ -178,7 +178,7 @@ export const Info: FunctionComponent<IInfoProps> = ({ info, whitelist, isLoading
                         </pre>
                       </Modal>
                       <button
-                        className={`link-hover link-primary link rounded-md`}
+                        className={`link link-hover link-primary rounded-md`}
                         onClick={onToggleOnIsViewFullReportOpen}
                       >
                         View full report

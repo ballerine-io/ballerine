@@ -1,17 +1,21 @@
 import { motion } from 'framer-motion';
-import { FunctionComponent } from 'react';
-import { getTimePastFromNow } from '../../../../common/utils/get-time-past-from-now';
-import { Avatar } from '../../../../common/components/atoms/Avatar';
-import { ApprovedSvg, RejectedSvg } from '../../../../common/components/atoms/icons';
-import { IItemProps } from '../../../Entity/components/Case/interfaces';
-import { NavLink, useLocation } from 'react-router-dom';
-import { createInitials } from '../../../../common/utils/create-initials/create-initials';
+import { FunctionComponent, useMemo } from 'react';
+
 import { ctw } from '../../../../common/utils/ctw/ctw';
+import { NavLink, useLocation } from 'react-router-dom';
+import { Avatar } from '../../../../common/components/atoms/Avatar';
+import { IItemProps } from '../../../Entity/components/Case/interfaces';
+import { stringToRGB } from '../../../../common/utils/string-to-rgb/string-to-rgb';
+import { ApprovedSvg, RejectedSvg } from '../../../../common/components/atoms/icons';
+import { UserAvatar } from '../../../../common/components/atoms/UserAvatar/UserAvatar';
+import { createInitials } from '../../../../common/utils/create-initials/create-initials';
 import { useEllipsesWithTitle } from '../../../../common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
-import { Cases } from './Cases';
+import dayjs from 'dayjs';
+import { StateTag } from '@ballerine/common';
+import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
 
 /**
- * @description To be used by {@link Cases}, and be wrapped by {@link Cases.List}. Uses an li element with default styling to display a single case's data. Navigates to the selected entity on click by setting the entity id into the path param.
+ * @description To be used by {@link Cases}, and be wrapped by {@link Cases.List}. Uses li element with default styling to display a single case's data. Navigates to the selected entity on click by setting the entity id into the path param.
  *
  * @see {@link ImageViewer.List}
  * @see {@link BallerineImage}
@@ -21,8 +25,9 @@ import { Cases } from './Cases';
  * @param props.id - The id of the entity, passed into the url on click -> /case-management/individuals/:id.
  * @param props.fullName - The full name of the entity.
  * @param props.createdAt - Expects an ISO date string to calculate the waiting time using {@link getTimePastFromNow}.
- * @param props.operators - Which operators are now on the entity's case.
- * @param props.status - Whether the entity is approved or rejected.
+ * @param props.assignee - Which operator is now on the entity's case.
+ * @param props.entityAvatarUrl - The entity's image url to pass into {@link Avatar} and ${@Link UserAvatar}.
+ * @param props.tags - Whether the case is approved or rejected.
  *
  * @constructor
  */
@@ -30,66 +35,67 @@ export const Item: FunctionComponent<IItemProps> = ({
   id,
   fullName,
   createdAt,
-  assigneeId,
-  assigneeFullName,
-  avatarUrl,
-  status,
+  assignee,
+  tags,
+  entityAvatarUrl,
 }) => {
-  const timePast = getTimePastFromNow(new Date(createdAt));
-  const assigneeInitials = createInitials(assigneeFullName);
   const entityInitials = createInitials(fullName);
-  const { ref, styles } = useEllipsesWithTitle();
+  const { ref, styles } = useEllipsesWithTitle<HTMLDivElement>();
   const { search } = useLocation();
+  const rgb = useMemo(() => stringToRGB(fullName), [fullName]);
+  const isApproved = tags?.includes(StateTag.APPROVED);
+  const isRejected = tags?.includes(StateTag.REJECTED);
 
   return (
-    <li className={`rounded-md p-2 px-1`}>
+    <li className="h-[64px] w-full px-4">
       <NavLink
         to={`/en/case-management/entities/${id}${search}`}
         className={({ isActive }) =>
-          ctw(`flex items-center gap-x-4 rounded-md px-3 outline-none`, { 'bg-muted': isActive })
+          ctw(
+            `flex h-[64px] items-center gap-x-4 rounded-lg px-5 py-4 outline-none active:bg-muted-foreground/30 active:text-foreground`,
+            {
+              'bg-muted': isActive,
+            },
+          )
         }
       >
         <div className={`indicator`}>
           <motion.div
-            key={status}
+            key={tags?.join('-')}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className={ctw(`indicator-center indicator-middle indicator-item`, {
-              hidden: status !== 'REJECTED' && status !== 'APPROVED',
-              'text-success': status === 'APPROVED',
-              'text-error': status === 'REJECTED',
+            className={ctw(`indicator-center indicator-item indicator-middle`, {
+              hidden: !isRejected && !isApproved,
+              'text-success': isApproved,
+              'text-error': isRejected,
             })}
           >
-            {status === 'REJECTED' && <RejectedSvg />}
-            {status === 'APPROVED' && <ApprovedSvg />}
+            {/*  Early tell if a state has invalids tags and includes both `REJECTED` and `APPROVED` */}
+            {isRejected && <RejectedSvg />}
+            {isApproved && <ApprovedSvg />}
           </motion.div>
           <Avatar
-            src={avatarUrl}
-            placeholder={!avatarUrl ? entityInitials : undefined}
+            src={entityAvatarUrl}
+            className="text-sm d-8"
             alt={`${fullName}'s avatar`}
-            className={`pt-1.5 d-9`}
+            placeholder={entityInitials}
+            style={{
+              color: `rgb(${rgb})`,
+              backgroundColor: `rgba(${rgb}, 0.2)`,
+            }}
           />
         </div>
-        <div>
-          <div className={'w-[15ch]'}>
-            <span ref={ref} style={styles}>
-              {fullName}
-            </span>
+        <div className={`max-w-[115px]`}>
+          <div ref={ref} className={`mb-[2px] text-sm font-bold`} style={styles}>
+            {valueOrNA(fullName)}
           </div>
-          <div className={`text-sm`}>Waiting {timePast}</div>
+          <div className={`text-xs opacity-60`}>
+            {dayjs(new Date(createdAt)).format('D MMM YYYY HH:mm')}
+          </div>
         </div>
         <div className={`ml-auto mr-1 flex -space-x-2 overflow-hidden`}>
-          {!!assigneeId && (
-            <Avatar
-              key={assigneeId}
-              // src={assignedTo}
-              src={''}
-              placeholder={assigneeInitials}
-              alt={`assigned to: ${assigneeFullName}`}
-              className={`h-6 w-6 pt-1 text-[0.6rem]`}
-            />
-          )}
+          {assignee && <UserAvatar fullName={assignee.fullName} avatarUrl={assignee.avatarUrl} />}
         </div>
       </NavLink>
     </li>

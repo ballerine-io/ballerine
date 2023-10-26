@@ -22,14 +22,31 @@ import { WorkflowStateChangedWebhookCaller } from '@/events/workflow-state-chang
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { WorkflowCompletedWebhookCaller } from '@/events/workflow-completed-webhook-caller';
+import { ProjectScopeService } from '@/project/project-scope.service';
 import { EndUserService } from '@/end-user/end-user.service';
+import { ProjectModule } from '@/project/project.module';
+import { PrismaModule } from '@/prisma/prisma.module';
+import { CustomerModule } from '@/customer/customer.module';
+import { CustomerService } from '@/customer/customer.service';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 
 @Module({
-  imports: [ACLModule, forwardRef(() => AuthModule), HttpModule],
+  imports: [
+    ACLModule,
+    forwardRef(() => AuthModule),
+    HttpModule,
+    ProjectModule,
+    PrismaModule,
+    CustomerModule,
+  ],
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
   providers: [
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
+    ProjectScopeService,
     EndUserRepository,
     EndUserService,
     BusinessRepository,
@@ -47,6 +64,10 @@ import { EndUserService } from '@/end-user/end-user.service';
     FilterService,
     UserService,
     UserRepository,
+    WorkflowTokenRepository,
+    WorkflowTokenService,
+    SalesforceService,
+    SalesforceIntegrationRepository,
   ],
   exports: [
     WorkflowService,

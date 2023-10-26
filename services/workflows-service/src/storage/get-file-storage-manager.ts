@@ -14,12 +14,12 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getSignedUrl as getSignedUrlCF } from 'aws-cloudfront-sign';
 import console from 'console';
 
-export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv) => {
-  if (AwsS3FileConfig.isConfigured(processEnv)) {
+export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv, prefix?: string) => {
+  if (AwsS3FileConfig.isConfigured(processEnv, prefix)) {
     return multerS3({
-      s3: new S3Client(AwsS3FileConfig.fetchClientConfig(processEnv)),
+      s3: new S3Client(AwsS3FileConfig.fetchClientConfig(processEnv, prefix)),
       acl: 'private',
-      bucket: AwsS3FileConfig.fetchBucketName(processEnv) as string,
+      bucket: AwsS3FileConfig.getBucketName(processEnv, prefix) as string,
     });
   } else {
     const root = path.parse(os.homedir()).root;
@@ -34,10 +34,16 @@ export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv) => {
 export const downloadFileFromS3 = async (
   bucketName: string,
   fileNameInBucket: string,
+  customerName?: string,
 ): Promise<TLocalFile> => {
   try {
     const getObjectCommand = new GetObjectCommand({ Bucket: bucketName, Key: fileNameInBucket });
-    const s3Client = new S3Client(AwsS3FileConfig.fetchClientConfig(process.env));
+    const s3Client = new S3Client(
+      AwsS3FileConfig.fetchClientConfig(
+        process.env,
+        //TODO: when multi-bucket tenant: `${customerName ? `${customerName.toUpperCase()}_` : ''}`,
+      ),
+    );
     const response = await s3Client.send(getObjectCommand);
     const readableStream = response.Body as Readable;
     const tmpFile = tmp.fileSync();
@@ -63,19 +69,19 @@ export const downloadFileFromS3 = async (
 export const createPresignedUrlWithClient = async ({
   bucketName,
   fileNameInBucket,
-  fileTypeByEnding,
+  mimeType,
   service = 'cloudfront',
 }: {
   bucketName: string;
   fileNameInBucket: string;
-  fileTypeByEnding?: string;
+  mimeType?: string;
   service?: 's3' | 'cloudfront';
 }): Promise<TLocalFile> => {
   if (
     service === 'cloudfront' &&
     process.env.AWS_S3_CF_URL &&
     process.env.AWS_S3_CF_KEYPAIR_ID &&
-    (process.env.AWS_S3_CF_PRIVATE_KEY || process.env.AWS_S3_CF_PRIVATE_KEY_BASE64)
+    (process.env.AWS_S3_CF_PRIVATE_KEY_BASE64 || process.env.AWS_S3_CF_PRIVATE_KEY)
   ) {
     return cloudfrontPresignedUrl({
       fileNameInBucket,
@@ -85,24 +91,24 @@ export const createPresignedUrlWithClient = async ({
   return s3PresignedUrl({
     bucketName,
     fileNameInBucket,
-    fileTypeByEnding,
+    mimeType,
   });
 };
 
 export const s3PresignedUrl = async ({
   bucketName,
   fileNameInBucket,
-  fileTypeByEnding,
+  mimeType,
 }: {
   bucketName: string;
   fileNameInBucket: string;
-  fileTypeByEnding?: string;
+  mimeType?: string;
 }) => {
   const s3Client = new S3Client(AwsS3FileConfig.fetchClientConfig(process.env));
   const command = new GetObjectCommand({
     Bucket: bucketName,
     Key: fileNameInBucket,
-    ResponseContentType: fileTypeByEnding && `application/${fileTypeByEnding}`,
+    ResponseContentType: mimeType ? mimeType : undefined,
   });
 
   return getSignedUrl(s3Client, command, { expiresIn: 1800 });

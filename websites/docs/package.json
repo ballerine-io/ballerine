@@ -1,53 +1,35 @@
 {
   "name": "@ballerine/docs-site",
   "type": "module",
-  "version": "0.4.1",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
-    "spellcheck": "cspell \"*\"",
     "dev": "astro dev",
     "start": "astro dev",
-    "check": "astro check && tsc",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
+    "check": "astro check && tsc",
     "format": "prettier --write --plugin-search-dir=. \"./**/*.{cjs,js,ts,tsx,ts,mts}\"",
     "format:check": "prettier --check --plugin-search-dir=. \"./**/*.{cjs,js,ts,tsx,ts,mts}\"",
     "lint": "eslint . --fix"
   },
-  "peerDependencies": {
-    "vite": "~3.2.5"
-  },
   "dependencies": {
-    "@algolia/client-search": "^4.13.1",
-    "@astrojs/mdx": "0.19.7",
-    "@astrojs/react": "^2.2.1",
-    "@astrojs/solid-js": "^1.2.3",
+    "@astrojs/starlight": "0.11.1",
     "@astrojs/tailwind": "^4.0.0",
-    "@ballerine/common": "0.5.19",
-    "@docsearch/css": "^3.1.0",
-    "@docsearch/react": "^3.1.0",
-    "@types/node": "^18.0.0",
-    "@types/react": "^17.0.45",
-    "@types/react-dom": "^18.0.0",
-    "astro": "^2.6.6",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "shiki": "^0.14.2",
-    "solid-js": "^1.4.3"
+    "@ballerine/common": "^0.5.14",
+    "astro": "3.3.3",
+    "sharp": "^0.32.4",
+    "shiki": "^0.14.3"
   },
   "devDependencies": {
-    "@types/html-escaper": "^3.0.0",
-    "cspell": "^6.31.2",
-    "@cspell/cspell-types": "^6.31.1",
-    "editorconfig": "^1.0.1",
-    "eslint": "^8.28.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-config-standard-with-typescript": "^23.0.0",
-    "eslint-plugin-astro": "^0.21.0",
-    "eslint-plugin-unused-imports": "^2.0.0",
-    "html-escaper": "^3.0.3",
-    "prettier": "^2.8.0",
-    "prettier-plugin-astro": "^0.10.0"
+    "eslint": "^8.46.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-config-standard-with-typescript": "^37.0.0",
+    "eslint-plugin-astro": "^0.28.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "prettier": "^3.0.1",
+    "prettier-plugin-astro": "^0.11.0",
+    "tailwindcss": "^3.3.3"
   }
 }

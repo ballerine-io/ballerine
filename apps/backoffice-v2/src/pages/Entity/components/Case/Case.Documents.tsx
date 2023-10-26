@@ -8,6 +8,7 @@ import { ctw } from '../../../../common/utils/ctw/ctw';
 import ReactCrop from 'react-image-crop';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { FileText } from 'lucide-react';
+import { isPdf } from '../../../../common/utils/is-pdf/is-pdf';
 
 /**
  * @description To be used by {@link Case}, and be wrapped by {@link Case.Content}. Displays a single entity's documents using {@link ImageViewer}. Displays documents[0].imageUrl if no document was selected yet.
@@ -51,7 +52,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
             <TransformComponent
               wrapperClass={`max-w-[441px]`}
               contentClass={ctw(`overflow-x-auto`, {
-                'hover:cursor-move': selectedImage?.fileType !== 'pdf',
+                'hover:cursor-move': !isPdf(selectedImage),
               })}
               wrapperStyle={{
                 width: '100%',
@@ -65,11 +66,9 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
               <ReactCrop
                 crop={crop}
                 onChange={onCrop}
-                disabled={
-                  !isCropping || selectedImage?.fileType === 'pdf' || isRotatedOrTransformed
-                }
+                disabled={!isCropping || isPdf(selectedImage) || isRotatedOrTransformed}
                 className={ctw({
-                  'd-full [&>div]:d-full': selectedImage?.fileType === 'pdf',
+                  'd-full [&>div]:d-full': isPdf(selectedImage),
                   'rotate-90': documentRotation === 90,
                   'rotate-180': documentRotation === 180,
                   'rotate-[270deg]': documentRotation === 270,
@@ -85,51 +84,51 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
             </TransformComponent>
           </TransformWrapper>
           <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
-            {selectedImage?.fileType !== 'pdf' && (
+            {!isPdf(selectedImage) && !isLoading && (
               <>
                 <button
                   type={`button`}
                   className={ctw(
-                    `btn-ghost btn-sm btn-circle btn bg-base-300/70 text-[0.688rem] focus:outline-primary`,
+                    `btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary`,
                   )}
                   onClick={onRotateDocument}
                 >
                   <FileText className={`rotate-90 p-0.5`} />
                 </button>
-                <button
-                  className={ctw(
-                    'btn-ghost btn-sm btn-circle btn bg-base-300/70 focus:outline-primary',
-                    {
-                      hidden: !isCropping,
-                    },
-                  )}
-                  onClick={onCancelCrop}
-                >
-                  <XMarkSvg className={`p-0.5`} />
-                </button>
-                <div
-                  title={
-                    isRotatedOrTransformed
-                      ? `Cannot OCR rotated, zoomed, panned, or pinched documents`
-                      : undefined
-                  }
-                >
-                  <button
-                    type={`button`}
-                    className={ctw(
-                      `btn-ghost btn-sm btn-circle btn bg-base-300/70 text-[0.688rem] focus:outline-primary`,
-                      { loading: isLoadingOCR },
-                    )}
-                    onClick={onOcr}
-                    disabled={isLoading || isRotatedOrTransformed}
-                  >
-                    {isCropping && !isLoadingOCR && <CheckSvg className={`p-0.5`} />}
-                    {!isCropping && !isLoadingOCR && <span className={`p-0.5`}>OCR</span>}
-                  </button>
-                </div>
+                {/*<button*/}
+                {/*  className={ctw(*/}
+                {/*    'btn btn-circle btn-ghost btn-sm bg-base-300/70 focus:outline-primary',*/}
+                {/*    {*/}
+                {/*      hidden: !isCropping,*/}
+                {/*    },*/}
+                {/*  )}*/}
+                {/*  onClick={onCancelCrop}*/}
+                {/*>*/}
+                {/*  <XMarkSvg className={`p-0.5`} />*/}
+                {/*</button>*/}
+                {/*<div*/}
+                {/*  title={*/}
+                {/*    isRotatedOrTransformed*/}
+                {/*      ? `Cannot OCR rotated, zoomed, panned, or pinched documents`*/}
+                {/*      : undefined*/}
+                {/*  }*/}
+                {/*>*/}
+                {/*  <button*/}
+                {/*    type={`button`}*/}
+                {/*    className={ctw(*/}
+                {/*      `btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary`,*/}
+                {/*      { loading: isLoadingOCR },*/}
+                {/*    )}*/}
+                {/*    onClick={onOcr}*/}
+                {/*    disabled={isRotatedOrTransformed}*/}
+                {/*  >*/}
+                {/*    {isCropping && !isLoadingOCR && <CheckSvg className={`p-0.5`} />}*/}
+                {/*    {!isCropping && !isLoadingOCR && <span className={`p-0.5`}>OCR</span>}*/}
+                {/*  </button>*/}
+                {/*</div>*/}
               </>
             )}
-            <ImageViewer.ZoomButton disabled={isLoading} />
+            {!isLoading && <ImageViewer.ZoomButton />}
           </div>
         </div>
       </div>

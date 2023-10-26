@@ -47,6 +47,20 @@ class FakeEntityRepo extends BaseFakeRepository {
   }
 }
 
+class FakeCustomerRepo extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+
+  async getByProjectId() {
+    return {
+      authenticationConfiguration: {
+        webhookSharedSecret: 'webhook_secret',
+      },
+    };
+  }
+}
+
 function buildWorkflowDeifintion(sequenceNum) {
   return {
     id: sequenceNum.toString(),
@@ -87,9 +101,14 @@ function buildDocument(category, status) {
 describe('WorkflowService', () => {
   let service;
   let workflowRuntimeDataRepo;
+  let projectScopeService;
   let businessRepo;
+  let customerService;
   let endUserRepo;
   let entityRepo;
+  let userService;
+  let workflowTokenService;
+  let salesforceService;
   const numbUserInfo = Symbol();
   let fakeHttpService;
   let testingModule: TestingModule;
@@ -115,13 +134,23 @@ describe('WorkflowService', () => {
     businessRepo = new FakeBusinessRepo();
     endUserRepo = new FakeEndUserRepo();
     entityRepo = new FakeEntityRepo();
+    customerService = new FakeCustomerRepo();
+    userService = new FakeEntityRepo();
+    salesforceService = new FakeEntityRepo();
+    workflowTokenService = new FakeEntityRepo();
 
     fakeHttpService = {
       requests: [],
 
       axiosRef: {
         async post(url, data, config) {
-          fakeHttpService.requests.push({ url, data, config });
+          fakeHttpService.requests.push({ url, data });
+          return {
+            status: 200,
+            data: { success: true },
+            statusText: 'OK',
+            headers: {},
+          };
         },
       },
     };
@@ -144,6 +173,7 @@ describe('WorkflowService', () => {
       configService as unknown as ConfigService,
       eventEmitter as any,
       testingModule.get(AppLoggerService),
+      customerService,
     );
 
     service = new WorkflowService(
@@ -153,10 +183,15 @@ describe('WorkflowService', () => {
       {} as any,
       businessRepo,
       entityRepo,
+      customerService,
       {} as any,
       {} as any,
       eventEmitter as any,
       testingModule.get(AppLoggerService),
+      projectScopeService,
+      userService,
+      salesforceService,
+      workflowTokenService,
     );
   });
 
@@ -222,6 +257,15 @@ describe('WorkflowService', () => {
         context: {
           documents: [buildDocument('willBeRemoved', 'pending'), buildDocument('a', 'pending')],
         },
+        config: {
+          subscriptions: [
+            {
+              type: 'webhook',
+              url: 'https://example.com',
+              events: ['workflow.context.document.changed'],
+            },
+          ],
+        },
       };
       await workflowRuntimeDataRepo.create({
         data: initialRuntimeData,
@@ -253,11 +297,6 @@ describe('WorkflowService', () => {
               ...newContext,
             },
           },
-          config: {
-            headers: {
-              'X-Authorization': configService.get('WEBHOOK_SECRET'),
-            },
-          },
         },
       ]);
     });
@@ -268,6 +307,15 @@ describe('WorkflowService', () => {
         workflowDefinitionId: '2',
         context: {
           documents: [buildDocument('a', 'pending')],
+        },
+        config: {
+          subscriptions: [
+            {
+              type: 'webhook',
+              url: 'https://example.com',
+              events: ['workflow.context.document.changed'],
+            },
+          ],
         },
       };
       await workflowRuntimeDataRepo.create({
@@ -300,11 +348,6 @@ describe('WorkflowService', () => {
               ...newContext,
             },
           },
-          config: {
-            headers: {
-              'X-Authorization': configService.get('WEBHOOK_SECRET'),
-            },
-          },
         },
       ]);
     });
@@ -317,6 +360,15 @@ describe('WorkflowService', () => {
             buildDocument('willBeRemoved', 'pending'),
             buildDocument('a', 'pending'),
             buildDocument('b', 'pending'),
+          ],
+        },
+        config: {
+          subscriptions: [
+            {
+              type: 'webhook',
+              url: 'https://example.com',
+              events: ['workflow.context.document.changed'],
+            },
           ],
         },
       };

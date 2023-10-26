@@ -1,10 +1,9 @@
 export interface IMapCellProps {
-  id?: string;
   value:
+    | string
     | {
-        country: string;
         city: string;
+        country: string;
         street: string;
-      }
-    | string;
+      };
 }

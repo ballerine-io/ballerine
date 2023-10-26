@@ -1,8 +1,10 @@
 export interface IDetailsProps {
   id: string;
+  hideSeparator?: boolean;
   value: {
     id: string;
     title: string;
+    subtitle: string;
     data: Array<{
       title: string;
       isEditable: boolean;

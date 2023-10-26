@@ -15,26 +15,28 @@ import { Input } from '../../../../common/components/atoms/Input/Input';
 import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
 import { useCaseCallToActionLogic } from './hooks/useCaseCallToActionLogic/useCaseCallToActionLogic';
 import { capitalize } from '../../../../common/utils/capitalize/capitalize';
+import { Send } from 'lucide-react';
+import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
+import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
+import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
 
 export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ value, data }) => {
   const {
     // Callbacks
     onMutateApproveCase,
     onMutateRevisionCase,
-    onMutateRejectCase,
-    onActionChange,
     onReasonChange,
     onCommentChange,
     // /Callbacks
 
     // State
-    actions,
-    action,
     reason,
     comment,
+
     reasons,
     noReasons,
     isDisabled,
+    isLoadingRevisionCase,
     // /State
   } = useCaseCallToActionLogic({
     parentWorkflowId: data?.parentWorkflowId,
@@ -42,37 +44,31 @@ export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ va
     childWorkflowContextSchema: data?.childWorkflowContextSchema,
   });
 
-  if (value === 'Reject') {
+  if (value === 'Re-upload needed') {
     return (
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant={`destructive`} disabled={data?.disabled || isDisabled}>
+          <Button variant={`warning`} disabled={data?.disabled || isDisabled}>
             {value}
           </Button>
         </DialogTrigger>
-        <DialogContent>
-          <div>
-            <label className={`mb-1 font-bold`} htmlFor={`action`}>
-              Action
-            </label>
-            <Select onValueChange={onActionChange} value={action} id={`action`}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {actions?.map(({ label, value }) => {
-                  return (
-                    <SelectItem key={action} value={value}>
-                      {label}
-                    </SelectItem>
-                  );
-                })}
-              </SelectContent>
-            </Select>
-          </div>
+        <DialogContent className={`mb-96`}>
+          <DialogHeader>
+            <DialogTitle className={`text-2xl`}>Ask to re-upload</DialogTitle>
+            <DialogDescription>
+              <span className="mb-[10px] block">
+                By clicking the button below, an email with a link will be sent to the customer,
+                directing them to re-upload the documents you have marked as “re-upload needed”.
+              </span>
+              <span>
+                The case’s status will then change to “Revisions” until the customer will provide
+                the needed documents and fixes.
+              </span>
+            </DialogDescription>
+          </DialogHeader>
           {!noReasons && (
             <div>
-              <label className={`mb-1 font-bold`} htmlFor={`reason`}>
+              <label className={`mb-2 block font-bold`} htmlFor={`reason`}>
                 Reason
               </label>
               <Select onValueChange={onReasonChange} value={reason} id={`reason`}>
@@ -85,11 +81,7 @@ export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ va
                     const capitalizedReason = capitalize(reasonWithSpace);
 
                     return (
-                      <SelectItem
-                        key={`${action}${reason}`}
-                        value={reason}
-                        className={`capitalize`}
-                      >
+                      <SelectItem key={reason} value={reason} className={`capitalize`}>
                         {capitalizedReason}
                       </SelectItem>
                     );
@@ -99,7 +91,7 @@ export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ va
             </div>
           )}
           <div>
-            <label className={`mb-1 font-bold`} htmlFor={`comment`}>
+            <label className={`mb-2 block font-bold`} htmlFor={`comment`}>
               {noReasons ? 'Reason' : 'Comment'}
             </label>
             <Input
@@ -118,12 +110,16 @@ export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ va
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <button
-                className={ctw(`btn-error btn justify-center`)}
-                onClick={action === 'revision' ? onMutateRevisionCase : onMutateRejectCase}
+              <Button
+                className={ctw(`gap-x-2`, {
+                  loading: isLoadingRevisionCase,
+                })}
+                disabled={isLoadingRevisionCase}
+                onClick={onMutateRevisionCase}
               >
-                Confirm
-              </button>
+                <Send size={18} />
+                Send email
+              </Button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>

@@ -14,7 +14,10 @@ model User {
   email     String  @unique
   phone     String? @unique
   password  String
+  avatarUrl String?
   roles     Json
+
+  userToProjects UserToProject[]
 
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
@@ -70,9 +73,14 @@ model EndUser {
   businesses           Business[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
+  projectId                String?
+  project                  Project?                   @relation(fields: [projectId], references: [id])
+  WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
+
   @@index([endUserType])
   @@index([approvalState])
   @@index([createdAt])
+  @@index([projectId])
 }
 
 model EndUsersOnBusinesses {
@@ -119,10 +127,14 @@ model Business {
   endUsers             EndUser[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
-  @@index([businessType])
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+
   @@index([companyName])
   @@index([approvalState])
   @@index([correlationId])
+  @@index([projectId])
+  @@index([businessType])
 }
 
 model WorkflowDefinition {
@@ -130,6 +142,9 @@ model WorkflowDefinition {
   reviewMachineId String?
   name            String
   version         Int     @default(1)
+
+  projectId String?
+  isPublic  Boolean @default(false)
 
   definitionType     String
   definition         Json
@@ -145,7 +160,12 @@ model WorkflowDefinition {
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   createdBy           String                @default("SYSTEM")
+  project             Project?              @relation(fields: [projectId], references: [id])
   workflowRuntimeData WorkflowRuntimeData[]
+  uiDefinitions       UiDefinition[]
+
+  @@unique([name, version, projectId, definitionType])
+  @@index([projectId, name, definitionType])
 }
 
 enum WorkflowRuntimeDataStatus {
@@ -169,16 +189,23 @@ model WorkflowRuntimeData {
   config                    Json?
   // history
   state                     String?
+  tags                      Json?
   status                    WorkflowRuntimeDataStatus @default(active)
   createdAt                 DateTime                  @default(now())
   updatedAt                 DateTime                  @updatedAt
   createdBy                 String                    @default("SYSTEM")
   resolvedAt                DateTime?
   assignedAt                DateTime?
+  salesforceObjectName      String?
+  salesforceRecordId        String?
 
-  parentRuntimeDataId       String?               @map("parent_runtime_data_id")
-  parentWorkflowRuntimeData WorkflowRuntimeData?  @relation("ParentChild", fields: [parentRuntimeDataId], references: [id])
-  childWorkflowsRuntimeData WorkflowRuntimeData[] @relation("ParentChild")
+  parentRuntimeDataId       String?                    @map("parent_runtime_data_id")
+  parentWorkflowRuntimeData WorkflowRuntimeData?       @relation("ParentChild", fields: [parentRuntimeDataId], references: [id])
+  childWorkflowsRuntimeData WorkflowRuntimeData[]      @relation("ParentChild")
+  WorkflowRuntimeDataToken  WorkflowRuntimeDataToken[]
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
 
   @@index([assigneeId, status])
   @@index([endUserId, status])
@@ -186,10 +213,13 @@ model WorkflowRuntimeData {
   @@index([workflowDefinitionId, status])
   @@index([state])
   @@index([parentRuntimeDataId])
+  @@index([projectId])
+  @@index([tags(ops: JsonbPathOps)], type: Gin)
 }
 
 model File {
   id               String   @id @default(cuid())
+  mimeType         String?
   userId           String
   fileNameOnDisk   String
   uri              String
@@ -197,7 +227,11 @@ model File {
   createdAt        DateTime @default(now())
   createdBy        String   @default("SYSTEM")
 
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+
   @@index([userId])
+  @@index([projectId])
 }
 
 model Policy {
@@ -209,15 +243,134 @@ model Policy {
 }
 
 model Filter {
-  id        String   @id @default(cuid())
-  // Name of the filter i.e. "KYC"
-  name      String   @unique
-  // Does the filter belong to EndUser or Business?
-  entity    String
-  // 1:1 with Prisma's select object
-  // Example: { select: { id: true, firstName: true, lastName: true }, where: { id: { equals: "123" } } }
-  query     Json
+  id     String @id @default(cuid())
+  name   String
+  entity String
+  query  Json
+
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   createdBy String   @default("SYSTEM")
+
+  @@unique([name, projectId]) // Ensure 'name' is unique within the scope of 'projectId'
+  @@index([projectId])
+}
+
+enum CustomerStatuses {
+  onboarding
+  during_pilot
+  active
+  terminated
+}
+
+model Customer {
+  id                          String           @id @default(cuid())
+  name                        String           @unique
+  displayName                 String
+  logoImageUri                String
+  faviconImageUri             String           @default("") // TODO: remove default value after data migration
+  customerStatus              CustomerStatuses @default(onboarding)
+  authenticationConfiguration Json?
+  country                     String?
+  language                    String?
+  websiteUrl                  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects Project[]
+
+  @@index(name)
+  @@index(customerStatus)
+  @@index([authenticationConfiguration(ops: JsonbPathOps)], type: Gin)
+}
+
+model Project {
+  id         String   @id @default(cuid())
+  name       String
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  userToProjects UserToProject[]
+
+  filters                  Filter[]
+  endUsers                 EndUser[]
+  business                 Business[]
+  workflowRuntimeData      WorkflowRuntimeData[]
+  files                    File[]
+  SalesforceIntegration    SalesforceIntegration?
+  workflowDefinitions      WorkflowDefinition[]
+  uiDefinitions            UiDefinition[]
+  WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
+
+  @@unique([name, customerId])
+  @@index(name)
+  @@index(customerId)
+}
+
+model UserToProject {
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  @@id([projectId, userId])
+  @@index([userId])
+}
+
+model SalesforceIntegration {
+  id                  String   @id @default(cuid()) @db.VarChar(500)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  projectId           String   @unique @db.VarChar(500)
+  project             Project  @relation(fields: [projectId], references: [id])
+  accessToken         String   @db.VarChar(500)
+  accessTokenIssuedAt DateTime
+  refreshToken        String   @db.VarChar(500)
+  instanceUrl         String   @db.VarChar(500)
+  userId              String   @db.VarChar(500)
+  organizationId      String   @db.VarChar(500)
+  idUrl               String   @db.VarChar(500)
+}
+
+enum UiDefinitionContext {
+  back_office
+  collection_flow
+}
+
+model UiDefinition {
+  id                   String              @id @default(cuid())
+  workflowDefinitionId String
+  uiContext            UiDefinitionContext
+
+  page  Int?
+  state String?
+
+  definition    Json? // Frontend UI xstate definition
+  uiSchema      Json // JSON schmea of how to render UI
+  schemaOptions Json? // Document Schemas, rejectionReasons: {}, documenTypes: {}, documenCateogries: {}
+  uiOptions     Json? // how the view will look, overall
+
+  projectId          String?
+  project            Project?           @relation(fields: [projectId], references: [id])
+  workflowDefinition WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
+}
+
+model WorkflowRuntimeDataToken {
+  id                    String              @id @default(cuid())
+  token                 String              @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workflowRuntimeDataId String
+  workflowRuntimeData   WorkflowRuntimeData @relation(fields: [workflowRuntimeDataId], references: [id])
+  endUserId             String
+  endUser               EndUser             @relation(fields: [endUserId], references: [id])
+  projectId             String
+  project               Project             @relation(fields: [projectId], references: [id])
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  expiresAt             DateTime
+  deletedAt             DateTime?
 }

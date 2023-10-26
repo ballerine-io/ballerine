@@ -9,7 +9,11 @@ import { AxiosInstance } from 'axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
 import { ExtractWorkflowEventData } from '@/workflow/types';
-import { getWebhookInfo } from '@/events/get-webhook-info';
+import { getWebhooks, Webhook } from '@/events/get-webhooks';
+import { sign } from '@/common/utils/sign/sign';
+import { env } from '@/env';
+import { CustomerService } from '@/customer/customer.service';
+import { TAuthenticationConfiguration } from '@/customer/types';
 
 @Injectable()
 export class WorkflowStateChangedWebhookCaller {
@@ -17,9 +21,10 @@ export class WorkflowStateChangedWebhookCaller {
 
   constructor(
     private httpService: HttpService,
-    private workflowEventEmitter: WorkflowEventEmitterService,
+    workflowEventEmitter: WorkflowEventEmitterService,
     private configService: ConfigService,
     private readonly logger: AppLoggerService,
+    private readonly customerService: CustomerService,
   ) {
     this.#__axios = this.httpService.axiosRef;
 
@@ -41,45 +46,60 @@ export class WorkflowStateChangedWebhookCaller {
       id: data.runtimeData.id,
     });
 
-    const { id, environment, url, authSecret, apiVersion } = getWebhookInfo(
+    const webhooks = getWebhooks(
       data.runtimeData.config,
       this.configService.get('NODE_ENV'),
-      this.configService.get('WEBHOOK_URL'),
-      this.configService.get('WEBHOOK_SECRET'),
       'workflow.state.changed',
     );
 
-    if (!url) {
-      this.logger.log(`No webhook url found for a workflow runtime data with an id of "${id}"`);
-      return;
-    }
+    const customer = await this.customerService.getByProjectId(data.runtimeData.projectId, {
+      select: {
+        authenticationConfiguration: true,
+      },
+    });
 
+    const { webhookSharedSecret } =
+      customer.authenticationConfiguration as TAuthenticationConfiguration;
+
+    for (const webhook of webhooks) {
+      await this.sendWebhook({ data, webhook, webhookSharedSecret });
+    }
+  }
+
+  private async sendWebhook({
+    data,
+    webhook: { id, url, environment, apiVersion },
+    webhookSharedSecret,
+  }: {
+    data: ExtractWorkflowEventData<'workflow.state.changed'>;
+    webhook: Webhook;
+    webhookSharedSecret: string;
+  }) {
     this.logger.log('Sending webhook', { id, url });
 
+    const payload = {
+      id,
+      eventName: 'workflow.state.changed',
+      state: data.state,
+      apiVersion,
+      timestamp: new Date().toISOString(),
+      workflowCreatedAt: data.runtimeData.createdAt,
+      workflowResolvedAt: data.runtimeData.resolvedAt,
+      workflowDefinitionId: data.runtimeData.workflowDefinitionId,
+      workflowRuntimeId: data.runtimeData.id,
+      ballerineEntityId: data.entityId,
+      correlationId: data.correlationId,
+      environment,
+      data: data.runtimeData.context,
+    };
+
     try {
-      const res = await this.#__axios.post(
-        url,
-        {
-          id,
-          eventName: 'workflow.state.changed',
-          state: data.state,
-          apiVersion,
-          timestamp: new Date().toISOString(),
-          workflowCreatedAt: data.runtimeData.createdAt,
-          workflowResolvedAt: data.runtimeData.resolvedAt,
-          workflowDefinitionId: data.runtimeData.workflowDefinitionId,
-          workflowRuntimeId: data.runtimeData.id,
-          ballerineEntityId: data.entityId,
-          correlationId: data.correlationId,
-          environment,
-          data: data.runtimeData.context,
+      const res = await this.#__axios.post(url, payload, {
+        headers: {
+          'X-Authorization': env.WEBHOOK_SECRET,
+          'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
         },
-        {
-          headers: {
-            'X-Authorization': authSecret,
-          },
-        },
-      );
+      });
 
       this.logger.log('Webhook Result:', {
         status: res.status,

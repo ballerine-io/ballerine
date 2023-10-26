@@ -1,30 +1,22 @@
-export const defaultContextSchema = {
-  $schema: 'http://json-schema.org/draft-07/schema#',
-  type: 'object',
-  properties: {
-    entity: {
-      type: 'object',
-      properties: {
-        type: {
-          enum: ['individual', 'business'],
-        },
-        data: {
-          type: 'object',
-          properties: {
-            additionalInfo: {
-              type: 'object',
-            },
+import { Type } from '@sinclair/typebox';
+
+export const defaultContextSchema = Type.Object({
+  entity: Type.Object(
+    {
+      type: Type.String({ enum: ['individual', 'business'] }),
+      data: Type.Optional(
+        Type.Object(
+          {
+            additionalInfo: Type.Optional(Type.Object({})),
           },
-          additionalProperties: true,
-        },
-        ballerineEntityId: {
-          type: 'string',
-        },
-        id: {
-          type: 'string',
-        },
-      },
-      required: ['type'],
+          { additionalProperties: true },
+        ),
+      ),
+      id: Type.Optional(Type.String()),
+      ballerineEntityId: Type.Optional(Type.String()),
+    },
+    {
+      additionalProperties: false,
       anyOf: [
         {
           required: ['id'],
@@ -33,64 +25,48 @@ export const defaultContextSchema = {
           required: ['ballerineEntityId'],
         },
       ],
-      additionalProperties: false,
     },
-    documents: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: {
-            type: 'string',
+  ),
+  documents: Type.Array(
+    Type.Object(
+      {
+        id: Type.Optional(Type.String()),
+        category: Type.String({
+          transform: ['trim', 'toLowerCase'],
+        }),
+        type: Type.String({
+          transform: ['trim', 'toLowerCase'],
+        }),
+        issuer: Type.Object(
+          {
+            type: Type.Optional(Type.String()),
+            name: Type.Optional(Type.String()),
+            country: Type.String({
+              transform: ['trim', 'toUpperCase'],
+            }),
+            city: Type.Optional(Type.String()),
+            additionalInfo: Type.Optional(Type.Object({})),
           },
-          category: {
-            type: 'string',
-            transform: ['trim', 'toLowerCase'],
-          },
-          type: {
-            type: 'string',
-            transform: ['trim', 'toLowerCase'],
-          },
-          issuer: {
-            type: 'object',
-            properties: {
-              type: {
-                type: 'string',
-              },
-              name: {
-                type: 'string',
-              },
-              country: {
-                type: 'string',
-                transform: ['trim', 'toUpperCase'],
-              },
-              city: {
-                type: 'string',
-              },
-              additionalInfo: {
-                type: 'object',
-              },
-            },
-            required: ['country'],
+          {
             additionalProperties: false,
           },
-          issuingVersion: {
-            type: 'integer',
-          },
-          decision: {
-            type: 'object',
-            properties: {
-              status: {
-                type: 'string',
-                enum: ['new', 'pending', 'revision', 'approved', 'rejected'],
-              },
-              rejectionReason: {
-                anyOf: [
-                  {
-                    type: 'string',
-                  },
-                  {
-                    type: 'string',
+        ),
+        issuingVersion: Type.Optional(Type.Number()),
+        decision: Type.Optional(
+          Type.Object(
+            {
+              status: Type.Optional(
+                Type.Union([
+                  Type.String({
+                    enum: ['new', 'pending', 'revision', 'approved', 'rejected'],
+                  }),
+                  Type.Null(),
+                ]),
+              ),
+              rejectionReason: Type.Optional(
+                Type.Union([
+                  Type.String(),
+                  Type.String({
                     enum: [
                       'Suspicious document',
                       'Document does not match customer profile',
@@ -98,16 +74,13 @@ export const defaultContextSchema = {
                       'Fake or altered document',
                       'Document on watchlist or blacklist',
                     ],
-                  },
-                ],
-              },
-              revisionReason: {
-                anyOf: [
-                  {
-                    type: 'string',
-                  },
-                  {
-                    type: 'string',
+                  }),
+                ]),
+              ),
+              revisionReason: Type.Optional(
+                Type.Union([
+                  Type.String(),
+                  Type.String({
                     enum: [
                       'Wrong document',
                       'Fake document',
@@ -123,76 +96,59 @@ export const defaultContextSchema = {
                       'Blurry image',
                       'Other',
                     ],
-                  },
-                ],
-              },
+                  }),
+                ]),
+              ),
             },
-            additionalProperties: false,
-          },
-          version: {
-            type: 'integer',
-          },
-          pages: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                ballerineFileId: {
-                  type: 'string',
-                },
-                provider: {
-                  type: 'string',
-                  enum: ['gcs', 'http', 'stream', 'base64', 'ftp'],
-                },
-                uri: {
-                  type: 'string',
-                  format: 'uri',
-                },
-                type: {
-                  enum: ['pdf', 'png', 'jpg'],
-                },
-                data: {
-                  type: 'string',
-                },
-                metadata: {
-                  type: 'object',
-                  properties: {
-                    side: {
-                      type: 'string',
-                    },
-                    pageNumber: {
-                      type: 'string',
-                    },
+            { additionalProperties: false },
+          ),
+        ),
+        version: Type.Optional(Type.Number()),
+        pages: Type.Array(
+          Type.Object(
+            {
+              ballerineFileId: Type.Optional(Type.String()),
+              provider: Type.String({ enum: ['gcs', 'http', 'stream', 'file-system', 'ftp'] }),
+              uri: Type.String({ format: 'uri' }),
+              type: Type.Optional(
+                Type.String({
+                  enum: [
+                    'application/pdf',
+                    'image/png',
+                    'image/jpg',
+                    'image/jpeg',
+                    // Backwards compatibility
+                    'pdf',
+                    'png',
+                    'jpg',
+                  ],
+                }),
+              ),
+              data: Type.Optional(Type.String()),
+              metadata: Type.Optional(
+                Type.Object(
+                  {
+                    side: Type.Optional(Type.String()),
+                    pageNumber: Type.Optional(Type.String()),
                   },
-                  additionalProperties: false,
-                },
-              },
-              required: ['provider', 'uri', 'type'],
+                  { additionalProperties: false },
+                ),
+              ),
+            },
+            {
               additionalProperties: false,
             },
-          },
-          properties: {
-            type: 'object',
-            properties: {
-              email: {
-                type: 'string',
-                format: 'email',
-              },
-              expiryDate: {
-                type: 'string',
-                format: 'date',
-              },
-              idNumber: {
-                type: 'string',
-                format: 'regex',
-              },
-            },
-          },
-        },
-        required: ['category', 'type', 'issuer', 'pages', 'properties'],
+          ),
+        ),
+        properties: Type.Object({
+          email: Type.Optional(Type.String({ format: 'email' })),
+          expiryDate: Type.Optional(Type.String({ format: 'date' })),
+          idNumber: Type.Optional(Type.String()),
+        }),
+      },
+      {
         additionalProperties: false,
       },
-    },
-  },
-  required: ['entity', 'documents'],
-};
+    ),
+  ),
+});

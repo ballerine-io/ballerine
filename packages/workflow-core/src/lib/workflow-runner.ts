@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { AnyRecord, uniqueArray } from '@ballerine/common';
+import { AnyRecord, isObject, uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
@@ -19,7 +19,9 @@ import { JsonSchemaValidator } from './utils/context-validator/json-schema-valid
 import {
   ActionablePlugin,
   ActionablePlugins,
+  CommonPlugin,
   CommonPlugins,
+  HttpPlugin,
   HttpPlugins,
   StatePlugin,
 } from './plugins/types';
@@ -148,6 +150,7 @@ export class WorkflowRunner {
         response: { transformers: responseTransformer, schemaValidator: responseValidator },
         successAction: apiPluginSchema.successAction,
         errorAction: apiPluginSchema.errorAction,
+        persistResponseDestination: apiPluginSchema.persistResponseDestination,
       });
 
       return apiPlugin;
@@ -160,9 +163,7 @@ export class WorkflowRunner {
     callbackAction?: ChildWorkflowPluginParams['action'],
   ) {
     return childPluginSchemas?.map(childPluginSchema => {
-      const transformers = this.fetchTransformers(
-        childPluginSchema.transformers['transform'] || [],
-      );
+      const transformers = this.fetchTransformers(childPluginSchema.transformers) || [];
 
       const childWorkflowPlugin = new ChildWorkflowPlugin({
         name: childPluginSchema.name,
@@ -419,12 +420,19 @@ export class WorkflowRunner {
 
     const service = interpret(workflow)
       .start(this.#__currentState)
-      .onTransition(state => {
+      .onTransition((state, context) => {
         if (state.changed) {
           console.log('Transitioned into', state.value);
 
           if (state.done) {
             console.log('Reached final state');
+          }
+
+          if (state.tags.has('failure')) {
+            console.log('Reached failure state', {
+              correlationId: context?.entity?.id,
+              ballerineEntityId: context?.entity?.ballerineEntityId,
+            });
           }
 
           if (this.#__callback) {
@@ -473,29 +481,13 @@ export class WorkflowRunner {
 
     if (commonPlugins) {
       for (const commonPlugin of commonPlugins) {
-        // @ts-expect-error - multiple types of plugins return different responses
-        const { callbackAction, error } = await commonPlugin.invoke?.(this.#__context);
-        if (!!error) {
-          this.#__context.pluginsOutput = {
-            ...(this.#__context.pluginsOutput || {}),
-            ...{ [commonPlugin.name]: { error: error } },
-          };
-        }
-        if (callbackAction) await this.sendEvent({ type: callbackAction });
+        await this.__invokeCommonPlugin(commonPlugin);
       }
     }
 
     if (stateApiPlugins) {
       for (const apiPlugin of stateApiPlugins) {
-        // @ts-expect-error - multiple types of plugins return different responses
-        const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(this.#__context);
-        if (!this.isPluginWithCallbackAction(apiPlugin)) continue;
-
-        this.#__context.pluginsOutput = {
-          ...(this.#__context.pluginsOutput || {}),
-          ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
-        };
-        await this.sendEvent(callbackAction);
+        await this.__invokeApiPlugin(apiPlugin);
       }
     }
 
@@ -522,6 +514,45 @@ export class WorkflowRunner {
     }
   }
 
+  private async __invokeCommonPlugin(commonPlugin: CommonPlugin) {
+    // @ts-expect-error - multiple types of plugins return different responses
+    const { callbackAction, error } = await commonPlugin.invoke?.(this.#__context);
+    if (!!error) {
+      this.#__context.pluginsOutput = {
+        ...(this.#__context.pluginsOutput || {}),
+        ...{ [commonPlugin.name]: { error: error } },
+      };
+    }
+    if (callbackAction) await this.sendEvent({ type: callbackAction });
+  }
+
+  private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
+    // @ts-expect-error - multiple types of plugins return different responses
+    const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(this.#__context);
+    if (error) {
+      console.error('Error invoking plugin: ', apiPlugin.name, this.#__context, error);
+    }
+    if (!this.isPluginWithCallbackAction(apiPlugin)) {
+      console.log('Plugin does not have callback action: ', apiPlugin.name);
+      return;
+    }
+
+    if (apiPlugin.persistResponseDestination && responseBody) {
+      this.#__context = this.mergeToContext(
+        this.#__context,
+        responseBody,
+        apiPlugin.persistResponseDestination,
+      );
+    } else {
+      this.#__context.pluginsOutput = {
+        ...(this.#__context.pluginsOutput || {}),
+        ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
+      };
+    }
+
+    await this.sendEvent(callbackAction);
+  }
+
   subscribe(callback: (event: WorkflowEvent) => void) {
     this.#__callback = callback;
     // Not currently in use.
@@ -532,5 +563,79 @@ export class WorkflowRunner {
     const service = interpret(this.#__workflow.withContext(this.#__context));
     service.start(this.#__currentState);
     return service.getSnapshot();
+  }
+
+  overrideContext(context: any) {
+    return (this.#__context = context);
+  }
+
+  async invokePlugin(pluginName: string) {
+    const { apiPlugins, commonPlugins, childWorkflowPlugins } = this.#__extensions;
+    const pluginToInvoke = [
+      ...(apiPlugins ?? []),
+      ...(commonPlugins ?? []),
+      ...(childWorkflowPlugins ?? []),
+    ]
+      .filter(plugin => !!plugin)
+      .find(plugin => plugin?.name === pluginName);
+
+    if (pluginToInvoke && this.isHttpPlugin(pluginToInvoke)) {
+      return await this.__invokeApiPlugin(pluginToInvoke);
+    }
+    if (pluginToInvoke && pluginToInvoke instanceof IterativePlugin) {
+      return await this.__invokeCommonPlugin(pluginToInvoke);
+    }
+  }
+
+  isHttpPlugin(plugin: unknown): plugin is HttpPlugin {
+    return (
+      plugin instanceof ApiPlugin || plugin instanceof WebhookPlugin || plugin instanceof KycPlugin
+    );
+  }
+
+  mergeToContext(
+    sourceContext: Record<string, any>,
+    informationToPersist: Record<string, any>,
+    pathToPersist: string,
+  ) {
+    const keys = pathToPersist.split('.') as Array<string>;
+    let obj = sourceContext;
+
+    for (let i = 0; i < keys.length - 1; i++) {
+      const key = keys[i] as string;
+      if (!obj[key]) {
+        obj[key] = {};
+      }
+      obj = obj[key];
+    }
+
+    const finalKey = keys[keys.length - 1] as string;
+    if (!obj[finalKey]) {
+      obj[finalKey] = {};
+    }
+
+    obj[finalKey] = this.deepMerge(informationToPersist, obj[finalKey]);
+
+    return sourceContext;
+  }
+
+  deepMerge(source: Record<string, any>, target: Record<string, any>) {
+    const output = { ...target };
+
+    if (isObject(target) && isObject(source)) {
+      Object.keys(source).forEach(key => {
+        if (isObject(source[key])) {
+          if (!target[key]) {
+            Object.assign(output, { [key]: source[key] });
+          } else {
+            output[key] = this.deepMerge(source[key], target[key]);
+          }
+        } else {
+          Object.assign(output, { [key]: source[key] });
+        }
+      });
+    }
+
+    return output;
   }
 }

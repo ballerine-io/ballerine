@@ -1,4 +1,5 @@
 import { Heading } from '../../components/Heading/Heading';
+import { Subheading } from '../../components/Subheading/Subheading';
 import { Alert } from '../../components/Alert/Alert';
 import { Container } from '../../components/Container/Container';
 import { CallToAction } from '../../components/CallToAction/CallToAction';
@@ -8,10 +9,14 @@ import { MultiDocuments } from '../../components/MultiDocuments/MultiDocuments';
 import { NestedDetails } from '../../components/NestedDetails/NestedDetails';
 import { MapCell } from '../../components/MapCell/MapCell';
 import { CaseCallToAction } from '../../components/CaseCallToAction/CaseCallToAction';
+import { BadgeCell } from '../../components/BadgeCell/BadgeCell';
+import { TableCell } from '../../components/TableCell/TableCell';
 
 export const cells = {
   heading: Heading,
+  subheading: Subheading,
   alert: Alert,
+  badge: BadgeCell,
   container: Container,
   callToAction: CallToAction,
   faceComparison: FaceComparison,
@@ -20,4 +25,5 @@ export const cells = {
   multiDocuments: MultiDocuments,
   map: MapCell,
   caseCallToAction: CaseCallToAction,
+  table: TableCell,
 };

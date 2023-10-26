@@ -14,8 +14,18 @@ import { FileService } from '@/providers/file/file.service';
 import { FileRepository } from '@/storage/storage.repository';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
+import { ProjectModule } from '@/project/project.module';
+import { CustomerModule } from '@/customer/customer.module';
+import { UserService } from '@/user/user.service';
+import { UserRepository } from '@/user/user.repository';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { PasswordService } from '@/auth/password/password.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 
 @Module({
+  imports: [ProjectModule, CustomerModule],
   controllers: [EndUserControllerInternal, EndUserControllerExternal],
   providers: [
     EndUserRepository,
@@ -31,6 +41,13 @@ import { EntityRepository } from '@/common/entity/entity.repository';
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
     WorkflowService,
+    UserService,
+    UserRepository,
+    PasswordService,
+    SalesforceService,
+    SalesforceIntegrationRepository,
+    WorkflowTokenService,
+    WorkflowTokenRepository,
   ],
 })
 export class EndUserModule {}

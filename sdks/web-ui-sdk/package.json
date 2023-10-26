@@ -21,7 +21,7 @@
   "types": "dist/index.d.ts",
   "name": "@ballerine/web-ui-sdk",
   "private": false,
-  "version": "1.3.20",
+  "version": "1.4.12",
   "type": "module",
   "files": [
     "dist"
@@ -80,7 +80,7 @@
     "eslint-plugin-svelte3": "^4.0.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "jsdom": "^20.0.2",
-    "postcss": "^8.4.18",
+    "postcss": "^8.4.31",
     "prettier": "^2.7.1",
     "prettier-plugin-svelte": "^2.8.0",
     "rollup-plugin-visualizer": "^5.8.3",
@@ -96,7 +96,7 @@
     "vitest": "^0.24.5"
   },
   "dependencies": {
-    "@ballerine/common": "0.5.19",
+    "@ballerine/common": "0.7.15",
     "@zerodevx/svelte-toast": "^0.8.0",
     "compressorjs": "^1.1.1",
     "deepmerge": "^4.3.0",

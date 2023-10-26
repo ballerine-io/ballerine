@@ -1,6 +1,8 @@
-import 'dotenv/config';
+import { config } from 'dotenv';
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
+
+config({ path: '.env' });
 
 export const env = createEnv({
   /*
@@ -11,7 +13,6 @@ export const env = createEnv({
     NODE_ENV: z.enum(['development', 'production', 'test', 'local']),
     ENV_FILE_NAME: z.string().optional(),
     BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
-    COMPOSE_PROJECT_NAME: z.string(),
     JWT_SECRET_KEY: z.string(),
     JWT_EXPIRATION: z.string(),
     PORT: z.coerce.number(),
@@ -29,15 +30,20 @@ export const env = createEnv({
     AWS_S3_BUCKET_SECRET: z.string().optional(),
     API_KEY: z.string(),
     SENTRY_DSN: z.string().nullable().optional(),
-    WEBHOOK_URL: z.string().url().optional(),
-    WEBHOOK_SECRET: z.string().optional(),
-    IS_DEMO: z.string().optional(),
+    WEBHOOK_SECRET: z
+      .string()
+      .optional()
+      .describe(
+        'Deprecated. Should use `customer.authenticationConfiguration.webhookSharedSecret` instead.',
+      ),
+    ADMIN_API_KEY: z.string().optional(),
     MAIL_ADAPTER: z
       .enum(['sendgrid', 'log'])
       .default('sendgrid')
       .describe(
         `Which mail adapter to use. Use "log" during development to log emails to the console. In production, use "sendgrid" to send emails via SendGrid.`,
       ),
+    UNIFIED_API_URL: z.string().url().describe('The URL of the Unified API.'),
     UNIFIED_API_TOKEN: z
       .string()
       .optional()
@@ -48,6 +54,14 @@ export const env = createEnv({
       .string()
       .optional()
       .describe('Shared secret for the Unified API. Used for verifying incoming callbacks.'),
+    SALESFORCE_API_VERSION: z
+      .string()
+      .optional()
+      .default('58.0')
+      .describe('Salesforce API version'),
+    SALESFORCE_CONSUMER_KEY: z.string().optional().describe('Salesforce consumer key'),
+    SALESFORCE_CONSUMER_SECRET: z.string().optional().describe('Salesforce consumer secret'),
+    APP_API_URL: z.string().url().describe('The URL of the workflows-service API'),
   },
   client: {},
   /**

@@ -1,28 +1,159 @@
 # @ballerine/common
 
-## 0.6.7-hotfix.8
+## 0.7.15
 
 ### Patch Changes
 
-- c548fca7: businessName now may accept spaces
+- 306ca466: businessName now may accept spaces
 
-## 0.6.7
-
-### Patch Changes
-
-- Update
-
-## 0.6.7
+## 0.7.14
 
 ### Patch Changes
 
-- Documents schemas update
+- Bump
 
-## 0.6.7
+## 0.7.13
 
 ### Patch Changes
 
-- gst
+- b1cebf50: pre
+- b1cebf50: Pre ver
+- b1cebf50: bump pre
+- b1cebf50: Version bump pre
+- Bump
+- b1cebf50: Pre bump
+- b1cebf50: Pre bump
+- b1cebf50: Bump
+- b1cebf50: pre
+- b1cebf50: Pre release
+- b1cebf50: Bumo
+
+## 0.7.13-3e08f108.9
+
+### Patch Changes
+
+- Version bump pre
+
+## 0.7.13-3e08f108.8
+
+### Patch Changes
+
+- Bump
+
+## 0.7.13-3e08f108.7
+
+### Patch Changes
+
+- Bumo
+
+## 0.7.13-3e08f108.6
+
+### Patch Changes
+
+- Pre ver
+
+## 0.7.13-3e08f108.5
+
+### Patch Changes
+
+- Pre bump
+
+## 0.7.13-3e08f108.4
+
+### Patch Changes
+
+- bump pre
+
+## 0.7.13-3e08f108.3
+
+### Patch Changes
+
+- Pre bump
+
+## 0.7.13-3e08f108.2
+
+### Patch Changes
+
+- Pre release
+
+## 0.7.13-3e08f108.1
+
+### Patch Changes
+
+- pre
+
+## 0.7.13-3e08f108.0
+
+### Patch Changes
+
+- pre
+
+## 0.7.12
+
+### Patch Changes
+
+- Bump minor version
+
+## 0.7.11
+
+### Patch Changes
+
+- Version minor bump
+
+## 0.7.10
+
+### Patch Changes
+
+- efedc9cb: Update document schemas
+- Version bump
+
+## 0.7.5
+
+### Patch Changes
+
+- Fix schema
+
+## 0.7.4
+
+### Patch Changes
+
+- Add business_utility_bill document
+
+## 0.7.3
+
+### Patch Changes
+
+- Update document schemas
+
+## 0.7.2
+
+### Patch Changes
+
+- Fix
+
+## 0.7.1
+
+### Patch Changes
+
+- Merge
+
+## 0.7.0
+
+### Minor Changes
+
+- Fixes
+
+## 0.6.0
+
+### Minor Changes
+
+- Fixes
+
+## 0.5.25
+
+### Patch Changes
+
+- c2a13806: Added StateTags
 
 ## 0.5.24
 
@@ -34,13 +165,19 @@
 
 ### Patch Changes
 
-- 9d0c7f92: updated document schemas
+- Removed verifiySignature util
 
 ## 0.5.22
 
 ### Patch Changes
 
 - Added `verifySignature` function
+
+## 0.5.20
+
+### Patch Changes
+
+- GH schemas update
 
 ## 0.5.19
 

@@ -20,7 +20,7 @@ export const useApproveCaseMutation = ({
       fetchWorkflowEvent({
         workflowId,
         body: {
-          name: Action.APPROVE.toLowerCase(),
+          name: Action.APPROVE,
         },
       }),
     onSuccess: () => {
