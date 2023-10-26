@@ -453,7 +453,7 @@ export class WorkflowRunner {
         `Event ${event.type} is not allowed in the current state: ${this.#__currentState}`,
       );
     }
-    // Non-blocking plugins are executed as actions
+    // Non-blocking plugins are executed as action
     const prePlugins =
       this.#__extensions.statePlugins?.filter(
         plugin =>
