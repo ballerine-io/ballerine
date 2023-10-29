@@ -1770,10 +1770,9 @@ export class WorkflowService {
     });
 
     if (!service.getSnapshot().nextEvents.includes(type)) {
-      this.logger.warn(
-        `Event ${type} does not exist in for workflow ${workflowDefinition.id}'s state: ${workflowRuntimeData.state}`,
+      throw new BadRequestException(
+        `Event ${type} does not exist for workflow ${workflowDefinition.id}'s state: ${workflowRuntimeData.state}`,
       );
-      return workflowRuntimeData;
     }
 
     await service.sendEvent({
