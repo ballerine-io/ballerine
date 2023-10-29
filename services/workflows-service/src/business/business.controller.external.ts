@@ -43,23 +43,21 @@ export class BusinessControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Pick<BusinessModel, 'id' | 'companyName'>> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return this.service.create(
-      {
-        data: {
-          ...data,
-          legalForm: 'name',
-          countryOfIncorporation: 'US',
-          address: 'addess',
-          industry: 'telecom',
-          documents: 's',
-        },
-        select: {
-          id: true,
-          companyName: true,
-        },
+    return this.service.create({
+      data: {
+        ...data,
+        legalForm: 'name',
+        countryOfIncorporation: 'US',
+        address: 'addess',
+        industry: 'telecom',
+        documents: 's',
+        projectId: currentProjectId,
       },
-      currentProjectId,
-    );
+      select: {
+        id: true,
+        companyName: true,
+      },
+    });
   }
 
   @common.Get()
@@ -115,23 +113,20 @@ export class BusinessControllerExternal {
     @common.Body() data: BusinessUpdateDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    return this.service.updateById(
-      businessId,
-      {
-        data: {
-          companyName: data.companyName,
-          address: data.address,
-          registrationNumber: data.registrationNumber,
-          website: data.website,
-          documents: data.documents ? JSON.stringify(data.documents) : undefined,
-          shareholderStructure:
-            data.shareholderStructure && data.shareholderStructure.length
-              ? JSON.stringify(data.shareholderStructure)
-              : undefined,
-        },
+    return this.service.updateById(businessId, {
+      data: {
+        companyName: data.companyName,
+        address: data.address,
+        registrationNumber: data.registrationNumber,
+        website: data.website,
+        documents: data.documents ? JSON.stringify(data.documents) : undefined,
+        shareholderStructure:
+          data.shareholderStructure && data.shareholderStructure.length
+            ? JSON.stringify(data.shareholderStructure)
+            : undefined,
+        projectId: currentProjectId,
       },
-      currentProjectId,
-    );
+    });
   }
 
   // curl -v http://localhost:3000/api/v1/external/businesses/:businessId/workflows
