@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { FilterModel } from './filter.model';
-import { TProjectId, TProjectIds } from '@/types';
+import { TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
@@ -14,9 +14,8 @@ export class FilterRepository {
 
   async create<T extends Prisma.FilterCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.FilterCreateArgs>,
-    projectId: TProjectId,
   ) {
-    return await this.prisma.filter.create(this.scopeService.scopeCreate(args, projectId));
+    return await this.prisma.filter.create(args);
   }
 
   async findMany<T extends Prisma.FilterFindManyArgs>(
@@ -35,19 +34,10 @@ export class FilterRepository {
     );
   }
 
-  async updateById(
-    id: string,
-    args: Prisma.FilterUpdateArgs,
-    projectId: TProjectId,
-  ): Promise<FilterModel> {
-    return await this.prisma.filter.update(
-      this.scopeService.scopeUpdate(
-        {
-          ...args,
-          where: { ...args.where, id: id },
-        },
-        projectId,
-      ),
-    );
+  async updateById(id: string, args: Prisma.FilterUpdateArgs): Promise<FilterModel> {
+    return await this.prisma.filter.update({
+      ...args,
+      where: { ...args.where, id: id },
+    });
   }
 }

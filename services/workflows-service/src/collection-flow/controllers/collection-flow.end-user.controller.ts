@@ -1,8 +1,7 @@
-import { BusinessService } from '@/business/business.service';
 import { Public } from '@/common/decorators/public.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
-import { Controller, Post, Query } from '@nestjs/common';
 import * as common from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { EndUserModel } from '@/end-user/end-user.model';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
@@ -22,10 +21,6 @@ export class CollectionFlowEndUserController {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [EndUserModel] })
   getCompanyInfo(@TokenScope() tokenScope: ITokenScope, @common.Body() data: EndUserCreateDto) {
-    return this.endUserService.updateById(
-      tokenScope.endUserId,
-      { data: data },
-      tokenScope.projectId,
-    );
+    return this.endUserService.updateById(tokenScope.endUserId, { data: data });
   }
 }
