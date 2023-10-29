@@ -11,7 +11,6 @@ import { TAuthenticatedUser } from '../../../../domains/auth/types';
 export type Assignee = Pick<TAuthenticatedUser, 'id' | 'fullName' | 'avatarUrl'>;
 
 interface IAssignDropdownProps {
-  avatarUrl: string | null;
   assignees: Assignee[];
   assignedUser?: Assignee;
   authenticatedUserId: string;
@@ -21,7 +20,6 @@ interface IAssignDropdownProps {
 export const AssignDropdown: React.FC<IAssignDropdownProps> = ({
   assignedUser,
   assignees,
-  avatarUrl,
   onAssigneeSelect,
   authenticatedUserId,
 }) => {
@@ -43,7 +41,7 @@ export const AssignDropdown: React.FC<IAssignDropdownProps> = ({
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               {assignedUser?.fullName ? (
-                <UserAvatar avatarUrl={avatarUrl} fullName={assignedUser?.fullName} />
+                <UserAvatar avatarUrl={assignedUser?.avatarUrl} fullName={assignedUser?.fullName} />
               ) : (
                 <UnassignedAvatarSvg className="d-[22px]" />
               )}
@@ -68,7 +66,7 @@ export const AssignDropdown: React.FC<IAssignDropdownProps> = ({
                 <div className="flex items-center">
                   <UserAvatar avatarUrl={assignee?.avatarUrl} fullName={assignee?.fullName} />
                   <span className="pl-2">
-                    {assignee?.id === authenticatedUserId ? 'Me' : assignee?.fullName}
+                    {`${assignee?.fullName}${assignee?.id === authenticatedUserId ? ' (You)' : ''}`}
                   </span>
                 </div>
                 {assignedUser?.id === assignee?.id && <CheckSvg className="d-4" />}

@@ -80,6 +80,7 @@ export const BaseWorkflowByIdSchema = z.object({
   assignee: ObjectWithIdSchema.extend({
     firstName: z.string(),
     lastName: z.string(),
+    avatarUrl: z.string().nullable().optional(),
   }).nullable(),
 });
 
