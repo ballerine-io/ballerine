@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { CheckSvg, DoubleCaretSvg, UnassignedAvatarSvg } from '../icons';
 import { DropdownMenu } from '../../molecules/DropdownMenu/DropdownMenu';
@@ -14,6 +14,7 @@ interface IAssignDropdownProps {
   avatarUrl: string | null;
   assignees: Assignee[];
   assignedUser?: Assignee;
+  authenticatedUserId: string;
   onAssigneeSelect: (id: string) => void;
 }
 
@@ -22,43 +23,59 @@ export const AssignDropdown: React.FC<IAssignDropdownProps> = ({
   assignees,
   avatarUrl,
   onAssigneeSelect,
-}) => (
-  <DropdownMenu>
-    <DropdownMenuTrigger asChild>
-      <div className="form-control flex w-[200px] cursor-pointer rounded-lg border border-neutral/10 px-4 py-[6px] text-sm theme-dark:border-neutral/60">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            {assignedUser?.fullName ? (
-              <UserAvatar avatarUrl={avatarUrl} fullName={assignedUser?.fullName} />
-            ) : (
-              <UnassignedAvatarSvg className="d-[22px]" />
-            )}
-            <span className="ml-2 bg-transparent text-sm">
-              {assignedUser?.fullName ?? 'Unassigned'}
-            </span>
-          </div>
-          <DoubleCaretSvg />
-        </div>
-      </div>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent className="min-w-[14rem]" align="start">
-      {Array.isArray(assignees) &&
-        assignees.map(assignee => (
-          <DropdownMenuItem
-            key={assignee?.id}
-            onClick={() =>
-              onAssigneeSelect(assignedUser?.id !== assignee?.id ? assignee?.id : null)
-            }
-          >
-            <div className="flex w-full items-center justify-between">
-              <div className="flex items-center">
-                <UserAvatar avatarUrl={assignee.avatarUrl} fullName={assignee?.fullName} />
-                <span className="pl-2">{assignee?.fullName}</span>
-              </div>
-              {assignedUser?.id === assignee?.id && <CheckSvg className="d-4" />}
+  authenticatedUserId,
+}) => {
+  const sortedAssignees = useMemo(
+    () =>
+      // Sort assignees so that the authenticated user is always first
+      assignees
+        ?.slice()
+        ?.sort((a, b) =>
+          a?.id === authenticatedUserId ? -1 : b?.id === authenticatedUserId ? 1 : 0,
+        ),
+    [assignees, authenticatedUserId],
+  );
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <div className="form-control flex w-[200px] cursor-pointer rounded-lg border border-neutral/10 px-4 py-[6px] text-sm theme-dark:border-neutral/60">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              {assignedUser?.fullName ? (
+                <UserAvatar avatarUrl={avatarUrl} fullName={assignedUser?.fullName} />
+              ) : (
+                <UnassignedAvatarSvg className="d-[22px]" />
+              )}
+              <span className="ml-2 bg-transparent text-sm">
+                {assignedUser?.fullName ?? 'Unassigned'}
+              </span>
             </div>
-          </DropdownMenuItem>
-        ))}
-    </DropdownMenuContent>
-  </DropdownMenu>
-);
+            <DoubleCaretSvg />
+          </div>
+        </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="min-w-[14rem]" align="start">
+        {Array.isArray(sortedAssignees) &&
+          sortedAssignees.map(assignee => (
+            <DropdownMenuItem
+              key={assignee?.id}
+              onClick={() =>
+                onAssigneeSelect(assignedUser?.id !== assignee?.id ? assignee?.id : null)
+              }
+            >
+              <div className="flex w-full items-center justify-between">
+                <div className="flex items-center">
+                  <UserAvatar avatarUrl={assignee?.avatarUrl} fullName={assignee?.fullName} />
+                  <span className="pl-2">
+                    {assignee?.id === authenticatedUserId ? 'Me' : assignee?.fullName}
+                  </span>
+                </div>
+                {assignedUser?.id === assignee?.id && <CheckSvg className="d-4" />}
+              </div>
+            </DropdownMenuItem>
+          ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};

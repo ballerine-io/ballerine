@@ -68,6 +68,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           onAssigneeSelect={id => {
             onMutateAssignWorkflow(id, id === authenticatedUser?.id);
           }}
+          authenticatedUserId={authenticatedUser?.id}
         />
       </div>
       <div className={`flex h-20 justify-between`}>
