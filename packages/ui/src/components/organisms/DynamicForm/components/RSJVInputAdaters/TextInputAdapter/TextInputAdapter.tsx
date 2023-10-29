@@ -4,9 +4,9 @@ import { TextField } from './components/TextField';
 import { TextInputFieldType } from './types';
 import { FieldProps } from '@rjsf/utils';
 import { useMemo } from 'react';
-import { RJSVInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
+import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 
-export const TextInputAdapter: RJSVInputAdapter = props => {
+export const TextInputAdapter: RJSFInputAdapter = props => {
   const InputComponent = useMemo(() => {
     const fieldsMap: Record<TextInputFieldType, React.ComponentType<FieldProps<string>>> = {
       select: SelectField,

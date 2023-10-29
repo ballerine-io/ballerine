@@ -7,7 +7,7 @@ export default {
 
 const options = new Array(20)
   .fill(null)
-  .map((_, index) => ({ value: `item-${index}`, label: `Item-${index}` }));
+  .map((_, index) => ({ value: `item-${index}`, title: `Item-${index}` }));
 
 const DefaultComponent = () => {
   const [value, setValue] = useState([]);
