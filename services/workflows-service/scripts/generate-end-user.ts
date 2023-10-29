@@ -183,6 +183,7 @@ export const generateEndUser = ({
     phone,
     dateOfBirth,
     avatarUrl,
+    project: { connect: { id: projectId } },
   };
   if (workflowDefinitionId) {
     res = {
