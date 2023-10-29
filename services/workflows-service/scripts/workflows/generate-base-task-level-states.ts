@@ -52,8 +52,6 @@ export const generateBaseTaskLevelStates = (
   },
   revision: {
     tags: [StateTag.REVISION],
-    on: {
-      [defaultResubmitEvent]: defaultState,
-    },
+    type: 'final',
   },
 });
