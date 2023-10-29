@@ -6,7 +6,7 @@ import { FieldProps } from '@rjsf/utils';
 import { useMemo } from 'react';
 import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 
-export const TextInputAdapter: RJSFInputAdapter = props => {
+export const TextInputAdapter: RJSFInputAdapter<string, unknown> = props => {
   const InputComponent = useMemo(() => {
     const fieldsMap: Record<TextInputFieldType, React.ComponentType<FieldProps<string>>> = {
       select: SelectField,

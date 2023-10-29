@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.7-3e08f108.1
+
+### Patch Changes
+
+- Reworked Multiselect items rendering for easier customization & Updated storybook & Updated Types
+
 ## 0.3.7-3e08f108.0
 
 ### Patch Changes

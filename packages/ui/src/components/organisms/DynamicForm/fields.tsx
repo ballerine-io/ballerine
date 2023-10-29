@@ -8,7 +8,7 @@ import { TextInputAdapter } from '@components/organisms/DynamicForm/components/R
 import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { RegistryFieldsType } from '@rjsf/utils';
 
-export const fields: Record<keyof RegistryFieldsType, RJSFInputAdapter<any>> = {
+export const fields: Record<keyof RegistryFieldsType, RJSFInputAdapter<unknown, unknown>> = {
   // Component with suffix Field is an overriding of internal RSJV components
   StringField: TextInputAdapter,
   BooleanField: BooleanFieldAdapter,

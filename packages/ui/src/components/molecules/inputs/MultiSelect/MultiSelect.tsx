@@ -1,10 +1,10 @@
 import { FocusEvent, useCallback, useMemo, useRef, useState } from 'react';
-import { X } from 'lucide-react';
 import { Command, CommandGroup, CommandInput, CommandItem } from '@components/atoms/Command';
-import { Badge } from '@components/atoms/Badge';
 import keyBy from 'lodash/keyBy';
 import { Popover, PopoverContent, ScrollArea, PopoverTrigger } from '@components/atoms';
 import { ClickAwayListener } from '@mui/material';
+import { SelectedElementParams } from '@components/molecules/inputs/MultiSelect/types';
+import { UnselectButtonProps } from '@components/molecules/inputs/MultiSelect/components/Chip/UnselectButton';
 
 export type MultiSelectValue = string | number;
 
@@ -13,11 +13,17 @@ export interface MultiSelectOption {
   value: MultiSelectValue;
 }
 
+export type MultiSelectSelectedItemRenderer = (
+  params: SelectedElementParams,
+  option: MultiSelectOption,
+) => JSX.Element;
+
 export interface MultiSelectProps {
   name?: string;
   value?: MultiSelectValue[];
   options: MultiSelectOption[];
   searchPlaceholder?: string;
+  renderSelected: MultiSelectSelectedItemRenderer;
   onChange: (selected: MultiSelectValue[], inputName: string) => void;
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
 }
@@ -27,6 +33,7 @@ export const MultiSelect = ({
   value,
   options,
   searchPlaceholder = 'Select more...',
+  renderSelected,
   onChange,
   onBlur,
 }: MultiSelectProps) => {
@@ -101,33 +108,39 @@ export const MultiSelect = ({
     if (open) setOpen(false);
   }, [open]);
 
+  const buildUnselectButtonProps = useCallback(
+    (option: MultiSelectOption) => {
+      const props: Omit<UnselectButtonProps, 'icon' | 'className'> = {
+        onKeyDown: e => {
+          if (e.key === 'Enter') {
+            handleUnselect(option);
+          }
+        },
+        onMouseDown: e => {
+          e.preventDefault();
+          e.stopPropagation();
+        },
+        onClick: () => handleUnselect(option),
+      };
+
+      return props;
+    },
+    [handleUnselect],
+  );
+
   return (
     <Popover open={open}>
       <ClickAwayListener onClickAway={handleOutsidePopupClick}>
-        <Command onKeyDown={handleKeyDown} className="overflow-visible bg-transparent">
+        <Command onKeyDown={handleKeyDown} className="overflow-visible">
           <PopoverTrigger asChild>
             <div className="border-input ring-offset-background focus-within:ring-ring min-10 group flex items-center rounded-md border py-2 text-sm focus-within:ring-1 focus-within:ring-offset-1">
               <div className="flex flex-wrap gap-2 px-2">
                 {selected.map(option => {
-                  return (
-                    <Badge key={option.value} className="h-6 text-white">
-                      {option.title}
-                      <button
-                        className="ring-offset-background focus:ring-ring ml-1 rounded-full outline-none focus:ring-2 focus:ring-offset-2"
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') {
-                            handleUnselect(option);
-                          }
-                        }}
-                        onMouseDown={e => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                        onClick={() => handleUnselect(option)}
-                      >
-                        <X className="hover:text-muted-foreground h-3 w-3 text-white" />
-                      </button>
-                    </Badge>
+                  return renderSelected(
+                    {
+                      unselectButtonProps: buildUnselectButtonProps(option),
+                    },
+                    option,
                   );
                 })}
                 <CommandInput
