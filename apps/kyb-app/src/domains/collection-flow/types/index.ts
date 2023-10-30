@@ -127,7 +127,7 @@ export interface UIPage {
   stateName: string;
   elements: UIElement<AnyObject>[];
   actions: Action[];
-  pageValidator?: Rule;
+  pageValidation?: Rule[];
 }
 
 export interface UISchema {
