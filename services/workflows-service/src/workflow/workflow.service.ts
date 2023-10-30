@@ -1447,6 +1447,7 @@ export class WorkflowService {
               documents: documentsWithPersistedImages,
             } as InputJsonValue,
             config: mergedConfig as InputJsonValue,
+            state: workflowDefinition.definition.initial as string,
             status: 'active',
             workflowDefinitionId: workflowDefinition.id,
             ...(parentWorkflowId &&
@@ -1961,8 +1962,8 @@ export class WorkflowService {
       }
       contextToPersist[childWorkflow.id] = {
         entityId: childWorkflow.context.entity.id,
-        status: childContextToPersist.status,
-        state: childContextToPersist.state,
+        status: childWorkflow.status,
+        state: childWorkflow.state,
         result: childContextToPersist,
       };
     }
