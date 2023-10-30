@@ -110,10 +110,12 @@ export const StoreInfoPage = {
   number: 7,
   stateName: 'store_info',
   name: 'Store Info',
-  pageValidator: {
-    type: 'json-schema',
-    value: validationSchema,
-  },
+  pageValidation: [
+    {
+      type: 'json-schema',
+      value: validationSchema,
+    },
+  ],
   elements: [
     {
       type: 'mainContainer',

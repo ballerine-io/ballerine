@@ -137,10 +137,12 @@ export const ProcessingDetails = {
   number: 9,
   stateName: 'processing_details',
   name: 'Processing Details',
-  pageValidator: {
-    type: 'json-schema',
-    value: validationSchema,
-  },
+  pageValidation: [
+    {
+      type: 'json-schema',
+      value: validationSchema,
+    },
+  ],
   elements: [
     {
       type: 'mainContainer',
