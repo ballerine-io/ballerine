@@ -301,8 +301,8 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.productPrice',
               options: {
-                label: 'Reasonable Product/Service Price',
-                hint: '100 USD',
+                label: 'Reasonable Product / Service Price (USD)',
+                hint: '100',
                 jsonFormDefinition: {
                   type: 'number',
                 },
