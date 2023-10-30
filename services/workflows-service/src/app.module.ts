@@ -15,7 +15,7 @@ import { StorageModule } from './storage/storage.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { FilterModule } from '@/filter/filter.module';
-import { env } from '@/env';
+import { configs, env } from '@/env';
 import { SentryModule } from '@/sentry/sentry.module';
 import { RequestIdMiddleware } from '@/common/middlewares/request-id.middleware';
 import { LogRequestInterceptor } from '@/common/interceptors/log-request.interceptor';
@@ -61,6 +61,7 @@ import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
     PrismaModule,
     ConfigModule.forRoot({
       isGlobal: true,
+      load: [configs],
       envFilePath: env.ENV_FILE_NAME ?? '.env',
     }),
     ServeStaticModule.forRootAsync({
