@@ -174,7 +174,7 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume',
               options: {
-                label: 'Monthly Sales Volume (CNY)',
+                label: 'Monthly Sales Volume (USD)',
                 hint: '5,000,000',
                 jsonFormDefinition: {
                   type: 'number',
@@ -200,7 +200,7 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay',
               options: {
-                label: 'Est. Monthly Sales Volume through ClipsPay (CNY)',
+                label: 'Est. Monthly Sales Volume through ClipsPay (USD)',
                 hint: '400,000',
                 jsonFormDefinition: {
                   type: 'number',
@@ -226,7 +226,7 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.averageTicketAmount',
               options: {
-                label: 'Average Ticket Amount (CNY)',
+                label: 'Average Ticket Amount (USD)',
                 hint: '25',
                 jsonFormDefinition: {
                   type: 'number',
@@ -239,7 +239,7 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.minimumTicketAmount',
               options: {
-                label: 'Minimum Ticket Amount (CNY)',
+                label: 'Minimum Ticket Amount (USD)',
                 hint: '300',
                 jsonFormDefinition: {
                   type: 'number',
@@ -252,7 +252,7 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.maximumTicketAmount',
               options: {
-                label: 'Maximum Ticket Amount (CNY)',
+                label: 'Maximum Ticket Amount (USD)',
                 hint: '2000',
                 jsonFormDefinition: {
                   type: 'number',
