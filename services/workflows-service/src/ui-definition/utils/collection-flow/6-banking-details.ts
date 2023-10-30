@@ -150,10 +150,12 @@ export const BankingDetailsPage = {
   number: 6,
   stateName: 'banking_details',
   name: 'Banking Details',
-  pageValidator: {
-    type: 'json-schema',
-    value: validationSchema,
-  },
+  pageValidation: [
+    {
+      type: 'json-schema',
+      value: validationSchema,
+    },
+  ],
   elements: [
     {
       type: 'mainContainer',
