@@ -71,6 +71,7 @@ import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { logDocumentWithoutId } from '@/common/utils/log-document-without-id/log-document-without-id';
 
 type TEntityId = string;
 
@@ -685,6 +686,13 @@ export class WorkflowService {
     postUpdateEventName?: string,
   ) {
     const workflow = await this.workflowRuntimeDataRepository.findById(workflowId, {}, projectIds);
+
+    logDocumentWithoutId({
+      line: 'updateDocumentDecisionById 692',
+      logger: this.logger,
+      workflowRuntimeData: workflow,
+    });
+
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflow?.workflowDefinitionId,
       {},
@@ -766,6 +774,12 @@ export class WorkflowService {
       projectIds![0]!,
     );
 
+    logDocumentWithoutId({
+      line: 'updateDocumentDecisionById 779',
+      logger: this.logger,
+      workflowRuntimeData: updatedWorkflow,
+    });
+
     if (postUpdateEventName) {
       return await this.event(
         { id: workflowId, name: postUpdateEventName },
@@ -793,6 +807,13 @@ export class WorkflowService {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowId, {}, [
       projectId,
     ]);
+
+    logDocumentWithoutId({
+      line: 'updateDocumentById 813',
+      logger: this.logger,
+      workflowRuntimeData: runtimeData,
+    });
+
     const workflowDef = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
       {},
@@ -833,6 +854,13 @@ export class WorkflowService {
       },
       [projectId],
     );
+
+    logDocumentWithoutId({
+      line: 'updateDocumentDecisionById 860',
+      logger: this.logger,
+      workflowRuntimeData: updatedWorkflow,
+    });
+
     this.__validateWorkflowDefinitionContext(workflowDef, updatedWorkflow.context);
     const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow, [projectId]);
 
@@ -1459,6 +1487,12 @@ export class WorkflowService {
         currentProjectId,
       );
 
+      logDocumentWithoutId({
+        line: 'createOrUpdateWorkflow 1465',
+        logger: this.logger,
+        workflowRuntimeData,
+      });
+
       if (
         // @ts-ignore
         mergedConfig.createCollectionFlowToken &&
@@ -1560,6 +1594,13 @@ export class WorkflowService {
         },
         currentProjectId,
       );
+
+      logDocumentWithoutId({
+        line: 'createOrUpdateWorkflow 1573',
+        logger: this.logger,
+        workflowRuntimeData,
+      });
+
       newWorkflowCreated = false;
     }
 
