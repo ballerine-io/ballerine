@@ -81,7 +81,7 @@ services:
       SESSION_SECRET: ${SESSION_SECRET}
       BACKOFFICE_CORS_ORIGIN: http://localhost:${BACKOFFICE_PORT}
       WORKFLOW_DASHBOARD_CORS_ORIGIN: http://localhost:${WORKFLOW_DASHBOARD_PORT}
-      ENENVIRONMENT_NAME: development
+      ENVIRONMENT_NAME: development
       PORT: ${WORKFLOW_SVC_PORT}
     depends_on:
       - migrate
