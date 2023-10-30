@@ -56,9 +56,9 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       SESSION_SECRET: ${SESSION_SECRET}
       BACKOFFICE_CORS_ORIGIN: http://localhost:${BACKOFFICE_PORT}
-      HEADLESS_EXAMPLE_CORS_ORIGIN: http://localhost:${HEADLESS_SVC_PORT}
       WORKFLOW_DASHBOARD_CORS_ORIGIN: http://localhost:${WORKFLOW_DASHBOARD_PORT}
       PORT: ${WORKFLOW_SVC_PORT}
+      ENENVIRONMENT_NAME: ${ENENVIRONMENT_NAME}
       KYB_EXAMPLE_CORS_ORIGIN: http://localhost:${KYB_APP_PORT}
     depends_on:
       ballerine-postgres:
