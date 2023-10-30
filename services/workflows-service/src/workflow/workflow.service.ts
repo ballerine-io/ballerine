@@ -313,6 +313,7 @@ export class WorkflowService {
         [childWorkflow.workflowRuntimeData.id]: {
           entityId: childWorkflow.workflowRuntimeData.context.entity.id,
           status: childWorkflow.workflowRuntimeData.status || 'active',
+          state: childWorkflow.workflowRuntimeData.state,
         },
       };
       const parentContext = this.composeContextWithChildResponse(
@@ -1016,7 +1017,9 @@ export class WorkflowService {
         {
           data: {
             status: 'active',
-            state: parentMachine?.workflowDefinition?.definition?.initial as string,
+            state:
+              parentMachine?.state ||
+              (parentMachine?.workflowDefinition?.definition?.initial as string),
             context: {
               ...parentMachine?.context,
               documents: parentMachine?.context?.documents?.map((document: any) => {
@@ -1939,11 +1942,7 @@ export class WorkflowService {
     workflowDefinition: WorkflowDefinition,
     isPersistableToParent: boolean,
   ) {
-    if (!isPersistableToParent)
-      return this.composeContextWithChildResponse(
-        parentWorkflowRuntime.context,
-        workflowDefinition.id,
-      );
+    if (!isPersistableToParent) return parentWorkflowRuntime.context;
 
     const transformerInstance = (transformers || []).map((transformer: SerializableTransformer) =>
       this.initiateTransformer(transformer),
@@ -1963,6 +1962,7 @@ export class WorkflowService {
       contextToPersist[childWorkflow.id] = {
         entityId: childWorkflow.context.entity.id,
         status: childContextToPersist.status,
+        state: childContextToPersist.state,
         result: childContextToPersist,
       };
     }
