@@ -686,13 +686,6 @@ export class WorkflowService {
     postUpdateEventName?: string,
   ) {
     const workflow = await this.workflowRuntimeDataRepository.findById(workflowId, {}, projectIds);
-
-    logDocumentWithoutId({
-      line: 'updateDocumentDecisionById 690',
-      logger: this.logger,
-      workflowRuntimeData: workflow,
-    });
-
     const workflowDefinition = await this.workflowDefinitionRepository.findById(
       workflow?.workflowDefinitionId,
       {},
@@ -775,7 +768,7 @@ export class WorkflowService {
     );
 
     logDocumentWithoutId({
-      line: 'updateDocumentDecisionById 777',
+      line: 'updateDocumentDecisionById 770',
       logger: this.logger,
       workflowRuntimeData: updatedWorkflow,
     });
@@ -807,13 +800,6 @@ export class WorkflowService {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowId, {}, [
       projectId,
     ]);
-
-    logDocumentWithoutId({
-      line: 'updateDocumentById 811',
-      logger: this.logger,
-      workflowRuntimeData: runtimeData,
-    });
-
     const workflowDef = await this.workflowDefinitionRepository.findById(
       runtimeData.workflowDefinitionId,
       {},
@@ -856,7 +842,7 @@ export class WorkflowService {
     );
 
     logDocumentWithoutId({
-      line: 'updateDocumentDecisionById 858',
+      line: 'updateDocumentDecisionById 844',
       logger: this.logger,
       workflowRuntimeData: updatedWorkflow,
     });
@@ -1488,7 +1474,7 @@ export class WorkflowService {
       );
 
       logDocumentWithoutId({
-        line: 'createOrUpdateWorkflow 1490',
+        line: 'createOrUpdateWorkflow 1476',
         logger: this.logger,
         workflowRuntimeData,
       });
