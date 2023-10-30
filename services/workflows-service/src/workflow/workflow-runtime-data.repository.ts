@@ -23,7 +23,8 @@ export class WorkflowRuntimeDataRepository {
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
     projectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.create<T>(
+    console.log(`workflowRuntimeData.create::NA`, args);
+    const res = await this.prisma.workflowRuntimeData.create<T>(
       this.scopeService.scopeCreate(
         {
           ...args,
@@ -38,6 +39,8 @@ export class WorkflowRuntimeDataRepository {
         projectId,
       ),
     );
+    console.log(`workflowRuntimeData.create::${res.id}`, res);
+    return res;
   }
 
   async findMany<T extends Prisma.WorkflowRuntimeDataFindManyArgs>(
@@ -77,7 +80,8 @@ export class WorkflowRuntimeDataRepository {
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>,
     projectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.update(
+    console.log(`workflowRuntimeData.updateById::${id}`, { id, args });
+    const res = await this.prisma.workflowRuntimeData.update(
       this.scopeService.scopeUpdate(
         {
           where: { id },
@@ -86,6 +90,8 @@ export class WorkflowRuntimeDataRepository {
         projectId,
       ),
     );
+    console.log(`workflowRuntimeData.updateById::${id}`, { id, res });
+    return res;
   }
 
   async updateContextById(
@@ -94,6 +100,7 @@ export class WorkflowRuntimeDataRepository {
     arrayMergeOption: ArrayMergeOption = 'by_id',
     projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeData> {
+    console.log(`workflowRuntimeData.updateContextById::${id}`, { id, newContext });
     const stringifiedContext = JSON.stringify(newContext);
     const affectedRows = await this.prisma
       .$executeRaw`UPDATE "WorkflowRuntimeData" SET "context" = jsonb_deep_merge_with_options("context", ${stringifiedContext}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id} AND "projectId" in (${projectIds?.join(
@@ -105,7 +112,9 @@ export class WorkflowRuntimeDataRepository {
       throw new Error(`No workflowRuntimeData found with the id "${id}"`);
     }
 
-    return this.findById(id, {}, projectIds);
+    const res = await this.findById(id, {}, projectIds);
+    console.log(`workflowRuntimeData.updateContextById::${id}`, { id, res });
+    return res;
   }
 
   async deleteById<T extends Omit<Prisma.WorkflowRuntimeDataDeleteArgs, 'where'>>(
