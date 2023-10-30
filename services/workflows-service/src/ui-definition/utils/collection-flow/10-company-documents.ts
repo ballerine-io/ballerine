@@ -54,15 +54,58 @@ const validationSchema = [
   },
 ];
 
+`entity.data.additionalInfo.hasConfirmed`;
+
+const jsonValidationSchema = {
+  type: 'object',
+  required: ['entity'],
+  properties: {
+    entity: {
+      type: 'object',
+      required: ['data'],
+      default: {},
+      properties: {
+        data: {
+          type: 'object',
+          required: ['additionalInfo'],
+          default: {},
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['hasConfirmed'],
+              properties: {
+                hasConfirmed: {
+                  type: 'boolean',
+                  default: false,
+                  const: true,
+                  errorMessage: {
+                    const: 'This field is required.',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
 export const CompanyDocuments = {
   type: 'page',
   number: 10,
   stateName: 'company_documents',
   name: 'Company Documents',
-  pageValidator: {
-    type: 'destination-engine',
-    value: validationSchema,
-  },
+  pageValidation: [
+    {
+      type: 'destination-engine',
+      value: validationSchema,
+    },
+    {
+      type: 'json-schema',
+      value: jsonValidationSchema,
+    },
+  ],
   elements: [
     {
       type: 'mainContainer',
