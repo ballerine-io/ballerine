@@ -23,7 +23,7 @@ export class WorkflowRuntimeDataRepository {
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
     projectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
-    console.log(`workflowRuntimeData.create::NA`, args);
+    console.log(`workflowRuntimeData.create::NA`, JSON.stringify(args, null, 2));
     const res = await this.prisma.workflowRuntimeData.create<T>(
       this.scopeService.scopeCreate(
         {
@@ -39,7 +39,7 @@ export class WorkflowRuntimeDataRepository {
         projectId,
       ),
     );
-    console.log(`workflowRuntimeData.create::${res.id}`, res);
+    console.log(`workflowRuntimeData.create::${res.id}`, JSON.stringify(res, null, 2));
     return res;
   }
 
@@ -80,7 +80,7 @@ export class WorkflowRuntimeDataRepository {
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>,
     projectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
-    console.log(`workflowRuntimeData.updateById::${id}`, { id, args });
+    console.log(`workflowRuntimeData.updateById::${id}`, JSON.stringify({ id, args }, null, 2));
     const res = await this.prisma.workflowRuntimeData.update(
       this.scopeService.scopeUpdate(
         {
@@ -90,7 +90,7 @@ export class WorkflowRuntimeDataRepository {
         projectId,
       ),
     );
-    console.log(`workflowRuntimeData.updateById::${id}`, { id, res });
+    console.log(`workflowRuntimeData.updateById::${id}`, JSON.stringify({ id, args }, null, 2));
     return res;
   }
 
@@ -100,7 +100,10 @@ export class WorkflowRuntimeDataRepository {
     arrayMergeOption: ArrayMergeOption = 'by_id',
     projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeData> {
-    console.log(`workflowRuntimeData.updateContextById::${id}`, { id, newContext });
+    console.log(
+      `workflowRuntimeData.updateContextById::${id}`,
+      JSON.stringify({ id, newContext }, null, 2),
+    );
     const stringifiedContext = JSON.stringify(newContext);
     const affectedRows = await this.prisma
       .$executeRaw`UPDATE "WorkflowRuntimeData" SET "context" = jsonb_deep_merge_with_options("context", ${stringifiedContext}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id} AND "projectId" in (${projectIds?.join(
@@ -113,7 +116,10 @@ export class WorkflowRuntimeDataRepository {
     }
 
     const res = await this.findById(id, {}, projectIds);
-    console.log(`workflowRuntimeData.updateContextById::${id}`, { id, res });
+    console.log(
+      `workflowRuntimeData.updateContextById::${id}`,
+      JSON.stringify({ id, res }, null, 2),
+    );
     return res;
   }
 
