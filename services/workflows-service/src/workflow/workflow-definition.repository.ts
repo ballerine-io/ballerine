@@ -59,14 +59,14 @@ export class WorkflowDefinitionRepository {
 
     queryArgs.where = {
       ...queryArgs.where,
-      id,
+
       OR: [
         {
           projectId: null,
           isPublic: true,
         },
         {
-          project: { id: { in: projectIds! } },
+          AND: [{ id, project: { id: { in: projectIds! } } }],
         },
       ],
     };
