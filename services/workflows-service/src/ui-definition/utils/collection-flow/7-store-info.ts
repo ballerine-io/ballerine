@@ -1,3 +1,5 @@
+import { multipleUrlsPattern } from '../schema-utils/regex';
+
 const validationSchema = {
   type: 'object',
   properties: {
@@ -33,8 +35,7 @@ const validationSchema = {
                   properties: {
                     websiteUrls: {
                       type: 'string',
-                      pattern:
-                        '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)?(\\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?(#[a-zA-Z0-9_]+)?(, *((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)?(\\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?(#[a-zA-Z0-9_]+)?)*$',
+                      pattern: multipleUrlsPattern,
                       minLength: 1,
                       errorMessage: {
                         minLength: 'Website URL(s) should not be empty.',
