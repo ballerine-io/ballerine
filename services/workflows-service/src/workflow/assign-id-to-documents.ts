@@ -5,8 +5,14 @@ export type TDocuments = DefaultContextSchema['documents'];
 
 export const assignIdToDocuments = (documents: TDocuments): TDocuments =>
   documents?.map(document => {
-    return {
+    const documentWithId = {
       ...document,
-      id: document.id ?? randomUUID(),
+      id: document.id || randomUUID(),
     };
+
+    if (!documentWithId?.id) {
+      console.error('Failed to assign an ID to a document\n', documentWithId);
+    }
+
+    return documentWithId;
   });
