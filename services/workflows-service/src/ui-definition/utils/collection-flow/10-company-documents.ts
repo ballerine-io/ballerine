@@ -14,26 +14,14 @@ const validationSchema = [
   {
     documentId: 'document-corporate-tax-certificate',
     destination: 'pages[0].ballerineFileId',
-    required: true,
-    errorMessage: 'This field is required',
-  },
-  {
-    documentId: 'document-corporate-tax-certificate',
-    destination: 'pages[0].ballerineFileId',
-    required: true,
-    errorMessage: 'This field is required',
   },
   {
     documentId: 'document-certificate-of-good-standing',
     destination: 'pages[0].ballerineFileId',
-    required: true,
-    errorMessage: 'This field is required',
   },
   {
     documentId: 'document-certificate-of-directors-and-shareholders',
     destination: 'pages[0].ballerineFileId',
-    required: true,
-    errorMessage: 'This field is required',
   },
   {
     documentId: 'document-picture-of-company-seal',
@@ -103,9 +91,6 @@ export const CompanyDocuments = {
               required: [
                 'document-certificates-of-incorporation',
                 'document-business-registration-certificate',
-                'document-corporate-tax-certificate',
-                'document-certificate-of-good-standing',
-                'document-certificate-of-directors-and-shareholders',
                 'document-picture-of-company-seal',
               ],
             },
