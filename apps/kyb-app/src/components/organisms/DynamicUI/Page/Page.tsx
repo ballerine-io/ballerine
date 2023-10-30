@@ -1,14 +1,14 @@
+import { usePageErrors } from '@app/components/organisms/DynamicUI/Page/hooks/usePageErrors';
+import { PageContext } from '@app/components/organisms/DynamicUI/Page/types';
+import { usePageResolverContext } from '@app/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
+import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { useRuleExecutor } from '@app/components/organisms/DynamicUI/hooks/useRuleExecutor';
+import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
 import { UIElement, UIPage } from '@app/domains/collection-flow';
 import { AnyChildren, AnyObject } from '@ballerine/ui';
-import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useMemo } from 'react';
-import { useRuleExecutor } from '@app/components/organisms/DynamicUI/hooks/useRuleExecutor';
-import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { PageContext } from '@app/components/organisms/DynamicUI/Page/types';
-import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
 import { pageContext } from './page.context';
-import { usePageErrors } from '@app/components/organisms/DynamicUI/Page/hooks/usePageErrors';
-import { usePageResolverContext } from '@app/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 
 const { Provider } = pageContext;
 
@@ -29,7 +29,10 @@ export const Page = ({ page, children }: PageProps) => {
     return definition;
   }, [page]);
 
-  const rules = useMemo(() => (page.pageValidator ? [page.pageValidator] : []), [page]);
+  const rules = useMemo(
+    () => (Array.isArray(page.pageValidation) ? page.pageValidation : []),
+    [page],
+  );
 
   const { payload } = useStateManagerContext();
   const { state } = useDynamicUIContext();

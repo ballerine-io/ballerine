@@ -121,10 +121,12 @@ export const WebsiteBasicRequirement = {
   number: 8,
   stateName: 'website_basic_requirement',
   name: 'Website Basic Requirement',
-  pageValidator: {
-    type: 'json-schema',
-    value: validationSchema,
-  },
+  pageValidation: [
+    {
+      type: 'json-schema',
+      value: validationSchema,
+    },
+  ],
   elements: [
     {
       type: 'mainContainer',
