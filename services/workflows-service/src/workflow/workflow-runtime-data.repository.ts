@@ -82,6 +82,13 @@ export class WorkflowRuntimeDataRepository {
         {
           where: { id },
           ...args,
+          data: {
+            ...args.data,
+            context: {
+              ...((args.data?.context ?? {}) as any),
+              documents: assignIdToDocuments((args.data?.context as any)?.documents),
+            },
+          } as any,
         },
         projectId,
       ),
