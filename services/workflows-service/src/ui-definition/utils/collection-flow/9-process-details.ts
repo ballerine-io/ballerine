@@ -360,7 +360,7 @@ export const ProcessingDetails = {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:field': 'CheckboxList',
+                  'ui:field': 'Multiselect',
                   options: [
                     {
                       title: 'B2C',
@@ -379,6 +379,12 @@ export const ProcessingDetails = {
                       value: 'Other',
                     },
                   ],
+                },
+                variants: {
+                  chip: {
+                    wrapper: 'secondary',
+                    label: 'primary',
+                  },
                 },
               },
             },
