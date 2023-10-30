@@ -2,7 +2,7 @@ import { useStateManagerContext } from '@app/components/organisms/DynamicUI/Stat
 import { useUIElementToolsLogic } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/hooks/useUIElementToolsLogic';
 import { Document, UIElement } from '@app/domains/collection-flow';
 import { fetchFile, uploadFile } from '@app/domains/storage/storage.api';
-import { AnyObject, ErrorsList, FileInputAdapter, RJSVInputProps } from '@ballerine/ui';
+import { AnyObject, ErrorsList, FileInputAdapter, RJSFInputProps } from '@ballerine/ui';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import set from 'lodash/set';
 import { collectionFlowFileStorage } from '@app/pages/CollectionFlow/collection-flow.file-storage';
@@ -18,7 +18,7 @@ interface DocumentFieldParams {
 }
 
 export const DocumentField = (
-  props: RJSVInputProps & { definition: UIElement<DocumentFieldParams> },
+  props: RJSFInputProps & { definition: UIElement<DocumentFieldParams> },
 ) => {
   const { definition, ...restProps } = props;
   const { onChange } = restProps;
