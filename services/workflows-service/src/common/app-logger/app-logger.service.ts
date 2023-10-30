@@ -9,20 +9,20 @@ export class AppLoggerService implements LoggerService {
     private readonly cls: ClsService,
   ) {}
 
-  log(message: string, payload: LogPayload = {}) {
-    this.logger.info(message, { ...this.getLogMetadata(), logData: payload });
+  log(message: string, logData: LogPayload = {}) {
+    this.logger.info(message, { ...this.getLogMetadata(), logData });
   }
 
-  error(message: string, payload: LogPayload = {}) {
-    this.logger.error(message, { ...this.getLogMetadata(), logData: payload });
+  error(message: string, logData: LogPayload = {}) {
+    this.logger.error(message, { ...this.getLogMetadata(), logData });
   }
 
-  warn(message: string, payload: LogPayload = {}) {
-    this.logger.warn(message, { ...this.getLogMetadata(), logData: payload });
+  warn(message: string, logData: LogPayload = {}) {
+    this.logger.warn(message, { ...this.getLogMetadata(), logData });
   }
 
-  debug(message: string, payload: LogPayload = {}) {
-    this.logger.debug(message, { ...this.getLogMetadata(), logData: payload });
+  debug(message: string, logData: LogPayload = {}) {
+    this.logger.debug(message, { ...this.getLogMetadata(), logData });
   }
 
   private getLogMetadata() {

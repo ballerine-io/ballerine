@@ -12,6 +12,7 @@ import helmet from 'helmet';
 import { env } from '@/env';
 import { json, NextFunction, Request, Response, urlencoded } from 'express';
 import { ClsMiddleware } from 'nestjs-cls';
+import { AppLoggerService } from './common/app-logger/app-logger.service';
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
@@ -110,8 +111,13 @@ async function main() {
 
   app.enableShutdownHooks();
 
+  const logger = app.get(AppLoggerService);
+
+  app.useLogger(logger);
+
   void app.listen(env.PORT);
-  console.log(`Listening on port ${env.PORT}`);
+
+  logger.log(`Listening on port ${env.PORT}`);
 
   return app;
 }
