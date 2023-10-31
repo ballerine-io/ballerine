@@ -150,11 +150,13 @@ export const BusinessAddressInfoPage = {
   type: 'page',
   number: 3,
   stateName: 'business_address_information',
-  name: 'Company Address',
-  pageValidator: {
-    type: 'json-schema',
-    value: validationSchema,
-  },
+  name: 'Business Address',
+  pageValidation: [
+    {
+      type: 'json-schema',
+      value: validationSchema,
+    },
+  ],
   elements: [
     {
       type: 'mainContainer',
@@ -165,7 +167,7 @@ export const BusinessAddressInfoPage = {
             {
               type: 'h1',
               options: {
-                text: 'Address',
+                text: 'Business Address',
               },
             },
             {

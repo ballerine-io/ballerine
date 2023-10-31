@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { mock } from 'jest-mock-extended';
-import { PrismaService } from 'nestjs-prisma';
+import { PrismaService } from '@/prisma/prisma.service';
 import { HealthService } from './health.service';
 
 describe('Testing the HealthService', () => {

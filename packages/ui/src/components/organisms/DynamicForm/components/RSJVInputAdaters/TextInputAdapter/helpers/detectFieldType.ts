@@ -1,7 +1,7 @@
+import { RJSFInputProps } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { TextInputFieldType } from '../types';
-import { FieldProps } from '@rjsf/utils';
 
-export const detectFieldType = (fieldProps: FieldProps): TextInputFieldType => {
+export const detectFieldType = (fieldProps: RJSFInputProps<unknown>): TextInputFieldType => {
   if (fieldProps.schema.oneOf) return 'select';
 
   return 'text';

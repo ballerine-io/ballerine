@@ -61,16 +61,16 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.15
+        specifier: 0.7.16
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.3.6
+        specifier: 0.3.7
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.13
+        specifier: 0.5.14
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.13
+        specifier: 0.5.14
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -344,13 +344,13 @@ importers:
   apps/kyb-app:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.1.13
+        specifier: 0.1.14
         version: link:../../packages/blocks
       '@ballerine/ui':
-        specifier: 0.3.6
+        specifier: 0.3.7
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.13
+        specifier: 0.5.14
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -703,10 +703,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.15
+        specifier: 0.7.16
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.13
+        specifier: 0.5.14
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1377,7 +1377,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.15
+        specifier: 0.7.16
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -1525,7 +1525,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.15
+        specifier: 0.7.16
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -1652,10 +1652,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.15
+        specifier: 0.7.16
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.13
+        specifier: 0.5.14
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -1788,7 +1788,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.5.13
+        specifier: 0.5.14
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2024,13 +2024,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.7.15
+        specifier: 0.7.16
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.13
+        specifier: 0.5.14
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.13
+        specifier: 0.5.14
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -16506,11 +16506,11 @@ packages:
       tiny-invariant: 1.3.1
     dev: true
 
-  /@storybook/channels@7.6.0-alpha.2:
-    resolution: {integrity: sha512-/RifysrrWYlYMpgYmkfZfTmFSeZQ4vdc0FaV3UupILJcSOz13rY+CvHjJzLGd53NPyG4B0YsFBnzqTUsQ1hPWA==}
+  /@storybook/channels@7.6.0-alpha.3:
+    resolution: {integrity: sha512-fhVcVzJCZmMVX2eQSXZ53M+EmYy9eYc3DQCwW684mBXNi0NtDwqdZExzGrhk6oqaCCFdBUgaOoKfCyWMwP2jsA==}
     dependencies:
-      '@storybook/client-logger': 7.6.0-alpha.2
-      '@storybook/core-events': 7.6.0-alpha.2
+      '@storybook/client-logger': 7.6.0-alpha.3
+      '@storybook/core-events': 7.6.0-alpha.3
       '@storybook/global': 5.0.0
       qs: 6.11.2
       telejson: 7.2.0
@@ -16647,8 +16647,8 @@ packages:
       '@storybook/global': 5.0.0
     dev: true
 
-  /@storybook/client-logger@7.6.0-alpha.2:
-    resolution: {integrity: sha512-HhoeGMc1SYLwR/bGoMjhUUAqxqTw3C9Z8G3+FiNI6J2Ape0AGKdSFhJ5sRx4j1K9iVaBFqsFh70Ba01JezGSIQ==}
+  /@storybook/client-logger@7.6.0-alpha.3:
+    resolution: {integrity: sha512-QWLLAuwaTgwdbQ9hJc6sHVjFIH+dh7E6C63MwxWaAN39+nxKYln25xcZaf3bpNvtwHWU8H5ULyE9Q2vGdURMuw==}
     dependencies:
       '@storybook/global': 5.0.0
     dev: true
@@ -16945,8 +16945,8 @@ packages:
     resolution: {integrity: sha512-EUXYb3gyQ2EzpDAWkgfoDl1EPabj3OE6+zntsD/gwvzQU85BTocs10ksnRyS55bfrQpYbf+Z+gw2CZboyagLgg==}
     dev: true
 
-  /@storybook/core-events@7.6.0-alpha.2:
-    resolution: {integrity: sha512-2bRYqGQ64JD9mFAtRfT1a+DdM4OX/bKBnvfRj0KGnJQCNI4+CTCPKhtVfX59PmJd5coGdqMFmU9S75H5cMnthA==}
+  /@storybook/core-events@7.6.0-alpha.3:
+    resolution: {integrity: sha512-9Jz/VimUPNTy9450A+Wv2ILiCbz7tSej8A4EZPB4vW8hi4sOy01FmV04eD75Q6MmnSFRBzmt9Si3Z9SSRTHJ9w==}
     dependencies:
       ts-dedent: 2.2.0
     dev: true
@@ -17225,14 +17225,16 @@ packages:
       '@storybook/preview-api': 7.1.0
     dev: true
 
-  /@storybook/instrumenter@7.6.0-alpha.2:
-    resolution: {integrity: sha512-o6E8KB+CZMFluj4e0sUQqphKTvauc0IKsWMA5nZzH/S87+nz6keEs6GkaSuhULwY+lWRUStfb0QJ/rfujpmEGA==}
+  /@storybook/instrumenter@7.6.0-alpha.3:
+    resolution: {integrity: sha512-pmTVBylMBX139utRD+1ZJUFtAjPuYBX4CwkslYgCp0DIMGPuvZmI8ZefBGUeDCZrcwl9VUhN6Kf8ZfrDgzHiiA==}
     dependencies:
-      '@storybook/channels': 7.6.0-alpha.2
-      '@storybook/client-logger': 7.6.0-alpha.2
-      '@storybook/core-events': 7.6.0-alpha.2
+      '@storybook/channels': 7.6.0-alpha.3
+      '@storybook/client-logger': 7.6.0-alpha.3
+      '@storybook/core-events': 7.6.0-alpha.3
       '@storybook/global': 5.0.0
-      '@storybook/preview-api': 7.6.0-alpha.2
+      '@storybook/preview-api': 7.6.0-alpha.3
+      '@vitest/utils': 0.34.6
+      util: 0.12.5
     dev: true
 
   /@storybook/manager-api@7.0.0-rc.10(react-dom@18.2.0)(react@18.2.0):
@@ -17439,15 +17441,15 @@ packages:
       util-deprecate: 1.0.2
     dev: true
 
-  /@storybook/preview-api@7.6.0-alpha.2:
-    resolution: {integrity: sha512-puoNcVVTbGHFhMw1u2HgzEdN9L9vJInejdNBpRS1YIc0+rHRyBbDNtm/bnve92p1eE/JY6KuAtFF1b8NMehgMg==}
+  /@storybook/preview-api@7.6.0-alpha.3:
+    resolution: {integrity: sha512-V3sxeaI5wM6PS5Ief5dnPPMzCM0HHWOgCCCRZJR2bIdDPB7sfBcvVsO/75O31IKUKtmJkyRe8oWimYCdUR1p2g==}
     dependencies:
-      '@storybook/channels': 7.6.0-alpha.2
-      '@storybook/client-logger': 7.6.0-alpha.2
-      '@storybook/core-events': 7.6.0-alpha.2
+      '@storybook/channels': 7.6.0-alpha.3
+      '@storybook/client-logger': 7.6.0-alpha.3
+      '@storybook/core-events': 7.6.0-alpha.3
       '@storybook/csf': 0.1.0
       '@storybook/global': 5.0.0
-      '@storybook/types': 7.6.0-alpha.2
+      '@storybook/types': 7.6.0-alpha.3
       '@types/qs': 6.9.7
       dequal: 2.0.3
       lodash: 4.17.21
@@ -17791,8 +17793,8 @@ packages:
   /@storybook/testing-library@0.0.14-next.1:
     resolution: {integrity: sha512-1CAl40IKIhcPaCC4pYCG0b9IiYNymktfV/jTrX7ctquRY3akaN7f4A1SippVHosksft0M+rQTFE0ccfWW581fw==}
     dependencies:
-      '@storybook/client-logger': 7.6.0-alpha.2
-      '@storybook/instrumenter': 7.6.0-alpha.2
+      '@storybook/client-logger': 7.6.0-alpha.3
+      '@storybook/instrumenter': 7.6.0-alpha.3
       '@testing-library/dom': 8.20.0
       '@testing-library/user-event': 13.5.0(@testing-library/dom@8.20.0)
       ts-dedent: 2.2.0
@@ -17908,10 +17910,10 @@ packages:
       file-system-cache: 2.3.0
     dev: true
 
-  /@storybook/types@7.6.0-alpha.2:
-    resolution: {integrity: sha512-nyiktBBZrjBoJyYIiK0lWcqmyrlqD0Hy/EL4rA739yCwiIgN8KJTPhqPElydYQhN6DOT6qQe7cCGotHioGneIg==}
+  /@storybook/types@7.6.0-alpha.3:
+    resolution: {integrity: sha512-NIMfDvgMumomKmbss6opqKuHQkZOmKB1MWt7FkrpkbheVJin1h3Ve0aoIH421ANCXi7UaswaEWanOCwHl3DZUg==}
     dependencies:
-      '@storybook/channels': 7.6.0-alpha.2
+      '@storybook/channels': 7.6.0-alpha.3
       '@types/babel__core': 7.20.1
       '@types/express': 4.17.9
       file-system-cache: 2.3.0
@@ -20313,6 +20315,14 @@ packages:
 
   /@vitest/utils@0.33.0:
     resolution: {integrity: sha512-pF1w22ic965sv+EN6uoePkAOTkAPWM03Ri/jXNyMIKBb/XHLDPfhLvf/Fa9g0YECevAIz56oVYXhodLvLQ/awA==}
+    dependencies:
+      diff-sequences: 29.4.3
+      loupe: 2.3.6
+      pretty-format: 29.5.0
+    dev: true
+
+  /@vitest/utils@0.34.6:
+    resolution: {integrity: sha512-IG5aDD8S6zlvloDsnzHw0Ut5xczlF+kv2BOTo+iXfPr54Yhi5qbVOgGB1hZaVq4iJ4C/MZ2J0y15IlsV/ZcI0A==}
     dependencies:
       diff-sequences: 29.4.3
       loupe: 2.3.6
@@ -38263,4 +38273,5 @@ packages:
   file:services/workflows-service/plugins/verify-repository-project-scoped:
     resolution: {directory: services/workflows-service/plugins/verify-repository-project-scoped, type: directory}
     name: eslint-plugin-ballerine
+    version: 1.0.0
     dev: true
