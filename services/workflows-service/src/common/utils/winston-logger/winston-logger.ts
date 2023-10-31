@@ -1,11 +1,18 @@
 import { IAppLogger, LogPayload } from '@/common/abstract-logger/abstract-logger';
+import { Inject } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { createLogger, format, transports, Logger as TWinstonLogger } from 'winston';
+
+export type LoggerSettings = {
+  envName: string;
+  logLevel: string;
+};
 
 export class WinstonLogger implements IAppLogger {
   private logger: TWinstonLogger;
 
-  constructor() {
-    const isProduction = process.env.NODE_ENV === 'production';
+  constructor(@Inject('LOGGER_SETTINGS') private readonly loggerSettings: LoggerSettings) {
+    const isProduction = loggerSettings.envName === 'production';
 
     const productionFormat = format.combine(format.timestamp(), format.json());
 
@@ -23,6 +30,7 @@ export class WinstonLogger implements IAppLogger {
     );
 
     this.logger = createLogger({
+      level: loggerSettings.logLevel || 'info',
       format: isProduction ? productionFormat : developmentFormat,
       transports: [new transports.Console()],
     });
