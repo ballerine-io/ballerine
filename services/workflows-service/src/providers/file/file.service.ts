@@ -178,16 +178,6 @@ export class FileService {
    * @param documentPage
    * @private
    */
-  private __fetchSourceServiceProvidersForDocuemnt(
-    documentPage: TDocumentWithoutPageType['pages'][number],
-  ): {
-    sourceServiceProvider: TFileServiceProvider;
-    sourceRemoteFileConfig: TRemoteFileConfig;
-  } {
-    return this.__fetchSourceServiceProviders(documentPage);
-  }
-
-  // TODO: Lior - use type from common
   private __fetchSourceServiceProviders({ uri, provider }: { uri: string; provider: string }): {
     sourceServiceProvider: TFileServiceProvider;
     sourceRemoteFileConfig: TRemoteFileConfig;

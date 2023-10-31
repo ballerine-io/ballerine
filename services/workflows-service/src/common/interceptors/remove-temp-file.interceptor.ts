@@ -33,21 +33,4 @@ export class RemoveTempFileInterceptor implements NestInterceptor {
       }),
     );
   }
-
-  // async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
-  //   const response = await firstValueFrom(next.handle());
-
-  //   const req = context.switchToHttp().getRequest();
-  //   if (req.file) {
-  //     const filePath = req.file.path;
-
-  //     try {
-  //       await fs.promises.unlink(filePath);
-  //     } catch (err) {
-  //       this.logger.error(`Error deleting file`, err as object);
-  //     }
-  //   }
-
-  //   return of(response);
-  // }
 }
