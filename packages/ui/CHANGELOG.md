@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.8
+
+### Patch Changes
+
+- Reworked ArrayFieldsLayout
+
 ## 0.3.7
 
 ### Patch Changes
