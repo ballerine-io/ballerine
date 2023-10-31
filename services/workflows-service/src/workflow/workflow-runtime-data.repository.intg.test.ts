@@ -117,16 +117,18 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     it('updateById: Merge context with nested entities - will preserve "replacment" behaviour for merging arrays', async () => {
       // Set up initial data
 
-      const createRes = await workflowRuntimeRepository.create({
-        data: {
-          workflowDefinitionId: 'test-definition',
-          workflowDefinitionVersion: 1,
-          context: {
-            entity: {
-              id: '1',
-              name: 'TestEntity',
+      const createRes = await workflowRuntimeRepository.create(
+        {
+          data: {
+            workflowDefinitionId: 'test-definition',
+            workflowDefinitionVersion: 1,
+            context: {
+              entity: {
+                id: '1',
+                name: 'TestEntity',
+              },
+              documents: [{ id: 'file1' }, { id: 'file2' }],
             },
-            documents: ['file1', 'file2'],
           },
           projectId: project.id,
         },
@@ -138,7 +140,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
           id: '2',
           name: 'UpdatedEntity',
         },
-        documents: ['file3'],
+        documents: [{ id: 'file3' }],
       };
 
       const res = await workflowRuntimeRepository.updateById(createRes.id, {
@@ -154,7 +156,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
           id: '2',
           name: 'UpdatedEntity',
         },
-        documents: ['file3'],
+        documents: [{ id: 'file3' }],
       });
     });
 

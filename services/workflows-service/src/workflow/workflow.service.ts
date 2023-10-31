@@ -71,6 +71,7 @@ import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { logDocumentWithoutId } from '@/common/utils/log-document-without-id/log-document-without-id';
 
 type TEntityId = string;
 
@@ -763,6 +764,12 @@ export class WorkflowService {
       projectIds![0]!,
     );
 
+    logDocumentWithoutId({
+      line: 'updateDocumentDecisionById 770',
+      logger: this.logger,
+      workflowRuntimeData: updatedWorkflow,
+    });
+
     if (postUpdateEventName) {
       return await this.event(
         { id: workflowId, name: postUpdateEventName },
@@ -830,6 +837,13 @@ export class WorkflowService {
       },
       [projectId],
     );
+
+    logDocumentWithoutId({
+      line: 'updateDocumentDecisionById 844',
+      logger: this.logger,
+      workflowRuntimeData: updatedWorkflow,
+    });
+
     this.__validateWorkflowDefinitionContext(workflowDef, updatedWorkflow.context);
     const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow, [projectId]);
 
@@ -947,8 +961,7 @@ export class WorkflowService {
 
       // @ts-ignore
       data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {
-        if (document?.decision?.status === 'revision' || document?.decision?.status === 'rejected')
-          return;
+        if (document?.decision?.status !== 'approve') return;
 
         if (!Object.keys(propertiesSchema ?? {})?.length) return;
 
@@ -1429,6 +1442,12 @@ export class WorkflowService {
         },
       });
 
+      logDocumentWithoutId({
+        line: 'createOrUpdateWorkflow 1476',
+        logger: this.logger,
+        workflowRuntimeData,
+      });
+
       if (
         // @ts-ignore
         mergedConfig.createCollectionFlowToken &&
@@ -1530,6 +1549,13 @@ export class WorkflowService {
           },
         },
       );
+
+      logDocumentWithoutId({
+        line: 'createOrUpdateWorkflow 1584',
+        logger: this.logger,
+        workflowRuntimeData,
+      });
+
       newWorkflowCreated = false;
     }
 
@@ -1735,10 +1761,9 @@ export class WorkflowService {
     });
 
     if (!service.getSnapshot().nextEvents.includes(type)) {
-      this.logger.warn(
-        `Event ${type} does not exist in for workflow ${workflowDefinition.id}'s state: ${workflowRuntimeData.state}`,
+      throw new BadRequestException(
+        `Event ${type} does not exist for workflow ${workflowDefinition.id}'s state: ${workflowRuntimeData.state}`,
       );
-      return workflowRuntimeData;
     }
 
     await service.sendEvent({

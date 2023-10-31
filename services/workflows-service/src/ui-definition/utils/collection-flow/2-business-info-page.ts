@@ -150,10 +150,12 @@ export const BusinessInfoPage = {
   number: 2, // routing number of page
   stateName: 'business_information', // this is the route from xstate
   name: 'Company Information', // page name ( in stepper )
-  pageValidator: {
-    type: 'json-schema',
-    value: validationSchema,
-  },
+  pageValidation: [
+    {
+      type: 'json-schema',
+      value: validationSchema,
+    },
+  ],
   elements: [
     {
       type: 'mainContainer',

@@ -1,9 +1,9 @@
 import { AnyObject } from '@common/types';
 import { AutocompleteInput } from '@components/molecules';
-import { RJSVInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
+import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { useCallback, useMemo } from 'react';
 
-export const AutocompleteTextInputAdapter: RJSVInputAdapter = ({
+export const AutocompleteTextInputAdapter: RJSFInputAdapter = ({
   id,
   disabled,
   formData,
