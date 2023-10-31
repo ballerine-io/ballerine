@@ -326,24 +326,29 @@ export class CollectionFlowService {
       projectIds,
       currentProjectId,
     );
-  } 
-  
+  }
+
   async uploadNewFile(projectId: string, workflowRuntimeDataId: string, file: Express.Multer.File) {
     // upload file into a customer folder
     const customer = await this.customerService.getByProjectId(projectId);
-    
-    const runtimeDataId = await this.workflowService.getWorkflowRuntimeDataById(workflowRuntimeDataId,
+
+    const runtimeDataId = await this.workflowService.getWorkflowRuntimeDataById(
+      workflowRuntimeDataId,
       {},
-      [projectId]);
-      
-    const entityId = runtimeDataId.businessId || runtimeDataId.endUserId
-    
+      [projectId],
+    );
+
+    const entityId = runtimeDataId.businessId || runtimeDataId.endUserId;
+
     if (!entityId) {
-      throw new NotFoundException('Workflow does\'t exists');
+      throw new NotFoundException("Workflow does't exists");
     }
 
     // Remove file extension (get everything before the last dot)
-    const nameWithoutExtension = (file.originalname || generateRandomId(16)).replace(/\.[^.]+$/, '');
+    const nameWithoutExtension = (file.originalname || generateRandomId(16)).replace(
+      /\.[^.]+$/,
+      '',
+    );
     // Remove non characters
     const alphabeticOnlyName = nameWithoutExtension.replace(/\W/g, '');
 
@@ -352,11 +357,9 @@ export class CollectionFlowService {
       entityId,
       projectId,
       customer.name,
-      { shouldDownloadFromSource: false}
+      { shouldDownloadFromSource: false },
     );
 
     return persistedFile;
   }
-
-  
 }
