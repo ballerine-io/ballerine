@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit, INestApplication } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+
+import { Prisma, PrismaClient } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 @Injectable()
@@ -20,9 +21,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     await this.$connect();
 
     // @ts-ignore
-    this.$on('query', e => {
-      // @ts-ignore
-      this.logger.debug('Query: ' + e.query);
+    this.$on('query', (e: Prisma.QueryEvent) => {
+      if (e && e.query) {
+        this.logger.debug(`Query: ${e.query}`);
+      }
     });
   }
 
