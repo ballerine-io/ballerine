@@ -39,7 +39,12 @@ export class ArrayInsertionStrategy implements InsertionStrategy {
 
     const value = (get(context, destination) as Array<AnyObject>) || [];
 
-    if (!Array.isArray(value) || !value.length) return context;
+    if (
+      !Array.isArray(value) ||
+      !value.length ||
+      !value.find((item: AnyObject) => item.__strategyInserted)
+    )
+      return context;
 
     set(
       context,
