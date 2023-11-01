@@ -210,10 +210,12 @@ export const DirectorsAndUbosPage = {
   number: 4,
   stateName: 'directors_and_ubos',
   name: 'Directors and UBOs',
-  pageValidator: {
-    type: 'json-schema',
-    value: validationSchema,
-  },
+  pageValidation: [
+    {
+      type: 'json-schema',
+      value: validationSchema,
+    },
+  ],
   elements: [
     {
       type: 'mainContainer',

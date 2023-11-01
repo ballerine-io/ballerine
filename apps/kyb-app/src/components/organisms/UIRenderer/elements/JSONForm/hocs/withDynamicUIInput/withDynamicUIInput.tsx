@@ -1,7 +1,7 @@
 import { usePageResolverContext } from '@app/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 import { findDefinitionByName } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
 import { useUIElementHandlers } from '@app/components/organisms/UIRenderer/hooks/useUIElementHandlers';
-import { RJSVInputProps, AnyObject } from '@ballerine/ui';
+import { RJSFInputProps, AnyObject, RJSFInputAdapter } from '@ballerine/ui';
 import { useCallback, useMemo } from 'react';
 import get from 'lodash/get';
 import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
@@ -31,17 +31,15 @@ const injectIndexToDestinationIfNeeded = (destination: string, index: number | n
 
   const result = destination.replace(`{INDEX}`, `${index}`);
 
-  console.log('result', result, index);
-
   return result;
 };
 
-export const withDynamicUIInput = (
-  Component: React.ComponentType<
-    RJSVInputProps | (RJSVInputProps & { definition?: UIElement<AnyObject> })
-  >,
-) => {
-  function Wrapper(props: RJSVInputProps) {
+export type DynamicUIComponent<TProps, TParams = AnyObject> = React.ComponentType<
+  TProps & { definition: UIElement<TParams> }
+>;
+
+export const withDynamicUIInput = (Component: RJSFInputAdapter<any, any>) => {
+  function Wrapper(props: RJSFInputProps) {
     const inputId = (props.idSchema as AnyObject)?.$id as string;
     const { name, onChange } = props;
     const { payload } = useStateManagerContext();

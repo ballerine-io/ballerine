@@ -530,6 +530,7 @@ const WorkflowRuntimeDataFilterQuerySchema = z
 
 export const FilterCreateSchema = z.object({
   name: z.string(),
+  projectId: z.string(),
   entity: z.enum(['individuals', 'businesses']),
   query: WorkflowRuntimeDataFilterQuerySchema,
 });
