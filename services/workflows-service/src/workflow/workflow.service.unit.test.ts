@@ -89,12 +89,17 @@ function buildWorkflowDeifintion(sequenceNum) {
   };
 }
 
-function buildDocument(category, status) {
+function buildDocument(category, status, fileType = 'jpg') {
   return {
     category: category,
     decision: {
       status: status,
     },
+    pages: [
+      {
+        type: fileType,
+      },
+    ],
   };
 }
 
