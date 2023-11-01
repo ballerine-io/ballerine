@@ -6,7 +6,7 @@ import { TFileServiceProvider } from './types';
 import { getDocumentId, isErrorWithMessage } from '@ballerine/common';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TProjectId } from '@/types';
-import crypto from 'crypto';
+import { randomUUID } from 'crypto';
 import { isType } from '@/common/is-type/is-type';
 import { z } from 'zod';
 import { StorageService } from '@/storage/storage.service';
@@ -18,7 +18,6 @@ import { streamToBuffer } from '@/common/stream-to-buffer/stream-to-buffer';
 import { Readable } from 'stream';
 import { TDocumentWithoutPageType } from '@/common/types';
 import * as fs from 'fs/promises';
-import { generateRandomId } from '@/common/utils/random';
 
 @Injectable()
 export class FileService {
@@ -272,7 +271,7 @@ export class FileService {
 
     const file = await fromFile(localFilePath ?? fileDetails.uri);
 
-    const remoteFileName = `${remoteFileNamePrefix}_${generateRandomId(8)}${
+    const remoteFileName = `${remoteFileNamePrefix}_${randomUUID()}${
       file?.ext ? `.${file?.ext}` : ''
     }`;
 

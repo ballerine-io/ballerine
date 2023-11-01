@@ -18,8 +18,8 @@ import { Customer, EndUser, File, UiDefinitionContext } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import keyBy from 'lodash/keyBy';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { randomUUID } from 'crypto';
 import { ITokenScope } from '@/common/decorators/token-scope.decorator';
-import { generateRandomId } from '@/common/utils/random';
 import { FileService } from '@/providers/file/file.service';
 
 type OptionalUiDefDefiniton = UiDefDefinition | null;
@@ -345,10 +345,7 @@ export class CollectionFlowService {
     }
 
     // Remove file extension (get everything before the last dot)
-    const nameWithoutExtension = (file.originalname || generateRandomId(16)).replace(
-      /\.[^.]+$/,
-      '',
-    );
+    const nameWithoutExtension = (file.originalname || randomUUID()).replace(/\.[^.]+$/, '');
     // Remove non characters
     const alphabeticOnlyName = nameWithoutExtension.replace(/\W/g, '');
 

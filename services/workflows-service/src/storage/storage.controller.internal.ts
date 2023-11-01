@@ -34,8 +34,11 @@ export class StorageControllerInternal {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
 
-  // TODO - update file to be multi-tenant to the specific s3 bucket
-  // curl -v -F "file=@a.jpg" http://localhost:3000/api/v1/storage
+  // curl -v -F "file=@a.jpg" http://localhost:3000/api/v1/internal/storage
+  // TODO: - update file to be multi-tenant to the specific s3 bucket
+  /**
+   * @deprecated
+   */
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
