@@ -6,7 +6,7 @@ import { TFileServiceProvider } from './types';
 import { getDocumentId, isErrorWithMessage } from '@ballerine/common';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { TProjectId } from '@/types';
-import crypto from 'crypto';
+import { randomUUID } from 'crypto';
 import { isType } from '@/common/is-type/is-type';
 import { z } from 'zod';
 import { StorageService } from '@/storage/storage.service';
@@ -17,7 +17,7 @@ import { fromBuffer, fromFile } from 'file-type';
 import { streamToBuffer } from '@/common/stream-to-buffer/stream-to-buffer';
 import { Readable } from 'stream';
 import { TDocumentWithoutPageType } from '@/common/types';
-import fs from 'fs';
+import * as fs from 'fs/promises';
 
 @Injectable()
 export class FileService {
@@ -51,7 +51,6 @@ export class FileService {
           mimeType,
         };
       }
-
       const filePaths = await this.copyThroughFileSystem(
         sourceServiceProvider,
         sourceRemoteFileConfig,
@@ -122,7 +121,11 @@ export class FileService {
       fileType?.mime,
     );
 
-    fs.unlinkSync(localFilePath);
+    try {
+      await fs.unlink(localFilePath);
+    } catch (err) {
+      // TODO: should we log non succesful deletetion ?
+    }
 
     return {
       remoteFilePath,
@@ -174,21 +177,20 @@ export class FileService {
    * @param documentPage
    * @private
    */
-  private __fetchSourceServiceProviders(documentPage: TDocumentWithoutPageType['pages'][number]): {
+  private __fetchSourceServiceProviders({ uri, provider }: { uri: string; provider: string }): {
     sourceServiceProvider: TFileServiceProvider;
     sourceRemoteFileConfig: TRemoteFileConfig;
   } {
-    if (documentPage.provider == 'http' && z.string().parse(documentPage.uri)) {
+    if (provider == 'http' && z.string().parse(uri)) {
       return {
         sourceServiceProvider: new HttpFileService(),
-        sourceRemoteFileConfig: documentPage.uri,
+        sourceRemoteFileConfig: uri,
       };
     }
 
-    if (documentPage.provider == 'aws_s3' && z.string().parse(documentPage.uri)) {
-      const prefixConfigName = `REMOTE`;
-      const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env, prefixConfigName);
-      const s3BucketConfig = this.__fetchAwsConfigForFileNameInBucket(documentPage.uri);
+    if (provider == 'aws_s3' && z.string().parse(uri)) {
+      const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);
+      const s3BucketConfig = this.__fetchAwsConfigForFileNameInBucket(uri);
 
       return {
         sourceServiceProvider: new AwsS3FileService(s3ClientConfig),
@@ -198,7 +200,7 @@ export class FileService {
 
     return {
       sourceServiceProvider: new LocalFileService(),
-      sourceRemoteFileConfig: documentPage.uri,
+      sourceRemoteFileConfig: uri,
     };
   }
 
@@ -245,27 +247,41 @@ export class FileService {
   }
 
   async copyToDestinationAndCreate(
-    document: TDocumentWithoutPageType,
+    fileDetails: { id: string; uri: string; provider: string },
     entityId: string,
-    documentPage: TDocumentWithoutPageType['pages'][number],
     projectId: TProjectId,
     customerName: string,
+    options?: { shouldDownloadFromSource: boolean },
   ) {
+    const { shouldDownloadFromSource } = {
+      ...{ shouldDownloadFromSource: true },
+      ...(options || {}),
+    };
+
     const { sourceServiceProvider, sourceRemoteFileConfig } =
-      this.__fetchSourceServiceProviders(documentPage);
+      this.__fetchSourceServiceProviders(fileDetails);
 
-    const tmpFile = tmp.fileSync();
-    const localFilePath = await sourceServiceProvider.download(
-      sourceRemoteFileConfig,
-      tmpFile.name,
-    );
-    const file = await fromFile(localFilePath);
+    const remoteFileNamePrefix = fileDetails.id! || getDocumentId(fileDetails, false);
 
-    const remoteFileName = `${
-      document.id! || getDocumentId(document, false)
-    }_${crypto.randomUUID()}${file?.ext ? `.${file?.ext}` : ''}`;
+    let localFilePath;
+    if (shouldDownloadFromSource) {
+      const tmpFile = tmp.fileSync();
+      localFilePath = await sourceServiceProvider.download(sourceRemoteFileConfig, tmpFile.name);
+    }
 
-    fs.unlinkSync(localFilePath);
+    const file = await fromFile(localFilePath ?? fileDetails.uri);
+
+    const remoteFileName = `${remoteFileNamePrefix}_${randomUUID()}${
+      file?.ext ? `.${file?.ext}` : ''
+    }`;
+
+    if (localFilePath) {
+      try {
+        await fs.unlink(localFilePath);
+      } catch (err) {
+        // TODO: should we log non succesful deletetion ?
+      }
+    }
 
     const { targetServiceProvider, targetRemoteFileConfig, remoteFileNameInDirectory } =
       this.__fetchTargetServiceProviders(entityId, customerName, remoteFileName);
@@ -276,6 +292,7 @@ export class FileService {
       targetServiceProvider,
       targetRemoteFileConfig,
     );
+
     const isFileInfoWithFileNameInBucket = isType(
       z.object({
         remoteFilePath: z.object({
@@ -283,7 +300,8 @@ export class FileService {
         }),
       }),
     )(fileInfo);
-    const { id: ballerineFileId, mimeType } = await this.storageService.createFileLink({
+
+    const persistedFile = await this.storageService.createFileLink({
       uri: remoteFileNameInDirectory,
       fileNameOnDisk: remoteFileNameInDirectory,
       userId: entityId,
@@ -294,9 +312,6 @@ export class FileService {
       mimeType: fileInfo?.mimeType,
     });
 
-    return {
-      ballerineFileId,
-      mimeType,
-    };
+    return persistedFile;
   }
 }

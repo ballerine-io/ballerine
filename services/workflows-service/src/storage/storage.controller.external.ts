@@ -31,6 +31,9 @@ export class StorageControllerExternal {
     protected readonly customerService: CustomerService,
   ) {}
 
+  /**
+   * @deprecated
+   */
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
