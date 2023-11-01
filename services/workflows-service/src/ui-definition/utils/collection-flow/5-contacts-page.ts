@@ -62,10 +62,12 @@ export const ContactsPage = {
   number: 5,
   stateName: 'contacts_page',
   name: 'Contacts',
-  pageValidator: {
-    type: 'json-schema',
-    value: validationSchema,
-  },
+  pageValidation: [
+    {
+      type: 'json-schema',
+      value: validationSchema,
+    },
+  ],
   elements: [
     {
       type: 'mainContainer',

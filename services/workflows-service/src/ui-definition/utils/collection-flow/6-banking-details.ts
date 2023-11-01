@@ -24,7 +24,6 @@ const validationSchema = {
                     'holderName',
                     'holderFullAddress',
                     'accountNumber',
-                    'iban',
                     'swiftCode',
                     'bankName',
                     'bankAddress',
@@ -76,6 +75,15 @@ const validationSchema = {
                         maxLength: 'SWIFT code should not exceed 11 characters.',
                       },
                     },
+                    routeNumber: {
+                      type: 'number',
+                      minLength: 8,
+                      maxLength: 10,
+                      errorMessage: {
+                        minLength: 'Route Number should be at least 8 characters long.',
+                        maxLength: 'Route Number should not exceed 10 characters.',
+                      },
+                    },
                     bankName: {
                       type: 'string',
                       minLength: 3,
@@ -83,6 +91,15 @@ const validationSchema = {
                       errorMessage: {
                         minLength: 'Bank name should be at least 3 characters long.',
                         maxLength: 'Bank name should not exceed 100 characters.',
+                      },
+                    },
+                    bankCode: {
+                      type: 'number',
+                      minLength: 2,
+                      maxLength: 13,
+                      errorMessage: {
+                        minLength: 'Bank Code should be at least 2 characters long.',
+                        maxLength: 'Bank Code should not exceed 13 characters.',
                       },
                     },
                     bankAddress: {
@@ -113,7 +130,6 @@ const validationSchema = {
                       holderName: 'Holder name is required.',
                       holderFullAddress: 'Holder full address is required.',
                       accountNumber: 'Account number is required.',
-                      iban: 'IBAN is required.',
                       swiftCode: 'SWIFT code is required.',
                       bankName: 'Bank name is required.',
                       bankAddress: 'Bank address is required.',
@@ -134,10 +150,12 @@ export const BankingDetailsPage = {
   number: 6,
   stateName: 'banking_details',
   name: 'Banking Details',
-  pageValidator: {
-    type: 'json-schema',
-    value: validationSchema,
-  },
+  pageValidation: [
+    {
+      type: 'json-schema',
+      value: validationSchema,
+    },
+  ],
   elements: [
     {
       type: 'mainContainer',
@@ -161,7 +179,6 @@ export const BankingDetailsPage = {
                 'card-holder-name-input',
                 'resident-address-input',
                 'account-number-input',
-                'iban-input',
                 'swift-code-input',
                 'bank-name-input',
                 'bank-address-input',
@@ -231,6 +248,18 @@ export const BankingDetailsPage = {
               },
             },
             {
+              name: 'route-number-input',
+              type: 'json-form:text',
+              valueDestination: 'entity.data.additionalInfo.bank.routeNumber',
+              options: {
+                jsonFormDefinition: {
+                  type: 'integer',
+                },
+                label: 'Route Number',
+                hint: '123456789',
+              },
+            },
+            {
               name: 'bank-name-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.bank.bankName',
@@ -240,6 +269,18 @@ export const BankingDetailsPage = {
                 },
                 label: 'Bank Name',
                 hint: 'Honk Kong Bank',
+              },
+            },
+            {
+              name: 'bank-code-input',
+              type: 'json-form:text',
+              valueDestination: 'entity.data.additionalInfo.bank.bankCode',
+              options: {
+                jsonFormDefinition: {
+                  type: 'integer',
+                },
+                label: 'Bank Code',
+                hint: '1234',
               },
             },
             {

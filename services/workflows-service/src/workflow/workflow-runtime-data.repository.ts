@@ -82,6 +82,13 @@ export class WorkflowRuntimeDataRepository {
         {
           where: { id },
           ...args,
+          data: {
+            ...args.data,
+            context: {
+              ...((args.data?.context ?? {}) as any),
+              documents: assignIdToDocuments((args.data?.context as any)?.documents),
+            },
+          } as any,
         },
         projectId,
       ),
@@ -94,7 +101,10 @@ export class WorkflowRuntimeDataRepository {
     arrayMergeOption: ArrayMergeOption = 'by_id',
     projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeData> {
-    const stringifiedContext = JSON.stringify(newContext);
+    const stringifiedContext = JSON.stringify({
+      ...newContext,
+      documents: assignIdToDocuments(newContext?.documents),
+    });
     const affectedRows = await this.prisma
       .$executeRaw`UPDATE "WorkflowRuntimeData" SET "context" = jsonb_deep_merge_with_options("context", ${stringifiedContext}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id} AND "projectId" in (${projectIds?.join(
       ',',
