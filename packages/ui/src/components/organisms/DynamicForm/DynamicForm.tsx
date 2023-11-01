@@ -11,7 +11,7 @@ import { fields as baseFields } from './fields';
 import { layouts as baseLayouts } from './layouts';
 import { forwardRef, useCallback, useMemo } from 'react';
 import { Provider, WarningsContext } from './warnings.context';
-import { RJSVInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters';
+import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters';
 
 type InputName = string;
 export type InputWarning = string | string[];
@@ -27,7 +27,7 @@ interface Props<TFormData> {
   formData?: object;
   warnings?: InputsWarnings;
   disabled?: boolean;
-  fields?: Record<keyof RegistryFieldsType, RJSVInputAdapter<any>>;
+  fields?: Record<keyof RegistryFieldsType, RJSFInputAdapter<any>>;
   layouts?: Partial<TemplatesType>;
   liveValidate?: boolean;
   transformErrors?: (errors: RJSFValidationError[], uiSchema: UiSchema) => RJSFValidationError[];

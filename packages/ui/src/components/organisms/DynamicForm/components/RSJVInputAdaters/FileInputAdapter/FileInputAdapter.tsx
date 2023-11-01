@@ -1,8 +1,8 @@
 import { Input } from '@components/atoms';
-import { RJSVInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
+import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { useCallback, useEffect, useRef } from 'react';
 
-export const FileInputAdapter: RJSVInputAdapter<File> = ({
+export const FileInputAdapter: RJSFInputAdapter<File> = ({
   id,
   name,
   uiSchema,

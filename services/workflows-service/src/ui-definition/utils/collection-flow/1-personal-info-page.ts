@@ -89,10 +89,12 @@ export const PersonalInfoPage = {
   name: 'Personal details',
   number: 1,
   stateName: 'personal_details',
-  pageValidator: {
-    type: 'json-schema',
-    value: validationSchema,
-  },
+  pageValidation: [
+    {
+      type: 'json-schema',
+      value: validationSchema,
+    },
+  ],
   elements: [
     {
       type: 'mainContainer',

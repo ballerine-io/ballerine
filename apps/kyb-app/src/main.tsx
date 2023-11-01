@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from './App';
 import './index.css';
+import '@ballerine/ui/dist/style.css';
 import settingsJson from '../settings.json';
 import { SettingsProvider } from '@app/common/providers/SettingsProvider/SettingsProvider';
 import { ThemeProvider } from '@app/common/providers/ThemeProvider/ThemeProvider';
