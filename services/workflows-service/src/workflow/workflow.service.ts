@@ -33,7 +33,6 @@ import { BusinessRepository } from '@/business/business.repository';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import addKeywords from 'ajv-keywords';
-import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
@@ -124,7 +123,6 @@ export class WorkflowService {
     protected readonly businessRepository: BusinessRepository,
     protected readonly entityRepository: EntityRepository,
     protected readonly customerService: CustomerService,
-    protected readonly storageService: StorageService,
     protected readonly fileService: FileService,
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
