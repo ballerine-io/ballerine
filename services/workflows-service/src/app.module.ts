@@ -6,7 +6,7 @@ import { ACLModule } from '@/common/access-control/acl.module';
 import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ServeStaticOptionsService } from './serve-static-options.service';
 import { EndUserModule } from './end-user/end-user.module';
@@ -33,16 +33,16 @@ import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
 import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 import { SalesforceModule } from '@/salesforce/salesforce.module';
 import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
+import { multerFactory } from './common/multer';
 
 @Module({
   controllers: [MetricsController],
   imports: [
     SentryModule,
-    MulterModule.register({
-      dest: './upload',
-      limits: {
-        fileSize: 1024 * 1024 * 10, // 10MB
-      },
+    MulterModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: multerFactory,
+      inject: [ConfigService],
     }),
     EventEmitterModule.forRoot(),
     UserModule,

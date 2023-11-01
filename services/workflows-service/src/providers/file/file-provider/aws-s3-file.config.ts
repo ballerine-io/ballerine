@@ -2,12 +2,12 @@ import { S3ClientConfig } from '@aws-sdk/client-s3';
 import { z } from 'zod';
 
 export class AwsS3FileConfig {
-  static isConfigured(processEnv: NodeJS.ProcessEnv, prefix = '') {
-    return !!this.getBucketName(processEnv, prefix) && !!processEnv[`${prefix}AWS_REGION`];
+  static isConfigured(processEnv: NodeJS.ProcessEnv) {
+    return !!this.getBucketName(processEnv) && !!processEnv[`AWS_REGION`];
   }
 
-  static getBucketName(processEnv: NodeJS.ProcessEnv, prefix = '') {
-    return processEnv[`${prefix}AWS_S3_BUCKET_NAME`];
+  static getBucketName(processEnv: NodeJS.ProcessEnv) {
+    return processEnv[`AWS_S3_BUCKET_NAME`];
   }
 
   static fetchClientConfig = (processEnv: NodeJS.ProcessEnv, prefix = ''): S3ClientConfig => {

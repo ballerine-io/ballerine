@@ -1,41 +1,72 @@
+import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { Public } from '@/common/decorators/public.decorator';
 import { ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
+import { FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
+import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { StorageService } from '@/storage/storage.service';
-import { Controller, Get, Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+  ParseFilePipeBuilder,
+  Post,
+  Res,
+  UnprocessableEntityException,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import * as errors from '../../errors';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { manageFileByProvider } from '@/storage/get-file-storage-manager';
-import { fileFilter } from '@/storage/file-filter';
+import { FILE_MAX_SIZE_IN_BYTE } from './../../storage/file-filter';
+import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
+import { formatBytes } from '@/common/utils/bytes';
+
+export const COLLECTION_FLOW_FILES_API_PATH = 'collection-flow/files';
 
 @Public()
 @UseTokenAuthGuard()
-@Controller('collection-flow/files')
+@Controller(COLLECTION_FLOW_FILES_API_PATH)
 export class CollectionFlowFilesController {
-  constructor(protected readonly storageService: StorageService) {}
+  constructor(
+    protected readonly storageService: StorageService,
+    protected readonly collectionFlowService: CollectionFlowService,
+  ) {}
 
+  // curl -v -F "file=@/<path>/a.jpg" http://localhost:3000/api/v1/collection-flow/files
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: manageFileByProvider(process.env),
+      storage: getDiskStorage(),
+      limits: {
+        files: 1,
+      },
       fileFilter,
     }),
+    RemoveTempFileInterceptor,
   )
   @Post('')
   async uploadFile(
-    @UploadedFile() file: Partial<Express.MulterS3.File>,
+    @UploadedFile(
+      new ParseFilePipeBuilder().addMaxSizeValidator({ maxSize: FILE_MAX_SIZE_IN_BYTE }).build({
+        fileIsRequired: true,
+        exceptionFactory: (error: string) => {
+          if (error.includes('expected size')) {
+            throw new UnprocessableEntityException(FILE_SIZE_EXCEEDED_MSG);
+          }
+          throw new UnprocessableEntityException(error);
+        },
+      }),
+    )
+    file: Express.Multer.File,
     @TokenScope() tokenScope: ITokenScope,
   ) {
-    const uploadedFile = await this.storageService.createFileLink({
-      uri: file.location || String(file.path),
-      fileNameOnDisk: String(file.path),
-      fileNameInBucket: file.key,
-      userId: tokenScope.endUserId,
-      projectId: tokenScope.projectId,
-      mimeType: file.mimetype,
-    });
-
-    return uploadedFile;
+    return this.collectionFlowService.uploadNewFile(
+      tokenScope.projectId,
+      tokenScope.workflowRuntimeDataId,
+      file,
+    );
   }
 
   @Get('/:id')
