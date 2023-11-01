@@ -8,6 +8,8 @@ import set from 'lodash/set';
 import { collectionFlowFileStorage } from '@app/pages/CollectionFlow/collection-flow.file-storage';
 import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
 import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
+import { HTTPError } from 'ky';
+import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
 
 interface DocumentFieldParams {
   documentData: AnyObject & { id: string };
@@ -24,15 +26,18 @@ export const DocumentField = (
   const { onChange } = restProps;
   const { stateApi } = useStateManagerContext();
   const { payload } = useStateManagerContext();
+  const [fieldError, setFieldError] = useState<ErrorField | null>(null);
   const { options } = definition;
   const [fileItem, setFile] = useState<File | null>(null);
 
   const { toggleElementLoading } = useUIElementToolsLogic(definition.name);
   const { state: elementState } = useUIElementState(definition);
+  const valueDestination = `document-error-${definition.options.documentData.id}`;
+
   const documentDefinition = useMemo(
     () => ({
       ...definition,
-      valueDestination: `document-error-${definition.options.documentData.id}`,
+      valueDestination,
     }),
     [definition],
   );
@@ -88,21 +93,36 @@ export const DocumentField = (
       }
 
       const fileIdPath = definition.valueDestination.replace(/documents\[\d+\]\./g, '');
-      const uploadResult = await uploadFile({ file });
 
-      set(document, fileIdPath, uploadResult.id);
-      set(document, 'decision', {});
+      try {
+        const uploadResult = await uploadFile({ file });
 
-      stateApi.setContext(context);
+        set(document, fileIdPath, uploadResult.id);
+        set(document, 'decision', {});
 
-      collectionFlowFileStorage.registerFile(uploadResult.id, file);
-      setFile(file);
+        stateApi.setContext(context);
+
+        collectionFlowFileStorage.registerFile(uploadResult.id, file);
+        setFile(file);
+        setFieldError(null);
+      } catch (err) {
+        if (err instanceof HTTPError) {
+          const jsonError = await err.response.json();
+
+          setFieldError({
+            fieldId: document.id,
+            message: jsonError.message,
+            type: 'warning',
+          });
+        }
+      }
 
       toggleElementLoading();
     },
     [stateApi, options, onChange, toggleElementLoading],
   );
 
+  const filedErrors = fieldError ? [fieldError] : [];
   return (
     <div className="flex flex-col gap-2">
       <FileInputAdapter
@@ -111,8 +131,11 @@ export const DocumentField = (
         formData={fileItem}
         onChange={handleChange}
       />
-      {warnings.length ? <ErrorsList errors={warnings.map(err => err.message)} /> : null}
+      {warnings.length ? (
+        <ErrorsList errors={[...warnings, ...filedErrors].map(err => err.message)} />
+      ) : null}
       {isTouched ? <ErrorsList errors={validationErrors.map(error => error.message)} /> : null}
+      {fieldError ? <ErrorsList errors={[fieldError.message]} /> : null}
     </div>
   );
 };
