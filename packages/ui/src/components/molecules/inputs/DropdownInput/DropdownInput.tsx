@@ -35,20 +35,23 @@ export const DropdownInput = ({
     [options, value],
   );
 
-  const handleOpenChange = useCallback((state: boolean) => {
-    setOpen(state);
+  const handleOpenChange = useCallback(
+    (state: boolean) => {
+      setOpen(state);
 
-    const hasBeenClosed = state === false;
+      const hasBeenClosed = state === false;
 
-    if (!hasBeenClosed || !onBlur) return;
+      if (!hasBeenClosed || !onBlur) return;
 
-    onBlur({
-      target: {
-        name: name,
-        value: value,
-      },
-    } as FocusEvent<any>);
-  }, []);
+      onBlur({
+        target: {
+          name: name,
+          value: value,
+        } as unknown,
+      } as FocusEvent<HTMLInputElement>);
+    },
+    [name, value, onBlur],
+  );
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
