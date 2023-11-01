@@ -40,6 +40,20 @@ export const getUgandaDocuments = (): TDocument[] => {
       }),
     },
     {
+      category: 'proof_of_ownership',
+      type: 'trade_license',
+      issuer: { country: 'UG' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        registrationNumber: TypeAlphanumericString,
+        issuer: TypeStringEnum(['KCCA', 'Other']),
+        expirationDate: Type.String({ format: 'date' }),
+        ownerName: Type.String(),
+      }),
+    },
+    {
       category: 'proof_of_registration',
       type: 'association_letter',
       issuer: { country: 'UG' },
@@ -55,7 +69,7 @@ export const getUgandaDocuments = (): TDocument[] => {
 
     // Business Ownership
     {
-      category: 'business_ownership',
+      category: 'proof_of_ownership',
       type: 'business_registration_form',
       issuer: { country: 'UG' },
       issuingVersion: 1,
@@ -203,35 +217,6 @@ export const getUgandaDocuments = (): TDocument[] => {
     },
 
     // Proof of Ownership
-    {
-      category: 'proof_of_ownership',
-      type: 'form_a',
-      issuer: { country: 'UG' },
-      issuingVersion: 1,
-      version: 1,
-      propertiesSchema: Type.Object({
-        businessName: Type.String(),
-        registrationNumber: TypeAlphanumericString,
-        taxIdNumber: TypeAlphanumericString,
-        issueDate: TypePastDate,
-        firstName: Type.String(),
-        middleName: Type.Optional(Type.String()),
-        lastName: Type.String(),
-        dateOfBirth: TypePastDate,
-        nationalIdNumber: TypeUgandaMobileNumber,
-      }),
-    },
-    {
-      category: 'proof_of_ownership',
-      type: 'receipt_for_permit',
-      issuer: { country: 'UG' },
-      issuingVersion: 1,
-      version: 1,
-      propertiesSchema: Type.Object({
-        businessName: Type.String(),
-        issueDate: TypePastDate,
-      }),
-    },
     {
       category: 'proof_of_ownership',
       type: 'property_rate',
