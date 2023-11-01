@@ -12,6 +12,14 @@ import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhookInfo } from '@/events/get-webhook-info';
 import { ConfigService } from '@nestjs/config';
 
+function getExtensionFromMimeType(mimeType: string): string {
+  const parts = mimeType.split('/');
+  if (parts.length === 2) {
+    return parts[1] as string;
+  }
+  return mimeType;
+}
+
 @Injectable()
 export class DocumentChangedWebhookCaller {
   #__axios: AxiosInstance;
@@ -90,6 +98,12 @@ export class DocumentChangedWebhookCaller {
 
     data.updatedRuntimeData.context.documents.forEach((doc: any) => {
       delete doc.propertiesSchema;
+
+      doc.pages.forEach((page: any) => {
+        // fix type
+        // delete mime from mime type and rename jpeg to jpg / shoud be removed after deprecation period (BAL-703)
+        page.type = getExtensionFromMimeType(page.type as string).replace('jpeg', 'jpg');
+      });
     });
 
     this.logger.log('Sending webhook', { id, url });
