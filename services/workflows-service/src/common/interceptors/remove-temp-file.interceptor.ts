@@ -25,11 +25,12 @@ export class RemoveTempFileInterceptor implements NestInterceptor {
         await this.deleteTempFile(req);
       }),
       catchError(async error => {
-        // This block executes for errors
         const req = context.switchToHttp().getRequest();
+
         await this.deleteTempFile(req);
+
         // Handle error from the response
-        return error;
+        throw error;
       }),
     );
   }
