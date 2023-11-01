@@ -18,7 +18,7 @@ import { ClsMiddleware } from 'nestjs-cls';
 global.__rootdir__ = __dirname || process.cwd();
 
 const corsOrigins =
-  env.NODE_ENV === 'production'
+  env.ENVIRONMENT_NAME === 'production'
     ? [
         env.BACKOFFICE_CORS_ORIGIN,
         env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
