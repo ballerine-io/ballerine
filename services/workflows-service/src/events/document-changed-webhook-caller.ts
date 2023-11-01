@@ -16,6 +16,14 @@ import { CustomerService } from '@/customer/customer.service';
 import { env } from '@/env';
 import { sign } from '@/common/utils/sign/sign';
 
+function getExtensionFromMimeType(mimeType: string): string {
+  const parts = mimeType.split('/');
+  if (parts.length === 2) {
+    return parts[1] as string;
+  }
+  return mimeType;
+}
+
 @Injectable()
 export class DocumentChangedWebhookCaller {
   #__axios: AxiosInstance;
@@ -88,6 +96,12 @@ export class DocumentChangedWebhookCaller {
 
     data.updatedRuntimeData.context.documents.forEach((doc: any) => {
       delete doc.propertiesSchema;
+
+      doc.pages.forEach((page: any) => {
+        // fix type
+        // delete mime from mime type and rename jpeg to jpg / shoud be removed after deprecation period (BAL-703)
+        page.type = getExtensionFromMimeType(page.type as string).replace('jpeg', 'jpg');
+      });
     });
 
     const customer = await this.customerService.getByProjectId(data.updatedRuntimeData.projectId, {
