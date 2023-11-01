@@ -350,7 +350,7 @@ export class CollectionFlowService {
     const alphabeticOnlyName = nameWithoutExtension.replace(/\W/g, '');
 
     const persistedFile = await this.fileService.copyToDestinationAndCreate(
-      { id: alphabeticOnlyName, uri: file.path, provider: 'file' },
+      { id: alphabeticOnlyName, uri: file.path, provider: 'file-system' },
       entityId,
       projectId,
       customer.name,
