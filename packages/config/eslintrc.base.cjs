@@ -13,10 +13,6 @@ module.exports = {
   env: {
     es6: true,
   },
-  node: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx'],
-    moduleDirectory: ['node_modules', 'src/'],
-  },
   plugins: ['@typescript-eslint', 'unused-imports'],
   rules: {
     'no-unused-vars': 'off', // We use the unused-imports plugin instead

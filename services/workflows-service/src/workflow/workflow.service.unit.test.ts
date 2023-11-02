@@ -114,7 +114,6 @@ describe('WorkflowService', () => {
   let userService;
   let workflowTokenService;
   let salesforceService;
-  const numbUserInfo = Symbol();
   let fakeHttpService;
   let testingModule: TestingModule;
   const configService = {

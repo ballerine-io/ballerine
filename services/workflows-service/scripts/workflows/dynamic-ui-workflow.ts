@@ -58,28 +58,28 @@ export const dynamicUiWorkflowDefinition = {
         },
       },
       run_cn_kyb: {
-        tags: [StateTag.COLLECTION_FLOW],
+        tags: [StateTag.DATA_ENRICHMENT],
         on: {
           CN_KYB_DONE: [{ target: 'run_vendor_company_sanctions' }],
           CN_KYB_FAIL: [{ target: 'failed' }],
         },
       },
       run_hk_kyb: {
-        tags: [StateTag.COLLECTION_FLOW],
+        tags: [StateTag.DATA_ENRICHMENT],
         on: {
           HK_KYB_HOOK_RESPONDED: [{ target: 'run_vendor_company_sanctions' }],
           HK_KYB_HOOK_FAILED: [{ target: 'failed' }],
         },
       },
       run_vendor_company_sanctions: {
-        tags: [StateTag.COLLECTION_FLOW],
+        tags: [StateTag.DATA_ENRICHMENT],
         on: {
           COMPANY_SANCTIONS_DONE: [{ target: 'run_vendor_ubos' }],
           COMPANY_SANCTIONS_FAIL: [{ target: 'failed' }],
         },
       },
       run_vendor_ubos: {
-        tags: [StateTag.COLLECTION_FLOW],
+        tags: [StateTag.DATA_ENRICHMENT],
         on: {
           UBO_HOOK_RESPONDED: [{ target: 'run_ubos' }],
           UBO_HOOK_FAILED: [{ target: 'failed' }],
