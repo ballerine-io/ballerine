@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
-import { kycEmailSessionDefinition } from './kyc-email-process-example';
 import { env } from '../../src/env';
+import { kycEmailSessionDefinition } from './kyc-email-process-example';
 
 import { defaultContextSchema, StateTag } from '@ballerine/common';
 import { generateDynamicUiTest } from './ui-definition/ui-kyb-parent-dynamic-example';

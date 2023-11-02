@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.18
+
+### Patch Changes
+
+- Updated default context schema
+
 ## 0.7.17
 
 ### Patch Changes

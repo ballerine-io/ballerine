@@ -109,7 +109,7 @@ export const defaultContextSchema = Type.Object({
             {
               ballerineFileId: Type.Optional(Type.String()),
               provider: Type.String({ enum: ['gcs', 'http', 'stream', 'file-system', 'ftp'] }),
-              uri: Type.String({ format: 'uri' }),
+              uri: Type.Optional(Type.String({ format: 'uri' })),
               type: Type.Optional(
                 Type.String({
                   enum: [
@@ -137,6 +137,14 @@ export const defaultContextSchema = Type.Object({
             },
             {
               additionalProperties: false,
+              oneOf: [
+                {
+                  required: ['ballerineFileId'],
+                },
+                {
+                  required: ['uri'],
+                },
+              ],
             },
           ),
         ),
