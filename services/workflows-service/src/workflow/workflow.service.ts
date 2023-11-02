@@ -33,13 +33,12 @@ import { BusinessRepository } from '@/business/business.repository';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import addKeywords from 'ajv-keywords';
-import { StorageService } from '@/storage/storage.service';
 import { FileService } from '@/providers/file/file.service';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
-import { DefaultContextSchema } from '@ballerine/common';
+import { DefaultContextSchema, getDocumentId } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import {
@@ -71,6 +70,7 @@ import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { logDocumentWithoutId } from '@/common/utils/log-document-without-id/log-document-without-id';
 
 type TEntityId = string;
 
@@ -123,7 +123,6 @@ export class WorkflowService {
     protected readonly businessRepository: BusinessRepository,
     protected readonly entityRepository: EntityRepository,
     protected readonly customerService: CustomerService,
-    protected readonly storageService: StorageService,
     protected readonly fileService: FileService,
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
@@ -766,6 +765,12 @@ export class WorkflowService {
       projectIds![0]!,
     );
 
+    logDocumentWithoutId({
+      line: 'updateDocumentDecisionById 770',
+      logger: this.logger,
+      workflowRuntimeData: updatedWorkflow,
+    });
+
     if (postUpdateEventName) {
       return await this.event(
         { id: workflowId, name: postUpdateEventName },
@@ -833,6 +838,13 @@ export class WorkflowService {
       },
       [projectId],
     );
+
+    logDocumentWithoutId({
+      line: 'updateDocumentDecisionById 844',
+      logger: this.logger,
+      workflowRuntimeData: updatedWorkflow,
+    });
+
     this.__validateWorkflowDefinitionContext(workflowDef, updatedWorkflow.context);
     const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow, [projectId]);
 
@@ -1459,6 +1471,12 @@ export class WorkflowService {
         currentProjectId,
       );
 
+      logDocumentWithoutId({
+        line: 'createOrUpdateWorkflow 1476',
+        logger: this.logger,
+        workflowRuntimeData,
+      });
+
       if (
         // @ts-ignore
         mergedConfig.createCollectionFlowToken &&
@@ -1560,6 +1578,13 @@ export class WorkflowService {
         },
         currentProjectId,
       );
+
+      logDocumentWithoutId({
+        line: 'createOrUpdateWorkflow 1584',
+        logger: this.logger,
+        workflowRuntimeData,
+      });
+
       newWorkflowCreated = false;
     }
 
@@ -1589,14 +1614,16 @@ export class WorkflowService {
       document?.pages?.map(async documentPage => {
         if (documentPage.ballerineFileId && documentPage.uri) return documentPage;
 
+        const documentId = document.id! || getDocumentId(document, false);
+
         const persistedFile = await this.fileService.copyToDestinationAndCreate(
-          document,
+          { id: documentId, uri: documentPage.uri, provider: documentPage.provider },
           entityId,
-          documentPage,
           projectId,
           customerName,
         );
-        const ballerineFileId = documentPage.ballerineFileId || persistedFile?.ballerineFileId;
+
+        const ballerineFileId = documentPage.ballerineFileId || persistedFile?.id;
 
         return { ...documentPage, type: persistedFile?.mimeType, ballerineFileId };
       }),
@@ -1769,10 +1796,9 @@ export class WorkflowService {
     });
 
     if (!service.getSnapshot().nextEvents.includes(type)) {
-      this.logger.warn(
-        `Event ${type} does not exist in for workflow ${workflowDefinition.id}'s state: ${workflowRuntimeData.state}`,
+      throw new BadRequestException(
+        `Event ${type} does not exist for workflow ${workflowDefinition.id}'s state: ${workflowRuntimeData.state}`,
       );
-      return workflowRuntimeData;
     }
 
     await service.sendEvent({
