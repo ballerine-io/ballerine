@@ -245,10 +245,13 @@ export class WorkflowService {
     if (addNextEvents) {
       const service = createWorkflow({
         runtimeId: workflow.id,
+        // @ts-expect-error - #_INFECTED_
         definition: workflow.workflowDefinition.definition,
-        definitionType: workflow.workflowDefinition.definitionType,
+        // Might want to change to type string in `createWorkflow` or add a type for `workflowDefinition` of 'statechart-json' | 'bpmn-json'
+        definitionType: workflow.workflowDefinition.definitionType as 'statechart-json',
         workflowContext: {
           machineContext: workflow.context,
+          // @ts-expect-error - #_INFECTED_
           state: workflow.state ?? workflow.workflowDefinition.definition?.initial,
         },
       });
@@ -256,7 +259,6 @@ export class WorkflowService {
       nextEvents = service.getSnapshot().nextEvents;
     }
 
-    // @ts-expect-error - typescript does not like recurrsion over types
     return {
       ...workflow,
       context: {
@@ -879,6 +881,7 @@ export class WorkflowService {
         this.workflowEventEmitter.emit('workflow.completed', {
           runtimeData: updatedWorkflow,
           state: updatedWorkflow.state,
+          // @ts-expect-error - #_INFECTED_
           entityId: updatedWorkflow.businessId || updatedWorkflow.endUserId,
           correlationId,
         });
@@ -1080,6 +1083,7 @@ export class WorkflowService {
       this.workflowEventEmitter.emit('workflow.completed', {
         runtimeData: updatedResult,
         state: currentState ?? updatedResult.state,
+        // @ts-expect-error - #_INFECTED_
         entityId: updatedResult.businessId || updatedResult.endUserId,
         correlationId,
       });
@@ -1534,9 +1538,9 @@ export class WorkflowService {
 
       if ('salesforceObjectName' in salesforceData && salesforceData.salesforceObjectName) {
         await this.updateSalesforceRecord({
-          workflowRuntimeData: workflowRuntimeData[0].workflowRuntimeData,
+          workflowRuntimeData,
           data: {
-            KYB_Started_At__c: workflowRuntimeData[0].workflowRuntimeData.createdAt,
+            KYB_Started_At__c: workflowRuntimeData.createdAt,
             KYB_Status__c: 'In Progress',
             KYB_Assigned_Agent__c: '',
           },
@@ -1724,6 +1728,7 @@ export class WorkflowService {
   ) {
     if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
 
+    // @ts-expect-error - #_INFECTED_
     const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
     const isValid = validate({
       ...context,
@@ -1767,12 +1772,15 @@ export class WorkflowService {
 
     const service = createWorkflow({
       runtimeId: workflowRuntimeData.id,
+      // @ts-expect-error - #_INFECTED_
       definition: workflowDefinition.definition,
+      // @ts-expect-error - #_INFECTED_
       definitionType: workflowDefinition.definitionType,
       workflowContext: {
         machineContext: workflowRuntimeData.context,
         state: workflowRuntimeData.state,
       },
+      // @ts-expect-error - #_INFECTED_
       extensions: workflowDefinition.extensions,
       invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
         const runnableChildWorkflow = await this.persistChildEvent(
@@ -1841,9 +1849,10 @@ export class WorkflowService {
     }
 
     this.workflowEventEmitter.emit('workflow.state.changed', {
+      // @ts-expect-error - #_INFECTED_
       entityId,
       state: updatedRuntimeData.state,
-      correlationId: updatedRuntimeData.correlationId,
+      correlationId: updatedRuntimeData.context.ballerineEntityId,
       runtimeData: updatedRuntimeData,
     });
 
@@ -1897,6 +1906,7 @@ export class WorkflowService {
     childRuntimeState?: string,
   ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
+      // @ts-expect-error - #_INFECTED_
       workflowRuntimeData.parentRuntimeDataId,
       { include: { childWorkflowsRuntimeData: true } },
       projectIds,
@@ -2093,8 +2103,11 @@ export class WorkflowService {
     };
   }) {
     return await this.salesforceService.updateRecord({
+      // @ts-expect-error - #__INFECTED__
       projectId: workflowRuntimeData.projectId,
+      // @ts-expect-error - #__INFECTED__
       objectName: workflowRuntimeData.salesforceObjectName,
+      // @ts-expect-error - #__INFECTED__
       recordId: workflowRuntimeData.salesforceRecordId,
       data,
     });

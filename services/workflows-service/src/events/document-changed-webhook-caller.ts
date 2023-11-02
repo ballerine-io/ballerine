@@ -111,11 +111,15 @@ export class DocumentChangedWebhookCaller {
       });
     });
 
-    const customer = await this.customerService.getByProjectId(data.updatedRuntimeData.projectId, {
-      select: {
-        authenticationConfiguration: true,
+    const customer = await this.customerService.getByProjectId(
+      // @ts-expect-error - #_INFECTED_
+      data.updatedRuntimeData.projectId,
+      {
+        select: {
+          authenticationConfiguration: true,
+        },
       },
-    });
+    );
 
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;

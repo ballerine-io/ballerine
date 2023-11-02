@@ -89,7 +89,7 @@ export class CollectionFlowService {
     const providedStepsMap = keyBy(steps, 'key');
 
     const persistedSteps =
-      definition.definition.states?.data_collection?.metadata?.uiSettings?.multiForm?.steps || [];
+      definition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm?.steps || [];
 
     const mergedSteps = persistedSteps.map((step: any) => {
       const stepToMergeIn = providedStepsMap[step.key];
@@ -106,10 +106,13 @@ export class CollectionFlowService {
       {
         data: {
           definition: {
-            ...definition.definition,
+            // @ts-expect-error - revisit after JSONB validation task - #_INFECTED_
+            ...definition?.definition,
             states: {
+              // @ts-expect-error - revisit after JSONB validation task - #_INFECTED_
               ...definition.definition?.states,
               data_collection: {
+                // @ts-expect-error - revisit after JSONB validation task - #_INFECTED_
                 ...definition.definition?.states?.data_collection,
                 metadata: {
                   uiSettings: {
@@ -129,6 +132,7 @@ export class CollectionFlowService {
     return plainToClass(FlowConfigurationModel, {
       id: updatedDefinition.id,
       steps:
+        // @ts-expect-error - revisit after JSONB validation task - #_INFECTED_
         updatedDefinition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm
           ?.steps || [],
     });

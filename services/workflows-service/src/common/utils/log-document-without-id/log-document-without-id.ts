@@ -13,11 +13,12 @@ export const logDocumentWithoutId = ({
 }) => {
   workflowRuntimeData?.context?.documents?.forEach(
     (document: DefaultContextSchema['documents'][number]) => {
-      if (!!document?.id) return;
+      if (document?.id) return;
 
       logger.error('Document without an ID was found', {
         line,
         workflowRuntimeDataId: workflowRuntimeData?.id,
+        // @ts-expect-error - #_INFECTED_
         workflowDefinitionId: workflowRuntimeData?.workflowDefinition?.id,
         entity: {
           id: workflowRuntimeData?.context?.entity?.id,

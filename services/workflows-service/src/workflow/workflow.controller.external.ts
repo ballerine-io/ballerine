@@ -278,7 +278,9 @@ export class WorkflowControllerExternal {
         data: hookResponse,
         resultDestinationPath: query.resultDestination || 'hookResponse',
         processName: query.processName,
+        // @ts-expect-error - #_INFECTED_
         projectIds: [workflowRuntime.projectId],
+        // @ts-expect-error - #_INFECTED_
         currentProjectId: workflowRuntime.projectId,
       });
 
@@ -287,6 +289,7 @@ export class WorkflowControllerExternal {
           id: params.id,
           name: params.event,
         },
+        // @ts-expect-error - #_INFECTED_
         [workflowRuntime.projectId],
         workflowRuntime.projectId,
       );
