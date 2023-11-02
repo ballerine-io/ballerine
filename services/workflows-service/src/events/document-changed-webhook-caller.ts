@@ -90,7 +90,7 @@ export class DocumentChangedWebhookCaller {
 
     const webhooks = getWebhooks(
       data.updatedRuntimeData.config,
-      this.configService.get('NODE_ENV'),
+      this.configService.get('ENVIRONMENT_NAME'),
       'workflow.context.document.changed',
     );
 
