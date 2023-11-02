@@ -1,5 +1,13 @@
 # @ballerine/workflow-core
 
+## 0.5.15
+
+### Patch Changes
+
+- AsiaVerify integrations
+- Updated dependencies
+  - @ballerine/common@0.7.17
+
 ## 0.5.14
 
 ### Patch Changes
