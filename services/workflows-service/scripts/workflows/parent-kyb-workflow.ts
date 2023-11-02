@@ -117,7 +117,7 @@ export const kybParentDynamicExample = {
     commonPlugins: [
       {
         pluginKind: 'iterative',
-        name: 'ubos_iterractive',
+        name: 'ubos_iterative',
         actionPluginName: 'veriff_kyc_child_plugin',
         stateNames: ['run_ubos'],
         iterateOn: [
