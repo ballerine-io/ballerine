@@ -38,7 +38,7 @@ import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
-import { DefaultContextSchema } from '@ballerine/common';
+import { DefaultContextSchema, getDocumentId } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import {
@@ -1614,14 +1614,16 @@ export class WorkflowService {
       document?.pages?.map(async documentPage => {
         if (documentPage.ballerineFileId && documentPage.uri) return documentPage;
 
+        const documentId = document.id! || getDocumentId(document, false);
+
         const persistedFile = await this.fileService.copyToDestinationAndCreate(
-          document,
+          { id: documentId, uri: documentPage.uri, provider: documentPage.provider },
           entityId,
-          documentPage,
           projectId,
           customerName,
         );
-        const ballerineFileId = documentPage.ballerineFileId || persistedFile?.ballerineFileId;
+
+        const ballerineFileId = documentPage.ballerineFileId || persistedFile?.id;
 
         return { ...documentPage, type: persistedFile?.mimeType, ballerineFileId };
       }),
