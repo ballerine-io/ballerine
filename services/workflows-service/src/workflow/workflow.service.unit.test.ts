@@ -190,7 +190,6 @@ describe('WorkflowService', () => {
       entityRepo,
       customerService,
       {} as any,
-      {} as any,
       eventEmitter as any,
       testingModule.get(AppLoggerService),
       projectScopeService,
