@@ -21,7 +21,7 @@ export class SentryModule implements OnModuleInit, OnModuleDestroy {
 
     Sentry.init({
       dsn: env.SENTRY_DSN,
-      debug: env.NODE_ENV !== 'production',
+      debug: env.ENVIRONMENT_NAME !== 'production',
       environment: env.ENVIRONMENT_NAME || env.NODE_ENV,
       integrations: [
         new RewriteFrames({
