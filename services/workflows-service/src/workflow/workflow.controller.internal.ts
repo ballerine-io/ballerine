@@ -39,6 +39,8 @@ import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
 import { DocumentUpdateInput } from './dtos/document-update-update-input';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
+import { EmitSystemBodyInput, EmitSystemParamInput } from './dtos/emit-system-event-input';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -216,6 +218,25 @@ export class WorkflowControllerInternal {
       data.document,
       currentProjectId,
     );
+  }
+
+  @common.Post(':id/system-event')
+  @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @UseGuards(AdminAuthGuard)
+  async emitWorkflowEvent(
+    @common.Param() params: EmitSystemParamInput,
+    @common.Body() data: EmitSystemBodyInput,
+  ) {
+    if (data.systemEventName !== 'workflow.context.changed') {
+      throw new common.BadRequestException(`Invalid system event name: ${data.systemEventName}`);
+    }
+    return await this.service.emitSystemWorkflowEvent({
+      workflowRuntimeId: params?.id,
+      projectId: data.projectId,
+      systemEventName: data.systemEventName as 'workflow.context.changed',
+    });
   }
 
   // PATCH /workflows/:workflowId/decision/:documentId
