@@ -31,6 +31,7 @@ import { UserRepository } from '@/user/user.repository';
 import { PasswordService } from '@/auth/password/password.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
+import { ClsService } from 'nestjs-cls';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
@@ -66,6 +67,7 @@ describe('#EndUserControllerExternal', () => {
       WorkflowTokenService,
       WorkflowTokenRepository,
       WorkflowRuntimeDataRepository,
+      ClsService,
     ];
     endUserService = (await fetchServiceFromModule(EndUserService, servicesProviders, [
       PrismaModule,
