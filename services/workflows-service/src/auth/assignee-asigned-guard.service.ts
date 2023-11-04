@@ -27,14 +27,10 @@ export class WorkflowAssigneeGuard implements CanActivate {
       },
       request.user!.projectIds,
     );
-    const pass =
-      workflowRuntime.assigneeId === requestingUserId ||
-      workflowRuntime.parentWorkflowRuntimeData?.assigneeId === requestingUserId;
 
-    if (pass) {
-      this.cls.set('assigneeId', requestingUserId);
-      this.cls.set('workflowId', workflowId);
-    }
-    return pass;
+    return (
+      workflowRuntime.assigneeId === requestingUserId ||
+      workflowRuntime.parentWorkflowRuntimeData?.assigneeId === requestingUserId
+    );
   }
 }
