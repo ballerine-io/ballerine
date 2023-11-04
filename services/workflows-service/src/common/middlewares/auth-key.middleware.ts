@@ -21,7 +21,13 @@ export class AuthKeyMiddleware implements NestMiddleware {
 
       const { projects, authenticationConfiguration, ...customerWithoutProjects } = customer;
 
-      this.cls.set('customerId', customer.id);
+      this.cls.set('entity', {
+        customer: {
+          id: customer.id,
+          name: customer.name,
+        },
+        type: 'customer',
+      });
 
       req.user = {
         customer: customerWithoutProjects,

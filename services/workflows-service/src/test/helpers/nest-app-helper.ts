@@ -6,7 +6,7 @@ import { AclValidateRequestInterceptor } from '@/common/access-control/intercept
 import { CallHandler, ExecutionContext, INestApplication, Provider, Type } from '@nestjs/common';
 import console from 'console';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
-import { ClsModule } from 'nestjs-cls';
+import { ClsModule, ClsService } from 'nestjs-cls';
 import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
 import { CustomerModule } from '@/customer/customer.module';
 import { CustomerService } from '@/customer/customer.service';
@@ -70,7 +70,7 @@ export const initiateNestApp = async (
     .compile();
 
   app = moduleRef.createNestApplication();
-  const middlewareInstnace = new AuthKeyMiddleware(app.get(CustomerService));
+  const middlewareInstnace = new AuthKeyMiddleware(app.get(CustomerService), app.get(ClsService));
 
   app.use(middlewareInstnace.use.bind(middlewareInstnace));
   await app.init();

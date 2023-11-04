@@ -1,13 +1,17 @@
 import { IAppLogger, LogPayload } from '@/common/abstract-logger/abstract-logger';
-import { Inject, Injectable, LoggerService } from '@nestjs/common';
+import { Inject, Injectable, LoggerService, OnModuleDestroy } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
 
 @Injectable()
-export class AppLoggerService implements LoggerService {
+export class AppLoggerService implements LoggerService, OnModuleDestroy {
   constructor(
     @Inject('LOGGER') private readonly logger: IAppLogger,
     private readonly cls: ClsService,
   ) {}
+
+  async onModuleDestroy() {
+    await this.logger.close();
+  }
 
   log(message: string, logData: LogPayload = {}) {
     this.logger.info(message, { ...this.getLogMetadata(), logData });
@@ -26,8 +30,21 @@ export class AppLoggerService implements LoggerService {
   }
 
   private getLogMetadata() {
-    return {
+    const metadata = {
       requestId: this.cls.get('requestId'),
     };
+
+    const entity = this.cls.get('entity');
+    if (entity && entity.type !== 'admin') {
+      if (entity.type === 'customer') {
+        // @ts-ignore
+        metadata.entity = entity.customer;
+      } else if (entity.type === 'endUser') {
+        // @ts-ignore
+        metadata.entity = entity.endUser;
+      }
+    }
+
+    return metadata;
   }
 }
