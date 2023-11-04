@@ -2100,4 +2100,33 @@ export class WorkflowService {
       data,
     });
   }
+
+  async emitSystemWorkflowEvent({
+    workflowRuntimeId,
+    projectId,
+    systemEventName,
+  }: {
+    workflowRuntimeId: string;
+    projectId: string;
+    systemEventName: 'workflow.context.changed'; // currently supports only this event
+  }) {
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId, {}, [
+      projectId,
+    ]);
+    const correlationId = await this.getCorrelationIdFromWorkflow(runtimeData, [projectId]);
+
+    this.workflowEventEmitter.emit(
+      systemEventName,
+      {
+        oldRuntimeData: runtimeData,
+        updatedRuntimeData: runtimeData,
+        state: runtimeData.state as string,
+        entityId: (runtimeData.businessId || runtimeData.endUserId) as string,
+        correlationId: correlationId,
+      },
+      {
+        forceEmit: true,
+      },
+    );
+  }
 }
