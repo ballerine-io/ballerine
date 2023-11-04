@@ -233,7 +233,7 @@ export class WorkflowControllerInternal {
       throw new common.BadRequestException(`Invalid system event name: ${data.systemEventName}`);
     }
     return await this.service.emitSystemWorkflowEvent({
-      workflowRuntimeId: params?.id,
+      workflowRuntimeId: params.id,
       projectId: data.projectId,
       systemEventName: data.systemEventName as 'workflow.context.changed',
     });

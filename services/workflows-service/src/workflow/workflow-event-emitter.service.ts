@@ -6,6 +6,7 @@ export type EventConfig = {
   forceEmit?: boolean;
 };
 
+const DEFAULT_CONFIG = { forceEmit: false };
 @Injectable()
 export class WorkflowEventEmitterService {
   constructor(private eventEmitter: EventEmitter2) {}
@@ -13,8 +14,9 @@ export class WorkflowEventEmitterService {
   emit<TEvent extends TEventName>(
     eventName: TEvent,
     eventData: ExtractWorkflowEventData<TEvent>,
-    config = { forceEmit: false },
+    config?: EventConfig,
   ) {
+    config = { ...DEFAULT_CONFIG, ...(config || {}) };
     if (!eventName) {
       throw new Error('Event name is required');
     }
