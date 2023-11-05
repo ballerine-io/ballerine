@@ -12,6 +12,9 @@ import helmet from 'helmet';
 import { env } from '@/env';
 import { json, NextFunction, Request, Response, urlencoded } from 'express';
 import { ClsMiddleware } from 'nestjs-cls';
+import * as Sentry from '@sentry/node';
+import { ConfigService } from '@nestjs/config';
+import { WinstonLogger } from './common/utils/winston-logger/winston-logger';
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
@@ -35,19 +38,29 @@ const corsOrigins =
       ];
 
 async function main() {
+  const logger = new WinstonLogger();
   const app = await NestFactory.create(AppModule, {
     snapshot: true,
+    logger,
     cors: {
       origin: corsOrigins,
       credentials: true,
     },
   });
 
+  const configService = app.get(ConfigService);
+
+  app.useLogger(logger);
   app.use(new ClsMiddleware({}).use);
+
+  if (configService.get('SENTRY_DSN')) {
+    app.use(Sentry.Handlers.requestHandler());
+    app.use(Sentry.Handlers.tracingHandler());
+  }
 
   app.use(helmet());
   app.use(json({ limit: '50mb' }));
-  app.use(urlencoded({ limit: '50mb' }));
+  app.use(urlencoded({ limit: '50mb', extended: true }));
   app.use(
     cookieSession({
       name: 'session',
@@ -110,8 +123,10 @@ async function main() {
 
   app.enableShutdownHooks();
 
-  void app.listen(env.PORT);
-  console.log(`Listening on port ${env.PORT}`);
+  const port = configService.getOrThrow<string>('PORT');
+  void app.listen(+port);
+
+  logger.log(`Listening on port ${port}`);
 
   return app;
 }
