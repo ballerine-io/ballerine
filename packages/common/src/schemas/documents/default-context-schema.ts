@@ -98,48 +98,42 @@ export const defaultContextSchema = Type.Object({
         ),
         version: Type.Optional(Type.Number()),
         pages: Type.Array(
-          Type.Object(
-            {
-              ballerineFileId: Type.Optional(Type.String()),
-              provider: Type.String({ enum: ['gcs', 'http', 'stream', 'file-system', 'ftp'] }),
-              uri: Type.Optional(Type.String({ format: 'uri' })),
-              type: Type.Optional(
-                Type.String({
-                  enum: [
-                    'application/pdf',
-                    'image/png',
-                    'image/jpg',
-                    'image/jpeg',
-                    // Backwards compatibility
-                    'pdf',
-                    'png',
-                    'jpg',
-                  ],
-                }),
-              ),
-              data: Type.Optional(Type.String()),
-              metadata: Type.Optional(
-                Type.Object(
-                  {
-                    side: Type.Optional(Type.String()),
-                    pageNumber: Type.Optional(Type.String()),
-                  },
-                  { additionalProperties: false },
-                ),
-              ),
-            },
-            {
-              additionalProperties: false,
-              anyOf: [
+          Type.Union([
+            Type.Composite([
+              Type.Object({ ballerineFileId: Type.String() }, { additionalProperties: false }),
+              Type.Object(
                 {
-                  required: ['ballerineFileId'],
+                  provider: Type.String({ enum: ['gcs', 'http', 'stream', 'file-system', 'ftp'] }),
+                  uri: Type.String({ format: 'uri' }),
+                  type: Type.Optional(
+                    Type.String({
+                      enum: [
+                        'application/pdf',
+                        'image/png',
+                        'image/jpg',
+                        'image/jpeg',
+                        // Backwards compatibility
+                        'pdf',
+                        'png',
+                        'jpg',
+                      ],
+                    }),
+                  ),
+                  data: Type.Optional(Type.String()),
+                  metadata: Type.Optional(
+                    Type.Object(
+                      {
+                        side: Type.Optional(Type.String()),
+                        pageNumber: Type.Optional(Type.String()),
+                      },
+                      { additionalProperties: false },
+                    ),
+                  ),
                 },
-                {
-                  required: ['uri'],
-                },
-              ],
-            },
-          ),
+                { additionalProperties: false },
+              ),
+            ]),
+          ]),
         ),
         properties: Type.Object({
           email: Type.Optional(Type.String({ format: 'email' })),
