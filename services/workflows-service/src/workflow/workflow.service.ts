@@ -1546,8 +1546,8 @@ export class WorkflowService {
       newWorkflowCreated = true;
     } else {
       // Updating existing workflow
-      console.log('existing documents', existingWorkflowRuntimeData.context.documents);
-      console.log('documents', contextToInsert.documents);
+      this.logger.log('existing documents', existingWorkflowRuntimeData.context.documents);
+      this.logger.log('documents', contextToInsert.documents);
       // contextToInsert.documents = updateDocuments(
       //   existingWorkflowRuntimeData.context.documents,
       //   context.documents,
@@ -2098,5 +2098,34 @@ export class WorkflowService {
       recordId: workflowRuntimeData.salesforceRecordId,
       data,
     });
+  }
+
+  async emitSystemWorkflowEvent({
+    workflowRuntimeId,
+    projectId,
+    systemEventName,
+  }: {
+    workflowRuntimeId: string;
+    projectId: string;
+    systemEventName: 'workflow.context.changed'; // currently supports only this event
+  }) {
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId, {}, [
+      projectId,
+    ]);
+    const correlationId = await this.getCorrelationIdFromWorkflow(runtimeData, [projectId]);
+
+    this.workflowEventEmitter.emit(
+      systemEventName,
+      {
+        oldRuntimeData: runtimeData,
+        updatedRuntimeData: runtimeData,
+        state: runtimeData.state as string,
+        entityId: (runtimeData.businessId || runtimeData.endUserId) as string,
+        correlationId: correlationId,
+      },
+      {
+        forceEmit: true,
+      },
+    );
   }
 }

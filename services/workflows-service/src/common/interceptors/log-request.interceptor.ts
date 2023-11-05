@@ -13,9 +13,6 @@ export class LogRequestInterceptor implements NestInterceptor {
         const response = context.switchToHttp().getResponse<Response>();
 
         this.logger.log(`Outgoing response`, {
-          request: {
-            id: response.req.id,
-          },
           response: {
             statusCode: response.statusCode,
           },
