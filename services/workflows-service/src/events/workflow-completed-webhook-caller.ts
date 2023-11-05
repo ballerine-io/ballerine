@@ -54,7 +54,7 @@ export class WorkflowCompletedWebhookCaller {
 
     const webhooks = getWebhooks(
       data.runtimeData.config,
-      this.configService.get('NODE_ENV'),
+      this.configService.get('ENVIRONMENT_NAME'),
       'workflow.completed',
     );
 

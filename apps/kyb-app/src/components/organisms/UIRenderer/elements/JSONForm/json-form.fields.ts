@@ -1,6 +1,11 @@
 import { CheckboxList } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/CheckboxList';
+import { CountryPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/CountryPicker';
 import { DocumentField } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField';
+import { IndustriesPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/IndustriesPicker';
+import { LocalePicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/LocalePicker';
+import { Multiselect } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/Multiselect/Multiselect';
 import { NationalityPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/NationalityPicker';
+import { StatePicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/StatePicker';
 import { withDynamicUIInput } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withDynamicUIInput';
 import {
   AutocompleteTextInputAdapter,
@@ -11,11 +16,6 @@ import {
   PhoneInputAdapter,
   TextInputAdapter,
 } from '@ballerine/ui';
-import { LocalePicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/LocalePicker';
-import { CountryPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/CountryPicker';
-import { IndustriesPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/IndustriesPicker';
-import { Multiselect } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/Multiselect/Multiselect';
-import { StatePicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/StatePicker';
 
 export const jsonFormFields = {
   // Component with suffix Field is an overriding of internal RSJV components
