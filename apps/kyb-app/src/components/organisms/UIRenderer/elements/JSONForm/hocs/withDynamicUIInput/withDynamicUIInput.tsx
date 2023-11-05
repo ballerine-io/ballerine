@@ -75,7 +75,7 @@ export const withDynamicUIInput = (Component: RJSFInputAdapter<any, any>) => {
       [definition, elementState, setElementState],
     );
 
-    const { disabled } = useUIElementProps(baseDefinition);
+    const { disabled, hidden } = useUIElementProps(baseDefinition);
 
     const { onChangeHandler } = useUIElementHandlers(definition);
 
