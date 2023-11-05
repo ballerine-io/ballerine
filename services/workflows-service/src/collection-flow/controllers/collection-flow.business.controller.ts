@@ -12,10 +12,10 @@ export class CollectionFlowBusinessController {
 
   @Get('/business-information')
   getCompanyInfo(@Query() query: GetBusinessInformationDto) {
-    const { countryCode,state,  vendor, registrationNumber } = query;
+    const { countryCode, state, vendor, registrationNumber } = query;
 
-    const jurisdictionCode = this.buildJurisdictionCode(countryCode, state)
-    console.log('CODE', jurisdictionCode, typeof state, query)
+    const jurisdictionCode = this.buildJurisdictionCode(countryCode, state);
+    console.log('CODE', jurisdictionCode, typeof state, query);
 
     return this.businessService.fetchCompanyInformation({
       registrationNumber,
