@@ -167,7 +167,15 @@
                   "additionalProperties": false
                 }
               },
-              "required": ["provider", "uri", "type"],
+              "required": ["provider", "type"],
+              "oneOf": [
+                {
+                  "required": ["ballerineFileId"]
+                },
+                {
+                  "required": ["uri"]
+                }
+              ],
               "additionalProperties": false
             }
           },

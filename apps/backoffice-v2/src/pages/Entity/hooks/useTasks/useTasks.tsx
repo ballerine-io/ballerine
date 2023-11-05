@@ -911,7 +911,7 @@ export const useTasks = ({
                     },
                     columns: [
                       {
-                        accessorKey: 'linkedAddress',
+                        accessorKey: 'country',
                         header: 'Linked address',
                       },
                       {
@@ -919,8 +919,8 @@ export const useTasks = ({
                         header: 'City',
                       },
                       {
-                        accessorKey: 'country',
-                        header: 'Country',
+                        accessorKey: 'linkedAddress',
+                        header: 'Address',
                       },
                     ],
                     data: sanction?.places?.map(({ country, city, address }) => ({

@@ -162,6 +162,11 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
+                  pages: [
+                    {
+                      provider: 'http',
+                    },
+                  ],
                 },
               },
             },
@@ -188,6 +193,11 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
+                  pages: [
+                    {
+                      provider: 'http',
+                    },
+                  ],
                 },
               },
             },
@@ -213,6 +223,11 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
+                  pages: [
+                    {
+                      provider: 'http',
+                    },
+                  ],
                 },
               },
             },
@@ -239,6 +254,11 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
+                  pages: [
+                    {
+                      provider: 'http',
+                    },
+                  ],
                 },
               },
             },
@@ -264,6 +284,11 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
+                  pages: [
+                    {
+                      provider: 'http',
+                    },
+                  ],
                 },
               },
             },
@@ -289,6 +314,11 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
+                  pages: [
+                    {
+                      provider: 'http',
+                    },
+                  ],
                 },
               },
             },
@@ -332,6 +362,11 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
+                  pages: [
+                    {
+                      provider: 'http',
+                    },
+                  ],
                 },
               },
             },
@@ -368,6 +403,11 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
+                  pages: [
+                    {
+                      provider: 'http',
+                    },
+                  ],
                 },
               },
             },
@@ -415,6 +455,11 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
+                  pages: [
+                    {
+                      provider: 'http',
+                    },
+                  ],
                 },
               },
             },
@@ -440,6 +485,11 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
+                  pages: [
+                    {
+                      provider: 'http',
+                    },
+                  ],
                 },
               },
             },
@@ -465,6 +515,11 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
+                  pages: [
+                    {
+                      provider: 'http',
+                    },
+                  ],
                 },
               },
             },
@@ -509,6 +564,11 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
+                  pages: [
+                    {
+                      provider: 'http',
+                    },
+                  ],
                 },
                 mappingParams: {
                   documentIndex: 11,

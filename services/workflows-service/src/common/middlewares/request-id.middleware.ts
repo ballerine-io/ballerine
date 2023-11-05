@@ -25,7 +25,6 @@ export class RequestIdMiddleware implements NestMiddleware {
 
     this.logger.log(`Incoming request`, {
       request: {
-        id: request.id,
         method: request.method,
         path: request.originalUrl,
         headers: cleanHeaders,

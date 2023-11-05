@@ -17,9 +17,6 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     const response = host.switchToHttp().getResponse<Response>();
 
     this.logger.error(`Outgoing response (Failure)`, {
-      request: {
-        id: response.req.id,
-      },
       response: {
         statusCode: response.statusCode,
       },

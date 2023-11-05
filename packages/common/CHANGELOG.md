@@ -1,5 +1,23 @@
 # @ballerine/common
 
+## 0.7.19
+
+### Patch Changes
+
+- Fixed default context schema
+
+## 0.7.18
+
+### Patch Changes
+
+- Updated default context schema
+
+## 0.7.17
+
+### Patch Changes
+
+- AsiaVerify integrations
+
 ## 0.7.16
 
 ### Patch Changes
