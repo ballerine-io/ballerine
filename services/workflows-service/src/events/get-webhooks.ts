@@ -11,7 +11,7 @@ export type Webhook = {
 
 export const getWebhooks = (
   config: WorkflowConfig,
-  NODE_ENV: string | undefined,
+  envName: string | undefined,
   event: string,
 ): Webhook[] => {
   return (config?.subscriptions ?? [])
@@ -20,7 +20,7 @@ export const getWebhooks = (
       ({ url }): Webhook => ({
         id: randomUUID(),
         url,
-        environment: NODE_ENV,
+        environment: envName,
         apiVersion: packageJson.version,
       }),
     );
