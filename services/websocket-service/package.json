@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/websocket-service",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "websocket-service",
   "private": false,
   "scripts": {

@@ -1,5 +1,16 @@
 # @ballerine/backoffice-v2
 
+## 0.5.18
+
+### Patch Changes
+
+- Bump ver
+- Updated dependencies
+  - @ballerine/common@0.7.20
+  - @ballerine/ui@0.3.9
+  - @ballerine/workflow-browser-sdk@0.5.18
+  - @ballerine/workflow-node-sdk@0.5.18
+
 ## 0.5.17
 
 ### Patch Changes
