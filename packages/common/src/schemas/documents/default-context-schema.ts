@@ -1,32 +1,25 @@
 import { Type } from '@sinclair/typebox';
 
-export const defaultContextSchema = Type.Object({
-  entity: Type.Object(
-    {
-      type: Type.String({ enum: ['individual', 'business'] }),
-      data: Type.Optional(
-        Type.Object(
-          {
-            additionalInfo: Type.Optional(Type.Object({})),
-          },
-          { additionalProperties: true },
-        ),
+const entitySchema = Type.Object(
+  {
+    type: Type.String({ enum: ['individual', 'business'] }),
+    data: Type.Optional(
+      Type.Object(
+        {
+          additionalInfo: Type.Optional(Type.Object({})),
+        },
+        { additionalProperties: true },
       ),
-      id: Type.Optional(Type.String()),
-      ballerineEntityId: Type.Optional(Type.String()),
-    },
-    {
-      additionalProperties: false,
-      anyOf: [
-        {
-          required: ['id'],
-        },
-        {
-          required: ['ballerineEntityId'],
-        },
-      ],
-    },
-  ),
+    ),
+  },
+  { additionalProperties: false },
+);
+
+export const defaultContextSchema = Type.Object({
+  entity: Type.Union([
+    Type.Composite([entitySchema, Type.Object({ id: Type.String() })]),
+    Type.Composite([entitySchema, Type.Object({ ballerineEntityId: Type.String() })]),
+  ]),
   documents: Type.Array(
     Type.Object(
       {
