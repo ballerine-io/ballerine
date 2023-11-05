@@ -15,6 +15,7 @@ import { LocalePicker } from '@app/components/organisms/UIRenderer/elements/JSON
 import { CountryPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/CountryPicker';
 import { IndustriesPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/IndustriesPicker';
 import { Multiselect } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/Multiselect/Multiselect';
+import { StatePicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/StatePicker';
 
 export const jsonFormFields = {
   // Component with suffix Field is an overriding of internal RSJV components
@@ -33,6 +34,7 @@ export const jsonFormFields = {
   CheckboxList: withDynamicUIInput(CheckboxList),
   IndustriesPicker: withDynamicUIInput(IndustriesPicker),
   Multiselect: withDynamicUIInput(Multiselect),
+  StatePicker: withDynamicUIInput(StatePicker),
 };
 
 export const jsonFormLayouts = baseLayouts;
