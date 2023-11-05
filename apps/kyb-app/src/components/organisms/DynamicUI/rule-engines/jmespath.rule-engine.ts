@@ -10,18 +10,23 @@ import jmespath from 'jmespath';
 export class JmespathRuleEngine implements RuleEngine {
   public readonly ENGINE_NAME = 'jmespath';
 
-  test(
+  validate(
     context: unknown,
     rule: Rule,
-    definition: UIElement<AnyObject>,
+    _: UIElement<AnyObject>,
     uiState: UIState,
   ): RuleTestResult {
+    const result = this.test({ ...(context as AnyObject), uiState }, rule);
+
+    return {
+      isValid: Boolean(result),
+      errors: [],
+    };
+  }
+
+  test(context: unknown, rule: Rule) {
     if (this.isJmesPath(rule)) {
-      const result = jmespath.search({ ...(context as AnyObject), uiState }, rule.value) as boolean;
-      return {
-        isValid: Boolean(result),
-        errors: [],
-      };
+      return jmespath.search(context, rule.value) as boolean;
     }
 
     throw new Error(`Invalid rule provided to ${this.ENGINE_NAME}`);
