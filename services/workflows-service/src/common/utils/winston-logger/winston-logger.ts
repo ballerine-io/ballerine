@@ -28,6 +28,24 @@ export class WinstonLogger implements IAppLogger {
     });
   }
 
+  close(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        this.logger.end(() => {
+          this.logger.transports.forEach(transport => {
+            if (transport instanceof transports.File) {
+              transport.close?.(); // Optional chaining to invoke 'close' method
+            }
+          });
+
+          resolve();
+        });
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
   log(message: string, payload: LogPayload = {}) {
     this.logger.info(message, payload);
   }
