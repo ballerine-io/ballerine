@@ -18,10 +18,12 @@ export interface RuleTestResult {
 export abstract class RuleEngine {
   public readonly ENGINE_NAME: string;
 
-  abstract test(
+  abstract validate(
     context: unknown,
     rule: Rule,
     definition: UIElement<AnyObject>,
     uiState: UIState,
   ): RuleTestResult;
+
+  abstract test(context: unknown, rule: Rule): boolean;
 }

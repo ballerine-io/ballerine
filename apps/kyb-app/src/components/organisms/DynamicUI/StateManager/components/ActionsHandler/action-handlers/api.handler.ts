@@ -1,13 +1,13 @@
 import { ActionHandler } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/action-handler.abstract';
-import { AnyObject } from '@ballerine/ui';
-import ky from 'ky';
-import jmespath from 'jmespath';
-import set from 'lodash/set';
-import { Action, IRule } from '@app/domains/collection-flow';
+import { EngineManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
 import { EventEngine } from '@app/components/organisms/DynamicUI/rule-engines/event.engine';
 import { JsonLogicRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
 import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
-import { EngineManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
+import { Action, IRule } from '@app/domains/collection-flow';
+import { AnyObject } from '@ballerine/ui';
+import jmespath from 'jmespath';
+import ky from 'ky';
+import set from 'lodash/set';
 
 export interface ApiActionParams {
   url: string;
@@ -89,7 +89,7 @@ export class ApiActionHandler implements ActionHandler {
       if (!engine) throw new Error(`Provided rule with engine ${rule.type} not supported`);
 
       //@ts-ignore
-      return engine.test(context, rule as IRule);
+      return engine.validate(context, rule as IRule);
     });
   }
 }

@@ -18,6 +18,8 @@
 
 ### Patch Changes
 
+- Updated dependencies
+  - @ballerine/ui@0.3.8
 - AsiaVerify integrations
   - @ballerine/blocks@0.1.15
   - @ballerine/workflow-browser-sdk@0.5.15
