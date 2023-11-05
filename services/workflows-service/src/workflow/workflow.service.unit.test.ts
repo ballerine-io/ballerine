@@ -120,6 +120,7 @@ describe('WorkflowService', () => {
     WEBHOOK_URL: 'https://example.com',
     WEBHOOK_SECRET: 'webhook_secret',
     NODE_ENV: 'test',
+    ENVIRONMENT_NAME: 'test',
 
     get(key: Exclude<keyof typeof this, 'get'>) {
       return this[key];

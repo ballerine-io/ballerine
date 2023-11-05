@@ -5,7 +5,7 @@ export class WinstonLogger implements IAppLogger {
   private logger: TWinstonLogger;
 
   constructor() {
-    const isProduction = process.env.NODE_ENV === 'production';
+    const isProduction = process.env.ENVIRONMENT_NAME === 'production';
 
     const productionFormat = format.combine(format.timestamp(), format.json());
 
