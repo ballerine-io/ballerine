@@ -1,5 +1,13 @@
 # kyb-app
 
+## 0.1.9
+
+### Patch Changes
+
+- AsiaVerify integrations
+  - @ballerine/blocks@0.1.15
+  - @ballerine/workflow-browser-sdk@0.5.15
+
 ## 0.1.8
 
 ### Patch Changes
