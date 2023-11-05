@@ -8,7 +8,7 @@ import { StorageService } from '@/storage/storage.service';
 import {
   Controller,
   Get,
-  NotFoundException,
+  Logger,
   Param,
   ParseFilePipeBuilder,
   Post,
@@ -22,7 +22,6 @@ import { Response } from 'express';
 import * as errors from '../../errors';
 import { FILE_MAX_SIZE_IN_BYTE } from './../../storage/file-filter';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
-import { formatBytes } from '@/common/utils/bytes';
 
 export const COLLECTION_FLOW_FILES_API_PATH = 'collection-flow/files';
 
@@ -30,6 +29,8 @@ export const COLLECTION_FLOW_FILES_API_PATH = 'collection-flow/files';
 @UseTokenAuthGuard()
 @Controller(COLLECTION_FLOW_FILES_API_PATH)
 export class CollectionFlowFilesController {
+  private readonly logger = new Logger(CollectionFlowFilesController.name);
+
   constructor(
     protected readonly storageService: StorageService,
     protected readonly collectionFlowService: CollectionFlowService,

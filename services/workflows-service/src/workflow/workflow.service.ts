@@ -1546,8 +1546,8 @@ export class WorkflowService {
       newWorkflowCreated = true;
     } else {
       // Updating existing workflow
-      console.log('existing documents', existingWorkflowRuntimeData.context.documents);
-      console.log('documents', contextToInsert.documents);
+      this.logger.log('existing documents', existingWorkflowRuntimeData.context.documents);
+      this.logger.log('documents', contextToInsert.documents);
       // contextToInsert.documents = updateDocuments(
       //   existingWorkflowRuntimeData.context.documents,
       //   context.documents,
