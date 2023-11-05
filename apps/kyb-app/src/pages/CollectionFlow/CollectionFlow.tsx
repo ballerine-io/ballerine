@@ -7,7 +7,6 @@ import { UIRenderer } from '@app/components/organisms/UIRenderer';
 import { Cell } from '@app/components/organisms/UIRenderer/elements/Cell';
 import { Divider } from '@app/components/organisms/UIRenderer/elements/Divider';
 import { JSONForm } from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
-import { withInitialDataCreation } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withInitialDataCreation';
 import { StepperUI } from '@app/components/organisms/UIRenderer/elements/StepperUI';
 import { SubmitButton } from '@app/components/organisms/UIRenderer/elements/SubmitButton';
 import { Title } from '@app/components/organisms/UIRenderer/elements/Title';
@@ -33,7 +32,7 @@ const elems = {
       dangerouslySetInnerHTML={{ __html: props.options.descriptionRaw as string }}
     ></p>
   ),
-  'json-form': withInitialDataCreation(JSONForm),
+  'json-form': JSONForm,
   container: Cell,
   mainContainer: Cell,
   'submit-button': SubmitButton,

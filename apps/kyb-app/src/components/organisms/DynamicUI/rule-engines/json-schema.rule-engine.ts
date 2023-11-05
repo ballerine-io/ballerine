@@ -4,14 +4,14 @@ import {
 } from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
 import { Rule, UIElement } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
-import Ajv from 'ajv/dist/2019';
 import ajvErrors from 'ajv-errors';
 import addFormats from 'ajv-formats';
+import Ajv from 'ajv/dist/2019';
 
 export class JsonSchemaRuleEngine implements RuleEngine {
   public readonly ENGINE_NAME = 'json-schema';
 
-  test(context: unknown, rule: Rule, definition: UIElement<AnyObject>) {
+  validate(context: unknown, rule: Rule, definition: UIElement<AnyObject>) {
     const validator = new Ajv({ allErrors: true, useDefaults: true });
     addFormats(validator, {
       formats: ['email', 'uri', 'date', 'date-time'],
@@ -27,6 +27,19 @@ export class JsonSchemaRuleEngine implements RuleEngine {
     }
 
     return { isValid: true, errors: [] };
+  }
+
+  test(context: unknown, rule: Rule) {
+    const validator = new Ajv({ allErrors: true, useDefaults: true });
+    addFormats(validator, {
+      formats: ['email', 'uri', 'date', 'date-time'],
+      keywords: true,
+    });
+    ajvErrors(validator, { singleError: true });
+
+    const validationResult = validator.validate(rule.value, context);
+
+    return validationResult;
   }
 
   private __extractErrorsWithFields(validator: Ajv, definition: UIElement<AnyObject>) {
