@@ -90,13 +90,13 @@ export const DocumentField = (
       }
 
       const fileIdPath = getDocumentFileIdPath(definition);
-      const fileTypePath = getDocumentFileTypePath(definition);
+      // const fileTypePath = getDocumentFileTypePath(definition);
 
       try {
         const uploadResult = await uploadFile({ file });
 
         set(document, fileIdPath, uploadResult.id);
-        set(document, fileTypePath, file.type);
+        // set(document, fileTypePath, file.type);
         set(document, 'decision', {});
 
         stateApi.setContext(context);
