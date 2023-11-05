@@ -1,11 +1,33 @@
 # @ballerine/backoffice-v2
 
-## 0.5.15
+## 0.5.17
 
 ### Patch Changes
 
 - Updated dependencies
   - @ballerine/ui@0.3.8
+  - @ballerine/common@0.7.19
+  - @ballerine/workflow-browser-sdk@0.5.17
+  - @ballerine/workflow-node-sdk@0.5.17
+
+## 0.5.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.18
+  - @ballerine/workflow-browser-sdk@0.5.16
+  - @ballerine/workflow-node-sdk@0.5.16
+
+## 0.5.15
+
+### Patch Changes
+
+- AsiaVerify integrations
+- Updated dependencies
+  - @ballerine/common@0.7.17
+  - @ballerine/workflow-browser-sdk@0.5.15
+  - @ballerine/workflow-node-sdk@0.5.15
 
 ## 0.5.14
 

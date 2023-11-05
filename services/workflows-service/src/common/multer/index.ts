@@ -7,7 +7,7 @@ import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.conf
 import os from 'os';
 import { getFileName } from '@/storage/get-file-name';
 
-export const multerFactory = async (configService: ConfigService): Promise<MulterModuleOptions> => {
+export const multerFactory = (configService: ConfigService): MulterModuleOptions => {
   const processEnv = process.env;
 
   const options: MulterModuleOptions = {
