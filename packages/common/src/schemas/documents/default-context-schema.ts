@@ -137,7 +137,7 @@ export const defaultContextSchema = Type.Object({
             },
             {
               additionalProperties: false,
-              oneOf: [
+              anyOf: [
                 {
                   required: ['ballerineFileId'],
                 },
