@@ -2,6 +2,7 @@ import { FunctionComponent, lazy } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { Outlet } from 'react-router-dom';
 import { Providers } from '../../common/components/templates/Providers/Providers';
+import { ServerDownLayout } from './ServerDown.layout';
 
 const ReactQueryDevtools = lazy(() =>
   process.env.NODE_ENV !== 'production'
@@ -21,7 +22,9 @@ export const Root: FunctionComponent = () => {
           duration: 1000 * 3,
         }}
       />
-      <Outlet />
+      <ServerDownLayout>
+        <Outlet />
+      </ServerDownLayout>
       {/*<Suspense>*/}
       {/*  <ReactQueryDevtools  />*/}
       {/*</Suspense>*/}

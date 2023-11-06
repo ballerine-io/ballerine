@@ -1,5 +1,71 @@
 # @ballerine/workflow-core
 
+## 0.5.18
+
+### Patch Changes
+
+- Bump ver
+- Updated dependencies
+  - @ballerine/common@0.7.20
+
+## 0.5.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.19
+
+## 0.5.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.18
+
+## 0.5.15
+
+### Patch Changes
+
+- AsiaVerify integrations
+- Updated dependencies
+  - @ballerine/common@0.7.17
+
+## 0.5.14
+
+### Patch Changes
+
+- 801fc639: pre
+- 801fc639: Pre ver
+- 801fc639: Prerelease
+- 801fc639: bump pre
+- 801fc639: Version bump pre
+- 801fc639: Pre bump
+- 801fc639: Pre bump
+- 801fc639: Bump
+- 801fc639: pre
+- Version bump
+- 801fc639: Pre release
+- 801fc639: Bumo
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+  - @ballerine/common@0.7.16
+
+## 0.5.13
+
+### Patch Changes
+
+- Updated dependencies [306ca466]
+  - @ballerine/common@0.7.15
+
 ## 0.5.12
 
 ### Patch Changes

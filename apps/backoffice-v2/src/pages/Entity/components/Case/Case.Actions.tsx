@@ -63,11 +63,11 @@ export const Actions: FunctionComponent<IActionsProps> = ({
       <div className={`mb-8 flex flex-row space-x-3.5`}>
         <AssignDropdown
           assignedUser={assignedUser}
-          avatarUrl={avatarUrl}
           assignees={assignees}
           onAssigneeSelect={id => {
             onMutateAssignWorkflow(id, id === authenticatedUser?.id);
           }}
+          authenticatedUserId={authenticatedUser?.id}
         />
       </div>
       <div className={`flex h-20 justify-between`}>

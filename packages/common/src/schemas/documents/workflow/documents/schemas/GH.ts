@@ -6,6 +6,7 @@ const alphaNumeric = '^[a-zA-Z0-9]*$';
 
 export const getGhanaDocuments = (): TDocument[] => {
   const TypeAlphanumericString = Type.String({ pattern: '^[a-zA-Z0-9]*$' });
+  const TypeAlphanumericWithSpacesString = Type.String({ pattern: '^[\\sa-zA-Z0-9]*$' });
   const TypePastDate = Type.String({
     format: 'date',
     formatMaximum: new Date().toISOString().split('T')[0],
@@ -688,7 +689,7 @@ export const getGhanaDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object({
         certificateNumber: TypeAlphanumericString,
-        businessName: TypeAlphanumericString,
+        businessName: TypeAlphanumericWithSpacesString,
         registrationNumber: Type.Optional(TypeAlphanumericString),
         issueDate: TypePastDate,
       }),

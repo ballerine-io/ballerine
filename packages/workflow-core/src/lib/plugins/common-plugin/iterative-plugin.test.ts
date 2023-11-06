@@ -88,8 +88,7 @@ describe('workflow-runner', () => {
         );
 
         // Act
-        // @ts-expect-error - we are testing the plugin
-        await workflow.sendEvent('ALL_GOOD');
+        await workflow.sendEvent({type: 'ALL_GOOD'});
 
         // Assert
         expect(serverRequestUrl).toEqual(

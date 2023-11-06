@@ -8,4 +8,5 @@ export abstract class IAppLogger {
   abstract warn(message: string, payload: LogPayload): void;
   abstract debug(message: string, payload: LogPayload): void;
   abstract error(message: string, payload: LogPayload): void;
+  abstract close(): Promise<void>;
 }

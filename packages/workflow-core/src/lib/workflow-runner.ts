@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { AnyRecord, isObject, uniqueArray } from '@ballerine/common';
+import { isObject, uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
@@ -17,7 +17,6 @@ import { Error as ErrorEnum } from './types';
 import { JmespathTransformer } from './utils/context-transformers/jmespath-transformer';
 import { JsonSchemaValidator } from './utils/context-validator/json-schema-validator';
 import {
-  ActionablePlugin,
   ActionablePlugins,
   CommonPlugin,
   CommonPlugins,
@@ -449,6 +448,11 @@ export class WorkflowRunner {
     // all sends() will be deferred until the workflow is started
     service.start();
 
+    if (!service.getSnapshot().nextEvents.includes(event.type)) {
+      throw new Error(
+        `Event ${event.type} is not allowed in the current state: ${this.#__currentState}`,
+      );
+    }
     // Non-blocking plugins are executed as actions
     const prePlugins =
       this.#__extensions.statePlugins?.filter(
@@ -550,7 +554,7 @@ export class WorkflowRunner {
       };
     }
 
-    await this.sendEvent(callbackAction);
+    await this.sendEvent({type: callbackAction});
   }
 
   subscribe(callback: (event: WorkflowEvent) => void) {

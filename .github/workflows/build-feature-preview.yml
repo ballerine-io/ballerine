@@ -1,0 +1,29 @@
+name: PR Webhooks
+'on':
+  pull_request:
+    branches:
+      - dev
+    branches-ignore:
+      - releases/**
+jobs:
+  backoffice:
+    if: contains(github.event.head_commit.added, 'apps/backoffice-v2/') || contains(github.event.head_commit.modified, 'apps/backoffice-v2/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: backoffice webhook
+        run: |
+          echo "Triggering webhook for backoffice"
+  dashboard:
+    if: contains(github.event.head_commit.added, 'apps/workflows-dashboard/') || contains(github.event.head_commit.modified, 'apps/workflows-dashboard/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: dashboard webhook
+        run: |
+          echo "Triggering webhook for dashboard"
+  folder3_changes:
+    if: contains(github.event.head_commit.added, 'examples/kyb-app/') || contains(github.event.head_commit.modified, 'examples/kyb-app/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: kyb webhook
+        run: |
+          echo "Triggering webhook for kyb-app"
