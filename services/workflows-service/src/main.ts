@@ -1,20 +1,20 @@
-import passport from 'passport';
-import cookieSession from 'cookie-session';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
+import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
+import cookieSession from 'cookie-session';
+import passport from 'passport';
 import { AppModule } from './app.module';
 import { swaggerDocumentOptions, swaggerPath, swaggerSetupOptions } from './swagger';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
-import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - there is an issue with helemet types
-import helmet from 'helmet';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { env } from '@/env';
-import { json, NextFunction, Request, Response, urlencoded } from 'express';
-import { ClsMiddleware } from 'nestjs-cls';
-import * as Sentry from '@sentry/node';
 import { ConfigService } from '@nestjs/config';
-import { WinstonLogger } from './common/utils/winston-logger/winston-logger';
+import * as Sentry from '@sentry/node';
+import { json, NextFunction, Request, Response, urlencoded } from 'express';
+import helmet from 'helmet';
+import { ClsMiddleware } from 'nestjs-cls';
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
@@ -38,19 +38,17 @@ const corsOrigins =
       ];
 
 async function main() {
-  const logger = new WinstonLogger();
   const app = await NestFactory.create(AppModule, {
     snapshot: true,
-    logger,
     cors: {
       origin: corsOrigins,
       credentials: true,
     },
   });
+  const logger = app.get(AppLoggerService);
 
   const configService = app.get(ConfigService);
 
-  app.useLogger(logger);
   app.use(new ClsMiddleware({}).use);
 
   if (configService.get('SENTRY_DSN')) {

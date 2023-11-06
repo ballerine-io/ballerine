@@ -1,5 +1,5 @@
 import { IAppLogger, LogPayload } from '@/common/abstract-logger/abstract-logger';
-import { createLogger, format, transports, Logger as TWinstonLogger } from 'winston';
+import { Logger as TWinstonLogger, createLogger, format, transports } from 'winston';
 
 export class WinstonLogger implements IAppLogger {
   private logger: TWinstonLogger;
@@ -7,7 +7,7 @@ export class WinstonLogger implements IAppLogger {
   constructor() {
     const isProduction = process.env.ENVIRONMENT_NAME === 'production';
 
-    const productionFormat = format.combine(format.timestamp(), format.json());
+    const productionFormat = format.combine(format.timestamp(), format.json(), format.uncolorize());
 
     const developmentFormat = format.combine(
       format.colorize({ all: true }),
