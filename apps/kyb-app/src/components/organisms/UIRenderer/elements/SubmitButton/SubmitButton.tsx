@@ -4,6 +4,7 @@ import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/u
 import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
 import { getElementNames } from '@app/components/organisms/UIRenderer/elements/SubmitButton/helpers';
 import { useUIElementHandlers } from '@app/components/organisms/UIRenderer/hooks/useUIElementHandlers';
+import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
 import { UIElementComponent } from '@app/components/organisms/UIRenderer/types';
 import { UIPage } from '@app/domains/collection-flow';
 import { Button } from '@ballerine/ui';
@@ -13,6 +14,7 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
   const { helpers } = useDynamicUIContext();
   const { onClickHandler } = useUIElementHandlers(definition);
   const { state } = useDynamicUIContext();
+  const { state: uiElementState } = useUIElementState(definition);
   const { currentPage } = usePageResolverContext();
 
   const setPageElementsTouched = useCallback(
@@ -44,7 +46,11 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
   }, [currentPage, state, setPageElementsTouched, onClickHandler]);
 
   return (
-    <Button variant="secondary" onClick={handleClick} disabled={state.isLoading}>
+    <Button
+      variant="secondary"
+      onClick={handleClick}
+      disabled={state.isLoading || uiElementState.isLoading}
+    >
       {definition.options.text || 'Submit'}
     </Button>
   );

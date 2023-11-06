@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run"
   },
   "dependencies": {
     "@ballerine/blocks": "0.1.18",
@@ -36,6 +37,7 @@
     "ky": "^0.33.3",
     "lodash": "^4.17.21",
     "lucide-react": "^0.144.0",
+    "p-queue": "^7.4.1",
     "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -47,6 +49,9 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^13.3.0",
+    "@types/jest": "^26.0.19",
     "@types/jmespath": "^0.15.0",
     "@types/json-logic-js": "^2.0.1",
     "@types/lodash": "^4.14.191",
@@ -62,10 +67,12 @@
     "eslint": "^8.44.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.1",
+    "jsdom": "^20.0.2",
     "tailwindcss": "^3.3.2",
     "tailwindcss-animate": "1.0.5",
     "typescript": "^5.0.2",
     "vite": "^4.4.0",
-    "vite-plugin-checker": "^0.6.1"
+    "vite-plugin-checker": "^0.6.1",
+    "vitest": "^0.34.6"
   }
 }

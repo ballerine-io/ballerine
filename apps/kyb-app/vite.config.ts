@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import tailwindcss from 'tailwindcss';
-import checker from 'vite-plugin-checker';
 import { resolve } from 'path';
+import tailwindcss from 'tailwindcss';
+import { defineConfig } from 'vite';
+import checker from 'vite-plugin-checker';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -20,5 +20,10 @@ export default defineConfig({
     alias: {
       '@app': resolve(__dirname, './src'),
     },
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './tests/setup.js',
   },
 });
