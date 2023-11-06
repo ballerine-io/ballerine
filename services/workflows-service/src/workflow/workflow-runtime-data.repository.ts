@@ -1,13 +1,14 @@
+import { SortOrder } from '@/common/query-filters/sort-order';
 import { PrismaService } from '@/prisma/prisma.service';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { TProjectId, TProjectIds } from '@/types';
+import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
+import { TEntityType } from '@/workflow/types';
+import { FindLastActiveFlowParams } from '@/workflow/types/params';
+import { DefaultContextSchema } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
 import { Prisma, WorkflowRuntimeData, WorkflowRuntimeDataStatus } from '@prisma/client';
-import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
-import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
-import { FindLastActiveFlowParams } from '@/workflow/types/params';
-import { ProjectScopeService } from '@/project/project-scope.service';
-import { SortOrder } from '@/common/query-filters/sort-order';
-import { TProjectId, TProjectIds } from '@/types';
 
 export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 
@@ -106,6 +107,33 @@ export class WorkflowRuntimeDataRepository {
     }
 
     return this.findById(id, {}, projectIds);
+  }
+
+  async patchDocumentById(
+    workflowRuntimeDataId: string,
+    documentId: string,
+    documentPayload: DefaultContextSchema['documents'][number] & { propertiesSchema?: object },
+    projectId: TProjectId,
+  ): Promise<WorkflowRuntimeData> {
+    const workflowRuntimeData = await this.findById(workflowRuntimeDataId, {}, [projectId]);
+
+    workflowRuntimeData.context.documents = workflowRuntimeData.context.documents.map(
+      (document: DefaultContextSchema['documents'][number]) => {
+        if (document.id === documentId) {
+          return documentPayload;
+        }
+
+        return document;
+      },
+    );
+
+    // Prisma throw validation error when trying to insert back config: null
+    // To avoid this undefined should be used
+    workflowRuntimeData.config = workflowRuntimeData.config ?? undefined;
+
+    await this.updateById(workflowRuntimeDataId, { data: workflowRuntimeData }, projectId);
+
+    return workflowRuntimeData;
   }
 
   async deleteById<T extends Omit<Prisma.WorkflowRuntimeDataDeleteArgs, 'where'>>(

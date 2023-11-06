@@ -1,36 +1,35 @@
+import { PasswordService } from '@/auth/password/password.service';
+import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { BusinessRepository } from '@/business/business.repository';
+import { EntityRepository } from '@/common/entity/entity.repository';
+import { EndUserRepository } from '@/end-user/end-user.repository';
+import { EndUserService } from '@/end-user/end-user.service';
+import { FilterRepository } from '@/filter/filter.repository';
+import { FilterService } from '@/filter/filter.service';
+import { PrismaService } from '@/prisma/prisma.service';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { FileService } from '@/providers/file/file.service';
+import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { FileRepository } from '@/storage/storage.repository';
+import { StorageService } from '@/storage/storage.service';
+import { createCustomer } from '@/test/helpers/create-customer';
+import { createProject } from '@/test/helpers/create-project';
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 import { fetchServiceFromModule } from '@/test/helpers/nest-app-helper';
-import { PrismaModule } from 'nestjs-prisma';
-import { EndUserRepository } from '@/end-user/end-user.repository';
-import { FilterService } from '@/filter/filter.service';
-import { FilterRepository } from '@/filter/filter.repository';
-import { FileRepository } from '@/storage/storage.repository';
-import { FileService } from '@/providers/file/file.service';
-import { StorageService } from '@/storage/storage.service';
-import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
-import { BusinessRepository } from '@/business/business.repository';
+import { UserRepository } from '@/user/user.repository';
+import { UserService } from '@/user/user.service';
 import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
+import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import {
   ArrayMergeOption,
   WorkflowRuntimeDataRepository,
 } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { PrismaService } from '@/prisma/prisma.service';
-import { EntityRepository } from '@/common/entity/entity.repository';
-import { ProjectScopeService } from '@/project/project-scope.service';
-import { EndUserService } from '@/end-user/end-user.service';
 import { Project } from '@prisma/client';
-import { createCustomer } from '@/test/helpers/create-customer';
-import { createProject } from '@/test/helpers/create-project';
-import { UserService } from '@/user/user.service';
-import { SalesforceService } from '@/salesforce/salesforce.service';
-import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
-import { UserRepository } from '@/user/user.repository';
-import { PasswordService } from '@/auth/password/password.service';
-import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { WorkflowModule } from './workflow.module';
-import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
+import { PrismaModule } from 'nestjs-prisma';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -1050,5 +1049,124 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
 
     const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
     expect(updatedContext).toEqual(expectedContext);
+  });
+
+  describe('patchDocumentById', () => {
+    it('will patch document by id', async () => {
+      const testDocumentId = 'document-1';
+      const patchDocumnent = {
+        id: testDocumentId,
+        properties: {
+          prop2: 'some-prop2-value',
+        },
+      };
+
+      const testWorkflow = await workflowRuntimeRepository.create(
+        {
+          data: {
+            workflowDefinitionId: 'test-definition',
+            workflowDefinitionVersion: 1,
+            context: {
+              entity: {
+                id: '1',
+                name: 'TestEntity',
+              },
+              documents: [
+                {
+                  id: testDocumentId,
+                  properties: {
+                    prop1: 'some-prop-value',
+                  },
+                },
+              ],
+            },
+            tags: [],
+          },
+        },
+        project.id,
+      );
+
+      const updatedWorkflow = await workflowRuntimeRepository.patchDocumentById(
+        testWorkflow.id as string,
+        testDocumentId,
+        patchDocumnent as any,
+        project.id,
+      );
+
+      expect(updatedWorkflow.context.documents[0]).toEqual(patchDocumnent);
+    });
+
+    it('wont perform any modifications if document not found', async () => {
+      const nonExistingDocumentId = 'non-existing-document';
+      const existingDocument = {
+        id: 'some-id',
+        properties: {
+          foo: 'bar',
+        },
+      };
+
+      const documents = [existingDocument];
+
+      const testWorkflow = await workflowRuntimeRepository.create(
+        {
+          data: {
+            workflowDefinitionId: 'test-definition',
+            workflowDefinitionVersion: 1,
+            context: {
+              entity: {
+                id: '1',
+                name: 'TestEntity',
+              },
+              documents: documents,
+            },
+            tags: [],
+          },
+        },
+        project.id,
+      );
+
+      const updatedWorkflow = await workflowRuntimeRepository.patchDocumentById(
+        testWorkflow.id as string,
+        nonExistingDocumentId,
+        {} as any,
+        project.id,
+      );
+
+      expect(updatedWorkflow.context.documents[0]).toEqual(existingDocument);
+      expect(updatedWorkflow.context.documents.length).toBe(documents.length);
+    });
+
+    it('wont insert any items to documents if not found by id', async () => {
+      const nonExistingDocumentId = 'non-existing-document';
+
+      const documents: any[] = [];
+
+      const testWorkflow = await workflowRuntimeRepository.create(
+        {
+          data: {
+            workflowDefinitionId: 'test-definition',
+            workflowDefinitionVersion: 1,
+            context: {
+              entity: {
+                id: '1',
+                name: 'TestEntity',
+              },
+              documents: documents,
+            },
+            tags: [],
+          },
+        },
+        project.id,
+      );
+
+      const updatedWorkflow = await workflowRuntimeRepository.patchDocumentById(
+        testWorkflow.id as string,
+        nonExistingDocumentId,
+        {} as any,
+        project.id,
+      );
+
+      expect(updatedWorkflow.context.documents.length).toBe(documents.length);
+    });
   });
 });

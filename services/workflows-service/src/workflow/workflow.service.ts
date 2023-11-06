@@ -831,12 +831,11 @@ export class WorkflowService {
       }
     }
 
-    const updatedWorkflow = await this.updateContextById(
+    const updatedWorkflow = await this.workflowRuntimeDataRepository.patchDocumentById(
       workflowId,
-      {
-        documents: [newDocument],
-      },
-      [projectId],
+      newDocument.id as string,
+      newDocument,
+      projectId,
     );
 
     logDocumentWithoutId({
