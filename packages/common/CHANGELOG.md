@@ -1,5 +1,45 @@
 # @ballerine/common
 
+## 0.7.20
+
+### Patch Changes
+
+- Bump ver
+
+## 0.7.19
+
+### Patch Changes
+
+- Fixed default context schema
+
+## 0.7.18
+
+### Patch Changes
+
+- Updated default context schema
+
+## 0.7.17
+
+### Patch Changes
+
+- AsiaVerify integrations
+
+## 0.7.16
+
+### Patch Changes
+
+- 801fc639: pre
+- 801fc639: Pre ver
+- 801fc639: bump pre
+- 801fc639: Version bump pre
+- 801fc639: Pre bump
+- 801fc639: Pre bump
+- 801fc639: Bump
+- 801fc639: pre
+- Version bump
+- 801fc639: Pre release
+- 801fc639: Bumo
+
 ## 0.7.15
 
 ### Patch Changes

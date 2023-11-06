@@ -1,32 +1,25 @@
 import { Type } from '@sinclair/typebox';
 
-export const defaultContextSchema = Type.Object({
-  entity: Type.Object(
-    {
-      type: Type.String({ enum: ['individual', 'business'] }),
-      data: Type.Optional(
-        Type.Object(
-          {
-            additionalInfo: Type.Optional(Type.Object({})),
-          },
-          { additionalProperties: true },
-        ),
+const entitySchema = Type.Object(
+  {
+    type: Type.String({ enum: ['individual', 'business'] }),
+    data: Type.Optional(
+      Type.Object(
+        {
+          additionalInfo: Type.Optional(Type.Object({})),
+        },
+        { additionalProperties: true },
       ),
-      id: Type.Optional(Type.String()),
-      ballerineEntityId: Type.Optional(Type.String()),
-    },
-    {
-      additionalProperties: false,
-      anyOf: [
-        {
-          required: ['id'],
-        },
-        {
-          required: ['ballerineEntityId'],
-        },
-      ],
-    },
-  ),
+    ),
+  },
+  { additionalProperties: false },
+);
+
+export const defaultContextSchema = Type.Object({
+  entity: Type.Union([
+    Type.Composite([entitySchema, Type.Object({ id: Type.String() })]),
+    Type.Composite([entitySchema, Type.Object({ ballerineEntityId: Type.String() })]),
+  ]),
   documents: Type.Array(
     Type.Object(
       {
@@ -105,40 +98,41 @@ export const defaultContextSchema = Type.Object({
         ),
         version: Type.Optional(Type.Number()),
         pages: Type.Array(
-          Type.Object(
-            {
-              ballerineFileId: Type.Optional(Type.String()),
-              provider: Type.String({ enum: ['gcs', 'http', 'stream', 'file-system', 'ftp'] }),
-              uri: Type.String({ format: 'uri' }),
-              type: Type.Optional(
-                Type.String({
-                  enum: [
-                    'application/pdf',
-                    'image/png',
-                    'image/jpg',
-                    'image/jpeg',
-                    // Backwards compatibility
-                    'pdf',
-                    'png',
-                    'jpg',
-                  ],
-                }),
-              ),
-              data: Type.Optional(Type.String()),
-              metadata: Type.Optional(
-                Type.Object(
-                  {
-                    side: Type.Optional(Type.String()),
-                    pageNumber: Type.Optional(Type.String()),
-                  },
-                  { additionalProperties: false },
+          Type.Union([
+            Type.Object({ ballerineFileId: Type.String() }, { additionalProperties: false }),
+            Type.Object(
+              {
+                ballerineFileId: Type.Optional(Type.String()),
+                provider: Type.String({ enum: ['gcs', 'http', 'stream', 'file-system', 'ftp'] }),
+                uri: Type.String({ format: 'uri' }),
+                type: Type.Optional(
+                  Type.String({
+                    enum: [
+                      'application/pdf',
+                      'image/png',
+                      'image/jpg',
+                      'image/jpeg',
+                      // Backwards compatibility
+                      'pdf',
+                      'png',
+                      'jpg',
+                    ],
+                  }),
                 ),
-              ),
-            },
-            {
-              additionalProperties: false,
-            },
-          ),
+                data: Type.Optional(Type.String()),
+                metadata: Type.Optional(
+                  Type.Object(
+                    {
+                      side: Type.Optional(Type.String()),
+                      pageNumber: Type.Optional(Type.String()),
+                    },
+                    { additionalProperties: false },
+                  ),
+                ),
+              },
+              { additionalProperties: false },
+            ),
+          ]),
         ),
         properties: Type.Object({
           email: Type.Optional(Type.String({ format: 'email' })),

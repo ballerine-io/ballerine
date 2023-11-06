@@ -37,6 +37,8 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
     return [];
   }, []);
 
+  console.log('hidden', hidden);
+
   return {
     disabled,
     hidden,

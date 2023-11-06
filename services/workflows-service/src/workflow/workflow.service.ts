@@ -3,6 +3,45 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { BusinessRepository } from '@/business/business.repository';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { EntityRepository } from '@/common/entity/entity.repository';
+import { SortOrder } from '@/common/query-filters/sort-order';
+import { TDocumentWithoutPageType, TDocumentsWithoutPageType } from '@/common/types';
+import { aliasIndividualAsEndUser } from '@/common/utils/alias-individual-as-end-user/alias-individual-as-end-user';
+import { logDocumentWithoutId } from '@/common/utils/log-document-without-id/log-document-without-id';
+import { CustomerService } from '@/customer/customer.service';
+import { EndUserRepository } from '@/end-user/end-user.repository';
+import { EndUserService } from '@/end-user/end-user.service';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { FileService } from '@/providers/file/file.service';
+import { SalesforceService } from '@/salesforce/salesforce.service';
+import { IObjectWithId, InputJsonValue, TProjectId, TProjectIds } from '@/types';
+import { UserService } from '@/user/user.service';
+import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
+import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
+import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
+import { GetLastActiveFlowParams } from '@/workflow/types/params';
+import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
+import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
+import {
+  WorkflowAssignee,
+  WorkflowRuntimeListItemModel,
+} from '@/workflow/workflow-runtime-list-item.model';
+import { DefaultContextSchema, getDocumentId } from '@ballerine/common';
+import {
+  ChildPluginCallbackOutput,
+  ChildToParentCallback,
+  ChildWorkflowCallback,
+  HelpersTransformer,
+  JmespathTransformer,
+  SerializableTransformer,
+  THelperFormatingLogic,
+  Transformer,
+  createWorkflow,
+} from '@ballerine/workflow-core';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {
   ApprovalState,
   Business,
@@ -12,65 +51,26 @@ import {
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+import addKeywords from 'ajv-keywords';
+import { plainToClass } from 'class-transformer';
+import { isEqual, merge } from 'lodash';
+import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
+import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
+import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
+import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import {
   ListRuntimeDataResult,
   ListWorkflowsRuntimeParams,
   TWorkflowWithRelations,
   WorkflowRuntimeListQueryResult,
 } from './types';
-import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import { isEqual, merge } from 'lodash';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { WorkflowDefinitionRepository } from './workflow-definition.repository';
-import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
-import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
-import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
-import { EndUserRepository } from '@/end-user/end-user.repository';
-import { InputJsonValue, IObjectWithId, TProjectId, TProjectIds } from '@/types';
-import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
-import { BusinessRepository } from '@/business/business.repository';
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
-import addKeywords from 'ajv-keywords';
-import { StorageService } from '@/storage/storage.service';
-import { FileService } from '@/providers/file/file.service';
-import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
-import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
-import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
-import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
-import { DefaultContextSchema } from '@ballerine/common';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
-import {
-  WorkflowAssignee,
-  WorkflowRuntimeListItemModel,
-} from '@/workflow/workflow-runtime-list-item.model';
-import { plainToClass } from 'class-transformer';
-import { SortOrder } from '@/common/query-filters/sort-order';
-import { aliasIndividualAsEndUser } from '@/common/utils/alias-individual-as-end-user/alias-individual-as-end-user';
-import { EntityRepository } from '@/common/entity/entity.repository';
-import {
-  ChildPluginCallbackOutput,
-  ChildToParentCallback,
-  ChildWorkflowCallback,
-  createWorkflow,
-  HelpersTransformer,
-  JmespathTransformer,
-  SerializableTransformer,
-  THelperFormatingLogic,
-  Transformer,
-} from '@ballerine/workflow-core';
-import { ProjectScopeService } from '@/project/project-scope.service';
-import { EndUserService } from '@/end-user/end-user.service';
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
-import { GetLastActiveFlowParams } from '@/workflow/types/params';
-import { TDocumentsWithoutPageType, TDocumentWithoutPageType } from '@/common/types';
-import { CustomerService } from '@/customer/customer.service';
-import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
-import { UserService } from '@/user/user.service';
-import { SalesforceService } from '@/salesforce/salesforce.service';
-import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { WorkflowDefinitionRepository } from './workflow-definition.repository';
+import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
+import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 
 type TEntityId = string;
 
@@ -123,7 +123,6 @@ export class WorkflowService {
     protected readonly businessRepository: BusinessRepository,
     protected readonly entityRepository: EntityRepository,
     protected readonly customerService: CustomerService,
-    protected readonly storageService: StorageService,
     protected readonly fileService: FileService,
     protected readonly workflowEventEmitter: WorkflowEventEmitterService,
     private readonly logger: AppLoggerService,
@@ -766,6 +765,12 @@ export class WorkflowService {
       projectIds![0]!,
     );
 
+    logDocumentWithoutId({
+      line: 'updateDocumentDecisionById 770',
+      logger: this.logger,
+      workflowRuntimeData: updatedWorkflow,
+    });
+
     if (postUpdateEventName) {
       return await this.event(
         { id: workflowId, name: postUpdateEventName },
@@ -833,6 +838,13 @@ export class WorkflowService {
       },
       [projectId],
     );
+
+    logDocumentWithoutId({
+      line: 'updateDocumentDecisionById 844',
+      logger: this.logger,
+      workflowRuntimeData: updatedWorkflow,
+    });
+
     this.__validateWorkflowDefinitionContext(workflowDef, updatedWorkflow.context);
     const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow, [projectId]);
 
@@ -953,8 +965,7 @@ export class WorkflowService {
 
       // @ts-ignore
       data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {
-        if (document?.decision?.status === 'revision' || document?.decision?.status === 'rejected')
-          return;
+        if (document?.decision?.status !== 'approve') return;
 
         if (!Object.keys(propertiesSchema ?? {})?.length) return;
 
@@ -1460,6 +1471,12 @@ export class WorkflowService {
         currentProjectId,
       );
 
+      logDocumentWithoutId({
+        line: 'createOrUpdateWorkflow 1476',
+        logger: this.logger,
+        workflowRuntimeData,
+      });
+
       if (
         // @ts-ignore
         mergedConfig.createCollectionFlowToken &&
@@ -1529,8 +1546,8 @@ export class WorkflowService {
       newWorkflowCreated = true;
     } else {
       // Updating existing workflow
-      console.log('existing documents', existingWorkflowRuntimeData.context.documents);
-      console.log('documents', contextToInsert.documents);
+      this.logger.log('existing documents', existingWorkflowRuntimeData.context.documents);
+      this.logger.log('documents', contextToInsert.documents);
       // contextToInsert.documents = updateDocuments(
       //   existingWorkflowRuntimeData.context.documents,
       //   context.documents,
@@ -1561,6 +1578,13 @@ export class WorkflowService {
         },
         currentProjectId,
       );
+
+      logDocumentWithoutId({
+        line: 'createOrUpdateWorkflow 1584',
+        logger: this.logger,
+        workflowRuntimeData,
+      });
+
       newWorkflowCreated = false;
     }
 
@@ -1588,16 +1612,18 @@ export class WorkflowService {
   ) {
     return await Promise.all(
       document?.pages?.map(async documentPage => {
-        if (documentPage.ballerineFileId && documentPage.uri) return documentPage;
+        if (documentPage.ballerineFileId) return documentPage;
+
+        const documentId = document.id! || getDocumentId(document, false);
 
         const persistedFile = await this.fileService.copyToDestinationAndCreate(
-          document,
+          { id: documentId, uri: documentPage.uri, provider: documentPage.provider },
           entityId,
-          documentPage,
           projectId,
           customerName,
         );
-        const ballerineFileId = documentPage.ballerineFileId || persistedFile?.ballerineFileId;
+
+        const ballerineFileId = documentPage.ballerineFileId || persistedFile?.id;
 
         return { ...documentPage, type: persistedFile?.mimeType, ballerineFileId };
       }),
@@ -1768,6 +1794,12 @@ export class WorkflowService {
         }
       },
     });
+
+    if (!service.getSnapshot().nextEvents.includes(type)) {
+      throw new BadRequestException(
+        `Event ${type} does not exist for workflow ${workflowDefinition.id}'s state: ${workflowRuntimeData.state}`,
+      );
+    }
 
     await service.sendEvent({
       type,
@@ -2066,5 +2098,34 @@ export class WorkflowService {
       recordId: workflowRuntimeData.salesforceRecordId,
       data,
     });
+  }
+
+  async emitSystemWorkflowEvent({
+    workflowRuntimeId,
+    projectId,
+    systemEventName,
+  }: {
+    workflowRuntimeId: string;
+    projectId: string;
+    systemEventName: 'workflow.context.changed'; // currently supports only this event
+  }) {
+    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId, {}, [
+      projectId,
+    ]);
+    const correlationId = await this.getCorrelationIdFromWorkflow(runtimeData, [projectId]);
+
+    this.workflowEventEmitter.emit(
+      systemEventName,
+      {
+        oldRuntimeData: runtimeData,
+        updatedRuntimeData: runtimeData,
+        state: runtimeData.state as string,
+        entityId: (runtimeData.businessId || runtimeData.endUserId) as string,
+        correlationId: correlationId,
+      },
+      {
+        forceEmit: true,
+      },
+    );
   }
 }

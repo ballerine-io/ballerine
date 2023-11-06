@@ -14,6 +14,9 @@ const validationSchema = {
                 ubos: {
                   type: 'array',
                   minItems: 1,
+                  errorMessage: {
+                    minItems: 'UBOs are required.',
+                  },
                   items: {
                     type: 'object',
                     required: ['firstName', 'lastName', 'nationalId', 'email'],
@@ -108,6 +111,9 @@ const validationSchema = {
                 directors: {
                   type: 'array',
                   minItems: 1,
+                  errorMessage: {
+                    minItems: 'Directors are required.',
+                  },
                   items: {
                     type: 'object',
                     required: ['firstName', 'lastName', 'nationalId', 'email'],
@@ -210,10 +216,12 @@ export const DirectorsAndUbosPage = {
   number: 4,
   stateName: 'directors_and_ubos',
   name: 'Directors and UBOs',
-  pageValidator: {
-    type: 'json-schema',
-    value: validationSchema,
-  },
+  pageValidation: [
+    {
+      type: 'json-schema',
+      value: validationSchema,
+    },
+  ],
   elements: [
     {
       type: 'mainContainer',
@@ -287,24 +295,21 @@ export const DirectorsAndUbosPage = {
                 'ubos:address-of-residence-input',
               ],
             },
-            dataCreation: {
-              createWhenHidden: true,
+            insertionParams: {
+              insertionStrategy: 'array',
               destination: 'entity.data.additionalInfo.ubos',
               schema: {
-                'entity.data.additionalInfo.ubos[0].firstName':
-                  'entity.data.additionalInfo.mainRepresentative.firstName',
-                'entity.data.additionalInfo.ubos[0].lastName':
-                  'entity.data.additionalInfo.mainRepresentative.lastName',
-                'entity.data.additionalInfo.ubos[0].email':
-                  'entity.data.additionalInfo.mainRepresentative.email',
+                firstName: 'entity.data.additionalInfo.mainRepresentative.firstName',
+                lastName: 'entity.data.additionalInfo.mainRepresentative.lastName',
+                email: 'entity.data.additionalInfo.mainRepresentative.email',
               },
-              insertRules: [
+              insertWhen: [
                 {
                   type: 'json-logic',
                   value: { '==': [{ var: 'entity.data.additionalInfo.imShareholder' }, true] },
                 },
               ],
-              deleteRules: [
+              removeWhen: [
                 {
                   type: 'json-logic',
                   value: {
@@ -475,24 +480,21 @@ export const DirectorsAndUbosPage = {
                     'directors:address-of-residence-input',
                   ],
                 },
-                dataCreation: {
+                insertionParams: {
+                  insertionStrategy: 'array',
                   destination: 'entity.data.additionalInfo.directors',
-                  createWhenHidden: true,
                   schema: {
-                    'entity.data.additionalInfo.directors[0].firstName':
-                      'entity.data.additionalInfo.mainRepresentative.firstName',
-                    'entity.data.additionalInfo.directors[0].lastName':
-                      'entity.data.additionalInfo.mainRepresentative.lastName',
-                    'entity.data.additionalInfo.directors[0].email':
-                      'entity.data.additionalInfo.mainRepresentative.email',
+                    firstName: 'entity.data.additionalInfo.mainRepresentative.firstName',
+                    lastName: 'entity.data.additionalInfo.mainRepresentative.lastName',
+                    email: 'entity.data.additionalInfo.mainRepresentative.email',
                   },
-                  insertRules: [
+                  insertWhen: [
                     {
                       type: 'json-logic',
                       value: { '==': [{ var: 'entity.data.additionalInfo.imDirector' }, true] },
                     },
                   ],
-                  deleteRules: [
+                  removeWhen: [
                     {
                       type: 'json-logic',
                       value: {

@@ -178,6 +178,13 @@ const complexFormScheme: RJSFSchema = {
       type: 'string',
       title: 'Favorite Fruit',
     },
+    hobby: {
+      type: 'array',
+      title: 'Hobby',
+      items: {
+        type: 'string',
+      },
+    },
     childrens: {
       title: 'Childrens',
       type: 'array',
@@ -252,6 +259,22 @@ const complexFormUISchema = {
         'ui:field': 'FileInput',
       },
     },
+  },
+  hobby: {
+    'ui:field': 'Multiselect',
+    'ui:label': true,
+    options: [
+      { title: 'Reading', value: 'reading' },
+      { title: 'Cooking', value: 'cooking' },
+      { title: 'Gardening', value: 'gardening' },
+      { title: 'Painting', value: 'painting' },
+      { title: 'Hiking', value: 'hiking' },
+      { title: 'Photography', value: 'photography' },
+      { title: 'Swimming', value: 'swimming' },
+      { title: 'Traveling', value: 'traveling' },
+      { title: 'Playing Guitar', value: 'playing guitar' },
+      { title: 'Yoga', value: 'yoga' },
+    ],
   },
 };
 
