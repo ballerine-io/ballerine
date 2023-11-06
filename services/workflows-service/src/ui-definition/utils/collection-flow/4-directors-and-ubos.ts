@@ -303,6 +303,20 @@ export const DirectorsAndUbosPage = {
                 lastName: 'entity.data.additionalInfo.mainRepresentative.lastName',
                 email: 'entity.data.additionalInfo.mainRepresentative.email',
               },
+              disableElements: [
+                {
+                  elementName: 'ubos:first-name-input',
+                  atIndex: 0,
+                },
+                {
+                  elementName: 'ubos:last-name-input',
+                  atIndex: 0,
+                },
+                {
+                  elementName: 'ubos:email-input',
+                  atIndex: 0,
+                },
+              ],
               insertWhen: [
                 {
                   type: 'json-logic',
@@ -488,6 +502,20 @@ export const DirectorsAndUbosPage = {
                     lastName: 'entity.data.additionalInfo.mainRepresentative.lastName',
                     email: 'entity.data.additionalInfo.mainRepresentative.email',
                   },
+                  disableElements: [
+                    {
+                      elementName: 'directors:first-name-input',
+                      atIndex: 0,
+                    },
+                    {
+                      elementName: 'directors:last-name-input',
+                      atIndex: 0,
+                    },
+                    {
+                      elementName: 'directors:email-input',
+                      atIndex: 0,
+                    },
+                  ],
                   insertWhen: [
                     {
                       type: 'json-logic',
