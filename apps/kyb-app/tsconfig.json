@@ -20,7 +20,7 @@
     "paths": {
       "@app/*": ["src/*"]
     },
-    "typeRoots": ["./types/**/*"]
+    "typeRoots": ["./types/**/*", "./node_modules/@types"]
   },
-  "include": ["src", "e2e"]
+  "include": ["vite-env.d.ts", "src", "e2e"]
 }
