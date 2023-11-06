@@ -42,7 +42,6 @@ export const useActionsHandlerLogic = (
         const actionHandlerManager = new ActionHandlerManager(actionHandlers);
         let context = stateApi.getContext();
 
-        console.log('Processing actions', actions);
         for (const action of actions) {
           const actionHandler = actionHandlerManager.getActionHandler(action.type);
           if (!actionHandler) throw new Error(`Action ${action.type} is not supported`);
@@ -51,7 +50,7 @@ export const useActionsHandlerLogic = (
 
         stateApi.setContext(context);
       } catch (error) {
-        console.log('error', error);
+        console.error('error', error);
         console.log('Failed to perform action ', error.message);
       } finally {
         setPendingActions([]);
