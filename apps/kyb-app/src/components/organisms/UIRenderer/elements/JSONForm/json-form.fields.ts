@@ -2,6 +2,7 @@ import { CheckboxList } from '@app/components/organisms/UIRenderer/elements/JSON
 import { CountryPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/CountryPicker';
 import { DocumentField } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField';
 import { IndustriesPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/IndustriesPicker';
+import { JSONFormArrayFieldLayout } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/JSONFormArrayFieldLayout';
 import { LocalePicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/LocalePicker';
 import { Multiselect } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/Multiselect/Multiselect';
 import { NationalityPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/NationalityPicker';
@@ -37,4 +38,7 @@ export const jsonFormFields = {
   StatePicker: withDynamicUIInput(StatePicker),
 };
 
-export const jsonFormLayouts = baseLayouts;
+export const jsonFormLayouts = {
+  ...baseLayouts,
+  ArrayFieldTemplate: JSONFormArrayFieldLayout,
+};

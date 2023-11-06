@@ -554,7 +554,7 @@ export class WorkflowRunner {
       };
     }
 
-    await this.sendEvent({type: callbackAction});
+    await this.sendEvent({ type: callbackAction });
   }
 
   subscribe(callback: (event: WorkflowEvent) => void) {

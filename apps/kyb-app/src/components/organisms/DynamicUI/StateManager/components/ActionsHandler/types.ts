@@ -2,8 +2,10 @@ import { StateMachineAPI } from '@app/components/organisms/DynamicUI/StateManage
 import { Action } from '@app/domains/collection-flow';
 import { AnyChildren } from '@ballerine/ui';
 
+export type ActionDispatcher = (action: Action) => void;
+
 export interface ActionsHandlerContext {
-  dispatchAction: (action: Action) => void;
+  dispatchAction: ActionDispatcher;
   actions: Action[];
 }
 
