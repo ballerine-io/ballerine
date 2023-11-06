@@ -5,7 +5,7 @@ export class WinstonLogger implements IAppLogger {
   private logger: TWinstonLogger;
 
   constructor() {
-    const isProduction = process.env.NODE_ENV === 'production';
+    const isProduction = process.env.ENVIRONMENT_NAME === 'production';
 
     const productionFormat = format.combine(format.timestamp(), format.json());
 
@@ -25,6 +25,24 @@ export class WinstonLogger implements IAppLogger {
     this.logger = createLogger({
       format: isProduction ? productionFormat : developmentFormat,
       transports: [new transports.Console()],
+    });
+  }
+
+  close(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        this.logger.end(() => {
+          this.logger.transports.forEach(transport => {
+            if (transport instanceof transports.File) {
+              transport.close?.(); // Optional chaining to invoke 'close' method
+            }
+          });
+
+          resolve();
+        });
+      } catch (err) {
+        reject(err);
+      }
     });
   }
 

@@ -12,8 +12,6 @@ import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.de
 import { Public } from '@/common/decorators/public.decorator';
 import { ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { EndUserService } from '@/end-user/end-user.service';
-import { BusinessService } from '@/business/business.service';
 import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
 
 @Public()
@@ -24,8 +22,6 @@ export class ColectionFlowController {
     protected readonly service: CollectionFlowService,
     protected readonly adapterManager: WorkflowAdapterManager,
     protected readonly workflowService: WorkflowService,
-    protected readonly endUserService: EndUserService,
-    protected readonly businessService: BusinessService,
   ) {}
 
   @common.Get('/customer')

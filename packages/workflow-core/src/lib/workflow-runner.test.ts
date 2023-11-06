@@ -11,7 +11,10 @@ const SINGLE_STATE_MACHINE_DEFINITION = {
   initial: 'initial',
   states: {
     initial: {
-      on: { EVENT: 'initial' },
+      on: {
+        EVENT: 'initial',
+        UnregisteredEvent: 'initial',
+      },
     },
   },
 };
