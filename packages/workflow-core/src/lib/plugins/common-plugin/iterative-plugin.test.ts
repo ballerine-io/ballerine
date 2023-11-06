@@ -88,7 +88,7 @@ describe('workflow-runner', () => {
         );
 
         // Act
-        await workflow.sendEvent({type: 'ALL_GOOD'});
+        await workflow.sendEvent({ type: 'ALL_GOOD' });
 
         // Assert
         expect(serverRequestUrl).toEqual(
