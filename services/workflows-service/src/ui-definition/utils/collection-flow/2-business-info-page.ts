@@ -51,6 +51,7 @@ const validationSchema = {
               minimum: 1,
               maximum: 100000,
               errorMessage: {
+                type: 'Number of employees is required.',
                 required: 'Number of employees is required.',
                 minimum: 'Number of employees must be at least 1.',
                 maximum: 'Number of employees cannot exceed 100,000.',

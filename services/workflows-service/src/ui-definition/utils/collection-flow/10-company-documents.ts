@@ -446,7 +446,7 @@ export const CompanyDocuments = {
             {
               name: 'document-office-interior-pictures-3',
               type: 'document',
-              // valueDestination: 'documents[10].pages[0].ballerineFileId',
+              valueDestination: 'documents[10].pages[0].ballerineFileId',
               options: {
                 label: 'Photo showing interior of the office - #2',
                 jsonFormDefinition: {

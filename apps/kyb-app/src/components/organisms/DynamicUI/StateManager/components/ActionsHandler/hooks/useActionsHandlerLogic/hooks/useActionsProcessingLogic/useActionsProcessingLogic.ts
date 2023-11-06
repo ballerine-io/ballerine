@@ -1,12 +1,12 @@
-import { useCallback, useMemo } from 'react';
-import { StateMachineAPI } from '@app/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
-import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { useRefValue } from '@app/hooks/useRefValue';
-import PQueue from 'p-queue';
-import { Action } from '@app/domains/collection-flow';
 import { ActionHandler } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/action-handler.abstract';
 import { ActionHandlerManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/hooks/useActionsHandlerLogic/hooks/helpers/action-handler-manager';
+import { StateMachineAPI } from '@app/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
+import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { UIElementsState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
+import { Action } from '@app/domains/collection-flow';
+import { useRefValue } from '@app/hooks/useRefValue';
+import PQueue from 'p-queue';
+import { useCallback, useMemo } from 'react';
 
 const queue = new PQueue({ concurrency: 1 });
 
@@ -57,7 +57,8 @@ export const useActionsProcessingLogic = (
         if (action.params?.debounce) {
           toggleElementsLockState(relevantElementNames, true);
 
-          await actionHandler.run(context, action, apiRef.current);
+          const updatedContext = await actionHandler.run(context, action, apiRef.current);
+          apiRef.current.setContext(updatedContext);
 
           toggleElementsLockState(relevantElementNames, false);
         } else {
