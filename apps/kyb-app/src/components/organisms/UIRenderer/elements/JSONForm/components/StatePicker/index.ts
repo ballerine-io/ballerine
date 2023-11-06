@@ -1,1 +1,1 @@
-export * from './StatePicker'
+export * from './StatePicker';
