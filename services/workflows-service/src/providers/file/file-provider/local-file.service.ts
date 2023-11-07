@@ -38,16 +38,47 @@ export class LocalFileService implements IFileProvider {
     localFilePath: TLocalFilePath,
     remoteFileConfig: TRemoteFileConfig,
   ): Promise<TRemoteFileConfig> {
-    const toLocalFilePath = remoteFileConfig as TLocalFilePath;
-    this.client
-      .createReadStream(this.__removeFilePrefix(localFilePath))
-      .pipe(this.client.createWriteStream(this.__removeFilePrefix(toLocalFilePath)));
+    return new Promise((resolve, reject) => {
+      const distFilePath = this.__removeFilePrefix(remoteFileConfig as TRemoteUri);
 
-    return Promise.resolve(toLocalFilePath);
+      const destDirectory = path.dirname(distFilePath);
+      if (!fs.existsSync(destDirectory)) {
+        fs.mkdirSync(destDirectory, { recursive: true });
+      }
+
+      // Create a readable stream from the source file
+      const readStream = this.client.createReadStream(this.__removeFilePrefix(localFilePath));
+
+      // Create a writable stream to the destination file
+      const writeStream = this.client.createWriteStream(this.__removeFilePrefix(distFilePath));
+
+      // Pipe the read stream to the write stream
+      readStream.pipe(writeStream);
+
+      // Log success or error
+      writeStream.on('finish', () => {
+        resolve(distFilePath);
+      });
+
+      writeStream.on('error', err => {
+        reject(err);
+      });
+    });
   }
 
-  generateRemotePath({ fileName }: { fileName: string }): string {
-    return path.join(os.tmpdir(), this.__removeFilePrefix(fileName));
+  generateRemotePath({
+    fileName,
+    customerName,
+    directory,
+  }: {
+    fileName: string;
+    customerName: string;
+    directory?: string;
+  }): string {
+    const desiredPath = [customerName, directory, this.__removeFilePrefix(fileName)]
+      .filter(pathPart => !!pathPart)
+      .join('/');
+    return path.join(os.homedir(), '.ballerine', desiredPath);
   }
 
   private __removeFilePrefix(fileName: string): string {
