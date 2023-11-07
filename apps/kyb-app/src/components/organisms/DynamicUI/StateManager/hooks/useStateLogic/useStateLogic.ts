@@ -90,7 +90,7 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
 
         setState(prev => ({ ...prev, machineState: machineApi.getState() }));
       } catch (error) {
-        console.log(`Error occured on attempt to send event ${eventName}`, error.message);
+        console.error(`Error occured on attempt to send event ${eventName}`, error.message);
       } finally {
         helpers.setLoading(false);
       }

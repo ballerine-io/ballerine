@@ -39,6 +39,7 @@ export class SentryModule implements OnModuleInit, OnModuleDestroy {
       sampleRate: 1.0,
       normalizeDepth: 15,
       integrations: [
+        new Sentry.Integrations.OnUncaughtException(),
         new Sentry.Integrations.Http({ tracing: true }),
         new Sentry.Integrations.Prisma({ client: this.prisma }),
         new Sentry.Integrations.OnUnhandledRejection({ mode: 'warn' }),
