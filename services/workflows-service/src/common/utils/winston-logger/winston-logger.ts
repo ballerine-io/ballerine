@@ -7,11 +7,12 @@ export class WinstonLogger implements IAppLogger {
   constructor() {
     const isLocal = process.env.ENVIRONMENT_NAME === 'local';
 
-    const jsonFormat = format.combine(format.timestamp(), format.json());
+    const jsonFormat = format.combine(format.timestamp(), format.json(), format.uncolorize());
 
     const prettyFormat = format.combine(
       format.colorize({ all: true }),
       format.timestamp(),
+      format.splat(),
       format.printf(({ timestamp, level, message, ...metadata }) => {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         let msg = `${timestamp} [${level}] : ${message} `;
