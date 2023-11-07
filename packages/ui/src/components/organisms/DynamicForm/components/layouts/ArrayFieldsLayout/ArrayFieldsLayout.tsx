@@ -1,8 +1,13 @@
-import { ArrayFieldTemplateProps } from '@rjsf/utils';
-import { Plus } from 'lucide-react';
-import { Button } from '@components/atoms';
 import { AnyObject } from '@common/types';
-import clsx from 'clsx';
+import { Button } from '@components/atoms';
+import { ArrayFieldsLayoutItem } from '@components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayoutItem';
+import { ArrayFieldTemplateItemType, ArrayFieldTemplateProps, RJSFSchema } from '@rjsf/utils';
+import { Plus } from 'lucide-react';
+
+export type ArrayFieldLayoutItem = ArrayFieldTemplateItemType<any, RJSFSchema, any>;
+export interface ArrayFieldsLayoutProps extends ArrayFieldTemplateProps {
+  children?: (items: ArrayFieldLayoutItem[], uiSchema: AnyObject) => JSX.Element[];
+}
 
 export const ArrayFieldsLayout = ({
   title,
@@ -10,30 +15,22 @@ export const ArrayFieldsLayout = ({
   canAdd,
   uiSchema,
   onAddClick,
-}: ArrayFieldTemplateProps) => {
-  const {
-    addText = 'Add',
-    removeText = 'Delete',
-    deleteButtonClassname = '',
-  } = uiSchema as AnyObject;
+  children,
+}: ArrayFieldsLayoutProps) => {
+  const { addText = 'Add' } = uiSchema as AnyObject;
 
   return (
     <div>
       <p className="pb-1 text-xl font-semibold">{title}</p>
-      {items.map(element => (
-        <div key={element.index} className="relative flex flex-row flex-nowrap">
-          <div className="flex-1">{element.children}</div>
-          <span
-            className={clsx(
-              'absolute right-0 top-0 inline-block cursor-pointer text-sm font-medium underline',
-              deleteButtonClassname as string,
-            )}
-            onClick={element.onDropIndexClick(element.index)}
-          >
-            {removeText}
-          </span>
-        </div>
-      ))}
+      {children
+        ? children(items, uiSchema)
+        : items.map((element, index) => (
+            <ArrayFieldsLayoutItem
+              key={`field-template-item-${index}`}
+              element={element}
+              uiSchema={uiSchema}
+            />
+          ))}
       {canAdd ? (
         <Button type="button" variant="outline" className="flex gap-2" onClick={onAddClick}>
           <Plus size="16" />

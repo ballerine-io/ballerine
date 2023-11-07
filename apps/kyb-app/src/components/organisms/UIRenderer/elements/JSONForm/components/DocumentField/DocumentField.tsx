@@ -1,14 +1,15 @@
 import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useUIElementToolsLogic } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/hooks/useUIElementToolsLogic';
+import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
 import { getDocumentFileIdPath } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/getDocumentFileIdPath';
+import { getDocumentFileTypePath } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/getDocumentFileTypePath';
 import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
 import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
 import { Document, UIElement } from '@app/domains/collection-flow';
 import { fetchFile, uploadFile } from '@app/domains/storage/storage.api';
 import { collectionFlowFileStorage } from '@app/pages/CollectionFlow/collection-flow.file-storage';
-import { HTTPError } from 'ky';
-import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
 import { ErrorsList, FileInputAdapter, RJSFInputProps } from '@ballerine/ui';
+import { HTTPError } from 'ky';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -89,11 +90,13 @@ export const DocumentField = (
       }
 
       const fileIdPath = getDocumentFileIdPath(definition);
+      // const fileTypePath = getDocumentFileTypePath(definition);
 
       try {
         const uploadResult = await uploadFile({ file });
 
         set(document, fileIdPath, uploadResult.id);
+        // set(document, fileTypePath, file.type);
         set(document, 'decision', {});
 
         stateApi.setContext(context);

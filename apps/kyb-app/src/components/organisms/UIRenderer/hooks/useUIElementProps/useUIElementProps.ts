@@ -1,6 +1,7 @@
 import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useRuleExecutor } from '@app/components/organisms/DynamicUI/hooks/useRuleExecutor';
+import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
 import { UIElement } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
@@ -13,11 +14,16 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
     useRuleExecutor(payload, definition.visibleOn, definition, state),
   ];
 
+  const { state: uiElementState } = useUIElementState(definition);
+  const { isLoading } = uiElementState;
+
   const disabled = useMemo(() => {
+    if (isLoading) return true;
+
     return availabilityTestResulsts.length
       ? availabilityTestResulsts.some(result => !result.isValid)
       : false;
-  }, [availabilityTestResulsts]);
+  }, [availabilityTestResulsts, isLoading]);
 
   const hidden = useMemo(() => {
     if (!definition.visibleOn || !definition.visibleOn.length) return false;
@@ -30,6 +36,8 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
   const errors = useMemo(() => {
     return [];
   }, []);
+
+  console.log('hidden', hidden);
 
   return {
     disabled,

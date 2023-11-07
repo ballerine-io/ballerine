@@ -1,12 +1,12 @@
-import { defineConfig, PluginOption } from 'vite';
 import * as childProcess from 'child_process';
 import react from '@vitejs/plugin-react';
-import tailwindcss from 'tailwindcss';
-import checker from 'vite-plugin-checker';
 import { resolve } from 'path';
 import { sentryVitePlugin, SentryVitePluginOptions } from '@sentry/vite-plugin';
 import fs from 'fs';
 import path from 'path';
+import tailwindcss from 'tailwindcss';
+import { defineConfig, PluginOption } from 'vite';
+import checker from 'vite-plugin-checker';
 
 interface PackageJson {
   name: string;
@@ -65,5 +65,10 @@ export default defineConfig({
     alias: {
       '@app': resolve(__dirname, './src'),
     },
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './tests/setup.js',
   },
 });

@@ -51,6 +51,7 @@ const validationSchema = {
               minimum: 1,
               maximum: 100000,
               errorMessage: {
+                type: 'Number of employees is required.',
                 required: 'Number of employees is required.',
                 minimum: 'Number of employees must be at least 1.',
                 maximum: 'Number of employees cannot exceed 100,000.',
@@ -123,19 +124,70 @@ const dispatchOpenCorporateRule = {
     entity: {
       type: 'object',
       required: ['data'],
+      default: {},
       properties: {
         data: {
           type: 'object',
           required: ['registrationNumber', 'country'],
+          default: {},
           properties: {
             registrationNumber: {
               type: 'string',
               minLength: 6,
+              maxLength: 20,
             },
             country: {
               type: 'string',
               minLength: 2,
               maxLength: 2,
+            },
+            additionalInfo: {
+              type: 'object',
+              properties: {
+                state: {
+                  type: 'string',
+                  minLength: 1,
+                },
+              },
+            },
+          },
+          if: {
+            properties: {
+              country: {
+                enum: ['AE', 'US', 'CA'],
+              },
+            },
+          },
+          then: {
+            required: ['additionalInfo'],
+            properties: {
+              additionalInfo: {
+                required: ['state'],
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  required: ['entity'],
+};
+
+const stateVisiblityRule = {
+  type: 'object',
+  properties: {
+    entity: {
+      type: 'object',
+      required: ['data'],
+      properties: {
+        data: {
+          type: 'object',
+          required: ['country'],
+          default: {},
+          properties: {
+            country: {
+              type: 'string',
+              enum: ['AE', 'US', 'CA'],
             },
           },
         },
@@ -173,17 +225,10 @@ export const BusinessInfoPage = {
         },
         {
           type: 'json-form',
+          name: 'business_info_form_p1',
           options: {
             jsonFormDefinition: {
-              required: [
-                'registration-number-input',
-                'country-picker-input',
-                'company-name-input',
-                'tax-identification-number-input',
-                'number-of-employees-input',
-                'business-type-input',
-                'registered-capital-in-yuan-type-input',
-              ],
+              required: ['registration-number-input', 'country-picker-input'],
             },
           },
           elements: [
@@ -218,6 +263,56 @@ export const BusinessInfoPage = {
                 },
               },
             },
+          ],
+        },
+        {
+          name: 'business_info_form_p2',
+          type: 'json-form',
+          options: {
+            jsonFormDefinition: {
+              required: ['business_info_state_input'],
+            },
+          },
+          visibleOn: [
+            {
+              type: 'json-schema',
+              value: stateVisiblityRule,
+            },
+          ],
+          elements: [
+            {
+              name: 'business_info_state_input',
+              type: 'json-form:text',
+              valueDestination: 'entity.data.additionalInfo.state',
+              options: {
+                label: 'State',
+                hint: 'California',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+                uiSchema: {
+                  'ui:field': 'StatePicker',
+                },
+                countryCodePath: 'entity.data.country',
+              },
+            },
+          ],
+        },
+        {
+          name: 'business_info_form_p3',
+          type: 'json-form',
+          options: {
+            jsonFormDefinition: {
+              required: [
+                'company-name-input',
+                'tax-identification-number-input',
+                'number-of-employees-input',
+                'business-type-input',
+                'registered-capital-in-yuan-type-input',
+              ],
+            },
+          },
+          elements: [
             {
               name: 'company-name-input',
               type: 'json-form:text',
@@ -344,11 +439,12 @@ export const BusinessInfoPage = {
   actions: [
     {
       type: 'definitionPlugin',
-      params: { pluginName: 'fetch_company_information' },
+      params: { pluginName: 'fetch_company_information', debounce: 700 },
       dispatchOn: {
         uiEvents: [
           { event: 'onChange', uiElementName: 'registration-number-input' },
           { event: 'onChange', uiElementName: 'country-picker-input' },
+          { event: 'onChange', uiElementName: 'business_info_state_input' },
         ],
         rules: [
           {

@@ -14,7 +14,7 @@ export class DocumentsRuleEngine implements RuleEngine {
   public readonly ENGINE_NAME = 'destination-engine';
   private ruleManager = new EngineManager([new JmespathRuleEngine(), new JsonLogicRuleEngine()]);
 
-  test(context: AnyObject, rule: unknown, definition: UIElement<AnyObject>, state: UIState) {
+  validate(context: AnyObject, rule: unknown, definition: UIElement<AnyObject>, state: UIState) {
     if (this.isDestinationValidatorRule(rule)) {
       const errors: ErrorField[] = [];
 
@@ -22,7 +22,7 @@ export class DocumentsRuleEngine implements RuleEngine {
         const isRequired = this.isRule(params.required)
           ? this.ruleManager
               .getEngine(params.required.type)
-              .test(context, params.required, definition, state).isValid
+              .validate(context, params.required, definition, state).isValid
           : params.required;
 
         const document = ((context.documents || []) as Document[]).find(
@@ -48,6 +48,10 @@ export class DocumentsRuleEngine implements RuleEngine {
     }
 
     throw new Error(`Invalid rule provided to ${this.ENGINE_NAME}`);
+  }
+
+  test() {
+    return true;
   }
 
   private isRule(rule: unknown): rule is Rule {
