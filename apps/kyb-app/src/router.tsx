@@ -5,7 +5,26 @@ import { Rejected } from '@app/pages/CollectionFlow/components/pages/Rejected';
 import { SignIn } from '@app/pages/SignIn';
 import { createBrowserRouter } from 'react-router-dom';
 
-export const router = createBrowserRouter([
+import {
+  createRoutesFromChildren,
+  matchRoutes,
+  useLocation,
+  useNavigationType,
+} from 'react-router-dom';
+import * as Sentry from '@sentry/react';
+import React from 'react';
+
+export const sentyRouterInstrumentation = Sentry.reactRouterV6Instrumentation(
+  React.useEffect,
+  useLocation,
+  useNavigationType,
+  createRoutesFromChildren,
+  matchRoutes,
+);
+
+const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouter(createBrowserRouter);
+
+export const router = sentryCreateBrowserRouter([
   {
     path: '/',
     Component: withTokenProtected(SignIn),

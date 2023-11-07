@@ -8,6 +8,7 @@ import { LoadingScreen } from '@app/common/components/molecules/LoadingScreen';
 import { CustomerProviderFallback } from '@app/components/molecules/CustomerProviderFallback';
 import { RouterProvider } from 'react-router-dom';
 import { router } from '@app/router';
+import * as Sentry from '@sentry/react';
 
 export const App = () => {
   const dependancyQueries = [
@@ -17,11 +18,16 @@ export const App = () => {
   ] as const;
 
   return (
-    <AppLoadingContainer dependencies={dependancyQueries}>
-      <CustomerProvider loadingPlaceholder={<LoadingScreen />} fallback={CustomerProviderFallback}>
-        <RouterProvider router={router} />
-      </CustomerProvider>
-    </AppLoadingContainer>
+    <Sentry.ErrorBoundary>
+      <AppLoadingContainer dependencies={dependancyQueries}>
+        <CustomerProvider
+          loadingPlaceholder={<LoadingScreen />}
+          fallback={CustomerProviderFallback}
+        >
+          <RouterProvider router={router} />
+        </CustomerProvider>
+      </AppLoadingContainer>
+    </Sentry.ErrorBoundary>
   );
 };
 
