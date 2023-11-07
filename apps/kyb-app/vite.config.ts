@@ -19,30 +19,34 @@ const packageJson: PackageJson = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8'),
 );
 
-const RELEASE_NAME = `${packageJson.name}@${packageJson.version}`;
+const plugins: PluginOption[] = [react(), tailwindcss(), checker({ typescript: true })];
 
-const isDevMode =
-  process.env.VITE_ENVIRONMENT_NAME === 'development' ||
-  process.env.VITE_ENVIRONMENT_NAME === 'local';
+if (process.env.VITE_SENTRY_AUTH_TOKEN) {
+  console.log('Initializing sentry');
 
-const sentryConfig: SentryVitePluginOptions = {
-  disable: !process.env.VITE_SENTRY_AUTH_TOKEN,
-  debug: isDevMode,
-  authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
-  org: 'ballerine-5s',
-  project: 'collection-flow',
-  release: {
-    name: RELEASE_NAME,
-    dist: childProcess.execSync('git rev-parse HEAD').toString().trim(),
-    setCommits: {
-      auto: true,
+  const isDevMode =
+    process.env.VITE_ENVIRONMENT_NAME === 'development' ||
+    process.env.VITE_ENVIRONMENT_NAME === 'local';
+
+  const sentryConfig: SentryVitePluginOptions = {
+    debug: isDevMode,
+    authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
+    org: 'ballerine-5s',
+    project: 'collection-flow',
+    release: {
+      dist: childProcess.execSync('git rev-parse HEAD').toString().trim(),
+      setCommits: {
+        auto: true,
+      },
     },
-  },
-  sourcemaps: {
-    assets: ['./dist/assets'],
-    ignore: ['node_modules'],
-  },
-};
+    sourcemaps: {
+      assets: ['./dist/assets'],
+      ignore: ['node_modules'],
+    },
+  };
+
+  plugins.push(sentryVitePlugin(sentryConfig) as PluginOption);
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -55,12 +59,7 @@ export default defineConfig({
   build: {
     sourcemap: true,
   },
-  plugins: [
-    react(),
-    tailwindcss(),
-    checker({ typescript: true }),
-    sentryVitePlugin(sentryConfig) as PluginOption[],
-  ],
+  plugins,
   resolve: {
     alias: {
       '@app': resolve(__dirname, './src'),
