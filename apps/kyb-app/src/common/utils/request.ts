@@ -17,7 +17,7 @@ export const request = ky.create({
       },
     ],
     beforeError: [
-      // TODO: catch Workflowsdk API Plugin errors as well
+      // TODO: BAL-740 - Catch Workflowsdk API Plugin errors as well
       async (error: HTTPError) => {
         const { request, response } = error;
 
