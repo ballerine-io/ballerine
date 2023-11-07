@@ -22,6 +22,7 @@ import { generateBaseTaskLevelStates } from './workflows/generate-base-task-leve
 import { generateBaseCaseLevelStates } from './workflows/generate-base-case-level-states';
 import { InputJsonValue } from '../src/types';
 import { generateDynamicUiWorkflow } from './workflows/dynamic-ui-workflow';
+import { generateWebsiteMonitoringExample } from './workflows/website-monitoring-workflow';
 
 seed(10).catch(error => {
   console.error(error);
@@ -1162,5 +1163,6 @@ async function seed(bcryptSalt: string | number) {
   await generateKybKycWorkflowDefinition(client);
   await generateKycForE2eTest(client);
   await generateDynamicUiWorkflow(client, project1.id);
+  await generateWebsiteMonitoringExample(client, project1.id);
   console.info('Seeded database successfully');
 }

@@ -5,11 +5,11 @@ export class WinstonLogger implements IAppLogger {
   private logger: TWinstonLogger;
 
   constructor() {
-    const isProduction = process.env.ENVIRONMENT_NAME === 'production';
+    const isLocal = process.env.ENVIRONMENT_NAME === 'local';
 
-    const productionFormat = format.combine(format.timestamp(), format.json(), format.uncolorize());
+    const jsonFormat = format.combine(format.timestamp(), format.json(), format.uncolorize());
 
-    const developmentFormat = format.combine(
+    const prettyFormat = format.combine(
       format.colorize({ all: true }),
       format.timestamp(),
       format.splat(),
@@ -24,7 +24,7 @@ export class WinstonLogger implements IAppLogger {
     );
 
     this.logger = createLogger({
-      format: isProduction ? productionFormat : developmentFormat,
+      format: isLocal ? prettyFormat : jsonFormat,
       transports: [new transports.Console()],
     });
   }
