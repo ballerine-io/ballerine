@@ -40,7 +40,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "3.325.0",
     "@aws-sdk/lib-storage": "3.325.0",
-    "@aws-sdk/s3-request-presigner": "3.325.0",
+    "@aws-sdk/s3-request-presigner": "3.429.0",
     "@ballerine/common": "0.6.7-hotfix.3",
     "@ballerine/workflow-core": "0.4.30",
     "@ballerine/workflow-node-sdk": "0.4.16",
