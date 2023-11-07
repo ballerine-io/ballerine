@@ -2,22 +2,34 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import { StateTag } from '@ballerine/common';
 
 export const websiteMonitoringDefinition = {
-  id: 'workflow_monitoring',
-  name: 'workflow_monitoring',
+  id: 'merchant_website_monitoring',
+  name: 'merchant_website_monitoring',
   version: 1,
   definitionType: 'statechart-json',
   definition: {
-    id: 'workflow_monitoring_v1',
+    id: 'merchant_website_monitoring_v1',
     predictableActionArguments: true,
     initial: 'start_website_monitoring',
     context: {
       documents: [],
     },
     states: {
+      idle: {
+        on: {
+          START: 'start_website_monitoring',
+        },
+      },
       start_website_monitoring: {
-        always: {
-          WEBSITE_MONITORING_SUCCESS: 'manual_review',
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          WEBSITE_MONITORING_SUCCESS: 'pending_website_response',
           WEBSITE_MONITORING_FAIL: 'failed',
+        },
+      },
+      pending_website_response: {
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          WEBSITE_MONITORING_FINISHED: 'manual_review',
         },
       },
       manual_review: {
@@ -59,7 +71,6 @@ export const websiteMonitoringDefinition = {
               mapping: `{
               businessId: entity.ballerineEntityId || entity.data.id,
               websiteUrl: entity.data.additionalInfo.store.website.mainWebsite,
-              lastName: entity.data.country,
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/WEBSITE_MONITORING_FINISHED','?resultDestination=pluginsOutput.website_monitoring.result']),
               vendor: 'legitscript'
               }`, // jmespath
