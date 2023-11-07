@@ -1,8 +1,5 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import { kycDynamicExample } from './kyc-dynamic-process-example';
-import { env } from '../../src/env';
 import { StateTag } from '@ballerine/common';
-import { generateDynamicUiTest } from './ui-definition/ui-kyb-parent-dynamic-example';
 
 export const websiteMonitoringDefinition = {
   id: 'workflow_monitoring',
@@ -93,5 +90,9 @@ export const generateWebsiteMonitoringExample = async (
     projectId: projectId,
   };
 
-  return websiteMonitoringExample;
+  const workflow = await prismaClient.workflowDefinition.create({
+    data: websiteMonitoringExample,
+  });
+
+  return workflow;
 };
