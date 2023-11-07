@@ -15,15 +15,15 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
   ];
 
   const { state: uiElementState } = useUIElementState(definition);
-  const { isLoading } = uiElementState;
+  const { isLoading, isDisabled } = uiElementState;
 
   const disabled = useMemo(() => {
-    if (isLoading) return true;
+    if (isLoading || isDisabled) return true;
 
     return availabilityTestResulsts.length
       ? availabilityTestResulsts.some(result => !result.isValid)
       : false;
-  }, [availabilityTestResulsts, isLoading]);
+  }, [availabilityTestResulsts, isLoading, isDisabled]);
 
   const hidden = useMemo(() => {
     if (!definition.visibleOn || !definition.visibleOn.length) return false;
