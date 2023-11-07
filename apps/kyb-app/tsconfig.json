@@ -20,7 +20,7 @@
     "paths": {
       "@app/*": ["src/*"]
     },
-    "typeRoots": ["./types/**/*"]
+    "types": ["jest"]
   },
-  "include": ["src", "e2e"]
+  "include": ["src", "e2e", "tests/**/*.js", "jest.config.ts"]
 }
