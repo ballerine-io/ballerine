@@ -455,6 +455,9 @@ importers:
         specifier: ^3.21.4
         version: 3.22.3
     devDependencies:
+      '@sentry/vite-plugin':
+        specifier: ^2.9.0
+        version: 2.9.0
       '@testing-library/jest-dom':
         specifier: ^6.1.4
         version: 6.1.4(@types/jest@26.0.24)(vitest@0.34.6)
@@ -13805,7 +13808,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.22.10
+      '@babel/runtime': 7.21.0
       '@radix-ui/primitive': 1.0.1
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.14)(react@18.2.0)
       '@radix-ui/react-context': 1.0.1(@types/react@18.2.14)(react@18.2.0)
