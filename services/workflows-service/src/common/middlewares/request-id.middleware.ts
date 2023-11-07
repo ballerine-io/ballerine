@@ -18,6 +18,8 @@ export class RequestIdMiddleware implements NestMiddleware {
 
     try {
       this.cls.set('requestId', request.id);
+
+      response.setHeader('X-Request-ID', request.id);
     } catch (e) {
       // Mainly for debugging purposes. See https://github.com/Papooch/nestjs-cls/issues/67
       this.logger.log('Could not set requestId');
