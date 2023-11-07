@@ -9,7 +9,7 @@ export const websiteMonitoringDefinition = {
   definition: {
     id: 'merchant_website_monitoring_v1',
     predictableActionArguments: true,
-    initial: 'start_website_monitoring',
+    initial: 'idle',
     context: {
       documents: [],
     },
@@ -71,6 +71,7 @@ export const websiteMonitoringDefinition = {
               mapping: `{
               businessId: entity.ballerineEntityId || entity.data.id,
               websiteUrl: entity.data.additionalInfo.store.website.mainWebsite,
+              countryCode: entity.data.country,
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/WEBSITE_MONITORING_FINISHED','?resultDestination=pluginsOutput.website_monitoring.result']),
               vendor: 'legitscript'
               }`, // jmespath
@@ -81,15 +82,16 @@ export const websiteMonitoringDefinition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping:
-                "{website_monitoring: {vendor: 'legitscript', type: 'website-monitoring', result: {metadata: @}}}", // jmespath
+              mapping: '{metadata: {result: @}}', // jmespath
             },
           ],
         },
       },
     ],
   },
-  config: {},
+  config: {
+    initialEvent: 'START',
+  },
 } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
 export const generateWebsiteMonitoringExample = async (
   prismaClient: PrismaClient,
@@ -97,7 +99,7 @@ export const generateWebsiteMonitoringExample = async (
 ) => {
   const websiteMonitoringExample = {
     ...websiteMonitoringDefinition,
-    isPublic: !!projectId,
+    isPublic: !projectId,
     projectId: projectId,
   };
 
