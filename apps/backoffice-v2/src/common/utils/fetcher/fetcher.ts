@@ -54,11 +54,22 @@ export const fetcher: IFetcher = async ({
     throw new HttpError(res.status, message);
   }
 
-  const [data, jsonError] = isBlob
-    ? await handlePromise(res.blob())
-    : !res.headers.get('content-length') || res.headers.get('content-length') > '0'
-    ? await handlePromise(res.json())
-    : [undefined, undefined];
+  const parseResponse = async () => {
+    if (res.status === 204) {
+      return [undefined, undefined];
+    }
+
+    if (isBlob) {
+      return await handlePromise(res.blob());
+    }
+
+    if (!res.headers.get('content-length') || res.headers.get('content-length') > '0') {
+      return await handlePromise(res.json());
+    }
+
+    return [undefined, undefined];
+  };
+  const [data, jsonError] = await parseResponse();
 
   if (jsonError) {
     console.error(jsonError);

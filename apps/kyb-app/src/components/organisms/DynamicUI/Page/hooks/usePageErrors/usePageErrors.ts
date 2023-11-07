@@ -1,11 +1,8 @@
-import { useMemo } from 'react';
-import { Document, UIElement, UIPage } from '@app/domains/collection-flow';
 import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
+import { findDefinitionByDestinationPath } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
+import { Document, UIElement, UIPage } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
-import {
-  findDefinitionByDestinationPath,
-  findDefinitionByName,
-} from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
+import { useMemo } from 'react';
 
 export interface PageError {
   page: number;
@@ -30,7 +27,7 @@ export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] 
     });
 
     pagesWithErrors.forEach(pageError => {
-      pageError.errors = (context.documents as Document[])
+      pageError.errors = ((context.documents as Document[]) || [])
         .filter((document, index) => {
           if (
             !(document?.decision?.status == 'revision' || document?.decision?.status == 'rejected')

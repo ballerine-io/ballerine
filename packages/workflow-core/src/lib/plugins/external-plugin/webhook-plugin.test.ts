@@ -85,7 +85,7 @@ describe('workflow-runner', () => {
         webhookPluginsSchemas,
       );
       it('transitions to successAction and persist response to context', async () => {
-        await workflow.sendEvent({type: 'ALL_GOOD'});
+        await workflow.sendEvent({ type: 'ALL_GOOD' });
         expect(serverRequestUrl).toEqual(
           'https://sometesturl.com/ballerine/test/url/123?id=some_id',
         );
