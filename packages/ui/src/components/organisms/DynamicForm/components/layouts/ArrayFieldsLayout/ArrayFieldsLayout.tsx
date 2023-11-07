@@ -19,7 +19,6 @@ export const ArrayFieldsLayout = ({
   children,
 }: ArrayFieldsLayoutProps) => {
   const { addText = 'Add' } = uiSchema as AnyObject;
-  console.log('layout schema', uiSchema);
   return (
     <div>
       <p className="pb-1 text-xl font-semibold">{title}</p>

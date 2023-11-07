@@ -131,6 +131,7 @@ const complexFormScheme: RJSFSchema = {
     firstName: {
       type: 'string',
       title: 'First Name',
+      description: 'This is input description.',
     },
     lastName: {
       type: 'string',

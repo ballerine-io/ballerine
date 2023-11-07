@@ -194,7 +194,7 @@ export const dynamicUiWorkflowDefinition = {
       {
         name: 'cn_kyb',
         pluginKind: 'kyb',
-        url: `${env.UNIFIED_API_URL}/companies-v2`,
+        url: `{secret.UNIFIED_API_URL}/companies-v2`,
         method: 'GET',
         stateNames: ['run_cn_kyb'],
         successAction: 'CN_KYB_DONE',
@@ -224,7 +224,7 @@ export const dynamicUiWorkflowDefinition = {
       {
         name: 'hk_kyb',
         pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/companies-v2/HK/{entity.data.registrationNumber}`,
+        url: `{secret.UNIFIED_API_URL}/companies-v2/HK/{entity.data.registrationNumber}`,
         method: 'GET',
         stateNames: ['run_hk_kyb'],
         successAction: 'HK_KYB_HOOK_RESPONDED',
@@ -242,11 +242,19 @@ export const dynamicUiWorkflowDefinition = {
             },
           ],
         },
+        response: {
+          transform: [
+            {
+              transformer: 'jmespath',
+              mapping: '{request: @}', // jmespath
+            },
+          ],
+        },
       },
       {
         name: 'company_sanctions',
         pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.companyName}/sanctions`,
+        url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.companyName}/sanctions`,
         method: 'GET',
         stateNames: ['run_vendor_company_sanctions'],
         successAction: 'COMPANY_SANCTIONS_DONE',
@@ -274,7 +282,7 @@ export const dynamicUiWorkflowDefinition = {
       {
         name: 'ubo',
         pluginKind: 'api',
-        url: `${env.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.registrationNumber}/ubo`,
+        url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.registrationNumber}/ubo`,
         method: 'GET',
         stateNames: ['run_vendor_ubos'],
         successAction: 'UBO_HOOK_RESPONDED',
@@ -295,7 +303,7 @@ export const dynamicUiWorkflowDefinition = {
           transform: [
             {
               transformer: 'jmespath',
-              mapping: '@', // jmespath
+              mapping: '{request: @}', // jmespath
             },
           ],
         },
