@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.10
+
+### Patch Changes
+
+- Fixed spacing between inputs and descriptions
+
 ## 0.3.9
 
 ### Patch Changes
