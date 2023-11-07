@@ -12,6 +12,7 @@ export class WinstonLogger implements IAppLogger {
     const developmentFormat = format.combine(
       format.colorize({ all: true }),
       format.timestamp(),
+      format.splat(),
       format.printf(({ timestamp, level, message, ...metadata }) => {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         let msg = `${timestamp} [${level}] : ${message} `;
