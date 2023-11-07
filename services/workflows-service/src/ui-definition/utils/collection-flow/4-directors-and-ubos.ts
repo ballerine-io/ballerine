@@ -331,7 +331,7 @@ export const DirectorsAndUbosPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.ubos[{INDEX}].firstName', //entity.data.additionalInfo.ubos[0].firstName
               options: {
-                label: 'Legal Name',
+                label: 'First Name',
                 hint: 'First Name',
                 jsonFormDefinition: {
                   type: 'string',
@@ -519,7 +519,7 @@ export const DirectorsAndUbosPage = {
                     jsonFormDefinition: {
                       type: 'string',
                     },
-                    label: 'Legal Name',
+                    label: 'First Name',
                     hint: 'First Name',
                   },
                 },
