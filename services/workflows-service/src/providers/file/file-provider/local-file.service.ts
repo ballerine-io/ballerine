@@ -52,10 +52,8 @@ export class LocalFileService implements IFileProvider {
       // Create a writable stream to the destination file
       const writeStream = this.client.createWriteStream(this.__removeFilePrefix(distFilePath));
 
-      // Pipe the read stream to the write stream
       readStream.pipe(writeStream);
 
-      // Log success or error
       writeStream.on('finish', () => {
         resolve(distFilePath);
       });
