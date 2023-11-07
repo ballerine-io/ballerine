@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.10
+
+### Patch Changes
+
+- Added Array Item title component
+
 ## 0.3.9
 
 ### Patch Changes
