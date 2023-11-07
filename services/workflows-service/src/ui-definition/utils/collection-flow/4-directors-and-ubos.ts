@@ -284,6 +284,7 @@ export const DirectorsAndUbosPage = {
             description:
               '<p>add all the natural persons that own or control, <bold>Directly Or Indirectly</bold> more than 25% of the company.</p>',
             jsonFormDefinition: {
+              title: 'Shareholder',
               type: 'array',
               required: [
                 'ubos:first-name-input',
@@ -294,6 +295,9 @@ export const DirectorsAndUbosPage = {
                 'ubos:ownership-percentage-input',
                 'ubos:address-of-residence-input',
               ],
+            },
+            uiSchema: {
+              titleTemplate: 'UBO {{INDEX}}',
             },
             insertionParams: {
               insertionStrategy: 'array',
@@ -479,6 +483,9 @@ export const DirectorsAndUbosPage = {
                     'directors:email-input',
                     'directors:address-of-residence-input',
                   ],
+                },
+                uiSchema: {
+                  titleTemplate: 'Director {{INDEX}}',
                 },
                 insertionParams: {
                   insertionStrategy: 'array',
