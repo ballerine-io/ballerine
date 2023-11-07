@@ -72,7 +72,7 @@ export const websiteMonitoringDefinition = {
               businessId: entity.ballerineEntityId || entity.data.id,
               websiteUrl: entity.data.additionalInfo.store.website.mainWebsite,
               countryCode: entity.data.country,
-              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/WEBSITE_MONITORING_FINISHED','?resultDestination=pluginsOutput.website_monitoring.result']),
+              callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/WEBSITE_MONITORING_FINISHED','?resultDestination=pluginsOutput.website_monitoring.data']),
               vendor: 'legitscript'
               }`, // jmespath
             },
