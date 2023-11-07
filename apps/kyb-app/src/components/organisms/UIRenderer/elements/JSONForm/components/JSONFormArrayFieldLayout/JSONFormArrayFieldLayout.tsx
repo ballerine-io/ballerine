@@ -3,6 +3,7 @@ import {
   AnyObject,
   ArrayFieldsLayout,
   ArrayFieldsLayoutItem,
+  ArrayFieldsLayoutItemTitle,
   ArrayFieldsLayoutProps,
 } from '@ballerine/ui';
 
@@ -15,6 +16,11 @@ export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
             key={`field-template-item-${index}`}
             element={item}
             uiSchema={uiSchema}
+            title={
+              typeof props.uiSchema.titleTemplate === 'string' ? (
+                <ArrayFieldsLayoutItemTitle index={index} template={props.uiSchema.titleTemplate} />
+              ) : undefined
+            }
             disableDeletion={ArrayInsertionStrategy.isValueInserted(
               (item?.children?.props as AnyObject)?.formData || {},
             )}
