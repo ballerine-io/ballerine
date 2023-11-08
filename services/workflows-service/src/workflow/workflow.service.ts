@@ -71,7 +71,6 @@ import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
-import { deepCamelKeys } from 'string-ts';
 
 type TEntityId = string;
 
