@@ -627,7 +627,7 @@ export const CompanyDocuments = {
     },
     {
       type: 'definitionPlugin',
-      params: { pluginName: 'sync_workflow_runtime', debounce: 700 },
+      params: { pluginName: 'sync_workflow_runtime', debounce: 100 },
       dispatchOn: {
         uiEvents: [
           { event: 'onChange', uiElementName: 'document-certificates-of-incorporation' },
