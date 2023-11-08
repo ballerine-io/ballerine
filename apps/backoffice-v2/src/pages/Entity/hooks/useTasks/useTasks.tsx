@@ -73,7 +73,7 @@ export const useTasks = ({
       results[docIndex][pageIndex] = docsData?.shift()?.data;
     });
   });
-  const pluginsOutputBlacklist = ['company_sanctions', 'directors', 'ubos'];
+  const pluginsOutputBlacklist = ['company_sanctions', 'directors', 'ubo'];
   const filteredPluginsOutput = useMemo(
     () => omitPropsFromObject(pluginsOutput, ...pluginsOutputBlacklist),
     [pluginsOutput, pluginsOutputBlacklist],
@@ -446,9 +446,9 @@ export const useTasks = ({
     alternativeNames: sanction?.entity?.otherNames,
     places: sanction?.entity?.places,
   }));
-  const ubos = pluginsOutput?.ubos?.data?.map(ubo => ({
+  const ubos = pluginsOutput?.ubo?.data?.data?.uboGraph?.map(ubo => ({
     name: ubo?.name,
-    percentage: ubo?.percentage,
+    percentage: ubo?.shareHolders?.[0]?.sharePercentage,
     type: ubo?.type,
     level: ubo?.level,
   }));
