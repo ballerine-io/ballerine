@@ -6,6 +6,8 @@ import { Method, States } from '../../common/enums';
 import { IWorkflowId } from './interfaces';
 import qs from 'qs';
 import { zPropertyKey } from '../../lib/zod/utils/z-property-key/z-property-key';
+import { deepCamelKeys } from 'string-ts';
+import { websiteMonitoringMock } from './__TEMP__';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -104,7 +106,18 @@ export const fetchWorkflowById = async ({
   const [workflow, error] = await apiClient({
     endpoint: `workflows/${workflowId}?filterId=${filterId}`,
     method: Method.GET,
-    schema: WorkflowByIdSchema,
+    schema: WorkflowByIdSchema.transform(data => ({
+      ...data,
+      context: {
+        ...websiteMonitoringMock,
+        pluginsOutput: {
+          ...websiteMonitoringMock?.pluginsOutput,
+          website_monitoring: {
+            data: deepCamelKeys(websiteMonitoringMock?.pluginsOutput?.website_monitoring?.data),
+          },
+        },
+      },
+    })),
   });
 
   return handleZodError(error, workflow);

@@ -9,9 +9,14 @@ import {
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from '../useEntity/utils';
-import { CommonWorkflowStates, getDocumentsByCountry, StateTag } from '@ballerine/common';
+import {
+  CommonWorkflowStates,
+  getDocumentsByCountry,
+  isNullish,
+  StateTag,
+} from '@ballerine/common';
 import * as React from 'react';
-import { useMemo } from 'react';
+import { ComponentProps, useMemo } from 'react';
 import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
 import { X } from 'lucide-react';
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
@@ -19,7 +24,7 @@ import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-
 import { Badge } from '@ballerine/ui';
 import { WarningFilledSvg } from '../../../../common/components/atoms/icons';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { toTitleCase } from 'string-ts';
+import { toTitleCase, toUpperCase } from 'string-ts';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import { useRemoveDecisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { getPostUpdateEventName } from './get-post-update-event-name';
@@ -924,9 +929,9 @@ export const useTasks = ({
                       },
                     ],
                     data: sanction?.places?.map(({ country, city, address }) => ({
-                      linkedAddress: address || 'Unavailable',
-                      city: city || 'Unavailable',
-                      country: country || 'Unavailable',
+                      linkedAddress: address || 'N/A',
+                      city: city || 'N/A',
+                      country: country || 'N/A',
                     })),
                   },
                 },
@@ -1086,9 +1091,368 @@ export const useTasks = ({
       ]
     : [];
 
+  const websiteMonitoring = pluginsOutput?.website_monitoring?.data?.map(
+    ({ lsAction, merchantDetails, merchantDomains, createdAt: checkCreatedAt }) => {
+      const { reason, contentLabels, actions } = lsAction;
+      const labels = contentLabels?.map(({ label: contentLabel }) => ({ contentLabel })) ?? [];
+      const {
+        // Merchant address
+        merchantCountry,
+        merchantRegion,
+        merchantCity,
+        merchantStreet,
+        merchantPostalCode,
+
+        // Business Owner address
+        businessOwnerCountry,
+        businessOwnerRegion,
+        businessOwnerCity,
+        businessOwnerStreet,
+        businessOwnerPostalCode,
+
+        // DBA address
+        dbaCountry,
+        dbaRegion,
+        dbaCity,
+        dbaStreet,
+        dbaPostalCode,
+
+        status,
+        ...details
+      } = merchantDetails;
+      const domains = merchantDomains?.map(({ merchantUrl: domain, websiteRegistrar }) => {
+        const { ianaNumber, riskLevel, name } = websiteRegistrar;
+
+        return {
+          domain,
+          websiteRegistrar: name,
+          ianaNumber,
+          riskLevel,
+        };
+      });
+      const addresses = [
+        {
+          entity: 'Merchant',
+          country: merchantCountry,
+          region: merchantRegion,
+          city: merchantCity,
+          street: merchantStreet,
+          postalCode: merchantPostalCode,
+        },
+        {
+          entity: 'Business Owner',
+          country: businessOwnerCountry,
+          region: businessOwnerRegion,
+          city: businessOwnerCity,
+          street: businessOwnerStreet,
+          postalCode: businessOwnerPostalCode,
+        },
+        {
+          entity: 'DBA',
+          country: dbaCountry,
+          region: dbaRegion,
+          city: dbaCity,
+          street: dbaStreet,
+          postalCode: dbaPostalCode,
+        },
+      ];
+      const checkResult = {
+        checkCreatedAt,
+        status,
+      };
+      const warnings = actions?.map(warning => ({ warning })) ?? [];
+
+      return {
+        reason,
+        labels,
+        addresses,
+        domains,
+        details,
+        checkResult,
+        warnings,
+      };
+    },
+  );
+  const websiteMonitoringBlock =
+    websiteMonitoring?.map(merchant => ({
+      cells: [
+        {
+          type: 'container',
+          value: [
+            {
+              type: 'container',
+              value: [
+                {
+                  type: 'heading',
+                  value: 'Website monitoring',
+                },
+                {
+                  type: 'subheading',
+                  value: '3rd Party Provided Data',
+                  props: {
+                    className: 'mb-4',
+                  },
+                },
+              ],
+            },
+            {
+              id: 'visible-title',
+              type: 'table',
+              hideSeparator: true,
+              value: {
+                title: 'Result',
+                columns: [
+                  {
+                    accessorKey: 'status',
+                    header: 'Status',
+                    cell: props => {
+                      const value = props.getValue();
+                      const isCompleted = value === 'completed';
+
+                      return (
+                        <span
+                          className={ctw({
+                            'text-warning': !isCompleted,
+                          })}
+                        >
+                          {toTitleCase(merchant?.checkResult?.status ?? '')}
+                        </span>
+                      );
+                    },
+                  },
+                  {
+                    accessorKey: 'checkCreatedAt',
+                    header: 'Check Created at',
+                  },
+                ],
+                data: [merchant?.checkResult],
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
+                columns: [
+                  {
+                    accessorKey: 'warning',
+                    header: 'Warning',
+                    cell: props => {
+                      let value = props.getValue();
+
+                      if (value === 'gbpp') {
+                        value = 'virp';
+                      }
+
+                      const pickWarningVariant = (): ComponentProps<typeof Badge>['variant'] => {
+                        const isHighRisk =
+                          merchant?.warnings?.some(({ warning }) => warning === 'high_risk') &&
+                          merchant?.warnings?.length > 1;
+                        const isDestructive = ['virp', 'bram'].includes(value) || isHighRisk;
+                        const isWarning = [
+                          'high_risk',
+                          'tc_moderate_risk',
+                          'tl_suspected',
+                          'offline_domain_moderate_risk',
+                          'parked_domain_moderate_risk',
+                        ].includes(value);
+                        const isSlate = ['low_risk'].includes(value);
+                        const isSuccess = ['cleared'].includes(value);
+
+                        if (isDestructive) return 'destructive';
+                        if (isWarning) return 'warning';
+                        if (isSlate) return 'secondary';
+                        if (isSuccess) return 'success';
+                      };
+                      const variant = pickWarningVariant();
+
+                      if (isNullish(value) || value === '') {
+                        return <span className={`text-slate-400`}>N/A</span>;
+                      }
+
+                      return (
+                        <Badge
+                          variant={variant}
+                          className={ctw(`mb-1 rounded-lg px-2 py-1 font-bold`, {
+                            'text-slate-400': variant === 'secondary',
+                          })}
+                        >
+                          {toUpperCase(toTitleCase(value))}
+                        </Badge>
+                      );
+                    },
+                  },
+                ],
+                data: merchant?.warnings,
+              },
+            },
+          ],
+        },
+        {
+          type: 'table',
+          value: {
+            props: {
+              table: {
+                className: 'my-8',
+              },
+            },
+            columns: [
+              {
+                accessorKey: 'contentLabel',
+                header: 'Content Labels',
+                cell: props => {
+                  const value = props.getValue();
+
+                  return (
+                    <div className={'flex space-x-2'}>
+                      <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
+                      <span>{value}</span>
+                    </div>
+                  );
+                },
+              },
+            ],
+            data: merchant?.labels,
+          },
+        },
+        {
+          type: 'container',
+          value: [
+            {
+              type: 'subheading',
+              value: 'Reason',
+              props: {
+                className: 'mb-2',
+              },
+            },
+            {
+              type: 'paragraph',
+              value:
+                isNullish(merchant?.reason) || merchant?.reason === '' ? 'N/A' : merchant?.reason,
+              props: {
+                className: ctw({
+                  'text-slate-400': isNullish(merchant?.reason) || merchant?.reason === '',
+                }),
+              },
+            },
+          ],
+        },
+        {
+          type: 'container',
+          value: [
+            {
+              type: 'heading',
+              value: 'Merchant Domains',
+            },
+            {
+              type: 'table',
+              value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
+                columns: [
+                  {
+                    accessorKey: 'domain',
+                    header: 'Domain',
+                  },
+                  {
+                    accessorKey: 'websiteRegistrar',
+                    header: 'Website Registrar',
+                  },
+                  {
+                    accessorKey: 'ianaNumber',
+                    header: 'IANA Number',
+                  },
+                  {
+                    accessorKey: 'riskLevel',
+                    header: 'Risk Level',
+                  },
+                ],
+                data: merchant?.domains,
+              },
+            },
+          ],
+        },
+        {
+          type: 'container',
+          value: [
+            {
+              type: 'heading',
+              value: 'Merchant Address',
+            },
+            {
+              type: 'table',
+              value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
+                columns: [
+                  {
+                    accessorKey: 'entity',
+                    header: 'Entity',
+                  },
+                  {
+                    accessorKey: 'country',
+                    header: 'Country',
+                  },
+                  {
+                    accessorKey: 'region',
+                    header: 'Region',
+                  },
+                  {
+                    accessorKey: 'city',
+                    header: 'City',
+                  },
+                  {
+                    accessorKey: 'street',
+                    header: 'Street',
+                  },
+                  {
+                    accessorKey: 'postalCode',
+                    header: 'Postal Code',
+                  },
+                ],
+                data: merchant?.addresses,
+              },
+            },
+          ],
+        },
+        {
+          type: 'container',
+          value: [
+            {
+              type: 'heading',
+              value: 'Merchant Details',
+              props: {
+                className: 'mb-4',
+              },
+            },
+            {
+              type: 'details',
+              hideSeparator: true,
+              value: {
+                data: Object.entries(merchant?.details ?? {})?.map(([title, value]) => ({
+                  title,
+                  value,
+                })),
+              },
+            },
+          ],
+        },
+      ],
+    })) ?? [];
+
   return useMemo(() => {
     return entity
       ? [
+          ...websiteMonitoringBlock,
           ...entityInfoBlock,
           ...registryInfoBlock,
           ...companySanctionsBlock,
