@@ -35,7 +35,7 @@ export const useActionsProcessingLogic = (
           ...elementNames.reduce((elementsState, elementName) => {
             elementsState[elementName] = {
               ...elements[elementName],
-              isLoading: locked,
+              isDisabled: locked,
             };
 
             return elementsState;
