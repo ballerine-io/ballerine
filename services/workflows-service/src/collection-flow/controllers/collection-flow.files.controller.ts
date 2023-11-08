@@ -63,7 +63,7 @@ export class CollectionFlowFilesController {
     file: Express.Multer.File,
     @TokenScope() tokenScope: ITokenScope,
   ) {
-    return this.collectionFlowService.uploadNewFile(
+    return await this.collectionFlowService.uploadNewFile(
       tokenScope.projectId,
       tokenScope.workflowRuntimeDataId,
       file,
