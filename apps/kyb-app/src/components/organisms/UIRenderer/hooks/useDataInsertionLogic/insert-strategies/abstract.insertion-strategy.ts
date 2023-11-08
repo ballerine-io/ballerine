@@ -3,7 +3,8 @@ import { AnyObject } from '@ballerine/ui';
 
 export interface StrategyParams {
   schema: InsertionSchema;
-  destination?: string;
+  destination: string;
+  bindingAnchorDestination: string;
 }
 
 export abstract class InsertionStrategy {

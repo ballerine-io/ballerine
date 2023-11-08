@@ -49,6 +49,7 @@ export class InsertStrategyRunner {
     const params: StrategyParams = {
       schema: inputParams.schema,
       destination: inputParams.destination,
+      bindingAnchorDestination: inputParams.bindingAnchorDestination,
     };
 
     return params;

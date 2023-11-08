@@ -10,16 +10,16 @@ export class ArrayInsertionStrategy implements InsertionStrategy {
   STRATEGY_TYPE = 'array';
 
   insert<TContext extends AnyObject>(context: TContext, params: StrategyParams): TContext {
-    const { schema, destination } = params;
+    const { schema, destination, bindingAnchorDestination } = params;
 
     const value = (get(context, destination) as Array<AnyObject>) || [];
-    const isAlreadyInserted = value.find(item => item.__strategyInserted);
+    const isAlreadyInserted = value.find(item => get(item, bindingAnchorDestination));
 
     if (isAlreadyInserted) return context;
 
-    const insertionValue: AnyObject = {
-      __strategyInserted: true,
-    };
+    const insertionValue: AnyObject = {};
+
+    set(insertionValue, bindingAnchorDestination, true);
 
     Object.entries(schema).forEach(([insertAt, pickFrom]) => {
       set(insertionValue, insertAt, get(context, pickFrom) as unknown);
@@ -42,14 +42,14 @@ export class ArrayInsertionStrategy implements InsertionStrategy {
     if (
       !Array.isArray(value) ||
       !value.length ||
-      !value.find((item: AnyObject) => item.__strategyInserted)
+      !value.find((item: AnyObject) => get(item, params.bindingAnchorDestination))
     )
       return context;
 
     set(
       context,
       destination,
-      value.filter(item => !item.__strategyInserted),
+      value.filter(item => !get(item, params.bindingAnchorDestination)),
     );
 
     return {
@@ -57,8 +57,16 @@ export class ArrayInsertionStrategy implements InsertionStrategy {
     };
   }
 
-  static isValueInserted<TValue extends AnyObject>(value: TValue): boolean {
-    if (typeof value === 'object' && value.__strategyInserted) return true;
+  static isValueInserted<TValue extends AnyObject>(
+    value: TValue,
+    bindingAnchorDestination?: string,
+  ): boolean {
+    if (
+      typeof value === 'object' &&
+      bindingAnchorDestination &&
+      get(value, bindingAnchorDestination)
+    )
+      return true;
 
     return false;
   }
