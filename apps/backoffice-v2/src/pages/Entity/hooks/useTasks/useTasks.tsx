@@ -446,7 +446,7 @@ export const useTasks = ({
     alternativeNames: sanction?.entity?.otherNames,
     places: sanction?.entity?.places,
   }));
-  const ubos = pluginsOutput?.ubo?.data?.data?.uboGraph?.map(ubo => ({
+  const ubos = pluginsOutput?.ubo?.data?.uboGraph?.map(ubo => ({
     name: ubo?.name,
     percentage: ubo?.shareHolders?.[0]?.sharePercentage,
     type: ubo?.type,
