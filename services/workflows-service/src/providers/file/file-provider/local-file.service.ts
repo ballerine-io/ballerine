@@ -42,14 +42,16 @@ export class LocalFileService implements IFileProvider {
       const distFilePath = this.__removeFilePrefix(remoteFileConfig as TRemoteUri);
 
       const readStream = this.client.createReadStream(this.__removeFilePrefix(localFilePath));
-      const writeStream = this.client.createWriteStream(this.__removeFilePrefix(distFilePath))
+      const writeStream = this.client.createWriteStream(this.__removeFilePrefix(distFilePath));
 
-      readStream.pipe(writeStream)
+      readStream
+        .pipe(writeStream)
         .on('finish', () => {
-        resolve(distFilePath);
-      }).on('error', err => {
-        reject(err);
-      });
+          resolve(distFilePath);
+        })
+        .on('error', err => {
+          reject(err);
+        });
     });
   }
 
