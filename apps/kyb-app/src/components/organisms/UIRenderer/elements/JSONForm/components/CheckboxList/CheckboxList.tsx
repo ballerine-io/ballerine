@@ -17,7 +17,7 @@ export const CheckboxList = (props: RJSFInputProps) => {
   return (
     <div className="flex flex-col gap-4">
       {options.map(option => (
-        <div className="flex items-center gap-2" key={option.value}>
+        <label className="flex items-center gap-2" key={option.value}>
           <Checkbox
             className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground bg-white"
             color="primary"
@@ -36,7 +36,7 @@ export const CheckboxList = (props: RJSFInputProps) => {
             }}
           />
           <span className="font-inter text-sm">{option.title}</span>
-        </div>
+        </label>
       ))}
     </div>
   );

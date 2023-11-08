@@ -2,7 +2,6 @@ import { useStateManagerContext } from '@app/components/organisms/DynamicUI/Stat
 import { useUIElementToolsLogic } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/hooks/useUIElementToolsLogic';
 import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
 import { getDocumentFileIdPath } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/getDocumentFileIdPath';
-import { getDocumentFileTypePath } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/getDocumentFileTypePath';
 import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
 import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
 import { Document, UIElement } from '@app/domains/collection-flow';
@@ -21,7 +20,7 @@ interface DocumentFieldParams {
 export const DocumentField = (
   props: RJSFInputProps & { definition: UIElement<DocumentFieldParams> },
 ) => {
-  const { definition, ...restProps } = props;
+  const { definition, onChange, ...restProps } = props;
   const { stateApi } = useStateManagerContext();
   const { payload } = useStateManagerContext();
   const [fieldError, setFieldError] = useState<ErrorField | null>(null);
@@ -104,6 +103,7 @@ export const DocumentField = (
         collectionFlowFileStorage.registerFile(uploadResult.id, file);
         setFile(file);
         setFieldError(null);
+        onChange(uploadResult.id);
       } catch (err) {
         if (err instanceof HTTPError) {
           const jsonError = await err.response.json();

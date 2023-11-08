@@ -30,11 +30,16 @@ export interface JSONFormElementBaseParams {
 }
 
 export interface JSONFormElementParams extends DefinitionInsertionParams {
-  jsonFormDefinition?: { type?: string; required?: string[] };
+  jsonFormDefinition?: { type?: string; required?: string[]; title?: string };
+  uiSchema?: AnyObject;
 }
 
 export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition }) => {
-  useDataInsertionLogic(definition, definition?.options?.jsonFormDefinition?.type !== 'array');
+  useDataInsertionLogic(
+    definition,
+    definition?.options?.jsonFormDefinition?.type !== 'array' ||
+      !definition?.options?.insertionParams,
+  );
 
   const { state: elementState } = useUIElementState(definition);
   const { hidden } = useUIElementProps(definition);

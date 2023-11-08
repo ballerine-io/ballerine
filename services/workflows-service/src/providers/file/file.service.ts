@@ -217,14 +217,18 @@ export class FileService {
     targetRemoteFileConfig: TRemoteFileConfig;
     remoteFileNameInDirectory: string;
   } {
+    const properties = {
+      customerName,
+      fileName,
+      directory: entityId,
+    };
+
     if (this.__fetchBucketName(process.env, false)) {
       const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);
       const awsFileService = new AwsS3FileService(s3ClientConfig);
-      const remoteFileNameInDocument = awsFileService.generateRemotePath({
-        customerName,
-        fileName,
-        directory: entityId,
-      });
+
+      const remoteFileNameInDocument = awsFileService.generateRemotePath(properties);
+
       const awsConfigForClient = this.__fetchAwsConfigForFileNameInBucket(remoteFileNameInDocument);
 
       return {
@@ -235,7 +239,7 @@ export class FileService {
     }
 
     const localFileService = new LocalFileService();
-    const toFileStoragePath = localFileService.generateRemotePath({ fileName });
+    const toFileStoragePath = localFileService.generateRemotePath(properties);
 
     return {
       targetServiceProvider: localFileService,
@@ -261,21 +265,21 @@ export class FileService {
 
     const remoteFileNamePrefix = fileDetails.id || getDocumentId(fileDetails, false);
 
-    let localFilePath;
+    let tmpLocalFilePath;
     if (shouldDownloadFromSource) {
       const tmpFile = tmp.fileSync();
-      localFilePath = await sourceServiceProvider.download(sourceRemoteFileConfig, tmpFile.name);
+      tmpLocalFilePath = await sourceServiceProvider.download(sourceRemoteFileConfig, tmpFile.name);
     }
 
-    const file = await fromFile(localFilePath ?? fileDetails.uri);
+    const file = await fromFile(tmpLocalFilePath ?? fileDetails.uri);
 
     const remoteFileName = `${remoteFileNamePrefix}_${randomUUID()}${
       file?.ext ? `.${file?.ext}` : ''
     }`;
 
-    if (localFilePath) {
+    if (tmpLocalFilePath) {
       try {
-        await fs.unlink(localFilePath);
+        await fs.unlink(tmpLocalFilePath);
       } catch (err) {
         // TODO: should we log non succesful deletetion ?
       }
