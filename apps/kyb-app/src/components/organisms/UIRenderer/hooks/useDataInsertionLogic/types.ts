@@ -10,6 +10,7 @@ export interface InsertionParams {
   insertionStrategy: 'array' | 'object';
   destination: string;
   disableElements?: DisablableListElementDefinition[];
+  bindingAnchorDestination: string;
 }
 
 export interface DefinitionInsertionParams {
