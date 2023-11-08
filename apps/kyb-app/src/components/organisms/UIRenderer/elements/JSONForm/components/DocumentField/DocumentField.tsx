@@ -122,7 +122,7 @@ export const DocumentField = (
         toggleElementLoading();
       }
     },
-    [stateApi, options, definition, toggleElementLoading],
+    [stateApi, options, definition, toggleElementLoading, sendEvent],
   );
 
   return (
