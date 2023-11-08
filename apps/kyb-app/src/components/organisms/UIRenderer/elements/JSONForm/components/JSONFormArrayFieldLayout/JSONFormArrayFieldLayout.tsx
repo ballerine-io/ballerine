@@ -1,3 +1,4 @@
+import { useJSONFormDefinition } from '@app/components/organisms/UIRenderer/elements/JSONForm/providers/JSONFormDefinitionProvider/useJSONFormDefinition';
 import { ArrayInsertionStrategy } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/insert-strategies/array.insertion-strategy';
 import {
   AnyObject,
@@ -8,6 +9,8 @@ import {
 } from '@ballerine/ui';
 
 export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
+  const { definition } = useJSONFormDefinition();
+
   return (
     <ArrayFieldsLayout {...props}>
       {(items, uiSchema) =>
@@ -23,6 +26,7 @@ export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
             }
             disableDeletion={ArrayInsertionStrategy.isValueInserted(
               (item?.children?.props as AnyObject)?.formData || {},
+              definition.options?.insertionParams?.bindingAnchorDestination,
             )}
           />
         ))
