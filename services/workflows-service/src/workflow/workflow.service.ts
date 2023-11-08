@@ -71,6 +71,7 @@ import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import { deepCamelKeys } from 'string-ts';
 
 type TEntityId = string;
 
@@ -261,6 +262,13 @@ export class WorkflowService {
       ...workflow,
       context: {
         ...workflow.context,
+        pluginsOutput: {
+          ...workflow.context?.pluginsOutput,
+          website_monitoring: {
+            ...workflow.context?.pluginsOutput?.website_monitoring,
+            data: deepCamelKeys(workflow.context?.pluginsOutput?.website_monitoring?.data),
+          },
+        },
         documents: workflow.context?.documents?.map(
           (document: DefaultContextSchema['documents'][number]) => {
             return addPropertiesSchemaToDocument(document);
