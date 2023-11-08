@@ -4,9 +4,9 @@ import { Outlet } from 'react-router-dom';
 import { ErrorAlert } from '../../common/components/atoms/ErrorAlert/ErrorAlert';
 
 export const ServerDownLayout: FunctionComponent = () => {
-  const { isSuccess } = useHealthQuery();
+  const { isSuccess, isLoading } = useHealthQuery();
 
-  if (isSuccess) return <Outlet />;
+  if (isSuccess || isLoading) return <Outlet />;
 
   return (
     <main className={`flex h-full flex-col items-center`}>
