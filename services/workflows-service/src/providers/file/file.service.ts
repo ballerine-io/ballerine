@@ -16,7 +16,6 @@ import { LocalFileService } from '@/providers/file/file-provider/local-file.serv
 import { fromBuffer, fromFile } from 'file-type';
 import { streamToBuffer } from '@/common/stream-to-buffer/stream-to-buffer';
 import { Readable } from 'stream';
-import { TDocumentWithoutPageType } from '@/common/types';
 import * as fs from 'fs/promises';
 
 @Injectable()
@@ -129,7 +128,6 @@ export class FileService {
 
     return {
       remoteFilePath,
-      localFilePath,
       mimeType: fileType?.mime,
     };
   }
@@ -261,7 +259,7 @@ export class FileService {
     const { sourceServiceProvider, sourceRemoteFileConfig } =
       this.__fetchSourceServiceProviders(fileDetails);
 
-    const remoteFileNamePrefix = fileDetails.id! || getDocumentId(fileDetails, false);
+    const remoteFileNamePrefix = fileDetails.id || getDocumentId(fileDetails, false);
 
     let localFilePath;
     if (shouldDownloadFromSource) {
