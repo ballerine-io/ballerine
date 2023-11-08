@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware, Scope } from '@nestjs/common';
+import { Injectable, NestMiddleware, Scope, UnauthorizedException } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { CustomerService } from '@/customer/customer.service';
 import { ClsService } from 'nestjs-cls';
@@ -19,7 +19,7 @@ export class AuthKeyMiddleware implements NestMiddleware {
 
       if (!customer) return next();
 
-      const { projects, authenticationConfiguration, ...customerWithoutProjects } = customer;
+      const {projects, authenticationConfiguration, ...customerWithoutProjects} = customer;
 
       this.cls.set('entity', {
         customer: {
@@ -29,11 +29,18 @@ export class AuthKeyMiddleware implements NestMiddleware {
         type: 'customer',
       });
 
+      const customerProjectIds = customer.projects?.map(project => project.id);
+      const requestedProjectId = req.body?.projectId || req.query.projectId ;
+
+      if (!!requestedProjectId && !customerProjectIds!.includes(requestedProjectId)) {
+        throw new UnauthorizedException(`Project ${requestedProjectId} is not available for customer ${customer.id}`);
+      }
+
       req.user = {
         customer: customerWithoutProjects,
         // @ts-expect-error `User`'s type does not match the `Customer`'s type
-        projectIds: customer.projects?.map(project => project.id),
-        type: 'customer',
+        projectIds: requestedProjectId ? [requestedProjectId] : customerProjectIds,
+        type: 'customer'
       };
     }
 

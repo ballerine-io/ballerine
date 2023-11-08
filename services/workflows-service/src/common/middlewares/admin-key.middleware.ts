@@ -10,10 +10,11 @@ export class AdminKeyMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
     const apiKey = authHeader?.split?.(' ')?.[1];
+    const projectId = req.body?.projectId || req.query.projectId;
 
     if (!!apiKey && apiKey == env.ADMIN_API_KEY) {
       const entity = {
-        projectIds: ['*'],
+        projectIds: !!projectId ? [projectId]: ['*'],
         type: 'admin',
       };
 
