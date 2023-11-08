@@ -14,7 +14,7 @@ import { json, NextFunction, Request, Response, urlencoded } from 'express';
 import { ClsMiddleware } from 'nestjs-cls';
 import * as Sentry from '@sentry/node';
 import { ConfigService } from '@nestjs/config';
-import { WinstonLogger } from './common/utils/winston-logger/winston-logger';
+import { AppLoggerService } from './common/app-logger/app-logger.service';
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
@@ -38,16 +38,16 @@ const corsOrigins =
       ];
 
 async function main() {
-  const logger = new WinstonLogger();
   const app = await NestFactory.create(AppModule, {
+    bufferLogs: true, //will be buffered until a custom logger is attached
     snapshot: true,
-    logger,
     cors: {
       origin: corsOrigins,
       credentials: true,
     },
   });
 
+  const logger = app.get(AppLoggerService);
   const configService = app.get(ConfigService);
 
   app.useLogger(logger);
