@@ -3,7 +3,7 @@ import { isValidDate } from '../../../../common/utils/is-valid-date';
 import { isValidIsoDate } from '../../../../common/utils/is-valid-iso-date/is-valid-iso-date';
 import { formatDate } from '../../../../common/utils/format-date';
 import dayjs from 'dayjs';
-import { isObject } from '@ballerine/common';
+import { isNullish, isObject } from '@ballerine/common';
 import { JsonDialog } from '../../../../common/components/molecules/JsonDialog';
 import { FileJson2 } from 'lucide-react';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
@@ -14,6 +14,10 @@ export const DefaultCell = <TData extends RowData, TValue = unknown>(
   props: CellContext<TData, TValue>,
 ) => {
   const value = props.getValue();
+
+  if (isNullish(value) || value === '') {
+    return <span className={`text-slate-400`}>N/A</span>;
+  }
 
   if (isValidDate(value, { isStrict: false }) || isValidIsoDate(value)) {
     return formatDate(dayjs(value).toDate());
