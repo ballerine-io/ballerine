@@ -2107,11 +2107,11 @@ export class WorkflowService {
     };
   }) {
     return await this.salesforceService.updateRecord({
-      // @ts-expect-error - #__INFECTED__
+      // @ts-expect-error - error from Prisma types fix
       projectId: workflowRuntimeData.projectId,
-      // @ts-expect-error - #__INFECTED__
+      // @ts-expect-error - error from Prisma types fix
       objectName: workflowRuntimeData.salesforceObjectName,
-      // @ts-expect-error - #__INFECTED__
+      // @ts-expect-error - error from Prisma types fix
       recordId: workflowRuntimeData.salesforceRecordId,
       data,
     });
