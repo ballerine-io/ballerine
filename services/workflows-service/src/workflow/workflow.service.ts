@@ -8,7 +8,7 @@ import { BusinessRepository } from '@/business/business.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { SortOrder } from '@/common/query-filters/sort-order';
-import { TDocumentWithoutPageType, TDocumentsWithoutPageType } from '@/common/types';
+import { TDocumentsWithoutPageType, TDocumentWithoutPageType } from '@/common/types';
 import { aliasIndividualAsEndUser } from '@/common/utils/alias-individual-as-end-user/alias-individual-as-end-user';
 import { logDocumentWithoutId } from '@/common/utils/log-document-without-id/log-document-without-id';
 import { CustomerService } from '@/customer/customer.service';
@@ -17,7 +17,7 @@ import { EndUserService } from '@/end-user/end-user.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { FileService } from '@/providers/file/file.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
-import { IObjectWithId, InputJsonValue, TProjectId, TProjectIds } from '@/types';
+import { InputJsonValue, IObjectWithId, TProjectId, TProjectIds } from '@/types';
 import { UserService } from '@/user/user.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
@@ -34,12 +34,12 @@ import {
   ChildPluginCallbackOutput,
   ChildToParentCallback,
   ChildWorkflowCallback,
+  createWorkflow,
   HelpersTransformer,
   JmespathTransformer,
   SerializableTransformer,
   THelperFormatingLogic,
   Transformer,
-  createWorkflow,
 } from '@ballerine/workflow-core';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {
@@ -1028,10 +1028,6 @@ export class WorkflowService {
         parentMachine?.id,
         {
           data: {
-            status: 'active',
-            state:
-              parentMachine?.state ||
-              (parentMachine?.workflowDefinition?.definition?.initial as string),
             context: {
               ...parentMachine?.context,
               documents: parentMachine?.context?.documents?.map((document: any) => {
