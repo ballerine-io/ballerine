@@ -200,7 +200,7 @@ export const dynamicUiWorkflowDefinition = {
         stateNames: ['run_cn_kyb'],
         successAction: 'CN_KYB_DONE',
         errorAction: 'CN_KYB_FAIL',
-        persistResponseDestination: 'pluginsOutput.businessInformation.data',
+        persistResponseDestination: 'pluginsOutput.businessInformation',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
@@ -229,7 +229,6 @@ export const dynamicUiWorkflowDefinition = {
         url: `{secret.UNIFIED_API_URL}/companies-v2/HK/{entity.data.registrationNumber}`,
         method: 'GET',
         stateNames: ['run_hk_kyb'],
-        successAction: 'HK_KYB_HOOK_RESPONDED',
         errorAction: 'HK_KYB_HOOK_FAILED',
         persistResponseDestination: 'pluginsOutput.businessInformation.request',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
@@ -289,7 +288,6 @@ export const dynamicUiWorkflowDefinition = {
         url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.registrationNumber}/ubo`,
         method: 'GET',
         stateNames: ['run_vendor_ubos'],
-        successAction: 'UBO_HOOK_RESPONDED',
         errorAction: 'UBO_HOOK_FAILED',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
