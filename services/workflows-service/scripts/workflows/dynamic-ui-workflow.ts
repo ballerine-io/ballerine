@@ -199,6 +199,7 @@ export const dynamicUiWorkflowDefinition = {
         stateNames: ['run_cn_kyb'],
         successAction: 'CN_KYB_DONE',
         errorAction: 'CN_KYB_FAIL',
+        persistResponseDestination: 'pluginsOutput.businessInformation.data',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
@@ -229,6 +230,7 @@ export const dynamicUiWorkflowDefinition = {
         stateNames: ['run_hk_kyb'],
         successAction: 'HK_KYB_HOOK_RESPONDED',
         errorAction: 'HK_KYB_HOOK_FAILED',
+        persistResponseDestination: 'pluginsOutput.businessInformation.request',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
@@ -237,7 +239,7 @@ export const dynamicUiWorkflowDefinition = {
               mapping: `{
                 countryOfIncorporation: 'HK',
                 vendor: 'asia-verify',
-                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/HK_KYB_HOOK_RESPONDED','?resultDestination=pluginsOutput.hk_kyb.result&processName=kyb-unified-api'])
+                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/HK_KYB_HOOK_RESPONDED','?resultDestination=pluginsOutput.businessInformation.data&processName=kyb-unified-api'])
               }`, // jmespath
             },
           ],
@@ -259,6 +261,7 @@ export const dynamicUiWorkflowDefinition = {
         stateNames: ['run_vendor_company_sanctions'],
         successAction: 'COMPANY_SANCTIONS_DONE',
         errorAction: 'COMPANY_SANCTIONS_FAIL',
+        persistResponseDestination: 'pluginsOutput.companySanctions',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
@@ -294,7 +297,7 @@ export const dynamicUiWorkflowDefinition = {
               transformer: 'jmespath',
               mapping: `{
                 vendor: 'asia-verify',
-                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/UBO_HOOK_RESPONDED','?resultDestination=pluginsOutput.ubo.result&processName=ubo-unified-api'])
+                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/UBO_HOOK_RESPONDED','?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api'])
               }`, // jmespath
             },
           ],
@@ -401,6 +404,7 @@ export const dynamicUiWorkflowDefinition = {
   },
   isPublic: true,
 };
+
 export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, projectId?: string) => {
   const kybDynamicExample = {
     ...dynamicUiWorkflowDefinition,
