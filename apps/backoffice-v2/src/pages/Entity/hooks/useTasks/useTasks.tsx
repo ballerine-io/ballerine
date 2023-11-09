@@ -73,7 +73,7 @@ export const useTasks = ({
       results[docIndex][pageIndex] = docsData?.shift()?.data;
     });
   });
-  const pluginsOutputBlacklist = ['company_sanctions', 'directors', 'ubo', 'businessInformation'];
+  const pluginsOutputBlacklist = ['companySanctions', 'directors', 'ubo', 'businessInformation'];
   const filteredPluginsOutput = useMemo(
     () => omitPropsFromObject(pluginsOutput, ...pluginsOutputBlacklist),
     [pluginsOutput, pluginsOutputBlacklist],
@@ -469,7 +469,7 @@ export const useTasks = ({
           },
         ];
 
-  const companySanctions = pluginsOutput?.company_sanctions?.data?.map(sanction => ({
+  const companySanctions = pluginsOutput?.companySanctions?.data?.map(sanction => ({
     sources: sanction?.entity?.sources,
     officialLists: sanction?.entity?.officialLists,
     fullReport: sanction,
