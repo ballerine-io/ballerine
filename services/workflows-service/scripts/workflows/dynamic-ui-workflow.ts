@@ -116,6 +116,7 @@ export const dynamicUiWorkflowDefinition = {
           approve: 'approved',
           reject: 'rejected',
           revision: 'pending_resubmission',
+          KYC_REVISION: 'pending_kyc_response_to_finish',
         },
       },
       pending_resubmission: {
@@ -142,7 +143,7 @@ export const dynamicUiWorkflowDefinition = {
               cond: {
                 type: 'jmespath',
                 options: {
-                  rule: 'length(childWorkflows.kyc_email_session_example.*.[result.vendorResult.decision][]) == length(childWorkflows.kyc_email_session_example.*[])',
+                  rule: `length(childWorkflows.kyc_email_session_example.*.[result.vendorResult.decision][]) == length(childWorkflows.kyc_email_session_example.*[]) && length(childWorkflows.kyc_email_session_example.*.[?state == 'revision']) == \`0\``,
                 },
               },
             },
@@ -392,6 +393,18 @@ export const dynamicUiWorkflowDefinition = {
         ],
         persistenceStates: ['kyc_manual_review'],
         deliverEvent: 'KYC_RESPONDED',
+      },
+      {
+        definitionId: kycEmailSessionDefinition.name,
+        persistenceStates: ['revision_email_sent'],
+        transformers: [
+          {
+            transformer: 'jmespath',
+            mapping:
+              '{childEntity: entity.data, vendorResult: pluginsOutput.kyc_session.kyc_session_1.result}', // jmespath
+          },
+        ],
+        deliverEvent: 'KYC_REVISION',
       },
     ],
   },
