@@ -128,7 +128,6 @@ export class FileService {
 
     return {
       remoteFilePath,
-      localFilePath,
       mimeType: fileType?.mime,
     };
   }
