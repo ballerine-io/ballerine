@@ -29,7 +29,6 @@ import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integra
 import { UserRepository } from '@/user/user.repository';
 import { PasswordService } from '@/auth/password/password.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { WorkflowModule } from './workflow.module';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
@@ -117,18 +116,16 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     it('updateById: Merge context with nested entities - will preserve "replacment" behaviour for merging arrays', async () => {
       // Set up initial data
 
-      const createRes = await workflowRuntimeRepository.create(
-        {
-          data: {
-            workflowDefinitionId: 'test-definition',
-            workflowDefinitionVersion: 1,
-            context: {
-              entity: {
-                id: '1',
-                name: 'TestEntity',
-              },
-              documents: ['file1', 'file2'],
+      const createRes = await workflowRuntimeRepository.create({
+        data: {
+          workflowDefinitionId: 'test-definition',
+          workflowDefinitionVersion: 1,
+          context: {
+            entity: {
+              id: '1',
+              name: 'TestEntity',
             },
+            documents: ['file1', 'file2'],
           },
           projectId: project.id,
         },
