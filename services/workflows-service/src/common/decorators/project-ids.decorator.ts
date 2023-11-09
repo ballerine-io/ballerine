@@ -10,13 +10,13 @@ export const ProjectIds = createParamDecorator((data: unknown, ctx: ExecutionCon
   const userAssociatedProjectIds = authenticatedEntity.projectIds!;
   const requestedProjectIds = RequestedProjectIdSchema.parse(request.query.projectIds);
 
-  const isExcludedInCustomerProjectIds =
+  const isUnauthorizedProjectIds =
     !!requestedProjectIds &&
     requestedProjectIds.length > 0 &&
     !requestedProjectIds.some(projectId => !userAssociatedProjectIds.includes(projectId));
   const notAdmin = !(authenticatedEntity.type === 'admin');
 
-  if (isExcludedInCustomerProjectIds && notAdmin) {
+  if (isUnauthorizedProjectIds && notAdmin) {
     throw new UnauthorizedException(
       `Requested projectId ${userAssociatedProjectIds.join(',')} is not associated with ${
         authenticatedEntity.type

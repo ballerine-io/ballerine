@@ -13,10 +13,10 @@ export const CurrentProject = createParamDecorator(
       request.payload.projectId || request.query.projectId,
     );
 
-    const isExcludedInCustomerProjectIds =
+    const isUnauthorizedProjectId =
       !!requestedProjectId && !userAssociatedProjectIds?.includes(requestedProjectId);
     const notAdmin = !(authenticatedEntity.type === 'admin');
-    if (isExcludedInCustomerProjectIds && notAdmin) {
+    if (isUnauthorizedProjectId && notAdmin) {
       throw new UnauthorizedException(
         `Requested projectId ${requestedProjectId} is not associated with ${
           authenticatedEntity.type
