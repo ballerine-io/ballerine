@@ -198,14 +198,14 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
               const displayValue = (value: unknown) => {
                 if (isEditable) return originalValue;
 
-                return isNullish(value) || value === '' ? 'Unavailable' : value;
+                return isNullish(value) || value === '' ? 'N/A' : value;
               };
 
               const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
                 const isCheckbox = event.target.type === 'checkbox';
                 const inputValue = isCheckbox ? event.target.checked : event.target.value;
 
-                form.setValue(title, inputValue === 'Unavailable' ? '' : inputValue);
+                form.setValue(title, inputValue === 'N/A' ? '' : inputValue);
               };
 
               return (
@@ -313,6 +313,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                                     isDecisionComponent,
                                     field.value,
                                   ),
+                                  'text-slate-400': isNullish(field.value) || field.value === '',
                                 },
                               )}
                               {...(pattern && { pattern })}

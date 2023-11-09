@@ -45,14 +45,17 @@ export const TableCell = forwardRef(
               {...value?.props?.row}
               className={ctw(value?.props?.row?.className, 'hover:bg-unset border-none')}
             >
-              {headerGroup.headers?.map(header => {
+              {headerGroup.headers?.map((header, index) => {
                 return (
                   <TableHead
                     key={header.id}
                     {...value?.props?.head}
                     className={ctw(
                       value?.props?.head?.className,
-                      '!h-[unset] pb-2 pt-0 text-sm font-medium leading-none text-foreground [&:first-of-type]:!pl-3.5',
+                      '!h-[unset] !pl-3 pb-2 pt-0 text-sm font-medium leading-none text-foreground',
+                      {
+                        '!pl-3.5': index === 0,
+                      },
                     )}
                   >
                     {!header.isPlaceholder &&
