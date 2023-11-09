@@ -127,7 +127,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
                 id: '1',
                 name: 'TestEntity',
               },
-              documents: [{ id: 'file1' }, { id: 'file2' }],
+              documents: ['file1', 'file2'],
             },
           },
           projectId: project.id,
@@ -140,7 +140,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
           id: '2',
           name: 'UpdatedEntity',
         },
-        documents: [{ id: 'file3' }],
+        documents: ['file3'],
       };
 
       const res = await workflowRuntimeRepository.updateById(createRes.id, {
@@ -156,7 +156,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
           id: '2',
           name: 'UpdatedEntity',
         },
-        documents: [{ id: 'file3' }],
+        documents: ['file3'],
       });
     });
 

@@ -4,23 +4,23 @@ import { recursiveMerge } from '@/collection-flow/helpers/recursive-merge';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-step.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { CustomerService } from '@/customer/customer.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
+import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
 import { TProjectId, TProjectIds } from '@/types';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { DefaultContextSchema, TDocument } from '@ballerine/common';
+import { DefaultContextSchema } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
-import { Customer, EndUser, File, UiDefinitionContext } from '@prisma/client';
+import { Customer, EndUser, UiDefinitionContext } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
+import { randomUUID } from 'crypto';
 import keyBy from 'lodash/keyBy';
-import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { ITokenScope } from '@/common/decorators/token-scope.decorator';
-
-type OptionalUiDefDefiniton = UiDefDefinition | null;
 
 @Injectable()
 export class CollectionFlowService {
@@ -34,6 +34,7 @@ export class CollectionFlowService {
     protected readonly uiDefinitionService: UiDefinitionService,
     protected readonly customerService: CustomerService,
     protected readonly storageService: StorageService,
+    protected readonly fileService: FileService,
   ) {}
 
   async getCustomerDetails(projectId: TProjectId): Promise<Customer> {
@@ -144,100 +145,6 @@ export class CollectionFlowService {
     return workflowData ? workflowData : null;
   }
 
-  // async updateFlow(
-  //   adapter: IWorkflowAdapter,
-  //   updatePayload: UpdateFlowPayload,
-  //   flowId: string,
-  //   projectId: TProjectId,
-  //   customer: Customer,
-  // ) {
-  //   const workflow = await this.workflowRuntimeDataRepository.findById(flowId, {}, [
-  //     projectId,
-  //   ] as TProjectIds);
-  //
-  //   if (!workflow) throw new NotFoundException();
-  //
-  //   const flowData = plainToClass(KYBParentKYCSessionExampleFlowData, {
-  //     id: flowId,
-  //     state: updatePayload.flowState,
-  //     flowData: updatePayload.dynamicData,
-  //     mainRepresentative: updatePayload.mainRepresentative,
-  //     documents: updatePayload.documents,
-  //     ubos: updatePayload.ubos,
-  //     flowState: updatePayload.flowState,
-  //     businessData: updatePayload.businessData,
-  //   });
-  //
-  //   const workflowData = adapter.deserialize(flowData as any, workflow, customer);
-  //
-  //   workflowData.context.documents = await this.__persistFileUrlsToDocuments(
-  //     workflowData.context.documents,
-  //     [projectId],
-  //   );
-  //
-  //   await this.businessService.updateById(
-  //     workflow.businessId,
-  //     {
-  //       data: updatePayload.businessData,
-  //     },
-  //     projectId,
-  //   );
-  //
-  //   await this.workflowService.createOrUpdateWorkflowRuntime({
-  //     workflowDefinitionId: workflowData.workflowDefinitionId,
-  //     context: workflowData.context,
-  //     projectIds: [projectId] as TProjectIds,
-  //     currentProjectId: projectId,
-  //   });
-  //
-  //   return flowData;
-  // }
-
-  private async __persistFileUrlsToDocuments(
-    documents: TDocument[] = [],
-    projectIds: TProjectIds,
-  ): Promise<TDocument[]> {
-    const fileEntities = (
-      await Promise.all(
-        documents.reduce((filesList, document) => {
-          document.pages.forEach((page: { ballerineFileId: string }) => {
-            if (!page.ballerineFileId) return;
-
-            filesList.push(
-              this.storageService.getFileById({ id: page.ballerineFileId }, projectIds),
-            );
-          });
-
-          return filesList;
-        }, [] as Promise<File | null>[]),
-      )
-    ).filter(Boolean);
-
-    const filesById = keyBy(fileEntities, 'id');
-
-    const updatedDocuments = documents.map(document => {
-      return {
-        ...document,
-        pages: document.pages.map(
-          (page: { ballerineFileId: string; uri: string; provider: string; type: string }) => {
-            const file = filesById[page.ballerineFileId] as File;
-
-            if (!file) return page;
-
-            return {
-              ballerineFileId: page.ballerineFileId,
-              uri: file.uri,
-              type: file.mimeType,
-              provider: 'http',
-            };
-          },
-        ),
-      };
-    });
-
-    return updatedDocuments;
-  }
-
   async updateWorkflowRuntimeData(payload: UpdateFlowDto, tokenScope: ITokenScope) {
     const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
       tokenScope.workflowRuntimeDataId,
@@ -258,11 +165,6 @@ export class CollectionFlowService {
     }
 
     const { state, ...resetContext } = payload.data.context as Record<string, any>;
-
-    resetContext.documents = await this.__persistFileUrlsToDocuments(
-      (payload.data.context as any).documents.filter(Boolean),
-      [tokenScope.projectId],
-    );
 
     const updateResult = await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: workflowRuntime.workflowDefinitionId,
@@ -310,5 +212,37 @@ export class CollectionFlowService {
       projectIds,
       currentProjectId,
     );
+  }
+
+  async uploadNewFile(projectId: string, workflowRuntimeDataId: string, file: Express.Multer.File) {
+    // upload file into a customer folder
+    const customer = await this.customerService.getByProjectId(projectId);
+
+    const runtimeDataId = await this.workflowService.getWorkflowRuntimeDataById(
+      workflowRuntimeDataId,
+      {},
+      [projectId],
+    );
+
+    const entityId = runtimeDataId.businessId || runtimeDataId.endUserId;
+
+    if (!entityId) {
+      throw new NotFoundException("Workflow does't exists");
+    }
+
+    // Remove file extension (get everything before the last dot)
+    const nameWithoutExtension = (file.originalname || randomUUID()).replace(/\.[^.]+$/, '');
+    // Remove non characters
+    const alphabeticOnlyName = nameWithoutExtension.replace(/\W/g, '');
+
+    const persistedFile = await this.fileService.copyToDestinationAndCreate(
+      { id: alphabeticOnlyName, uri: file.path, provider: 'file-system' },
+      entityId,
+      projectId,
+      customer.name,
+      { shouldDownloadFromSource: false },
+    );
+
+    return persistedFile;
   }
 }

@@ -122,7 +122,6 @@ describe('WorkflowControllerInternal', () => {
       entityRepo,
       customerService,
       {} as any,
-      {} as any,
       eventEmitterSpy,
       testingModule.get(AppLoggerService),
       scopeService,

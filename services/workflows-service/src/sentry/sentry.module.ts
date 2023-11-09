@@ -1,9 +1,10 @@
+import { ConfigService } from '@nestjs/config';
 import { Module, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { SentryInterceptor } from '@/sentry/sentry.interceptor';
 import { RewriteFrames } from '@sentry/integrations';
-import { env } from '@/env';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @Module({
   providers: [
@@ -14,16 +15,35 @@ import { env } from '@/env';
   ],
 })
 export class SentryModule implements OnModuleInit, OnModuleDestroy {
+  _envName: string;
+  _sentryDsn: string | undefined;
+
+  constructor(
+    protected readonly configService: ConfigService,
+    protected readonly prisma: PrismaService,
+  ) {
+    this._sentryDsn = this.configService.get('SENTRY_DSN');
+    this._envName =
+      this.configService.get('ENVIRONMENT_ENV') || this.configService.get('NODE_ENV', 'local');
+  }
+
   onModuleInit() {
-    if (!env.SENTRY_DSN) {
+    if (!this.configService.get('SENTRY_DSN')) {
       return;
     }
 
     Sentry.init({
-      dsn: env.SENTRY_DSN,
-      debug: env.NODE_ENV !== 'production',
-      environment: env.ENVIRONMENT_NAME || env.NODE_ENV,
+      dsn: this._sentryDsn,
+      environment: this._envName,
+      enableTracing: true,
+      sampleRate: 1.0,
+      normalizeDepth: 15,
       integrations: [
+        new Sentry.Integrations.OnUncaughtException(),
+        new Sentry.Integrations.Http({ tracing: true }),
+        new Sentry.Integrations.Prisma({ client: this.prisma }),
+        new Sentry.Integrations.OnUnhandledRejection({ mode: 'warn' }),
+        new Sentry.Integrations.Http({ tracing: true }),
         new RewriteFrames({
           root: global.__rootdir__,
         }),
@@ -32,7 +52,7 @@ export class SentryModule implements OnModuleInit, OnModuleDestroy {
   }
 
   async onModuleDestroy() {
-    if (!env.SENTRY_DSN) {
+    if (!this._sentryDsn) {
       return;
     }
 

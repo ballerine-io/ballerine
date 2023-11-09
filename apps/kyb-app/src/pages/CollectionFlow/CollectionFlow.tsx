@@ -1,13 +1,17 @@
+import { StepperProgress } from '@app/common/components/atoms/StepperProgress';
+import { ProgressBar } from '@app/common/components/molecules/ProgressBar';
 import { AppShell } from '@app/components/layouts/AppShell';
 import { DynamicUI, State } from '@app/components/organisms/DynamicUI';
+import { usePageErrors } from '@app/components/organisms/DynamicUI/Page/hooks/usePageErrors';
 import { UIRenderer } from '@app/components/organisms/UIRenderer';
 import { Cell } from '@app/components/organisms/UIRenderer/elements/Cell';
 import { Divider } from '@app/components/organisms/UIRenderer/elements/Divider';
 import { JSONForm } from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
-import { withInitialDataCreation } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withInitialDataCreation';
 import { StepperUI } from '@app/components/organisms/UIRenderer/elements/StepperUI';
+import { SubmitButton } from '@app/components/organisms/UIRenderer/elements/SubmitButton';
 import { Title } from '@app/components/organisms/UIRenderer/elements/Title';
 import { useCustomer } from '@app/components/providers/CustomerProvider';
+import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
 import { prepareInitialUIState } from '@app/helpers/prepareInitialUIState';
 import { useFlowContextQuery } from '@app/hooks/useFlowContextQuery';
 import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
@@ -17,11 +21,6 @@ import { Rejected } from '@app/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@app/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
-import { usePageErrors } from '@app/components/organisms/DynamicUI/Page/hooks/usePageErrors';
-import { SubmitButton } from '@app/components/organisms/UIRenderer/elements/SubmitButton';
-import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
-import { StepperProgress } from '@app/common/components/atoms/StepperProgress';
-import { ProgressBar } from '@app/common/components/molecules/ProgressBar';
 
 const elems = {
   h1: Title,
@@ -33,7 +32,7 @@ const elems = {
       dangerouslySetInnerHTML={{ __html: props.options.descriptionRaw as string }}
     ></p>
   ),
-  'json-form': withInitialDataCreation(JSONForm),
+  'json-form': JSONForm,
   container: Cell,
   mainContainer: Cell,
   'submit-button': SubmitButton,

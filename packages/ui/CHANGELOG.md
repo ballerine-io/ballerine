@@ -1,5 +1,29 @@
 # @ballerine/ui
 
+## 0.3.11
+
+### Patch Changes
+
+- Added Array Item title component
+
+## 0.3.10
+
+### Patch Changes
+
+- Fixed spacing between inputs and descriptions
+
+## 0.3.9
+
+### Patch Changes
+
+- Bump ver
+
+## 0.3.8
+
+### Patch Changes
+
+- Reworked ArrayFieldsLayout
+
 ## 0.3.7
 
 ### Patch Changes

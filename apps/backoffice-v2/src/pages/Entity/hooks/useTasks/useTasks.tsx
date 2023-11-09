@@ -73,7 +73,7 @@ export const useTasks = ({
       results[docIndex][pageIndex] = docsData?.shift()?.data;
     });
   });
-  const pluginsOutputBlacklist = ['company_sanctions', 'directors', 'ubos'];
+  const pluginsOutputBlacklist = ['company_sanctions', 'directors', 'ubo', 'businessInformation'];
   const filteredPluginsOutput = useMemo(
     () => omitPropsFromObject(pluginsOutput, ...pluginsOutputBlacklist),
     [pluginsOutput, pluginsOutputBlacklist],
@@ -123,6 +123,42 @@ export const useTasks = ({
               },
             ],
           }));
+
+  const kybRegistryInfoBlock =
+    Object.keys(pluginsOutput?.businessInformation?.data?.[0] ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'container',
+                value: [
+                  {
+                    id: 'nested-details-heading',
+                    type: 'heading',
+                    value: 'Registry Information',
+                  },
+                  {
+                    type: 'subheading',
+                    value: 'Registry-provided data',
+                  },
+                ],
+              },
+              {
+                type: 'details',
+                hideSeparator: true,
+                value: {
+                  data: Object.entries(pluginsOutput?.businessInformation?.data?.[0])?.map(
+                    ([title, value]) => ({
+                      title,
+                      value,
+                    }),
+                  ),
+                },
+              },
+            ],
+          },
+        ];
 
   const taskBlocks =
     documents?.map(
@@ -446,9 +482,9 @@ export const useTasks = ({
     alternativeNames: sanction?.entity?.otherNames,
     places: sanction?.entity?.places,
   }));
-  const ubos = pluginsOutput?.ubos?.data?.map(ubo => ({
+  const ubos = pluginsOutput?.ubo?.data?.uboGraph?.map(ubo => ({
     name: ubo?.name,
-    percentage: ubo?.percentage,
+    percentage: ubo?.shareHolders?.[0]?.sharePercentage,
     type: ubo?.type,
     level: ubo?.level,
   }));
@@ -911,7 +947,7 @@ export const useTasks = ({
                     },
                     columns: [
                       {
-                        accessorKey: 'linkedAddress',
+                        accessorKey: 'country',
                         header: 'Linked address',
                       },
                       {
@@ -919,8 +955,8 @@ export const useTasks = ({
                         header: 'City',
                       },
                       {
-                        accessorKey: 'country',
-                        header: 'Country',
+                        accessorKey: 'linkedAddress',
+                        header: 'Address',
                       },
                     ],
                     data: sanction?.places?.map(({ country, city, address }) => ({
@@ -1091,6 +1127,7 @@ export const useTasks = ({
       ? [
           ...entityInfoBlock,
           ...registryInfoBlock,
+          ...kybRegistryInfoBlock,
           ...companySanctionsBlock,
           ...directorsUserProvidedBlock,
           ...directorsRegistryProvidedBlock,
