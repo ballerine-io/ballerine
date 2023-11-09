@@ -1,6 +1,6 @@
 import { getAccessToken } from '@app/helpers/get-access-token.helper';
-import ky, { HTTPError } from 'ky';
 import * as Sentry from '@sentry/react';
+import ky, { HTTPError } from 'ky';
 
 export const request = ky.create({
   prefixUrl: import.meta.env.VITE_API_URL || `${window.location.origin}/api/v1/`,
@@ -24,7 +24,7 @@ export const request = ky.create({
         let responseBody = '';
 
         try {
-          responseBody = await error.response.text();
+          responseBody = await error.response.clone().text();
         } catch (_) {
           /* empty */
         }

@@ -116,6 +116,7 @@ export const dynamicUiWorkflowDefinition = {
           approve: 'approved',
           reject: 'rejected',
           revision: 'pending_resubmission',
+          KYC_REVISION: 'pending_kyc_response_to_finish',
         },
       },
       pending_resubmission: {
@@ -142,7 +143,7 @@ export const dynamicUiWorkflowDefinition = {
               cond: {
                 type: 'jmespath',
                 options: {
-                  rule: 'length(childWorkflows.kyc_email_session_example.*.[result.vendorResult.decision][]) == length(childWorkflows.kyc_email_session_example.*[])',
+                  rule: `length(childWorkflows.kyc_email_session_example.*.[result.vendorResult.decision][]) == length(childWorkflows.kyc_email_session_example.*[]) && length(childWorkflows.kyc_email_session_example.*.[?state == 'revision']) == \`0\``,
                 },
               },
             },
@@ -199,6 +200,7 @@ export const dynamicUiWorkflowDefinition = {
         stateNames: ['run_cn_kyb'],
         successAction: 'CN_KYB_DONE',
         errorAction: 'CN_KYB_FAIL',
+        persistResponseDestination: 'pluginsOutput.businessInformation',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
@@ -227,8 +229,8 @@ export const dynamicUiWorkflowDefinition = {
         url: `{secret.UNIFIED_API_URL}/companies-v2/HK/{entity.data.registrationNumber}`,
         method: 'GET',
         stateNames: ['run_hk_kyb'],
-        successAction: 'HK_KYB_HOOK_RESPONDED',
         errorAction: 'HK_KYB_HOOK_FAILED',
+        persistResponseDestination: 'pluginsOutput.businessInformation.request',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
@@ -237,7 +239,7 @@ export const dynamicUiWorkflowDefinition = {
               mapping: `{
                 countryOfIncorporation: 'HK',
                 vendor: 'asia-verify',
-                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/HK_KYB_HOOK_RESPONDED','?resultDestination=pluginsOutput.hk_kyb.result&processName=kyb-unified-api'])
+                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/HK_KYB_HOOK_RESPONDED','?resultDestination=pluginsOutput.businessInformation.data&processName=kyb-unified-api'])
               }`, // jmespath
             },
           ],
@@ -259,6 +261,7 @@ export const dynamicUiWorkflowDefinition = {
         stateNames: ['run_vendor_company_sanctions'],
         successAction: 'COMPANY_SANCTIONS_DONE',
         errorAction: 'COMPANY_SANCTIONS_FAIL',
+        persistResponseDestination: 'pluginsOutput.companySanctions',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
@@ -285,7 +288,6 @@ export const dynamicUiWorkflowDefinition = {
         url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.registrationNumber}/ubo`,
         method: 'GET',
         stateNames: ['run_vendor_ubos'],
-        successAction: 'UBO_HOOK_RESPONDED',
         errorAction: 'UBO_HOOK_FAILED',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
@@ -294,7 +296,7 @@ export const dynamicUiWorkflowDefinition = {
               transformer: 'jmespath',
               mapping: `{
                 vendor: 'asia-verify',
-                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/UBO_HOOK_RESPONDED','?resultDestination=pluginsOutput.ubo.result&processName=ubo-unified-api'])
+                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/UBO_HOOK_RESPONDED','?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api'])
               }`, // jmespath
             },
           ],
@@ -393,6 +395,18 @@ export const dynamicUiWorkflowDefinition = {
         persistenceStates: ['kyc_manual_review'],
         deliverEvent: 'KYC_RESPONDED',
       },
+      {
+        definitionId: kycEmailSessionDefinition.name,
+        persistenceStates: ['revision_email_sent'],
+        transformers: [
+          {
+            transformer: 'jmespath',
+            mapping:
+              '{childEntity: entity.data, vendorResult: pluginsOutput.kyc_session.kyc_session_1.result}', // jmespath
+          },
+        ],
+        deliverEvent: 'KYC_REVISION',
+      },
     ],
   },
   contextSchema: {
@@ -401,6 +415,7 @@ export const dynamicUiWorkflowDefinition = {
   },
   isPublic: true,
 };
+
 export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, projectId?: string) => {
   const kybDynamicExample = {
     ...dynamicUiWorkflowDefinition,

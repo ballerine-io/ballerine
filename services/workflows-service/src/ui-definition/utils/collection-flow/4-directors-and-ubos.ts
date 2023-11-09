@@ -307,6 +307,7 @@ export const DirectorsAndUbosPage = {
                 lastName: 'entity.data.additionalInfo.mainRepresentative.lastName',
                 email: 'entity.data.additionalInfo.mainRepresentative.email',
               },
+              bindingAnchorDestination: 'additionalInfo.__isGeneratedAutomatically',
               disableElements: [
                 {
                   elementName: 'ubos:first-name-input',
@@ -509,6 +510,7 @@ export const DirectorsAndUbosPage = {
                     lastName: 'entity.data.additionalInfo.mainRepresentative.lastName',
                     email: 'entity.data.additionalInfo.mainRepresentative.email',
                   },
+                  bindingAnchorDestination: 'additionalInfo.__isGeneratedAutomatically',
                   disableElements: [
                     {
                       elementName: 'directors:first-name-input',
