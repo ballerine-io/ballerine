@@ -14,26 +14,14 @@ const validationSchema = [
   {
     documentId: 'document-corporate-tax-certificate',
     destination: 'pages[0].ballerineFileId',
-    required: true,
-    errorMessage: 'This field is required',
-  },
-  {
-    documentId: 'document-corporate-tax-certificate',
-    destination: 'pages[0].ballerineFileId',
-    required: true,
-    errorMessage: 'This field is required',
   },
   {
     documentId: 'document-certificate-of-good-standing',
     destination: 'pages[0].ballerineFileId',
-    required: true,
-    errorMessage: 'This field is required',
   },
   {
     documentId: 'document-certificate-of-directors-and-shareholders',
     destination: 'pages[0].ballerineFileId',
-    required: true,
-    errorMessage: 'This field is required',
   },
   {
     documentId: 'document-picture-of-company-seal',
@@ -66,15 +54,58 @@ const validationSchema = [
   },
 ];
 
+`entity.data.additionalInfo.hasConfirmed`;
+
+const jsonValidationSchema = {
+  type: 'object',
+  required: ['entity'],
+  properties: {
+    entity: {
+      type: 'object',
+      required: ['data'],
+      default: {},
+      properties: {
+        data: {
+          type: 'object',
+          required: ['additionalInfo'],
+          default: {},
+          properties: {
+            additionalInfo: {
+              type: 'object',
+              required: ['hasConfirmed'],
+              properties: {
+                hasConfirmed: {
+                  type: 'boolean',
+                  default: false,
+                  const: true,
+                  errorMessage: {
+                    const: 'This field is required.',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
 export const CompanyDocuments = {
   type: 'page',
   number: 10,
   stateName: 'company_documents',
   name: 'Company Documents',
-  pageValidator: {
-    type: 'destination-engine',
-    value: validationSchema,
-  },
+  pageValidation: [
+    {
+      type: 'destination-engine',
+      value: validationSchema,
+    },
+    {
+      type: 'json-schema',
+      value: jsonValidationSchema,
+    },
+  ],
   elements: [
     {
       type: 'mainContainer',
@@ -103,9 +134,6 @@ export const CompanyDocuments = {
               required: [
                 'document-certificates-of-incorporation',
                 'document-business-registration-certificate',
-                'document-corporate-tax-certificate',
-                'document-certificate-of-good-standing',
-                'document-certificate-of-directors-and-shareholders',
                 'document-picture-of-company-seal',
               ],
             },
@@ -135,10 +163,6 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                   properties: {},
                 },
-                mappingParams: {
-                  documentIndex: 0,
-                  documentPage: 0,
-                },
               },
             },
             {
@@ -165,10 +189,6 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                   properties: {},
                 },
-                mappingParams: {
-                  documentIndex: 1,
-                  documentPage: 0,
-                },
               },
             },
             {
@@ -193,10 +213,6 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
-                },
-                mappingParams: {
-                  documentIndex: 2,
-                  documentPage: 0,
                 },
               },
             },
@@ -224,10 +240,6 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                   properties: {},
                 },
-                mappingParams: {
-                  documentIndex: 3,
-                  documentPage: 0,
-                },
               },
             },
             {
@@ -253,10 +265,6 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                   properties: {},
                 },
-                mappingParams: {
-                  documentIndex: 4,
-                  documentPage: 0,
-                },
               },
             },
             {
@@ -281,10 +289,6 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
-                },
-                mappingParams: {
-                  documentIndex: 5,
-                  documentPage: 0,
                 },
               },
             },
@@ -329,10 +333,6 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                   properties: {},
                 },
-                mappingParams: {
-                  documentIndex: 6,
-                  documentPage: 0,
-                },
               },
             },
           ],
@@ -368,10 +368,6 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
-                },
-                mappingParams: {
-                  documentIndex: 7,
-                  documentPage: 0,
                 },
               },
             },
@@ -420,10 +416,6 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                   properties: {},
                 },
-                mappingParams: {
-                  documentIndex: 8,
-                  documentPage: 0,
-                },
               },
             },
             {
@@ -449,10 +441,6 @@ export const CompanyDocuments = {
                   issuingVersion: 1,
                   properties: {},
                 },
-                mappingParams: {
-                  documentIndex: 9,
-                  documentPage: 0,
-                },
               },
             },
             {
@@ -477,10 +465,6 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
-                },
-                mappingParams: {
-                  documentIndex: 10,
-                  documentPage: 0,
                 },
               },
             },
@@ -525,10 +509,6 @@ export const CompanyDocuments = {
                   version: '1',
                   issuingVersion: 1,
                   properties: {},
-                },
-                mappingParams: {
-                  documentIndex: 11,
-                  documentPage: 0,
                 },
               },
             },
@@ -642,6 +622,30 @@ export const CompanyDocuments = {
               '==': [{ var: 'entity.data.additionalInfo.hasConfirmed' }, true, false],
             },
           },
+        ],
+      },
+    },
+    {
+      type: 'definitionPlugin',
+      params: { pluginName: 'sync_workflow_runtime', debounce: 50 },
+      dispatchOn: {
+        uiEvents: [
+          { event: 'onChange', uiElementName: 'document-certificates-of-incorporation' },
+          { event: 'onChange', uiElementName: 'document-business-registration-certificate' },
+          { event: 'onChange', uiElementName: 'document-picture-of-company-seal' },
+          { event: 'onChange', uiElementName: 'document-corporate-tax-certificate' },
+          { event: 'onChange', uiElementName: 'document-certificate-of-good-standing' },
+          {
+            event: 'onChange',
+            uiElementName: 'document-certificate-of-directors-and-shareholders',
+          },
+          { event: 'onChange', uiElementName: 'document-picture-of-company-seal' },
+          { event: 'onChange', uiElementName: 'document-website-pictures-domain-certificate' },
+          { event: 'onChange', uiElementName: 'document-website-pictures-website-business' },
+          { event: 'onChange', uiElementName: 'document-office-front-door-pictures-1' },
+          { event: 'onChange', uiElementName: 'document-office-interior-pictures-2' },
+          { event: 'onChange', uiElementName: 'document-office-interior-pictures-3' },
+          { event: 'onChange', uiElementName: 'document-transaction-data-last-months' },
         ],
       },
     },

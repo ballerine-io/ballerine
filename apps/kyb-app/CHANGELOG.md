@@ -1,5 +1,106 @@
 # kyb-app
 
+## 0.1.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.3.11
+
+## 0.1.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.3.10
+
+## 0.1.12
+
+### Patch Changes
+
+- Bump ver
+- Updated dependencies
+  - @ballerine/blocks@0.1.18
+  - @ballerine/ui@0.3.9
+  - @ballerine/workflow-browser-sdk@0.5.18
+
+## 0.1.11
+
+### Patch Changes
+
+- @ballerine/blocks@0.1.17
+- @ballerine/workflow-browser-sdk@0.5.17
+
+## 0.1.10
+
+### Patch Changes
+
+- @ballerine/blocks@0.1.16
+- @ballerine/workflow-browser-sdk@0.5.16
+
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.3.8
+- AsiaVerify integrations
+  - @ballerine/blocks@0.1.15
+  - @ballerine/workflow-browser-sdk@0.5.15
+
+## 0.1.8
+
+### Patch Changes
+
+- 801fc639: pre
+- 801fc639: Pre ver
+- 801fc639: Prerelease
+- 801fc639: bump pre
+- 801fc639: Version bump pre
+- 801fc639: Pre bump
+- 801fc639: Pre bump
+- 801fc639: Bump
+- 801fc639: pre
+- Version bump
+- 801fc639: Pre release
+- 801fc639: Bumo
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [52e71ce5]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [52e71ce5]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+  - @ballerine/workflow-browser-sdk@0.5.14
+  - @ballerine/blocks@0.1.14
+  - @ballerine/ui@0.3.7
+
+## 0.1.8-3e08f108.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.3.7-3e08f108.1
+
+## 0.1.8-3e08f108.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.3.7-3e08f108.0
+
 ## 0.1.7
 
 ### Patch Changes

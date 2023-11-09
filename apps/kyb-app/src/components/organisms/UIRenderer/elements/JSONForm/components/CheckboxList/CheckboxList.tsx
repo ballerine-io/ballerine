@@ -1,4 +1,4 @@
-import { Checkbox, RJSVInputProps } from '@ballerine/ui';
+import { Checkbox, RJSFInputProps } from '@ballerine/ui';
 import { useMemo } from 'react';
 
 interface CheckboxListOption {
@@ -6,7 +6,7 @@ interface CheckboxListOption {
   value: string;
 }
 
-export const CheckboxList = (props: RJSVInputProps) => {
+export const CheckboxList = (props: RJSFInputProps) => {
   //@ts-nocheck
   const { uiSchema, formData = [], onChange } = props;
 
@@ -17,7 +17,7 @@ export const CheckboxList = (props: RJSVInputProps) => {
   return (
     <div className="flex flex-col gap-4">
       {options.map(option => (
-        <div className="flex items-center gap-2" key={option.value}>
+        <label className="flex items-center gap-2" key={option.value}>
           <Checkbox
             className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground bg-white"
             color="primary"
@@ -36,7 +36,7 @@ export const CheckboxList = (props: RJSVInputProps) => {
             }}
           />
           <span className="font-inter text-sm">{option.title}</span>
-        </div>
+        </label>
       ))}
     </div>
   );

@@ -164,7 +164,8 @@ export const definition = {
               mapping: `{
               token: flowConfig.tokenId,
               registrationNumber: entity.data.registrationNumber,
-              jurisdictionCode: entity.data.country,
+              countryCode: entity.data.country,
+              state: entity.data.additionalInfo.state || '',
               vendor: 'open-corporates'
               }`,
             },

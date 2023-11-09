@@ -48,7 +48,7 @@ export class WorkflowStateChangedWebhookCaller {
 
     const webhooks = getWebhooks(
       data.runtimeData.config,
-      this.configService.get('NODE_ENV'),
+      this.configService.get('ENVIRONMENT_NAME'),
       'workflow.state.changed',
     );
 

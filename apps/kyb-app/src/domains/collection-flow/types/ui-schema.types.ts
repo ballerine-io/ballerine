@@ -37,7 +37,11 @@ export interface EventRule extends BaseRule {
   value: EventRuleValue;
 }
 
-export interface Action<TParams = AnyObject> {
+export interface BaseActionParams {
+  debounce?: number;
+}
+
+export interface Action<TParams = BaseActionParams> {
   type: string;
   dispatchOn: {
     uiEvents: { event: string; uiElementName: string }[];

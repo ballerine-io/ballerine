@@ -1,3 +1,5 @@
+import { singleUrlPattern } from '../schema-utils/regex';
+
 const validationSchema = {
   type: 'object',
   properties: {
@@ -31,8 +33,7 @@ const validationSchema = {
                       properties: {
                         mainWebsite: {
                           type: 'string',
-                          pattern:
-                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)?(\\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?(#[a-zA-Z0-9_]+)?$',
+                          pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
                             minLength: 'Main Website should not be empty.',
@@ -45,8 +46,7 @@ const validationSchema = {
                         },
                         returnPolicyUrl: {
                           type: 'string',
-                          pattern:
-                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)?(\\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?(#[a-zA-Z0-9_]+)?$',
+                          pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
                             minLength: 'Return Policy URL should not be empty.',
@@ -55,8 +55,7 @@ const validationSchema = {
                         },
                         shippingPolicyUrl: {
                           type: 'string',
-                          pattern:
-                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)?(\\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?(#[a-zA-Z0-9_]+)?$',
+                          pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
                             minLength: 'Shipping Policy URL should not be empty.',
@@ -65,12 +64,29 @@ const validationSchema = {
                         },
                         aboutUsUrl: {
                           type: 'string',
-                          pattern:
-                            '^((https?):\\/\\/)?([a-z0-9-]+\\.)+[a-z0-9]+(\\.[a-z]{2})?(\\/[a-zA-Z0-9#]+\\/?)?(\\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?(#[a-zA-Z0-9_]+)?$',
+                          pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
                             minLength: 'About Us URL should not be empty.',
                             pattern: 'About Us URL should be a valid URL.',
+                          },
+                        },
+                        termsOfUseUrl: {
+                          type: 'string',
+                          pattern: singleUrlPattern,
+                          minLength: 1,
+                          errorMessage: {
+                            minLength: 'Terms of Use URL should not be empty.',
+                            pattern: 'Terms of Use URL should be a valid URL.',
+                          },
+                        },
+                        privacyPolicyUrl: {
+                          type: 'string',
+                          pattern: singleUrlPattern,
+                          minLength: 1,
+                          errorMessage: {
+                            minLength: 'Privacy Policy URL should not be empty.',
+                            pattern: 'Privacy Policy URL should be a valid URL.',
                           },
                         },
                         productQuantity: {
@@ -94,13 +110,9 @@ const validationSchema = {
                         required: {
                           mainWebsite: 'Main website URL is required.',
                           contactDetails: 'Contact details are required.',
-                          returnPolicyUrl: 'Return policy URL is required.',
-                          shippingPolicyUrl: 'Shipping policy URL is required.',
-                          aboutUsUrl: 'About us URL is required.',
                           productQuantity: 'Product quantity is required.',
                           productDescription: 'Product description is required.',
                           productPrice: 'Product price is required.',
-                          websiteLanguage: 'Website language is required.',
                         },
                       },
                     },
@@ -121,10 +133,12 @@ export const WebsiteBasicRequirement = {
   number: 8,
   stateName: 'website_basic_requirement',
   name: 'Website Basic Requirement',
-  pageValidator: {
-    type: 'json-schema',
-    value: validationSchema,
-  },
+  pageValidation: [
+    {
+      type: 'json-schema',
+      value: validationSchema,
+    },
+  ],
   elements: [
     {
       type: 'mainContainer',
@@ -157,7 +171,7 @@ export const WebsiteBasicRequirement = {
                 'contact-details-input',
                 'operation-entities-name-input',
                 'contact-details-input',
-                'product-quantity-url-input',
+                'product-quantity-input',
                 'product-description-input',
                 'product-price-input',
               ],
@@ -216,7 +230,7 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Shipping Policy',
+                label: 'Shipping Policy URL',
                 hint: 'www.example.com/shipping-policy',
               },
             },
@@ -228,12 +242,36 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'About Us/Brand Intro URL',
+                label: 'About Us / Brand Intro URL',
                 hint: 'www.example.com/about-us',
               },
             },
             {
-              name: 'product-quantity-url-input',
+              name: 'terms-of-us-url-input',
+              type: 'json-form:text',
+              valueDestination: 'entity.data.additionalInfo.store.website.termsOfUseUrl',
+              options: {
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+                label: 'Terms of Use URL',
+                hint: 'www.example.com/terms',
+              },
+            },
+            {
+              name: 'privacy-policy-url-input',
+              type: 'json-form:text',
+              valueDestination: 'entity.data.additionalInfo.store.website.privacyPolicyUrl',
+              options: {
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+                label: 'Privacy Policy URL',
+                hint: 'www.example.com/privacy',
+              },
+            },
+            {
+              name: 'product-quantity-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.productQuantity',
               options: {
@@ -265,8 +303,8 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.productPrice',
               options: {
-                label: 'Reasonable Product/Service Price',
-                hint: '100 USD',
+                label: 'Reasonable Product / Service Price (USD)',
+                hint: '100',
                 jsonFormDefinition: {
                   type: 'number',
                 },

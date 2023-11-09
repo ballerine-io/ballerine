@@ -4,12 +4,12 @@ import {
   JsonLogicRuleEngine,
   RuleTestResult,
 } from '@app/components/organisms/DynamicUI/rule-engines';
+import { DocumentsRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/documents.rule-engine';
+import { JmespathRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
 import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
 import { Rule, UIElement } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { JmespathRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
-import { DocumentsRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/documents.rule-engine';
 
 export const useRuleExecutor = (
   context: AnyObject,
@@ -49,7 +49,7 @@ export const useRuleExecutor = (
             //TO DO: Find solution on how to define array items in schemas
             // ctx.documents = ctx?.documents.filter(Boolean);
 
-            return engine.test(ctx, rule, definition, uiState);
+            return engine.validate(ctx, rule, definition, uiState);
           }) || [];
 
         setExecutionResult(executionResult);

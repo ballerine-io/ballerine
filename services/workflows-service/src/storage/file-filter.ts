@@ -1,12 +1,23 @@
+import { formatBytes } from '@/common/utils/bytes';
+import { UnprocessableEntityException } from '@nestjs/common';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 
+export const SUPPORTED_FILE_EXT_REGEX = /\.(jpg|jpeg|svg|png|pdf|gif|txt)$/;
+
+export const FILE_MAX_SIZE_IN_KB = 1024;
+export const FILE_MAX_SIZE_IN_BYTE = 2 * FILE_MAX_SIZE_IN_KB * 1024; // 2 MB
+
+export const FILE_SIZE_EXCEEDED_MSG = `File size exceeded ${formatBytes(FILE_MAX_SIZE_IN_BYTE)}`;
+export const FILE_TYPE_NOT_SUPPORTED_MSG = 'File type not supported';
+
 export const fileFilter: MulterOptions['fileFilter'] = (req, file, callback) => {
-  const MAX_FILE_SIZE = 1024;
+  const MAX_FILE_SIZE = FILE_MAX_SIZE_IN_KB;
   if (file.size >= MAX_FILE_SIZE) {
-    return callback(new Error(`File size exceeded ${MAX_FILE_SIZE}`), false);
+    return callback(new UnprocessableEntityException(FILE_SIZE_EXCEEDED_MSG), false);
   }
-  if (!file.originalname.match(/\.(jpg|jpeg|svg|png|gif|pdf|txt)$/)) {
-    return callback(new Error('Only image files are allowed!'), false);
+
+  if (!file.originalname.match(SUPPORTED_FILE_EXT_REGEX)) {
+    return callback(new UnprocessableEntityException(FILE_TYPE_NOT_SUPPORTED_MSG), false);
   }
   callback(null, true);
 };
