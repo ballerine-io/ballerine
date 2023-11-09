@@ -1926,6 +1926,7 @@ export class WorkflowService {
         childWorkflowCallback.persistenceStates &&
         childWorkflowCallback.persistenceStates.includes(childRuntimeState)
       ) || isFinal;
+
     if (!isPersistableState) return;
 
     const parentContext = await this.generateParentContextWithInjectedChildContext(
@@ -1933,7 +1934,6 @@ export class WorkflowService {
       childWorkflowCallback.transformers,
       parentWorkflowRuntime,
       workflowDefinition,
-      isPersistableState,
     );
 
     await this.updateWorkflowRuntimeData(
@@ -1942,11 +1942,7 @@ export class WorkflowService {
       currentProjectId,
     );
 
-    if (
-      childWorkflowCallback.deliverEvent &&
-      parentWorkflowRuntime.status !== 'completed' &&
-      isPersistableState
-    ) {
+    if (childWorkflowCallback.deliverEvent && parentWorkflowRuntime.status !== 'completed') {
       await this.event(
         {
           id: parentWorkflowRuntime.id,
@@ -1963,10 +1959,7 @@ export class WorkflowService {
     transformers: ChildWorkflowCallback['transformers'],
     parentWorkflowRuntime: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
-    isPersistableToParent: boolean,
   ) {
-    if (!isPersistableToParent) return parentWorkflowRuntime.context;
-
     const transformerInstance = (transformers || []).map((transformer: SerializableTransformer) =>
       this.initiateTransformer(transformer),
     );
