@@ -89,6 +89,7 @@ export class CollectionFlowService {
     const providedStepsMap = keyBy(steps, 'key');
 
     const persistedSteps =
+      // @ts-expect-error - error from Prisma types fix
       definition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm?.steps || [];
 
     const mergedSteps = persistedSteps.map((step: any) => {

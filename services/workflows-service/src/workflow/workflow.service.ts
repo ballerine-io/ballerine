@@ -280,6 +280,7 @@ export class WorkflowService {
           : workflow.business.approvalState,
       },
       endUser: undefined,
+      // @ts-expect-error - error from Prisma types fix
       business: undefined,
       nextEvents,
       childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
@@ -1462,6 +1463,7 @@ export class WorkflowService {
               documents: documentsWithPersistedImages,
             } as InputJsonValue,
             config: mergedConfig as InputJsonValue,
+            // @ts-expect-error - error from Prisma types fix
             state: workflowDefinition.definition.initial as string,
             status: 'active',
             workflowDefinitionId: workflowDefinition.id,
