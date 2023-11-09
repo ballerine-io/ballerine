@@ -1,3 +1,4 @@
+import { useEventEmitterLogic } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
 import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useUIElementToolsLogic } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/hooks/useUIElementToolsLogic';
 import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
@@ -37,6 +38,9 @@ export const DocumentField = (
     }),
     [definition],
   );
+
+  const sendEvent = useEventEmitterLogic(definition);
+
   const { validationErrors, warnings } = useUIElementErrors(documentDefinition);
   const { isTouched } = elementState;
 
@@ -44,7 +48,7 @@ export const DocumentField = (
     if (!Array.isArray(payload.documents)) return null;
 
     const document = payload.documents.find((document: Document) => {
-      return document.id === definition.options.documentData.id;
+      return document?.id === definition.options.documentData.id;
     }) as Document;
 
     const fileIdPath = getDocumentFileIdPath(definition);
@@ -101,6 +105,7 @@ export const DocumentField = (
         collectionFlowFileStorage.registerFile(uploadResult.id, file);
         setFile(file);
         setFieldError(null);
+        sendEvent('onChange');
       } catch (err) {
         if (err instanceof HTTPError) {
           const response = (await err.response.json()) as AnyObject;
@@ -117,7 +122,7 @@ export const DocumentField = (
         toggleElementLoading();
       }
     },
-    [stateApi, options, definition, toggleElementLoading],
+    [stateApi, options, definition, toggleElementLoading, sendEvent],
   );
 
   return (
