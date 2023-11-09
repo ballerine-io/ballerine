@@ -106,13 +106,13 @@ export class CollectionFlowService {
       {
         data: {
           definition: {
-            // @ts-expect-error - revisit after JSONB validation task - #_INFECTED_
+            // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
             ...definition?.definition,
             states: {
-              // @ts-expect-error - revisit after JSONB validation task - #_INFECTED_
+              // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
               ...definition.definition?.states,
               data_collection: {
-                // @ts-expect-error - revisit after JSONB validation task - #_INFECTED_
+                // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
                 ...definition.definition?.states?.data_collection,
                 metadata: {
                   uiSettings: {
@@ -132,7 +132,7 @@ export class CollectionFlowService {
     return plainToClass(FlowConfigurationModel, {
       id: updatedDefinition.id,
       steps:
-        // @ts-expect-error - revisit after JSONB validation task - #_INFECTED_
+        // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
         updatedDefinition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm
           ?.steps || [],
     });

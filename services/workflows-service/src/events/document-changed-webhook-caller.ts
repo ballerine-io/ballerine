@@ -112,7 +112,7 @@ export class DocumentChangedWebhookCaller {
     });
 
     const customer = await this.customerService.getByProjectId(
-      // @ts-expect-error - #_INFECTED_
+      // @ts-expect-error - error from Prisma types fix
       data.updatedRuntimeData.projectId,
       {
         select: {
