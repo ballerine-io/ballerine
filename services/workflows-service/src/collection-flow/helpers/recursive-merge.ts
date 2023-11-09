@@ -1,6 +1,6 @@
 import { isPlainObject } from 'is-what';
 
-export function recursiveMerge(objA: any, objB: any) {
+export const recursiveMerge = (objA: any, objB: any) => {
   for (const key in objB) {
     const valueA = objA[key];
     const valueB = objB[key];
@@ -19,4 +19,4 @@ export function recursiveMerge(objA: any, objB: any) {
   }
 
   return objA;
-}
+};

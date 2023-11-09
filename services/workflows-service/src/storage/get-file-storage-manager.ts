@@ -13,20 +13,28 @@ import os from 'os';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getSignedUrl as getSignedUrlCF } from 'aws-cloudfront-sign';
 
-export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv, prefix?: string) => {
-  if (AwsS3FileConfig.isConfigured(processEnv, prefix)) {
-    return multerS3({
-      s3: new S3Client(AwsS3FileConfig.fetchClientConfig(processEnv, prefix)),
-      acl: 'private',
-      bucket: AwsS3FileConfig.getBucketName(processEnv, prefix) as string,
-    });
-  } else {
-    const root = path.parse(os.homedir()).root;
+export const getDiskStorage = () => {
+  const root = path.parse(os.homedir()).root;
 
-    return diskStorage({
-      destination: `${root}/tmp`,
-      filename: getFileName,
-    });
+  return diskStorage({
+    destination: `${root}/tmp`,
+    filename: getFileName,
+  });
+};
+
+export const getObjectStorage = (processEnv: NodeJS.ProcessEnv) => {
+  return multerS3({
+    s3: new S3Client(AwsS3FileConfig.fetchClientConfig(processEnv)),
+    acl: 'private',
+    bucket: AwsS3FileConfig.getBucketName(processEnv) as string,
+  });
+};
+
+export const manageFileByProvider = (processEnv: NodeJS.ProcessEnv) => {
+  if (AwsS3FileConfig.isConfigured(processEnv)) {
+    return getObjectStorage(processEnv);
+  } else {
+    return getDiskStorage();
   }
 };
 

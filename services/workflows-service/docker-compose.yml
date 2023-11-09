@@ -22,6 +22,7 @@ services:
       COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
       API_KEY: ${API_KEY}
       NODE_ENV: ${NODE_ENV}
+      ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
     depends_on:
       - migrate
   migrate:

@@ -10,14 +10,26 @@ import jsonLogic from 'json-logic-js';
 export class JsonLogicRuleEngine implements RuleEngine {
   public readonly ENGINE_NAME = 'json-logic';
 
-  test(context: unknown, rule: unknown, _: UIElement<AnyObject>, uiState: UIState): RuleTestResult {
-    if (this.isJsonRule(rule)) {
-      const result = jsonLogic.apply(rule.value, {
+  validate(
+    context: unknown,
+    rule: unknown,
+    _: UIElement<AnyObject>,
+    uiState: UIState,
+  ): RuleTestResult {
+    const result = this.test(
+      {
         ...(context as object),
         uiState,
-      } as AnyObject) as boolean;
+      } as AnyObject,
+      rule,
+    );
 
-      return { isValid: result, errors: [] };
+    return { isValid: result, errors: [] };
+  }
+
+  test(context: unknown, rule: unknown) {
+    if (this.isJsonRule(rule)) {
+      return jsonLogic.apply(rule.value, context as AnyObject) as boolean;
     }
 
     throw new Error(`Invalid rule provided to ${this.ENGINE_NAME}`);

@@ -7,6 +7,7 @@ export const StateTag = {
   PENDING_PROCESS: 'pending_process',
   COLLECTION_FLOW: 'collection_flow',
   FAILURE: 'failure',
+  DATA_ENRICHMENT: 'data_enrichment',
 } as const;
 
 export const StateTags = [

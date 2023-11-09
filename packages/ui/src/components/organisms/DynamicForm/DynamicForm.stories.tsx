@@ -131,6 +131,7 @@ const complexFormScheme: RJSFSchema = {
     firstName: {
       type: 'string',
       title: 'First Name',
+      description: 'This is input description.',
     },
     lastName: {
       type: 'string',
@@ -190,7 +191,6 @@ const complexFormScheme: RJSFSchema = {
       type: 'array',
       items: {
         type: 'object',
-        title: 'Children',
         properties: {
           name: {
             type: 'string',
@@ -249,7 +249,8 @@ const complexFormUISchema = {
   childrens: {
     addText: 'Add Children',
     deleteText: 'Remove Children',
-
+    titleTemplate: 'Children {{INDEX}}',
+    'ui:title': false,
     items: {
       titleClassName: 'text-sm',
       birthDate: {
@@ -258,6 +259,7 @@ const complexFormUISchema = {
       birthCertificate: {
         'ui:field': 'FileInput',
       },
+      'ui:label': false,
     },
   },
   hobby: {

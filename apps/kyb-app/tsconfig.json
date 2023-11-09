@@ -20,7 +20,7 @@
     "paths": {
       "@app/*": ["src/*"]
     },
-    "typeRoots": ["./types/**/*"]
+    "types": ["jest", "vite/client", "node"]
   },
-  "include": ["src", "e2e"]
+  "include": ["vite-env.d.ts", "src", "e2e", "tests/**/*.js", "jest.config.ts"]
 }

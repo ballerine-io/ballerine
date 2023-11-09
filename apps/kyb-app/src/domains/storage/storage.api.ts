@@ -1,7 +1,7 @@
 import { request } from '@app/common/utils/request';
 import { IFile, UploadFileDto, UploadFileResult } from '@app/domains/storage/types';
 
-export const uploadFile = async (dto: UploadFileDto): Promise<UploadFileResult> => {
+export const uploadAndGetFile = async (dto: UploadFileDto): Promise<UploadFileResult> => {
   const formData = new FormData();
   formData.append('file', dto.file);
 
@@ -14,6 +14,23 @@ export const uploadFile = async (dto: UploadFileDto): Promise<UploadFileResult> 
     }>();
 
   return await request.get(`collection-flow/files/${fileId}`).json<UploadFileResult>();
+};
+
+export const uploadFile = async (dto: UploadFileDto): Promise<{ id: string }> => {
+  const formData = new FormData();
+  formData.append('file', dto.file);
+
+  const { id: fileId } = await request
+    .post('collection-flow/files', {
+      body: formData,
+    })
+    .json<{
+      id: string;
+    }>();
+
+  return {
+    id: fileId,
+  };
 };
 
 export const fetchFile = async (fileId: string): Promise<IFile> => {
