@@ -1087,7 +1087,7 @@ export class WorkflowService {
       this.workflowEventEmitter.emit('workflow.completed', {
         runtimeData: updatedResult,
         state: currentState ?? updatedResult.state,
-        // @ts-expect-error - error from Prisma types fix
+        // @ts-ignore - error from Prisma types fix
         entityId: updatedResult.businessId || updatedResult.endUserId,
         correlationId,
       });
