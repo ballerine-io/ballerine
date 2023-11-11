@@ -5,7 +5,7 @@ import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer
 export const SUPPORTED_FILE_EXT_REGEX = /\.(jpg|jpeg|svg|png|pdf|gif|txt)$/;
 
 export const FILE_MAX_SIZE_IN_KB = 1024;
-export const FILE_MAX_SIZE_IN_BYTE = 10 * FILE_MAX_SIZE_IN_KB * 1024; // 2 MB
+export const FILE_MAX_SIZE_IN_BYTE = 10 * FILE_MAX_SIZE_IN_KB * 1024; // 10 MB
 
 export const FILE_SIZE_EXCEEDED_MSG = `File size exceeded ${formatBytes(FILE_MAX_SIZE_IN_BYTE)}`;
 export const FILE_TYPE_NOT_SUPPORTED_MSG = 'File type not supported';
