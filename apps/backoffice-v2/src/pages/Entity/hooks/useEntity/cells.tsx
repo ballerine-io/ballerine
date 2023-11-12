@@ -11,6 +11,7 @@ import { MapCell } from '../../components/MapCell/MapCell';
 import { CaseCallToAction } from '../../components/CaseCallToAction/CaseCallToAction';
 import { BadgeCell } from '../../components/BadgeCell/BadgeCell';
 import { TableCell } from '../../components/TableCell/TableCell';
+import { Paragraph } from '../../components/Paragraph/Paragraph';
 
 export const cells = {
   heading: Heading,
@@ -26,4 +27,5 @@ export const cells = {
   map: MapCell,
   caseCallToAction: CaseCallToAction,
   table: TableCell,
+  paragraph: Paragraph,
 };
