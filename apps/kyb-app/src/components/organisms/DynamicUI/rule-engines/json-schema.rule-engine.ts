@@ -82,7 +82,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
   ): string {
     const fieldDestination = instancePath.split('/').filter(part => part !== '');
 
-    if (error.params.missingProperty) {
+    if (error.params?.missingProperty) {
       fieldDestination.push(
         (error.params.missingProperty as string) ||
           (((error.params.errors as Array<AnyObject>)[0]?.params as AnyObject)
@@ -92,7 +92,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
 
     if (
       Array.isArray(error.params.errors) &&
-      ((error.params.errors as Array<AnyObject>)[0]?.params as AnyObject).missingProperty
+      ((error.params.errors as Array<AnyObject>)[0]?.params as AnyObject)?.missingProperty
     ) {
       fieldDestination.push(
         (error.params.missingProperty as string) ||
