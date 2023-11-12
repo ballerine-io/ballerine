@@ -61,9 +61,11 @@ const validationSchema = {
               type: 'string',
               minLength: 8,
               maxLength: 15,
+              pattern: '^[^\\s]*$',
               errorMessage: {
                 minLength: 'Tax ID should have at least 8 characters.',
                 maxLength: 'Tax ID should not exceed 15 characters.',
+                pattern: 'Tax ID must be in valid format',
                 required: 'Tax identification number is required.',
               },
             },

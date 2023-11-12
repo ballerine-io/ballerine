@@ -49,7 +49,14 @@ export const Page = ({ page, children }: PageProps) => {
       errors: fieldErrors.reduce((map, item) => {
         if (!item.fieldId) return map;
 
-        map[item.fieldId] = item;
+        const isExists = map[item.fieldId];
+
+        if (isExists) {
+          map[item.fieldId].push(item);
+        } else {
+          map[item.fieldId] = [item];
+        }
+
         return map;
       }, {} as PageContext['errors']),
       pageErrors: pageErrors.reduce((map, pageError) => {

@@ -103,6 +103,10 @@ export const withDynamicUIInput = (Component: RJSFInputAdapter<any, any>) => {
 
     const { validationErrors, warnings } = useUIElementErrors(definition);
 
+    if (name === 'tax-identification-number-input') {
+      console.log('VALIDATION ERRORS', validationErrors);
+    }
+
     return (
       <div className="flex flex-col gap-2">
         <Component
