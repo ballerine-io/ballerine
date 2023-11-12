@@ -1,5 +1,33 @@
 # @ballerine/workflows-dashboard
 
+## 0.1.8
+
+### Patch Changes
+
+- version bump
+
+## 0.1.7
+
+### Patch Changes
+
+- Bump ver
+
+## 0.1.6
+
+### Patch Changes
+
+- 801fc639: pre
+- 801fc639: Pre ver
+- 801fc639: bump pre
+- 801fc639: Version bump pre
+- 801fc639: Pre bump
+- 801fc639: Pre bump
+- 801fc639: Bump
+- 801fc639: pre
+- Version bump
+- 801fc639: Pre release
+- 801fc639: Bumo
+
 ## 0.1.5
 
 ### Patch Changes

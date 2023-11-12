@@ -1,5 +1,71 @@
 # @ballerine/ui
 
+## 0.3.12
+
+### Patch Changes
+
+- version bump
+
+## 0.3.11
+
+### Patch Changes
+
+- Added Array Item title component
+
+## 0.3.10
+
+### Patch Changes
+
+- Fixed spacing between inputs and descriptions
+
+## 0.3.9
+
+### Patch Changes
+
+- Bump ver
+
+## 0.3.8
+
+### Patch Changes
+
+- Reworked ArrayFieldsLayout
+
+## 0.3.7
+
+### Patch Changes
+
+- 801fc639: pre
+- 801fc639: Pre ver
+- 801fc639: Prerelease
+- 801fc639: bump pre
+- 801fc639: Updated exports & Renamed vars
+- 801fc639: Version bump pre
+- 801fc639: Pre bump
+- 801fc639: Pre bump
+- 801fc639: Added default value to Autocomplete
+- 52e71ce5: Reworked Multiselect items rendering for easier customization & Updated storybook & Updated Types
+- 801fc639: Bump
+- 801fc639: pre
+- 52e71ce5: Added Multiselect adapter & updated storybook & fixed focus bug
+- 801fc639: Added blur handlers to Dynamic Form inputs
+- 801fc639: Fixed missing AutocompleteAdapter placeholder
+- Version bump
+- 801fc639: Pre release
+- 801fc639: Bumo
+- 801fc639: Bump
+
+## 0.3.7-3e08f108.1
+
+### Patch Changes
+
+- Reworked Multiselect items rendering for easier customization & Updated storybook & Updated Types
+
+## 0.3.7-3e08f108.0
+
+### Patch Changes
+
+- Added Multiselect adapter & updated storybook & fixed focus bug
+
 ## 0.3.6
 
 ### Patch Changes

@@ -3,11 +3,12 @@ import { createFormSchemaFromUIElements } from '@app/components/organisms/UIRend
 import { createInitialFormData } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/createInitialFormData';
 import { UIElementComponent } from '@app/components/organisms/UIRenderer/types';
 
+import { JSONFormElementParams } from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
+import { jsonFormFields } from '@app/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
 import { AnyObject, DynamicForm } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import { useCallback, useMemo, useState } from 'react';
 import set from 'lodash/set';
-import { jsonFormFields } from '@app/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
+import { useCallback, useMemo } from 'react';
 
 export interface JSONFormElementBaseParams {
   jsonFormDefinition: RJSFSchema;
@@ -18,16 +19,11 @@ export interface JSONFormElementBaseParams {
   documentData?: AnyObject;
 }
 
-export interface JSONFormElementParams {
-  jsonFormDefinition?: { type?: string; required?: string[] };
-}
-
 export const Documents: UIElementComponent<JSONFormElementParams> = ({ definition, actions }) => {
   const { formSchema, uiSchema } = useMemo(
     () => createFormSchemaFromUIElements(definition),
     [definition],
   );
-  const [isUploading, setUploading] = useState(false);
   const { stateApi } = useStateManagerContext();
 
   const { payload } = useStateManagerContext();

@@ -89,12 +89,17 @@ function buildWorkflowDeifintion(sequenceNum) {
   };
 }
 
-function buildDocument(category, status) {
+function buildDocument(category, status, fileType = 'jpg') {
   return {
     category: category,
     decision: {
       status: status,
     },
+    pages: [
+      {
+        type: fileType,
+      },
+    ],
   };
 }
 
@@ -109,13 +114,13 @@ describe('WorkflowService', () => {
   let userService;
   let workflowTokenService;
   let salesforceService;
-  const numbUserInfo = Symbol();
   let fakeHttpService;
   let testingModule: TestingModule;
   const configService = {
     WEBHOOK_URL: 'https://example.com',
     WEBHOOK_SECRET: 'webhook_secret',
     NODE_ENV: 'test',
+    ENVIRONMENT_NAME: 'test',
 
     get(key: Exclude<keyof typeof this, 'get'>) {
       return this[key];
@@ -184,7 +189,6 @@ describe('WorkflowService', () => {
       businessRepo,
       entityRepo,
       customerService,
-      {} as any,
       {} as any,
       eventEmitter as any,
       testingModule.get(AppLoggerService),

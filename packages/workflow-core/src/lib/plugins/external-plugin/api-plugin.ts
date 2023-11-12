@@ -100,6 +100,12 @@ export class ApiPlugin {
       headers: headers,
     };
 
+    Object.keys(payload).forEach(key => {
+      if (typeof payload[key] === 'string') {
+        payload[key] = this.replaceValuePlaceholders(payload[key] as string, payload);
+      }
+    });
+
     // @TODO: Use an enum over string literals for HTTP methods
     if (this.method.toUpperCase() !== 'GET' && payload) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

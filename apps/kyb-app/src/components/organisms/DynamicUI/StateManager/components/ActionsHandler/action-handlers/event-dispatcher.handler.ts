@@ -1,8 +1,8 @@
 import { ActionHandler } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/action-handler.abstract';
 import { StateMachineAPI } from '@app/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
-import { Action } from '@app/domains/collection-flow';
+import { Action, BaseActionParams } from '@app/domains/collection-flow';
 
-export interface EventDispatcherParams {
+export interface EventDispatcherParams extends BaseActionParams {
   eventName: string;
 }
 

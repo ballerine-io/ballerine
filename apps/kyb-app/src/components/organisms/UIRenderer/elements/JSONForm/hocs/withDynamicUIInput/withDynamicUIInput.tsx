@@ -1,16 +1,15 @@
 import { usePageResolverContext } from '@app/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
-import { findDefinitionByName } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
-import { useUIElementHandlers } from '@app/components/organisms/UIRenderer/hooks/useUIElementHandlers';
-import { RJSVInputProps, AnyObject } from '@ballerine/ui';
-import { useCallback, useMemo } from 'react';
-import get from 'lodash/get';
 import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
-import { UIElement } from '@app/domains/collection-flow';
 import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { findDefinitionByName } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
 import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
-import { ErrorsList } from '@ballerine/ui';
+import { useUIElementHandlers } from '@app/components/organisms/UIRenderer/hooks/useUIElementHandlers';
+import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
 import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
+import { UIElement } from '@app/domains/collection-flow';
+import { AnyObject, ErrorsList, RJSFInputAdapter, RJSFInputProps } from '@ballerine/ui';
+import get from 'lodash/get';
+import { useCallback, useMemo } from 'react';
 
 const findLastDigit = (str: string) => {
   const digitRegex = /_(\d+)_/g;
@@ -31,17 +30,15 @@ const injectIndexToDestinationIfNeeded = (destination: string, index: number | n
 
   const result = destination.replace(`{INDEX}`, `${index}`);
 
-  console.log('result', result, index);
-
   return result;
 };
 
-export const withDynamicUIInput = (
-  Component: React.ComponentType<
-    RJSVInputProps | (RJSVInputProps & { definition?: UIElement<AnyObject> })
-  >,
-) => {
-  function Wrapper(props: RJSVInputProps) {
+export type DynamicUIComponent<TProps, TParams = AnyObject> = React.ComponentType<
+  TProps & { definition: UIElement<TParams> }
+>;
+
+export const withDynamicUIInput = (Component: RJSFInputAdapter<any, any>) => {
+  function Wrapper(props: RJSFInputProps) {
     const inputId = (props.idSchema as AnyObject)?.$id as string;
     const { name, onChange } = props;
     const { payload } = useStateManagerContext();
@@ -57,11 +54,14 @@ export const withDynamicUIInput = (
     }, [name, currentPage]);
 
     const definition = useMemo(() => {
+      const inputIndex = getInputIndex(inputId || '');
+
       return {
         ...baseDefinition,
+        name: inputIndex !== null ? `${baseDefinition.name}[${inputIndex}]` : baseDefinition.name,
         valueDestination: injectIndexToDestinationIfNeeded(
           baseDefinition.valueDestination,
-          getInputIndex(inputId || ''),
+          inputIndex,
         ),
       };
     }, [baseDefinition, inputId]);
@@ -77,7 +77,7 @@ export const withDynamicUIInput = (
       [definition, elementState, setElementState],
     );
 
-    const { disabled } = useUIElementProps(baseDefinition);
+    const { disabled } = useUIElementProps(definition);
 
     const { onChangeHandler } = useUIElementHandlers(definition);
 

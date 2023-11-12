@@ -6,6 +6,7 @@ import { Method, States } from '../../common/enums';
 import { IWorkflowId } from './interfaces';
 import qs from 'qs';
 import { zPropertyKey } from '../../lib/zod/utils/z-property-key/z-property-key';
+import { deepCamelKeys } from 'string-ts';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -80,6 +81,7 @@ export const BaseWorkflowByIdSchema = z.object({
   assignee: ObjectWithIdSchema.extend({
     firstName: z.string(),
     lastName: z.string(),
+    avatarUrl: z.string().nullable().optional(),
   }).nullable(),
 });
 
@@ -103,7 +105,21 @@ export const fetchWorkflowById = async ({
   const [workflow, error] = await apiClient({
     endpoint: `workflows/${workflowId}?filterId=${filterId}`,
     method: Method.GET,
-    schema: WorkflowByIdSchema,
+    schema: WorkflowByIdSchema.transform(data => ({
+      ...data,
+      context: {
+        ...data.context,
+        pluginsOutput: {
+          ...data.context?.pluginsOutput,
+          // TODO: Upgrade workflows-service TypeScript version to >= 5 and use `string-ts`'s `deepCamelCase` instead on the server side in `formatWorkflow`.
+          // Currently, `nest-access-control` v2.2.0 is incompatible with TypeScript >= 5.
+          website_monitoring: {
+            ...data.context?.pluginsOutput?.website_monitoring,
+            data: deepCamelKeys(data.context?.pluginsOutput?.website_monitoring?.data ?? {}),
+          },
+        },
+      },
+    })),
   });
 
   return handleZodError(error, workflow);
