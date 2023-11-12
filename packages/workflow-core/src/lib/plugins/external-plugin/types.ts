@@ -7,15 +7,6 @@ export interface ValidatableTransformer {
   transformers: Transformers;
   schemaValidator?: Validator;
 }
-
-export interface SerializableValidatableTransformer {
-  transform: Array<{
-    transformer: string;
-    mapping: string | THelperFormatingLogic;
-  }>;
-  schema?: TJsonSchema;
-}
-
 export interface IApiPluginParams {
   name: string;
   stateNames: Array<string>;
@@ -30,15 +21,6 @@ export interface IApiPluginParams {
 
   invoke?(...args: Array<any>): any;
 }
-
-export interface ISerializableHttpPluginParams
-  extends Omit<IApiPluginParams, 'request' | 'response'> {
-  request: SerializableValidatableTransformer;
-  response: SerializableValidatableTransformer;
-
-  invoke?(...args: Array<any>): any;
-}
-
 export interface WebhookPluginParams {
   name: string;
   stateNames: Array<string>;
@@ -53,9 +35,35 @@ export interface IterativePluginParams {
   stateNames: Array<string>;
   iterateOn: Omit<IApiPluginParams['request'], 'schemaValidator'>;
   actionPlugin: ActionablePlugin;
-  invoke?(...args: Array<any>): any;
   successAction?: string;
   errorAction?: string;
+
+  invoke?(...args: Array<any>): any;
+}
+
+export interface SerializableValidatableTransformer {
+  transform: Array<{
+    transformer: string;
+    mapping: string | THelperFormatingLogic;
+  }>;
+  schema?: TJsonSchema;
+}
+
+export interface ISerializableHttpPluginParams
+  extends Omit<IApiPluginParams, 'request' | 'response'> {
+  request: SerializableValidatableTransformer;
+  response: SerializableValidatableTransformer;
+
+  invoke?(...args: Array<any>): any;
+}
+
+export interface SerializableWebhookPluginParams extends Omit<WebhookPluginParams, 'request'> {
+  name: string;
+  stateNames: Array<string>;
+  url: string;
+  method: ISerializableHttpPluginParams['method'];
+  headers: ISerializableHttpPluginParams['headers'];
+  request: SerializableValidatableTransformer;
 }
 
 export interface ISerializableChildPluginParams
@@ -65,11 +73,13 @@ export interface ISerializableChildPluginParams
   invoke?(...args: Array<any>): Promise<any>;
 }
 
-export interface SerializableWebhookPluginParams extends Omit<WebhookPluginParams, 'request'> {
+export interface SerializableIterativePluginParams {
   name: string;
   stateNames: Array<string>;
-  url: string;
-  method: IApiPluginParams['method'];
-  headers: IApiPluginParams['headers'];
-  request: SerializableValidatableTransformer;
+  iterateOn: Omit<SerializableValidatableTransformer['transform'], 'schema'>;
+  successAction?: string;
+  errorAction?: string;
+
+  invoke?(...args: any): void;
 }
+
