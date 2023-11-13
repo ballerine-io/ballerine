@@ -1,4 +1,4 @@
-export class FileStorage {
+export class FileRepository {
   readonly filesById = new Map<string, File>();
   readonly idsByFiles = new Map<File, string>();
 
@@ -17,10 +17,10 @@ export class FileStorage {
   }
 
   getFileId(file: File): string {
-    return this.idsByFiles.get(file);
+    return this.idsByFiles.get(file) || null;
   }
 
   getFileById(fileId: string): File | null {
-    return this.filesById.get(fileId);
+    return this.filesById.get(fileId) || null;
   }
 }
