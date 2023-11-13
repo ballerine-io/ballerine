@@ -9,6 +9,7 @@ export interface ValidatableTransformer {
 }
 export interface IApiPluginParams {
   name: string;
+  pluginKind: string;
   stateNames: Array<string>;
   url: string;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';

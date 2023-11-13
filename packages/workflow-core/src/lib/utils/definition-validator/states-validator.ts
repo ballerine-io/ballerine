@@ -1,14 +1,11 @@
 import { StateMachine } from 'xstate';
-import { AnyRecord } from '@ballerine/common';
+import {ruleValidator, TDefintionRules} from "./rule-validator";
 
 type TTransitionEvent = string;
 
 type TTransitionOption = {
   target: string;
-  cond?: {
-    type: string;
-    options: AnyRecord;
-  };
+  cond?: TDefintionRules;
 };
 type TTransitionOptions = Array<TTransitionOption>;
 export const statesValidator = (states: StateMachine<any, any, any>['states']) => {
@@ -25,7 +22,8 @@ export const statesValidator = (states: StateMachine<any, any, any>['states']) =
         if (Array.isArray(transitionEvent)) {
           (transitionEvent as unknown as TTransitionOptions).forEach(transitionOption => {
             validateTransitionOnEvent(stateNames, currentState, transitionOption.target);
-            // validate transitionOption.cond
+
+            transitionOption.cond && ruleValidator(transitionOption.cond);
           });
         } else {
           validateTransitionOnEvent(
@@ -39,7 +37,7 @@ export const statesValidator = (states: StateMachine<any, any, any>['states']) =
   }
 };
 
-const validateTransitionOnEvent = (
+export const validateTransitionOnEvent = (
   stateNames: Array<string>,
   currentState: string,
   targetState: string,

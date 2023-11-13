@@ -103,6 +103,7 @@ export const generateWebsiteMonitoringExample = async (
     projectId: projectId,
   };
 
+  // statesValidator(websiteMonitoringExample.definition.states);
   const workflow = await prismaClient.workflowDefinition.create({
     data: websiteMonitoringExample,
   });
