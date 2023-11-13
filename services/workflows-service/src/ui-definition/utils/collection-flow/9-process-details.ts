@@ -106,6 +106,7 @@ const validationSchema = {
                             spikeTransactionNumber: 'Spike Transaction Number is required.',
                             mainCategory: 'Customer Category is required.',
                             businessModel: 'Website Business Model is required.',
+                            volumeInRegion: 'Split of volume by regions is required.',
                           },
                         },
                       },
@@ -281,7 +282,7 @@ export const ProcessingDetails = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: ['spike-sales-volume-input', 'volume-in-region'],
+              required: ['spike-sales-volume-input', 'spike-sales-transaction-number-input'],
             },
           },
           visibleOn: [
@@ -323,7 +324,7 @@ export const ProcessingDetails = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: [],
+              required: ['volume-in-region'],
             },
           },
           elements: [
