@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react-swc';
 import { defineConfig } from 'vitest/config';
 import terminal from 'vite-plugin-terminal';
-import tsconfigPaths from 'vite-tsconfig-paths';
+import tsconfigPaths from 'vite-tsconfig-paths/dist';
 
 export default defineConfig(configEnv => {
   const isDevelopment = configEnv.mode === 'development';
