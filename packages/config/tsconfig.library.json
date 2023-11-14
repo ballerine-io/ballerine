@@ -1,10 +1,10 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     /* If transpiling with TypeScript: */
     "moduleResolution": "NodeNext",
     "module": "NodeNext",
+    "outDir": "dist",
     "sourceMap": true,
 
     /* AND if you're building for a library: */

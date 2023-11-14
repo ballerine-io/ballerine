@@ -1,17 +1,12 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     /* If NOT transpiling with TypeScript: */
-    //    "moduleResolution": "Bundler",
-    // Change to "Bundler" when there's a better IDE support (no module resolution errors)
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "module": "ESNext",
     "noEmit": true,
 
     /* If your code runs in the DOM: */
-    "lib": ["es2022", "dom", "dom.iterable"],
-
-    "jsx": "react-jsx"
+    "lib": ["es2022", "dom", "dom.iterable"]
   }
 }
