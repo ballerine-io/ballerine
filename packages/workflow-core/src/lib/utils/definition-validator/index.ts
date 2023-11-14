@@ -1,8 +1,8 @@
 import { StateMachine } from 'xstate';
 import {WorkflowExtensions} from "../../types";
-import {defintionValidator} from "./defintion-validator";
+import {definitionValidator} from "./definition-validator";
 export const validateDefinitionLogic = (workflowDefinitionArgs: Record<string, any>) => {
-  defintionValidator(
+  definitionValidator(
     {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       states: workflowDefinitionArgs.definition.states as StateMachine<any, any, any>['states'],

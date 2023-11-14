@@ -11,7 +11,7 @@ import {ruleValidator} from "./rule-validator";
 import { isErrorWithMessage } from "@ballerine/common";
 
 
-export const extentionsValidator = (extensions: WorkflowExtensions, states: StateMachine<any, any, any>['states']) => {
+export const extensionsValidator = (extensions: WorkflowExtensions, states: StateMachine<any, any, any>['states']) => {
   if (extensions.apiPlugins) {
     extensions.apiPlugins.forEach(plugin => {
 
@@ -81,7 +81,7 @@ const validateTransformers = (pluginName: string, transformers: SerializableVali
 
 const validatePluginStateAction = (
   pluginStateNames: Array<string>,
-  states: Parameters<typeof extentionsValidator>[1],
+  states: Parameters<typeof extensionsValidator>[1],
   successAction?: string,
   errorAction?: string,
 ) => {
@@ -99,7 +99,7 @@ const validatePluginStateAction = (
 }
 
 const validateCallbackTransition = (
-  states: Parameters<typeof extentionsValidator>[1],
+  states: Parameters<typeof extensionsValidator>[1],
   currentState: string,
   callbackEvent: string,
   actionName: 'successAction' | 'errorAction',
