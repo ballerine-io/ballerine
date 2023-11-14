@@ -1,22 +1,11 @@
 {
+  "extends": "../../packages/config/tsconfig.bundler.json",
   "compilerOptions": {
     "outDir": "./dist/types",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "target": "ESNext",
-    "module": "CommonJS",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "strictNullChecks": true,
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "noImplicitReturns": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
     "baseUrl": ".",
-    "pretty": true
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
-  "files": ["src/index.ts"],
   "include": ["src"]
 }
