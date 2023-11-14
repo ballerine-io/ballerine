@@ -46,16 +46,16 @@ const createMockParentWithChildWorkflow = async ({
     ubos,
     prismaClient,
   });
-  const businessWithWorkflowInformation = (0, generate_end_user_1.generateBusiness)(
-    Object.assign(Object.assign({ projectId: projectId }, business), {
-      workflow: {
-        workflowDefinitionId: parentRuntimeInformation.workflowDefinitionId,
-        workflowDefinitionVersion: parentRuntimeInformation.workflowDefinitionVersion,
-        state: 'manual_review',
-        context: parentRuntimeInformation.context,
-      },
-    }),
-  );
+  const businessWithWorkflowInformation = (0, generate_end_user_1.generateBusiness)({
+    projectId: projectId,
+    ...business,
+    workflow: {
+      workflowDefinitionId: parentRuntimeInformation.workflowDefinitionId,
+      workflowDefinitionVersion: parentRuntimeInformation.workflowDefinitionVersion,
+      state: 'manual_review',
+      context: parentRuntimeInformation.context,
+    },
+  });
   const businessRecord = await prismaClient.business.create({
     data: businessWithWorkflowInformation,
     select: { workflowRuntimeData: true },
@@ -510,7 +510,7 @@ const generateParentRuntimeContext = async ({
             streetNumber: '',
           },
           bankInformation: business.bankInformation,
-          companyActivity: Object.assign({ industry: business.industry }, business.companyActivity),
+          companyActivity: { industry: business.industry, ...business.companyActivity },
           companyDocuments: companyDocuments,
           companyInformation: {
             vat: business.vatNumber,

@@ -4,6 +4,7 @@ exports.workflows = void 0;
 const faker_1 = require('@faker-js/faker');
 const workflows = () => {
   return [
+    // German company
     {
       business: {
         id: faker_1.faker.datatype.uuid(),
