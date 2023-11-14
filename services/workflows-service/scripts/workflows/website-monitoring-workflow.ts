@@ -1,5 +1,5 @@
-import {Prisma, PrismaClient} from '@prisma/client';
-import {StateTag} from '@ballerine/common';
+import { Prisma, PrismaClient } from '@prisma/client';
+import { StateTag } from '@ballerine/common';
 
 export const websiteMonitoringDefinition = {
   id: 'merchant_website_monitoring',

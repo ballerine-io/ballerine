@@ -16,7 +16,6 @@ export type {
   ChildToParentCallback,
   SerializableValidatableTransformer,
   THelperFormatingLogic,
-  validateDefinitionLogic,
 } from './lib';
 export {
   createWorkflow,
@@ -26,4 +25,5 @@ export {
   JmespathTransformer,
   JsonSchemaValidator,
   HelpersTransformer,
+  validateDefinitionLogic,
 } from './lib';

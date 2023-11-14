@@ -25,6 +25,7 @@ export class WorkflowDefinitionRepository {
   async createUnscoped<T extends Prisma.WorkflowDefinitionCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionCreateArgs>,
   ): Promise<WorkflowDefinition> {
+    validateDefinitionLogic(args.data);
     return await this.prisma.workflowDefinition.create<T>(args);
   }
 
@@ -72,11 +73,7 @@ export class WorkflowDefinitionRepository {
         },
       ],
     };
-
-    const workflowDefinition = await this.prisma.workflowDefinition.findFirstOrThrow(queryArgs);
-    validateDefinitionLogic(workflowDefinition);
-
-    return workflowDefinition;
+    return await this.prisma.workflowDefinition.findFirstOrThrow(queryArgs);
   }
 
   async findTemplateByIdUnscoped<
@@ -85,14 +82,10 @@ export class WorkflowDefinitionRepository {
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionFindFirstOrThrowArgs, 'where'>>,
   ): Promise<WorkflowDefinition> {
-    const workflowDefinition = await this.prisma.workflowDefinition.findFirstOrThrow({
+    return await this.prisma.workflowDefinition.findFirstOrThrow({
       where: { id, isPublic: true },
       ...args,
     });
-
-    validateDefinitionLogic(workflowDefinition);
-
-    return workflowDefinition;
   }
 
   async updateById<T extends Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>(

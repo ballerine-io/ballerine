@@ -19,5 +19,4 @@ export const definitionValidator = (
   },);
   statesValidator(definition.states)
   if (extensions) extensionsValidator(extensions, definition.states)
-
 };
