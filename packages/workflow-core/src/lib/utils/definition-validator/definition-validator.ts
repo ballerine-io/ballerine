@@ -3,11 +3,13 @@ import { StateMachine } from 'xstate';
 import { WorkflowExtensions } from '../../types';
 import { statesValidator, validateTransitionOnEvent } from './states-validator';
 import { extensionsValidator } from './extensions-validator';
+import { AnyRecord } from '@ballerine/common';
 
 export const definitionValidator = (
   definition: {
     states?: StateMachine<any, any, any>['states'];
     initial?: string;
+    initialContext?: AnyRecord;
   },
   extensions?: WorkflowExtensions,
 ) => {
@@ -19,6 +21,6 @@ export const definitionValidator = (
       targetState: definition.initial,
     });
 
-  statesValidator(definition.states);
+  statesValidator(definition.states, definition.initialContext);
   if (extensions) extensionsValidator(extensions, definition.states);
 };

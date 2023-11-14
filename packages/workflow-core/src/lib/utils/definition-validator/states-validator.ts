@@ -1,5 +1,6 @@
 import { StateMachine } from 'xstate';
 import { ruleValidator, TDefintionRules } from './rule-validator';
+import { AnyRecord } from '@ballerine/common';
 
 type TTransitionEvent = string;
 
@@ -8,7 +9,10 @@ type TTransitionOption = {
   cond?: TDefintionRules;
 };
 type TTransitionOptions = Array<TTransitionOption>;
-export const statesValidator = (states: StateMachine<any, any, any>['states']) => {
+export const statesValidator = (
+  states: StateMachine<any, any, any>['states'],
+  initialContext?: AnyRecord,
+) => {
   const stateNames = Object.keys(states);
   for (const currentState of stateNames) {
     if (!states[currentState]) {
@@ -27,7 +31,7 @@ export const statesValidator = (states: StateMachine<any, any, any>['states']) =
               targetState: transitionOption.target,
             });
 
-            transitionOption.cond && ruleValidator(transitionOption.cond);
+            transitionOption.cond && ruleValidator(transitionOption.cond, initialContext);
           });
         }
 
