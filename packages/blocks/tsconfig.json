@@ -1,8 +1,12 @@
 {
   "extends": "../config/tsconfig.dom-bundler.json",
   "compilerOptions": {
+    // TODO Use 'composite', 'moduleResolution' and 'module' from 'extends' - currently fails build
+    "composite": false,
+    "moduleResolution": "node",
+    "module": "CommonJS",
+
     "jsx": "react-jsx",
-    "outDir": "./dist/types",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
