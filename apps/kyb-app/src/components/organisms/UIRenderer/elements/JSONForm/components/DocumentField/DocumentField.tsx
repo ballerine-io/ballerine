@@ -3,16 +3,19 @@ import { useStateManagerContext } from '@app/components/organisms/DynamicUI/Stat
 import { useUIElementToolsLogic } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/hooks/useUIElementToolsLogic';
 import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
 import { getDocumentFileIdPath } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/getDocumentFileIdPath';
+import { FileUploaderField } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField';
+import { useFileRepository } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileRepository';
+import { UploadFileFn } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/types';
 import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
 import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
 import { Document, UIElement } from '@app/domains/collection-flow';
 import { fetchFile, uploadFile } from '@app/domains/storage/storage.api';
 import { collectionFlowFileStorage } from '@app/pages/CollectionFlow/collection-flow.file-storage';
-import { AnyObject, ErrorsList, FileInputAdapter, RJSFInputProps } from '@ballerine/ui';
+import { AnyObject, ErrorsList, RJSFInputProps } from '@ballerine/ui';
 import { HTTPError } from 'ky';
 import get from 'lodash/get';
 import set from 'lodash/set';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 
 interface DocumentFieldParams {
   documentData: Partial<Document>;
@@ -21,12 +24,11 @@ interface DocumentFieldParams {
 export const DocumentField = (
   props: RJSFInputProps & { definition: UIElement<DocumentFieldParams> },
 ) => {
-  const { definition, ...restProps } = props;
+  const { definition, formData, onBlur, ...restProps } = props;
   const { stateApi } = useStateManagerContext();
   const { payload } = useStateManagerContext();
   const [fieldError, setFieldError] = useState<ErrorField | null>(null);
   const { options } = definition;
-  const [fileItem, setFile] = useState<File | null>(null);
 
   const { toggleElementLoading } = useUIElementToolsLogic(definition.name);
   const { state: elementState } = useUIElementState(definition);
@@ -57,30 +59,58 @@ export const DocumentField = (
 
     return fileId;
   }, [payload.documents, definition]);
+  useFileRepository(collectionFlowFileStorage, fileId);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!fileId) return;
 
     const persistedFile = collectionFlowFileStorage.getFileById(fileId);
 
-    if (persistedFile) {
-      setFile(persistedFile);
-    } else {
-      void fetchFile(fileId).then(file => {
-        const createdFile = new File([''], file.fileNameInBucket || file.fileNameOnDisk, {
-          type: 'text/plain',
-        });
+    if (persistedFile) return;
 
-        collectionFlowFileStorage.registerFile(fileId, createdFile);
-        setFile(createdFile);
+    void fetchFile(fileId).then(file => {
+      const createdFile = new File([''], file.fileNameInBucket || file.fileNameOnDisk, {
+        type: 'text/plain',
       });
-    }
+
+      collectionFlowFileStorage.registerFile(fileId, createdFile);
+    });
   }, [fileId, toggleElementLoading]);
 
-  const handleChange = useCallback(
+  const fileUploader: UploadFileFn = useCallback(
     async (file: File) => {
-      toggleElementLoading();
+      const context = stateApi.getContext();
+      const document = (context.documents as Document[]).find(
+        document => document && document.id === options.documentData.id,
+      );
 
+      try {
+        toggleElementLoading();
+        const uploadResult = await uploadFile({ file });
+        setFieldError(null);
+
+        return { fileId: uploadResult.id };
+      } catch (error) {
+        if (error instanceof HTTPError) {
+          const response = (await error.response.json()) as AnyObject;
+          setFieldError({
+            fieldId: document.id,
+            message: response.message as string,
+            type: 'warning',
+          });
+          return;
+        }
+
+        throw error;
+      } finally {
+        toggleElementLoading();
+      }
+    },
+    [stateApi, options, toggleElementLoading],
+  );
+
+  const handleChange = useCallback(
+    (fileId: string) => {
       const context = stateApi.getContext();
       let document = (context.documents as Document[]).find(
         document => document && document.id === definition.options.documentData.id,
@@ -93,44 +123,24 @@ export const DocumentField = (
 
       const fileIdPath = getDocumentFileIdPath(definition);
 
-      try {
-        const uploadResult = await uploadFile({ file });
+      set(document, fileIdPath, fileId);
+      set(document, 'decision', {});
 
-        set(document, fileIdPath, uploadResult.id);
-        // set(document, fileTypePath, file.type);
-        set(document, 'decision', {});
+      stateApi.setContext(context);
 
-        stateApi.setContext(context);
-
-        collectionFlowFileStorage.registerFile(uploadResult.id, file);
-        setFile(file);
-        setFieldError(null);
-        sendEvent('onChange');
-      } catch (err) {
-        if (err instanceof HTTPError) {
-          const response = (await err.response.json()) as AnyObject;
-          setFieldError({
-            fieldId: document.id,
-            message: response.message as string,
-            type: 'warning',
-          });
-          return;
-        }
-
-        throw err;
-      } finally {
-        toggleElementLoading();
-      }
+      sendEvent('onChange');
     },
-    [stateApi, options, definition, toggleElementLoading, sendEvent],
+    [stateApi, options, definition, sendEvent],
   );
 
   return (
     <div className="flex flex-col gap-2">
-      <FileInputAdapter
-        {...restProps}
+      <FileUploaderField
+        uploadFile={fileUploader}
         disabled={elementState.isLoading || restProps.disabled}
-        formData={fileItem}
+        fileId={fileId}
+        fileRepository={collectionFlowFileStorage}
+        onBlur={onBlur as () => void}
         onChange={handleChange}
       />
       {warnings.length ? <ErrorsList errors={warnings.map(err => err.message)} /> : null}

@@ -8,6 +8,7 @@ import { forwardRef, useCallback, useEffect, useRef } from 'react';
 export const FileUploaderField = forwardRef(
   ({
     onChange,
+    onBlur,
     uploadFile: _uploadFile,
     fileRepository: fileStorage,
     fileId,
@@ -25,7 +26,7 @@ export const FileUploaderField = forwardRef(
       if (!uploadedFileId) return;
 
       onChange(uploadedFileId);
-    }, [uploadedFileId]);
+    }, [uploadedFileId, onChange]);
 
     const handleChange = useCallback(
       async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,6 +43,7 @@ export const FileUploaderField = forwardRef(
         accept={acceptFileFormats}
         disabled={disabled || isLoading || isUploading}
         onChange={handleChange}
+        onBlur={onBlur}
         ref={inputRef}
       />
     );

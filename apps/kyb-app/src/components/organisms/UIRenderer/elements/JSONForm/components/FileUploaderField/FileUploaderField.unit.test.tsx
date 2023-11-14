@@ -146,4 +146,27 @@ describe('FileUploaderField', () => {
       expect(onChangeCallback).toHaveBeenCalledTimes(1);
     });
   });
+
+  it('will fire onBlur when user change focus', async () => {
+    const onChangeCallback = jest.fn();
+    const onBlurCallaback = jest.fn();
+
+    const { getByTestId } = render(
+      <FileUploaderField
+        uploadFile={() => Promise.resolve({ fileId: '123' })}
+        onBlur={onBlurCallaback}
+        onChange={onChangeCallback}
+        fileRepository={new FileRepository()}
+      />,
+    );
+
+    const input = getByTestId('file-uploader-field');
+
+    fireEvent.focus(input);
+    fireEvent.blur(input);
+
+    await waitFor(() => {
+      expect(onBlurCallaback).toHaveBeenCalledTimes(1);
+    });
+  });
 });

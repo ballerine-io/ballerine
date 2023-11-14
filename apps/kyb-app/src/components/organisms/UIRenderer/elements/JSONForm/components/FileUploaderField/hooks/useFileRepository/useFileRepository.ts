@@ -2,8 +2,9 @@ import {
   RegisterFileFn,
   UseFileRepositoryResult,
 } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/types';
-import { FileRepository } from '@app/utils/file-repository';
-import { useCallback, useState } from 'react';
+import { useRefValue } from '@app/hooks/useRefValue';
+import { FileRepository, FileRepositoryListener } from '@app/utils/file-repository';
+import { useCallback, useEffect, useState } from 'react';
 
 export const useFileRepository = (
   fileRepository: FileRepository,
@@ -24,6 +25,25 @@ export const useFileRepository = (
     },
     [fileRepository],
   );
+
+  const repositoryListener: FileRepositoryListener = useCallback(
+    (updatedFileId, action) => {
+      if (fileId === updatedFileId && action === 'add') {
+        setFile(fileRepository.getFileById(updatedFileId));
+      }
+    },
+    [setFile, fileId],
+  );
+
+  const listenerRef = useRefValue(repositoryListener);
+
+  useEffect(() => {
+    fileRepository.subscribe(listenerRef.current);
+
+    return () => {
+      fileRepository.unsubscribe(listenerRef.current);
+    };
+  }, [listenerRef, fileRepository]);
 
   return {
     file,

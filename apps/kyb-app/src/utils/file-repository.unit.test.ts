@@ -63,4 +63,48 @@ describe('FileRepository', () => {
     expect(repository.getFileById(testFileId1)).toBe(testFile1);
     expect(repository.getFileById(testFileId2)).toBe(testFile2);
   });
+
+  describe('subscribers will be notified when:', () => {
+    test('file will be added', () => {
+      const repositoryListener = jest.fn();
+
+      repository.subscribe(repositoryListener);
+
+      const testFileId = 'test_file_1';
+      const testFile = { name: testFileId } as File;
+
+      repository.registerFile(testFileId, testFile);
+
+      expect(repositoryListener).toHaveBeenCalledTimes(1);
+      expect(repositoryListener).toHaveBeenCalledWith(testFileId, 'add');
+    });
+
+    test('file will be removed', () => {
+      const repositoryListener = jest.fn();
+      const testFileId = 'test_file_1';
+      const testFile = { name: testFileId } as File;
+
+      repository.registerFile(testFileId, testFile);
+      repository.subscribe(repositoryListener);
+
+      repository.removeByFileId(testFileId);
+
+      expect(repositoryListener).toHaveBeenCalledTimes(1);
+      expect(repositoryListener).toHaveBeenCalledWith(testFileId, 'remove');
+    });
+
+    test('file has been added and removed', () => {
+      const repositoryListener = jest.fn();
+      const testFileId = 'test_file_1';
+      const testFile = { name: testFileId } as File;
+      repository.subscribe(repositoryListener);
+
+      repository.registerFile(testFileId, testFile);
+
+      repository.removeByFileId(testFileId);
+
+      expect(repositoryListener).toHaveBeenNthCalledWith(1, testFileId, 'add');
+      expect(repositoryListener).toHaveBeenNthCalledWith(2, testFileId, 'remove');
+    });
+  });
 });
