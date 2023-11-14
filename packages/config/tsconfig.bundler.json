@@ -5,14 +5,20 @@
     "declaration": true,
 
     /* AND if you're building for a library in a monorepo: */
-    "composite": true,
+    //    "composite": true,
     "declarationMap": true,
 
     /* If NOT transpiling with TypeScript: */
     // Change to "Bundler" when there's a better IDE support (no module resolution errors)
     "moduleResolution": "node",
-    "module": "ESNext",
-    "noEmit": true,
+    //    "module": "ESNext",
+    //    "noEmit": true,
+
+    // Until Rollup is re-evaluated
+    "emitDeclarationOnly": true,
+    // Temporarily until 'composite: true' + 'module: ESNext' are working
+    "module": "CommonJS",
+    "composite": false,
 
     /* If your code doesn't run in the DOM: */
     "lib": ["es2022"]

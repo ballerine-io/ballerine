@@ -1,11 +1,11 @@
 {
   "extends": "../config/tsconfig.bundler.json",
   "compilerOptions": {
-    "emitDeclarationOnly": true,
     "outDir": "./dist/types",
-    "composite": false,
-    "module": "CommonJS",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src"]
 }
