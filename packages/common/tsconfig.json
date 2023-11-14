@@ -1,5 +1,5 @@
 {
-  "extends": "../config/tsconfig.dom-bundler.json",
+  "extends": "../config/tsconfig.bundler.json",
   "compilerOptions": {
     // TODO Use 'composite', and 'module' from 'extends' - currently fails build
     "composite": false,
