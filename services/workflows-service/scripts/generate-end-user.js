@@ -143,7 +143,8 @@ const generateEndUser = ({
     avatarUrl,
   };
   if (workflowDefinitionId) {
-    res = Object.assign(Object.assign({}, res), {
+    res = {
+      ...res,
       workflowRuntimeData: {
         create: {
           workflowDefinitionVersion,
@@ -156,7 +157,7 @@ const generateEndUser = ({
           tags: [common_1.StateTag.MANUAL_REVIEW],
         },
       },
-    });
+    };
   }
   res.project = { connect: { id: projectId } };
   return res;

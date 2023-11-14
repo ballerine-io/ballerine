@@ -1,6 +1,7 @@
 {
   "extends": "../config/tsconfig.dom-bundler.json",
   "compilerOptions": {
+    "outDir": "./dist",
     "baseUrl": ".",
     "jsx": "react-jsx",
     "paths": {

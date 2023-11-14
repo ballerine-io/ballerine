@@ -12,7 +12,7 @@ import { env } from '@/env';
 import { lastValueFrom } from 'rxjs';
 import { plainToClass } from 'class-transformer';
 import { AxiosError } from 'axios';
-import { TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class BusinessService {
@@ -21,9 +21,9 @@ export class BusinessService {
     protected readonly logger: AppLoggerService,
     protected readonly httpService: HttpService,
   ) {}
-  async create(args: Parameters<BusinessRepository['create']>[0]) {
+  async create(args: Parameters<BusinessRepository['create']>[0], projectId: TProjectId) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return await this.repository.create(args);
+    return await this.repository.create(args, projectId);
   }
 
   async list(args: Parameters<BusinessRepository['findMany']>[0], projectIds: TProjectIds) {
@@ -38,8 +38,12 @@ export class BusinessService {
     return await this.repository.findById(id, args, projectIds);
   }
 
-  async updateById(id: string, args: Parameters<BusinessRepository['updateById']>[1]) {
-    return await this.repository.updateById(id, args);
+  async updateById(
+    id: string,
+    args: Parameters<BusinessRepository['updateById']>[1],
+    projectId: TProjectId,
+  ) {
+    return await this.repository.updateById(id, args, projectId);
   }
 
   async fetchCompanyInformation({

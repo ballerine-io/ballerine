@@ -6,11 +6,11 @@ import { UpdateFlowDto } from '@/collection-flow/dto/update-flow-input.dto';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { Public } from '@/common/decorators/public.decorator';
-import { ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
+import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
 
@@ -50,7 +50,7 @@ export class ColectionFlowController {
     } catch (error) {
       if (error instanceof UnsupportedFlowTypeException) {
         throw new common.BadRequestException(
-          `${activeWorkflow.workflowDefinitionId as string} is not supported.`,
+          `${activeWorkflow.workflowDefinitionId} is not supported.`,
         );
       }
       throw error;

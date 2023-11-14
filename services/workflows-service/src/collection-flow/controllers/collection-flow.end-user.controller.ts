@@ -5,7 +5,7 @@ import { Controller } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { EndUserModel } from '@/end-user/end-user.model';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
-import { ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
+import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { EndUserService } from '@/end-user/end-user.service';
 

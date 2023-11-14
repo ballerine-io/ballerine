@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { FileRepository } from './storage.repository';
 import { IFileIds } from './types';
 import { Prisma } from '@prisma/client';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
+import { SetOptional } from 'type-fest';
 
 @Injectable()
 export class StorageService {
@@ -21,20 +22,22 @@ export class StorageService {
   > & {
     projectId: TProjectId;
   }) {
-    const file = await this.fileRepository.create({
-      data: {
-        uri,
-        fileNameOnDisk,
-        userId,
-        fileNameInBucket,
-        mimeType,
-        projectId,
+    const file = await this.fileRepository.create(
+      {
+        data: {
+          uri,
+          fileNameOnDisk,
+          userId,
+          fileNameInBucket,
+          mimeType,
+        },
+        select: {
+          id: true,
+          mimeType: true,
+        },
       },
-      select: {
-        id: true,
-        mimeType: true,
-      },
-    });
+      projectId,
+    );
 
     return file;
   }

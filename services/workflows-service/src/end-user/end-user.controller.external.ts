@@ -4,7 +4,7 @@ import * as common from '@nestjs/common';
 import { Param } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
-import { Request } from 'express';
+import type { Request } from 'express';
 
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as errors from '../errors';
@@ -20,7 +20,7 @@ import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definit
 import { WorkflowService } from '@/workflow/workflow.service';
 import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
