@@ -8,7 +8,7 @@ import {
 } from '@/components/atoms/Table';
 import { memo, useMemo } from 'react';
 import classnames from 'classnames';
-import { flexRender, getCoreRowModel, SortingState, useReactTable } from '@tanstack/react-table';
+import { useReactTable, flexRender, getCoreRowModel, SortingState } from '@tanstack/react-table';
 import { IWorkflow } from '@/domains/workflows/api/workflow';
 import { defaultColumns } from '@/components/molecules/WorkflowsTable/columns';
 import Scrollbars from 'react-custom-scrollbars';
@@ -65,14 +65,7 @@ export const WorkflowsTable = memo(({ items, isFetching, sorting, columns, onSor
         table.setSorting(newSortingValue);
       } else {
         const sortingState = updater as SortingState;
-
-        if (!sortingState[0]?.id) {
-          console.error(`Invalid sorting state: ${JSON.stringify(sortingState)}`);
-
-          return;
-        }
-
-        onSort(sortingState[0]?.id, sortingState[0]?.desc ? 'desc' : 'asc');
+        onSort(sortingState[0].id, sortingState[0].desc ? 'desc' : 'asc');
       }
     },
     getCoreRowModel: getCoreRowModel(),
