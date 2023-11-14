@@ -7,14 +7,22 @@ window.DataTransfer = function () {};
 //@ts-ignore
 jest.spyOn(window, 'DataTransfer', 'get').mockImplementation(function () {
   return function () {
-    const files: any[] = [];
+    // Mocking FileList
+    const files = {
+      length: 0,
+      item: function (index) {
+        //@ts-ignore
+        return this[index];
+      },
+    };
 
     return {
       files,
       items: {
         add: function (file: File) {
           //@ts-ignore
-          files.push(file);
+          files[files.length] = file;
+          files.length = files.length + 1;
         },
       },
     };

@@ -1,18 +1,17 @@
 import { useFileUploading } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/useFileUploading';
-import * as storageApi from '@app/domains/storage/storage.api';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { HTTPError, NormalizedOptions } from 'ky';
 
 describe('useFileUploading - hook', () => {
   describe('when upload is successful', () => {
     it('will perform transition on isUploading state', async () => {
-      jest.spyOn(storageApi, 'uploadFile').mockReturnValue(Promise.resolve({ id: '1212' }));
+      const uploader = jest.fn().mockReturnValue(Promise.resolve({ fileId: 'test' }));
 
-      const { result } = renderHook(() => useFileUploading());
+      const { result } = renderHook(() => useFileUploading(uploader));
       expect(result.current.isUploading).toBe(false);
 
       act(() => {
-        void result.current.uploadFile({} as File, 'someFile');
+        void result.current.uploadFile({} as File);
       });
 
       expect(result.current.isUploading).toBe(true);
@@ -24,16 +23,14 @@ describe('useFileUploading - hook', () => {
 
     it('will return id of uploaded file', async () => {
       const testUploadFileId = 'test_file_id';
-      jest
-        .spyOn(storageApi, 'uploadFile')
-        .mockReturnValue(Promise.resolve({ id: testUploadFileId }));
+      const uploader = jest.fn().mockReturnValue(Promise.resolve({ fileId: testUploadFileId }));
 
-      const { result } = renderHook(() => useFileUploading());
+      const { result } = renderHook(() => useFileUploading(uploader));
 
       expect(result.current.isUploading).toBe(false);
 
       act(() => {
-        void result.current.uploadFile({} as File, 'someFile');
+        void result.current.uploadFile({} as File);
       });
 
       expect(result.current.isUploading).toBe(true);
@@ -47,15 +44,16 @@ describe('useFileUploading - hook', () => {
 
   describe('when upload request failed', () => {
     it('will return HTTPError', async () => {
-      const testUploadFileId = 'test_file_id';
-      jest
-        .spyOn(storageApi, 'uploadFile')
-        .mockRejectedValue(new HTTPError({} as Response, {} as Request, {} as NormalizedOptions));
+      const uploader = jest
+        .fn()
+        .mockRejectedValueOnce(
+          new HTTPError({} as Response, {} as Request, {} as NormalizedOptions),
+        );
 
-      const { result } = renderHook(() => useFileUploading());
+      const { result } = renderHook(() => useFileUploading(uploader));
 
       act(() => {
-        void result.current.uploadFile({} as File, testUploadFileId);
+        void result.current.uploadFile({} as File);
       });
 
       await waitFor(() => {
@@ -67,31 +65,36 @@ describe('useFileUploading - hook', () => {
 
     it('will persist previous fileId', async () => {
       const testUploadFileId = 'test_file_id';
-      jest
-        .spyOn(storageApi, 'uploadFile')
-        .mockReturnValue(Promise.resolve({ id: testUploadFileId }));
+      const uploadWithResult = jest
+        .fn()
+        .mockReturnValue(Promise.resolve({ fileId: testUploadFileId }));
 
-      const { result } = renderHook(() => useFileUploading());
+      const { result, rerender } = renderHook(uploaderFn => useFileUploading(uploaderFn), {
+        initialProps: uploadWithResult,
+      });
 
       act(() => {
-        void result.current.uploadFile({} as File, testUploadFileId);
+        void result.current.uploadFile({} as File);
       });
 
       await waitFor(() => {
         expect(result.current.fileId).toBe(testUploadFileId);
       });
 
-      jest
-        .spyOn(storageApi, 'uploadFile')
+      const uploadAndThrow = jest
+        .fn()
         .mockRejectedValue(new HTTPError({} as Response, {} as Request, {} as NormalizedOptions));
 
+      rerender(uploadAndThrow);
+
       act(() => {
-        void result.current.uploadFile({} as File, testUploadFileId);
+        void result.current.uploadFile({} as File);
       });
 
       await waitFor(() => {
-        expect(result.current.error).toBeTruthy();
+        expect(Boolean(result.current.error)).toBe(true);
         expect(result.current.fileId).toBe(testUploadFileId);
+        expect(result.current.isUploading).toBe(false);
       });
     });
   });

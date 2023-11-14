@@ -1,14 +1,12 @@
-import '@ballerine/ui/dist/style.css';
-import { AppLoadingContainer } from '@app/components/organisms/AppLoadingContainer';
+import { FileUploaderField } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField';
 import { useCustomerQuery } from '@app/hooks/useCustomerQuery';
-import { useUISchemasQuery } from '@app/hooks/useUISchemasQuery';
 import { useFlowContextQuery } from '@app/hooks/useFlowContextQuery';
-import { CustomerProvider } from '@app/components/providers/CustomerProvider';
-import { LoadingScreen } from '@app/common/components/molecules/LoadingScreen';
-import { CustomerProviderFallback } from '@app/components/molecules/CustomerProviderFallback';
-import { RouterProvider } from 'react-router-dom';
-import { router } from '@app/router';
-import * as Sentry from '@sentry/react';
+import { useUISchemasQuery } from '@app/hooks/useUISchemasQuery';
+import { FileRepository } from '@app/utils/file-repository';
+import '@ballerine/ui/dist/style.css';
+
+const repo = new FileRepository();
+repo.registerFile('test', new File([], 'test.file'));
 
 export const App = () => {
   const dependancyQueries = [
@@ -18,16 +16,24 @@ export const App = () => {
   ] as const;
 
   return (
-    <Sentry.ErrorBoundary>
-      <AppLoadingContainer dependencies={dependancyQueries}>
-        <CustomerProvider
-          loadingPlaceholder={<LoadingScreen />}
-          fallback={CustomerProviderFallback}
-        >
-          <RouterProvider router={router} />
-        </CustomerProvider>
-      </AppLoadingContainer>
-    </Sentry.ErrorBoundary>
+    // <Sentry.ErrorBoundary>
+    //   <AppLoadingContainer dependencies={dependancyQueries}>
+    //     <CustomerProvider
+    //       loadingPlaceholder={<LoadingScreen />}
+    //       fallback={CustomerProviderFallback}
+    //     >
+    //       <RouterProvider router={router} />
+    //     </CustomerProvider>
+    //   </AppLoadingContainer>
+    // </Sentry.ErrorBoundary>
+    <FileUploaderField
+      onChange={() => {}}
+      uploadFile={() => Promise.resolve({ fileId: 'test' })}
+      fileId={'test'}
+      placeholder="123"
+      acceptFileFormats="test123"
+      fileRepository={repo}
+    />
   );
 };
 

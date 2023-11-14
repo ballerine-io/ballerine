@@ -1,6 +1,6 @@
 import { useFileRepository } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileRepository/useFileRepository';
 import { FileRepository } from '@app/utils/file-repository';
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 
 describe('useFileRepository - hook', () => {
   let repository: FileRepository;
@@ -46,13 +46,19 @@ describe('useFileRepository - hook', () => {
   });
 
   describe('when using .registerFile', () => {
-    it('will return same file instance', () => {
+    it('will return same file instance', async () => {
       const { result } = renderHook(() => useFileRepository(repository));
 
       const fileId = 'some_file_id';
       const testFile = { name: 'someFile' } as File;
 
-      expect(result.current.registerFile(testFile, fileId)).toBe(testFile);
+      act(() => {
+        result.current.registerFile(testFile, fileId);
+      });
+
+      await waitFor(() => {
+        expect(result.current.file).toBe(testFile);
+      });
     });
   });
 });

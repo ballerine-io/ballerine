@@ -3,7 +3,7 @@ import { HTTPError } from 'ky';
 export interface UploadFileResult {
   fileId: string;
 }
-export type UploadFileFn = (file: File, fileId: string) => Promise<UploadFileResult>;
+export type UploadFileFn = (file: File) => Promise<UploadFileResult>;
 
 export interface UseFileUploadingResult {
   isUploading: boolean;
