@@ -1,15 +1,15 @@
-import { Step } from '@app/common/hooks/useStepper';
-import { Stepper } from '@app/components/atoms/Stepper';
-import { Item } from '@app/components/atoms/Stepper/Item';
-import { VerticalLayout } from '@app/components/atoms/Stepper/layouts/Vertical';
-import { usePageResolverContext } from '@app/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
-import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { Step } from '@/common/hooks/useStepper';
+import { Stepper } from '@/components/atoms/Stepper';
+import { Item } from '@/components/atoms/Stepper/Item';
+import { VerticalLayout } from '@/components/atoms/Stepper/layouts/Vertical';
+import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useMemo, useRef } from 'react';
-import { usePageContext } from '@app/components/organisms/DynamicUI/Page';
-import { UIPage } from '@app/domains/collection-flow';
-import { UIElementState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
-import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
+import { usePageContext } from '@/components/organisms/DynamicUI/Page';
+import { UIPage } from '@/domains/collection-flow';
+import { UIElementState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
+import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
 
 export const StepperUI = () => {
   const { state: uiState } = useDynamicUIContext();

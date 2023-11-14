@@ -1,8 +1,8 @@
 import {
   JSONFormElementBaseParams,
   JSONFormElementParams,
-} from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
-import { UIElement } from '@app/domains/collection-flow';
+} from '@/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
+import { UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 

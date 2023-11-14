@@ -1,4 +1,4 @@
-import { getAccessToken } from '@app/helpers/get-access-token.helper';
+import { getAccessToken } from '@/helpers/get-access-token.helper';
 import * as Sentry from '@sentry/react';
 import ky, { HTTPError } from 'ky';
 

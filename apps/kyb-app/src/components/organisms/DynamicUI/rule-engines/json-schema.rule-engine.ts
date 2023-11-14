@@ -1,8 +1,8 @@
 import {
   ErrorField,
   RuleEngine,
-} from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
-import { Rule, UIElement } from '@app/domains/collection-flow';
+} from '@/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
+import { Rule, UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import ajvErrors from 'ajv-errors';
 import addFormats from 'ajv-formats';

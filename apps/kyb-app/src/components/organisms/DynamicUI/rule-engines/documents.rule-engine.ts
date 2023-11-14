@@ -1,12 +1,12 @@
-import { EngineManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
-import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
-import { JmespathRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
-import { JsonLogicRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
+import { EngineManager } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
+import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
+import { JmespathRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
+import { JsonLogicRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
 import {
   ErrorField,
   RuleEngine,
-} from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
-import { Document, DocumentsValidatorRule, Rule, UIElement } from '@app/domains/collection-flow';
+} from '@/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
+import { Document, DocumentsValidatorRule, Rule, UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import get from 'lodash/get';
 

@@ -1,11 +1,11 @@
-import { StateProvider } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { useMachineLogic } from '@app/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
-import { useStateLogic } from '@app/components/organisms/DynamicUI/StateManager/hooks/useStateLogic';
-import { createStateMachine } from '@app/components/organisms/DynamicUI/StateManager/state-machine.factory';
+import { StateProvider } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useMachineLogic } from '@/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
+import { useStateLogic } from '@/components/organisms/DynamicUI/StateManager/hooks/useStateLogic';
+import { createStateMachine } from '@/components/organisms/DynamicUI/StateManager/state-machine.factory';
 import {
   StateManagerContext,
   StateManagerProps,
-} from '@app/components/organisms/DynamicUI/StateManager/types';
+} from '@/components/organisms/DynamicUI/StateManager/types';
 import { useMemo } from 'react';
 
 export const StateManager = ({

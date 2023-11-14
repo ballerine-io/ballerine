@@ -1,5 +1,5 @@
-import { JSONFormElementParams } from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
-import { UIElement } from '@app/domains/collection-flow';
+import { JSONFormElementParams } from '@/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
+import { UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import get from 'lodash/get';
 

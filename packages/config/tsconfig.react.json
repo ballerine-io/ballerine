@@ -2,7 +2,9 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     /* If NOT transpiling with TypeScript: */
-    "moduleResolution": "Bundler",
+    //    "moduleResolution": "Bundler",
+    // Change to NodeNext project by project - requires updating imports
+    "moduleResolution": "node",
     "module": "ESNext",
     "noEmit": true,
 

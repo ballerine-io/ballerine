@@ -1,9 +1,9 @@
-import { ActionHandler } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/action-handler.abstract';
-import { EngineManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
-import { EventEngine } from '@app/components/organisms/DynamicUI/rule-engines/event.engine';
-import { JsonLogicRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
-import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
-import { Action, BaseActionParams, IRule } from '@app/domains/collection-flow';
+import { ActionHandler } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/action-handler.abstract';
+import { EngineManager } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
+import { EventEngine } from '@/components/organisms/DynamicUI/rule-engines/event.engine';
+import { JsonLogicRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
+import { JsonSchemaRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
+import { Action, BaseActionParams, IRule } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import jmespath from 'jmespath';
 import ky from 'ky';

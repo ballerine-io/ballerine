@@ -1,6 +1,6 @@
 import { useLayoutEffect } from 'react';
-import { transformThemeToInlineStyles } from '@app/utils/transform-theme-to-inline-styles';
-import { ITheme } from '@app/common/types/settings';
+import { transformThemeToInlineStyles } from '@/utils/transform-theme-to-inline-styles';
+import { ITheme } from '@/common/types/settings';
 
 interface Props {
   theme: ITheme;

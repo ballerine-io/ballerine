@@ -1,11 +1,11 @@
 import { AnyObject } from '@ballerine/ui';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import isEqual from 'lodash/isEqual';
-import { StateMachineAPI } from '@app/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
-import { getAccessToken } from '@app/helpers/get-access-token.helper';
-import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
-import { useCustomer } from '@app/components/providers/CustomerProvider';
+import { StateMachineAPI } from '@/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
+import { getAccessToken } from '@/helpers/get-access-token.helper';
+import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
+import { useCustomer } from '@/components/providers/CustomerProvider';
 
 interface State {
   machineState: string;

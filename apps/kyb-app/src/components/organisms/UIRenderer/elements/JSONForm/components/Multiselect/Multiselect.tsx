@@ -1,4 +1,4 @@
-import { UIElement } from '@app/domains/collection-flow';
+import { UIElement } from '@/domains/collection-flow';
 import {
   Chip,
   MultiSelectSelectedItemRenderer,

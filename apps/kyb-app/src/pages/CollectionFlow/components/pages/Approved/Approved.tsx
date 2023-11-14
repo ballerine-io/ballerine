@@ -1,6 +1,6 @@
-import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
+import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Button, Card } from '@ballerine/ui';
-import { useCustomer } from '@app/components/providers/CustomerProvider';
+import { useCustomer } from '@/components/providers/CustomerProvider';
 
 export const Approved = withSessionProtected(() => {
   const { customer } = useCustomer();

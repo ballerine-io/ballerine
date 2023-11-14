@@ -1,7 +1,7 @@
 import {
   StepsManagerActions,
   StepsRepositoryState,
-} from '@app/common/hooks/useStepper/hooks/useStepsManager/types';
+} from '@/common/hooks/useStepper/hooks/useStepsManager/types';
 
 const initialState: StepsRepositoryState = {
   activeStep: 0,

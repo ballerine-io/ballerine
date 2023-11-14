@@ -1,20 +1,20 @@
-import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { createFormSchemaFromUIElements } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/createFormSchemaFromUIElements';
-import { createInitialFormData } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/createInitialFormData';
-import { UIElementComponent } from '@app/components/organisms/UIRenderer/types';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { createFormSchemaFromUIElements } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/createFormSchemaFromUIElements';
+import { createInitialFormData } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/createInitialFormData';
+import { UIElementComponent } from '@/components/organisms/UIRenderer/types';
 
 import {
   jsonFormFields,
   jsonFormLayouts,
-} from '@app/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
-import { JSONFormDefinitionProvider } from '@app/components/organisms/UIRenderer/elements/JSONForm/providers/JSONFormDefinitionProvider';
-import { useDataInsertionLogic } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic';
-import { DefinitionInsertionParams } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/types';
-import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
-import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
-import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
-import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
-import { transformRJSFErrors } from '@app/helpers/transform-errors';
+} from '@/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
+import { JSONFormDefinitionProvider } from '@/components/organisms/UIRenderer/elements/JSONForm/providers/JSONFormDefinitionProvider';
+import { useDataInsertionLogic } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic';
+import { DefinitionInsertionParams } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/types';
+import { useUIElementErrors } from '@/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
+import { useUIElementProps } from '@/components/organisms/UIRenderer/hooks/useUIElementProps';
+import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
+import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
+import { transformRJSFErrors } from '@/helpers/transform-errors';
 import { AnyObject, DynamicForm, ErrorsList } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import get from 'lodash/get';

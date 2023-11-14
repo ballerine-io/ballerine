@@ -1,5 +1,5 @@
-import { request } from '@app/common/utils/request';
-import { UpdateBusinessDto } from '@app/domains/business/types';
+import { request } from '@/common/utils/request';
+import { UpdateBusinessDto } from '@/domains/business/types';
 import { AnyObject } from '@ballerine/ui';
 import { GetBusinessInformationDto, TBusinessInformation } from './types';
 

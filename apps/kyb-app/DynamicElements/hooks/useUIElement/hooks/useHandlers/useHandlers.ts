@@ -1,6 +1,6 @@
-import { isEventRule } from '@app/components/organisms/DynamicElements/helpers/is-event-rule';
-import { useDynamicUIContext } from '@app/components/organisms/DynamicElements/hooks/useDynamicUIContext';
-import { Action, UIElement } from '@app/domains/collection-flow';
+import { isEventRule } from '@/components/organisms/DynamicElements/helpers/is-event-rule';
+import { useDynamicUIContext } from '@/components/organisms/DynamicElements/hooks/useDynamicUIContext';
+import { Action, UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 

@@ -1,5 +1,5 @@
-import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
-import { Rule, UIElement } from '@app/domains/collection-flow';
+import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
+import { Rule, UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
 export type ErrorField = {

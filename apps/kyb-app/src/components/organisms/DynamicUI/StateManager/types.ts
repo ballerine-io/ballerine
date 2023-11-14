@@ -1,5 +1,5 @@
-import { StateMachineAPI } from '@app/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
-import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
+import { StateMachineAPI } from '@/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
+import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { MachineConfig } from 'xstate';
 

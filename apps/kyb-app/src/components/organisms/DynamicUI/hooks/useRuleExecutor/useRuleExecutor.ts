@@ -1,13 +1,10 @@
-import { EngineManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
-import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
-import {
-  JsonLogicRuleEngine,
-  RuleTestResult,
-} from '@app/components/organisms/DynamicUI/rule-engines';
-import { DocumentsRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/documents.rule-engine';
-import { JmespathRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
-import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
-import { Rule, UIElement } from '@app/domains/collection-flow';
+import { EngineManager } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
+import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
+import { JsonLogicRuleEngine, RuleTestResult } from '@/components/organisms/DynamicUI/rule-engines';
+import { DocumentsRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/documents.rule-engine';
+import { JmespathRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
+import { JsonSchemaRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
+import { Rule, UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useEffect, useMemo, useRef, useState } from 'react';
 

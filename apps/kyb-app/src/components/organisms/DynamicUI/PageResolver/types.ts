@@ -1,4 +1,4 @@
-import { UIPage } from '@app/domains/collection-flow';
+import { UIPage } from '@/domains/collection-flow';
 import { AnyChildren } from '@ballerine/ui';
 
 export interface PageResolverContext {

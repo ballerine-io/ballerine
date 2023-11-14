@@ -1,8 +1,8 @@
-import { AppNavigate } from '@app/common/components/organisms/NavigateWithToken';
-import { useCustomer } from '@app/components/providers/CustomerProvider';
-import { useSessionQuery } from '@app/hooks/useSessionQuery';
-import { SigninLayout } from '@app/pages/SignIn/components/layouts/SigninLayout';
-import { SigninForm } from '@app/pages/SignIn/components/organisms/SigninForm';
+import { AppNavigate } from '@/common/components/organisms/NavigateWithToken';
+import { useCustomer } from '@/components/providers/CustomerProvider';
+import { useSessionQuery } from '@/hooks/useSessionQuery';
+import { SigninLayout } from '@/pages/SignIn/components/layouts/SigninLayout';
+import { SigninForm } from '@/pages/SignIn/components/organisms/SigninForm';
 import { useCallback, useState } from 'react';
 
 export const SignIn = () => {

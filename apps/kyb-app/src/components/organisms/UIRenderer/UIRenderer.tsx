@@ -1,7 +1,7 @@
-import { baseElements } from '@app/components/organisms/UIRenderer/base-elements';
-import { ElementsMap } from '@app/components/organisms/UIRenderer/types/elements.types';
-import { generateBlocks } from '@app/components/organisms/UIRenderer/utils/generateBlocks';
-import { UIElement } from '@app/domains/collection-flow';
+import { baseElements } from '@/components/organisms/UIRenderer/base-elements';
+import { ElementsMap } from '@/components/organisms/UIRenderer/types/elements.types';
+import { generateBlocks } from '@/components/organisms/UIRenderer/utils/generateBlocks';
+import { UIElement } from '@/domains/collection-flow';
 import { BlocksComponent } from '@ballerine/blocks';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';

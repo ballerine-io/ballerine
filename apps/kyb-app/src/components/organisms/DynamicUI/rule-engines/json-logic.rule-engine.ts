@@ -1,9 +1,9 @@
-import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
+import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
 import {
   RuleEngine,
   RuleTestResult,
-} from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
-import { JSONLogicRule, UIElement } from '@app/domains/collection-flow';
+} from '@/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
+import { JSONLogicRule, UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import jsonLogic from 'json-logic-js';
 

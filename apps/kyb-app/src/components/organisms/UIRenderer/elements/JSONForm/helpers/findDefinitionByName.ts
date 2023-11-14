@@ -1,4 +1,4 @@
-import { UIElement } from '@app/domains/collection-flow';
+import { UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
 export const findDefinitionByName = (

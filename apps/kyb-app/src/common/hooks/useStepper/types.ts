@@ -1,4 +1,4 @@
-import { StepStatus } from '@app/components/atoms/Stepper/types';
+import { StepStatus } from '@/components/atoms/Stepper/types';
 
 export type StepIndex = number;
 
