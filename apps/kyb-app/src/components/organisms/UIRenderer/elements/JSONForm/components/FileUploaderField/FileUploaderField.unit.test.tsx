@@ -122,4 +122,28 @@ describe('FileUploaderField', () => {
       });
     });
   });
+
+  it('will fire onChange when user selects a file', async () => {
+    const onChangeCallback = jest.fn();
+
+    const { getByTestId } = render(
+      <FileUploaderField
+        uploadFile={() => Promise.resolve({ fileId: '123' })}
+        onChange={onChangeCallback}
+        fileRepository={new FileRepository()}
+      />,
+    );
+
+    const input = getByTestId('file-uploader-field');
+
+    fireEvent.change(input, {
+      target: {
+        files: [new File([], 'test')],
+      },
+    });
+
+    await waitFor(() => {
+      expect(onChangeCallback).toHaveBeenCalledTimes(1);
+    });
+  });
 });

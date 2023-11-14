@@ -1,15 +1,15 @@
+import { Head } from '@app/Head';
+import { SettingsProvider } from '@app/common/providers/SettingsProvider/SettingsProvider';
+import { ThemeProvider } from '@app/common/providers/ThemeProvider';
+import { queryClient } from '@app/common/utils/query-client';
+import '@ballerine/ui/dist/style.css';
+import * as Sentry from '@sentry/react';
+import { QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import settingsJson from '../settings.json';
 import { App } from './App';
 import './index.css';
-import '@ballerine/ui/dist/style.css';
-import settingsJson from '../settings.json';
-import { SettingsProvider } from '@app/common/providers/SettingsProvider/SettingsProvider';
-import { ThemeProvider } from '@app/common/providers/ThemeProvider/ThemeProvider';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '@app/common/utils/query-client';
-import { Head } from './Head';
-import * as Sentry from '@sentry/react';
 import { sentyRouterInstrumentation } from './router';
 
 Sentry.init({
