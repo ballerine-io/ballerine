@@ -1,7 +1,7 @@
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { Paper } from '@/components/atoms/Paper';
-import { ComponentProps, FocusEvent, useCallback, useMemo } from 'react';
+import { FocusEvent, useCallback, useMemo } from 'react';
 import { ThemeProvider } from '@mui/material';
 import { muiTheme } from '@/common/mui-theme';
 
@@ -35,8 +35,8 @@ export const AutocompleteInput = ({
 }: AutocompleteInputProps) => {
   const optionLabels = useMemo(() => options.map(option => option.value), [options]);
 
-  const handleChange: NonNullable<ComponentProps<typeof Autocomplete>['onChange']> = useCallback(
-    (_, newValue) => {
+  const handleChange = useCallback(
+    (_, newValue: string) => {
       onChange({ target: { value: newValue, name } } as AutocompleteChangeEvent);
     },
     [name, onChange],
@@ -62,7 +62,7 @@ export const AutocompleteInput = ({
         getOptionLabel={label => label}
         freeSolo
         inputValue={value}
-        PaperComponent={Paper as ComponentProps<typeof Autocomplete>['PaperComponent']}
+        PaperComponent={Paper}
         onChange={handleChange}
         disabled={disabled}
         slotProps={{
