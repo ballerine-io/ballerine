@@ -1,26 +1,16 @@
 {
+  "extends": "../config/tsconfig.dom-bundler.json",
   "compilerOptions": {
-    "outDir": "./dist/types",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "target": "ESNext",
-    "module": "CommonJS",
+    // TODO Use 'composite', 'moduleResolution' and 'module' from 'extends' - currently fails build
+    "composite": false,
     "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "strictNullChecks": true,
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "noImplicitReturns": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
+    "module": "CommonJS",
+
+    "jsx": "react-jsx",
     "baseUrl": ".",
-    "pretty": true,
     "paths": {
       "@/*": ["src/*"]
-    },
-    "jsx": "react-jsx"
+    }
   },
-  "files": ["src/index.ts"],
   "include": ["src"]
 }
