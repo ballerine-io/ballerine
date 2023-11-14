@@ -1,25 +1,15 @@
 {
+  "extends": "../config/tsconfig.dom-bundler.json",
   "compilerOptions": {
-    "outDir": "./dist/types",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "target": "ESNext",
+    // TODO Use 'composite', and 'module' from 'extends' - currently fails build
+    "composite": false,
     "module": "CommonJS",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "strictNullChecks": true,
-    "declaration": true,
+    "outDir": "./dist/types",
     "emitDeclarationOnly": true,
-    "noImplicitReturns": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
     "baseUrl": ".",
-    "pretty": true,
     "paths": {
       "@/*": ["src/*"]
     }
   },
-  "files": ["src/index.ts"],
   "include": ["src"]
 }

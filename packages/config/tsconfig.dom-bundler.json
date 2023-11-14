@@ -9,7 +9,8 @@
     "declarationMap": true,
 
     /* If NOT transpiling with TypeScript: */
-    "moduleResolution": "Bundler",
+    // Change to "Bundler" when there's a better IDE support (no module resolution errors)
+    "moduleResolution": "node",
     "module": "ESNext",
     "noEmit": true,
 
