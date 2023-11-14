@@ -1,11 +1,11 @@
 {
   "extends": "@ballerine/config/tsconfig.bundler.json",
   "compilerOptions": {
+    "emitDeclarationOnly": true,
     "outDir": "./dist/types",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "composite": false,
+    "module": "CommonJS",
+    "baseUrl": "."
   },
   "include": ["src"]
 }
