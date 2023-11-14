@@ -4,7 +4,6 @@
     /* If transpiling with TypeScript: */
     "moduleResolution": "NodeNext",
     "module": "NodeNext",
-    "outDir": "dist",
     "sourceMap": true,
 
     /* If your code doesn't run in the DOM: */
