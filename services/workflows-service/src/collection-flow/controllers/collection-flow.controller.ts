@@ -50,7 +50,7 @@ export class ColectionFlowController {
     } catch (error) {
       if (error instanceof UnsupportedFlowTypeException) {
         throw new common.BadRequestException(
-          `${activeWorkflow.workflowDefinitionId as string} is not supported.`,
+          `${activeWorkflow.workflowDefinitionId} is not supported.`,
         );
       }
       throw error;
