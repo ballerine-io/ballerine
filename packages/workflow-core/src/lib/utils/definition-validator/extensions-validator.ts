@@ -75,10 +75,8 @@ const validateChildPlugin = (
 const validateTransformers = (pluginName: string, transformers: SerializableValidatableTransformer['transform']) => {
   transformers.forEach(transform => {
     try {
-      transform.transformer === 'jmespath' &&
-      validateMapping('jmespath', transform.mapping as string);
-      transform.transformer === 'json-logic' &&
-      validateMapping('json-logic', transform.mapping as unknown as Record<string, unknown>)
+      if (transform.transformer === 'jmespath') validateMapping('jmespath', transform.mapping as string);
+      if (transform.transformer === 'json-logic') validateMapping('json-logic', transform.mapping as unknown as Record<string, unknown>)
     } catch (ex) {
       throw new Error(`Invalid transform for ${pluginName} - type: ${transform.transformer} transformer: ${isErrorWithMessage(ex) ? ex.message : ''}`);
     }

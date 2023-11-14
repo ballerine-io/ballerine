@@ -1,9 +1,10 @@
-import { StateMachine } from 'xstate';
+import {StateMachine} from 'xstate';
 
 
 import {WorkflowExtensions} from "../../types";
 import {statesValidator, validateTransitionOnEvent} from "./states-validator";
 import {extensionsValidator} from "./extensions-validator";
+
 export const definitionValidator = (
   definition: {
     states: StateMachine<any, any, any>['states'],
@@ -17,5 +18,6 @@ export const definitionValidator = (
     targetState: definition.initial
   },);
   statesValidator(definition.states)
-  extensions && extensionsValidator(extensions, definition.states)
+  if (extensions) extensionsValidator(extensions, definition.states)
+
 };
