@@ -8,7 +8,7 @@ import {
 } from "../../plugins/external-plugin/types";
 import {WorkflowExtensions} from "../../types";
 import {ruleValidator} from "./rule-validator";
-import { isErrorWithMessage } from "@ballerine/common";
+import {isErrorWithMessage} from "@ballerine/common";
 
 export const extensionsValidator = (extensions: WorkflowExtensions, states: StateMachine<any, any, any>['states']) => {
   extensions.apiPlugins?.forEach(plugin => {
