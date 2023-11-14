@@ -1,4 +1,4 @@
-import { DynamicForm } from '@components/organisms/DynamicForm/DynamicForm';
+import { DynamicForm } from '@/components/organisms/DynamicForm/DynamicForm';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 
 export default {

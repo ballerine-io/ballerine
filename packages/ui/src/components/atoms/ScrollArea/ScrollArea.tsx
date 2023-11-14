@@ -1,7 +1,8 @@
 import * as React from 'react';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
-import { ctw } from '@utils/ctw';
-import { ScrollBar } from '@components/atoms/ScrollArea';
+import { ctw } from '@/utils/ctw';
+import { ScrollBar } from '@/components/atoms/ScrollArea';
+import { ScrollBar } from '@/components/atoms';
 
 interface Props extends ScrollAreaPrimitive.ScrollAreaProps {
   orientation: 'vertical' | 'horizontal' | 'both';

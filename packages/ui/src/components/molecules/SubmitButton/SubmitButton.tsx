@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from '@components/atoms';
+import { Button, ButtonProps } from '@/components/atoms';
 import clsx from 'clsx';
 import { Loader2 } from 'lucide-react';
 import { forwardRef } from 'react';

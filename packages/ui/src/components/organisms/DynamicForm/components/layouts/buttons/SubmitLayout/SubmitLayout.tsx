@@ -1,5 +1,5 @@
-import { SubmitButton } from '@components/molecules/SubmitButton';
-import { SubmitButtonProps, getSubmitButtonOptions } from '@rjsf/utils';
+import { SubmitButton } from '@/components/molecules/SubmitButton';
+import { getSubmitButtonOptions, SubmitButtonProps } from '@rjsf/utils';
 import clsx from 'clsx';
 
 export const SubmitLayout = ({ uiSchema }: SubmitButtonProps) => {

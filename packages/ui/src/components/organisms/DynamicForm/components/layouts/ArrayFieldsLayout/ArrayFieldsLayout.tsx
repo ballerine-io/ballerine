@@ -1,9 +1,10 @@
-import { AnyObject } from '@common/types';
-import { Button } from '@components/atoms';
-import { ArrayFieldsLayoutItem } from '@components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayoutItem';
-import { ArrayFieldsLayoutItemTitle } from '@components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayoutItemTitle';
+import { AnyObject } from '@/common/types';
+import { Button } from '@/components/atoms';
+import { ArrayFieldsLayoutItem } from '@/components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayoutItem';
+import { ArrayFieldsLayoutItemTitle } from '@/components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayoutItemTitle';
 import { ArrayFieldTemplateItemType, ArrayFieldTemplateProps, RJSFSchema } from '@rjsf/utils';
 import { Plus } from 'lucide-react';
+import { ArrayFieldsLayoutItem, ArrayFieldsLayoutItemTitle } from '@/components';
 
 export type ArrayFieldLayoutItem = ArrayFieldTemplateItemType<any, RJSFSchema, any>;
 export interface ArrayFieldsLayoutProps extends ArrayFieldTemplateProps {

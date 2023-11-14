@@ -1,4 +1,4 @@
-import { ctw } from '@utils/ctw';
+import { ctw } from '@/utils/ctw';
 import * as React from 'react';
 
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(

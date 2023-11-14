@@ -1,11 +1,11 @@
-import { MultiselectInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters';
-import { AutocompleteTextInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/AutocompleteTextInputAdapter';
-import { BooleanFieldAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/BooleanFieldAdapter';
-import { DateInputAdater } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/DateInputAdater';
-import { FileInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/FileInputAdapter';
-import { PhoneInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/PhoneInputAdapter';
-import { TextInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/TextInputAdapter';
-import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
+import { MultiselectInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters';
+import { AutocompleteTextInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/AutocompleteTextInputAdapter';
+import { BooleanFieldAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/BooleanFieldAdapter';
+import { DateInputAdater } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/DateInputAdater';
+import { FileInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/FileInputAdapter';
+import { PhoneInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/PhoneInputAdapter';
+import { TextInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/TextInputAdapter';
+import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { RegistryFieldsType } from '@rjsf/utils';
 
 export const fields: Record<keyof RegistryFieldsType, RJSFInputAdapter<unknown, unknown>> = {

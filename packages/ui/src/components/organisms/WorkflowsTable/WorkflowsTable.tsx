@@ -1,16 +1,20 @@
-import { Table } from '@components/atoms/Table/Table';
-import { TableBody } from '@components/atoms/Table/TableBody';
-import { TableCell } from '@components/atoms/Table/TableCell';
-import { TableHead } from '@components/atoms/Table/TableHead';
-import { TableHeader } from '@components/atoms/Table/TableHeader';
-import { TableRow } from '@components/atoms/Table/TableRow';
+import { Table } from '@/components/atoms/Table/Table';
+import { TableBody } from '@/components/atoms/Table/TableBody';
+import { TableCell } from '@/components/atoms/Table/TableCell';
+import { TableHead } from '@/components/atoms/Table/TableHead';
+import { TableHeader } from '@/components/atoms/Table/TableHeader';
+import { TableRow } from '@/components/atoms/Table/TableRow';
 import { useMemo } from 'react';
-import { useReactTable, flexRender, getCoreRowModel } from '@tanstack/react-table';
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { defaultColumns } from './columns';
-import { InputColumn, WorkflowsTableSorting, WorkflowTableColumnDef } from './types';
+import {
+  InputColumn,
+  WorkflowsTableSorting,
+  WorkflowTableColumnDef,
+  WorkflowTableItem,
+} from './types';
 import keyBy from 'lodash/keyBy';
 import { mergeColumns } from './utils/merge-columns';
-import { WorkflowTableItem } from './types';
 import { TableContainer } from './components/TableContainer';
 import { ScrollContainer } from './components/ScrollContainer';
 

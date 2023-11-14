@@ -1,4 +1,4 @@
-import { AnyChildren } from '@common/types';
+import { AnyChildren } from '@/common/types';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
 

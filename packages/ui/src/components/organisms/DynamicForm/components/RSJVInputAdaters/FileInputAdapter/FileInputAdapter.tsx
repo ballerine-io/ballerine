@@ -1,5 +1,5 @@
-import { Input } from '@components/atoms';
-import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
+import { Input } from '@/components/atoms';
+import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { useCallback, useEffect, useRef } from 'react';
 
 export const FileInputAdapter: RJSFInputAdapter<File> = ({

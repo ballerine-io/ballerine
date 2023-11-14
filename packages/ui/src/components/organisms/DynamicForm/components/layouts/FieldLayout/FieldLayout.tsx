@@ -1,8 +1,9 @@
-import { Label } from '@components/atoms';
-import { ErrorsList } from '@components/molecules/ErrorsList';
-import { useWarnings } from '@components/organisms/DynamicForm/hooks/useWarnings/useWarnings';
+import { Label } from '@/components/atoms';
+import { ErrorsList } from '@/components/molecules/ErrorsList';
+import { useWarnings } from '@/components/organisms/DynamicForm/hooks/useWarnings/useWarnings';
 import { FieldTemplateProps } from '@rjsf/utils';
 import { useMemo } from 'react';
+import { ErrorsList } from '@/components';
 
 export const FieldLayout = ({
   id,

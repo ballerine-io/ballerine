@@ -1,7 +1,8 @@
-import { AnyObject } from '@common/types';
-import { DropdownInput, DropdownOption } from '@components/molecules';
+import { AnyObject } from '@/common/types';
+import { DropdownInput, DropdownOption } from '@/components/molecules';
 import { FieldProps } from '@rjsf/utils';
 import { useCallback, useMemo } from 'react';
+import { DropdownInput } from '@/components';
 
 export const SelectField = ({
   id,

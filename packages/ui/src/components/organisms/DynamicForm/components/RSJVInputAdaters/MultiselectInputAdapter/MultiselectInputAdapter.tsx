@@ -5,10 +5,11 @@ import {
   MultiSelectProps,
   MultiSelectSelectedItemRenderer,
   MultiSelectValue,
-} from '@components/molecules';
-import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
+} from '@/components/molecules';
+import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { X } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
+import { MultiSelect } from '@/components';
 
 export const MultiselectInputAdapter: RJSFInputAdapter<MultiSelectValue[], MultiSelectProps> = ({
   id,

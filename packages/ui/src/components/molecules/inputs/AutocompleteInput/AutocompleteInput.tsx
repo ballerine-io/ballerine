@@ -1,9 +1,9 @@
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import { Paper } from '@components/atoms/Paper';
+import { Paper } from '@/components/atoms/Paper';
 import { FocusEvent, useCallback, useMemo } from 'react';
 import { ThemeProvider } from '@mui/material';
-import { muiTheme } from '@common/mui-theme';
+import { muiTheme } from '@/common/mui-theme';
 
 export interface AutocompleteOption {
   value: string;

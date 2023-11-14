@@ -11,7 +11,7 @@ import { fields as baseFields } from './fields';
 import { layouts as baseLayouts } from './layouts';
 import { forwardRef, useCallback, useMemo } from 'react';
 import { Provider, WarningsContext } from './warnings.context';
-import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters';
+import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters';
 
 type InputName = string;
 export type InputWarning = string | string[];

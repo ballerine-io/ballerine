@@ -1,4 +1,4 @@
-import { Input, TextArea } from '@components/atoms';
+import { Input, TextArea } from '@/components/atoms';
 import { FieldProps } from '@rjsf/utils';
 import { useCallback } from 'react';
 

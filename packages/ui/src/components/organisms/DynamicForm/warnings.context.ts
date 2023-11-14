@@ -1,4 +1,4 @@
-import { InputsWarnings } from '@components/organisms/DynamicForm/DynamicForm';
+import { InputsWarnings } from '@/components/organisms/DynamicForm/DynamicForm';
 import { createContext } from 'react';
 
 export interface WarningsContext {

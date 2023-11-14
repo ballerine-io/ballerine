@@ -1,10 +1,10 @@
 import { FocusEvent, useCallback, useMemo, useRef, useState } from 'react';
-import { Command, CommandGroup, CommandInput, CommandItem } from '@components/atoms/Command';
+import { Command, CommandGroup, CommandInput, CommandItem } from '@/components/atoms/Command';
 import keyBy from 'lodash/keyBy';
-import { Popover, PopoverContent, ScrollArea, PopoverTrigger } from '@components/atoms';
+import { Popover, PopoverContent, PopoverTrigger, ScrollArea } from '@/components/atoms';
 import { ClickAwayListener } from '@mui/material';
-import { SelectedElementParams } from '@components/molecules/inputs/MultiSelect/types';
-import { UnselectButtonProps } from '@components/molecules/inputs/MultiSelect/components/Chip/UnselectButton';
+import { SelectedElementParams } from '@/components/molecules/inputs/MultiSelect/types';
+import { UnselectButtonProps } from '@/components/molecules/inputs/MultiSelect/components/Chip/UnselectButton';
 
 export type MultiSelectValue = string | number;
 

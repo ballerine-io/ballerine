@@ -1,5 +1,5 @@
-import { PhoneNumberInput } from '@components/atoms';
-import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
+import { PhoneNumberInput } from '@/components/atoms';
+import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { useCallback } from 'react';
 
 export const PhoneInputAdapter: RJSFInputAdapter = ({

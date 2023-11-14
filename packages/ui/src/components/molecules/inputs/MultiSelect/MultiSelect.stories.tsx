@@ -1,4 +1,4 @@
-import { Chip } from '@components/molecules/inputs/MultiSelect/components/Chip';
+import { Chip } from '@/components/molecules/inputs/MultiSelect/components/Chip';
 import { MultiSelect, MultiSelectSelectedItemRenderer } from './MultiSelect';
 import { useCallback, useState } from 'react';
 import { X } from 'lucide-react';

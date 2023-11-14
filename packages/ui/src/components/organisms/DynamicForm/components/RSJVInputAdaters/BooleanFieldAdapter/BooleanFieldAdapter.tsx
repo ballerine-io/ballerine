@@ -1,5 +1,5 @@
-import { Checkbox } from '@components/atoms';
-import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
+import { Checkbox } from '@/components/atoms';
+import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { useCallback } from 'react';
 
 export const BooleanFieldAdapter: RJSFInputAdapter<boolean> = ({
