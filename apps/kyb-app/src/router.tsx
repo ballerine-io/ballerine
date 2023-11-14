@@ -3,8 +3,9 @@ import { CollectionFlow } from '@/pages/CollectionFlow';
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { SignIn } from '@/pages/SignIn';
+import { createBrowserRouter } from 'react-router-dom';
+
 import {
-  createBrowserRouter,
   createRoutesFromChildren,
   matchRoutes,
   useLocation,
@@ -21,10 +22,7 @@ export const sentyRouterInstrumentation = Sentry.reactRouterV6Instrumentation(
   matchRoutes,
 );
 
-const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouter(
-  // @ts-ignore
-  createBrowserRouter,
-);
+const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouter(createBrowserRouter);
 
 export const router = sentryCreateBrowserRouter([
   {
