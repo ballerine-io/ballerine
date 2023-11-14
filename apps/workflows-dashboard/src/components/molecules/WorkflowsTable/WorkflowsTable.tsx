@@ -5,20 +5,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@app/components/atoms/Table';
+} from '@/components/atoms/Table';
 import { memo, useMemo } from 'react';
 import classnames from 'classnames';
 import { useReactTable, flexRender, getCoreRowModel, SortingState } from '@tanstack/react-table';
-import { IWorkflow } from '@app/domains/workflows/api/workflow';
-import { defaultColumns } from '@app/components/molecules/WorkflowsTable/columns';
+import { IWorkflow } from '@/domains/workflows/api/workflow';
+import { defaultColumns } from '@/components/molecules/WorkflowsTable/columns';
 import Scrollbars from 'react-custom-scrollbars';
 import {
   InputColumn,
   WorkflowsTableSorting,
   WorkflowTableColumnDef,
-} from '@app/components/molecules/WorkflowsTable/types';
+} from '@/components/molecules/WorkflowsTable/types';
 import keyBy from 'lodash/keyBy';
-import { mergeColumns } from '@app/components/molecules/WorkflowsTable/utils/merge-columns';
+import { mergeColumns } from '@/components/molecules/WorkflowsTable/utils/merge-columns';
 
 interface Props {
   items: IWorkflow[];

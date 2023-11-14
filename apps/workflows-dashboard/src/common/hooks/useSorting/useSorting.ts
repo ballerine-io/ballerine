@@ -1,9 +1,9 @@
 import {
   getSortingDataFromQuery,
   SortingData,
-} from '@app/common/hooks/useSorting/helpers/get-sorting-data-from-query';
-import { buildSortingRegex } from '@app/common/hooks/useSorting/utils/build-sorting-regex';
-import { SortingParams } from '@app/common/types/sorting-params.types';
+} from '@/common/hooks/useSorting/helpers/get-sorting-data-from-query';
+import { buildSortingRegex } from '@/common/hooks/useSorting/utils/build-sorting-regex';
+import { SortingParams } from '@/common/types/sorting-params.types';
 import { useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 

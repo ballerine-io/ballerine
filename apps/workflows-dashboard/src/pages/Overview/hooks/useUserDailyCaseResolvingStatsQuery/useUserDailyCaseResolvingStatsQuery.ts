@@ -1,4 +1,4 @@
-import { usersStatsQueryKeys } from '@app/domains/user/api/users-stats';
+import { usersStatsQueryKeys } from '@/domains/user/api/users-stats';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { useMemo } from 'react';

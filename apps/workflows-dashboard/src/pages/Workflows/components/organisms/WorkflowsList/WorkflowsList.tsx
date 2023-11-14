@@ -1,9 +1,9 @@
-import { useSorting } from '@app/common/hooks/useSorting';
-import { LoadingSpinner } from '@app/components/atoms/LoadingSpinner';
-import { WorkflowsTable } from '@app/components/molecules/WorkflowsTable';
-import { InputColumn } from '@app/components/molecules/WorkflowsTable/types';
-import { IWorkflow } from '@app/domains/workflows/api/workflow';
-import { ViewWorkflow } from '@app/pages/Workflows/components/organisms/WorkflowsList/components/ViewWorkflow';
+import { useSorting } from '@/common/hooks/useSorting';
+import { LoadingSpinner } from '@/components/atoms/LoadingSpinner';
+import { WorkflowsTable } from '@/components/molecules/WorkflowsTable';
+import { InputColumn } from '@/components/molecules/WorkflowsTable/types';
+import { IWorkflow } from '@/domains/workflows/api/workflow';
+import { ViewWorkflow } from '@/pages/Workflows/components/organisms/WorkflowsList/components/ViewWorkflow';
 
 interface Props {
   workflows: IWorkflow[];

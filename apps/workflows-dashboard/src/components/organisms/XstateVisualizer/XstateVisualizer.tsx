@@ -2,7 +2,7 @@ import { memo, useLayoutEffect, useMemo, useRef } from 'react';
 import { inspect } from '@xstate/inspect';
 import { createMachine } from 'xstate';
 import { useInterpret, useMachine } from '@xstate/react';
-import { deserializeStateDefinition } from '@app/components/organisms/XstateVisualizer/utils/deserialize-state-definition';
+import { deserializeStateDefinition } from '@/components/organisms/XstateVisualizer/utils/deserialize-state-definition';
 
 interface Props {
   stateDefinition: Record<string, any>;
