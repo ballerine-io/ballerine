@@ -3,7 +3,7 @@ import { ErrorsList } from '@/components/molecules/ErrorsList';
 import { useWarnings } from '@/components/organisms/DynamicForm/hooks/useWarnings/useWarnings';
 import { FieldTemplateProps } from '@rjsf/utils';
 import { useMemo } from 'react';
-import { InputWarning } from '@/components';
+import { ErrorsList } from '@/components';
 
 export const FieldLayout = ({
   id,
@@ -34,11 +34,7 @@ export const FieldLayout = ({
       {rawErrors ? <ErrorsList errors={errors} /> : null}
       {fieldWarnings ? (
         <ErrorsList
-          errors={
-            Array.isArray(fieldWarnings)
-              ? (fieldWarnings as unknown as Extract<InputWarning, string[]>)
-              : [fieldWarnings as unknown as Extract<InputWarning, string>]
-          }
+          errors={Array.isArray(fieldWarnings) ? fieldWarnings : [fieldWarnings]}
           type="warning"
         />
       ) : null}
