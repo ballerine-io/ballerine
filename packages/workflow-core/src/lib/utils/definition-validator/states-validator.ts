@@ -1,5 +1,5 @@
 import { StateMachine } from 'xstate';
-import {ruleValidator, TDefintionRules} from "./rule-validator";
+import { ruleValidator, TDefintionRules } from './rule-validator';
 
 type TTransitionEvent = string;
 
@@ -21,40 +21,37 @@ export const statesValidator = (states: StateMachine<any, any, any>['states']) =
         const transitionEvent = transitions[event]!;
         if (Array.isArray(transitionEvent)) {
           (transitionEvent as unknown as TTransitionOptions).forEach(transitionOption => {
-            validateTransitionOnEvent(
-              {
-                stateNames,
-                currentState,
-                targetState: transitionOption.target
-              });
+            validateTransitionOnEvent({
+              stateNames,
+              currentState,
+              targetState: transitionOption.target,
+            });
 
             transitionOption.cond && ruleValidator(transitionOption.cond);
           });
-        } else {
-          validateTransitionOnEvent(
-            {
-              stateNames,
-              currentState,
-              targetState: transitionEvent as unknown as TTransitionEvent,
-            },
-          );
+        }
+
+        if (typeof transitionEvent === 'string') {
+          validateTransitionOnEvent({
+            stateNames,
+            currentState,
+            targetState: transitionEvent as unknown as TTransitionEvent,
+          });
         }
       }
     }
   }
 };
 
-export const validateTransitionOnEvent = (
-  {
-    stateNames,
-    currentState,
-    targetState
-  }: {
-    stateNames: Array<string>,
-    currentState: string,
-    targetState: string
-  }
-) => {
+export const validateTransitionOnEvent = ({
+  stateNames,
+  currentState,
+  targetState,
+}: {
+  stateNames: Array<string>;
+  currentState: string;
+  targetState: string;
+}) => {
   if (!stateNames.includes(targetState)) {
     throw new Error(`Invalid transition from ${currentState} to ${targetState}`);
   }
