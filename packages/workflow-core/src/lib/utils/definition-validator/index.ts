@@ -1,6 +1,7 @@
 import { StateMachine } from 'xstate';
 import {WorkflowExtensions} from "../../types";
 import {definitionValidator} from "./definition-validator";
+
 export const validateDefinitionLogic = (workflowDefinitionArgs: Record<string, any>) => {
   definitionValidator(
     {

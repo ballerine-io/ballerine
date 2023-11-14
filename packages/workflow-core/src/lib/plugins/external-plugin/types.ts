@@ -71,6 +71,7 @@ export interface SerializableWebhookPluginParams extends Omit<WebhookPluginParam
 
 export interface ISerializableChildPluginParams
   extends Omit<ChildWorkflowPluginParams, 'action' | 'transformers' | 'parentWorkflowRuntimeId'> {
+  pluginKind: string;
   transformers: Omit<SerializableValidatableTransformer, 'schema'>['transform'];
 
   invoke?(...args: Array<any>): Promise<any>;

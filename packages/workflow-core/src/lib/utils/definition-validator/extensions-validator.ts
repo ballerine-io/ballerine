@@ -10,32 +10,38 @@ import {WorkflowExtensions} from "../../types";
 import {ruleValidator} from "./rule-validator";
 import { isErrorWithMessage } from "@ballerine/common";
 
-
 export const extensionsValidator = (extensions: WorkflowExtensions, states: StateMachine<any, any, any>['states']) => {
-  if (extensions.apiPlugins) {
-    extensions.apiPlugins.forEach(plugin => {
+  extensions.apiPlugins?.forEach(plugin => {
 
-      const pluginKind = (plugin as ISerializableHttpPluginParams).pluginKind;
-      if (
-        pluginKind === 'api' ||
-        pluginKind === 'kyb' ||
-        pluginKind === 'kyc-session' ||
-        pluginKind === 'email' ||
-        pluginKind === 'kyc'
-      ) {
-        validateApiPlugin(plugin as unknown as ISerializableHttpPluginParams, states)
-      }
-      if (pluginKind === 'webhook') {
-        validateWebhookPlugin(plugin as unknown as SerializableWebhookPluginParams)
-      }
-      if (pluginKind === 'iterative') {
-        validateIterativePlugin(plugin as unknown as SerializableIterativePluginParams, states)
-      }
-      if (pluginKind === 'child') {
-        validateChildPlugin(plugin as unknown as ISerializableChildPluginParams)
-      }
-    });
-  }
+    const pluginKind = (plugin as ISerializableHttpPluginParams).pluginKind;
+    if (
+      pluginKind === 'api' ||
+      pluginKind === 'kyb' ||
+      pluginKind === 'kyc-session' ||
+      pluginKind === 'email' ||
+      pluginKind === 'kyc'
+    ) {
+      validateApiPlugin(plugin as unknown as ISerializableHttpPluginParams, states)
+    }
+
+    if (pluginKind === 'webhook') {
+      validateWebhookPlugin(plugin as unknown as SerializableWebhookPluginParams)
+    }
+  });
+
+  extensions.commonPlugins?.forEach(plugin => {
+    const pluginKind = (plugin as unknown as ISerializableChildPluginParams).pluginKind;
+    if (pluginKind === 'iterative') {
+      validateIterativePlugin(plugin as unknown as SerializableIterativePluginParams, states)
+    }
+  });
+
+  extensions.childWorkflowPlugins?.forEach(plugin => {
+    const pluginKind = (plugin as unknown as ISerializableChildPluginParams).pluginKind;
+    if (pluginKind === 'child') {
+      validateChildPlugin(plugin as unknown as ISerializableChildPluginParams)
+    }
+  });
 }
 const validateApiPlugin = (
   plugin: ISerializableHttpPluginParams,
