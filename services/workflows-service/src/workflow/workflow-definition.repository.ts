@@ -3,6 +3,7 @@ import { ProjectScopeService } from '@/project/project-scope.service';
 import { TProjectId, TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { Prisma, WorkflowDefinition } from '@prisma/client';
+import { validateDefinitionLogic } from "@ballerine/workflow-core";
 
 @Injectable()
 export class WorkflowDefinitionRepository {
@@ -15,6 +16,7 @@ export class WorkflowDefinitionRepository {
     args: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionCreateArgs>,
     projectId?: TProjectId,
   ): Promise<WorkflowDefinition> {
+    validateDefinitionLogic(args.data)
     return await this.prisma.workflowDefinition.create<T>(
       this.scopeService.scopeCreate(args, projectId),
     );
@@ -70,7 +72,11 @@ export class WorkflowDefinitionRepository {
         },
       ],
     };
-    return await this.prisma.workflowDefinition.findFirstOrThrow(queryArgs);
+
+    const workflowDefinition = await this.prisma.workflowDefinition.findFirstOrThrow(queryArgs);
+    validateDefinitionLogic(workflowDefinition)
+
+    return workflowDefinition;
   }
 
   async findTemplateByIdUnscoped<
@@ -79,10 +85,14 @@ export class WorkflowDefinitionRepository {
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionFindFirstOrThrowArgs, 'where'>>,
   ): Promise<WorkflowDefinition> {
-    return await this.prisma.workflowDefinition.findFirstOrThrow({
+    const workflowDefinition  = await this.prisma.workflowDefinition.findFirstOrThrow({
       where: { id, isPublic: true },
       ...args,
     });
+
+    validateDefinitionLogic(workflowDefinition)
+
+    return workflowDefinition;
   }
 
   async updateById<T extends Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>(
@@ -90,6 +100,8 @@ export class WorkflowDefinitionRepository {
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>,
     projectId: TProjectId,
   ): Promise<WorkflowDefinition> {
+    args.data.definition && validateDefinitionLogic(args.data)
+
     return await this.prisma.workflowDefinition.update(
       this.scopeService.scopeUpdate(
         {

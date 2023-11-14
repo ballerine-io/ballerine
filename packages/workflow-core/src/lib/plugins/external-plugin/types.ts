@@ -9,7 +9,7 @@ export interface ValidatableTransformer {
 }
 export interface IApiPluginParams {
   name: string;
-  pluginKind: string;
+  pluginKind?: string;
   stateNames: Array<string>;
   url: string;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
@@ -24,6 +24,7 @@ export interface IApiPluginParams {
 }
 export interface WebhookPluginParams {
   name: string;
+  pluginKind: string;
   stateNames: Array<string>;
   url: string;
   method: IApiPluginParams['method'];
@@ -33,6 +34,7 @@ export interface WebhookPluginParams {
 
 export interface IterativePluginParams {
   name: string;
+  pluginKind: string;
   stateNames: Array<string>;
   iterateOn: Omit<IApiPluginParams['request'], 'schemaValidator'>;
   actionPlugin: ActionablePlugin;

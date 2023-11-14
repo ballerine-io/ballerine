@@ -41,6 +41,7 @@ export {
   HelpersTransformer,
   JmespathTransformer,
   JsonSchemaValidator,
+  validateDefinitionLogic,
 } from './utils';
 export { HttpError } from './errors';
 export { createWorkflow } from './create-workflow';

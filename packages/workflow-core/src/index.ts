@@ -16,6 +16,7 @@ export type {
   ChildToParentCallback,
   SerializableValidatableTransformer,
   THelperFormatingLogic,
+  validateDefinitionLogic,
 } from './lib';
 export {
   createWorkflow,
