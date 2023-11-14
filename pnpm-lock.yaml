@@ -833,7 +833,7 @@ importers:
   packages/blocks:
     dependencies:
       '@ballerine/common':
-        specifier: workspace:*
+        specifier: ^0.7.21
         version: link:../common
     devDependencies:
       '@babel/core':
