@@ -21,6 +21,6 @@ export const definitionValidator = (
       targetState: definition.initial,
     });
 
-  statesValidator(definition.states, definition.initialContext);
+  statesValidator(definition.states);
   if (extensions) extensionsValidator(extensions, definition.states);
 };
