@@ -2,7 +2,8 @@ import { useEventEmitterLogic } from '@app/components/organisms/DynamicUI/StateM
 import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useUIElementToolsLogic } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/hooks/useUIElementToolsLogic';
 import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
-import { getDocumentFileIdPath } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/getDocumentFileIdPath';
+import { DocumentValueDestinationParser } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/document-value-destination-parser';
+import { serializeDocumentId } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/serialize-document-id';
 import { FileUploaderField } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField';
 import { useFileRepository } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileRepository';
 import { UploadFileFn } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/types';
@@ -22,9 +23,11 @@ interface DocumentFieldParams {
 }
 
 export const DocumentField = (
-  props: RJSFInputProps & { definition: UIElement<DocumentFieldParams> },
+  props: RJSFInputProps & { definition: UIElement<DocumentFieldParams> } & {
+    inputIndex: number | null;
+  },
 ) => {
-  const { definition, formData, onBlur, ...restProps } = props;
+  const { definition, formData, inputIndex, onBlur, ...restProps } = props;
   const { stateApi } = useStateManagerContext();
   const { payload } = useStateManagerContext();
   const [fieldError, setFieldError] = useState<ErrorField | null>(null);
@@ -49,16 +52,22 @@ export const DocumentField = (
   const fileId = useMemo(() => {
     if (!Array.isArray(payload.documents)) return null;
 
-    const document = payload.documents.find((document: Document) => {
-      return document?.id === definition.options.documentData.id;
-    }) as Document;
+    const parser = new DocumentValueDestinationParser(definition.valueDestination);
+    const documentsPath = parser.extractRootPath();
+    const documentPagePath = parser.extractPagePath();
+    const documents = get(payload, documentsPath) as Document[];
 
-    const fileIdPath = getDocumentFileIdPath(definition);
+    const document = documents.find((document: Document) => {
+      return document?.id === serializeDocumentId(definition.options.documentData.id, inputIndex);
+    });
 
-    const fileId = get(document, fileIdPath) as string | null;
+    const documentPage = get(document, documentPagePath) as Document['pages'][number];
+    const fileIdPath = parser.extractFileIdPath();
+
+    const fileId = get(documentPage, fileIdPath) as string | null;
 
     return fileId;
-  }, [payload.documents, definition]);
+  }, [payload.documents, definition, inputIndex]);
   useFileRepository(collectionFlowFileStorage, fileId);
 
   useLayoutEffect(() => {
@@ -81,7 +90,8 @@ export const DocumentField = (
     async (file: File) => {
       const context = stateApi.getContext();
       const document = (context.documents as Document[]).find(
-        document => document && document.id === options.documentData.id,
+        document =>
+          document && document.id === serializeDocumentId(options.documentData.id, inputIndex),
       );
 
       try {
@@ -106,31 +116,47 @@ export const DocumentField = (
         toggleElementLoading();
       }
     },
-    [stateApi, options, toggleElementLoading],
+    [stateApi, options, inputIndex, toggleElementLoading],
   );
 
   const handleChange = useCallback(
     (fileId: string) => {
+      const destinationParser = new DocumentValueDestinationParser(definition.valueDestination);
+      const pathToDocumentsList = destinationParser.extractRootPath();
+      const pathToPage = destinationParser.extractPagePath();
+      const pathToFileId = destinationParser.extractFileIdPath();
+
       const context = stateApi.getContext();
+      const documents = (get(context, pathToDocumentsList) as Document[]) || [];
+
       let document = (context.documents as Document[]).find(
-        document => document && document.id === definition.options.documentData.id,
+        document =>
+          document &&
+          document.id === serializeDocumentId(definition.options.documentData.id, inputIndex),
       );
+
       if (!document) {
-        document = options.documentData as Document;
-        context.documents = [...(context.documents as Document[]), document];
-        set(context, 'documents', context.documents);
+        document = {
+          ...options.documentData,
+          id: serializeDocumentId(options.documentData.id, inputIndex),
+        } as Document;
+        documents.push(document);
+        set(context, pathToDocumentsList, documents);
       }
 
-      const fileIdPath = getDocumentFileIdPath(definition);
+      const documentPage =
+        (get(document, pathToPage) as Document['pages'][number]) ||
+        ({} as Document['pages'][number]);
 
-      set(document, fileIdPath, fileId);
+      set(documentPage, pathToFileId, fileId);
+      set(document, pathToPage, documentPage);
       set(document, 'decision', {});
 
       stateApi.setContext(context);
 
       sendEvent('onChange');
     },
-    [stateApi, options, definition, sendEvent],
+    [stateApi, options, definition, inputIndex, sendEvent],
   );
 
   return (

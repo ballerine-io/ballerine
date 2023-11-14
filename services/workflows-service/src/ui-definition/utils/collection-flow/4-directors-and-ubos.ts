@@ -626,6 +626,31 @@ export const DirectorsAndUbosPage = {
                     hint: 'name@companyhk.com',
                   },
                 },
+                {
+                  name: 'directors:passport-document',
+                  type: 'json-form:document',
+                  valueDestination:
+                    'entity.data.additionalInfo.directors[{INDEX}].additionalInfo.documents[0].pages[0].ballerineFileId',
+                  options: {
+                    jsonFormDefinition: {
+                      type: 'string',
+                    },
+                    uiSchema: {
+                      'ui:field': 'DocumentInput',
+                    },
+                    documentData: {
+                      id: 'directors:passport-document-[{INDEX}]',
+                      category: 'proof_of_location',
+                      type: 'interior_office_photo',
+                      issuer: {
+                        country: 'ZZ',
+                      },
+                      version: '1',
+                      issuingVersion: 1,
+                      properties: {},
+                    },
+                  },
+                },
               ],
             },
             {

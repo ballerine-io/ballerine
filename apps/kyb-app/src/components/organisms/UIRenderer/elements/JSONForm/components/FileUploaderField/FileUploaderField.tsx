@@ -26,7 +26,7 @@ export const FileUploaderField = forwardRef(
       if (!uploadedFileId) return;
 
       onChange(uploadedFileId);
-    }, [uploadedFileId, onChange]);
+    }, [uploadedFileId]);
 
     const handleChange = useCallback(
       async (event: React.ChangeEvent<HTMLInputElement>) => {

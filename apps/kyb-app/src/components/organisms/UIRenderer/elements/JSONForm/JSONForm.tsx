@@ -57,7 +57,6 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
 
   useEffect(() => {
     const elementValue = get(payload, definition.valueDestination) as unknown;
-
     // TO DO: ADD this logic to jmespath @blokh
     if (definition.options?.jsonFormDefinition?.type === 'array' && Array.isArray(elementValue)) {
       const payload = stateApi.getContext();
