@@ -1,4 +1,7 @@
-import { getSortingDataFromQuery } from '@/common/hooks/useSorting/helpers/get-sorting-data-from-query';
+import {
+  getSortingDataFromQuery,
+  SortingData,
+} from '@/common/hooks/useSorting/helpers/get-sorting-data-from-query';
 import { buildSortingRegex } from '@/common/hooks/useSorting/utils/build-sorting-regex';
 import { SortingParams } from '@/common/types/sorting-params.types';
 import { useCallback, useMemo } from 'react';
@@ -7,13 +10,13 @@ import { useSearchParams } from 'react-router-dom';
 export function useSorting(prefix = 'order_by') {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const parseResult = useMemo(() => {
+  const parseResult: SortingData | null = useMemo(() => {
     return getSortingDataFromQuery(searchParams.toString(), buildSortingRegex(prefix));
   }, [prefix, searchParams]);
 
   const setSorting = useCallback(
     (key: string, value: 'asc' | 'desc') => {
-      if (parseResult?.keyWithPrefix) {
+      if (parseResult) {
         searchParams.delete(parseResult.keyWithPrefix);
       }
 
