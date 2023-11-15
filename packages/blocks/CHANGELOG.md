@@ -1,5 +1,13 @@
 # @ballerine/blocks
 
+## 0.1.20
+
+### Patch Changes
+
+- Change document schemas
+- Updated dependencies
+  - @ballerine/common@0.7.22
+
 ## 0.1.19
 
 ### Patch Changes
