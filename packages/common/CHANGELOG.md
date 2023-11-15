@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.22
+
+### Patch Changes
+
+- Added ZZ schemas
+
 ## 0.7.21
 
 ### Patch Changes

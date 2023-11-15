@@ -55,7 +55,7 @@ export const DocumentField = (
     const parser = new DocumentValueDestinationParser(definition.valueDestination);
     const documentsPath = parser.extractRootPath();
     const documentPagePath = parser.extractPagePath();
-    const documents = get(payload, documentsPath) as Document[];
+    const documents = (get(payload, documentsPath) as Document[]) || [];
 
     const document = documents.find((document: Document) => {
       return document?.id === serializeDocumentId(definition.options.documentData.id, inputIndex);
@@ -88,8 +88,11 @@ export const DocumentField = (
 
   const fileUploader: UploadFileFn = useCallback(
     async (file: File) => {
+      const parser = new DocumentValueDestinationParser(definition.valueDestination);
+
       const context = stateApi.getContext();
-      const document = (context.documents as Document[]).find(
+      const documents = (get(context, parser.extractRootPath()) as Document[]) || [];
+      const document = documents.find(
         document =>
           document && document.id === serializeDocumentId(options.documentData.id, inputIndex),
       );
@@ -116,7 +119,7 @@ export const DocumentField = (
         toggleElementLoading();
       }
     },
-    [stateApi, options, inputIndex, toggleElementLoading],
+    [stateApi, options, inputIndex, definition.valueDestination, toggleElementLoading],
   );
 
   const handleChange = useCallback(

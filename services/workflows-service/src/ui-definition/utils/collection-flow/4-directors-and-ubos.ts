@@ -632,6 +632,8 @@ export const DirectorsAndUbosPage = {
                   valueDestination:
                     'entity.data.additionalInfo.directors[{INDEX}].additionalInfo.documents[0].pages[0].ballerineFileId',
                   options: {
+                    label: 'ID/Passport photo',
+                    description: 'Valid identification document',
                     jsonFormDefinition: {
                       type: 'string',
                     },
@@ -640,8 +642,35 @@ export const DirectorsAndUbosPage = {
                     },
                     documentData: {
                       id: 'directors:passport-document-[{INDEX}]',
-                      category: 'proof_of_location',
-                      type: 'interior_office_photo',
+                      category: 'proof_of_identity',
+                      type: 'passport',
+                      issuer: {
+                        country: 'ZZ',
+                      },
+                      version: '1',
+                      issuingVersion: 1,
+                      properties: {},
+                    },
+                  },
+                },
+                {
+                  name: 'directors:passport-selfie',
+                  type: 'json-form:document',
+                  valueDestination:
+                    'entity.data.additionalInfo.directors[{INDEX}].additionalInfo.documents[1].pages[0].ballerineFileId',
+                  options: {
+                    label: 'Selfie with ID/Passport photo',
+                    description: "The same document held next to the director's face",
+                    jsonFormDefinition: {
+                      type: 'string',
+                    },
+                    uiSchema: {
+                      'ui:field': 'DocumentInput',
+                    },
+                    documentData: {
+                      id: 'directors:passport-selfie-[{INDEX}]',
+                      category: 'proof_of_identity_ownership',
+                      type: 'selfie',
                       issuer: {
                         country: 'ZZ',
                       },
