@@ -10,9 +10,7 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "eslint-plugin-react": "^7.33.2"
-  },
-  "devDependencies": {
+    "eslint-plugin-react": "^7.33.2",
     "@ballerine/eslint-config": "^1.0.0"
   }
 }
