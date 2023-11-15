@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "@ballerine/common": "0.5.19",
-    "@ballerine/workflow-core": "0.4.29",
+    "@ballerine/workflow-core": "0.5.13",
     "xstate": "^4.37.0"
   },
   "devDependencies": {
