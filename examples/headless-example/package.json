@@ -34,7 +34,7 @@
     "vite": "^4.1.0"
   },
   "dependencies": {
-    "@ballerine/common": "0.5.19",
+    "@ballerine/common": "0.7.14",
     "@ballerine/workflow-browser-sdk": "0.4.22",
     "@felte/reporter-svelte": "^1.1.5",
     "@felte/validator-zod": "^1.0.13",
