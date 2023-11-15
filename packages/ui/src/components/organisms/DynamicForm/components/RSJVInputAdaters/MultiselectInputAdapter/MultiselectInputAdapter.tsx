@@ -9,7 +9,6 @@ import {
 import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { X } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
-import { MultiSelect } from '@/components';
 
 export const MultiselectInputAdapter: RJSFInputAdapter<MultiSelectValue[], MultiSelectProps> = ({
   id,
