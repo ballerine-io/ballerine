@@ -7,11 +7,10 @@ import {
 } from '@rjsf/utils';
 import Form, { IChangeEvent } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
-import { fields as baseFields } from './fields';
+import { fields as baseFields, fields } from './fields';
 import { layouts as baseLayouts } from './layouts';
 import { forwardRef, useCallback, useMemo } from 'react';
 import { Provider, WarningsContext } from './warnings.context';
-import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters';
 
 type InputName = string;
 export type InputWarning = string | string[];
@@ -20,14 +19,14 @@ export interface InputsWarnings {
   [k: InputName]: InputWarning | InputsWarnings;
 }
 
-interface Props<TFormData> {
+export interface DynamicFormProps<TFormData> {
   schema: RJSFSchema;
   uiSchema?: UiSchema;
   className?: string;
   formData?: object;
   warnings?: InputsWarnings;
   disabled?: boolean;
-  fields?: Record<keyof RegistryFieldsType, RJSFInputAdapter<any>>;
+  fields?: typeof fields;
   layouts?: Partial<TemplatesType>;
   liveValidate?: boolean;
   transformErrors?: (errors: RJSFValidationError[], uiSchema: UiSchema) => RJSFValidationError[];
@@ -50,11 +49,12 @@ export const DynamicForm = forwardRef(
       transformErrors,
       onChange,
       onSubmit,
-    }: Props<TFormData>,
+    }: DynamicFormProps<TFormData>,
     ref: any,
   ) => {
     const handleChange = useCallback(
       (form: IChangeEvent<TFormData>) => {
+        // @ts-ignore
         onChange && onChange(form.formData);
       },
       [onChange],
@@ -62,6 +62,7 @@ export const DynamicForm = forwardRef(
 
     const handleSubmit = useCallback(
       (form: IChangeEvent<TFormData>) => {
+        // @ts-ignore
         onSubmit && onSubmit(form.formData);
       },
       [onSubmit],
@@ -95,8 +96,8 @@ export const DynamicForm = forwardRef(
           showErrorList={false}
           disabled={disabled}
           liveValidate={liveValidate}
+          // @ts-ignore
           transformErrors={transformErrors}
-          //@ts-nocheck
           ref={ref}
         />
       </Provider>
