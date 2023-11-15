@@ -1,7 +1,26 @@
-import { TWorkflowById } from '../../../../domains/workflows/fetchers';
+import {
+  CommonWorkflowStates,
+  StateTag,
+  getDocumentsByCountry,
+  isNullish,
+} from '@ballerine/common';
+import { Badge } from '@ballerine/ui';
+import { X } from 'lucide-react';
+import * as React from 'react';
+import { ComponentProps, useMemo } from 'react';
+import { toTitleCase, toUpperCase } from 'string-ts';
+import { WarningFilledSvg } from '../../../../common/components/atoms/icons';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { includesValues } from '../../../../common/utils/includes-values/includes-values';
+import { isValidUrl } from '../../../../common/utils/is-valid-url';
+import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
+import { useRemoveDecisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
+import { TWorkflowById } from '../../../../domains/workflows/fetchers';
+import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
+import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
+import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import {
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
@@ -9,28 +28,12 @@ import {
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from '../useEntity/utils';
-import {
-  CommonWorkflowStates,
-  getDocumentsByCountry,
-  isNullish,
-  StateTag,
-} from '@ballerine/common';
-import * as React from 'react';
-import { ComponentProps, useMemo } from 'react';
-import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
-import { X } from 'lucide-react';
-import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
-import { Badge } from '@ballerine/ui';
-import { WarningFilledSvg } from '../../../../common/components/atoms/icons';
-import { ctw } from '../../../../common/utils/ctw/ctw';
-import { toTitleCase, toUpperCase } from 'string-ts';
-import { isValidUrl } from '../../../../common/utils/is-valid-url';
-import { useRemoveDecisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { getPostUpdateEventName } from './get-post-update-event-name';
+import { useDocumentPageImages } from './hooks/useDocumentPageImages';
 import { motionProps } from './motion-props';
-import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
-import { includesValues } from '../../../../common/utils/includes-values/includes-values';
+import { selectDirectorsDocuments } from './selectors/selectDirectorsDocuments';
+import { selectWorkflowDocuments } from './selectors/selectWorkflowDocuments';
 
 export const useTasks = ({
   workflow,
@@ -59,26 +62,42 @@ export const useTasks = ({
   const caseState = useCaseState(session?.user, workflow);
   const postUpdateEventName = getPostUpdateEventName(workflow);
   // const deliverEvent = workflow?.workflowDefinition?.config?.deliverEvent;
-  const docsData = useStorageFilesQuery(
-    workflow?.context?.documents?.flatMap(({ pages }) =>
-      pages?.map(({ ballerineFileId }) => ballerineFileId),
-    ),
+  const workflowDocuments = useMemo(() => selectWorkflowDocuments(workflow), [workflow]);
+  const directorsDocuments = useMemo(() => selectDirectorsDocuments(workflow), [workflow]);
+  const workflowDocumentPages = useMemo(
+    () =>
+      workflowDocuments.flatMap(({ pages }) =>
+        pages?.map(({ ballerineFileId }) => ballerineFileId),
+      ),
+    [workflowDocuments],
   );
+  const directorDocumentPages = useMemo(
+    () =>
+      directorsDocuments.flatMap(({ pages }) =>
+        pages?.map(({ ballerineFileId }) => ballerineFileId),
+      ),
+    [directorsDocuments],
+  );
+
+  const workflowDocsData = useStorageFilesQuery(workflowDocumentPages);
+  const directorsDocsData = useStorageFilesQuery(directorDocumentPages);
+
   const { noAction } = useCaseDecision();
   const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(
     workflow?.id,
     postUpdateEventName,
   );
 
-  const results: Array<Array<string>> = [];
-  workflow?.context?.documents?.forEach((document, docIndex) => {
-    document?.pages?.forEach((page, pageIndex: number) => {
-      if (!results[docIndex]) {
-        results[docIndex] = [];
-      }
-      results[docIndex][pageIndex] = docsData?.shift()?.data;
-    });
-  });
+  const workflowDocumentPagesResults: Array<Array<string>> = useDocumentPageImages(
+    workflowDocuments,
+    workflowDocsData,
+  );
+
+  const directorsDocumentPagesResults: Array<Array<string>> = useDocumentPageImages(
+    directorsDocuments,
+    directorsDocsData,
+  );
+
   const pluginsOutputBlacklist = [
     'companySanctions',
     'directors',
@@ -361,13 +380,13 @@ export const useTasks = ({
         const documentsCell = {
           type: 'multiDocuments',
           value: {
-            isLoading: docsData?.some(({ isLoading }) => isLoading),
+            isLoading: workflowDocsData?.some(({ isLoading }) => isLoading),
             data:
               documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
                 title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
                   toTitleCase(docType ?? ''),
                 )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                imageUrl: results[docIndex][pageIndex],
+                imageUrl: workflowDocumentPagesResults[docIndex][pageIndex],
                 fileType: type,
               })) ?? [],
           },
@@ -1098,6 +1117,45 @@ export const useTasks = ({
           },
         ];
 
+  const directorsDocumentsBlocks = directorsUserProvided
+    .filter(director => Array.isArray(director.additionalInfo?.documents))
+    .map(director => {
+      const { documents } = director.additionalInfo;
+
+      const multiDocumentsBlocks = documents.map((document, docIndex) => {
+        return {
+          type: 'multiDocuments',
+          isLoading: directorsDocsData?.some(({ isLoading }) => isLoading),
+          value: {
+            data: document.pages.map(({ type, metadata }, pageIndex) => ({
+              title: `${valueOrNA(toTitleCase(document.category ?? ''))} - ${valueOrNA(
+                toTitleCase(document.type ?? ''),
+              )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
+              imageUrl: directorsDocumentPagesResults[docIndex][pageIndex],
+              fileType: type,
+            })),
+          },
+        };
+      });
+
+      return {
+        cells: [
+          {
+            type: 'heading',
+            value: `Director - ${director.firstName} ${director.lastName}`,
+          },
+          {
+            type: 'subheading',
+            value: 'Identity documents',
+            props: {
+              className: 'mb-4',
+            },
+          },
+          ...multiDocumentsBlocks,
+        ],
+      };
+    });
+
   const directorsRegistryProvidedBlock = directorsRegistryProvided
     ? [
         {
@@ -1523,6 +1581,7 @@ export const useTasks = ({
           ...companySanctionsBlock,
           ...directorsUserProvidedBlock,
           ...directorsRegistryProvidedBlock,
+          ...directorsDocumentsBlocks,
           ...ubosBlock,
           ...storeInfoBlock,
           ...websiteBasicRequirementBlock,
@@ -1537,14 +1596,14 @@ export const useTasks = ({
   }, [
     address,
     caseState.writeEnabled,
-    docsData,
+    workflowDocsData,
     documents,
     documentsSchemas,
     entity,
     parentMachine?.status,
     pluginsOutput,
     pluginsOutputKeys,
-    results,
+    workflowDocumentPagesResults,
     noAction,
     removeDecisionById,
   ]);
