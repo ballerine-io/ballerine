@@ -27,7 +27,7 @@
     "@tanstack/react-table": "^8.9.2",
     "@xstate/inspect": "^0.7.1",
     "@xstate/react": "^3.2.2",
-    "axios": "^1.4.0",
+    "axios": "^1.6.0",
     "class-variance-authority": "^0.6.0",
     "classnames": "^2.3.2",
     "clsx": "^1.2.1",
