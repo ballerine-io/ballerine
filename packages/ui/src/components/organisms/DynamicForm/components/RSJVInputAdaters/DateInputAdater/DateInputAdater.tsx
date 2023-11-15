@@ -1,7 +1,6 @@
 import { DatePickerInput } from '@/components/molecules';
 import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { useCallback } from 'react';
-import { DatePickerInput } from '@/components';
 
 export const DateInputAdater: RJSFInputAdapter = ({ id, formData, disabled, onBlur, onChange }) => {
   const handleBlur = useCallback(() => {
