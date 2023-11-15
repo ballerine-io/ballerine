@@ -1,5 +1,5 @@
 {
-  "name": "@ballerine/eslint-config",
+  "name": "@ballerine/eslint-config-react",
   "version": "1.0.0",
   "description": "",
   "main": ".eslintrc.js",
@@ -10,10 +10,9 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.11.0",
-    "@typescript-eslint/parser": "^6.11.0",
-    "eslint": "^8.53.0",
-    "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-react": "^7.33.2"
+  },
+  "devDependencies": {
+    "@ballerine/eslint-config": "^1.0.0"
   }
 }

@@ -4,8 +4,7 @@ import {
   UBOShareholder,
 } from '@/collection-flow/dto/update-flow-input.dto';
 import { IsNullable } from '@/common/decorators/is-nullable.decorator';
-import { oneOf } from '@/common/decorators/one-of.decorator';
-import type { WorkflowRuntimeData } from '@prisma/client';
+import { WorkflowRuntimeData } from '@prisma/client';
 import {
   IsArray,
   IsBoolean,
