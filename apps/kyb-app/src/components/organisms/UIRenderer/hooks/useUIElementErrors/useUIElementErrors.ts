@@ -12,10 +12,22 @@ export const useUIElementErrors = (
   const { currentPage } = usePageResolverContext();
 
   const errors = useMemo(() => {
-    const pageErrors = _pageErrors[currentPage.stateName] || {};
-    const fieldPageError = pageErrors[definition.valueDestination];
+    const pageErrors =
+      _pageErrors[
+        // @ts-ignore
+        currentPage?.stateName
+      ] || {};
+    const fieldPageError =
+      pageErrors[
+        // @ts-ignore
+        definition.valueDestination
+      ];
 
-    const fieldError = _errors[definition.valueDestination];
+    const fieldError =
+      _errors[
+        // @ts-ignore
+        definition.valueDestination
+      ];
 
     const allErrors = [fieldPageError, fieldError];
 

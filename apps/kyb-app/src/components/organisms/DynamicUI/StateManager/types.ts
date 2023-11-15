@@ -23,5 +23,5 @@ export interface StateManagerProps {
   definitionType: string;
   extensions: AnyObject;
   children: AnyChildren | StateManagerChildCallback;
-  initialContext?: CollectionFlowContext;
+  initialContext: CollectionFlowContext | null;
 }

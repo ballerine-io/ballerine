@@ -57,12 +57,15 @@ export const useActionsProcessingLogic = (
         if (action.params?.debounce) {
           toggleElementsLockState(relevantElementNames, true);
 
-          const updatedContext = await actionHandler.run(context, action, apiRef.current);
-          apiRef.current.setContext(updatedContext);
+          const updatedContext = await actionHandler?.run(context, action, apiRef.current);
+          apiRef.current.setContext(
+            // @ts-ignore
+            updatedContext,
+          );
 
           toggleElementsLockState(relevantElementNames, false);
         } else {
-          await actionHandler.run(context, action, apiRef.current);
+          await actionHandler?.run(context, action, apiRef.current);
         }
       };
 

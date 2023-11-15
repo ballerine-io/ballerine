@@ -20,7 +20,7 @@ export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
             element={item}
             uiSchema={uiSchema}
             title={
-              typeof props.uiSchema.titleTemplate === 'string' ? (
+              typeof props.uiSchema?.titleTemplate === 'string' ? (
                 <ArrayFieldsLayoutItemTitle index={index} template={props.uiSchema.titleTemplate} />
               ) : undefined
             }

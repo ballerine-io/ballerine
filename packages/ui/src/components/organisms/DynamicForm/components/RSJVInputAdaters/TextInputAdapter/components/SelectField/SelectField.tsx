@@ -2,7 +2,6 @@ import { AnyObject } from '@/common/types';
 import { DropdownInput, DropdownOption } from '@/components/molecules';
 import { FieldProps } from '@rjsf/utils';
 import { useCallback, useMemo } from 'react';
-import { DropdownInput } from '@/components';
 
 export const SelectField = ({
   id,
@@ -25,13 +24,15 @@ export const SelectField = ({
   }, [schema.oneOf]);
 
   const handleBlur = useCallback(() => {
+    // @ts-ignore
     onBlur && onBlur(id, formData);
   }, [id, onBlur, formData]);
 
   return (
     <DropdownInput
-      placeholdersParams={{ placeholder: uiSchema['ui:placeholder'] }}
+      placeholdersParams={{ placeholder: uiSchema?.['ui:placeholder'] }}
       searchable
+      // @ts-ignore
       name={id}
       options={options}
       value={formData}

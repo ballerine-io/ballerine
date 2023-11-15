@@ -36,6 +36,7 @@ export const Documents: UIElementComponent<JSONFormElementParams> = ({ definitio
     async (values: AnyObject) => {
       if (definition.options?.jsonFormDefinition?.type === 'array') {
         const prevContext = stateApi.getContext();
+        // @ts-ignore
         set(prevContext, definition.valueDestination, values);
 
         stateApi.setContext(prevContext);

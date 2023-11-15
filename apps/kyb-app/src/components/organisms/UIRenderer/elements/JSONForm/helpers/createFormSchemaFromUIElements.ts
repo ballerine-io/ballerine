@@ -31,6 +31,13 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
         description: uiElement.options.description,
       };
 
+      // @ts-ignore
+
+      if (!formSchema.properties) {
+        formSchema.properties = {};
+      }
+
+      // @ts-ignore
       formSchema.properties[uiElement.name] = elementDefinition;
 
       const elementUISchema = {
@@ -68,7 +75,11 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
         description: uiElement.options.description,
       };
 
-      //@ts-nocheck
+      if (!(formSchema.items as RJSFSchema)?.properties) {
+        (formSchema.items as RJSFSchema).properties = {};
+      }
+
+      // @ts-ignore
       (formSchema.items as RJSFSchema).properties[uiElement.name] = elementDefinition;
 
       const elementUISchema = {
@@ -77,7 +88,6 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
         'ui:placeholder': uiElement?.options?.hint,
       };
 
-      //@ts-nocheck
       uiSchema.items[uiElement.name] = elementUISchema;
     });
   }

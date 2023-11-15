@@ -69,7 +69,7 @@ export class LocalFileService implements IFileProvider {
       .filter(pathPart => !!pathPart)
       .join('/');
 
-    let remotePath = path.join(os.homedir(), '.ballerine', desiredPath);
+    const remotePath = path.join(os.homedir(), '.ballerine', desiredPath);
 
     const destDirectory = path.dirname(remotePath);
     if (!fs.existsSync(destDirectory)) {

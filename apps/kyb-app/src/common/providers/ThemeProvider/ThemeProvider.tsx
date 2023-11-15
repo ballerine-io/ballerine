@@ -11,7 +11,7 @@ export const ThemeProvider = ({ theme, children }: Props) => {
   useLayoutEffect(() => {
     document
       .getElementsByTagName('html')[0]
-      .setAttribute('style', transformThemeToInlineStyles(theme));
+      ?.setAttribute('style', transformThemeToInlineStyles(theme));
   });
 
   return <>{children}</>;

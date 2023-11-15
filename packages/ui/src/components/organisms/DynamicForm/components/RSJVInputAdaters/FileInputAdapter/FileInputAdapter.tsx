@@ -16,7 +16,7 @@ export const FileInputAdapter: RJSFInputAdapter<File> = ({
   useEffect(() => {
     if (!inputRef.current) return;
 
-    if (!inputRef.current.files.length) {
+    if (!inputRef.current.files?.length) {
       const files = new DataTransfer();
 
       if (!(formData instanceof File)) return;
@@ -28,7 +28,7 @@ export const FileInputAdapter: RJSFInputAdapter<File> = ({
 
   const handleChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files[0];
+      const file = event.target.files?.[0];
       if (!file) return;
 
       onChange(file);
@@ -37,6 +37,7 @@ export const FileInputAdapter: RJSFInputAdapter<File> = ({
   );
 
   const handleBlur = useCallback(() => {
+    // @ts-ignore
     onBlur && onBlur(id, formData);
   }, [id, onBlur, formData]);
 
@@ -47,7 +48,7 @@ export const FileInputAdapter: RJSFInputAdapter<File> = ({
         type="file"
         id={id}
         name={name}
-        placeholder={uiSchema['ui:placeholder']}
+        placeholder={uiSchema?.['ui:placeholder']}
         //@ts-ignore
         onChange={handleChange}
         accept="image/jpeg, image/png, application/pdf, .docx"

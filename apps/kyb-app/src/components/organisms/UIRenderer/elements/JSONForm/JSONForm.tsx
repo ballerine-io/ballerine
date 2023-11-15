@@ -56,7 +56,11 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
   const formRef = useRef<any>(null);
 
   useEffect(() => {
-    const elementValue = get(payload, definition.valueDestination) as unknown;
+    const elementValue = get(
+      payload,
+      // @ts-ignore
+      definition.valueDestination,
+    ) as unknown;
 
     // TO DO: ADD this logic to jmespath @blokh
     if (definition.options?.jsonFormDefinition?.type === 'array' && Array.isArray(elementValue)) {
@@ -64,13 +68,14 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
       //@ts-ignore
       set(
         payload,
+        // @ts-ignore
         definition.valueDestination,
         elementValue.map((obj: AnyObject) => ({
           ...obj,
           additionalInfo: {
             ...obj.additionalInfo,
             companyName: get(payload, 'entity.data.companyName') as string,
-            customerCompany: (payload as CollectionFlowContext).flowConfig.customerCompany,
+            customerCompany: (payload as CollectionFlowContext).flowConfig?.customerCompany,
           },
         })),
       );
@@ -81,10 +86,19 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
     (values: AnyObject[]) => {
       if (definition.options?.jsonFormDefinition?.type === 'array') {
         const prevContext = stateApi.getContext();
-        const currentValue = get(prevContext, definition.valueDestination);
+        const currentValue = get(
+          prevContext,
+          // @ts-ignore
+          definition.valueDestination,
+        );
 
         if (Array.isArray(currentValue) && currentValue.length !== values.length) {
-          set(prevContext, definition.valueDestination, values);
+          set(
+            prevContext,
+            // @ts-ignore
+            definition.valueDestination,
+            values,
+          );
           stateApi.setContext(prevContext);
         }
       }
@@ -108,6 +122,7 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
             formData={formData}
             ref={formRef}
             transformErrors={transformRJSFErrors}
+            // @ts-ignore - potential bug, does this function even handle arrays?
             onChange={handleArrayInputChange}
             onSubmit={handleSubmit}
           />

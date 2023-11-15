@@ -16,6 +16,7 @@ const findLastDigit = (str: string) => {
   const matches = digitRegex.exec(str);
 
   if (matches && matches.length > 0) {
+    // @ts-ignore
     const result = parseInt(matches[matches.length - 1]);
     return result;
   }
@@ -46,7 +47,11 @@ export const withDynamicUIInput = (Component: RJSFInputAdapter<any, any>) => {
     const { state } = useDynamicUIContext();
 
     const baseDefinition = useMemo(() => {
-      const definition = findDefinitionByName(name, currentPage.elements);
+      const definition = findDefinitionByName(
+        name,
+        // @ts-ignore
+        currentPage?.elements,
+      );
 
       if (!definition) throw new Error('definition not found');
 
@@ -60,6 +65,7 @@ export const withDynamicUIInput = (Component: RJSFInputAdapter<any, any>) => {
         ...baseDefinition,
         name: inputIndex !== null ? `${baseDefinition.name}[${inputIndex}]` : baseDefinition.name,
         valueDestination: injectIndexToDestinationIfNeeded(
+          // @ts-ignore
           baseDefinition.valueDestination,
           inputIndex,
         ),

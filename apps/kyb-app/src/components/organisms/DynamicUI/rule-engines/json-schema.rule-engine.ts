@@ -11,6 +11,7 @@ import Ajv from 'ajv/dist/2019';
 export class JsonSchemaRuleEngine implements RuleEngine {
   public readonly ENGINE_NAME = 'json-schema';
 
+  // @ts-ignore
   validate(context: unknown, rule: Rule, definition: UIElement<AnyObject>) {
     const validator = new Ajv({ allErrors: true, useDefaults: true });
     addFormats(validator, {
@@ -23,7 +24,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
     if (!validationResult) {
       const validationErrorMessage = this.__extractErrorsWithFields(validator, definition);
 
-      return { isValid: false, errors: validationErrorMessage.flat() };
+      return { isValid: false, errors: validationErrorMessage?.flat() };
     }
 
     return { isValid: true, errors: [] };
@@ -73,6 +74,6 @@ export class JsonSchemaRuleEngine implements RuleEngine {
       });
     });
 
-    return result.flat().filter(result => Boolean(result.message));
+    return result?.flat()?.filter(result => Boolean(result.message));
   }
 }

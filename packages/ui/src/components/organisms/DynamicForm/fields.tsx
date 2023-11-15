@@ -7,8 +7,16 @@ import { PhoneInputAdapter } from '@/components/organisms/DynamicForm/components
 import { TextInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/TextInputAdapter';
 import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { RegistryFieldsType } from '@rjsf/utils';
+import { MultiSelectProps, MultiSelectValue } from '@/components';
 
-export const fields: Record<keyof RegistryFieldsType, RJSFInputAdapter<unknown, unknown>> = {
+export const fields: Record<
+  keyof RegistryFieldsType,
+  | RJSFInputAdapter<string, unknown>
+  | RJSFInputAdapter<string | number, unknown>
+  | RJSFInputAdapter<boolean, unknown>
+  | RJSFInputAdapter<File, unknown>
+  | RJSFInputAdapter<MultiSelectValue[], MultiSelectProps>
+> = {
   // Component with suffix Field is an overriding of internal RSJV components
   StringField: TextInputAdapter,
   BooleanField: BooleanFieldAdapter,

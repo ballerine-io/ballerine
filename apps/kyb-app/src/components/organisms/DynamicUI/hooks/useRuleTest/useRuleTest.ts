@@ -14,6 +14,7 @@ export const useRulesTest = (context: AnyObject, rules: Rule[], initialResult: b
     () =>
       new EngineManager([
         new JsonLogicRuleEngine(),
+        // @ts-ignore
         new JsonSchemaRuleEngine(),
         new JmespathRuleEngine(),
         new DocumentsRuleEngine(),
@@ -27,7 +28,7 @@ export const useRulesTest = (context: AnyObject, rules: Rule[], initialResult: b
         rules?.map(rule => {
           const engine = rulesManager.getEngine(rule.type);
 
-          return engine.test(context, rule);
+          return engine?.test(context, rule);
         }) || [];
 
       setExecutionResult(executionResult.length ? executionResult.every(Boolean) : false);

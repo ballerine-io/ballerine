@@ -53,6 +53,7 @@ export const DocumentField = (
 
     const fileIdPath = getDocumentFileIdPath(definition);
 
+    // @ts-ignore
     const fileId = get(document, fileIdPath) as string | null;
 
     return fileId;
@@ -67,6 +68,7 @@ export const DocumentField = (
       setFile(persistedFile);
     } else {
       void fetchFile(fileId).then(file => {
+        // @ts-ignore
         const createdFile = new File([''], file.fileNameInBucket || file.fileNameOnDisk, {
           type: 'text/plain',
         });
@@ -96,6 +98,7 @@ export const DocumentField = (
       try {
         const uploadResult = await uploadFile({ file });
 
+        // @ts-ignore
         set(document, fileIdPath, uploadResult.id);
         // set(document, fileTypePath, file.type);
         set(document, 'decision', {});
@@ -110,6 +113,7 @@ export const DocumentField = (
         if (err instanceof HTTPError) {
           const response = (await err.response.json()) as AnyObject;
           setFieldError({
+            // @ts-ignore
             fieldId: document.id,
             message: response.message as string,
             type: 'warning',

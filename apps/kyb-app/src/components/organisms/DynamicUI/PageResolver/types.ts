@@ -6,7 +6,7 @@ export interface PageResolverContext {
   pages: UIPage[];
 }
 
-export type PageResolverRenderCallback = (currentPage: PageResolverContext) => JSX.Element;
+export type PageResolverRenderCallback = (currentPage: PageResolverContext) => JSX.Element | null;
 
 export interface PageResolverProps {
   state: string;

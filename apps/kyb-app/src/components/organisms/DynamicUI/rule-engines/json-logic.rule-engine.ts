@@ -36,6 +36,8 @@ export class JsonLogicRuleEngine implements RuleEngine {
   }
 
   private isJsonRule(rule: unknown): rule is JSONLogicRule {
-    return typeof rule === 'object' && 'type' in rule && rule.type === 'json-logic';
+    return (
+      typeof rule === 'object' && rule !== null && 'type' in rule && rule.type === 'json-logic'
+    );
   }
 }

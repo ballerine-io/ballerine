@@ -11,6 +11,6 @@ export const useUISchemasQuery = () => {
   return {
     isLoading,
     data: data ?? null,
-    error: error as HTTPError,
+    error: error ? (error as HTTPError) : null,
   };
 };

@@ -13,6 +13,7 @@ import * as Sentry from '@sentry/react';
 import { sentyRouterInstrumentation } from './router';
 
 Sentry.init({
+  // @ts-ignore
   dsn: import.meta.env.VITE_SENTRY_DSN,
   environment: import.meta.env.VITE_ENVIRONMENT_NAME || 'development',
   enabled: !!import.meta.env.VITE_SENTRY_DSN,

@@ -4,7 +4,6 @@ import { ArrayFieldsLayoutItem } from '@/components/organisms/DynamicForm/compon
 import { ArrayFieldsLayoutItemTitle } from '@/components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayoutItemTitle';
 import { ArrayFieldTemplateItemType, ArrayFieldTemplateProps, RJSFSchema } from '@rjsf/utils';
 import { Plus } from 'lucide-react';
-import { ArrayFieldsLayoutItem, ArrayFieldsLayoutItemTitle } from '@/components';
 
 export type ArrayFieldLayoutItem = ArrayFieldTemplateItemType<any, RJSFSchema, any>;
 export interface ArrayFieldsLayoutProps extends ArrayFieldTemplateProps {
@@ -24,14 +23,18 @@ export const ArrayFieldsLayout = ({
     <div>
       <p className="pb-1 text-xl font-semibold">{title}</p>
       {children
-        ? children(items, uiSchema)
+        ? // @ts-ignore
+          children(items, uiSchema)
         : items.map((element, index) => (
             <ArrayFieldsLayoutItem
               key={`field-template-item-${index}`}
               element={element}
+              // @ts-ignore
               uiSchema={uiSchema}
               title={
+                // @ts-ignore
                 typeof uiSchema.titleTemplate === 'string' ? (
+                  // @ts-ignore
                   <ArrayFieldsLayoutItemTitle template={uiSchema.titleTemplate} index={index} />
                 ) : null
               }

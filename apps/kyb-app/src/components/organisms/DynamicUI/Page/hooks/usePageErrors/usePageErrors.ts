@@ -27,6 +27,7 @@ export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] 
     });
 
     pagesWithErrors.forEach(pageError => {
+      // @ts-ignore
       pageError.errors = ((context.documents as Document[]) || [])
         .filter((document, index) => {
           if (

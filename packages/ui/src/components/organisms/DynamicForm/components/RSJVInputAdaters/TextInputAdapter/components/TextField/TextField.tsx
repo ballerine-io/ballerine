@@ -27,6 +27,7 @@ export const TextField = ({
   );
 
   const handleBlur = useCallback(() => {
+    // @ts-ignore
     onBlur && onBlur(id, formData);
   }, [id, onBlur, formData]);
 
@@ -34,13 +35,13 @@ export const TextField = ({
     id,
     name,
     value: formData || '',
-    placeholder: uiSchema['ui:placeholder'],
+    placeholder: uiSchema?.['ui:placeholder'],
     disabled,
     onChange: handleChange,
     onBlur: handleBlur,
   };
 
-  return uiSchema['ui:widget'] === 'textarea' ? (
+  return uiSchema?.['ui:widget'] === 'textarea' ? (
     <TextArea {...inputProps} />
   ) : (
     <Input {...inputProps} type={schema.type === 'number' ? 'number' : 'text'} />

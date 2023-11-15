@@ -10,6 +10,7 @@ export const PhoneInputAdapter: RJSFInputAdapter = ({
   onBlur,
 }) => {
   const handleBlur = useCallback(() => {
+    // @ts-ignore
     onBlur && onBlur(id, formData);
   }, [id, onBlur, formData]);
 

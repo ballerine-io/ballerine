@@ -4,7 +4,7 @@ import { Action } from '@/domains/collection-flow';
 export type ActionHandlerApi = StateMachineAPI;
 
 export abstract class ActionHandler {
-  public readonly ACTION_TYPE: string;
+  public abstract readonly ACTION_TYPE: string;
 
   abstract run<TContext>(
     context: TContext,

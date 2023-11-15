@@ -47,19 +47,24 @@ export const CollectionFlowDumb = () => {
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
-  const pageErrors = usePageErrors(context ?? {}, elements);
+  const pageErrors = usePageErrors(
+    context ?? {},
+    // @ts-ignore
+    elements,
+  );
   const filteredNonEmptyErrors = pageErrors?.filter(pageError => !!pageError.errors.length);
-  const initialContext: CollectionFlowContext = useMemo(() => {
+  // @ts-ignore
+  const initialContext: CollectionFlowContext | null = useMemo(() => {
     const appState =
       filteredNonEmptyErrors?.[0]?.stateName ||
       context?.flowConfig?.appState ||
-      elements?.at(0).stateName;
+      elements?.at(0)?.stateName;
     if (!appState) return null;
 
     return {
       ...context,
       flowConfig: {
-        ...context.flowConfig,
+        ...context?.flowConfig,
         appState,
       },
       state: appState,
@@ -70,8 +75,8 @@ export const CollectionFlowDumb = () => {
     return prepareInitialUIState(elements || [], context || {});
   }, [elements, context]);
 
-  if (initialContext.flowConfig?.appState === 'approved') return <Approved />;
-  if (initialContext.flowConfig?.appState == 'rejected') return <Rejected />;
+  if (initialContext?.flowConfig?.appState === 'approved') return <Approved />;
+  if (initialContext?.flowConfig?.appState == 'rejected') return <Rejected />;
 
   return definition && context ? (
     <DynamicUI initialState={initialUIState}>
@@ -86,7 +91,7 @@ export const CollectionFlowDumb = () => {
           state === 'finish' ? (
             <Success />
           ) : (
-            <DynamicUI.PageResolver state={state} pages={elements}>
+            <DynamicUI.PageResolver state={state} pages={elements ?? []}>
               {({ currentPage }) => {
                 return currentPage ? (
                   <DynamicUI.Page page={currentPage}>
@@ -105,8 +110,10 @@ export const CollectionFlowDumb = () => {
                                 </div>
                                 <div className="pb-10">
                                   <AppShell.Logo
-                                    logoSrc={customer.logoImageUri}
-                                    appName={customer.displayName}
+                                    // @ts-ignore
+                                    logoSrc={customer?.logoImageUri}
+                                    // @ts-ignore
+                                    appName={customer?.displayName}
                                   />
                                 </div>
                                 <div className="h-full max-h-[460px] pb-10">
@@ -116,7 +123,7 @@ export const CollectionFlowDumb = () => {
                               <div>
                                 <div>
                                   <div className="border-b pb-12">
-                                    Contact {customer.displayName || 'PayLynk'} for support <br />{' '}
+                                    Contact {customer?.displayName || 'PayLynk'} for support <br />{' '}
                                     example@example.com (000) 123-4567
                                   </div>
                                   <img src={'/poweredby.svg'} className="mt-6" />
@@ -146,9 +153,10 @@ export const CollectionFlowDumb = () => {
                                 <div className="flex items-center gap-3 pb-3">
                                   <StepperProgress
                                     currentStep={
-                                      elements.findIndex(page => page.stateName === state) + 1
+                                      (elements?.findIndex(page => page?.stateName === state) ??
+                                        0) + 1
                                     }
-                                    totalSteps={elements.length}
+                                    totalSteps={elements?.length ?? 0}
                                   />
                                   <ProgressBar />
                                 </div>

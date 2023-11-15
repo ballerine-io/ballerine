@@ -40,7 +40,11 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
   );
 
   const handleClick = useCallback(() => {
-    setPageElementsTouched(currentPage, state);
+    setPageElementsTouched(
+      // @ts-ignore
+      currentPage,
+      state,
+    );
     onClickHandler();
   }, [currentPage, state, setPageElementsTouched, onClickHandler]);
 

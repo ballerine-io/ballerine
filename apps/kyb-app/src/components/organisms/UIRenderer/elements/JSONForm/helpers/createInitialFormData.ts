@@ -12,12 +12,14 @@ export const createInitialFormData = (
     !definition.options?.jsonFormDefinition?.type ||
     definition.options?.jsonFormDefinition?.type === 'object'
   ) {
-    definition.elements.forEach(element => {
+    definition.elements?.forEach(element => {
+      // @ts-ignore
       formData[element.name] = get(context, element.valueDestination) as unknown;
     });
   }
 
   if (definition.options?.jsonFormDefinition?.type === 'array') {
+    // @ts-ignore
     formData = (get(context, definition.valueDestination) as AnyObject[]) || [];
   }
 

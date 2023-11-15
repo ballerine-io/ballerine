@@ -16,6 +16,7 @@ export const getDispatchableActions = (
   return actions.filter(action => {
     const engineManager = new EngineManager([
       new JsonLogicRuleEngine(),
+      // @ts-ignore
       new JsonSchemaRuleEngine(),
       new DocumentsRuleEngine(),
       new JmespathRuleEngine(),
@@ -27,7 +28,12 @@ export const getDispatchableActions = (
       action.dispatchOn?.rules?.length &&
       action.dispatchOn?.rules?.every(
         rule =>
-          engineManager.getEngine(rule.type).validate(context, rule, definition, state).isValid,
+          engineManager
+            ?.getEngine(
+              // @ts-ignore
+              rule?.type,
+            )
+            ?.validate(context, rule, definition, state).isValid,
       )
     );
   });

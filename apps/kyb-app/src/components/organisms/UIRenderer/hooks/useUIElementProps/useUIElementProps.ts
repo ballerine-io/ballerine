@@ -10,8 +10,20 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
   const { payload } = useStateManagerContext();
   const { state } = useDynamicUIContext();
   const [availabilityTestResulsts, visibilityTestResults] = [
-    useRuleExecutor(payload, definition.availableOn, definition, state),
-    useRuleExecutor(payload, definition.visibleOn, definition, state),
+    useRuleExecutor(
+      payload,
+      // @ts-ignore
+      definition.availableOn,
+      definition,
+      state,
+    ),
+    useRuleExecutor(
+      payload,
+      // @ts-ignore
+      definition.visibleOn,
+      definition,
+      state,
+    ),
   ];
 
   const { state: uiElementState } = useUIElementState(definition);

@@ -16,7 +16,7 @@ export interface RuleTestResult {
 }
 
 export abstract class RuleEngine {
-  public readonly ENGINE_NAME: string;
+  public abstract readonly ENGINE_NAME: string;
 
   abstract validate(
     context: unknown,

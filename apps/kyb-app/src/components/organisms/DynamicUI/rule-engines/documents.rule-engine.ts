@@ -21,8 +21,8 @@ export class DocumentsRuleEngine implements RuleEngine {
       rule.value.forEach(params => {
         const isRequired = this.isRule(params.required)
           ? this.ruleManager
-              .getEngine(params.required.type)
-              .validate(context, params.required, definition, state).isValid
+              ?.getEngine(params.required.type)
+              ?.validate(context, params.required, definition, state).isValid
           : params.required;
 
         const document = ((context.documents || []) as Document[]).find(
@@ -55,10 +55,12 @@ export class DocumentsRuleEngine implements RuleEngine {
   }
 
   private isRule(rule: unknown): rule is Rule {
-    return typeof rule === 'object' && 'type' in rule;
+    return typeof rule === 'object' && rule !== null && 'type' in rule;
   }
 
   private isDestinationValidatorRule(rule: unknown): rule is DocumentsValidatorRule {
-    return typeof rule === 'object' && 'type' in rule && rule.type === this.ENGINE_NAME;
+    return (
+      typeof rule === 'object' && rule !== null && 'type' in rule && rule.type === this.ENGINE_NAME
+    );
   }
 }

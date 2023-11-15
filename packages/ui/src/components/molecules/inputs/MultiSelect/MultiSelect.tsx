@@ -53,7 +53,11 @@ export const MultiSelect = ({
   const handleSelect = useCallback(
     (option: MultiSelectOption) => {
       setInputValue('');
-      onChange(value ? [...value, option.value] : [option.value], name);
+      onChange(
+        value ? [...value, option.value] : [option.value],
+        // @ts-ignore
+        name,
+      );
     },
     [value, name, onChange],
   );
@@ -62,8 +66,10 @@ export const MultiSelect = ({
     (option: MultiSelectOption) => {
       onChange(
         selected
-          .filter(selectedOption => selectedOption.value !== option.value)
+          .filter(selectedOption => selectedOption?.value !== option.value)
+          // @ts-ignore
           .map(option => option.value),
+        // @ts-ignore
         name,
       );
     },
@@ -78,7 +84,9 @@ export const MultiSelect = ({
           if (input.value === '') {
             selected.pop();
             onChange(
-              selected.map(option => option.value),
+              // @ts-ignore
+              selected.map(option => option?.value),
+              // @ts-ignore
               name,
             );
           }
@@ -138,8 +146,10 @@ export const MultiSelect = ({
                 {selected.map(option => {
                   return renderSelected(
                     {
+                      // @ts-ignore
                       unselectButtonProps: buildUnselectButtonProps(option),
                     },
+                    // @ts-ignore
                     option,
                   );
                 })}

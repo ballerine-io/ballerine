@@ -38,7 +38,15 @@ export const Page = ({ page, children }: PageProps) => {
   const { state } = useDynamicUIContext();
   const rulesResult = useRuleExecutor(payload, rules, definition, state);
   const fieldErrors = useMemo(
-    () => rulesResult.reduce((errors, item) => errors.concat(item.errors), [] as ErrorField[]),
+    () =>
+      rulesResult.reduce(
+        (errors, item) =>
+          errors.concat(
+            // @ts-ignore
+            item.errors,
+          ),
+        [] as ErrorField[],
+      ),
     [rulesResult],
   );
 
@@ -56,10 +64,10 @@ export const Page = ({ page, children }: PageProps) => {
         map[pageError.stateName] = pageError.errors.reduce((map, error) => {
           map[error.fieldId] = error;
           return map;
-        }, {});
+        }, {} as PageContext['pageErrors'][string]);
 
         return map;
-      }, {}),
+      }, {} as PageContext['pageErrors']),
     };
 
     return ctx;

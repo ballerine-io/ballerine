@@ -26,6 +26,7 @@ export const useRuleExecutor = (
     () =>
       new EngineManager([
         new JsonLogicRuleEngine(),
+        // @ts-ignore
         new JsonSchemaRuleEngine(),
         new JmespathRuleEngine(),
         new DocumentsRuleEngine(),
@@ -41,14 +42,15 @@ export const useRuleExecutor = (
             const engine = rulesManager.getEngine(rule.type);
 
             const ctx = { ...context };
-            //@ts-nocheck
+
             //This hack is neeeded to filter out `empty`
             //TO DO: Find solution on how to define array items in schemas
             // ctx.documents = ctx?.documents.filter(Boolean);
 
-            return engine.validate(ctx, rule, definition, uiState);
+            return engine?.validate(ctx, rule, definition, uiState);
           }) || [];
 
+        // @ts-ignore
         setExecutionResult(executionResult);
       },
     [rulesManager],
@@ -59,7 +61,7 @@ export const useRuleExecutor = (
   }, [context, rules, uiStateRef, definition, executeRules]);
 
   if (import.meta.env.MODE === 'development') {
-    if (executionResult.length && executionResult.every(r => !r.isValid && r.errors.length)) {
+    if (executionResult.length && executionResult.every(r => !r.isValid && r.errors?.length)) {
       console.log('Rules execution result', executionResult);
     }
   }
