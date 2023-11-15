@@ -61,16 +61,16 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.21
+        specifier: 0.7.22
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.3.12
+        specifier: 0.3.13
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.19
+        specifier: 0.5.20
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.19
+        specifier: 0.5.20
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -350,16 +350,16 @@ importers:
   apps/kyb-app:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.1.19
+        specifier: 0.1.20
         version: link:../../packages/blocks
       '@ballerine/common':
         specifier: ^0.7.22
-        version: 0.7.22
+        version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.3.12
+        specifier: 0.3.13
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.19
+        specifier: 0.5.20
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -745,10 +745,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.21
+        specifier: 0.7.22
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.19
+        specifier: 0.5.20
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -843,7 +843,7 @@ importers:
     dependencies:
       '@ballerine/common':
         specifier: ^0.7.21
-        version: 0.7.22
+        version: link:../common
     devDependencies:
       '@babel/core':
         specifier: 7.17.9
@@ -1428,7 +1428,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.21
+        specifier: 0.7.22
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -1576,7 +1576,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.21
+        specifier: 0.7.22
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -1703,10 +1703,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.21
+        specifier: 0.7.22
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.19
+        specifier: 0.5.20
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -1839,7 +1839,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.5.19
+        specifier: 0.5.20
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2075,13 +2075,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.7.21
+        specifier: 0.7.22
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.19
+        specifier: 0.5.20
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.19
+        specifier: 0.5.20
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -8904,15 +8904,6 @@ packages:
     resolution: {integrity: sha512-WYRqLyBOwtoi193YJvonsz5fdY73/MpAxaO9Sj1dp2nOeqKAv2j880ELUVfyfgYE18ZDBB4qoykvT4X3Rea7KA==}
     engines: {node: '>=12'}
     dependencies:
-      ajv: 8.12.0
-      json-schema-to-zod: 0.6.3
-    dev: false
-
-  /@ballerine/common@0.7.22:
-    resolution: {integrity: sha512-Xls1mj1X+PXdHr4sIoVODG7ZeRldnyUsqOT9akbN+75/c00yKHizu5Muc6jJLaHZymJY/NPtelVIsrBvZI5L7A==}
-    engines: {node: '>=12'}
-    dependencies:
-      '@sinclair/typebox': 0.31.7
       ajv: 8.12.0
       json-schema-to-zod: 0.6.3
     dev: false
@@ -37501,7 +37492,7 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
       globrex: 0.1.2
       tsconfck: 2.1.1(typescript@4.9.5)
-      vite: 4.4.9(@types/node@18.15.10)(less@4.2.0)
+      vite: 4.4.9(@types/node@20.4.1)(less@4.2.0)
     transitivePeerDependencies:
       - supports-color
       - typescript
