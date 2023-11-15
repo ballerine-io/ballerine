@@ -1884,6 +1884,7 @@ export class WorkflowService {
         currentProjectId,
       );
     }
+
     return updatedRuntimeData;
   }
 
@@ -1900,58 +1901,67 @@ export class WorkflowService {
       { include: { childWorkflowsRuntimeData: true } },
       projectIds,
     );
+
     const parentWorkflowDefinition = await this.getWorkflowDefinitionById(
       parentWorkflowRuntime.workflowDefinitionId,
       {},
       projectIds,
     );
 
-    const callbackTransformation = (
+    const callbackTransformations = (
       parentWorkflowDefinition?.config
         ?.childCallbackResults as ChildToParentCallback['childCallbackResults']
     )
       // @ts-ignore - fix as childCallbackResults[number]
-      ?.find(childCallbackResult => workflowDefinition.id === childCallbackResult.definitionId);
-    const childWorkflowCallback = (callbackTransformation ||
-      workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
-    const childrenOfSameDefinition = (
-      parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>
-    )?.filter(
-      childWorkflow =>
-        childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
-    );
-    const isPersistableState =
-      !!(
-        childRuntimeState &&
-        childWorkflowCallback.persistenceStates &&
-        childWorkflowCallback.persistenceStates.includes(childRuntimeState)
-      ) || isFinal;
+      ?.filter(childCallbackResult => workflowDefinition.id === childCallbackResult.definitionId)
+      ?.map(async callbackTransformation => {
+        const childWorkflowCallback = (callbackTransformation ||
+          workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
 
-    if (!isPersistableState) return;
+        const childrenOfSameDefinition = (
+          parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>
+        )?.filter(
+          childWorkflow =>
+            childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
+        );
 
-    const parentContext = await this.generateParentContextWithInjectedChildContext(
-      childrenOfSameDefinition,
-      childWorkflowCallback.transformers,
-      parentWorkflowRuntime,
-      workflowDefinition,
-    );
+        const isPersistableState =
+          !!(
+            childRuntimeState &&
+            childWorkflowCallback.persistenceStates &&
+            childWorkflowCallback.persistenceStates.includes(childRuntimeState)
+          ) || isFinal;
 
-    await this.updateWorkflowRuntimeData(
-      parentWorkflowRuntime.id,
-      { context: parentContext },
-      currentProjectId,
-    );
+        if (!isPersistableState) return;
 
-    if (childWorkflowCallback.deliverEvent && parentWorkflowRuntime.status !== 'completed') {
-      await this.event(
-        {
-          id: parentWorkflowRuntime.id,
-          name: childWorkflowCallback.deliverEvent,
-        },
-        projectIds,
-        currentProjectId,
-      );
-    }
+        const parentContext = await this.generateParentContextWithInjectedChildContext(
+          childrenOfSameDefinition,
+          childWorkflowCallback.transformers,
+          parentWorkflowRuntime,
+          workflowDefinition,
+        );
+
+        await this.updateWorkflowRuntimeData(
+          parentWorkflowRuntime.id,
+          { context: parentContext },
+          currentProjectId,
+        );
+
+        if (childWorkflowCallback.deliverEvent && parentWorkflowRuntime.status !== 'completed') {
+          await this.event(
+            {
+              id: parentWorkflowRuntime.id,
+              name: childWorkflowCallback.deliverEvent,
+            },
+            projectIds,
+            currentProjectId,
+          );
+        }
+      });
+
+    if (!callbackTransformations?.length) return;
+
+    await Promise.all(callbackTransformations);
   }
 
   private async generateParentContextWithInjectedChildContext(
