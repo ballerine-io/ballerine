@@ -7,7 +7,9 @@
     "spellcheck": "cspell \"*\"",
     "dev": "vite --host",
     "build": "tsc && vite build",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "preview": "vite preview",
     "test": "NODE_ENV=test jest"
   },
