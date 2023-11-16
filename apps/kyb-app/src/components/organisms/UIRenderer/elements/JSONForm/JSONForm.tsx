@@ -33,6 +33,7 @@ export interface JSONFormElementBaseParams {
 export interface JSONFormElementParams extends DefinitionInsertionParams {
   jsonFormDefinition?: { type?: string; required?: string[]; title?: string };
   uiSchema?: AnyObject;
+  definition: JSONFormElementBaseParams;
 }
 
 export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition }) => {
