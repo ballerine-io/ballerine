@@ -1,11 +1,8 @@
-const { parserOptions, ...config } = require('../config/eslintrc.base.cjs');
-
+/** @type {import('eslint').Linter.Config} */
 module.exports = {
-  ...config,
-  parserOptions: {
-    ...parserOptions,
-    tsconfigRootDir: __dirname,
-    project: ['./tsconfig.eslint.json'],
+  env: {
+    node: true,
   },
-  ignorePatterns: ['.eslintrc.cjs'],
+  extends: ['@ballerine/eslint-config'],
+  ignorePatterns: ['.eslintrc.cjs', 'rollup.config.js'],
 };
