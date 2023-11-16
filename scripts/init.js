@@ -9,7 +9,8 @@ const ensureEnvFileIsPresent = projectPath => {
   const envFile = path.join(projectPath, '.env');
   const envExampleFile = path.join(projectPath, '.env.example');
   if (fs.existsSync(envFile)) {
-    fs.copyFileSync(envFile, `${envFile}-${new Date().toISOString()}.backup`);
+    const destPath = `${envFile}-${new Date().toISOString().replace(/,|:|\s/g, '-')}.backup`;
+    fs.copyFileSync(envFile, destPath);
   }
   fs.copyFileSync(envExampleFile, envFile);
 };
