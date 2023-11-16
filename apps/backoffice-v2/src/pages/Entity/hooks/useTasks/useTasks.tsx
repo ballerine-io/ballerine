@@ -1167,7 +1167,7 @@ export const useTasks = ({
                           formatMaximum,
                         },
                       ]) => {
-                        const fieldValue = value || (properties?.[title] ?? '');
+                        const fieldValue = value || (document.properties?.[title] ?? '');
 
                         return {
                           title,
@@ -1183,6 +1183,7 @@ export const useTasks = ({
                       },
                     ),
                   },
+                  documents,
                 },
               ],
             },

@@ -346,6 +346,9 @@ importers:
       '@ballerine/blocks':
         specifier: 0.1.20
         version: link:../../packages/blocks
+      '@ballerine/common':
+        specifier: ^0.7.22
+        version: link:../../packages/common
       '@ballerine/ui':
         specifier: 0.3.12
         version: link:../../packages/ui

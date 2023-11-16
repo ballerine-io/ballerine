@@ -152,7 +152,6 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        documentType: Type.Optional(Type.String()),
         documentNumber: Type.Optional(Type.String()),
         firstName: Type.Optional(Type.String()),
         lastName: Type.Optional(Type.String()),
@@ -165,7 +164,6 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        documentType: Type.Optional(Type.String()),
         documentNumber: Type.Optional(Type.String()),
         firstName: Type.Optional(Type.String()),
         lastName: Type.Optional(Type.String()),
@@ -178,7 +176,6 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        documentType: Type.Optional(Type.String()),
         documentNumber: Type.Optional(Type.String()),
         firstName: Type.Optional(Type.String()),
         lastName: Type.Optional(Type.String()),
@@ -191,7 +188,6 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        documentType: Type.Optional(Type.String()),
         documentNumber: Type.Optional(Type.String()),
         firstName: Type.Optional(Type.String()),
         lastName: Type.Optional(Type.String()),
@@ -204,7 +200,6 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuingVersion: 1,
       version: 1,
       propertiesSchema: Type.Object({
-        documentType: Type.Optional(Type.String()),
         documentNumber: Type.Optional(Type.String()),
         firstName: Type.Optional(Type.String()),
         lastName: Type.Optional(Type.String()),

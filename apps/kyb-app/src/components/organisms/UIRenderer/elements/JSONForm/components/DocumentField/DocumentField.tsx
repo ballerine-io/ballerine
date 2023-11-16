@@ -12,6 +12,7 @@ import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/us
 import { Document, UIElement } from '@app/domains/collection-flow';
 import { fetchFile, uploadFile } from '@app/domains/storage/storage.api';
 import { collectionFlowFileStorage } from '@app/pages/CollectionFlow/collection-flow.file-storage';
+import { findDocumentSchemaByTypeAndCategory } from '@ballerine/common';
 import { AnyObject, ErrorsList, RJSFInputProps } from '@ballerine/ui';
 import { HTTPError } from 'ky';
 import get from 'lodash/get';
@@ -142,6 +143,11 @@ export const DocumentField = (
         document = {
           ...options.documentData,
           id: serializeDocumentId(options.documentData.id, inputIndex),
+          propertiesSchema:
+            findDocumentSchemaByTypeAndCategory(
+              options.documentData.type,
+              options.documentData.category,
+            )?.propertiesSchema || undefined,
         } as Document;
         documents.push(document);
         set(context, pathToDocumentsList, documents);
