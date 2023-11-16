@@ -1,7 +1,7 @@
 /** @type {import('eslint').Linter.Config} */
 module.exports = {
   env: {
-    node: true,
+    browser: true,
   },
   extends: ['@ballerine/eslint-config'],
 };
