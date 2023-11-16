@@ -20,6 +20,7 @@ import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { DynamicForm, ErrorsList } from '@ballerine/ui/src';
 
 export interface JSONFormElementBaseParams {
   jsonFormDefinition: RJSFSchema;
@@ -33,7 +34,6 @@ export interface JSONFormElementBaseParams {
 export interface JSONFormElementParams extends DefinitionInsertionParams {
   jsonFormDefinition?: { type?: string; required?: string[]; title?: string };
   uiSchema?: AnyObject;
-  definition: JSONFormElementBaseParams;
 }
 
 export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition }) => {
