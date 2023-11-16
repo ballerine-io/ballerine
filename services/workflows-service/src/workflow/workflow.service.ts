@@ -1933,13 +1933,11 @@ export class WorkflowService {
         const childWorkflowCallback = (callbackTransformation ||
           workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
 
-        const childrenOfSameDefinition = (
-          // @ts-ignore - error from prisma types fix
-          parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>
-        )?.filter(
-          childWorkflow =>
-            childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
-        );
+        const childrenOfSameDefinition = // @ts-ignore - error from Prisma types fix
+          (parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>)?.filter(
+            childWorkflow =>
+              childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
+          );
 
         const isPersistableState =
           !!(
