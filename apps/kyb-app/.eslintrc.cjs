@@ -42,5 +42,4 @@ module.exports = {
       version: 'detect',
     },
   },
-  ignorePatterns: ['.eslintrc.cjs', ...(config.ignorePatterns ?? [])],
 };

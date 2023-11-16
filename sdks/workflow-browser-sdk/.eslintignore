@@ -1,2 +1,4 @@
 dist
 node_modules
+rollup.config.js
+.eslintrc.cjs

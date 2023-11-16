@@ -19,6 +19,5 @@ module.exports = {
     'import/no-cycle': 'error',
     'ballerine/verify-repository-project-scoped': 'error',
   },
-  ignorePatterns: ['.eslintrc.cjs'],
   plugins: ['ballerine'],
 };

@@ -4,5 +4,4 @@ module.exports = {
     node: true,
   },
   extends: ['@ballerine/eslint-config'],
-  ignorePatterns: ['.eslintrc.cjs', 'rollup.config.js'],
 };
