@@ -11,6 +11,7 @@ export const useUpdateDocumentByIdMutation = ({
 }: {
   workflowId: string;
   documentId: string;
+  isDirector?: boolean;
 }) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
@@ -19,9 +20,11 @@ export const useUpdateDocumentByIdMutation = ({
   return useMutation({
     mutationFn: ({
       document,
+      isDirector,
     }: {
       document: Record<PropertyKey, unknown>;
       action: 'update_document_properties';
+      isDirector?: boolean;
     }) =>
       updateWorkflowDocumentById({
         workflowId,
@@ -29,6 +32,7 @@ export const useUpdateDocumentByIdMutation = ({
         body: {
           document,
         },
+        isDirector,
       }),
     onMutate: async ({ document }) => {
       await queryClient.cancelQueries({

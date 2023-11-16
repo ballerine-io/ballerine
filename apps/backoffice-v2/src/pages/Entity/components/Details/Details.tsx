@@ -13,6 +13,7 @@ export const Details: FunctionComponent<IDetailsProps> = ({
   value,
   hideSeparator,
   documents,
+  isDirector,
 }) => {
   const { entityId } = useParams();
   const filterId = useFilterId();
@@ -34,6 +35,7 @@ export const Details: FunctionComponent<IDetailsProps> = ({
         documents={documents ?? workflow?.context?.documents}
         title={value?.title}
         data={value?.data}
+        isDirector={isDirector}
       />
       {!hideSeparator && <Separator className={`my-2`} />}
     </div>

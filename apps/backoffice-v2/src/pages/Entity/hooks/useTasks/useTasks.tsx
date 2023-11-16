@@ -1147,6 +1147,7 @@ export const useTasks = ({
                   title: 'Details test',
                   type: 'details',
                   value: {
+                    id: document.id,
                     title: 'Details test',
                     data: Object.entries(
                       {
@@ -1184,6 +1185,7 @@ export const useTasks = ({
                     ),
                   },
                   documents,
+                  isDirector: true,
                 },
               ],
             },

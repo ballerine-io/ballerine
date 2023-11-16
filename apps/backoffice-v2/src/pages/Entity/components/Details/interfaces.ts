@@ -4,6 +4,7 @@ export interface IDetailsProps {
   id: string;
   hideSeparator?: boolean;
   documents?: AnyObject[];
+  isDirector?: boolean;
   value: {
     id: string;
     title: string;

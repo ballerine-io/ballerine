@@ -788,10 +788,12 @@ export class WorkflowService {
       workflowId,
       documentId,
       checkRequiredFields = true,
+      isDirectorDocument,
     }: {
       workflowId: string;
       documentId: string;
       checkRequiredFields?: boolean;
+      isDirectorDocument?: boolean;
     },
     data: DefaultContextSchema['documents'][number] & { propertiesSchema?: object },
     projectId: TProjectId,
@@ -834,9 +836,11 @@ export class WorkflowService {
 
     const updatedWorkflow = await this.updateContextById(
       workflowId,
-      {
-        documents: [newDocument],
-      },
+      isDirectorDocument
+        ? this.updateDirectorDocument(runtimeData.context, newDocument)
+        : {
+            documents: [newDocument],
+          },
       [projectId],
     );
 
@@ -886,6 +890,27 @@ export class WorkflowService {
     }
 
     return updatedWorkflow;
+  }
+
+  private updateDirectorDocument(
+    context: WorkflowRuntimeData['context'],
+    documentUpdatePayload: any,
+  ): WorkflowRuntimeData['context'] {
+    const directorsDocuments =
+      ((context?.entity?.data?.additionalInfo?.directors as any[]) || [])
+        .map(director => director.additionalInfo?.documents)
+        .filter(Boolean)
+        .flat() || ([] as any[]);
+
+    directorsDocuments.forEach(document => {
+      if (document?.id === documentUpdatePayload?.id) {
+        Object.entries(documentUpdatePayload).forEach(([key, value]) => {
+          document[key] = value;
+        });
+      }
+    });
+
+    return context;
   }
 
   async updateContextById(
