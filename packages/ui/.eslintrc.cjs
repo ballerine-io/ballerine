@@ -6,4 +6,8 @@ module.exports = {
       callees: ['ctw'],
     },
   },
+  rules: {
+    'tailwindcss/no-custom-classname': 'off',
+    'tailwindcss/classnames-order': 'off',
+  },
 };
