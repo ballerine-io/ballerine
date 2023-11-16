@@ -51,7 +51,7 @@ export const useTasks = ({
   const {
     store,
     bank: bankDetails,
-    directors: directorsUserProvided,
+    directors: directorsUserProvided = [],
     mainRepresentative,
     mainContact,
     openCorporate: _openCorporate,
@@ -71,6 +71,7 @@ export const useTasks = ({
       ),
     [workflowDocuments],
   );
+
   const directorDocumentPages = useMemo(
     () =>
       directorsDocuments.flatMap(({ pages }) =>
@@ -1123,18 +1124,87 @@ export const useTasks = ({
       const { documents } = director.additionalInfo;
 
       const multiDocumentsBlocks = documents.map((document, docIndex) => {
+        const additionalProperties = composePickableCategoryType(
+          document.category,
+          document.type,
+          documents,
+        );
+
         return {
-          type: 'multiDocuments',
-          isLoading: directorsDocsData?.some(({ isLoading }) => isLoading),
-          value: {
-            data: document.pages.map(({ type, metadata }, pageIndex) => ({
-              title: `${valueOrNA(toTitleCase(document.category ?? ''))} - ${valueOrNA(
-                toTitleCase(document.type ?? ''),
-              )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-              imageUrl: directorsDocumentPagesResults[docIndex][pageIndex],
-              fileType: type,
-            })),
-          },
+          id: 'kyc-block',
+          type: 'container',
+          value: [
+            {
+              type: 'container',
+              value: [
+                {
+                  type: 'subheading',
+                  value: `${valueOrNA(toTitleCase(document.category ?? ''))} - ${valueOrNA(
+                    toTitleCase(document.type ?? ''),
+                  )}`,
+                },
+                {
+                  title: 'Details test',
+                  type: 'details',
+                  value: {
+                    title: 'Details test',
+                    data: Object.entries(
+                      {
+                        ...additionalProperties,
+                        ...document.propertiesSchema?.properties,
+                      } ?? {},
+                    )?.map(
+                      ([
+                        title,
+                        {
+                          type,
+                          format,
+                          pattern,
+                          isEditable = true,
+                          dropdownOptions,
+                          value,
+                          formatMinimum,
+                          formatMaximum,
+                        },
+                      ]) => {
+                        const fieldValue = value || (properties?.[title] ?? '');
+
+                        return {
+                          title,
+                          value: fieldValue,
+                          type,
+                          format,
+                          pattern,
+                          dropdownOptions,
+                          isEditable,
+                          minimum: formatMinimum,
+                          maximum: formatMaximum,
+                        };
+                      },
+                    ),
+                  },
+                },
+              ],
+            },
+            {
+              type: 'container',
+              value: [
+                {
+                  type: 'multiDocuments',
+                  isLoading: directorsDocsData?.some(({ isLoading }) => isLoading),
+                  value: {
+                    data: document.pages.map(({ type, metadata }, pageIndex) => ({
+                      title: `${valueOrNA(toTitleCase(document.category ?? ''))} - ${valueOrNA(
+                        toTitleCase(document.type ?? ''),
+                      )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
+                      imageUrl: directorsDocumentPagesResults[docIndex][pageIndex],
+                      fileType: type,
+                    })),
+                  },
+                },
+              ],
+            },
+          ],
         };
       });
 
@@ -1143,13 +1213,6 @@ export const useTasks = ({
           {
             type: 'heading',
             value: `Director - ${director.firstName} ${director.lastName}`,
-          },
-          {
-            type: 'subheading',
-            value: 'Identity documents',
-            props: {
-              className: 'mb-4',
-            },
           },
           ...multiDocumentsBlocks,
         ],

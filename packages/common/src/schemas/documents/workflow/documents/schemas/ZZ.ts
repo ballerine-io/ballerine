@@ -151,7 +151,12 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: Type.Object({}),
+      propertiesSchema: Type.Object({
+        documentType: Type.Optional(Type.String()),
+        documentNumber: Type.Optional(Type.String()),
+        firstName: Type.Optional(Type.String()),
+        lastName: Type.Optional(Type.String()),
+      }),
     },
     {
       category: 'proof_of_identity',
@@ -159,7 +164,12 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: Type.Object({}),
+      propertiesSchema: Type.Object({
+        documentType: Type.Optional(Type.String()),
+        documentNumber: Type.Optional(Type.String()),
+        firstName: Type.Optional(Type.String()),
+        lastName: Type.Optional(Type.String()),
+      }),
     },
     {
       category: 'proof_of_identity',
@@ -167,7 +177,12 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: Type.Object({}),
+      propertiesSchema: Type.Object({
+        documentType: Type.Optional(Type.String()),
+        documentNumber: Type.Optional(Type.String()),
+        firstName: Type.Optional(Type.String()),
+        lastName: Type.Optional(Type.String()),
+      }),
     },
     {
       category: 'proof_of_identity',
@@ -175,7 +190,12 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: Type.Object({}),
+      propertiesSchema: Type.Object({
+        documentType: Type.Optional(Type.String()),
+        documentNumber: Type.Optional(Type.String()),
+        firstName: Type.Optional(Type.String()),
+        lastName: Type.Optional(Type.String()),
+      }),
     },
     {
       category: 'proof_of_identity_ownership',
@@ -183,7 +203,12 @@ export const getUniversalDocuments = (): TDocument[] => {
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
-      propertiesSchema: Type.Object({}),
+      propertiesSchema: Type.Object({
+        documentType: Type.Optional(Type.String()),
+        documentNumber: Type.Optional(Type.String()),
+        firstName: Type.Optional(Type.String()),
+        lastName: Type.Optional(Type.String()),
+      }),
     },
   ];
 };
