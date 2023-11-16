@@ -30,6 +30,7 @@ export class WorkflowAssigneeGuard implements CanActivate {
 
     return (
       workflowRuntime.assigneeId === requestingUserId ||
+      // @ts-ignore - fix type from include/select not propagating from repository
       workflowRuntime.parentWorkflowRuntimeData?.assigneeId === requestingUserId
     );
   }
