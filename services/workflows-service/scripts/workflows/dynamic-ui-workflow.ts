@@ -289,6 +289,7 @@ export const dynamicUiWorkflowDefinition = {
         method: 'GET',
         stateNames: ['run_vendor_ubos'],
         errorAction: 'UBO_HOOK_FAILED',
+        persistResponseDestination: 'pluginsOutput.ubo.request',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
