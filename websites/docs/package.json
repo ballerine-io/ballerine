@@ -19,7 +19,7 @@
     "@astrojs/tailwind": "^4.0.0",
     "@ballerine/common": "^0.5.14",
     "astro": "3.3.3",
-    "sharp": "^0.32.4",
+    "sharp": "^0.32.6",
     "shiki": "^0.14.3"
   },
   "devDependencies": {
