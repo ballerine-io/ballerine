@@ -1,5 +1,3 @@
-import { type } from 'os';
-
 declare module '@prisma/client' {
   import type {
     WorkflowRuntimeData as _WorkflowRuntimeData,
