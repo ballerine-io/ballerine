@@ -1,5 +1,4 @@
 import { FunctionComponent } from 'react';
-import { PrimaryButton } from '../PrimaryButton/PrimaryButton';
 import { EllipsisSvg } from '../icons';
 import { ButtonComponent } from '../../../types';
 import { ctw } from '../../../utils/ctw/ctw';

@@ -104,6 +104,7 @@
   },
   "devDependencies": {
     "@ballerine/config": "^1.0.1",
+    "@ballerine/eslint-config-react": "^1.0.0",
     "@cspell/cspell-types": "^6.31.1",
     "@faker-js/faker": "^7.6.0",
     "@playwright/test": "^1.32.1",
