@@ -1,9 +1,8 @@
-const config = require('../../packages/config/eslintrc.base.cjs');
-
+/** @type {import('eslint').Linter.Config} */
 module.exports = {
-  ...config,
-  parserOptions: {
-    ...config.parserOptions,
-    project: './tsconfig.json',
+  env: {
+    node: true,
   },
+  extends: ['@ballerine/eslint-config'],
+  ignorePatterns: ['.eslintrc.cjs', 'rollup.config.js'],
 };
