@@ -21,7 +21,7 @@ backoffice:
   strategyType: RollingUpdate
   updateStrategy:
     maxSurge: 1
-    maxUnavailable: "0"
+    maxUnavailable: '0'
   nameOverride: backoffice
   service:
     port: 80
@@ -29,7 +29,7 @@ backoffice:
     protocol: TCP
   image:
     registry: ghcr.io
-    repository: "ballerine-io/backoffice"
+    repository: 'ballerine-io/backoffice'
     pullPolicy: Always
     pullSecrets: ""
     tag: "dev"
@@ -60,7 +60,7 @@ headlessexample:
   strategyType: RollingUpdate
   updateStrategy:
     maxSurge: 1
-    maxUnavailable: "0"
+    maxUnavailable: '0'
   nameOverride: headlessexample
   service:
     port: 80
@@ -68,7 +68,7 @@ headlessexample:
     protocol: TCP
   image:
     registry: ghcr.io
-    repository: "ballerine-io/headless-example"
+    repository: 'ballerine-io/headless-example'
     pullPolicy: Always
     pullSecrets: ""
     tag: "dev"
@@ -138,7 +138,7 @@ workflowsdashboard:
   strategyType: RollingUpdate
   updateStrategy:
     maxSurge: 1
-    maxUnavailable: "0"
+    maxUnavailable: '0'
   nameOverride: workflowsdashboard
   service:
     port: 80
@@ -146,7 +146,7 @@ workflowsdashboard:
     protocol: TCP
   image:
     registry: ghcr.io
-    repository: "ballerine-io/workflows-dashboard"
+    repository: 'ballerine-io/workflows-dashboard'
     pullPolicy: Always
     pullSecrets: ""
     tag: "dev"
@@ -177,7 +177,7 @@ websocketService:
   strategyType: RollingUpdate
   updateStrategy:
     maxSurge: 1
-    maxUnavailable: "0"
+    maxUnavailable: '0'
   nameOverride: websocketservice
   service:
     port: 3500
@@ -185,7 +185,7 @@ websocketService:
     protocol: TCP
   image:
     registry: ghcr.io
-    repository: "ballerine-io/websocket-service"
+    repository: 'ballerine-io/websocket-service'
     pullPolicy: Always
     tag: "dev"
   ingress:
@@ -216,7 +216,7 @@ workflowService:
   strategyType: RollingUpdate
   updateStrategy:
     maxSurge: 1
-    maxUnavailable: "0"
+    maxUnavailable: '0'
   nameOverride: workflowservice
   migration: true
   service:
@@ -225,7 +225,7 @@ workflowService:
     protocol: TCP
   image:
     registry: ghcr.io
-    repository: "ballerine-io/workflows-service"
+    repository: 'ballerine-io/workflows-service'
     pullPolicy: Always
     pullSecrets: ""
     tag: "dev"

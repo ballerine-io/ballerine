@@ -3,7 +3,7 @@ import { EndUserRepository } from './end-user.repository';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
 import { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { Business, EndUser } from '@prisma/client';
+import { Business, EndUser, Prisma } from '@prisma/client';
 
 @Injectable()
 export class EndUserService {
@@ -31,6 +31,7 @@ export class EndUserService {
   async createWithBusiness(
     endUser: EndUserCreateDto,
     projectId: TProjectId,
+    businessId?: string,
   ): Promise<EndUser & { businesses: Business[] }> {
     const { companyName = '', ...userData } = endUser;
 
@@ -39,7 +40,12 @@ export class EndUserService {
         data: {
           ...userData,
           businesses: {
-            create: { companyName, projectId: projectId },
+            connectOrCreate: {
+              where: {
+                id: businessId,
+              },
+              create: { companyName, projectId: projectId },
+            },
           },
         },
         include: {
@@ -67,5 +73,12 @@ export class EndUserService {
       },
       projectIds,
     );
+  }
+  async updateById(
+    id: string,
+    endUser: Omit<Prisma.EndUserUpdateArgs, 'where'>,
+    projectId: TProjectId,
+  ) {
+    return await this.repository.updateById(id, endUser, projectId);
   }
 }

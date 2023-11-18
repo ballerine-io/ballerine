@@ -62,7 +62,14 @@ describe('UserSessionAuditMiddleware', () => {
     middleware = new UserSessionAuditMiddleware(app.get(AppLoggerService), app.get(UserService));
     userService = app.get(UserService);
     const prismaService = app.get(PrismaService);
-    const customer = await createCustomer(prismaService, String(Date.now()), 'secret', '');
+    const customer = await createCustomer(
+      prismaService,
+      String(Date.now()),
+      'secret',
+      '',
+      '',
+      'webhookSharedSecret',
+    );
     project = await createProject(prismaService, customer, '3');
 
     callback = jest.fn(() => null);

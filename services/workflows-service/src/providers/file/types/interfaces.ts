@@ -1,5 +1,6 @@
 import { Readable } from 'stream';
 import { TLocalFilePath, TRemoteFileConfig } from './files-types';
+import { MimeType } from 'file-type';
 
 export interface IFileProvider {
   isRemoteExists(remoteFileConfig: TRemoteFileConfig): Promise<boolean>;
@@ -10,6 +11,7 @@ export interface IFileProvider {
   upload(
     localFilePath: TLocalFilePath,
     remoteFileConfig: TRemoteFileConfig,
+    mimeType: MimeType | undefined,
   ): Promise<TRemoteFileConfig | TLocalFilePath | void>;
   generateRemotePath({
     fileName,

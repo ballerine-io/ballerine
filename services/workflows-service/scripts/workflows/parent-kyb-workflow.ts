@@ -1,7 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { kycDynamicExample } from './kyc-dynamic-process-example';
 import { env } from '../../src/env';
 import { StateTag } from '@ballerine/common';
+import { generateDynamicUiTest } from './ui-definition/ui-kyb-parent-dynamic-example';
 
 export const kybParentDynamicExample = {
   id: 'dynamic_kyb_parent_example',
@@ -18,7 +19,7 @@ export const kybParentDynamicExample = {
     states: {
       idle: {
         on: {
-          start: 'run_ubos',
+          COLLECTION_FLOW_FINISHED: 'manual_review',
         },
       },
       run_ubos: {
@@ -51,10 +52,16 @@ export const kybParentDynamicExample = {
       },
       manual_review: {
         tags: [StateTag.MANUAL_REVIEW],
-        type: 'final' as const,
+        on: {
+          revision: 'revision',
+        },
       },
       auto_reject: {
         tags: [StateTag.REJECTED],
+        type: 'final' as const,
+      },
+      revision: {
+        tags: [StateTag.REVISION],
         type: 'final' as const,
       },
     },
@@ -110,7 +117,7 @@ export const kybParentDynamicExample = {
     commonPlugins: [
       {
         pluginKind: 'iterative',
-        name: 'ubos_iterractive',
+        name: 'ubos_iterative',
         actionPluginName: 'veriff_kyc_child_plugin',
         stateNames: ['run_ubos'],
         iterateOn: [
@@ -138,10 +145,18 @@ export const kybParentDynamicExample = {
       },
     ],
   },
-  isPublic: true,
-};
-export const generateParentKybWithKycs = async (prismaClient: PrismaClient) => {
-  return await prismaClient.workflowDefinition.create({
-    data: kybParentDynamicExample,
+} as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
+export const generateParentKybWithKycs = async (prismaClient: PrismaClient, projectId?: string) => {
+  const kybDynamicExample = {
+    ...kybParentDynamicExample,
+    isPublic: projectId ? false : true,
+    projectId: projectId,
+  };
+
+  const workflow = await prismaClient.workflowDefinition.create({
+    data: kybDynamicExample,
   });
+
+  await generateDynamicUiTest(prismaClient, workflow.id, projectId || workflow.projectId);
+  return workflow;
 };

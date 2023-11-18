@@ -13,14 +13,16 @@ import { CommonWorkflowStates, defaultContextSchema } from '@ballerine/common';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
-import { generateParentKybWithKycs } from './workflows/parent-kyb-workflow';
 import { generateKybDefintion } from './workflows';
 import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
 import { generateParentKybWithSessionKycs } from './workflows/parent-kyb-kyc-session-workflow';
 import { env } from '../src/env';
+import { generateKybKycWorkflowDefinition } from './workflows/kyb-kyc-workflow-definition';
 import { generateBaseTaskLevelStates } from './workflows/generate-base-task-level-states';
 import { generateBaseCaseLevelStates } from './workflows/generate-base-case-level-states';
 import { InputJsonValue } from '../src/types';
+import { generateDynamicUiWorkflow } from './workflows/dynamic-ui-workflow';
+import { generateWebsiteMonitoringExample } from './workflows/website-monitoring-workflow';
 
 seed(10).catch(error => {
   console.error(error);
@@ -57,6 +59,8 @@ async function createCustomer(
   id: string,
   apiKey: string,
   logoImageUri: string,
+  faviconImageUri: string,
+  webhookSharedSecret: string,
 ) {
   return await client.customer.create({
     data: {
@@ -68,8 +72,10 @@ async function createCustomer(
         authValue: apiKey,
         validUntil: '',
         isValid: '',
+        webhookSharedSecret,
       },
       logoImageUri: logoImageUri,
+      faviconImageUri,
       country: 'GB',
       language: 'en',
     },
@@ -96,12 +102,16 @@ async function seed(bcryptSalt: string | number) {
     '1',
     env.API_KEY,
     'https://assets-global.website-files.com/62827cf4fe5eb528708511d4/645511cb3d3dd84ee28fe04d_CyberAgent.svg',
+    '',
+    `webhook-shared-secret-${env.API_KEY}`,
   );
   const customer2 = await createCustomer(
     client,
     '2',
     `${env.API_KEY}2`,
     'https://assets-global.website-files.com/62827cf4fe5eb528708511d4/645d26f285bd18467470e7cd_zenhub-logo.svg',
+    '',
+    `webhook-shared-secret-${env.API_KEY}2`,
   );
   const project1 = await createProject(client, customer, '1');
   const project2 = await createProject(client, customer2, '2');
@@ -1049,8 +1059,17 @@ async function seed(bcryptSalt: string | number) {
         childWorkflowsRuntimeData: true,
       },
       where: {
-        workflowDefinitionId: 'kyb_parent_kyc_session_example',
+        workflowDefinitionId: 'kyb_dynamic_ui_session_example',
         businessId: { not: null },
+        state: {
+          in: [
+            'manual_review',
+            'approved',
+            'revision',
+            'rejected',
+            'pending_kyc_response_to_finish',
+          ],
+        },
       },
     },
     project1.id,
@@ -1077,6 +1096,7 @@ async function seed(bcryptSalt: string | number) {
   await client.$transaction(async tx => {
     businessRiskIds.map(async (id, index) => {
       const riskWf = async () => ({
+        runtimeId: `test-workflow-risk-id-${index}`,
         workflowDefinitionId: riskScoreMachineKybId,
         workflowDefinitionVersion: 1,
         context: await createMockBusinessContextData(id, index + 1),
@@ -1140,7 +1160,9 @@ async function seed(bcryptSalt: string | number) {
   await generateKybDefintion(client);
   await generateKycSessionDefinition(client);
   await generateParentKybWithSessionKycs(client);
+  await generateKybKycWorkflowDefinition(client);
   await generateKycForE2eTest(client);
-  await generateParentKybWithKycs(client);
+  await generateDynamicUiWorkflow(client, project1.id);
+  await generateWebsiteMonitoringExample(client, project1.id);
   console.info('Seeded database successfully');
 }

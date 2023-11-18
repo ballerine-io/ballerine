@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { env } from '../../src/env';
-import { defaultContextSchema, StateTag } from '@ballerine/common';
+import { StateTag } from '@ballerine/common';
 
 export const kycEmailSessionDefinition = {
   id: 'kyc_email_session_example',
@@ -25,7 +25,20 @@ export const kycEmailSessionDefinition = {
           API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],
         },
       },
+      get_kyc_session_revision: {
+        tags: [StateTag.REVISION],
+        on: {
+          SEND_EMAIL: [{ target: 'revision_email_sent' }],
+          API_CALL_ERROR: [{ target: 'kyc_auto_reject' }],
+        },
+      },
       email_sent: {
+        tags: [StateTag.PENDING_PROCESS],
+        on: {
+          KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }],
+        },
+      },
+      revision_email_sent: {
         tags: [StateTag.REVISION],
         on: {
           KYC_HOOK_RESPONDED: [{ target: 'kyc_manual_review' }],
@@ -49,7 +62,7 @@ export const kycEmailSessionDefinition = {
         tags: [StateTag.REVISION],
         always: [
           {
-            target: 'get_kyc_session',
+            target: 'get_kyc_session_revision',
           },
         ],
       },
@@ -72,9 +85,9 @@ export const kycEmailSessionDefinition = {
       {
         name: 'kyc_session',
         pluginKind: 'kyc-session',
-        url: `${env.UNIFIED_API_URL}/individual-verification-sessions`,
+        url: `{secret.UNIFIED_API_URL}/individual-verification-sessions`,
         method: 'POST',
-        stateNames: ['get_kyc_session'],
+        stateNames: ['get_kyc_session', 'get_kyc_session_revision'],
         successAction: 'SEND_EMAIL',
         errorAction: 'API_CALL_ERROR',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
@@ -83,7 +96,7 @@ export const kycEmailSessionDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              endUserId: join('__',[entity.id,pluginsOutput.kyc_session.kyc_session_1.result.metadata.id || '']),
+              endUserId: join('__',[entity.ballerineEntityId || entity.data.id || entity.data.identityNumber, pluginsOutput.kyc_session.kyc_session_1.result.metadata.id || '']),
               firstName: entity.data.firstName,
               lastName: entity.data.lastName,
               callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/KYC_HOOK_RESPONDED','?resultDestination=pluginsOutput.kyc_session.kyc_session_1.result']),
@@ -106,7 +119,7 @@ export const kycEmailSessionDefinition = {
         pluginKind: 'email',
         url: `{secret.EMAIL_API_URL}`,
         method: 'POST',
-        stateNames: ['email_sent'],
+        stateNames: ['email_sent', 'revision_email_sent'],
         headers: {
           Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
           'Content-Type': 'application/json',
@@ -124,10 +137,9 @@ export const kycEmailSessionDefinition = {
               name: join(' ',[entity.data.additionalInfo.customerCompany,'Team']),
               receivers: [entity.data.email],
               subject: '{customerCompanyName} activation, Action needed.',
-              preheader: 'Verify your identity for Happy Home Goods activation with {customerCompanyName}.',
-              templateId: (documents[].decision[].revisionReason | [0])!=null && 'd-7305991b3e5840f9a14feec767ea7301' || 'd-61c568cfa5b145b5916ff89790fe2065',
+              templateId: (documents[].decision[].revisionReason | [0])!=null && 'd-2c6ae291d9df4f4a8770d6a4e272d803' || 'd-61c568cfa5b145b5916ff89790fe2065',
               revisionReason: documents[].decision[].revisionReason | [0],
-              supportEmail: join('',[entity.data.additionalInfo.companyName,'@support.com'])
+              supportEmail: join('',['support@',entity.data.additionalInfo.customerCompany,'.com']),
               adapter: '${env.MAIL_ADAPTER}'
               }`, // jmespath
             },
@@ -149,10 +161,6 @@ export const kycEmailSessionDefinition = {
       ],
       deliverEvent: 'KYC_DONE',
     },
-  },
-  contextSchema: {
-    type: 'json-schema',
-    schema: defaultContextSchema,
   },
   isPublic: true,
 };

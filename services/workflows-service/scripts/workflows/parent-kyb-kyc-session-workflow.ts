@@ -53,87 +53,6 @@ export const parentKybWithSessionWorkflowDefinition = {
         on: {
           start: 'run_ubos',
         },
-        metadata: {
-          uiSettings: {
-            multiForm: {
-              documents: [
-                {
-                  name: 'bankStatement',
-                  type: 'file',
-                },
-                {
-                  name: 'companyStructure',
-                  type: 'file',
-                },
-                {
-                  name: 'registrationCertificate',
-                  type: 'file',
-                },
-                {
-                  name: 'addressProof',
-                  type: 'file',
-                },
-              ],
-              steps: [
-                {
-                  title: 'Personal information',
-                  description: 'Please provide your personal information',
-                  formSchema: personalInformationSchema,
-                  uiSchema: personalInformationUISchema,
-                  defaultData: defaultPersonalInformationData,
-                  key: 'personalInformation',
-                },
-                {
-                  title: 'Company Information',
-                  description: 'Please provide your company information',
-                  formSchema: companyInformationSchema,
-                  uiSchema: companyInformationUISchema,
-                  defaultData: defaultCompanyInformationData,
-                  key: 'companyInformation',
-                },
-                {
-                  title: 'Headquarters Address',
-                  description: 'Please provide headquarters address',
-                  formSchema: headquartersSchema,
-                  uiSchema: headquartersUISchema,
-                  defaultData: defaultHeadquartersData,
-                  key: 'headquarters',
-                },
-                {
-                  title: 'Company Activity',
-                  description: 'Please provide details about company activity',
-                  formSchema: companyActivitySchema,
-                  uiSchema: companyActivityUISchema,
-                  key: 'companyActivity',
-                },
-                {
-                  title: 'Bank Information',
-                  description: 'Please provide your bank details',
-                  formSchema: bankInformationSchema,
-                  uiSchema: bankInformationUISchema,
-                  defaultData: defaultBankInformationData,
-                  key: 'bankInformation',
-                },
-                {
-                  title: 'Company Ownership',
-                  description: 'Please provide ownership details',
-                  formSchema: shareholdersSchema,
-                  uiSchema: shareholdersUISchema,
-                  defaultData: defaultShareholdersData,
-                  key: 'ubos',
-                },
-                {
-                  title: 'Company Documents',
-                  description: 'Please upload company documents',
-                  formSchema: companyDocumentsSchema,
-                  uiSchema: companyDocumentsUISchema,
-                  defaultData: defaultCompanyDocumentsData,
-                  key: 'companyDocuments',
-                },
-              ],
-            },
-          },
-        },
       },
       run_ubos: {
         tags: [StateTag.COLLECTION_FLOW],
@@ -298,7 +217,7 @@ export const parentKybWithSessionWorkflowDefinition = {
     commonPlugins: [
       {
         pluginKind: 'iterative',
-        name: 'ubos_iterractive',
+        name: 'ubos_iterative',
         actionPluginName: 'veriff_kyc_child_plugin',
         stateNames: ['run_ubos'],
         iterateOn: [

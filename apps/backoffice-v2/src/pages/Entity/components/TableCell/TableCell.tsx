@@ -45,14 +45,17 @@ export const TableCell = forwardRef(
               {...value?.props?.row}
               className={ctw(value?.props?.row?.className, 'hover:bg-unset border-none')}
             >
-              {headerGroup.headers?.map(header => {
+              {headerGroup.headers?.map((header, index) => {
                 return (
                   <TableHead
                     key={header.id}
                     {...value?.props?.head}
                     className={ctw(
                       value?.props?.head?.className,
-                      '!h-[unset] pb-2 pt-0 text-sm font-medium leading-none text-foreground',
+                      '!h-[unset] !pl-3 pb-2 pt-0 text-sm font-medium leading-none text-foreground',
+                      {
+                        '!pl-3.5': index === 0,
+                      },
                     )}
                   >
                     {!header.isPlaceholder &&
@@ -75,7 +78,7 @@ export const TableCell = forwardRef(
                   <TableCellComponent
                     key={cell.id}
                     {...value?.props?.cell}
-                    className={ctw(value?.props?.cell?.className, '!py-px')}
+                    className={ctw(value?.props?.cell?.className, '!py-px !pl-3.5')}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCellComponent>
@@ -90,7 +93,7 @@ export const TableCell = forwardRef(
               <TableCellComponent
                 colSpan={value?.columns?.length}
                 {...value?.props?.cell}
-                className={ctw(value?.props?.cell?.className, 'h-24 text-center')}
+                className={ctw(value?.props?.cell?.className, '!py-px !pl-3.5')}
               >
                 No results.
               </TableCellComponent>

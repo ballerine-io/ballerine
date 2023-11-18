@@ -12,13 +12,16 @@ import helmet from 'helmet';
 import { env } from '@/env';
 import { json, NextFunction, Request, Response, urlencoded } from 'express';
 import { ClsMiddleware } from 'nestjs-cls';
+import * as Sentry from '@sentry/node';
+import { ConfigService } from '@nestjs/config';
+import { AppLoggerService } from './common/app-logger/app-logger.service';
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
 global.__rootdir__ = __dirname || process.cwd();
 
 const corsOrigins =
-  env.NODE_ENV === 'production'
+  env.ENVIRONMENT_NAME === 'production'
     ? [
         env.BACKOFFICE_CORS_ORIGIN,
         env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
@@ -26,17 +29,17 @@ const corsOrigins =
         /\.ballerine\.app$/,
       ]
     : [
-        env.BACKOFFICE_CORS_ORIGIN,
-        env.HEADLESS_EXAMPLE_CORS_ORIGIN,
         env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
         env.KYB_EXAMPLE_CORS_ORIGIN,
         /\.ballerine\.dev$/,
         /\.ballerine\.app$/,
-        /\.+$/,
+        /\.ballerine\.io$/,
+        /^http:\/\/localhost:\d+$/,
       ];
 
 async function main() {
   const app = await NestFactory.create(AppModule, {
+    bufferLogs: true, //will be buffered until a custom logger is attached
     snapshot: true,
     cors: {
       origin: corsOrigins,
@@ -44,18 +47,27 @@ async function main() {
     },
   });
 
+  const logger = app.get(AppLoggerService);
+  const configService = app.get(ConfigService);
+
+  app.useLogger(logger);
   app.use(new ClsMiddleware({}).use);
+
+  if (configService.get('SENTRY_DSN')) {
+    app.use(Sentry.Handlers.requestHandler());
+    app.use(Sentry.Handlers.tracingHandler());
+  }
 
   app.use(helmet());
   app.use(json({ limit: '50mb' }));
-  app.use(urlencoded({ limit: '50mb' }));
+  app.use(urlencoded({ limit: '50mb', extended: true }));
   app.use(
     cookieSession({
       name: 'session',
       keys: [env.SESSION_SECRET],
-      httpOnly: env.NODE_ENV === 'production',
+      httpOnly: env.ENVIRONMENT_NAME === 'production',
       secure: false,
-      sameSite: env.NODE_ENV === 'production' ? 'strict' : false,
+      sameSite: env.ENVIRONMENT_NAME === 'production' ? 'strict' : false,
       maxAge: 1000 * 60 * 60 * 1, // 1 hour(s),
     }),
   );
@@ -111,8 +123,10 @@ async function main() {
 
   app.enableShutdownHooks();
 
-  void app.listen(env.PORT);
-  console.log(`Listening on port ${env.PORT}`);
+  const port = configService.getOrThrow<string>('PORT');
+  void app.listen(+port);
+
+  logger.log(`Listening on port ${port}`);
 
   return app;
 }

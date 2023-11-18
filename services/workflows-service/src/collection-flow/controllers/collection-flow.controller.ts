@@ -11,6 +11,8 @@ import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { Public } from '@/common/decorators/public.decorator';
 import { ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
+import { WorkflowService } from '@/workflow/workflow.service';
+import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
 
 @Public()
 @UseTokenAuthGuard()
@@ -19,6 +21,7 @@ export class ColectionFlowController {
   constructor(
     protected readonly service: CollectionFlowService,
     protected readonly adapterManager: WorkflowAdapterManager,
+    protected readonly workflowService: WorkflowService,
   ) {}
 
   @common.Get('/customer')
@@ -54,6 +57,15 @@ export class ColectionFlowController {
     }
   }
 
+  @common.Get('/context')
+  async getContext(@TokenScope() tokenScope: ITokenScope) {
+    return await this.workflowService.getWorkflowRuntimeDataById(
+      tokenScope.workflowRuntimeDataId,
+      { select: { context: true, state: true } },
+      [tokenScope.projectId],
+    );
+  }
+
   @common.Get('/configuration')
   async getFlowConfiguration(
     @TokenScope() tokenScope: ITokenScope,
@@ -83,39 +95,22 @@ export class ColectionFlowController {
   }
 
   @common.Put('')
-  async updateFlow(@common.Body() dto: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
-    const [customer, workflow] = await Promise.all([
-      await this.service.getCustomerDetails(tokenScope.projectId),
-      await this.service.getActiveFlow(tokenScope.workflowRuntimeDataId, [tokenScope.projectId]),
-    ]);
-
-    if (!workflow) throw new common.InternalServerErrorException('Workflow not found.');
-
-    try {
-      const adapter = this.adapterManager.getAdapter(workflow.workflowDefinitionId);
-
-      return this.service.updateFlow(
-        adapter,
-        dto.payload,
-        tokenScope.workflowRuntimeDataId,
-        tokenScope.projectId,
-        customer,
-      );
-    } catch (error) {
-      if (error instanceof UnsupportedFlowTypeException) {
-        throw new common.BadRequestException(
-          `${workflow.workflowDefinitionId as string} is not supported.`,
-        );
-      }
-
-      throw error;
-    }
+  async updateFlow(@common.Body() payload: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
+    return await this.service.updateWorkflowRuntimeData(payload, tokenScope);
   }
 
-  @common.Post('finish')
-  async finishFlow(@TokenScope() tokenScope: ITokenScope) {
-    return this.service.finishFlow(
-      tokenScope.workflowRuntimeDataId,
+  @common.Put('/sync')
+  async syncWorkflow(@common.Body() payload: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
+    return await this.service.syncWorkflow(payload, tokenScope);
+  }
+
+  @common.Post('/send-event')
+  async finishFlow(@TokenScope() tokenScope: ITokenScope, @common.Body() body: FinishFlowDto) {
+    return await this.workflowService.event(
+      {
+        id: tokenScope.workflowRuntimeDataId,
+        name: body.eventName,
+      },
       [tokenScope.projectId],
       tokenScope.projectId,
     );

@@ -1,8 +1,6 @@
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Form } from '../../../../common/components/organisms/Form/Form';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
-import { camelCaseToSpace } from '../../../../common/utils/camel-case-to-space/camel-case-to-space';
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { Button, buttonVariants } from '../../../../common/components/atoms/Button/Button';
 import React, { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
@@ -27,6 +25,8 @@ import { useUpdateDocumentByIdMutation } from '../../../../domains/workflows/hoo
 import { isValidDate } from '../../../../common/utils/is-valid-date';
 import { isValidIsoDate } from '../../../../common/utils/is-valid-iso-date/is-valid-iso-date';
 import { JsonDialog } from '@ballerine/ui';
+import { toTitleCase } from 'string-ts';
+import { isValidDatetime } from '../../../../common/utils/is-valid-datetime';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -130,7 +130,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       type: string | undefined;
       value: unknown;
     }) => {
-      if (format === 'date-time') {
+      if (format === 'date-time' || isValidDatetime(value)) {
         return 'datetime-local';
       }
 
@@ -199,14 +199,14 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
               const displayValue = (value: unknown) => {
                 if (isEditable) return originalValue;
 
-                return isNullish(value) || value === '' ? 'Unavailable' : value;
+                return isNullish(value) || value === '' ? 'N/A' : value;
               };
 
               const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
                 const isCheckbox = event.target.type === 'checkbox';
                 const inputValue = isCheckbox ? event.target.checked : event.target.value;
 
-                form.setValue(title, inputValue === 'Unavailable' ? '' : inputValue);
+                form.setValue(title, inputValue === 'N/A' ? '' : inputValue);
               };
 
               return (
@@ -231,7 +231,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
                     return (
                       <FormItem>
-                        <FormLabel>{toStartCase(camelCaseToSpace(title))}</FormLabel>
+                        <FormLabel>{toTitleCase(title)}</FormLabel>
                         {(isObject(value) || Array.isArray(value)) && (
                           <div
                             className={`flex items-end justify-start`}
@@ -314,6 +314,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                                     isDecisionComponent,
                                     field.value,
                                   ),
+                                  'text-slate-400': isNullish(field.value) || field.value === '',
                                 },
                               )}
                               {...(pattern && { pattern })}

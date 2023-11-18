@@ -1,15 +1,15 @@
-import { Input, Label } from '@components/atoms';
-import { RJSVInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
+import { Input } from '@components/atoms';
+import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { useCallback, useEffect, useRef } from 'react';
 
-export const FileInputAdapter: RJSVInputAdapter<File> = ({
+export const FileInputAdapter: RJSFInputAdapter<File> = ({
   id,
   name,
   uiSchema,
-  schema,
   formData,
   disabled,
   onChange,
+  onBlur,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -36,19 +36,24 @@ export const FileInputAdapter: RJSVInputAdapter<File> = ({
     [onChange],
   );
 
+  const handleBlur = useCallback(() => {
+    onBlur && onBlur(id, formData);
+  }, [id, onBlur, formData]);
+
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor={id}>{schema.title}</Label>
       <Input
         ref={inputRef}
         type="file"
         id={id}
         name={name}
         placeholder={uiSchema['ui:placeholder']}
-        onChange={e => void handleChange(e)}
+        //@ts-ignore
+        onChange={handleChange}
         accept="image/jpeg, image/png, application/pdf, .docx"
         className="line-1 flex items-center"
         disabled={disabled}
+        onBlur={handleBlur}
       />
     </div>
   );

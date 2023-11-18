@@ -28,6 +28,9 @@ import { SalesforceService } from '@/salesforce/salesforce.service';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { UserRepository } from '@/user/user.repository';
 import { PasswordService } from '@/auth/password/password.service';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { WorkflowModule } from './workflow.module';
+import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -51,7 +54,6 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       WorkflowEventEmitterService,
       BusinessRepository,
       WorkflowDefinitionRepository,
-      WorkflowRuntimeDataRepository,
       WorkflowService,
       EventEmitter2,
       PrismaService,
@@ -61,6 +63,9 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       SalesforceService,
       SalesforceIntegrationRepository,
       PasswordService,
+      WorkflowTokenService,
+      WorkflowTokenRepository,
+      WorkflowRuntimeDataRepository,
     ];
 
     workflowRuntimeRepository = (await fetchServiceFromModule(
@@ -79,7 +84,14 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       PrismaModule,
     ])) as unknown as PrismaService;
 
-    const customer = await createCustomer(prismaService, '1', 'secret', '');
+    const customer = await createCustomer(
+      prismaService,
+      '1',
+      'secret',
+      '',
+      '',
+      'webhook-shared-secret',
+    );
     project = await createProject(prismaService, customer, '5');
   });
 

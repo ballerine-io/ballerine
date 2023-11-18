@@ -59,6 +59,7 @@ export class WorkflowBrowserSDK {
       ...options,
       extensions: {
         statePlugins,
+        ...options?.extensions,
       },
       definition: {
         ...options?.definition,
@@ -226,6 +227,14 @@ export class WorkflowBrowserSDK {
       : (event: TWorkflowEvent) => void,
   ) {
     this.#__subscribers.push({ event, cb });
+  }
+
+  overrideContext<TContext extends Record<string, any>>(context: any): TContext {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return this.#__service.overrideContext(context);
+  }
+  async invokePlugin(pluginName: string) {
+    return await this.#__service.invokePlugin(pluginName);
   }
 
   async sendEvent(event: WorkflowEventWithoutState) {

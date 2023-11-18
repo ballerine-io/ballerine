@@ -1,24 +1,25 @@
 import { BusinessService } from '@/business/business.service';
-import { UpdateFlowPayload } from '@/collection-flow/dto/update-flow-input.dto';
+import { UpdateFlowDto } from '@/collection-flow/dto/update-flow-input.dto';
 import { recursiveMerge } from '@/collection-flow/helpers/recursive-merge';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
-import { FlowStepModel } from '@/collection-flow/models/flow-step.model';
-import { IWorkflowAdapter } from '@/collection-flow/workflow-adapters/abstract-workflow-adapter';
-import { KYBParentKYCSessionExampleFlowData } from '@/collection-flow/workflow-adapters/kyb_parent_kyc_session_example/kyb_parent_kyc_session_example.model';
+import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-step.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { CustomerService } from '@/customer/customer.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
+import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
 import { TProjectId, TProjectIds } from '@/types';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { TDocument } from '@ballerine/common';
+import { DefaultContextSchema } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
-import { Customer, EndUser } from '@prisma/client';
-import { File } from '@prisma/client';
+import { Customer, EndUser, UiDefinitionContext } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
+import { randomUUID } from 'crypto';
 import keyBy from 'lodash/keyBy';
 
 @Injectable()
@@ -30,8 +31,10 @@ export class CollectionFlowService {
     protected readonly workflowDefinitionRepository: WorkflowDefinitionRepository,
     protected readonly workflowService: WorkflowService,
     protected readonly businessService: BusinessService,
+    protected readonly uiDefinitionService: UiDefinitionService,
     protected readonly customerService: CustomerService,
     protected readonly storageService: StorageService,
+    protected readonly fileService: FileService,
   ) {}
 
   async getCustomerDetails(projectId: TProjectId): Promise<Customer> {
@@ -54,20 +57,25 @@ export class CollectionFlowService {
       projectIds,
     );
 
-    return plainToClass(FlowConfigurationModel, {
+    const uiDefintion = await this.uiDefinitionService.getByWorkflowDefinitionId(
+      workflowDefinition.id,
+      'collection_flow' as keyof typeof UiDefinitionContext,
+      projectIds,
+      {},
+    );
+
+    return {
       id: workflowDefinition.id,
-      steps:
-        workflowDefinition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm
-          ?.steps || [],
-      documentConfigurations:
-        workflowDefinition.definition?.states?.data_collection?.metadata?.uiSettings.multiForm
-          .documents || [],
-    });
+      uiSchema: uiDefintion.uiSchema as unknown as UiSchemaStep[],
+      definition: uiDefintion.definition
+        ? (uiDefintion.definition as unknown as UiDefDefinition)
+        : undefined,
+    };
   }
 
   async updateFlowConfiguration(
     configurationId: string,
-    steps: FlowStepModel[],
+    steps: UiSchemaStep[],
     projectIds: TProjectIds,
     projectId: TProjectId,
   ): Promise<FlowConfigurationModel> {
@@ -81,7 +89,8 @@ export class CollectionFlowService {
     const providedStepsMap = keyBy(steps, 'key');
 
     const persistedSteps =
-      definition.definition.states?.data_collection?.metadata?.uiSettings?.multiForm?.steps || [];
+      // @ts-expect-error - error from Prisma types fix
+      definition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm?.steps || [];
 
     const mergedSteps = persistedSteps.map((step: any) => {
       const stepToMergeIn = providedStepsMap[step.key];
@@ -98,10 +107,13 @@ export class CollectionFlowService {
       {
         data: {
           definition: {
-            ...definition.definition,
+            // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
+            ...definition?.definition,
             states: {
+              // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
               ...definition.definition?.states,
               data_collection: {
+                // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
                 ...definition.definition?.states?.data_collection,
                 metadata: {
                   uiSettings: {
@@ -121,6 +133,7 @@ export class CollectionFlowService {
     return plainToClass(FlowConfigurationModel, {
       id: updatedDefinition.id,
       steps:
+        // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
         updatedDefinition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm
           ?.steps || [],
     });
@@ -140,98 +153,65 @@ export class CollectionFlowService {
     return workflowData ? workflowData : null;
   }
 
-  async updateFlow(
-    adapter: IWorkflowAdapter,
-    updatePayload: UpdateFlowPayload,
-    flowId: string,
-    projectId: TProjectId,
-    customer: Customer,
-  ) {
-    const workflow = await this.workflowRuntimeDataRepository.findById(flowId, {}, [
-      projectId,
-    ] as TProjectIds);
-
-    if (!workflow) throw new NotFoundException();
-
-    const flowData = plainToClass(KYBParentKYCSessionExampleFlowData, {
-      id: flowId,
-      state: updatePayload.flowState,
-      flowData: updatePayload.dynamicData,
-      mainRepresentative: updatePayload.mainRepresentative,
-      documents: updatePayload.documents,
-      ubos: updatePayload.ubos,
-      flowState: updatePayload.flowState,
-      businessData: updatePayload.businessData,
-    });
-
-    const workflowData = adapter.deserialize(flowData as any, workflow, customer);
-
-    workflowData.context.documents = await this.__persistFileUrlsToDocuments(
-      workflowData.context.documents,
-      [projectId],
+  async updateWorkflowRuntimeData(payload: UpdateFlowDto, tokenScope: ITokenScope) {
+    const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
+      tokenScope.workflowRuntimeDataId,
+      {},
+      [tokenScope.projectId] as TProjectIds,
     );
 
-    await this.businessService.updateById(
-      workflow.businessId,
-      {
-        data: updatePayload.businessData,
-      },
-      projectId,
-    );
+    if (payload.data.endUser) {
+      await this.endUserService.updateById(
+        tokenScope.endUserId,
+        { data: payload.data.endUser },
+        tokenScope.projectId,
+      );
+    }
 
-    await this.workflowService.createOrUpdateWorkflowRuntime({
-      workflowDefinitionId: workflowData.workflowDefinitionId,
-      context: workflowData.context,
-      projectIds: [projectId] as TProjectIds,
-      currentProjectId: projectId,
+    if (payload.data.ballerineEntityId && payload.data.business) {
+      await this.businessService.updateById(
+        payload.data.ballerineEntityId,
+        { data: payload.data.business },
+        tokenScope.projectId,
+      );
+    }
+
+    const { state, ...resetContext } = payload.data.context as Record<string, any>;
+
+    const updateResult = await this.workflowService.createOrUpdateWorkflowRuntime({
+      workflowDefinitionId: workflowRuntime.workflowDefinitionId,
+      context: resetContext as DefaultContextSchema,
+      config: workflowRuntime.config,
+      parentWorkflowId: undefined,
+      projectIds: [tokenScope.projectId],
+      currentProjectId: tokenScope.projectId,
     });
 
-    return flowData;
+    return updateResult;
   }
 
-  private async __persistFileUrlsToDocuments(
-    documents: TDocument[] = [],
-    projectIds: TProjectIds,
-  ): Promise<TDocument[]> {
-    const fileEntities = (
-      await Promise.all(
-        documents.reduce((filesList, document) => {
-          document.pages.forEach((page: { ballerineFileId: string }) => {
-            if (!page.ballerineFileId) return;
+  async syncWorkflow(payload: UpdateFlowDto, tokenScope: ITokenScope) {
+    if (payload.data.endUser) {
+      await this.endUserService.updateById(
+        tokenScope.endUserId,
+        { data: payload.data.endUser },
+        tokenScope.projectId,
+      );
+    }
 
-            filesList.push(
-              this.storageService.getFileById({ id: page.ballerineFileId }, projectIds),
-            );
-          });
+    if (payload.data.ballerineEntityId && payload.data.business) {
+      await this.businessService.updateById(
+        payload.data.ballerineEntityId,
+        { data: payload.data.business },
+        tokenScope.projectId,
+      );
+    }
 
-          return filesList;
-        }, [] as Promise<File | null>[]),
-      )
-    ).filter(Boolean);
-
-    const filesById = keyBy(fileEntities, 'id');
-
-    const updatedDocuments = documents.map(document => {
-      return {
-        ...document,
-        pages: document.pages.map(
-          (page: { ballerineFileId: string; uri: string; provider: string; type: string }) => {
-            const file = filesById[page.ballerineFileId] as File;
-
-            if (!file) return page;
-
-            return {
-              ballerineFileId: page.ballerineFileId,
-              uri: file.uri,
-              type: file.mimeType,
-              provider: 'http',
-            };
-          },
-        ),
-      };
-    });
-
-    return updatedDocuments;
+    return await this.workflowService.syncContextById(
+      tokenScope.workflowRuntimeDataId,
+      payload.data.context as DefaultContextSchema,
+      tokenScope.projectId,
+    );
   }
 
   async finishFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
@@ -242,21 +222,6 @@ export class CollectionFlowService {
       {},
       projectIds,
     );
-
-    return await this.workflowService.updateContextById(
-      workflowRuntimeData.id,
-      {
-        ...workflowRuntimeData.context,
-        entity: {
-          ...workflowRuntimeData.context.entity,
-          data: {
-            ...workflowRuntimeData.context.entity.data,
-            __isFinished: true,
-          },
-        },
-      },
-      projectIds,
-    );
   }
 
   async resubmitFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
@@ -265,5 +230,37 @@ export class CollectionFlowService {
       projectIds,
       currentProjectId,
     );
+  }
+
+  async uploadNewFile(projectId: string, workflowRuntimeDataId: string, file: Express.Multer.File) {
+    // upload file into a customer folder
+    const customer = await this.customerService.getByProjectId(projectId);
+
+    const runtimeDataId = await this.workflowService.getWorkflowRuntimeDataById(
+      workflowRuntimeDataId,
+      {},
+      [projectId],
+    );
+
+    const entityId = runtimeDataId.businessId || runtimeDataId.endUserId;
+
+    if (!entityId) {
+      throw new NotFoundException("Workflow does't exists");
+    }
+
+    // Remove file extension (get everything before the last dot)
+    const nameWithoutExtension = (file.originalname || randomUUID()).replace(/\.[^.]+$/, '');
+    // Remove non characters
+    const alphabeticOnlyName = nameWithoutExtension.replace(/\W/g, '');
+
+    const persistedFile = await this.fileService.copyToDestinationAndCreate(
+      { id: alphabeticOnlyName, uri: file.path, provider: 'file-system' },
+      entityId,
+      projectId,
+      customer.name,
+      { shouldDownloadFromSource: false },
+    );
+
+    return persistedFile;
   }
 }

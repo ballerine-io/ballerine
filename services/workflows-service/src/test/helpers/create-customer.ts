@@ -5,6 +5,8 @@ export async function createCustomer(
   id: string,
   apiKey: string,
   logoImageUri: string,
+  faviconImageUri: string,
+  webhookSharedSecret: string,
 ) {
   return await client.customer.create({
     data: {
@@ -16,8 +18,10 @@ export async function createCustomer(
         authValue: apiKey,
         validUntil: '',
         isValid: '',
+        webhookSharedSecret,
       },
       logoImageUri: logoImageUri,
+      faviconImageUri,
       country: 'GB',
       language: 'en',
     },

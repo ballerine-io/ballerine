@@ -6,5 +6,8 @@ export const tagToBadgeData = {
   [StateTag.REJECTED]: { variant: 'destructive', text: 'Rejected' },
   [StateTag.RESOLVED]: { variant: 'success', text: 'Resolved' },
   [StateTag.MANUAL_REVIEW]: { variant: 'info', text: 'Manual Review' },
-  [StateTag.COLLECTION_FLOW]: { variant: 'slate', text: 'Collection in progress' },
+  [StateTag.COLLECTION_FLOW]: { variant: 'violet', text: 'Collection in Progress' },
+  [StateTag.PENDING_PROCESS]: { variant: 'warning', text: 'Pending ID Verification' },
+  [StateTag.FAILURE]: { variant: 'destructive', text: 'Failed' },
+  [StateTag.DATA_ENRICHMENT]: { variant: 'violet', text: 'Awaiting 3rd Party Data' },
 } as const;

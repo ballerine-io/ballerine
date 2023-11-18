@@ -1,16 +1,15 @@
-import { UserInfo } from '@/user/user-info';
+import { Customer } from '@prisma/client';
 
 declare global {
   // eslint-disable-next-line no-var
   var __rootdir__: string;
 
   namespace Express {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
     interface User {
-      id: string;
-      email: string;
-      firstName: string;
-      lastName: string;
+      user?: Partial<User>;
+      customer?: Partial<Customer>;
+      type: 'user' | 'customer' | 'admin';
+      projectIds: string[] | null;
     }
 
     interface Request {

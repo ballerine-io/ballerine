@@ -325,6 +325,7 @@ export const UserSelectSchema = z.object({
   firstName: z.boolean().optional(),
   lastName: z.boolean().optional(),
   email: z.boolean().optional(),
+  avatarUrl: z.boolean().optional(),
   phone: z.boolean().optional(),
   roles: z.boolean().optional(),
   createdAt: z.boolean().optional(),
@@ -529,6 +530,7 @@ const WorkflowRuntimeDataFilterQuerySchema = z
 
 export const FilterCreateSchema = z.object({
   name: z.string(),
+  projectId: z.string(),
   entity: z.enum(['individuals', 'businesses']),
   query: WorkflowRuntimeDataFilterQuerySchema,
 });

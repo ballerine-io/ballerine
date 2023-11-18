@@ -7,10 +7,7 @@ import { DialogClose } from '@radix-ui/react-dialog';
 import { IActionsProps } from './interfaces';
 import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import {
-  AssignDropdown,
-  Assignee,
-} from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
+import { AssignDropdown } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
 import { Button } from '../../../../common/components/atoms/Button/Button';
 import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
 import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
@@ -19,8 +16,8 @@ import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dia
 import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
 import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
 import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
-import { convertSnakeCaseToTitleCase } from '../../hooks/useEntity/utils';
 import { tagToBadgeData } from './consts';
+import { toTitleCase } from 'string-ts';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -28,7 +25,7 @@ import { tagToBadgeData } from './consts';
  * @param props
  * @param props.id - The id of the entity, passed into the reject/approve mutation.
  * @param props.fullName - The full name of the entity.
- * @param props.avatarUrl - The entity's image url to pass into {@link Avatar}.
+ * @param props.showResolutionButtons - Whether to show the reject/approve buttons.
  *
  * @see {@link Case}
  * @see {@link Avatar}
@@ -38,7 +35,6 @@ import { tagToBadgeData } from './consts';
 export const Actions: FunctionComponent<IActionsProps> = ({
   id,
   fullName,
-  avatarUrl,
   showResolutionButtons,
 }) => {
   const {
@@ -66,11 +62,11 @@ export const Actions: FunctionComponent<IActionsProps> = ({
       <div className={`mb-8 flex flex-row space-x-3.5`}>
         <AssignDropdown
           assignedUser={assignedUser}
-          avatarUrl={avatarUrl}
           assignees={assignees}
           onAssigneeSelect={id => {
             onMutateAssignWorkflow(id, id === authenticatedUser?.id);
           }}
+          authenticatedUserId={authenticatedUser?.id}
         />
       </div>
       <div className={`flex h-20 justify-between`}>
@@ -90,10 +86,13 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                 variant={tagToBadgeData[tag].variant}
                 className={ctw(`text-sm font-bold`, {
                   'bg-info/20 text-info': tag === StateTag.MANUAL_REVIEW,
-                  'bg-violet-500/20 text-violet-500': tag === StateTag.COLLECTION_FLOW,
+                  'bg-violet-500/20 text-violet-500': [
+                    StateTag.COLLECTION_FLOW,
+                    StateTag.DATA_ENRICHMENT,
+                  ].includes(tag),
                 })}
               >
-                {convertSnakeCaseToTitleCase(tagToBadgeData[tag].text)}
+                {tagToBadgeData[tag].text}
               </Badge>
             </div>
           )}

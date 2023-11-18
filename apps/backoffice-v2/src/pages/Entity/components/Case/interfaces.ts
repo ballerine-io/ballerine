@@ -5,8 +5,8 @@ import { Documents } from './Case.Documents';
 import { Info } from './Case.Info';
 import { Content } from './Case.Content';
 import { FaceMatch } from './Case.FaceMatch';
-import { TState } from '../../../../common/types';
 import { Assignee } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
+import { TStateTags } from '@ballerine/common';
 
 export interface IItemProps {
   id: string;
@@ -14,7 +14,7 @@ export interface IItemProps {
   createdAt: string;
   entityAvatarUrl: string;
   assignee: Assignee | null;
-  status: TState;
+  tags: TStateTags;
 }
 
 export interface IInfoProps {

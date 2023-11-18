@@ -1,10 +1,10 @@
 import * as common from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { CustomerService } from '@/customer/customer.service';
 import { CustomerModel } from '@/customer/customer.model';
 import { Customer } from '@prisma/client';
 import { TProjectIds } from '@/types';
-import { NotFoundException } from '@nestjs/common';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 
 @swagger.ApiTags('internal/customers')
@@ -25,6 +25,7 @@ export class CustomerControllerInternal {
         name: true,
         displayName: true,
         logoImageUri: true,
+        faviconImageUri: true,
         country: true,
         language: true,
         customerStatus: true,

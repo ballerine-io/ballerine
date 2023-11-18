@@ -6,6 +6,7 @@ import * as path from 'path';
 
 export class LocalFileService implements IFileProvider {
   protected client;
+
   constructor(...args: any) {
     this.client = fs;
   }
@@ -38,19 +39,47 @@ export class LocalFileService implements IFileProvider {
     localFilePath: TLocalFilePath,
     remoteFileConfig: TRemoteFileConfig,
   ): Promise<TRemoteFileConfig> {
-    const toLocalFilePath = remoteFileConfig as TLocalFilePath;
-    this.client
-      .createReadStream(this.__removeFilePrefix(localFilePath))
-      .pipe(this.client.createWriteStream(this.__removeFilePrefix(toLocalFilePath)));
+    return new Promise((resolve, reject) => {
+      const distFilePath = this.__removeFilePrefix(remoteFileConfig as TRemoteUri);
 
-    return Promise.resolve(toLocalFilePath);
+      const readStream = this.client.createReadStream(this.__removeFilePrefix(localFilePath));
+      const writeStream = this.client.createWriteStream(this.__removeFilePrefix(distFilePath));
+
+      readStream
+        .pipe(writeStream)
+        .on('finish', () => {
+          resolve(distFilePath);
+        })
+        .on('error', err => {
+          reject(err);
+        });
+    });
   }
 
-  generateRemotePath({ fileName }: { fileName: string }): string {
-    return path.join(os.tmpdir(), this.__removeFilePrefix(fileName));
+  generateRemotePath({
+    fileName,
+    customerName,
+    directory,
+  }: {
+    fileName: string;
+    customerName: string;
+    directory?: string;
+  }): string {
+    const desiredPath = [customerName, directory, this.__removeFilePrefix(fileName)]
+      .filter(pathPart => !!pathPart)
+      .join('/');
+
+    let remotePath = path.join(os.homedir(), '.ballerine', desiredPath);
+
+    const destDirectory = path.dirname(remotePath);
+    if (!fs.existsSync(destDirectory)) {
+      fs.mkdirSync(destDirectory, { recursive: true });
+    }
+
+    return remotePath;
   }
 
   private __removeFilePrefix(fileName: string): string {
-    return fileName.replace('file://', '');
+    return fileName?.replace('file://', '');
   }
 }

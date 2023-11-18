@@ -84,6 +84,7 @@ describe('WorkflowControllerInternal', () => {
   let scopeService;
   let userService;
   let salesforceService;
+  let workflowTokenService;
   const numbUserInfo = Symbol();
   let testingModule: TestingModule;
 
@@ -103,6 +104,7 @@ describe('WorkflowControllerInternal', () => {
     customerService = new FakeEntityRepo();
     userService = new FakeEntityRepo();
     salesforceService = new FakeEntityRepo();
+    workflowTokenService = new FakeEntityRepo();
 
     eventEmitterSpy = {
       emitted: [],
@@ -120,12 +122,12 @@ describe('WorkflowControllerInternal', () => {
       entityRepo,
       customerService,
       {} as any,
-      {} as any,
       eventEmitterSpy,
       testingModule.get(AppLoggerService),
       scopeService,
       userService,
       salesforceService,
+      workflowTokenService,
     );
     const filterService = {} as any;
     const rolesBuilder = {} as any;

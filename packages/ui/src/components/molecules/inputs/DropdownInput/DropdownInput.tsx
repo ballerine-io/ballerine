@@ -14,7 +14,7 @@ import {
 import { CaretSortIcon } from '@radix-ui/react-icons';
 import clsx from 'clsx';
 import { CheckIcon } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { FocusEvent, useCallback, useMemo, useState } from 'react';
 
 export const DropdownInput = ({
   name,
@@ -25,6 +25,7 @@ export const DropdownInput = ({
   searchable = false,
   disabled,
   onChange,
+  onBlur,
 }: DropdownInputProps) => {
   const { placeholder = '', searchPlaceholder = '' } = placeholdersParams;
   const [open, setOpen] = useState(false);
@@ -34,8 +35,26 @@ export const DropdownInput = ({
     [options, value],
   );
 
+  const handleOpenChange = useCallback(
+    (state: boolean) => {
+      setOpen(state);
+
+      const hasBeenClosed = state === false;
+
+      if (!hasBeenClosed || !onBlur) return;
+
+      onBlur({
+        target: {
+          name: name,
+          value: value,
+        } as unknown,
+      } as FocusEvent<HTMLInputElement>);
+    },
+    [name, value, onBlur],
+  );
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -52,9 +71,15 @@ export const DropdownInput = ({
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent style={{ width: 'var(--radix-popover-trigger-width)' }} className="p-2">
+      <PopoverContent
+        style={{ width: 'var(--radix-popover-trigger-width)' }}
+        className="p-2"
+        onBlur={onBlur}
+      >
         <Command className="w-full">
-          {searchable ? <CommandInput placeholder={searchPlaceholder} className="h-9" /> : null}
+          {searchable ? (
+            <CommandInput onBlur={onBlur} placeholder={searchPlaceholder} className="h-9" />
+          ) : null}
           <CommandEmpty>{notFoundText || ''}</CommandEmpty>
           <ScrollArea orientation="both" className="h-[200px]">
             <CommandGroup>

@@ -17,7 +17,6 @@ export class SessionSerializer extends PassportSerializer {
         firstName: user.firstName,
         lastName: user.lastName,
       },
-      projectIds: user.userToProjects?.map(userToProject => userToProject.projectId) || null,
       type: 'user',
     });
   }
@@ -43,7 +42,7 @@ export class SessionSerializer extends PassportSerializer {
         user: userData,
         projectIds: userToProjects?.map(userToProject => userToProject.projectId) || null,
         type: 'user',
-      } as const;
+      } as AuthenticatedEntity & { projectIds: string[] | null };
 
       return done(null, authenticatedEntity);
     } catch (err) {

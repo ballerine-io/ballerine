@@ -1,5 +1,243 @@
 # @ballerine/workflow-browser-sdk
 
+## 0.5.20
+
+### Patch Changes
+
+- Change document schemas
+- Updated dependencies
+  - @ballerine/common@0.7.22
+  - @ballerine/workflow-core@0.5.20
+
+## 0.5.19
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.7.21
+  - @ballerine/workflow-core@0.5.19
+
+## 0.5.18
+
+### Patch Changes
+
+- Bump ver
+- Updated dependencies
+  - @ballerine/common@0.7.20
+  - @ballerine/workflow-core@0.5.18
+
+## 0.5.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.19
+  - @ballerine/workflow-core@0.5.17
+
+## 0.5.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.18
+  - @ballerine/workflow-core@0.5.16
+
+## 0.5.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.17
+  - @ballerine/workflow-core@0.5.15
+
+## 0.5.14
+
+### Patch Changes
+
+- 801fc639: pre
+- 801fc639: Pre ver
+- 801fc639: Prerelease
+- 801fc639: bump pre
+- 801fc639: Version bump pre
+- 801fc639: Pre bump
+- 801fc639: Pre bump
+- 801fc639: Bump
+- 801fc639: pre
+- Version bump
+- 801fc639: Pre release
+- 801fc639: Bumo
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+- Updated dependencies
+- Updated dependencies [801fc639]
+- Updated dependencies [801fc639]
+  - @ballerine/workflow-core@0.5.14
+  - @ballerine/common@0.7.16
+
+## 0.5.13
+
+### Patch Changes
+
+- Updated dependencies [306ca466]
+  - @ballerine/common@0.7.15
+  - @ballerine/workflow-core@0.5.13
+
+## 0.5.12
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.12
+  - @ballerine/common@0.7.14
+
+## 0.5.11
+
+### Patch Changes
+
+- b1cebf50: pre
+- b1cebf50: Pre ver
+- b1cebf50: Prerelease
+- b1cebf50: bump pre
+- b1cebf50: Version bump pre
+- Bump
+- b1cebf50: Pre bump
+- b1cebf50: Pre bump
+- b1cebf50: Bump
+- b1cebf50: pre
+- b1cebf50: Pre release
+- b1cebf50: Bumo
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+- Updated dependencies [b1cebf50]
+  - @ballerine/workflow-core@0.5.11
+  - @ballerine/common@0.7.13
+
+## 0.5.11-3e08f108.10
+
+### Patch Changes
+
+- Version bump pre
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.11-3e08f108.10
+  - @ballerine/common@0.7.13-3e08f108.9
+
+## 0.5.11-3e08f108.9
+
+### Patch Changes
+
+- Bump
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.11-3e08f108.9
+  - @ballerine/common@0.7.13-3e08f108.8
+
+## 0.5.11-3e08f108.8
+
+### Patch Changes
+
+- Bumo
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.11-3e08f108.8
+  - @ballerine/common@0.7.13-3e08f108.7
+
+## 0.5.11-3e08f108.7
+
+### Patch Changes
+
+- Pre ver
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.11-3e08f108.7
+  - @ballerine/common@0.7.13-3e08f108.6
+
+## 0.5.11-3e08f108.6
+
+### Patch Changes
+
+- Pre bump
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.11-3e08f108.6
+  - @ballerine/common@0.7.13-3e08f108.5
+
+## 0.5.11-3e08f108.5
+
+### Patch Changes
+
+- bump pre
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.11-3e08f108.5
+  - @ballerine/common@0.7.13-3e08f108.4
+
+## 0.5.11-3e08f108.4
+
+### Patch Changes
+
+- Pre bump
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.11-3e08f108.4
+  - @ballerine/common@0.7.13-3e08f108.3
+
+## 0.5.11-3e08f108.3
+
+### Patch Changes
+
+- Pre release
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.11-3e08f108.3
+  - @ballerine/common@0.7.13-3e08f108.2
+
+## 0.5.11-3e08f108.2
+
+### Patch Changes
+
+- pre
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.11-3e08f108.2
+  - @ballerine/common@0.7.13-3e08f108.1
+
+## 0.5.11-3e08f108.1
+
+### Patch Changes
+
+- pre
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.11-3e08f108.1
+  - @ballerine/common@0.7.13-3e08f108.0
+
+## 0.5.11-3e08f108.0
+
+### Patch Changes
+
+- Prerelease
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.11-3e08f108.0
+
+## 0.5.10
+
+### Patch Changes
+
+- e51852fe: Bump
+- Version bump
+- Updated dependencies [e51852fe]
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.10
+
 ## 0.5.9
 
 ### Patch Changes

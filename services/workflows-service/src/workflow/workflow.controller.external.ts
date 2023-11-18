@@ -32,7 +32,6 @@ import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-u
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { EndUserService } from '@/end-user/end-user.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { WorkflowWithToken } from '@/workflow/dtos/workflow-with-token';
 import { Public } from '@/common/decorators/public.decorator';
 
 @swagger.ApiBearerAuth()
@@ -74,7 +73,6 @@ export class WorkflowControllerExternal {
   @common.Get('/workflow-definition/:id')
   @ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  @UseCustomerAuthGuard()
   async getWorkflowDefinition(
     @common.Param() params: WorkflowDefinitionWhereUniqueInput,
     @ProjectIds() projectIds: TProjectIds,
@@ -172,12 +170,19 @@ export class WorkflowControllerExternal {
     if (!entity.id && !entity.ballerineEntityId)
       throw new common.BadRequestException('Entity id is required');
 
+    const hasSalesforceRecord =
+      Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
+
     const actionResult = await this.service.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: workflowId,
       context,
       config,
       projectIds,
       currentProjectId,
+      ...(hasSalesforceRecord && {
+        salesforceObjectName: body.salesforceObjectName,
+        salesforceRecordId: body.salesforceRecordId,
+      }),
     });
 
     return res.json({
@@ -273,7 +278,9 @@ export class WorkflowControllerExternal {
         data: hookResponse,
         resultDestinationPath: query.resultDestination || 'hookResponse',
         processName: query.processName,
+        // @ts-expect-error - error from Prisma types fix
         projectIds: [workflowRuntime.projectId],
+        // @ts-expect-error - error from Prisma types fix
         currentProjectId: workflowRuntime.projectId,
       });
 
@@ -282,6 +289,7 @@ export class WorkflowControllerExternal {
           id: params.id,
           name: params.event,
         },
+        // @ts-expect-error - error from Prisma types fix
         [workflowRuntime.projectId],
         workflowRuntime.projectId,
       );
@@ -293,75 +301,5 @@ export class WorkflowControllerExternal {
     }
 
     return;
-  }
-
-  @common.Post('/with-token')
-  @swagger.ApiOkResponse()
-  @common.HttpCode(200)
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseCustomerAuthGuard()
-  async createWorkflowRuntimeDataWithToken(
-    @common.Body() body: WorkflowWithToken,
-    @CurrentProject() currentProjectId: TProjectId,
-  ) {
-    const endUser = await this.endUserService.createWithBusiness(
-      {
-        firstName: '',
-        lastName: '',
-        email: body.email,
-        companyName: '',
-      },
-      currentProjectId,
-    );
-
-    const hasSalesforceRecord =
-      Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
-
-    const workflow = await this.service.createOrUpdateWorkflowRuntime({
-      workflowDefinitionId: body.workflowDefinitionId,
-      context: {
-        entity: {
-          ballerineEntityId: endUser.businesses.at(-1)?.id,
-          type: 'business',
-          data: {
-            additionalInformation: {
-              endUserId: endUser.id,
-            },
-          },
-        },
-        documents: [],
-        projectId: currentProjectId,
-      },
-      projectIds: [currentProjectId],
-      currentProjectId: currentProjectId,
-      ...(hasSalesforceRecord && {
-        salesforceObjectName: body.salesforceObjectName,
-        salesforceRecordId: body.salesforceRecordId,
-      }),
-    });
-
-    const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-
-    const workflowToken = await this.workflowTokenService.create(currentProjectId, {
-      workflowRuntimeDataId: workflow[0].workflowRuntimeData.id,
-      endUserId: endUser.id,
-      expiresAt: nowPlus30Days,
-    });
-
-    // @TODO: Send email with token
-
-    if (hasSalesforceRecord) {
-      await this.service.updateSalesforceRecord({
-        workflowRuntimeData: workflow[0].workflowRuntimeData,
-
-        data: {
-          KYB_Started_At__c: workflow[0].workflowRuntimeData.createdAt,
-          KYB_Status__c: 'In Progress',
-          KYB_Assigned_Agent__c: '',
-        },
-      });
-    }
-
-    return { token: workflowToken.token };
   }
 }

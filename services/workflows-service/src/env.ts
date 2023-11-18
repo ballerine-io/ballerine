@@ -10,7 +10,8 @@ export const env = createEnv({
    */
   clientPrefix: 'PUBLIC_',
   server: {
-    NODE_ENV: z.enum(['development', 'production', 'test', 'local']),
+    NODE_ENV: z.enum(['development', 'production', 'test', 'local']), // TODO: remove 'test', 'local'
+    ENVIRONMENT_NAME: z.enum(['development', 'production', 'staging', 'test', 'local']),
     ENV_FILE_NAME: z.string().optional(),
     BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
     JWT_SECRET_KEY: z.string(),
@@ -22,7 +23,6 @@ export const env = createEnv({
     DB_URL: z.string().url(),
     SESSION_SECRET: z.string(),
     BACKOFFICE_CORS_ORIGIN: z.string().url(),
-    HEADLESS_EXAMPLE_CORS_ORIGIN: z.string().url(),
     WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().url(),
     KYB_EXAMPLE_CORS_ORIGIN: z.string().url(),
     AWS_S3_BUCKET_NAME: z.string().optional(),
@@ -30,8 +30,12 @@ export const env = createEnv({
     AWS_S3_BUCKET_SECRET: z.string().optional(),
     API_KEY: z.string(),
     SENTRY_DSN: z.string().nullable().optional(),
-    WEBHOOK_URL: z.string().url().optional(),
-    WEBHOOK_SECRET: z.string().optional(),
+    WEBHOOK_SECRET: z
+      .string()
+      .optional()
+      .describe(
+        'Deprecated. Should use `customer.authenticationConfiguration.webhookSharedSecret` instead.',
+      ),
     ADMIN_API_KEY: z.string().optional(),
     MAIL_ADAPTER: z
       .enum(['sendgrid', 'log'])
@@ -67,3 +71,7 @@ export const env = createEnv({
   runtimeEnv: process.env,
   skipValidation: !!process.env.CI,
 });
+
+export const configs = () => {
+  return env;
+};

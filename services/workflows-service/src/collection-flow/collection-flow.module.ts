@@ -8,9 +8,6 @@ import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { EndUserService } from '@/end-user/end-user.service';
-import { DocumentChangedWebhookCaller } from '@/events/document-changed-webhook-caller';
-import { WorkflowCompletedWebhookCaller } from '@/events/workflow-completed-webhook-caller';
-import { WorkflowStateChangedWebhookCaller } from '@/events/workflow-state-changed-webhook-caller';
 import { FilterRepository } from '@/filter/filter.repository';
 import { FilterService } from '@/filter/filter.service';
 import { ProjectModule } from '@/project/project.module';
@@ -27,26 +24,38 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CustomerModule } from '@/customer/customer.module';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
 import { TokenAuthModule } from '@/common/guards/token-guard/token-auth.module';
-import { CustomerService } from '@/customer/customer.service';
-import { CustomerRepository } from '@/customer/customer.repository';
 import { CollectionFlowFilesController } from '@/collection-flow/controllers/collection-flow.files.controller';
 import { CollectionFlowBusinessController } from '@/collection-flow/controllers/collection-flow.business.controller';
+import { CustomerService } from '@/customer/customer.service';
+import { CustomerRepository } from '@/customer/customer.repository';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
+import { CollectionFlowEndUserController } from '@/collection-flow/controllers/collection-flow.end-user.controller';
 
 @Module({
-  imports: [AppLoggerModule, HttpModule, ProjectModule, CustomerModule, TokenAuthModule],
+  imports: [
+    AppLoggerModule,
+    HttpModule,
+    ProjectModule,
+    CustomerModule,
+    TokenAuthModule,
+    UiDefinitionModule,
+  ],
   controllers: [
     ColectionFlowController,
     CollectionFlowFilesController,
     CollectionFlowBusinessController,
+    CollectionFlowEndUserController,
   ],
   providers: [
     CollectionFlowService,
     EndUserService,
     EndUserRepository,
     WorkflowRuntimeDataRepository,
+    UiDefinitionService,
     WorkflowAdapterManager,
     WorkflowDefinitionRepository,
     BusinessRepository,
@@ -58,9 +67,6 @@ import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integra
     HookCallbackHandlerService,
     FileService,
     WorkflowEventEmitterService,
-    DocumentChangedWebhookCaller,
-    WorkflowCompletedWebhookCaller,
-    WorkflowStateChangedWebhookCaller,
     FilterRepository,
     FilterService,
     UserService,

@@ -1,4 +1,5 @@
-import { IsBoolean, IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsObject, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class DocumentConfiguration {
   @IsString()
@@ -8,30 +9,49 @@ export class DocumentConfiguration {
   type!: string;
 }
 
-export class FlowStepModel {
+export class UiSchemaStep {
   @IsString()
-  key!: string;
+  type!: string;
+
+  @IsString()
+  name!: string;
 
   @IsString()
   @IsOptional()
-  title!: string;
+  number?: string;
 
   @IsString()
   @IsOptional()
-  description!: string;
+  stateName?: string;
+
+  @IsObject()
+  elements!: object;
 
   @IsObject()
   @IsOptional()
-  uiSchema!: object;
+  actions?: object;
+}
+
+export class UiDefDefinition {
+  @IsString()
+  id!: string;
+
+  @IsString()
+  initial!: string;
 
   @IsObject()
   @IsOptional()
-  formSchema!: object;
+  context?: string;
+
+  @IsObject()
+  states!: string;
 
   @IsObject()
   @IsOptional()
-  defaultData!: object;
+  extensions?: string;
 
+  @IsOptional()
   @IsBoolean()
-  isFinal!: boolean;
+  @Type(() => Boolean)
+  predictableActionArguments?: boolean;
 }

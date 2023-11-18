@@ -131,6 +131,7 @@ const complexFormScheme: RJSFSchema = {
     firstName: {
       type: 'string',
       title: 'First Name',
+      description: 'This is input description.',
     },
     lastName: {
       type: 'string',
@@ -178,12 +179,18 @@ const complexFormScheme: RJSFSchema = {
       type: 'string',
       title: 'Favorite Fruit',
     },
+    hobby: {
+      type: 'array',
+      title: 'Hobby',
+      items: {
+        type: 'string',
+      },
+    },
     childrens: {
       title: 'Childrens',
       type: 'array',
       items: {
         type: 'object',
-        title: 'Children',
         properties: {
           name: {
             type: 'string',
@@ -242,7 +249,8 @@ const complexFormUISchema = {
   childrens: {
     addText: 'Add Children',
     deleteText: 'Remove Children',
-
+    titleTemplate: 'Children {{INDEX}}',
+    'ui:title': false,
     items: {
       titleClassName: 'text-sm',
       birthDate: {
@@ -251,7 +259,24 @@ const complexFormUISchema = {
       birthCertificate: {
         'ui:field': 'FileInput',
       },
+      'ui:label': false,
     },
+  },
+  hobby: {
+    'ui:field': 'Multiselect',
+    'ui:label': true,
+    options: [
+      { title: 'Reading', value: 'reading' },
+      { title: 'Cooking', value: 'cooking' },
+      { title: 'Gardening', value: 'gardening' },
+      { title: 'Painting', value: 'painting' },
+      { title: 'Hiking', value: 'hiking' },
+      { title: 'Photography', value: 'photography' },
+      { title: 'Swimming', value: 'swimming' },
+      { title: 'Traveling', value: 'traveling' },
+      { title: 'Playing Guitar', value: 'playing guitar' },
+      { title: 'Yoga', value: 'yoga' },
+    ],
   },
 };
 

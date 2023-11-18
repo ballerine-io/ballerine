@@ -1,10 +1,14 @@
+import { ClsService } from 'nestjs-cls';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 
 @Injectable()
 export class TokenAuthGuard implements CanActivate {
-  constructor(protected readonly tokenService: WorkflowTokenService) {}
+  constructor(
+    protected readonly tokenService: WorkflowTokenService,
+    private readonly cls: ClsService,
+  ) {}
 
   async canActivate(context: ExecutionContext) {
     const req = context.switchToHttp().getRequest<Request>();
@@ -14,11 +18,23 @@ export class TokenAuthGuard implements CanActivate {
       throw new UnauthorizedException('Unauthorized');
     }
 
-    const tokenEntity = await this.tokenService.findByToken(token);
+    try {
+      const tokenEntity = await this.tokenService.findByToken(token);
+      if (!tokenEntity) throw new UnauthorizedException('Unauthorized');
 
-    if (!tokenEntity) throw new UnauthorizedException('Unauthorized');
+      this.cls.set('entity', {
+        endUser: {
+          workflowRuntimeDataId: tokenEntity.workflowRuntimeDataId,
+          endUserId: tokenEntity.endUserId,
+          id: tokenEntity.id,
+        },
+        type: 'endUser',
+      });
 
-    (req as any).tokenScope = tokenEntity;
+      (req as any).tokenScope = tokenEntity;
+    } catch (error) {
+      throw new UnauthorizedException('Unauthorized');
+    }
 
     return true;
   }

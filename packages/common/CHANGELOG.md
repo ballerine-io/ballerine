@@ -1,5 +1,145 @@
 # @ballerine/common
 
+## 0.7.22
+
+### Patch Changes
+
+- Change document schemas
+
+## 0.7.21
+
+### Patch Changes
+
+- version bump
+
+## 0.7.20
+
+### Patch Changes
+
+- Bump ver
+
+## 0.7.19
+
+### Patch Changes
+
+- Fixed default context schema
+
+## 0.7.18
+
+### Patch Changes
+
+- Updated default context schema
+
+## 0.7.17
+
+### Patch Changes
+
+- AsiaVerify integrations
+
+## 0.7.16
+
+### Patch Changes
+
+- 801fc639: pre
+- 801fc639: Pre ver
+- 801fc639: bump pre
+- 801fc639: Version bump pre
+- 801fc639: Pre bump
+- 801fc639: Pre bump
+- 801fc639: Bump
+- 801fc639: pre
+- Version bump
+- 801fc639: Pre release
+- 801fc639: Bumo
+
+## 0.7.15
+
+### Patch Changes
+
+- 306ca466: businessName now may accept spaces
+
+## 0.7.14
+
+### Patch Changes
+
+- Bump
+
+## 0.7.13
+
+### Patch Changes
+
+- b1cebf50: pre
+- b1cebf50: Pre ver
+- b1cebf50: bump pre
+- b1cebf50: Version bump pre
+- Bump
+- b1cebf50: Pre bump
+- b1cebf50: Pre bump
+- b1cebf50: Bump
+- b1cebf50: pre
+- b1cebf50: Pre release
+- b1cebf50: Bumo
+
+## 0.7.13-3e08f108.9
+
+### Patch Changes
+
+- Version bump pre
+
+## 0.7.13-3e08f108.8
+
+### Patch Changes
+
+- Bump
+
+## 0.7.13-3e08f108.7
+
+### Patch Changes
+
+- Bumo
+
+## 0.7.13-3e08f108.6
+
+### Patch Changes
+
+- Pre ver
+
+## 0.7.13-3e08f108.5
+
+### Patch Changes
+
+- Pre bump
+
+## 0.7.13-3e08f108.4
+
+### Patch Changes
+
+- bump pre
+
+## 0.7.13-3e08f108.3
+
+### Patch Changes
+
+- Pre bump
+
+## 0.7.13-3e08f108.2
+
+### Patch Changes
+
+- Pre release
+
+## 0.7.13-3e08f108.1
+
+### Patch Changes
+
+- pre
+
+## 0.7.13-3e08f108.0
+
+### Patch Changes
+
+- pre
+
 ## 0.7.12
 
 ### Patch Changes

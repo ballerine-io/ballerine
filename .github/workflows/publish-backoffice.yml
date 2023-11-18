@@ -73,6 +73,7 @@ jobs:
         with:
           context: apps/backoffice-v2
           platforms: linux/amd64
+          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
           push: true
           tags: ${{ steps.branchmeta.outputs.tags }}
 
@@ -95,5 +96,17 @@ jobs:
         with:
           context: apps/backoffice-v2
           platforms: linux/amd64
+          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
           push: true
           tags: ${{ steps.prodmeta.outputs.tags }}
+
+
+      - name: Scan Docker Image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
+          format: 'table'
+          ignore-unfixed: true
+          exit-code: 1
+          vuln-type: 'os,library'
+          severity: 'CRITICAL'

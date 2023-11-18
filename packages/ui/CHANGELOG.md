@@ -1,5 +1,215 @@
 # @ballerine/ui
 
+## 0.3.14
+
+### Patch Changes
+
+- Workflow changes
+
+## 0.3.13
+
+### Patch Changes
+
+- Change document schemas
+
+## 0.3.12
+
+### Patch Changes
+
+- version bump
+
+## 0.3.11
+
+### Patch Changes
+
+- Added Array Item title component
+
+## 0.3.10
+
+### Patch Changes
+
+- Fixed spacing between inputs and descriptions
+
+## 0.3.9
+
+### Patch Changes
+
+- Bump ver
+
+## 0.3.8
+
+### Patch Changes
+
+- Reworked ArrayFieldsLayout
+
+## 0.3.7
+
+### Patch Changes
+
+- 801fc639: pre
+- 801fc639: Pre ver
+- 801fc639: Prerelease
+- 801fc639: bump pre
+- 801fc639: Updated exports & Renamed vars
+- 801fc639: Version bump pre
+- 801fc639: Pre bump
+- 801fc639: Pre bump
+- 801fc639: Added default value to Autocomplete
+- 52e71ce5: Reworked Multiselect items rendering for easier customization & Updated storybook & Updated Types
+- 801fc639: Bump
+- 801fc639: pre
+- 52e71ce5: Added Multiselect adapter & updated storybook & fixed focus bug
+- 801fc639: Added blur handlers to Dynamic Form inputs
+- 801fc639: Fixed missing AutocompleteAdapter placeholder
+- Version bump
+- 801fc639: Pre release
+- 801fc639: Bumo
+- 801fc639: Bump
+
+## 0.3.7-3e08f108.1
+
+### Patch Changes
+
+- Reworked Multiselect items rendering for easier customization & Updated storybook & Updated Types
+
+## 0.3.7-3e08f108.0
+
+### Patch Changes
+
+- Added Multiselect adapter & updated storybook & fixed focus bug
+
+## 0.3.6
+
+### Patch Changes
+
+- Bump
+
+## 0.3.5
+
+### Patch Changes
+
+- b1cebf50: pre
+- b1cebf50: Pre ver
+- b1cebf50: Prerelease
+- b1cebf50: bump pre
+- b1cebf50: Updated exports & Renamed vars
+- b1cebf50: Version bump pre
+- Bump
+- b1cebf50: Pre bump
+- b1cebf50: Pre bump
+- b1cebf50: Added default value to Autocomplete
+- b1cebf50: Bump
+- b1cebf50: pre
+- b1cebf50: Added blur handlers to Dynamic Form inputs
+- b1cebf50: Fixed missing AutocompleteAdapter placeholder
+- b1cebf50: Pre release
+- b1cebf50: Bumo
+- b1cebf50: Bump
+
+## 0.3.5-3e08f108.15
+
+### Patch Changes
+
+- Version bump pre
+
+## 0.3.5-3e08f108.14
+
+### Patch Changes
+
+- Bump
+
+## 0.3.5-3e08f108.13
+
+### Patch Changes
+
+- Bumo
+
+## 0.3.5-3e08f108.12
+
+### Patch Changes
+
+- Fixed missing AutocompleteAdapter placeholder
+
+## 0.3.5-3e08f108.11
+
+### Patch Changes
+
+- Pre ver
+
+## 0.3.5-3e08f108.10
+
+### Patch Changes
+
+- Pre bump
+
+## 0.3.5-3e08f108.9
+
+### Patch Changes
+
+- bump pre
+
+## 0.3.5-3e08f108.8
+
+### Patch Changes
+
+- Pre bump
+
+## 0.3.5-3e08f108.7
+
+### Patch Changes
+
+- Updated exports & Renamed vars
+
+## 0.3.5-3e08f108.6
+
+### Patch Changes
+
+- Added blur handlers to Dynamic Form inputs
+
+## 0.3.5-3e08f108.5
+
+### Patch Changes
+
+- Pre release
+
+## 0.3.5-3e08f108.4
+
+### Patch Changes
+
+- Bump
+
+## 0.3.5-3e08f108.3
+
+### Patch Changes
+
+- Added default value to Autocomplete
+
+## 0.3.5-3e08f108.2
+
+### Patch Changes
+
+- pre
+
+## 0.3.5-3e08f108.1
+
+### Patch Changes
+
+- pre
+
+## 0.3.5-3e08f108.0
+
+### Patch Changes
+
+- Prerelease
+
+## 0.3.4
+
+### Patch Changes
+
+- e51852fe: Bump
+- e51852fe: Bump
+- Version bump
+
 ## 0.3.3
 
 ### Patch Changes

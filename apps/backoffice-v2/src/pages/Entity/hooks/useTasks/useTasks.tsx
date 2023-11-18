@@ -4,40 +4,33 @@ import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseSt
 import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import {
   composePickableCategoryType,
-  convertSnakeCaseToTitleCase,
   extractCountryCodeFromWorkflow,
   getIsEditable,
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from '../useEntity/utils';
 import {
-  CommonWorkflowEvent,
   CommonWorkflowStates,
   getDocumentsByCountry,
+  isNullish,
   StateTag,
 } from '@ballerine/common';
 import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
-import { toStartCase } from '../../../../common/utils/to-start-case/to-start-case';
 import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
 import { X } from 'lucide-react';
-import { MotionBadge } from '../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
+import { Badge } from '@ballerine/ui';
+import { WarningFilledSvg } from '../../../../common/components/atoms/icons';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { toTitleCase, toUpperCase } from 'string-ts';
+import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import { useRemoveDecisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
-
-const motionProps: ComponentProps<typeof MotionBadge> = {
-  exit: { opacity: 0, transition: { duration: 0.2 } },
-  initial: { y: 10, opacity: 0 },
-  transition: { type: 'spring', bounce: 0.3 },
-  animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
-};
-
-function getPostUpdateEventName(workflow: TWorkflowById): string | undefined {
-  if (!workflow?.workflowDefinition?.config?.workflowLevelResolution) {
-    return CommonWorkflowEvent.RETURN_TO_REVIEW;
-  }
-}
+import { getPostUpdateEventName } from './get-post-update-event-name';
+import { motionProps } from './motion-props';
+import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
+import { includesValues } from '../../../../common/utils/includes-values/includes-values';
 
 export const useTasks = ({
   workflow,
@@ -52,6 +45,16 @@ export const useTasks = ({
   documents: TWorkflowById['context']['documents'];
   parentMachine: TWorkflowById['context']['parentMachine'];
 }) => {
+  const {
+    store,
+    bank: bankDetails,
+    directors: directorsUserProvided,
+    mainRepresentative,
+    mainContact,
+    openCorporate: _openCorporate,
+    ...entityDataAdditionalInfo
+  } = workflow?.context?.entity?.data?.additionalInfo ?? {};
+  const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
   const postUpdateEventName = getPostUpdateEventName(workflow);
@@ -76,19 +79,33 @@ export const useTasks = ({
       results[docIndex][pageIndex] = docsData?.shift()?.data;
     });
   });
-  const pluginsOutputKeys = Object.keys(pluginsOutput ?? {});
-  const address = getAddressDeep(pluginsOutput, { propertyName: 'registeredAddressInFull' });
+  const pluginsOutputBlacklist = [
+    'companySanctions',
+    'directors',
+    'ubo',
+    'businessInformation',
+    'website_monitoring',
+  ];
+  const filteredPluginsOutput = useMemo(
+    () => omitPropsFromObject(pluginsOutput, ...pluginsOutputBlacklist),
+    [pluginsOutput, pluginsOutputBlacklist],
+  );
+  const pluginsOutputKeys = Object.keys(filteredPluginsOutput ?? {});
+  const address = getAddressDeep(filteredPluginsOutput, {
+    propertyName: 'registeredAddressInFull',
+  });
   const { data: locations } = useNominatimQuery(address);
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
   const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
 
   const registryInfoBlock =
-    Object.keys(pluginsOutput ?? {}).length === 0
+    Object.keys(filteredPluginsOutput ?? {}).length === 0
       ? []
       : pluginsOutputKeys
           ?.filter(
             key =>
-              !!Object.keys(pluginsOutput[key] ?? {})?.length && !('error' in pluginsOutput[key]),
+              !!Object.keys(filteredPluginsOutput[key] ?? {})?.length &&
+              !('error' in filteredPluginsOutput[key]),
           )
           ?.map((key, index, collection) => ({
             cells: [
@@ -110,7 +127,7 @@ export const useTasks = ({
                 type: 'details',
                 hideSeparator: index === collection.length - 1,
                 value: {
-                  data: Object.entries(pluginsOutput[key] ?? {})?.map(([title, value]) => ({
+                  data: Object.entries(filteredPluginsOutput[key] ?? {})?.map(([title, value]) => ({
                     title,
                     value,
                   })),
@@ -118,6 +135,42 @@ export const useTasks = ({
               },
             ],
           }));
+
+  const kybRegistryInfoBlock =
+    Object.keys(pluginsOutput?.businessInformation?.data?.[0] ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'container',
+                value: [
+                  {
+                    id: 'nested-details-heading',
+                    type: 'heading',
+                    value: 'Registry Information',
+                  },
+                  {
+                    type: 'subheading',
+                    value: 'Registry-provided data',
+                  },
+                ],
+              },
+              {
+                type: 'details',
+                hideSeparator: true,
+                value: {
+                  data: Object.entries(pluginsOutput?.businessInformation?.data?.[0])?.map(
+                    ([title, value]) => ({
+                      title,
+                      value,
+                    }),
+                  ),
+                },
+              },
+            ],
+          },
+        ];
 
   const taskBlocks =
     documents?.map(
@@ -226,8 +279,8 @@ export const useTasks = ({
           value: [
             {
               type: 'heading',
-              value: `${convertSnakeCaseToTitleCase(category)} - ${convertSnakeCaseToTitleCase(
-                docType,
+              value: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
+                toTitleCase(docType ?? ''),
               )}`,
             },
             {
@@ -311,8 +364,8 @@ export const useTasks = ({
             isLoading: docsData?.some(({ isLoading }) => isLoading),
             data:
               documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
-                title: `${convertSnakeCaseToTitleCase(category)} - ${convertSnakeCaseToTitleCase(
-                  docType,
+                title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
+                  toTitleCase(docType ?? ''),
                 )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
                 imageUrl: results[docIndex][pageIndex],
                 fileType: type,
@@ -342,7 +395,7 @@ export const useTasks = ({
                 value: [
                   {
                     type: 'heading',
-                    value: `${toStartCase(entity?.type)} Information`,
+                    value: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,
                   },
                   {
                     type: 'subheading',
@@ -355,12 +408,12 @@ export const useTasks = ({
                 type: 'details',
                 hideSeparator: true,
                 value: {
-                  title: `${toStartCase(entity?.type)} Information`,
+                  title: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,
                   data: [
                     ...Object.entries(
                       omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {},
                     ),
-                    ...Object.entries(entity?.data?.additionalInfo ?? {}),
+                    ...Object.entries(omitPropsFromObject(entityDataAdditionalInfo ?? {}, 'ubos')),
                   ]
                     ?.map(([title, value]) => ({
                       title,
@@ -393,13 +446,13 @@ export const useTasks = ({
                     {
                       id: 'header',
                       type: 'heading',
-                      value: `${toStartCase(entity?.type)} Address`,
+                      value: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Address`,
                     },
                     {
                       type: 'details',
                       hideSeparator: true,
                       value: {
-                        title: `${toStartCase(entity?.type)} Address`,
+                        title: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Address`,
                         data:
                           typeof address === 'string'
                             ? [
@@ -428,8 +481,1059 @@ export const useTasks = ({
           },
         ];
 
+  const companySanctions = pluginsOutput?.companySanctions?.data?.map(sanction => ({
+    sources: sanction?.entity?.sources,
+    officialLists: sanction?.entity?.officialLists,
+    fullReport: sanction,
+    linkedIndividuals: sanction?.entity?.linkedIndividuals,
+    lastReviewed: sanction?.entity?.lastReviewed,
+    primaryName: sanction?.entity?.name,
+    labels: sanction?.entity?.categories,
+    reasonsForMatch: sanction?.matchedFields,
+    furtherInformation: sanction?.entity?.furtherInformation,
+    alternativeNames: sanction?.entity?.otherNames,
+    places: sanction?.entity?.places,
+  }));
+  const ubos = pluginsOutput?.ubo?.data?.uboGraph?.map(ubo => ({
+    name: ubo?.name,
+    percentage: ubo?.shareHolders?.[0]?.sharePercentage,
+    type: ubo?.type,
+    level: ubo?.level,
+  }));
+  const directorsRegistryProvided = pluginsOutput?.directors?.data?.map(({ name, position }) => ({
+    name,
+    position,
+  }));
+
+  const storeInfoBlock =
+    Object.keys(storeInfo ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Store Info',
+              },
+              {
+                type: 'subheading',
+                value: 'User-provided data',
+              },
+              {
+                type: 'container',
+                value: [
+                  {
+                    type: 'details',
+                    value: {
+                      data: Object.entries(omitPropsFromObject(storeInfo, 'websiteUrls'))?.map(
+                        ([title, value]) => ({
+                          title,
+                          value,
+                          isEditable: false,
+                        }),
+                      ),
+                    },
+                    hideSeparator: true,
+                  },
+                  {
+                    type: 'table',
+                    value: {
+                      columns: [
+                        {
+                          accessorKey: 'websiteUrl',
+                          header: 'Website URLs',
+                        },
+                      ],
+                      data: storeInfo?.websiteUrls
+                        ? storeInfo?.websiteUrls
+                            ?.split(',')
+                            ?.map(websiteUrl => ({ websiteUrl: websiteUrl?.trim() }))
+                        : [],
+                    },
+                    hideSeparator: true,
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
+  const websiteBasicRequirementBlock =
+    Object.keys(websiteBasicRequirement ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Website Basic Requirement',
+              },
+              {
+                type: 'subheading',
+                value: 'User-provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(websiteBasicRequirement)?.map(([title, value]) => ({
+                    title,
+                    value,
+                    isEditable: false,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
+          },
+        ];
+
+  const bankingDetailsBlock =
+    Object.keys(bankDetails ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Banking details',
+              },
+              {
+                type: 'subheading',
+                value: 'User-provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(bankDetails)?.map(([title, value]) => ({
+                    title,
+                    value,
+                    isEditable: false,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
+          },
+        ];
+
+  const processingDetailsBlock =
+    Object.keys(processingDetails ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Processing details',
+              },
+              {
+                type: 'subheading',
+                value: 'User-provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(processingDetails)?.map(([title, value]) => ({
+                    title,
+                    value,
+                    isEditable: false,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
+          },
+        ];
+
+  const mainRepresentativeBlock =
+    Object.keys(mainRepresentative ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Main Representative',
+              },
+              {
+                type: 'subheading',
+                value: 'User-provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(mainRepresentative)?.map(([title, value]) => ({
+                    title,
+                    value,
+                    isEditable: false,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
+          },
+        ];
+
+  const mainContactBlock =
+    Object.keys(mainContact ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Main Contact',
+              },
+              {
+                type: 'subheading',
+                value: 'User-provided Data',
+              },
+              {
+                type: 'details',
+                value: {
+                  data: Object.entries(mainContact ?? {})?.map(([title, value]) => ({
+                    title,
+                    value,
+                  })),
+                },
+                hideSeparator: true,
+              },
+            ],
+          },
+        ];
+
+  const companySanctionsBlock = companySanctions
+    ? [
+        {
+          cells: [
+            {
+              type: 'heading',
+              value: 'Company Sanctions',
+            },
+            {
+              type: 'container',
+              value: [
+                {
+                  type: 'subheading',
+                  value: 'Company check results',
+                  props: {
+                    className: 'text-lg my-4 block',
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    columns: [
+                      {
+                        accessorKey: 'totalMatches',
+                        header: 'Total matches',
+                        cell: props => {
+                          const value = props.getValue();
+
+                          return (
+                            <Badge variant={'warning'} className={`rounded-lg py-4 font-bold`}>
+                              {value} {value === 1 ? 'match' : 'matches'}
+                            </Badge>
+                          );
+                        },
+                      },
+                      {
+                        accessorKey: 'fullReport',
+                        header: 'Full report',
+                      },
+                    ],
+                    data: [
+                      {
+                        totalMatches: companySanctions?.length,
+                        fullReport: companySanctions,
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+            ...companySanctions?.map((sanction, index) => ({
+              type: 'container',
+              props: {
+                className: ctw({
+                  'mt-2': index === 0,
+                }),
+              },
+              value: [
+                {
+                  type: 'subheading',
+                  value: `Match ${index + 1}`,
+                  props: {
+                    className: 'text-lg block ms-2 mb-6',
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'mb-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'primaryName',
+                        header: 'Primary name',
+                      },
+                      {
+                        accessorKey: 'lastReviewed',
+                        header: 'Last reviewed',
+                      },
+                    ],
+                    data: [
+                      {
+                        primaryName: sanction?.primaryName,
+                        lastReviewed: sanction?.lastReviewed,
+                      },
+                    ],
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'label',
+                        header: 'Labels',
+                        cell: props => {
+                          const value = props.getValue();
+
+                          return (
+                            <div className={'flex space-x-2'}>
+                              <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
+                              <span>{value}</span>
+                            </div>
+                          );
+                        },
+                      },
+                    ],
+                    data: sanction?.labels?.map(label => ({ label })),
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'reasonForMatch',
+                        header: 'Reasons for Match',
+                      },
+                    ],
+                    data: sanction?.reasonsForMatch?.map(reasonForMatch => ({
+                      reasonForMatch: toTitleCase(reasonForMatch),
+                    })),
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                      cell: {
+                        className: 'break-all w-[60ch]',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'source',
+                        header: 'Sources',
+                      },
+                    ],
+                    data: sanction?.sources
+                      ?.map(({ url: source }) => ({ source }))
+                      // TODO: Research why zod's url validation fails on some valid urls.
+                      ?.filter(({ source }) => isValidUrl(source)),
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'alternativeNames',
+                        header: 'Alternative names',
+                      },
+                    ],
+                    data: [
+                      {
+                        alternativeNames: sanction?.alternativeNames,
+                      },
+                    ],
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'officialList',
+                        header: 'Official lists',
+                      },
+                    ],
+                    data: sanction?.officialLists?.map(({ description: officialList }) => ({
+                      officialList,
+                    })),
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'furtherInformation',
+                        header: 'Further information',
+                      },
+                    ],
+                    data: sanction?.furtherInformation?.map(furtherInformation => ({
+                      furtherInformation,
+                    })),
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'linkedIndividual',
+                        header: 'Linked individual',
+                      },
+                      {
+                        accessorKey: 'description',
+                        header: 'Description',
+                      },
+                    ],
+                    data: sanction?.linkedIndividuals?.map(
+                      ({ firstName, middleName, lastName, description }) => ({
+                        linkedIndividual: `${firstName}${
+                          middleName ? `${middleName} ` : ''
+                        } ${lastName}`,
+                        description,
+                      }),
+                    ),
+                  },
+                },
+                {
+                  type: 'table',
+                  value: {
+                    props: {
+                      table: {
+                        className: 'my-8',
+                      },
+                    },
+                    columns: [
+                      {
+                        accessorKey: 'country',
+                        header: 'Linked address',
+                      },
+                      {
+                        accessorKey: 'city',
+                        header: 'City',
+                      },
+                      {
+                        accessorKey: 'linkedAddress',
+                        header: 'Address',
+                      },
+                    ],
+                    data: sanction?.places?.map(({ country, city, address }) => ({
+                      linkedAddress: address || 'N/A',
+                      city: city || 'N/A',
+                      country: country || 'N/A',
+                    })),
+                  },
+                },
+              ],
+            })),
+          ],
+        },
+      ]
+    : [];
+
+  const ubosBlock = ubos
+    ? [
+        {
+          cells: [
+            {
+              type: 'heading',
+              value: 'UBOs',
+            },
+            {
+              type: 'subheading',
+              value: 'Registry-provided Data',
+              props: {
+                className: 'mb-4',
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'name',
+                    header: 'Name',
+                  },
+                  {
+                    accessorKey: 'percentage',
+                    header: 'Percentage (25% or higher)',
+                  },
+                  {
+                    accessorKey: 'type',
+                    header: 'Type',
+                  },
+                  {
+                    accessorKey: 'level',
+                    header: 'Level',
+                  },
+                ],
+                data: ubos?.map(({ name, percentage, type, level }) => ({
+                  name,
+                  percentage,
+                  type,
+                  level,
+                })),
+              },
+            },
+          ],
+        },
+      ]
+    : [];
+
+  const directorsUserProvidedBlock =
+    Object.keys(directorsUserProvided ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'heading',
+                value: 'Directors',
+              },
+              {
+                type: 'subheading',
+                value: 'User-provided Data',
+                props: {
+                  className: 'mb-4',
+                },
+              },
+              {
+                type: 'table',
+                value: {
+                  columns: [
+                    {
+                      accessorKey: 'name',
+                      header: 'Name',
+                    },
+                    {
+                      accessorKey: 'nationality',
+                      header: 'Nationality',
+                    },
+                    {
+                      accessorKey: 'identityNumber',
+                      header: 'Identity number',
+                    },
+                    {
+                      accessorKey: 'email',
+                      header: 'Email',
+                    },
+                    {
+                      accessorKey: 'address',
+                      header: 'Address',
+                    },
+                  ],
+                  data: directorsUserProvided?.map(
+                    ({
+                      firstName,
+                      lastName,
+                      nationalId: identityNumber,
+                      additionalInfo,
+                      ...rest
+                    }) => ({
+                      ...rest,
+                      name: `${firstName} ${lastName}`,
+                      address: additionalInfo?.fullAddress,
+                      nationality: additionalInfo?.nationality,
+                      identityNumber,
+                      ...omitPropsFromObject(additionalInfo, 'fullAddress', 'nationality'),
+                    }),
+                  ),
+                },
+              },
+            ],
+          },
+        ];
+
+  const directorsRegistryProvidedBlock = directorsRegistryProvided
+    ? [
+        {
+          cells: [
+            {
+              type: 'heading',
+              value: 'Directors',
+            },
+            {
+              type: 'subheading',
+              value: 'Registry-provided Data',
+              props: {
+                className: 'mb-4',
+              },
+            },
+            {
+              type: 'table',
+              value: {
+                columns: [
+                  {
+                    accessorKey: 'name',
+                    header: 'Name',
+                  },
+                  {
+                    accessorKey: 'position',
+                    header: 'Position',
+                  },
+                ],
+                data: directorsRegistryProvided,
+              },
+            },
+          ],
+        },
+      ]
+    : [];
+
+  const websiteMonitoringAdapter = ({
+    lsAction,
+    merchantDetails,
+    merchantDomains,
+    createdAt: checkCreatedAt,
+  }) => {
+    const { reason, contentLabels, actions } = lsAction ?? {};
+    const labels = contentLabels?.map(({ label: contentLabel }) => ({ contentLabel })) ?? [];
+    const {
+      // Merchant address
+      merchantCountry,
+      merchantRegion,
+      merchantCity,
+      merchantStreet,
+      merchantPostalCode,
+
+      // Business Owner address
+      businessOwnerCountry,
+      businessOwnerRegion,
+      businessOwnerCity,
+      businessOwnerStreet,
+      businessOwnerPostalCode,
+
+      // DBA address
+      dbaCountry,
+      dbaRegion,
+      dbaCity,
+      dbaStreet,
+      dbaPostalCode,
+
+      status,
+      ...details
+    } = merchantDetails ?? {};
+    const domains = merchantDomains?.map(({ merchantUrl: domain, websiteRegistrar }) => {
+      const { ianaNumber, riskLevel, name } = websiteRegistrar;
+
+      return {
+        domain,
+        websiteRegistrar: name,
+        ianaNumber,
+        riskLevel,
+      };
+    });
+    const addresses = [
+      {
+        entity: 'Merchant',
+        country: merchantCountry,
+        region: merchantRegion,
+        city: merchantCity,
+        street: merchantStreet,
+        postalCode: merchantPostalCode,
+      },
+      {
+        entity: 'Business Owner',
+        country: businessOwnerCountry,
+        region: businessOwnerRegion,
+        city: businessOwnerCity,
+        street: businessOwnerStreet,
+        postalCode: businessOwnerPostalCode,
+      },
+      {
+        entity: 'DBA',
+        country: dbaCountry,
+        region: dbaRegion,
+        city: dbaCity,
+        street: dbaStreet,
+        postalCode: dbaPostalCode,
+      },
+    ];
+    const checkResult = {
+      checkCreatedAt,
+      status,
+    };
+    const warnings = actions?.map(warning => ({ warning })) ?? [];
+
+    return {
+      reason,
+      labels,
+      addresses,
+      domains,
+      details,
+      checkResult,
+      warnings,
+    };
+  };
+  const websiteMonitoring = websiteMonitoringAdapter(pluginsOutput?.website_monitoring?.data ?? {});
+  const websiteMonitoringBlock =
+    Object.keys(pluginsOutput?.website_monitoring?.data ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'container',
+                value: [
+                  {
+                    type: 'container',
+                    value: [
+                      {
+                        type: 'heading',
+                        value: 'Website monitoring',
+                      },
+                      {
+                        type: 'subheading',
+                        value: '3rd Party Provided Data',
+                        props: {
+                          className: 'mb-4',
+                        },
+                      },
+                    ],
+                  },
+                  {
+                    id: 'visible-title',
+                    type: 'table',
+                    hideSeparator: true,
+                    value: {
+                      title: 'Result',
+                      columns: [
+                        {
+                          accessorKey: 'status',
+                          header: 'Status',
+                          cell: props => {
+                            const value = props.getValue();
+                            const isCompleted = value === 'completed';
+
+                            return (
+                              <span
+                                className={ctw({
+                                  'text-warning': !isCompleted,
+                                })}
+                              >
+                                {toTitleCase(websiteMonitoring?.checkResult?.status ?? '')}
+                              </span>
+                            );
+                          },
+                        },
+                        {
+                          accessorKey: 'checkCreatedAt',
+                          header: 'Check Created at',
+                        },
+                      ],
+                      data: [websiteMonitoring?.checkResult],
+                    },
+                  },
+                  {
+                    type: 'table',
+                    value: {
+                      props: {
+                        table: {
+                          className: 'my-8',
+                        },
+                      },
+                      columns: [
+                        {
+                          accessorKey: 'warning',
+                          header: 'Warning',
+                          cell: props => {
+                            let value = props.getValue();
+
+                            if (value === 'gbpp') {
+                              value = 'virp';
+                            }
+
+                            const pickWarningVariant = (): ComponentProps<
+                              typeof Badge
+                            >['variant'] => {
+                              const warnings = websiteMonitoring?.warnings?.map(
+                                ({ warning }) => warning,
+                              );
+                              const isHighRisk =
+                                (warnings?.includes('high_risk') &&
+                                  websiteMonitoring?.warnings?.length > 1) ||
+                                includesValues(['gbpp', 'bram', 'tl_confirmed'], warnings);
+                              const isDestructive = ['virp', 'bram'].includes(value) || isHighRisk;
+                              const isWarning = [
+                                'high_risk',
+                                'tc_moderate_risk',
+                                'tl_suspected',
+                                'offline_domain_moderate_risk',
+                                'parked_domain_moderate_risk',
+                              ].includes(value);
+                              const isSlate = ['low_risk'].includes(value);
+                              const isSuccess = ['cleared'].includes(value);
+
+                              if (isDestructive) return 'destructive';
+                              if (isWarning) return 'warning';
+                              if (isSlate) return 'secondary';
+                              if (isSuccess) return 'success';
+
+                              return 'secondary';
+                            };
+                            const variant = pickWarningVariant();
+
+                            if (isNullish(value) || value === '') {
+                              return <span className={`text-slate-400`}>N/A</span>;
+                            }
+
+                            return (
+                              <Badge
+                                variant={variant}
+                                className={ctw(`mb-1 rounded-lg px-2 py-1 font-bold`, {
+                                  'text-slate-400': variant === 'secondary',
+                                })}
+                              >
+                                {toUpperCase(toTitleCase(value))}
+                              </Badge>
+                            );
+                          },
+                        },
+                      ],
+                      data: websiteMonitoring?.warnings,
+                    },
+                  },
+                ],
+              },
+              {
+                type: 'table',
+                value: {
+                  props: {
+                    table: {
+                      className: 'mb-8',
+                    },
+                  },
+                  columns: [
+                    {
+                      accessorKey: 'contentLabel',
+                      header: 'Content Labels',
+                      cell: props => {
+                        const value = props.getValue();
+
+                        return (
+                          <div className={'flex space-x-2'}>
+                            <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
+                            <span>{value}</span>
+                          </div>
+                        );
+                      },
+                    },
+                  ],
+                  data: websiteMonitoring?.labels,
+                },
+              },
+              {
+                type: 'container',
+                value: [
+                  {
+                    type: 'subheading',
+                    value: 'Reason',
+                    props: {
+                      className: 'mb-2',
+                    },
+                  },
+                  {
+                    type: 'paragraph',
+                    value:
+                      isNullish(websiteMonitoring?.reason) || websiteMonitoring?.reason === ''
+                        ? 'N/A'
+                        : websiteMonitoring?.reason,
+                    props: {
+                      className: ctw({
+                        'text-slate-400':
+                          isNullish(websiteMonitoring?.reason) || websiteMonitoring?.reason === '',
+                      }),
+                    },
+                  },
+                ],
+              },
+              {
+                type: 'container',
+                value: [
+                  {
+                    type: 'heading',
+                    value: 'Merchant Domains',
+                  },
+                  {
+                    type: 'table',
+                    value: {
+                      props: {
+                        table: {
+                          className: 'my-8',
+                        },
+                      },
+                      columns: [
+                        {
+                          accessorKey: 'domain',
+                          header: 'Domain',
+                        },
+                        {
+                          accessorKey: 'websiteRegistrar',
+                          header: 'Website Registrar',
+                        },
+                        {
+                          accessorKey: 'ianaNumber',
+                          header: 'IANA Number',
+                        },
+                        {
+                          accessorKey: 'riskLevel',
+                          header: 'Risk Level',
+                        },
+                      ],
+                      data: websiteMonitoring?.domains,
+                    },
+                  },
+                ],
+              },
+              {
+                type: 'container',
+                value: [
+                  {
+                    type: 'heading',
+                    value: 'Merchant Address',
+                  },
+                  {
+                    type: 'table',
+                    value: {
+                      props: {
+                        table: {
+                          className: 'my-8',
+                        },
+                      },
+                      columns: [
+                        {
+                          accessorKey: 'entity',
+                          header: 'Entity',
+                        },
+                        {
+                          accessorKey: 'country',
+                          header: 'Country',
+                        },
+                        {
+                          accessorKey: 'region',
+                          header: 'Region',
+                        },
+                        {
+                          accessorKey: 'city',
+                          header: 'City',
+                        },
+                        {
+                          accessorKey: 'street',
+                          header: 'Street',
+                        },
+                        {
+                          accessorKey: 'postalCode',
+                          header: 'Postal Code',
+                        },
+                      ],
+                      data: websiteMonitoring?.addresses,
+                    },
+                  },
+                ],
+              },
+              {
+                type: 'container',
+                value: [
+                  {
+                    type: 'heading',
+                    value: 'Merchant Details',
+                    props: {
+                      className: 'mb-6',
+                    },
+                  },
+                  {
+                    type: 'details',
+                    hideSeparator: true,
+                    value: {
+                      data: Object.entries(websiteMonitoring?.details ?? {})?.map(
+                        ([title, value]) => ({
+                          title,
+                          value,
+                        }),
+                      ),
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ];
+
   return useMemo(() => {
-    return entity ? [...entityInfoBlock, ...registryInfoBlock, ...taskBlocks, ...mapBlock] : [];
+    return entity
+      ? [
+          ...websiteMonitoringBlock,
+          ...entityInfoBlock,
+          ...registryInfoBlock,
+          ...kybRegistryInfoBlock,
+          ...companySanctionsBlock,
+          ...directorsUserProvidedBlock,
+          ...directorsRegistryProvidedBlock,
+          ...ubosBlock,
+          ...storeInfoBlock,
+          ...websiteBasicRequirementBlock,
+          ...bankingDetailsBlock,
+          ...processingDetailsBlock,
+          ...mainContactBlock,
+          ...mainRepresentativeBlock,
+          ...mapBlock,
+          ...taskBlocks,
+        ]
+      : [];
   }, [
     address,
     caseState.writeEnabled,

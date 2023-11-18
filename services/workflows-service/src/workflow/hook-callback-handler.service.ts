@@ -1,3 +1,4 @@
+import { set } from 'lodash';
 import { Injectable } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { AnyRecord } from '@ballerine/common';
@@ -42,11 +43,12 @@ export class HookCallbackHandlerService {
       );
     }
 
-    const updatedContext = { ...workflowRuntime.context, [resultDestinationPath]: data };
+    set(workflowRuntime.context, resultDestinationPath, data);
+
     await this.workflowService.updateWorkflowRuntimeData(
       workflowRuntime.id,
       {
-        context: updatedContext,
+        context: workflowRuntime.context,
       },
       currentProjectId,
     );
@@ -78,7 +80,7 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
     const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
       documents as TDocumentsWithoutPageType,
-      context.entity.id,
+      context.entity.id || context.entity.ballerineEntityId,
       currentProjectId,
       customer.name,
     );

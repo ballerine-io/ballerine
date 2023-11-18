@@ -1,6 +1,6 @@
-import { DocumentConfiguration, FlowStepModel } from '@/collection-flow/models/flow-step.model';
+import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-step.model';
 import { Type } from 'class-transformer';
-import { IsArray, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class FlowConfigurationModel {
   @IsString()
@@ -8,11 +8,10 @@ export class FlowConfigurationModel {
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => FlowStepModel)
-  steps!: FlowStepModel[];
+  @Type(() => UiSchemaStep)
+  uiSchema!: UiSchemaStep[];
 
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => DocumentConfiguration)
-  documentConfigurations!: DocumentConfiguration[];
+  @IsObject()
+  @IsOptional()
+  definition?: UiDefDefinition;
 }
