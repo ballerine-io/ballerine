@@ -5,6 +5,7 @@ import { HTTPError } from 'ky';
 export const useFlowContextQuery = () => {
   const { data, isLoading, error } = useQuery({
     ...collectionFlowQuerykeys.getContext(),
+    // @ts-ignore
     staleTime: Infinity,
   });
 
