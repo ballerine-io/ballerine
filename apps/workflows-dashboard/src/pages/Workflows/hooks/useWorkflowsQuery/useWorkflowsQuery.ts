@@ -10,7 +10,6 @@ export function useWorkflowsQuery(query: WorkflowFilterValues, sortingParams?: S
     data = { results: [], meta: { pages: 0, total: 0 } },
   } = useQuery({
     ...workflowKeys.list(query, sortingParams || {}),
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     keepPreviousData: true,
   });

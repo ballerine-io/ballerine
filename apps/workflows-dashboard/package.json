@@ -54,6 +54,7 @@
   },
   "devDependencies": {
     "@ballerine/config": "^1.0.0",
+    "@ballerine/eslint-config-react": "^1.0.0",
     "@cspell/cspell-types": "^6.31.1",
     "@types/axios": "^0.14.0",
     "@types/classnames": "^2.3.1",

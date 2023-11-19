@@ -20,7 +20,6 @@ import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { DynamicForm, ErrorsList } from '@ballerine/ui/src';
 
 export interface JSONFormElementBaseParams {
   jsonFormDefinition: RJSFSchema;

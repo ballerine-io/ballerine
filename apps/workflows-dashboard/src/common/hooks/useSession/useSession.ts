@@ -10,7 +10,6 @@ export function useSession() {
     refetch,
   } = useQuery({
     ...sessionKeys.details(),
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     refetchInterval: ONE_MINUTE_IN_MS,
     retry: (retryCount: number) => retryCount < 3,
