@@ -73,8 +73,8 @@ model EndUser {
   businesses           Business[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
-  projectId                String
-  project                  Project                    @relation(fields: [projectId], references: [id])
+  projectId                String?
+  project                  Project?                   @relation(fields: [projectId], references: [id])
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
 
   @@index([endUserType])
@@ -127,8 +127,8 @@ model Business {
   endUsers             EndUser[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id])
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
 
   @@index([companyName])
   @@index([approvalState])
@@ -204,8 +204,8 @@ model WorkflowRuntimeData {
   childWorkflowsRuntimeData WorkflowRuntimeData[]      @relation("ParentChild")
   WorkflowRuntimeDataToken  WorkflowRuntimeDataToken[]
 
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id])
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
 
   @@index([assigneeId, status])
   @@index([endUserId, status])
@@ -227,8 +227,8 @@ model File {
   createdAt        DateTime @default(now())
   createdBy        String   @default("SYSTEM")
 
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id])
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
 
   @@index([userId])
   @@index([projectId])
@@ -248,8 +248,8 @@ model Filter {
   entity String
   query  Json
 
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id])
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -355,8 +355,8 @@ model UiDefinition {
   schemaOptions Json? // Document Schemas, rejectionReasons: {}, documenTypes: {}, documenCateogries: {}
   uiOptions     Json? // how the view will look, overall
 
-  projectId          String
-  project            Project            @relation(fields: [projectId], references: [id])
+  projectId          String?
+  project            Project?           @relation(fields: [projectId], references: [id])
   workflowDefinition WorkflowDefinition @relation(fields: [workflowDefinitionId], references: [id])
 }
 
