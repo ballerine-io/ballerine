@@ -66,11 +66,14 @@ export class FilterControllerExternal {
   @swagger.ApiForbiddenResponse()
   @UsePipes(new ZodValidationPipe(FilterCreateSchema, 'body'))
   async createFilter(@common.Body() data: FilterCreateDto) {
-    return await this.service.create({
-      data: {
-        ...data,
-        query: data.query as InputJsonValue,
+    return await this.service.create(
+      {
+        data: {
+          ...data,
+          query: data.query as InputJsonValue,
+        },
       },
-    });
+      data.projectId,
+    );
   }
 }

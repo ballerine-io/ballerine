@@ -21,6 +21,10 @@ export class CollectionFlowEndUserController {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [EndUserModel] })
   getCompanyInfo(@TokenScope() tokenScope: ITokenScope, @common.Body() data: EndUserCreateDto) {
-    return this.endUserService.updateById(tokenScope.endUserId, { data: data });
+    return this.endUserService.updateById(
+      tokenScope.endUserId,
+      { data: data },
+      tokenScope.projectId,
+    );
   }
 }
