@@ -1,5 +1,5 @@
 {
-  "extends": "../config/tsconfig.dom-bundler.json",
+  "extends": "@ballerine/config/tsconfig.dom-bundler.json",
   "compilerOptions": {
     "jsx": "react-jsx",
     "outDir": "./dist/types",

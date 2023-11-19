@@ -5,6 +5,7 @@ import { HTTPError } from 'ky';
 export const useUISchemasQuery = () => {
   const { data, isLoading, error } = useQuery({
     ...collectionFlowQuerykeys.getUISchema(),
+    // @ts-ignore
     staleTime: Infinity,
   });
 

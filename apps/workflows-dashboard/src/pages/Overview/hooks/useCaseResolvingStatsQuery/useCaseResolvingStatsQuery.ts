@@ -7,6 +7,8 @@ export const useCaseResolvingStatsQuery = () => {
   const initialDate = useMemo(() => +dayjs().subtract(6, 'day').startOf('day').toDate(), []);
   const { data = [], isLoading } = useQuery({
     ...userStatsQueryKeys.userDailyCasesResolvedStats({ fromDate: initialDate }),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     enabled: Boolean(initialDate),
   });
 

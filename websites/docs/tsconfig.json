@@ -1,5 +1,5 @@
 {
-  "extends": "../../packages/config/tsconfig.react.json",
+  "extends": "@ballerine/config/tsconfig.react.json",
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": ".",

@@ -34,21 +34,23 @@ export class BusinessControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Pick<BusinessModel, 'id' | 'companyName'>> {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return this.service.create({
-      data: {
-        ...data,
-        legalForm: 'name',
-        countryOfIncorporation: 'US',
-        address: 'addess',
-        industry: 'telecom',
-        documents: 's',
-        projectId: currentProjectId,
+    return this.service.create(
+      {
+        data: {
+          ...data,
+          legalForm: 'name',
+          countryOfIncorporation: 'US',
+          address: 'addess',
+          industry: 'telecom',
+          documents: 's',
+        },
+        select: {
+          id: true,
+          companyName: true,
+        },
       },
-      select: {
-        id: true,
-        companyName: true,
-      },
-    });
+      currentProjectId,
+    );
   }
 
   @common.Get()
