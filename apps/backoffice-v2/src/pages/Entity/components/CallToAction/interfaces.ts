@@ -17,4 +17,6 @@ export interface ICallToActionProps {
   };
   documentSelection?: ICallToActionDocumentSelection;
   contextUpdateMethod?: 'base' | 'director';
+  revisionReasons?: string[];
+  rejectionReasons?: string[];
 }

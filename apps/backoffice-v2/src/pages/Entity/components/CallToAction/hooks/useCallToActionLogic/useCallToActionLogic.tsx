@@ -16,7 +16,11 @@ const getPostUpdateEventNameEvent = (workflow: TWorkflowById) => {
     return CommonWorkflowEvent.TASK_REVIEWED;
   }
 };
-export const useCallToActionLogic = (contextUpdateMethod: 'base' | 'director' = 'base') => {
+export const useCallToActionLogic = (
+  contextUpdateMethod: 'base' | 'director' = 'base',
+  revisionReasons: string[],
+  rejectionReasons: string[],
+) => {
   const { entityId } = useParams();
   const filterId = useFilterId();
   const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
@@ -31,14 +35,14 @@ export const useCallToActionLogic = (contextUpdateMethod: 'base' | 'director' = 
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingRevisionTaskById } =
     useRevisionTaskByIdMutation(workflow?.id, postUpdateEventName);
 
-  const revisionReasons =
-    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
-      ({ enum: enum_ }) => !!enum_,
-    )?.enum;
-  const rejectionReasons =
-    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
-      ({ enum: enum_ }) => !!enum_,
-    )?.enum;
+  // const revisionReasons =
+  //   workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+  //     ({ enum: enum_ }) => !!enum_,
+  //   )?.enum;
+  // const rejectionReasons =
+  //   workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
+  //     ({ enum: enum_ }) => !!enum_,
+  //   )?.enum;
   const isLoadingTaskDecisionById =
     isLoadingApproveTaskById || isLoadingRejectTaskById || isLoadingRevisionTaskById;
 

@@ -25,19 +25,24 @@ export const DocumentPicker: FunctionComponent<DocumentPickerProps> = ({
   );
 
   return (
-    <Select onValueChange={handleChange} value={value}>
-      <SelectTrigger className="w-full">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {options?.map(option => {
-          return (
-            <SelectItem key={option.value} value={option.value} className={`capitalize`}>
-              {option.name}
-            </SelectItem>
-          );
-        })}
-      </SelectContent>
-    </Select>
+    <div>
+      <label className={`mb-2 block font-bold`} htmlFor={`reason`}>
+        Document to re-upload
+      </label>
+      <Select onValueChange={handleChange} value={value}>
+        <SelectTrigger className="w-full">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {options?.map(option => {
+            return (
+              <SelectItem key={option.value} value={option.value} className={`capitalize`}>
+                {option.name}
+              </SelectItem>
+            );
+          })}
+        </SelectContent>
+      </Select>
+    </div>
   );
 };

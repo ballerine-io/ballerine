@@ -281,6 +281,14 @@ export const useTasks = ({
                 disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
                 decision: 'reject',
               },
+              revisionReasons:
+                workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+                  ({ enum: enum_ }) => !!enum_,
+                )?.enum,
+              rejectionReasons:
+                workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
+                  ({ enum: enum_ }) => !!enum_,
+                )?.enum,
             },
             {
               type: 'callToAction',
@@ -290,6 +298,14 @@ export const useTasks = ({
                 disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
                 decision: 'approve',
               },
+              revisionReasons:
+                workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+                  ({ enum: enum_ }) => !!enum_,
+                )?.enum,
+              rejectionReasons:
+                workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
+                  ({ enum: enum_ }) => !!enum_,
+                )?.enum,
             },
           ];
         };

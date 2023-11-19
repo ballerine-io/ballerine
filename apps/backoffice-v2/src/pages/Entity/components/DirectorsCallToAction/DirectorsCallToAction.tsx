@@ -6,6 +6,7 @@ import {
   ICallToActionDocumentSelection,
   ICallToActionProps,
 } from '../CallToAction/interfaces';
+import { getRevisionReasonsForDocument } from './helpers';
 
 interface IDirectorsCallToActionProps extends ICallToActionProps {
   documents: AnyObject[];
@@ -39,11 +40,23 @@ export const DirectorsCallToAction: FunctionComponent<IDirectorsCallToActionProp
     [documentsOptions, documentId, handleDocumentSelection],
   );
 
+  const selectedDocument = useMemo(
+    () => documents.find(document => document.id === documentId) || null,
+    [documents, documentId],
+  );
+
+  const revisionReasonsByDocument = useMemo(() => {
+    if (!selectedDocument) return [];
+
+    return getRevisionReasonsForDocument(selectedDocument);
+  }, [selectedDocument]);
+
   return (
     <CallToAction
       data={{ id: documentId ?? undefined }}
       documentSelection={documentSelectionProps}
       contextUpdateMethod="director"
+      revisionReasons={revisionReasonsByDocument}
       {...restProps}
     />
   );

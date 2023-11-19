@@ -36,6 +36,8 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
   data,
   documentSelection,
   contextUpdateMethod,
+  revisionReasons,
+  rejectionReasons,
 }) => {
   const {
     onMutateTaskDecisionById,
@@ -51,7 +53,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
     onCommentChange,
     noReasons,
     workflowLevelResolution,
-  } = useCallToActionLogic(contextUpdateMethod);
+  } = useCallToActionLogic(contextUpdateMethod, revisionReasons, rejectionReasons);
 
   if (value === 'Reject') {
     return (
