@@ -3,7 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 
 export const useCustomerQuery = () => {
-  const { data, isLoading, error } = useQuery(collectionFlowQuerykeys.getCustomer());
+  const { data, isLoading, error } = useQuery(
+    // @ts-ignore
+    collectionFlowQuerykeys.getCustomer(),
+  );
 
   return {
     customer: data ? data : null,

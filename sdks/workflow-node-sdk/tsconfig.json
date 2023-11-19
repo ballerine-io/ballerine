@@ -1,5 +1,5 @@
 {
-  "extends": "../../packages/config/tsconfig.bundler.json",
+  "extends": "@ballerine/config/tsconfig.bundler.json",
   "compilerOptions": {
     "outDir": "./dist/types",
     "baseUrl": ".",
