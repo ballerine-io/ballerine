@@ -1,7 +1,7 @@
 import {
   BaseIndicator,
   BaseIndicatorProps,
-} from '@app/components/atoms/Stepper/components/atoms/BaseIndicator';
+} from '@/components/atoms/Stepper/components/atoms/BaseIndicator';
 interface Props {
   indicatorProps?: BaseIndicatorProps;
 }

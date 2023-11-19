@@ -1,4 +1,4 @@
-import { IWorkflow } from '@app/domains/workflows/api/workflow';
+import { IWorkflow } from '@/domains/workflows/api/workflow';
 import { AccessorFnColumnDef, ColumnDef } from '@tanstack/react-table';
 
 export interface WorkflowsTableSorting {

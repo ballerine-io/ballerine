@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-import { getWeekDayName } from '@app/components/molecules/WeeklyBarChart/utils/get-week-day-name';
+import { getWeekDayName } from '@/components/molecules/WeeklyBarChart/utils/get-week-day-name';
 
 export interface WeeklyBarChartData {
   value: number;

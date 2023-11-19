@@ -6,8 +6,8 @@ import {
   PrevStepActionPayload,
   UpdateStepDataAction,
   WarningStepActionPayload,
-} from '@app/common/hooks/useStepper/hooks/useStepsManager/types';
-import { IStep } from '@app/common/hooks/useStepper/types';
+} from '@/common/hooks/useStepper/hooks/useStepsManager/types';
+import { IStep } from '@/common/hooks/useStepper/types';
 
 export const completeCurrentStepAction = (): CompleteCurrentStepActionPayload => ({
   type: 'COMPLETE-CURRENT',

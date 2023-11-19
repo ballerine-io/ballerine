@@ -1,4 +1,4 @@
-import { ctw } from '@app/common/utils/ctw/ctw';
+import { ctw } from '@/common/utils/ctw/ctw';
 import * as React from 'react';
 import { useFormField } from './hooks/useFormField/useFormField';
 

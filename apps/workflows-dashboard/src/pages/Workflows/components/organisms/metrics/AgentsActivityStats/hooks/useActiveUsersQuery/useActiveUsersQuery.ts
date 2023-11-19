@@ -1,4 +1,4 @@
-import { usersKeys } from '@app/domains/workflows/api/users';
+import { usersKeys } from '@/domains/workflows/api/users';
 import { useQuery } from '@tanstack/react-query';
 
 export const useActiveUsersQuery = () => {

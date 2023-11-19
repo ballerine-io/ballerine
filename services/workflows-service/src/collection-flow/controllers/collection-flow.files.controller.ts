@@ -1,6 +1,6 @@
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { Public } from '@/common/decorators/public.decorator';
-import { ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
+import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { FILE_SIZE_EXCEEDED_MSG, fileFilter, FILE_MAX_SIZE_IN_BYTE } from '@/storage/file-filter';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
@@ -18,7 +18,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Response } from 'express';
+import type { Response } from 'express';
 import * as errors from '../../errors';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 

@@ -1,4 +1,4 @@
-import { sessionKeys } from '@app/domains/auth/api/session/query-keys';
+import { sessionKeys } from '@/domains/auth/api/session/query-keys';
 import { useQuery } from '@tanstack/react-query';
 
 const ONE_MINUTE_IN_MS = 1000 * 60;

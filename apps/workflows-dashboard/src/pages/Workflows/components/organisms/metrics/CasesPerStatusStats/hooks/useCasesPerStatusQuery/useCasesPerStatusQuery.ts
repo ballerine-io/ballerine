@@ -1,5 +1,5 @@
-import { ICasesPerStatusStats } from '@app/domains/workflows/api/workflow-metrics';
-import { workflowMetricsKeys } from '@app/domains/workflows/api/workflow-metrics/query-keys';
+import { ICasesPerStatusStats } from '@/domains/workflows/api/workflow-metrics';
+import { workflowMetricsKeys } from '@/domains/workflows/api/workflow-metrics/query-keys';
 import { useQuery } from '@tanstack/react-query';
 
 export const useCasesPerStatusQuery = () => {

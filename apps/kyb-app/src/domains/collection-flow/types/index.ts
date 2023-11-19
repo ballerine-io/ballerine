@@ -1,4 +1,4 @@
-import { Action, Rule, UIElement } from '@app/domains/collection-flow/types/ui-schema.types';
+import { Action, Rule, UIElement } from '@/domains/collection-flow/types/ui-schema.types';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 

@@ -3,8 +3,8 @@ import {
   UIElementStateSetter,
   UIElementsState,
   UIElementsStateSetter,
-} from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
-import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
+} from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
+import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
 import { useCallback, useState } from 'react';
 
 export const useUIElementsStateLogic = (initialState?: UIState['elements']) => {

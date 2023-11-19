@@ -1,5 +1,5 @@
-import { useCustomer } from '@app/components/providers/CustomerProvider';
-import { withSessionProtected } from '@app/hooks/useSessionQuery/hocs/withSessionProtected';
+import { useCustomer } from '@/components/providers/CustomerProvider';
+import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Button, Card } from '@ballerine/ui';
 
 export const Success = withSessionProtected(() => {
@@ -24,7 +24,8 @@ export const Success = withSessionProtected(() => {
           <Button
             variant="secondary"
             onClick={() => {
-              location.href = customer.websiteUrl;
+              // @ts-ignore
+              location.href = customer?.websiteUrl;
             }}
           >
             Back to {customer?.displayName} Portal

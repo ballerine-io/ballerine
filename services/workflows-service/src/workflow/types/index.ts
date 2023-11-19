@@ -9,7 +9,7 @@ import {
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
 import { User } from '@sentry/node';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 
 export interface RunnableWorkflowData {
   workflowDefinition: WorkflowDefinition;

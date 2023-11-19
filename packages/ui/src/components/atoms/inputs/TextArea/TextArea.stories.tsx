@@ -1,4 +1,4 @@
-import { TextArea } from '@components/atoms/inputs/TextArea/TextArea';
+import { TextArea } from '@/components/atoms/inputs/TextArea/TextArea';
 
 export default {
   component: TextArea,
