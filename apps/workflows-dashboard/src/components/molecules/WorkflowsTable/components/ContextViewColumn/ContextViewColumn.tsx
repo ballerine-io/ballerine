@@ -1,5 +1,5 @@
-import { Button } from '@app/components/atoms/Button';
-import { Dialog, DialogContent, DialogTrigger } from '@app/components/atoms/Dialog';
+import { Button } from '@/components/atoms/Button';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/atoms/Dialog';
 import { CodeIcon } from 'lucide-react';
 import Scrollbars from 'react-custom-scrollbars';
 import ReactJson from 'react-json-view';

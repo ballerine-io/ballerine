@@ -1,4 +1,4 @@
-import { ActionHandler } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/action-handler.abstract';
+import { ActionHandler } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/action-handler.abstract';
 
 export class ActionHandlerManager {
   constructor(private readonly actionHandlers: ActionHandler[]) {}

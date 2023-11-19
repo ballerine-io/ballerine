@@ -1,10 +1,10 @@
-import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { createFormSchemaFromUIElements } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/createFormSchemaFromUIElements';
-import { createInitialFormData } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/createInitialFormData';
-import { UIElementComponent } from '@app/components/organisms/UIRenderer/types';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { createFormSchemaFromUIElements } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/createFormSchemaFromUIElements';
+import { createInitialFormData } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/createInitialFormData';
+import { UIElementComponent } from '@/components/organisms/UIRenderer/types';
 
-import { JSONFormElementParams } from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
-import { jsonFormFields } from '@app/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
+import { JSONFormElementParams } from '@/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
+import { jsonFormFields } from '@/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
 import { AnyObject, DynamicForm } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import set from 'lodash/set';
@@ -36,6 +36,7 @@ export const Documents: UIElementComponent<JSONFormElementParams> = ({ definitio
     async (values: AnyObject) => {
       if (definition.options?.jsonFormDefinition?.type === 'array') {
         const prevContext = stateApi.getContext();
+        // @ts-ignore
         set(prevContext, definition.valueDestination, values);
 
         stateApi.setContext(prevContext);

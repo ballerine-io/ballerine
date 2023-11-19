@@ -1,8 +1,8 @@
 import {
   AgentCasesChart,
   AgentCasesChartData,
-} from '@app/pages/Workflows/components/molecules/AgentCasesChart';
-import { useUsersAssignedCasesStatsQuery } from '@app/pages/Workflows/components/organisms/metrics/AgentCasesStats/hooks/useUsersAssignedCasesStatsQuery';
+} from '@/pages/Workflows/components/molecules/AgentCasesChart';
+import { useUsersAssignedCasesStatsQuery } from '@/pages/Workflows/components/organisms/metrics/AgentCasesStats/hooks/useUsersAssignedCasesStatsQuery';
 import { useMemo } from 'react';
 
 export const AgentCasesStats = () => {

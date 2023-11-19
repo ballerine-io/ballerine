@@ -1,4 +1,4 @@
-import { workflowMetricsKeys } from '@app/domains/workflows/api/workflow-metrics/query-keys';
+import { workflowMetricsKeys } from '@/domains/workflows/api/workflow-metrics/query-keys';
 import { useQuery } from '@tanstack/react-query';
 
 export const useActivePerWorkflowStatsQuery = () => {

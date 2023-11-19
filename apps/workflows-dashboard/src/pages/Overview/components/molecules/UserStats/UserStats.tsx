@@ -1,6 +1,6 @@
-import { UserStats as IUserStats } from '@app/domains/user/api/user-stats';
-import { DurationCard } from '@app/pages/Overview/components/molecules/UserStats/components/DurationCard';
-import { PercentageCard } from '@app/pages/Overview/components/molecules/UserStats/components/PercentageCard';
+import { UserStats as IUserStats } from '@/domains/user/api/user-stats';
+import { DurationCard } from '@/pages/Overview/components/molecules/UserStats/components/DurationCard';
+import { PercentageCard } from '@/pages/Overview/components/molecules/UserStats/components/PercentageCard';
 
 interface Props {
   userStats: IUserStats;

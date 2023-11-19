@@ -1,4 +1,4 @@
-import { RuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
+import { RuleEngine } from '@/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
 
 export class EngineManager {
   private enginesMap = new Map<string, RuleEngine>();

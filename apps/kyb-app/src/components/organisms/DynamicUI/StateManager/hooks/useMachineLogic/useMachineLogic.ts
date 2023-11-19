@@ -1,9 +1,10 @@
 import { AnyObject } from '@ballerine/ui';
 import { WorkflowBrowserSDK } from '@ballerine/workflow-browser-sdk';
 import { useCallback, useMemo, useState } from 'react';
+import { isErrorWithMessage } from '@ballerine/common';
 
 export interface StateMachineAPI {
-  invokePlugin: (pluginName) => Promise<void>;
+  invokePlugin: (pluginName: string) => Promise<void>;
   sendEvent: (eventName: string) => Promise<void>;
   setContext: (newContext: AnyObject) => AnyObject;
   getContext: () => AnyObject;
@@ -21,7 +22,7 @@ export const useMachineLogic = (
       try {
         await machine.invokePlugin(pluginName);
       } catch (error) {
-        console.log('Failed to invoke plugin', error.message);
+        console.log('Failed to invoke plugin', isErrorWithMessage(error) ? error.message : error);
       } finally {
         setInvokingPlugin(false);
       }

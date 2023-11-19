@@ -1,4 +1,4 @@
-import { collectionFlowQuerykeys } from '@app/domains/collection-flow';
+import { collectionFlowQuerykeys } from '@/domains/collection-flow';
 import { useQuery } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 
@@ -11,6 +11,6 @@ export const useUISchemasQuery = () => {
   return {
     isLoading,
     data: data ?? null,
-    error: error as HTTPError,
+    error: error ? (error as HTTPError) : null,
   };
 };

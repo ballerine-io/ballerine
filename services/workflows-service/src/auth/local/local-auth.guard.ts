@@ -1,6 +1,6 @@
 import { AuthGuard } from '@nestjs/passport';
 import { ExecutionContext } from '@nestjs/common';
-import { Request } from 'express';
+import type { Request } from 'express';
 
 export class LocalAuthGuard extends AuthGuard('local') {
   async canActivate(context: ExecutionContext) {
