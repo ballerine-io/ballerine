@@ -16,7 +16,7 @@ const getPostUpdateEventNameEvent = (workflow: TWorkflowById) => {
     return CommonWorkflowEvent.TASK_REVIEWED;
   }
 };
-export const useCallToActionLogic = () => {
+export const useCallToActionLogic = (contextUpdateMethod: 'base' | 'director' = 'base') => {
   const { entityId } = useParams();
   const filterId = useFilterId();
   const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
@@ -107,12 +107,13 @@ export const useCallToActionLogic = () => {
             documentId: payload?.id,
             reason: payload?.reason,
             decision: payload?.decision,
+            contextUpdateMethod,
           });
         }
 
         toast.error('Invalid decision');
       },
-    [mutateApproveTaskById, mutateRejectTaskById, mutateRevisionTaskById],
+    [contextUpdateMethod, mutateApproveTaskById, mutateRejectTaskById, mutateRevisionTaskById],
   );
   const workflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??

@@ -1,27 +1,28 @@
-import { AnimatePresence } from 'framer-motion';
-import React, { ComponentProps, FunctionComponent } from 'react';
 import { DialogClose } from '@radix-ui/react-dialog';
+import { AnimatePresence } from 'framer-motion';
+import { ComponentProps, FunctionComponent } from 'react';
 
-import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
-import { ctw } from '../../../../common/utils/ctw/ctw';
-import { DialogContent } from '../../../../common/components/organisms/Dialog/Dialog.Content';
+import { Send } from 'lucide-react';
+import { Button } from '../../../../common/components/atoms/Button/Button';
+import { Input } from '../../../../common/components/atoms/Input/Input';
 import { Select } from '../../../../common/components/atoms/Select/Select';
-import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
-import { ICallToActionProps } from './interfaces';
-import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
 import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
+import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
 import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
-import { Input } from '../../../../common/components/atoms/Input/Input';
-import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
-import { useCallToActionLogic } from './hooks/useCallToActionLogic/useCallToActionLogic';
 import { MotionButton } from '../../../../common/components/molecules/MotionButton/MotionButton';
-import { Button } from '../../../../common/components/atoms/Button/Button';
+import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
+import { DialogContent } from '../../../../common/components/organisms/Dialog/Dialog.Content';
+import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
+import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
 import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
 import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
-import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
+import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
 import { capitalize } from '../../../../common/utils/capitalize/capitalize';
-import { Send } from 'lucide-react';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { DocumentPicker } from './components/DocumentPicker';
+import { useCallToActionLogic } from './hooks/useCallToActionLogic/useCallToActionLogic';
+import { ICallToActionProps } from './interfaces';
 
 const motionProps: ComponentProps<typeof MotionButton> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -30,7 +31,12 @@ const motionProps: ComponentProps<typeof MotionButton> = {
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
 };
 
-export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, data }) => {
+export const CallToAction: FunctionComponent<ICallToActionProps> = ({
+  value,
+  data,
+  documentSelection,
+  contextUpdateMethod,
+}) => {
   const {
     onMutateTaskDecisionById,
     isLoadingTaskDecisionById,
@@ -45,7 +51,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
     onCommentChange,
     noReasons,
     workflowLevelResolution,
-  } = useCallToActionLogic();
+  } = useCallToActionLogic(contextUpdateMethod);
 
   if (value === 'Reject') {
     return (
@@ -194,6 +200,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
               </p>
             </DialogDescription>
           </DialogHeader>
+          {documentSelection ? <DocumentPicker {...documentSelection} /> : null}
           {!noReasons && (
             <div>
               <label className={`mb-2 block font-bold`} htmlFor={`reason`}>

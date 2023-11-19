@@ -145,15 +145,15 @@ export const updateWorkflowDocumentById = async ({
   workflowId,
   documentId,
   body,
-  isDirector,
+  contextUpdateMethod,
 }: IWorkflowId & {
   documentId: string;
   body: Record<PropertyKey, unknown>;
-  isDirector?: boolean;
+  contextUpdateMethod?: 'base' | 'director';
 }) => {
   const [workflow, error] = await apiClient({
     endpoint: `workflows/${workflowId}/documents/${documentId}${
-      isDirector ? `?isDirector=${isDirector?.toString()}` : ''
+      contextUpdateMethod ? `?contextUpdateMethod=${contextUpdateMethod}` : ''
     }`,
     method: Method.PATCH,
     body,
@@ -207,6 +207,7 @@ export const updateWorkflowDecision = async ({
   workflowId,
   documentId,
   body,
+  contextUpdateMethod,
 }: IWorkflowId & {
   documentId: string;
   body: {
@@ -214,9 +215,12 @@ export const updateWorkflowDecision = async ({
     reason?: string;
     postUpdateEventName?: string;
   };
+  contextUpdateMethod: 'base' | 'director';
 }) => {
   const [workflow, error] = await apiClient({
-    endpoint: `workflows/${workflowId}/decision/${documentId}`,
+    endpoint: `workflows/${workflowId}/decision/${documentId}${
+      contextUpdateMethod ? `?contextUpdateMethod=${contextUpdateMethod}` : ''
+    }`,
     method: Method.PATCH,
     body,
     schema: WorkflowByIdSchema.pick({

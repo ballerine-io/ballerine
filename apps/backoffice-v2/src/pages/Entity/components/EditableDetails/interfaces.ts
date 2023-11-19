@@ -22,5 +22,5 @@ export interface IEditableDetails {
   }>;
   title: string;
   workflowId: string;
-  isDirector?: boolean;
+  contextUpdateMethod?: 'base' | 'director';
 }

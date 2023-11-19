@@ -42,7 +42,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   documents,
   title,
   workflowId,
-  isDirector = false,
+  contextUpdateMethod = 'base',
 }) => {
   const [formData, setFormData] = useState(data);
   const POSITIVE_VALUE_INDICATOR = ['approved'];
@@ -76,16 +76,16 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const onMutateTaskDecisionById = ({
     document,
     action,
-    isDirector,
+    contextUpdateMethod,
   }: {
     document: AnyRecord;
     action: Parameters<typeof mutateUpdateWorkflowById>[0]['action'];
-    isDirector?: boolean;
+    contextUpdateMethod: 'base' | 'director';
   }) =>
     mutateUpdateWorkflowById({
       document,
       action,
-      isDirector,
+      contextUpdateMethod,
     });
   const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = formData => {
     const document = documents?.find(document => document?.id === valueId);
@@ -120,7 +120,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     return onMutateTaskDecisionById({
       document: newDocument,
       action: 'update_document_properties',
-      isDirector,
+      contextUpdateMethod,
     });
   };
   const isDecisionComponent = title === 'Decision';

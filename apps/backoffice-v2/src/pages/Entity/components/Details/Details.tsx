@@ -13,7 +13,7 @@ export const Details: FunctionComponent<IDetailsProps> = ({
   value,
   hideSeparator,
   documents,
-  isDirector,
+  contextUpdateMethod,
 }) => {
   const { entityId } = useParams();
   const filterId = useFilterId();
@@ -21,7 +21,6 @@ export const Details: FunctionComponent<IDetailsProps> = ({
 
   if (!value.data?.length) return;
 
-  console.log('DETAILS DOCUMENTS', documents);
   return (
     <div
       className={ctw(`m-2 rounded p-1`, {
@@ -35,7 +34,7 @@ export const Details: FunctionComponent<IDetailsProps> = ({
         documents={documents ?? workflow?.context?.documents}
         title={value?.title}
         data={value?.data}
-        isDirector={isDirector}
+        contextUpdateMethod={contextUpdateMethod}
       />
       {!hideSeparator && <Separator className={`my-2`} />}
     </div>

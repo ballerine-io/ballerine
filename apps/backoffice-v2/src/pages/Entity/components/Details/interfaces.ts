@@ -4,7 +4,7 @@ export interface IDetailsProps {
   id: string;
   hideSeparator?: boolean;
   documents?: AnyObject[];
-  isDirector?: boolean;
+  contextUpdateMethod?: 'base' | 'director';
   value: {
     id: string;
     title: string;

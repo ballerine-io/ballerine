@@ -30,6 +30,7 @@ import {
 } from '../useEntity/utils';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
 import { getPostUpdateEventName } from './get-post-update-event-name';
+import { useDirectorsBlocks } from './hooks/useDirectorsBlocks';
 import { useDocumentPageImages } from './hooks/useDocumentPageImages';
 import { motionProps } from './motion-props';
 import { selectDirectorsDocuments } from './selectors/selectDirectorsDocuments';
@@ -1118,109 +1119,11 @@ export const useTasks = ({
           },
         ];
 
-  const directorsDocumentsBlocks = directorsUserProvided
-    .filter(director => Array.isArray(director.additionalInfo?.documents))
-    .map(director => {
-      const { documents } = director.additionalInfo;
-
-      const multiDocumentsBlocks = documents.map((document, docIndex) => {
-        const additionalProperties = composePickableCategoryType(
-          document.category,
-          document.type,
-          documents,
-        );
-
-        return {
-          id: 'kyc-block',
-          type: 'container',
-          value: [
-            {
-              type: 'container',
-              value: [
-                {
-                  type: 'subheading',
-                  value: `${valueOrNA(toTitleCase(document.category ?? ''))} - ${valueOrNA(
-                    toTitleCase(document.type ?? ''),
-                  )}`,
-                },
-                {
-                  title: 'Details test',
-                  type: 'details',
-                  value: {
-                    id: document.id,
-                    title: 'Details test',
-                    data: Object.entries(
-                      {
-                        ...additionalProperties,
-                        ...document.propertiesSchema?.properties,
-                      } ?? {},
-                    )?.map(
-                      ([
-                        title,
-                        {
-                          type,
-                          format,
-                          pattern,
-                          isEditable = true,
-                          dropdownOptions,
-                          value,
-                          formatMinimum,
-                          formatMaximum,
-                        },
-                      ]) => {
-                        const fieldValue = value || (document.properties?.[title] ?? '');
-
-                        return {
-                          title,
-                          value: fieldValue,
-                          type,
-                          format,
-                          pattern,
-                          dropdownOptions,
-                          isEditable,
-                          minimum: formatMinimum,
-                          maximum: formatMaximum,
-                        };
-                      },
-                    ),
-                  },
-                  documents,
-                  isDirector: true,
-                },
-              ],
-            },
-            {
-              type: 'container',
-              value: [
-                {
-                  type: 'multiDocuments',
-                  isLoading: directorsDocsData?.some(({ isLoading }) => isLoading),
-                  value: {
-                    data: document.pages.map(({ type, metadata }, pageIndex) => ({
-                      title: `${valueOrNA(toTitleCase(document.category ?? ''))} - ${valueOrNA(
-                        toTitleCase(document.type ?? ''),
-                      )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                      imageUrl: directorsDocumentPagesResults[docIndex][pageIndex],
-                      fileType: type,
-                    })),
-                  },
-                },
-              ],
-            },
-          ],
-        };
-      });
-
-      return {
-        cells: [
-          {
-            type: 'heading',
-            value: `Director - ${director.firstName} ${director.lastName}`,
-          },
-          ...multiDocumentsBlocks,
-        ],
-      };
-    });
+  const directorsDocumentsBlocks = useDirectorsBlocks(
+    workflow,
+    directorsDocsData,
+    directorsDocumentPagesResults,
+  );
 
   const directorsRegistryProvidedBlock = directorsRegistryProvided
     ? [

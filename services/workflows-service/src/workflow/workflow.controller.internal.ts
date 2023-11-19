@@ -11,6 +11,7 @@ import { FilterService } from '@/filter/filter.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { TProjectId, TProjectIds } from '@/types';
 import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
+import { DocumentDecisionUpdateQueryInput } from '@/workflow/dtos/document-decision-query.input';
 import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';
 import { DocumentUpdateQueryInput } from '@/workflow/dtos/document-update-query-input';
 import {
@@ -216,7 +217,7 @@ export class WorkflowControllerInternal {
         workflowId: params?.id,
         documentId: params?.documentId,
         checkRequiredFields: false,
-        isDirectorDocument: query.isDirector,
+        documentsUpdateContextMethod: query.contextUpdateMethod,
       },
       data.document,
       currentProjectId,
@@ -251,6 +252,7 @@ export class WorkflowControllerInternal {
   async updateDocumentDecisionById(
     @common.Param() params: DocumentDecisionParamsInput,
     @common.Body() data: DocumentDecisionUpdateInput,
+    @common.Query() query: DocumentDecisionUpdateQueryInput,
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
@@ -259,6 +261,7 @@ export class WorkflowControllerInternal {
         {
           workflowId: params?.id,
           documentId: params?.documentId,
+          documentsUpdateContextMethod: query.contextUpdateMethod,
         },
         {
           status: data?.decision,

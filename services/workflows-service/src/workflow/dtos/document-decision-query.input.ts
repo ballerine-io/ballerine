@@ -1,7 +1,7 @@
 import { oneOf } from '@/common/decorators/one-of.decorator';
 import { IsOptional, IsString } from 'class-validator';
 
-export class DocumentUpdateQueryInput {
+export class DocumentDecisionUpdateQueryInput {
   @IsString()
   @IsOptional()
   @oneOf(['base', 'director'])

@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { TWorkflowById, updateWorkflowDocumentById } from '../../../fetchers';
+import toast from 'react-hot-toast';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
+import { TWorkflowById, updateWorkflowDocumentById } from '../../../fetchers';
 import { workflowsQueryKeys } from '../../../query-keys';
 
 export const useUpdateDocumentByIdMutation = ({
@@ -11,7 +11,6 @@ export const useUpdateDocumentByIdMutation = ({
 }: {
   workflowId: string;
   documentId: string;
-  isDirector?: boolean;
 }) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
@@ -20,20 +19,21 @@ export const useUpdateDocumentByIdMutation = ({
   return useMutation({
     mutationFn: ({
       document,
-      isDirector,
+      contextUpdateMethod,
     }: {
       document: Record<PropertyKey, unknown>;
       action: 'update_document_properties';
-      isDirector?: boolean;
-    }) =>
-      updateWorkflowDocumentById({
+      contextUpdateMethod: 'base' | 'director';
+    }) => {
+      return updateWorkflowDocumentById({
         workflowId,
         documentId,
         body: {
           document,
         },
-        isDirector,
-      }),
+        contextUpdateMethod,
+      });
+    },
     onMutate: async ({ document }) => {
       await queryClient.cancelQueries({
         queryKey: workflowById.queryKey,
