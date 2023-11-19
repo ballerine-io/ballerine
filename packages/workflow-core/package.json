@@ -32,15 +32,17 @@
   "dependencies": {
     "@ballerine/common": "0.7.22",
     "ajv": "^8.12.0",
+    "i18n-iso-countries": "^7.6.0",
     "jmespath": "^0.16.0",
     "json-logic-js": "^2.0.2",
-    "i18n-iso-countries": "^7.6.0",
     "xstate": "^4.35.2"
   },
   "devDependencies": {
     "@babel/core": "7.17.9",
     "@babel/preset-env": "7.16.11",
     "@babel/preset-typescript": "7.16.7",
+    "@ballerine/config": "^1.0.0",
+    "@cspell/cspell-types": "^6.31.1",
     "@rollup/plugin-babel": "5.3.1",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-json": "^6.0.0",
@@ -57,7 +59,6 @@
     "@vitest/coverage-istanbul": "^0.28.4",
     "concurrently": "^7.6.0",
     "cspell": "^6.31.2",
-    "@cspell/cspell-types": "^6.31.1",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.32.0",
     "eslint-config-prettier": "^6.11.0",

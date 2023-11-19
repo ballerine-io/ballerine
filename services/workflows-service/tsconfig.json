@@ -1,5 +1,5 @@
 {
-  "extends": "../../packages/config/tsconfig.node.json",
+  "extends": "@ballerine/config/tsconfig.node.json",
   "compilerOptions": {
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
