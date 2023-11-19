@@ -5,7 +5,7 @@ import { IStreamableFileProvider } from './types/interfaces';
 import { TFileServiceProvider } from './types';
 import { getDocumentId, isErrorWithMessage } from '@ballerine/common';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
-import { TProjectId } from '@/types';
+import type { TProjectId } from '@/types';
 import { randomUUID } from 'crypto';
 import { isType } from '@/common/is-type/is-type';
 import { z } from 'zod';

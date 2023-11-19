@@ -88,6 +88,6 @@
     "vitest": "^0.33.0"
   },
   "dependencies": {
-    "@ballerine/common": "workspace:*"
+    "@ballerine/common": "^0.7.21"
   }
 }

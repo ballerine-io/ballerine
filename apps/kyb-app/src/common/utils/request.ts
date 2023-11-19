@@ -1,4 +1,4 @@
-import { getAccessToken } from '@app/helpers/get-access-token.helper';
+import { getAccessToken } from '@/helpers/get-access-token.helper';
 import * as Sentry from '@sentry/react';
 import ky, { HTTPError } from 'ky';
 
@@ -35,15 +35,16 @@ export const request = ky.create({
             request.method,
             request.url,
             String(error.response.status),
-            getAccessToken(),
+            getAccessToken() || 'anonymous',
           ]);
           Sentry.setUser({
-            id: getAccessToken(),
+            id: getAccessToken() || 'anonymous',
           });
 
           Sentry.captureException(error, {
             extra: {
               ErrorMessage: `StatusCode: ${response?.status}, URL:${response?.url}`,
+              // @ts-ignore
               reqId: response?.headers?.['X-Request-ID'],
               bodyRaw: responseBody,
             },

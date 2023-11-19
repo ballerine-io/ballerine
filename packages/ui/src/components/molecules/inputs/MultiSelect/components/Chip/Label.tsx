@@ -1,4 +1,4 @@
-import { ctw } from '@utils/ctw';
+import { ctw } from '@/utils/ctw';
 import { VariantProps, cva } from 'class-variance-authority';
 
 const labelVariants = cva('', {

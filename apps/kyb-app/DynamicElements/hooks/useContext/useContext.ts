@@ -1,4 +1,4 @@
-import { UIElement } from '@app/domains/collection-flow';
+import { UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useCallback, useEffect, useRef, useState } from 'react';
 

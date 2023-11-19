@@ -1,5 +1,5 @@
-import { request } from '@app/common/utils/request';
-import { IFile, UploadFileDto, UploadFileResult } from '@app/domains/storage/types';
+import { request } from '@/common/utils/request';
+import { IFile, UploadFileDto, UploadFileResult } from '@/domains/storage/types';
 
 export const uploadAndGetFile = async (dto: UploadFileDto): Promise<UploadFileResult> => {
   const formData = new FormData();

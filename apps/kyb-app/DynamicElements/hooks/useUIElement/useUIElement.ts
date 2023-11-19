@@ -1,6 +1,6 @@
-import { useHandlers } from '@app/components/organisms/DynamicElements/hooks/useUIElement/hooks/useHandlers';
-import { useProperties } from '@app/components/organisms/DynamicElements/hooks/useUIElement/hooks/useProperties';
-import { Action, UIElement } from '@app/domains/collection-flow';
+import { useHandlers } from '@/components/organisms/DynamicElements/hooks/useUIElement/hooks/useHandlers';
+import { useProperties } from '@/components/organisms/DynamicElements/hooks/useUIElement/hooks/useProperties';
+import { Action, UIElement } from '@/domains/collection-flow';
 
 export const useUIElement = <TInputParams, TContext>(
   definition: UIElement<TInputParams>,

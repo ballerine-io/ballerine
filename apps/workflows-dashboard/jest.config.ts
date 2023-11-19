@@ -11,6 +11,6 @@ export default {
   globals: { 'ts-jest': { diagnostics: false } },
   transform: {},
   moduleNameMapper: {
-    '^@app/(.*)$': `${resolve(__dirname, './src/$1')}`,
+    '^@/(.*)$': `${resolve(__dirname, './src/$1')}`,
   },
 };
