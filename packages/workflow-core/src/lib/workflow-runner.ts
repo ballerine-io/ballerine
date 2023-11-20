@@ -456,6 +456,7 @@ export class WorkflowRunner {
     }
 
     // Non-blocking plugins are executed as actions
+    // Un-like state plugins, if a state is transitioned into itself, pre-plugins will be executed each time the function is triggered
     const prePlugins =
       this.#__extensions.statePlugins?.filter(
         plugin =>
@@ -467,6 +468,8 @@ export class WorkflowRunner {
     const snapshot = service.getSnapshot();
 
     for (const prePlugin of prePlugins) {
+      console.log('Pre plugins are about to be deprecated. Please contact the team for more info');
+
       await this.#__handleAction({
         type: 'STATE_ACTION_STATUS',
         plugin: prePlugin,
