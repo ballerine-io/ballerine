@@ -4,6 +4,7 @@ import nock from 'nock';
 import { WorkflowRunner } from './workflow-runner';
 import { ApiPlugin } from './plugins';
 import { JmespathTransformer } from './utils';
+import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
 
 const generateWorkflow = (options?: Partial<Parameters<typeof createWorkflow>[0]>) => {
   return createWorkflow({
@@ -285,7 +286,7 @@ describe('initiateApiPlugins #unit', () => {
           successAction: 'successAction1',
           errorAction: 'errorAction1',
         },
-      ];
+      ] satisfies Parameters<(typeof workflow)['initiateApiPlugins']>[0];
       const expectedPluginStructure = {
         name: apiPluginSchemas[0]!.name,
         stateNames: apiPluginSchemas[0]!.stateNames,
@@ -320,6 +321,52 @@ describe('initiateApiPlugins #unit', () => {
       expect(result).toHaveLength(apiPluginSchemas.length);
       expect(actualPluginStructure).toEqual(expectedPluginStructure);
       expect(result[0]).toBeInstanceOf(ApiPlugin);
+    });
+  });
+
+  describe('initiateChildPlugin #unit', () => {
+    describe('when valid childPluginSchemas are provided', () => {
+      it('should initialize API plugins based on the schemas', () => {
+        // Arrange
+        const workflow = generateWorkflow();
+        const childPluginSchemas = [
+          {
+            name: 'TestPlugin1',
+            stateNames: ['state1', 'state2'],
+            definitionId: 'definitionId1',
+            initEvent: 'initEvent1',
+            transformers: [
+              {
+                transformer: 'jmespath',
+                mapping: `@`,
+              },
+            ],
+          },
+        ] satisfies Parameters<(typeof workflow)['initiateChildPlugin']>[0];
+        const expectedPluginStructure = {
+          name: childPluginSchemas[0]!.name,
+          stateNames: childPluginSchemas[0]!.stateNames,
+          definitionId: childPluginSchemas[0]!.definitionId,
+          initEvent: childPluginSchemas[0]!.initEvent,
+          transformers: [new JmespathTransformer(`@`)],
+        };
+
+        // Act
+        const result = workflow.initiateChildPlugin(childPluginSchemas, 'parent');
+
+        // Assert
+        const actualPluginStructure = {
+          name: result[0]!.name,
+          stateNames: result[0]!.stateNames,
+          definitionId: result[0]!.definitionId,
+          initEvent: result[0]!.initEvent,
+          transformers: result[0]!.transformers,
+        };
+
+        expect(result).toHaveLength(childPluginSchemas.length);
+        expect(actualPluginStructure).toEqual(expectedPluginStructure);
+        expect(result[0]).toBeInstanceOf(ChildWorkflowPlugin);
+      });
     });
   });
 });
