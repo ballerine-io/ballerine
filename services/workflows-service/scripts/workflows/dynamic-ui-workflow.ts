@@ -5,6 +5,22 @@ import { kycEmailSessionDefinition } from './kyc-email-process-example';
 import { defaultContextSchema, StateTag } from '@ballerine/common';
 import { generateDynamicUiTest } from './ui-definition/ui-kyb-parent-dynamic-example';
 
+const KYC_DONE_RULE =
+  'childWorkflows.kyc_email_session_example && length(childWorkflows.kyc_email_session_example.*.[result.vendorResult.decision][]) == length(childWorkflows.kyc_email_session_example.*[])';
+
+const VENDOR_DONE_RULE =
+  'pluginsOutput.businessInformation.data && pluginsOutput.ubo.data && pluginsOutput.companySanctions.data';
+
+const kycAndVendorDone = {
+  target: 'manual_review',
+  cond: {
+    type: 'jmespath',
+    options: {
+      rule: `${KYC_DONE_RULE} && ${VENDOR_DONE_RULE}`,
+    },
+  },
+};
+
 export const dynamicUiWorkflowDefinition = {
   id: 'kyb_dynamic_ui_session_example',
   name: 'kyb_dynamic_ui_session_example',
@@ -32,64 +48,34 @@ export const dynamicUiWorkflowDefinition = {
       collection_flow: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
-          COLLECTION_FLOW_FINISHED: [
-            {
-              target: 'run_cn_kyb',
-              cond: {
-                type: 'jmespath',
-                options: {
-                  rule: 'entity.data.country == `CN`',
-                },
-              },
-            },
-            {
-              target: 'run_hk_kyb',
-              cond: {
-                type: 'jmespath',
-                options: {
-                  rule: 'entity.data.country == `HK`',
-                },
-              },
-            },
-            {
-              target: 'failed',
-            },
-          ],
-        },
-      },
-      run_cn_kyb: {
-        tags: [StateTag.DATA_ENRICHMENT],
-        on: {
-          CN_KYB_DONE: [{ target: 'run_vendor_company_sanctions' }],
-          CN_KYB_FAIL: [{ target: 'failed' }],
-        },
-      },
-      run_hk_kyb: {
-        tags: [StateTag.DATA_ENRICHMENT],
-        on: {
-          HK_KYB_HOOK_RESPONDED: [{ target: 'run_vendor_company_sanctions' }],
-          HK_KYB_HOOK_FAILED: [{ target: 'failed' }],
-        },
-      },
-      run_vendor_company_sanctions: {
-        tags: [StateTag.DATA_ENRICHMENT],
-        on: {
-          COMPANY_SANCTIONS_DONE: [{ target: 'run_vendor_ubos' }],
-          COMPANY_SANCTIONS_FAIL: [{ target: 'failed' }],
-        },
-      },
-      run_vendor_ubos: {
-        tags: [StateTag.DATA_ENRICHMENT],
-        on: {
-          UBO_HOOK_RESPONDED: [{ target: 'run_ubos' }],
-          UBO_HOOK_FAILED: [{ target: 'failed' }],
+          COLLECTION_FLOW_FINISHED: [{ target: 'run_ubos' }],
         },
       },
       run_ubos: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
-          EMAIL_SENT_TO_UBOS: [{ target: 'pending_kyc_response_to_finish' }],
+          EMAIL_SENT_TO_UBOS: [{ target: 'run_vendor_data' }],
           FAILED_EMAIL_SENT_TO_UBOS: [{ target: 'failed' }],
+        },
+      },
+      run_vendor_data: {
+        tags: [StateTag.DATA_ENRICHMENT],
+        on: {
+          KYC_RESPONDED: [kycAndVendorDone],
+          VENDOR_DONE: [
+            {
+              target: 'pending_kyc_response_to_finish',
+              cond: {
+                type: 'jmespath',
+                options: {
+                  rule: `!(${KYC_DONE_RULE}) && ${VENDOR_DONE_RULE}`,
+                },
+              },
+            },
+            kycAndVendorDone,
+          ],
+          reject: 'rejected',
+          VENDOR_FAILED: 'rejected',
         },
       },
       pending_kyc_response_to_finish: {
@@ -101,7 +87,7 @@ export const dynamicUiWorkflowDefinition = {
               cond: {
                 type: 'jmespath',
                 options: {
-                  rule: 'length(childWorkflows.kyc_email_session_example.*.[result.vendorResult.decision][]) == length(childWorkflows.kyc_email_session_example.*[])',
+                  rule: KYC_DONE_RULE,
                 },
               },
             },
@@ -143,7 +129,7 @@ export const dynamicUiWorkflowDefinition = {
               cond: {
                 type: 'jmespath',
                 options: {
-                  rule: `length(childWorkflows.kyc_email_session_example.*.[result.vendorResult.decision][]) == length(childWorkflows.kyc_email_session_example.*[]) && length(childWorkflows.kyc_email_session_example.*.[?state == 'revision']) == \`0\``,
+                  rule: `${KYC_DONE_RULE} && length(childWorkflows.kyc_email_session_example.*.[?state == 'revision']) == \`0\``,
                 },
               },
             },
@@ -193,24 +179,25 @@ export const dynamicUiWorkflowDefinition = {
         },
       },
       {
-        name: 'cn_kyb',
-        pluginKind: 'kyb',
-        url: `{secret.UNIFIED_API_URL}/companies-v2`,
+        name: 'kyb',
+        pluginKind: 'api',
+        url: `{secret.UNIFIED_API_URL}/companies-v2/{entity.data.country}/{entity.data.registrationNumber}`,
         method: 'GET',
-        stateNames: ['run_cn_kyb'],
-        successAction: 'CN_KYB_DONE',
-        errorAction: 'CN_KYB_FAIL',
+        stateNames: ['run_vendor_data'],
+        successAction: 'VENDOR_DONE',
+        errorAction: 'VENDOR_FAILED',
         persistResponseDestination: 'pluginsOutput.businessInformation',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
           transform: [
             {
               transformer: 'jmespath',
-              mapping: `{
-                companyNumber: entity.data.registrationNumber,
-                countryOfIncorporation: 'CN',
-                vendor: 'asia-verify'
-              }`, // jmespath
+              mapping: `merge(
+                { vendor: 'asia-verify' },
+                entity.data.country == 'HK' && {
+                  callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.businessInformation.data&processName=kyb-unified-api'])
+                }
+              )`, // jmespath
             },
           ],
         },
@@ -224,43 +211,13 @@ export const dynamicUiWorkflowDefinition = {
         },
       },
       {
-        name: 'hk_kyb',
-        pluginKind: 'api',
-        url: `{secret.UNIFIED_API_URL}/companies-v2/HK/{entity.data.registrationNumber}`,
-        method: 'GET',
-        stateNames: ['run_hk_kyb'],
-        errorAction: 'HK_KYB_HOOK_FAILED',
-        persistResponseDestination: 'pluginsOutput.businessInformation.request',
-        headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-                countryOfIncorporation: 'HK',
-                vendor: 'asia-verify',
-                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/HK_KYB_HOOK_RESPONDED','?resultDestination=pluginsOutput.businessInformation.data&processName=kyb-unified-api'])
-              }`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: '{request: @}', // jmespath
-            },
-          ],
-        },
-      },
-      {
         name: 'company_sanctions',
         pluginKind: 'api',
         url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.companyName}/sanctions`,
         method: 'GET',
-        stateNames: ['run_vendor_company_sanctions'],
-        successAction: 'COMPANY_SANCTIONS_DONE',
-        errorAction: 'COMPANY_SANCTIONS_FAIL',
+        stateNames: ['run_vendor_data'],
+        successAction: 'VENDOR_DONE',
+        errorAction: 'VENDOR_FAILED',
         persistResponseDestination: 'pluginsOutput.companySanctions',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
@@ -287,8 +244,9 @@ export const dynamicUiWorkflowDefinition = {
         pluginKind: 'api',
         url: `{secret.UNIFIED_API_URL}/companies/{entity.data.country}/{entity.data.registrationNumber}/ubo`,
         method: 'GET',
-        stateNames: ['run_vendor_ubos'],
-        errorAction: 'UBO_HOOK_FAILED',
+        stateNames: ['run_vendor_data'],
+        successAction: 'VENDOR_DONE',
+        errorAction: 'VENDOR_FAILED',
         persistResponseDestination: 'pluginsOutput.ubo.request',
         headers: { Authorization: 'Bearer {secret.UNIFIED_API_TOKEN}' },
         request: {
@@ -297,7 +255,7 @@ export const dynamicUiWorkflowDefinition = {
               transformer: 'jmespath',
               mapping: `{
                 vendor: 'asia-verify',
-                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/UBO_HOOK_RESPONDED','?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api'])
+                callbackUrl: join('',['{secret.APP_API_URL}/api/v1/external/workflows/',workflowRuntimeId,'/hook/VENDOR_DONE','?resultDestination=pluginsOutput.ubo.data&processName=ubo-unified-api'])
               }`, // jmespath
             },
           ],
