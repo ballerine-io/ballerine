@@ -58,7 +58,21 @@ async function main() {
     app.use(Sentry.Handlers.tracingHandler());
   }
 
-  app.use(helmet());
+  app.use(
+    helmet({
+      hsts: {
+        maxAge: 31536000, // 1 year in seconds
+        includeSubDomains: true,
+        preload: true,
+      },
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+        },
+      },
+    }),
+  );
+
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ limit: '50mb', extended: true }));
   app.use(
@@ -71,13 +85,6 @@ async function main() {
       maxAge: 1000 * 60 * 60 * 1, // 1 hour(s),
     }),
   );
-
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    if (!req.session) return next();
-
-    req.session.nowInMinutes = Math.floor(Date.now() / 60e3);
-    next();
-  });
 
   // register regenerate & save after the cookieSession middleware initialization
   app.use((req: Request, res: Response, next: NextFunction) => {

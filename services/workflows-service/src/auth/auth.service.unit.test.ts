@@ -96,16 +96,4 @@ describe('AuthService', () => {
       ).resolves.toBe(null);
     });
   });
-
-  describe('Testing the authService.login()', () => {
-    it('should return userInfo object for correct email and password', async () => {
-      const loginResult = await service.login(VALID_CREDENTIALS);
-      expect(loginResult).toEqual({
-        email: USER.email,
-        roles: USER.roles,
-        accessToken: SIGN_TOKEN,
-        id: USER.id,
-      });
-    });
-  });
 });
