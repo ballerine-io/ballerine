@@ -5,6 +5,7 @@ import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/quer
 import { useParams } from 'react-router-dom';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../useCaseState/useCaseState';
+import { selectDirectorsDocuments } from '../../../../hooks/useTasks/selectors/selectDirectorsDocuments';
 
 export const useCaseDecision = () => {
   const filterId = useFilterId();
@@ -25,7 +26,11 @@ export const useCaseDecision = () => {
   const canRevision =
     caseState.actionButtonsEnabled &&
     workflow?.nextEvents?.includes(Action.REVISION) &&
-    someDocumentDecisionStatus(workflow?.context?.documents, 'revision');
+    someDocumentDecisionStatus(
+      [...((selectDirectorsDocuments(workflow) as any) || []), ...workflow?.context?.documents],
+      'revision',
+    );
+
   const canApprove =
     !canRevision &&
     caseState.actionButtonsEnabled &&

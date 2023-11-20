@@ -8,6 +8,10 @@ import { composePickableCategoryType } from '../../../useEntity/utils';
 import { useRemoveDecisionTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { getPostUpdateEventName } from '../../get-post-update-event-name';
 import { selectDirectorsDocuments } from '../../selectors/selectDirectorsDocuments';
+import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useCaseState } from '../../../../../../pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { StateTag } from '@ballerine/common';
+import { motionProps } from '../../motion-props';
 
 export type Director = AnyObject;
 
@@ -20,6 +24,8 @@ export const useDirectorsBlocks = (
     workflow.id,
     getPostUpdateEventName(workflow),
   );
+  const { data: session } = useAuthenticatedUserQuery();
+  const caseState = useCaseState(session?.user, workflow);
 
   const directors: Director[] = useMemo(
     () => (workflow?.context?.entity?.data?.additionalInfo?.directors as Director[]) || [],
@@ -48,6 +54,21 @@ export const useDirectorsBlocks = (
             documents,
           );
 
+          const decisionCell = {
+            type: 'details',
+            value: {
+              id: document.id,
+              title: 'Decision',
+              hideSeparator: true,
+              data: document?.decision?.status
+                ? Object.entries(document?.decision ?? {}).map(([title, value]) => ({
+                    title,
+                    value,
+                  }))
+                : [],
+            },
+          };
+
           return {
             type: 'container',
             value: [
@@ -58,17 +79,27 @@ export const useDirectorsBlocks = (
                   className: 'mt-0',
                 },
                 value: [
-                  {
-                    type: 'directorsCallToAction',
-                    value: 'Approve',
-                    documents,
-                    data: {
-                      id: document.id,
+                  document?.decision?.status === 'approved'
+                    ? {
+                        type: 'badge',
+                        value: 'Approved',
+                        props: {
+                          ...motionProps,
+                          variant: 'success',
+                          className: `text-sm font-bold bg-success/20`,
+                        },
+                      }
+                    : {
+                        type: 'directorsCallToAction',
+                        value: 'Approve',
+                        documents,
+                        data: {
+                          id: document.id,
 
-                      // disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
-                      decision: 'approve',
-                    },
-                  },
+                          // disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
+                          decision: 'approve',
+                        },
+                      },
                 ],
               },
               {
@@ -110,6 +141,9 @@ export const useDirectorsBlocks = (
                               },
                             ]) => {
                               const fieldValue = value || (document.properties?.[title] ?? '');
+                              const isDoneWithRevision = document?.decision?.status === 'revised';
+                              const isEditableDecision =
+                                isDoneWithRevision || !document?.decision?.status;
 
                               return {
                                 title,
@@ -118,7 +152,7 @@ export const useDirectorsBlocks = (
                                 format,
                                 pattern,
                                 dropdownOptions,
-                                isEditable,
+                                isEditable: isEditableDecision && caseState.writeEnabled,
                                 minimum: formatMinimum,
                                 maximum: formatMaximum,
                               };
@@ -128,8 +162,10 @@ export const useDirectorsBlocks = (
                         documents,
                         contextUpdateMethod: 'director',
                       },
+                      decisionCell,
                     ],
                   },
+
                   {
                     type: 'container',
                     value: [
@@ -156,33 +192,47 @@ export const useDirectorsBlocks = (
           };
         });
 
+        const isDocumentRevision = documents.some(
+          document => document?.decision?.status === 'revision',
+        );
+
         return {
+          className: isDocumentRevision
+            ? `shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning ${
+                workflow?.tags?.includes(StateTag.REVISION) ? '' : 'bg-warning/10'
+              }`
+            : '',
           cells: [
             {
-              id: 'header',
               type: 'container',
               value: [
                 {
-                  type: 'heading',
-                  value: `Director - ${director.firstName} ${director.lastName}`,
-                },
-                {
-                  id: 'actions',
+                  id: 'header',
                   type: 'container',
                   value: [
                     {
-                      type: 'directorsCallToAction',
-                      // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
-                      value: 'Re-upload needed',
-                      documents,
-                      workflow,
-                      onReset: handleRevisionDecisionsReset,
+                      type: 'heading',
+                      value: `Director - ${director.firstName} ${director.lastName}`,
+                    },
+                    {
+                      id: 'actions',
+                      type: 'container',
+                      value: [
+                        {
+                          type: 'directorsCallToAction',
+                          // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
+                          value: 'Re-upload needed',
+                          documents,
+                          workflow,
+                          onReset: handleRevisionDecisionsReset,
+                        },
+                      ],
                     },
                   ],
                 },
+                ...multiDocumentsBlocks,
               ],
             },
-            ...multiDocumentsBlocks,
           ],
         };
       });
