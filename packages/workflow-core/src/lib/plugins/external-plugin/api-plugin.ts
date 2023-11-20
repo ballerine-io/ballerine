@@ -40,7 +40,12 @@ export class ApiPlugin {
         requestPayload,
         'Request',
       );
-      if (!isValidRequest) return this.returnErrorResponse(errorMessage!);
+
+      if (!isValidRequest) {
+        return this.returnErrorResponse(errorMessage!);
+      }
+
+      console.log(`API Plugin :: Sending ${this.method} API request to ${this.url}`);
 
       const apiResponse = await this.makeApiRequest(
         this.replaceValuePlaceholders(this.url, context),
@@ -48,6 +53,8 @@ export class ApiPlugin {
         requestPayload,
         this.composeRequestHeaders(this.headers!, context),
       );
+
+      console.log(`API Plugin :: Received ${apiResponse.statusText} response from ${this.url}`);
 
       if (apiResponse.ok) {
         const result = await apiResponse.json();
@@ -61,13 +68,19 @@ export class ApiPlugin {
           responseBody,
           'Response',
         );
-        if (!isValidResponse) return this.returnErrorResponse(errorMessage!);
+
+        if (!isValidResponse) {
+          return this.returnErrorResponse(errorMessage!);
+        }
+
         if (this.successAction) {
           return this.returnSuccessResponse(this.successAction, responseBody);
         }
+
         return {};
       } else {
         const errorResponse = await apiResponse.json();
+
         return this.returnErrorResponse(
           'Request Failed: ' + apiResponse.statusText + ' Error: ' + JSON.stringify(errorResponse),
         );
