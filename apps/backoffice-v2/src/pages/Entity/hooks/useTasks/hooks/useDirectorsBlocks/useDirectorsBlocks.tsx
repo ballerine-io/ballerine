@@ -131,6 +131,7 @@ export const useDirectorsBlocks = (
                       // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
                       value: 'Re-upload needed',
                       documents,
+                      workflow,
                     },
                     {
                       type: 'callToAction',

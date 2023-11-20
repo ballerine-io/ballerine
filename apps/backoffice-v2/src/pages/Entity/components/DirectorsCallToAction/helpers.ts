@@ -1,6 +1,9 @@
 import { AnyObject } from '@ballerine/ui';
 
-export const getRevisionReasonsForDocument = ({ type, category }: AnyObject) => {
+export const getRevisionReasonsForDocument = (
+  { type, category }: AnyObject,
+  workflow: AnyObject,
+) => {
   if (category === 'proof_of_identity' && type === 'passport')
     return [
       'Blurry image',
@@ -21,5 +24,9 @@ export const getRevisionReasonsForDocument = ({ type, category }: AnyObject) => 
     ];
   }
 
-  return [];
+  return (
+    (workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+      ({ enum: enum_ }) => !!enum_,
+    )?.enum as string[]) || ([] as string[])
+  );
 };

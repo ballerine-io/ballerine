@@ -10,10 +10,12 @@ import { getRevisionReasonsForDocument } from './helpers';
 
 interface IDirectorsCallToActionProps extends ICallToActionProps {
   documents: AnyObject[];
+  workflow: AnyObject;
 }
 
 export const DirectorsCallToAction: FunctionComponent<IDirectorsCallToActionProps> = ({
   documents,
+  workflow,
   ...restProps
 }) => {
   const [documentId, setDocumentId] = useState<string | null>(null);
@@ -48,8 +50,8 @@ export const DirectorsCallToAction: FunctionComponent<IDirectorsCallToActionProp
   const revisionReasonsByDocument = useMemo(() => {
     if (!selectedDocument) return [];
 
-    return getRevisionReasonsForDocument(selectedDocument);
-  }, [selectedDocument]);
+    return getRevisionReasonsForDocument(selectedDocument, workflow);
+  }, [selectedDocument, workflow]);
 
   return (
     <CallToAction
