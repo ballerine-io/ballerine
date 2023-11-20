@@ -11,11 +11,13 @@ import { getRevisionReasonsForDocument } from './helpers';
 interface IDirectorsCallToActionProps extends ICallToActionProps {
   documents: AnyObject[];
   workflow: AnyObject;
+  onReset?: () => void;
 }
 
 export const DirectorsCallToAction: FunctionComponent<IDirectorsCallToActionProps> = ({
   documents,
   workflow,
+  onReset,
   ...restProps
 }) => {
   const [documentId, setDocumentId] = useState<string | null>(null);
@@ -53,12 +55,19 @@ export const DirectorsCallToAction: FunctionComponent<IDirectorsCallToActionProp
     return getRevisionReasonsForDocument(selectedDocument, workflow);
   }, [selectedDocument, workflow]);
 
+  const isCanBeReseted = useMemo(
+    () => documents.some(document => document.decision?.status === 'revision'),
+    [documents],
+  );
+
   return (
     <CallToAction
       data={{ id: documentId ?? undefined }}
       documentSelection={documentSelectionProps}
       contextUpdateMethod="director"
       revisionReasons={revisionReasonsByDocument}
+      onReuploadReset={isCanBeReseted ? onReset : undefined}
+      onDialogClose={() => setDocumentId(null)}
       {...restProps}
     />
   );

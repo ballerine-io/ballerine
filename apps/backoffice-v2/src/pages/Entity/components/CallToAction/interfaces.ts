@@ -19,4 +19,6 @@ export interface ICallToActionProps {
   contextUpdateMethod?: 'base' | 'director';
   revisionReasons?: string[];
   rejectionReasons?: string[];
+  onReuploadReset?: () => void;
+  onDialogClose: () => void;
 }

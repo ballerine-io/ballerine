@@ -1,10 +1,13 @@
 import { AnyObject } from '@ballerine/ui';
 import { UseQueryResult } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
 import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { composePickableCategoryType } from '../../../useEntity/utils';
+import { useRemoveDecisionTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
+import { getPostUpdateEventName } from '../../get-post-update-event-name';
+import { selectDirectorsDocuments } from '../../selectors/selectDirectorsDocuments';
 
 export type Director = AnyObject;
 
@@ -13,10 +16,24 @@ export const useDirectorsBlocks = (
   documentFiles: UseQueryResult[],
   documentImages: Array<Array<string>>,
 ) => {
+  const { mutate } = useRemoveDecisionTaskByIdMutation(
+    workflow.id,
+    getPostUpdateEventName(workflow),
+  );
+
   const directors: Director[] = useMemo(
     () => (workflow?.context?.entity?.data?.additionalInfo?.directors as Director[]) || [],
     [workflow],
   );
+  const documents = useMemo(() => selectDirectorsDocuments(workflow), [workflow]);
+
+  const handleRevisionDecisionsReset = useCallback(() => {
+    const documentsToReset = documents.filter(document => document.decision?.status);
+
+    documentsToReset.forEach(document => {
+      mutate({ documentId: document.id, contextUpdateMethod: 'director' });
+    });
+  }, []);
 
   const blocks = useMemo(() => {
     return directors
@@ -132,6 +149,7 @@ export const useDirectorsBlocks = (
                       value: 'Re-upload needed',
                       documents,
                       workflow,
+                      onReset: handleRevisionDecisionsReset,
                     },
                     {
                       type: 'callToAction',
@@ -150,7 +168,7 @@ export const useDirectorsBlocks = (
           ],
         };
       });
-  }, [directors, documentFiles, documentImages]);
+  }, [directors, documentFiles, documentImages, handleRevisionDecisionsReset, workflow]);
 
   return blocks;
 };

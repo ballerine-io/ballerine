@@ -11,16 +11,25 @@ import { useRevisionTaskByIdMutation } from '../../../../../../domains/entities/
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { CommonWorkflowEvent } from '@ballerine/common';
 
+export interface UseCallToActionLogicParams {
+  contextUpdateMethod?: 'base' | 'director';
+  revisionReasons?: string[];
+  rejectionReasons?: string[];
+  onReuploadReset?: () => void;
+}
+
 const getPostUpdateEventNameEvent = (workflow: TWorkflowById) => {
   if (!workflow?.workflowDefinition?.config?.workflowLevelResolution) {
     return CommonWorkflowEvent.TASK_REVIEWED;
   }
 };
-export const useCallToActionLogic = (
-  contextUpdateMethod: 'base' | 'director' = 'base',
-  revisionReasons: string[],
-  rejectionReasons: string[],
-) => {
+export const useCallToActionLogic = (params: UseCallToActionLogicParams) => {
+  const {
+    contextUpdateMethod = 'base',
+    rejectionReasons,
+    revisionReasons,
+    onReuploadReset,
+  } = params;
   const { entityId } = useParams();
   const filterId = useFilterId();
   const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
@@ -127,6 +136,8 @@ export const useCallToActionLogic = (
     setReason(reasons?.[0] ?? '');
   }, [action, reasons]);
 
+  const isReuploadResetable = Boolean(onReuploadReset);
+
   return {
     isLoadingTaskDecisionById,
     caseState,
@@ -141,5 +152,6 @@ export const useCallToActionLogic = (
     noReasons,
     onMutateTaskDecisionById,
     workflowLevelResolution,
+    isReuploadResetable,
   };
 };

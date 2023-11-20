@@ -1,8 +1,8 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { AnimatePresence } from 'framer-motion';
-import { ComponentProps, FunctionComponent } from 'react';
+import { ComponentProps, FunctionComponent, useCallback } from 'react';
 
-import { Send } from 'lucide-react';
+import { Send, X } from 'lucide-react';
 import { Button } from '../../../../common/components/atoms/Button/Button';
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { Select } from '../../../../common/components/atoms/Select/Select';
@@ -38,6 +38,8 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
   contextUpdateMethod,
   revisionReasons,
   rejectionReasons,
+  onReuploadReset,
+  onDialogClose,
 }) => {
   const {
     onMutateTaskDecisionById,
@@ -53,11 +55,24 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
     onCommentChange,
     noReasons,
     workflowLevelResolution,
-  } = useCallToActionLogic(contextUpdateMethod, revisionReasons, rejectionReasons);
+    isReuploadResetable,
+  } = useCallToActionLogic({
+    contextUpdateMethod,
+    revisionReasons,
+    rejectionReasons,
+    onReuploadReset,
+  });
+
+  const handleDialogClose = useCallback(
+    (open: boolean) => {
+      if (!open) onDialogClose();
+    },
+    [onDialogClose],
+  );
 
   if (value === 'Reject') {
     return (
-      <Dialog>
+      <Dialog onOpenChange={handleDialogClose}>
         <AnimatePresence>
           <DialogTrigger asChild>
             <MotionButton
@@ -164,7 +179,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
 
   if (value === 'Re-upload needed') {
     return (
-      <Dialog>
+      <Dialog onOpenChange={handleDialogClose}>
         <AnimatePresence>
           <DialogTrigger asChild>
             <MotionButton
@@ -172,8 +187,18 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
               size="wide"
               variant="warning"
               disabled={!caseState.actionButtonsEnabled || data?.disabled}
+              className={ctw({ 'flex gap-2': isReuploadResetable })}
             >
               {value}
+              {isReuploadResetable ? (
+                <X
+                  className="h-4 w-4 cursor-pointer"
+                  onClick={event => {
+                    event.stopPropagation();
+                    onReuploadReset && onReuploadReset();
+                  }}
+                />
+              ) : null}
             </MotionButton>
           </DialogTrigger>
         </AnimatePresence>
@@ -202,7 +227,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
               </p>
             </DialogDescription>
           </DialogHeader>
-          {documentSelection ? <DocumentPicker {...documentSelection} /> : null}
+          {documentSelection ? <DocumentPicker {...documentSelection} value={data?.id} /> : null}
           {!noReasons && (
             <div>
               <label className={`mb-2 block font-bold`} htmlFor={`reason`}>
