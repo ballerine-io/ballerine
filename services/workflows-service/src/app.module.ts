@@ -34,6 +34,7 @@ import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 import { SalesforceModule } from '@/salesforce/salesforce.module';
 import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
 import { multerFactory } from './common/multer';
+import { DataMigrationModule } from "@/data-migration/data-migration.module";
 
 @Module({
   controllers: [MetricsController],
@@ -49,6 +50,7 @@ import { multerFactory } from './common/multer';
     WorkflowModule,
     UiDefinitionModule,
     StorageModule,
+    DataMigrationModule,
     EndUserModule,
     CustomerModule,
     BusinessModule,

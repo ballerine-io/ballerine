@@ -20,8 +20,9 @@
     "checkJs": false,
     "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@/env": ["src/env.ts"],
     }
   },
-  "include": ["src", "plugins"]
+  "include": ["src", "plugins", "prisma/data-migrations/**/*"],
 }

@@ -34,7 +34,9 @@
     "compose:up": "docker compose up -d",
     "compose:down": "docker compose down --volumes",
     "upload-sourcemaps": "ts-node scripts/upload-sourcemaps.ts",
-    "prepare": "npm run prisma:generate"
+    "prepare": "npm run prisma:generate",
+    "db:data-migration:generate": "plop --plopfile ./prisma/data-migrations/plopfile.js --dest ./",
+    "db:data-migration:up": "nest start --entryFile ./src/migration"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.347.1",
@@ -127,6 +129,7 @@
     "jest": "27.0.6",
     "jest-mock-extended": "^2.0.4",
     "json-schema-to-typescript": "^13.0.1",
+    "plop": "^4.0.0",
     "prettier": "^2.8.4",
     "prisma": "4.13.0",
     "supertest": "4.0.2",

@@ -10,8 +10,9 @@ export class DataMigrationRepository {
 
   async getLatestTimestamp(){
     return await this.prisma.dataMigrationVersion.findFirst({
+      select: {success: true},
       orderBy: {
-        migratedAt: 'desc',
+        version: 'desc',
       },
     });
   }
