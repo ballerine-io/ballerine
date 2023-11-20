@@ -4,6 +4,29 @@ import { z } from 'zod';
 
 config({ path: '.env' });
 
+// Custom transform function to parse time strings
+function parseTimeString(timeString: string): number {
+  const regex = /^(\d+)([smh])$/;
+  const match = timeString.match(regex);
+
+  if (!match && !Array.isArray(match)) {
+    throw new Error('Invalid time format. Use formats like "1s", "5s", "10m", "1h".');
+  }
+  const value = parseInt((match as any)[1], 10);
+  const unit = match[2];
+
+  switch (unit) {
+    case 's':
+      return value * 1000; // Convert seconds to milliseconds
+    case 'm':
+      return value * 60 * 1000; // Convert minutes to milliseconds
+    case 'h':
+      return value * 60 * 60 * 1000; // Convert hours to milliseconds
+    default:
+      throw new Error('Invalid time unit. Use "s" for seconds, "m" for minutes, or "h" for hours.');
+  }
+}
+
 export const env = createEnv({
   /*
    * clientPrefix is required.
@@ -15,7 +38,12 @@ export const env = createEnv({
     ENV_FILE_NAME: z.string().optional(),
     BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
     JWT_SECRET_KEY: z.string(),
-    JWT_EXPIRATION: z.string(),
+    JWT_EXPIRATION: z
+      .string()
+      .default('1h')
+      .refine(value => !isNaN(parseTimeString(value)), {
+        message: 'Invalid time string format.',
+      }),
     PORT: z.coerce.number(),
     DB_USER: z.string(),
     DB_PASSWORD: z.string(),
