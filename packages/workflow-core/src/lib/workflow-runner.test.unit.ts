@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createWorkflow } from './create-workflow';
 import nock from 'nock';
+import { WorkflowRunner } from './workflow-runner';
+import { ApiPlugin } from './plugins';
+import { JmespathTransformer } from './utils';
 
 const generateWorkflow = (options?: Partial<Parameters<typeof createWorkflow>[0]>) => {
   return createWorkflow({
@@ -33,7 +36,7 @@ const generateWorkflow = (options?: Partial<Parameters<typeof createWorkflow>[0]
       machineContext: {},
       ...options?.workflowContext,
     },
-  });
+  }) as WorkflowRunner;
 };
 
 describe('sendEvent #unit', () => {
@@ -251,10 +254,72 @@ describe('sendEvent #unit', () => {
   });
 });
 
-describe('getSnapshot #unit', () => {
-  describe('when', () => {
-    it('should', () => {
-      expect(true).toBe(true);
+describe('initiateApiPlugins #unit', () => {
+  describe('when valid apiPluginSchemas are provided', () => {
+    it('should initialize API plugins based on the schemas', () => {
+      // Arrange
+      const workflow = generateWorkflow();
+      const apiPluginSchemas = [
+        {
+          name: 'TestPlugin1',
+          stateNames: ['state1', 'state2'],
+          url: 'http://example.com/api1',
+          method: 'GET' as const,
+          request: {
+            transform: [
+              {
+                transformer: 'jmespath',
+                mapping: `@`,
+              },
+            ],
+          },
+          response: {
+            transform: [
+              {
+                transformer: 'jmespath',
+                mapping: `@`,
+              },
+            ],
+          },
+          headers: { 'Content-Type': 'application/json' },
+          successAction: 'successAction1',
+          errorAction: 'errorAction1',
+        },
+      ];
+      const expectedPluginStructure = {
+        name: apiPluginSchemas[0]!.name,
+        stateNames: apiPluginSchemas[0]!.stateNames,
+        url: apiPluginSchemas[0]!.url,
+        method: apiPluginSchemas[0]!.method,
+        headers: {
+          ...apiPluginSchemas[0]!.headers,
+          accept: 'application/json',
+        },
+        request: { transformers: [new JmespathTransformer(`@`)], schemaValidator: undefined },
+        response: { transformers: [new JmespathTransformer(`@`)], schemaValidator: undefined },
+        successAction: apiPluginSchemas[0]!.successAction,
+        errorAction: apiPluginSchemas[0]!.errorAction,
+      };
+
+      // Act
+      const result = workflow.initiateApiPlugins(apiPluginSchemas);
+
+      // Assert
+      const actualPluginStructure = {
+        name: result[0]!.name,
+        stateNames: result[0]!.stateNames,
+        url: result[0]!.url,
+        method: result[0]!.method,
+        headers: result[0]!.headers,
+        request: result[0]!.request,
+        response: result[0]!.response,
+        successAction: result[0]!.successAction,
+        errorAction: result[0]!.errorAction,
+      };
+
+      expect(result).toHaveLength(apiPluginSchemas.length);
+      expect(actualPluginStructure).toEqual(expectedPluginStructure);
+      expect(result[0]).toBeInstanceOf(ApiPlugin);
     });
   });
 });
