@@ -65,7 +65,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
 
   const handleDialogClose = useCallback(
     (open: boolean) => {
-      if (!open) onDialogClose();
+      if (!open) onDialogClose && onDialogClose();
     },
     [onDialogClose],
   );

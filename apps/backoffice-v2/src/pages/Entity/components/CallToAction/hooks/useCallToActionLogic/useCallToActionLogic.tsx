@@ -99,6 +99,7 @@ export const useCallToActionLogic = (params: UseCallToActionLogicParams) => {
         if (payload?.decision === 'approve') {
           return mutateApproveTaskById({
             documentId: payload?.id,
+            contextUpdateMethod,
           });
         }
 

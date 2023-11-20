@@ -49,79 +49,106 @@ export const useDirectorsBlocks = (
           );
 
           return {
-            id: 'kyc-block',
             type: 'container',
             value: [
               {
+                id: 'actions',
                 type: 'container',
+                props: {
+                  className: 'mt-0',
+                },
                 value: [
                   {
-                    type: 'subheading',
-                    value: `${valueOrNA(toTitleCase(document.category ?? ''))} - ${valueOrNA(
-                      toTitleCase(document.type ?? ''),
-                    )}`,
-                  },
-                  {
-                    title: 'Details test',
-                    type: 'details',
-                    value: {
-                      id: document.id,
-                      title: 'Details test',
-                      data: Object.entries(
-                        {
-                          ...additionalProperties,
-                          ...document.propertiesSchema?.properties,
-                        } ?? {},
-                      )?.map(
-                        ([
-                          title,
-                          {
-                            type,
-                            format,
-                            pattern,
-                            isEditable = true,
-                            dropdownOptions,
-                            value,
-                            formatMinimum,
-                            formatMaximum,
-                          },
-                        ]) => {
-                          const fieldValue = value || (document.properties?.[title] ?? '');
-
-                          return {
-                            title,
-                            value: fieldValue,
-                            type,
-                            format,
-                            pattern,
-                            dropdownOptions,
-                            isEditable,
-                            minimum: formatMinimum,
-                            maximum: formatMaximum,
-                          };
-                        },
-                      ),
-                    },
+                    type: 'directorsCallToAction',
+                    value: 'Approve',
                     documents,
-                    contextUpdateMethod: 'director',
+                    data: {
+                      id: document.id,
+
+                      // disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
+                      decision: 'approve',
+                    },
                   },
                 ],
               },
               {
+                id: 'kyc-block',
                 type: 'container',
                 value: [
                   {
-                    type: 'multiDocuments',
-                    isLoading: documentFiles?.some(({ isLoading }) => isLoading),
-                    value: {
-                      data: document.pages.map(({ type, metadata }, pageIndex) => ({
-                        title: `${valueOrNA(toTitleCase(document.category ?? ''))} - ${valueOrNA(
+                    type: 'container',
+                    value: [
+                      {
+                        type: 'subheading',
+                        value: `${valueOrNA(toTitleCase(document.category ?? ''))} - ${valueOrNA(
                           toTitleCase(document.type ?? ''),
-                        )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                        imageUrl: documentImages[docIndex][pageIndex],
-                        fileType: type,
-                      })),
-                    },
+                        )}`,
+                      },
+                      {
+                        title: 'Details test',
+                        type: 'details',
+                        value: {
+                          id: document.id,
+                          title: 'Details test',
+                          data: Object.entries(
+                            {
+                              ...additionalProperties,
+                              ...document.propertiesSchema?.properties,
+                            } ?? {},
+                          )?.map(
+                            ([
+                              title,
+                              {
+                                type,
+                                format,
+                                pattern,
+                                isEditable = true,
+                                dropdownOptions,
+                                value,
+                                formatMinimum,
+                                formatMaximum,
+                              },
+                            ]) => {
+                              const fieldValue = value || (document.properties?.[title] ?? '');
+
+                              return {
+                                title,
+                                value: fieldValue,
+                                type,
+                                format,
+                                pattern,
+                                dropdownOptions,
+                                isEditable,
+                                minimum: formatMinimum,
+                                maximum: formatMaximum,
+                              };
+                            },
+                          ),
+                        },
+                        documents,
+                        contextUpdateMethod: 'director',
+                      },
+                    ],
+                  },
+                  {
+                    type: 'container',
+                    value: [
+                      {
+                        type: 'multiDocuments',
+                        isLoading: documentFiles?.some(({ isLoading }) => isLoading),
+                        value: {
+                          data: document.pages.map(({ type, metadata }, pageIndex) => ({
+                            title: `${valueOrNA(
+                              toTitleCase(document.category ?? ''),
+                            )} - ${valueOrNA(toTitleCase(document.type ?? ''))}${
+                              metadata?.side ? ` - ${metadata?.side}` : ''
+                            }`,
+                            imageUrl: documentImages[docIndex][pageIndex],
+                            fileType: type,
+                          })),
+                        },
+                      },
+                    ],
                   },
                 ],
               },
@@ -150,15 +177,6 @@ export const useDirectorsBlocks = (
                       documents,
                       workflow,
                       onReset: handleRevisionDecisionsReset,
-                    },
-                    {
-                      type: 'callToAction',
-                      value: 'Approve',
-                      data: {
-                        // id,
-                        // disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
-                        decision: 'approve',
-                      },
                     },
                   ],
                 },
