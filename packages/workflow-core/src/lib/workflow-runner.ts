@@ -451,7 +451,9 @@ export class WorkflowRunner {
 
     if (!service.getSnapshot().nextEvents.includes(event.type)) {
       throw new Error(
-        `Event ${event.type} is not allowed in the current state: ${this.#__currentState}`,
+        `Event ${event.type} is not allowed in the current state: ${JSON.stringify(
+          this.#__currentState,
+        )}`,
       );
     }
 
