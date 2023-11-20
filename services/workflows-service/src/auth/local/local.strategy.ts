@@ -4,10 +4,14 @@ import { Strategy } from 'passport-local';
 import { AuthService } from '../auth.service';
 import { IAuthStrategy } from '@/auth/types';
 import { UserInfo } from '@/user/user-info';
+import { JwtAuthService } from '../jwt/jwt.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) implements IAuthStrategy {
-  constructor(protected readonly authService: AuthService) {
+  constructor(
+    protected readonly authService: AuthService,
+    private readonly jwtAuthService: JwtAuthService,
+  ) {
     super({
       usernameField: 'email',
     });
@@ -18,6 +22,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) implements IAuthSt
     if (!user) {
       throw new UnauthorizedException();
     }
-    return user;
+    const accessToken = await this.jwtAuthService.signPayload({ user });
+    return { accessToken, ...user };
   }
 }
