@@ -230,20 +230,28 @@ describe('sendEvent #unit', () => {
       action.mockClear();
     });
   });
-});
 
-describe('subscribe', () => {
-  describe('when firing a valid event', () => {
-    it('should move the workflow to the next state', () => {
+  describe('when using `subscribe`', () => {
+    it('should call the passed callback', async () => {
       // Arrange
+      const workflow = generateWorkflow();
+      const callback = vi.fn();
+
       // Act
+      workflow.subscribe(callback);
+      await workflow.sendEvent({ type: 'NEXT' });
+
       // Assert
-      expect(true).toBe(true);
+      expect(callback).toHaveBeenCalledTimes(1);
+      expect(callback).toHaveBeenCalledWith({
+        type: 'NEXT',
+        state: 'second',
+      });
     });
   });
 });
 
-describe('getSnapshot', () => {
+describe('getSnapshot #unit', () => {
   describe('when', () => {
     it('should', () => {
       expect(true).toBe(true);
