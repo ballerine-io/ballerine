@@ -5,6 +5,7 @@ import { WorkflowRunner } from './workflow-runner';
 import { ApiPlugin } from './plugins';
 import { JmespathTransformer } from './utils';
 import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
+import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
 
 const generateWorkflow = (options?: Partial<Parameters<typeof createWorkflow>[0]>) => {
   return createWorkflow({
@@ -366,6 +367,55 @@ describe('initiateApiPlugins #unit', () => {
         expect(result).toHaveLength(childPluginSchemas.length);
         expect(actualPluginStructure).toEqual(expectedPluginStructure);
         expect(result[0]).toBeInstanceOf(ChildWorkflowPlugin);
+      });
+    });
+  });
+
+  describe('initiateCommonPlugins #unit', () => {
+    describe('when valid commonPluginSchemas are provided', () => {
+      it('should initialize API plugins based on the schemas', () => {
+        // Arrange
+        const workflow = generateWorkflow();
+        const commonPluginSchemas = [
+          {
+            name: 'TestPlugin1',
+            stateNames: ['state1', 'state2'],
+            actionPluginName: 'actionPluginName1',
+            response: {
+              transform: [
+                {
+                  transformer: 'jmespath',
+                  mapping: `@`,
+                },
+              ],
+            },
+            iterateOn: [
+              {
+                transformer: 'jmespath',
+                mapping: `users`,
+              },
+            ],
+          },
+        ] satisfies Parameters<(typeof workflow)['initiateCommonPlugins']>[0];
+        const expectedPluginStructure = {
+          name: commonPluginSchemas[0]!.name,
+          stateNames: commonPluginSchemas[0]!.stateNames,
+          iterateOn: [new JmespathTransformer(`users`)],
+        };
+
+        // Act
+        const result = workflow.initiateCommonPlugins(commonPluginSchemas, []);
+
+        // Assert
+        const actualPluginStructure = {
+          name: result[0]!.name,
+          stateNames: result[0]!.stateNames,
+          iterateOn: result[0]!.iterateOn,
+        };
+
+        expect(result).toHaveLength(commonPluginSchemas.length);
+        expect(actualPluginStructure).toEqual(expectedPluginStructure);
+        expect(result[0]).toBeInstanceOf(IterativePlugin);
       });
     });
   });
