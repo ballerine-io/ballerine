@@ -1,4 +1,3 @@
-import RedirectingException from './../common/filters/redirecting.exception';
 import { PassportSerializer } from '@nestjs/passport';
 import { Inject, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '@/user/user.service';
@@ -37,18 +36,9 @@ export class SessionSerializer extends PassportSerializer {
   ) {
     try {
       if (!user.expires) {
-        return done(
-          new RedirectingException(
-            `/login?error="Expire not found"`,
-            'Session missed expires property',
-          ),
-          null,
-        );
+        return done(new UnauthorizedException('Session missed expires property'), null);
       } else if (new Date(user.expires) < new Date()) {
-        return done(
-          new RedirectingException(`/login?error="expired"`, 'Session has expired'),
-          null,
-        );
+        return done(new UnauthorizedException(`Session has expired`), null);
       }
 
       const userResult = await this.userService.getByIdUnscoped(user.user!.id!, {
