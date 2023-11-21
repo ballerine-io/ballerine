@@ -21,6 +21,7 @@ import { ctw } from '../../../utils/ctw/ctw';
  * @constructor
  */
 export const Item: FunctionComponent<IItemProps> = ({
+  id,
   src,
   fileType,
   alt,
@@ -42,6 +43,7 @@ export const Item: FunctionComponent<IItemProps> = ({
           buttonClassName,
         )}
         onClick={onSelectImage({
+          id,
           imageUrl: src,
           fileType,
         })}

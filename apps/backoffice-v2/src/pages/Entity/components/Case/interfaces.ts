@@ -40,11 +40,13 @@ export interface ICaseChildren {
 
 export interface IDocumentsProps {
   documents: Array<{
+    id: string;
     imageUrl: string;
     fileType: string;
     title: string;
   }>;
   isLoading?: boolean;
+  hideOpenExternalButton?: boolean;
 }
 
 export interface IFaceMatchProps extends ComponentProps<'div'> {
