@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { t } from 'i18next';
 import { useToggle } from '../../../../../../common/hooks/useToggle/useToggle';
 import { ReactZoomPanPinchContentRef } from 'react-zoom-pan-pinch';
+import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
 
 export const useDocuments = (documents: IDocumentsProps['documents']) => {
   const initialImage = documents?.[0];
@@ -22,6 +23,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
   const [isLoadingOCR, , toggleOnIsLoadingOCR, toggleOffIsLoadingOCR] = useToggle(false);
   const selectedImageRef = useRef<HTMLImageElement>();
   const recognize = useTesseract();
+  const filterId = useFilterId();
   const onOcr = useCallback(async () => {
     if (!isCropping) {
       toggleOnIsCropping();
@@ -88,10 +90,8 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
   );
 
   const onOpenDocumentInNewTab = useCallback(document => {
-    const url = `${location.href.substring(
-      0,
-      location.toString().indexOf(location.search),
-    )}/document/${document.id}?filterId=${new URLSearchParams(location.search).get('filterId')}`;
+    const baseUrl = location.href.split('?')[0];
+    const url = `${baseUrl}/document/${document.id}?filterId=${filterId}`;
 
     window.open(url, '_blank');
   });
