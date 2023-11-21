@@ -130,18 +130,8 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       type: string | undefined;
       value: unknown;
     }) => {
-      if (
-        format === 'date-time' ||
-        isValidDatetime(value, {
-          isStrict: false,
-        }) ||
-        isValidDatetime(value)
-      ) {
+      if (format === 'date-time' || isValidDatetime(value)) {
         return 'datetime-local';
-      }
-
-      if (isValidDate(value, { isStrict: false }) || isValidIsoDate(value) || type === 'date') {
-        return 'date';
       }
 
       if (format) {
@@ -154,6 +144,10 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
 
       if (type === 'boolean') {
         return 'checkbox';
+      }
+
+      if (isValidDate(value, { isStrict: false }) || isValidIsoDate(value) || type === 'date') {
+        return 'date';
       }
 
       if (!type) {

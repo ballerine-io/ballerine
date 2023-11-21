@@ -13,6 +13,7 @@ import {
   CommonWorkflowStates,
   getDocumentsByCountry,
   isNullish,
+  isObject,
   StateTag,
 } from '@ballerine/common';
 import * as React from 'react';
@@ -31,6 +32,7 @@ import { getPostUpdateEventName } from './get-post-update-event-name';
 import { motionProps } from './motion-props';
 import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
 import { includesValues } from '../../../../common/utils/includes-values/includes-values';
+import { isPrimitive } from '../../../../common/utils/is-primitive/is-primitive';
 
 export const useTasks = ({
   workflow,
@@ -384,8 +386,41 @@ export const useTasks = ({
       },
     ) ?? [];
 
+  const { dynamicInfo: entityDataDynamicInfo, ...entityData } = entity?.data ?? {};
+  const pickDynamicInfoCell = (value: unknown) => {
+    if (isPrimitive(value)) {
+      return {
+        type: 'paragraph',
+        value,
+      };
+    }
+
+    if (isObject(value)) {
+      return {
+        type: 'details',
+        hideSeparator: true,
+        value: {
+          data: Object.entries(value ?? {})?.map(([title, value]) => ({
+            title,
+            value,
+            isEditable: false,
+          })),
+        },
+      };
+    }
+
+    return {
+      type: 'jsonDialog',
+      value: value,
+      props: {
+        buttonProps: {
+          className: '!pl-3.5',
+        },
+      },
+    };
+  };
   const entityInfoBlock =
-    Object.keys(entity?.data ?? {}).length === 0
+    Object.keys(entityData).length === 0
       ? []
       : [
           {
@@ -411,7 +446,7 @@ export const useTasks = ({
                   title: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,
                   data: [
                     ...Object.entries(
-                      omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {},
+                      omitPropsFromObject(entityData, 'additionalInfo', 'address') ?? {},
                     ),
                     ...Object.entries(omitPropsFromObject(entityDataAdditionalInfo ?? {}, 'ubos')),
                   ]
@@ -428,6 +463,19 @@ export const useTasks = ({
                     .filter(elem => !elem.title.startsWith('__')),
                 },
               },
+              ...Object.entries(entityDataDynamicInfo ?? {})?.map(([title, value]) => ({
+                type: 'container',
+                value: [
+                  {
+                    type: 'subheading',
+                    value: valueOrNA(toTitleCase(title)),
+                    props: {
+                      className: '!pl-1.5',
+                    },
+                  },
+                  pickDynamicInfoCell(value),
+                ],
+              })),
             ],
           },
         ];
@@ -665,7 +713,7 @@ export const useTasks = ({
                   data: Object.entries(mainRepresentative)?.map(([title, value]) => ({
                     title,
                     value,
-                    isEditable: true,
+                    isEditable: false,
                   })),
                 },
                 hideSeparator: true,
