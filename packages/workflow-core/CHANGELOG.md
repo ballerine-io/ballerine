@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.5.21
+
+### Patch Changes
+
+- Workflow changes
+
 ## 0.5.20
 
 ### Patch Changes
