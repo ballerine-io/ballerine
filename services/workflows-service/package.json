@@ -36,7 +36,9 @@
     "upload-sourcemaps": "ts-node scripts/upload-sourcemaps.ts",
     "prepare": "npm run prisma:generate",
     "db:data-migration:generate": "plop --plopfile ./prisma/data-migrations/plopfile.js --dest ./",
-    "db:data-migration:up": "nest start --entryFile ./src/migration"
+    "db:data-migration:migrate": "npm run build && nest start --entryFile ./src/data-migration/scripts/migrate",
+    "db:data-migration:import": "ts-node ./src/data-migration/scripts/import",
+    "db:data-migration:export": "ts-node ./src/data-migration/scripts/export"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.347.1",

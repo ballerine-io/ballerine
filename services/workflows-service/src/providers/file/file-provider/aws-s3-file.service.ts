@@ -6,11 +6,11 @@ import {
 import {
   GetObjectCommand,
   HeadObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   PutObjectCommandInput,
   S3Client,
   S3ClientConfig,
-  ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
 import fs, { createReadStream } from 'fs';
@@ -18,7 +18,7 @@ import { isErrorWithName } from '@ballerine/common';
 import { Upload } from '@aws-sdk/lib-storage';
 import { IStreamableFileProvider } from '../types/interfaces';
 import { MimeType } from 'file-type';
-import path from "path";
+import path from 'path';
 
 export class AwsS3FileService implements IStreamableFileProvider {
   protected client;
@@ -190,43 +190,81 @@ export class AwsS3FileService implements IStreamableFileProvider {
   }
 
   async downloadFolderContent(
-    remoteFileConfig: TS3BucketConfig,
-    localeFilePath: TLocalFilePath,
-  ){
+    remoteFileConfig: Omit<TS3BucketConfig, 'directoryName' | 'fileNameInBucket' | 'private'>,
+    localFolderPath: TLocalFilePath,
+  ) {
     try {
       const data = await this.client.send(
         new ListObjectsV2Command({
           Bucket: remoteFileConfig.bucketName,
-          Prefix: remoteFileConfig.directoryName
-        })
+        }),
       );
 
-      if(data.Contents) {
+      if (data.Contents) {
         for (const obj of data.Contents) {
           const getObjectParams = {
             Bucket: remoteFileConfig.bucketName,
-            Key: obj.Key
+            Key: obj.Key,
           };
           const getObjectCommand = new GetObjectCommand(getObjectParams);
           const response = await this.client.send(getObjectCommand);
           const readableStream = response.Body as Readable;
-          const localFilePath = path.join(localeFilePath, obj.Key!);
+          const localFilePath = path.join(localFolderPath, obj.Key!);
 
           // Ensure local directory structure exists
-          fs.mkdirSync(path.dirname(localFilePath), {recursive: true});
+          fs.mkdirSync(path.dirname(localFilePath), { recursive: true });
 
           const writableStream = fs.createWriteStream(localFilePath);
           await new Promise((resolve, reject) => {
-            readableStream
-              .pipe(writableStream)
-              .on('finish', resolve)
-              .on('error', reject);
+            readableStream.pipe(writableStream).on('finish', resolve).on('error', reject);
           });
         }
       }
-
     } catch (error) {
       console.error('Error downloading folder from S3:', error);
+      throw error;
+    }
+  }
+
+  async uploadFolderContent(
+    localFolderPath: TLocalFilePath,
+    remoteFileConfig: Omit<TS3BucketConfig, 'fileNameInBucket' | 'private'>,
+    suffix?: string,
+  ) {
+    const uploadFile = async (filePath: string, relativeName: string) => {
+      const fileContent = fs.readFileSync(filePath);
+
+      const putObjectParams = {
+        Bucket: remoteFileConfig.bucketName,
+        Key: relativeName,
+        Body: fileContent,
+      };
+
+      const putObjectCommand = new PutObjectCommand(putObjectParams);
+      await this.client.send(putObjectCommand);
+    };
+
+    const uploadDirectory = async (directoryPath: string, relativePath: string) => {
+      const files = fs.readdirSync(directoryPath);
+
+      for (const file of files) {
+        const filePath = path.join(directoryPath, file);
+        const fileRelativePath = path.join(relativePath, file);
+
+        if (fs.lstatSync(filePath).isDirectory()) {
+          await uploadDirectory(filePath, fileRelativePath);
+        } else {
+          if (suffix && fileRelativePath.endsWith(suffix)) {
+            await uploadFile(filePath, fileRelativePath);
+          }
+        }
+      }
+    };
+
+    try {
+      await uploadDirectory(localFolderPath, '');
+    } catch (error) {
+      console.error('Error uploading folder to S3:', error);
       throw error;
     }
   }

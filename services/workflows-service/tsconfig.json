@@ -21,8 +21,8 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"],
-      "@/env": ["src/env.ts"],
+      "@/env": ["src/env.ts"]
     }
   },
-  "include": ["src", "plugins", "prisma/data-migrations/**/*"],
+  "include": ["src", "plugins", "prisma/data-migrations/**/*"]
 }

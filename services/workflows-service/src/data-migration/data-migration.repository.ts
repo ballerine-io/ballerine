@@ -1,16 +1,14 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import {  DataMigrationVersion, Prisma } from '@prisma/client';
+import { DataMigrationVersion, Prisma } from '@prisma/client';
 
 @Injectable()
 export class DataMigrationRepository {
-  constructor(
-    protected readonly prisma: PrismaService,
-  ) {}
+  constructor(protected readonly prisma: PrismaService) {}
 
-  async getLatestTimestamp(){
+  async getLatestTimestamp() {
     return await this.prisma.dataMigrationVersion.findFirst({
-      select: {success: true},
+      where: { success: true },
       orderBy: {
         version: 'desc',
       },
@@ -18,8 +16,8 @@ export class DataMigrationRepository {
   }
 
   async create<T extends Prisma.DataMigrationVersionCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.DataMigrationVersionCreateArgs>
+    args: Prisma.SelectSubset<T, Prisma.DataMigrationVersionCreateArgs>,
   ): Promise<DataMigrationVersion> {
-    return await this.prisma.dataMigrationVersion.create(args)
+    return await this.prisma.dataMigrationVersion.create(args);
   }
 }

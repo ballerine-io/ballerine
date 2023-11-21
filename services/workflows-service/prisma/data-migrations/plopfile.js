@@ -7,14 +7,14 @@ module.exports = function (plop) {
         type: 'list',
         name: 'env',
         message: 'Select environment:',
-        choices: ['default', 'dev', 'prod', 'sb'],
-        default: 'default'
+        choices: ['common', 'dev', 'prod', 'sb'],
+        default: 'common',
       },
       {
         type: 'input',
         name: 'migrationName',
-        message: 'Enter the migration name:'
-      }
+        message: 'Enter the migration name:',
+      },
     ],
     actions: [
       function (data) {
@@ -32,8 +32,8 @@ module.exports = function (plop) {
       {
         type: 'add',
         path: 'prisma/data-migrations/{{env}}/{{date}}_{{snakeCase migrationName}}.ts',
-        templateFile: './migration-template.hbs'
-      }
-    ]
+        templateFile: './migration-template.hbs',
+      },
+    ],
   });
 };
