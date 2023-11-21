@@ -248,9 +248,8 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
                   reason: comment ? `${reason} - ${comment}` : reason,
                 })}
               >
-                {workflowLevelResolution ? (
-                  'Approve'
-                ) : (
+                {workflowLevelResolution && 'Mark'}
+                {!workflowLevelResolution && (
                   <>
                     <Send size={18} />
                     Send email
