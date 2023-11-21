@@ -31,6 +31,8 @@ import { getPostUpdateEventName } from './get-post-update-event-name';
 import { motionProps } from './motion-props';
 import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
 import { includesValues } from '../../../../common/utils/includes-values/includes-values';
+import { isPhoneNumberRegex } from '../../../../common/constants';
+import { formatPhoneNumber } from '../../../../common/utils/format-phone-number/format-phone-number';
 
 export const useTasks = ({
   workflow,
@@ -644,7 +646,6 @@ export const useTasks = ({
             ],
           },
         ];
-
   const mainRepresentativeBlock =
     Object.keys(mainRepresentative ?? {}).length === 0
       ? []
@@ -664,7 +665,7 @@ export const useTasks = ({
                 value: {
                   data: Object.entries(mainRepresentative)?.map(([title, value]) => ({
                     title,
-                    value,
+                    value: isPhoneNumberRegex.test(value) ? formatPhoneNumber(value) : value,
                     isEditable: false,
                   })),
                 },
@@ -673,7 +674,6 @@ export const useTasks = ({
             ],
           },
         ];
-
   const mainContactBlock =
     Object.keys(mainContact ?? {}).length === 0
       ? []
@@ -693,7 +693,7 @@ export const useTasks = ({
                 value: {
                   data: Object.entries(mainContact ?? {})?.map(([title, value]) => ({
                     title,
-                    value,
+                    value: isPhoneNumberRegex.test(value) ? formatPhoneNumber(value) : value,
                   })),
                 },
                 hideSeparator: true,
