@@ -1,12 +1,12 @@
-import { apiClient } from '../../common/api-client/api-client';
+import qs from 'qs';
+import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
+import { apiClient } from '../../common/api-client/api-client';
+import { Method, States } from '../../common/enums';
 import { handleZodError } from '../../common/utils/handle-zod-error/handle-zod-error';
 import { ObjectWithIdSchema } from '../../lib/zod/utils/object-with-id/object-with-id';
-import { Method, States } from '../../common/enums';
-import { IWorkflowId } from './interfaces';
-import qs from 'qs';
 import { zPropertyKey } from '../../lib/zod/utils/z-property-key/z-property-key';
-import { deepCamelKeys } from 'string-ts';
+import { IWorkflowId } from './interfaces';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -145,12 +145,16 @@ export const updateWorkflowDocumentById = async ({
   workflowId,
   documentId,
   body,
+  contextUpdateMethod,
 }: IWorkflowId & {
   documentId: string;
   body: Record<PropertyKey, unknown>;
+  contextUpdateMethod?: 'base' | 'director';
 }) => {
   const [workflow, error] = await apiClient({
-    endpoint: `workflows/${workflowId}/documents/${documentId}`,
+    endpoint: `workflows/${workflowId}/documents/${documentId}${
+      contextUpdateMethod ? `?contextUpdateMethod=${contextUpdateMethod}` : ''
+    }`,
     method: Method.PATCH,
     body,
     schema: z.any(),
@@ -203,6 +207,7 @@ export const updateWorkflowDecision = async ({
   workflowId,
   documentId,
   body,
+  contextUpdateMethod,
 }: IWorkflowId & {
   documentId: string;
   body: {
@@ -210,9 +215,12 @@ export const updateWorkflowDecision = async ({
     reason?: string;
     postUpdateEventName?: string;
   };
+  contextUpdateMethod: 'base' | 'director';
 }) => {
   const [workflow, error] = await apiClient({
-    endpoint: `workflows/${workflowId}/decision/${documentId}`,
+    endpoint: `workflows/${workflowId}/decision/${documentId}${
+      contextUpdateMethod ? `?contextUpdateMethod=${contextUpdateMethod}` : ''
+    }`,
     method: Method.PATCH,
     body,
     schema: WorkflowByIdSchema.pick({

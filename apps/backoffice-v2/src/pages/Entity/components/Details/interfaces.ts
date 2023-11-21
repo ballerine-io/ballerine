@@ -1,6 +1,10 @@
+import { AnyObject } from '@ballerine/ui';
+
 export interface IDetailsProps {
   id: string;
   hideSeparator?: boolean;
+  documents?: AnyObject[];
+  contextUpdateMethod?: 'base' | 'director';
   value: {
     id: string;
     title: string;
