@@ -5,12 +5,23 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { IAuthStrategy } from '../types';
 import { UserInfo } from '../../user/user-info';
 import { env } from '@/env';
+import { Request } from 'express';
+
+function extractJWT(req: Request): string | null {
+  if (req.cookies && 'token' in req.cookies && req.cookies.user_token.length > 0) {
+    return req.cookies.token;
+  }
+  return null;
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) implements IAuthStrategy {
   constructor(protected readonly userService: UserService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        extractJWT,
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ]),
       ignoreExpiration: false,
       secretOrKey: env.JWT_SECRET_KEY,
       algorithms: ['RS256'],
