@@ -82,7 +82,7 @@ async function main() {
       httpOnly: env.ENVIRONMENT_NAME === 'production',
       secure: false,
       sameSite: env.ENVIRONMENT_NAME === 'production' ? 'strict' : false,
-      maxAge: 1000 * 60 * 60 * 1, // 1 hour(s),
+      maxAge: 1000 * 60 * 60 * env.SESSION_EXPIRATION_IN_MINUTES,
     }),
   );
 
@@ -115,7 +115,7 @@ async function main() {
     const date = new Date();
 
     // TODO: extract from config
-    date.setTime(date.getTime() + 1 * 60 * 1000); // 1m
+    date.setTime(date.getTime() + env.JWT_EXPIRATION); // 1m
     req.session.passport.user.expires = date;
 
     next();

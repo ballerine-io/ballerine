@@ -50,6 +50,7 @@ export const env = createEnv({
     DB_PORT: z.coerce.number(),
     DB_URL: z.string().url(),
     SESSION_SECRET: z.string(),
+    SESSION_EXPIRATION_IN_MINUTES: z.number().default(60),
     BACKOFFICE_CORS_ORIGIN: z.string().url(),
     WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().url(),
     KYB_EXAMPLE_CORS_ORIGIN: z.string().url(),

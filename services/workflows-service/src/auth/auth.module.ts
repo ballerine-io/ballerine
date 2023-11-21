@@ -1,9 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { BasicStrategy } from './basic/basic.strategy';
-import { JwtStrategy } from './jwt/jwt.strategy';
 import { PasswordService } from './password/password.service';
 // eslint-disable-next-line import/no-cycle
 import { UserModule } from '../user/user.module';
@@ -12,9 +10,7 @@ import { SessionSerializer } from '@/auth/session-serializer';
 import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
 import { PassportModule } from '@nestjs/passport';
-import { env } from '@/env';
 import { ProjectModule } from '@/project/project.module';
-import { JwtAuthService } from './jwt/jwt.service';
 
 @Module({
   imports: [
@@ -22,14 +18,6 @@ import { JwtAuthService } from './jwt/jwt.service';
     PassportModule.register({
       session: true,
       defaultStrategy: 'local',
-    }),
-    JwtModule.registerAsync({
-      useFactory: () => {
-        return {
-          secret: env.JWT_SECRET_KEY,
-          signOptions: { expiresIn: env.JWT_EXPIRATION },
-        };
-      },
     }),
     ProjectModule,
   ],
@@ -42,10 +30,8 @@ import { JwtAuthService } from './jwt/jwt.service';
       useClass: UserService,
     },
     BasicStrategy,
-    JwtStrategy,
     LocalStrategy,
     SessionSerializer,
-    JwtAuthService,
   ],
   controllers: [AuthController],
   exports: [AuthService, PasswordService, PassportModule],
