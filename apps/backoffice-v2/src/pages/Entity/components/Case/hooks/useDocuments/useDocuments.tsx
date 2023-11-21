@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { t } from 'i18next';
 import { useToggle } from '../../../../../../common/hooks/useToggle/useToggle';
 import { ReactZoomPanPinchContentRef } from 'react-zoom-pan-pinch';
+import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
 
 export const useDocuments = (documents: IDocumentsProps['documents']) => {
   const initialImage = documents?.[0];
@@ -22,6 +23,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
   const [isLoadingOCR, , toggleOnIsLoadingOCR, toggleOffIsLoadingOCR] = useToggle(false);
   const selectedImageRef = useRef<HTMLImageElement>();
   const recognize = useTesseract();
+  const filterId = useFilterId();
   const onOcr = useCallback(async () => {
     if (!isCropping) {
       toggleOnIsCropping();
@@ -64,6 +66,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
   const [selectedImage, setSelectedImage] = useState<{
     imageUrl: string;
     fileType: string;
+    id: string;
   }>();
   const onSelectImage = useCallback(
     (next: { imageUrl: string; fileType: string }) => () => {
@@ -87,6 +90,13 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     [],
   );
 
+  const onOpenDocumentInNewTab = useCallback(documentId => {
+    const baseUrl = location.href.split('?')[0];
+    const url = `${baseUrl}/document/${documentId}?filterId=${filterId}`;
+
+    window.open(url, '_blank');
+  });
+
   return {
     crop,
     onCrop,
@@ -101,6 +111,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     onSelectImage,
     documentRotation,
     onRotateDocument,
+    onOpenDocumentInNewTab,
     isRotatedOrTransformed,
     onTransformed,
   };
