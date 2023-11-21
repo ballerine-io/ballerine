@@ -43,3 +43,5 @@ export type TKeyofArrayElement<TArray extends AnyArray> = keyof TArray[number];
 export type TypesafeOmit<TObj extends Record<PropertyKey, unknown>, TProps extends keyof TObj> = {
   [TKey in Exclude<keyof TObj, TProps>]: TObj[TKey];
 } & {};
+
+export type Primitive = string | number | symbol | bigint | boolean | null | undefined;
