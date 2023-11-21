@@ -43,6 +43,7 @@ export class AuthController {
   getSession(@Req() req: Request): {
     user: Partial<User> | undefined;
   } {
+    throw new UnauthorizedException();
     return {
       user: (req?.user as unknown as AuthenticatedEntity)?.user,
     };

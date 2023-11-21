@@ -5,13 +5,13 @@ import { Providers } from '../../common/components/templates/Providers/Providers
 import { Toaster } from 'react-hot-toast';
 import { ErrorAlert } from '../../common/components/atoms/ErrorAlert/ErrorAlert';
 import { useAuthenticatedLayoutLogic } from '../../domains/auth/components/AuthenticatedLayout/hooks/useAuthenticatedLayoutLogic/useAuthenticatedLayoutLogic';
-import { isErrorWithMessage } from '@ballerine/common';
+import { isErrorWithCode } from '@ballerine/common';
 
 export const RootError: FunctionComponent = () => {
   const error = useRouteError();
   const { redirectUnauthenticatedTo, location } = useAuthenticatedLayoutLogic();
 
-  if (isErrorWithMessage(error) && error.message === 'Unauthorized (401)') {
+  if (isErrorWithCode(error) && error.code === 401) {
     return (
       <Navigate
         to={redirectUnauthenticatedTo}
