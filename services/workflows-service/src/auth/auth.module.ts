@@ -14,8 +14,6 @@ import { UserRepository } from '@/user/user.repository';
 import { PassportModule } from '@nestjs/passport';
 import { env } from '@/env';
 import { ProjectModule } from '@/project/project.module';
-import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { JwtAuthService } from './jwt/jwt.service';
 
 @Module({
@@ -29,7 +27,7 @@ import { JwtAuthService } from './jwt/jwt.service';
       useFactory: () => {
         return {
           secret: env.JWT_SECRET_KEY,
-          signOptions: { expiresIn: '1h' },
+          signOptions: { expiresIn: env.JWT_EXPIRATION },
         };
       },
     }),

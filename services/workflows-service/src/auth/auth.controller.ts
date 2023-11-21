@@ -32,6 +32,7 @@ export class AuthController {
   ): Promise<{ user: undefined }> {
     const asyncLogout = util.promisify(req.logout.bind(req));
     await asyncLogout();
+    res.cookie('token', '', { expires: new Date() });
     res.clearCookie('session', { path: '/', httpOnly: true });
     res.clearCookie('session.sig', { path: '/', httpOnly: true });
 
