@@ -9,16 +9,18 @@ export interface ICallToActionDocumentSelection {
   onSelect: (value: ICallToActionDocumentOption['value']) => void;
 }
 export interface ICallToActionProps {
-  value: string;
-  data: {
-    id: string;
-    disabled: boolean;
-    decision: 'reject' | 'approve' | 'revision' | 'revised';
+  value: {
+    text: string;
+    props: {
+      id: string;
+      disabled: boolean;
+      decision: 'reject' | 'approve' | 'revision' | 'revised';
+      documentSelection?: ICallToActionDocumentSelection;
+      contextUpdateMethod?: 'base' | 'director';
+      revisionReasons?: string[];
+      rejectionReasons?: string[];
+      onReuploadReset?: () => void;
+      onDialogClose?: () => void;
+    };
   };
-  documentSelection?: ICallToActionDocumentSelection;
-  contextUpdateMethod?: 'base' | 'director';
-  revisionReasons?: string[];
-  rejectionReasons?: string[];
-  onReuploadReset?: () => void;
-  onDialogClose: () => void;
 }

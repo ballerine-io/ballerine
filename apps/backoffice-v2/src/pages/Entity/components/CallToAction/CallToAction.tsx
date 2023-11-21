@@ -31,16 +31,19 @@ const motionProps: ComponentProps<typeof MotionButton> = {
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
 };
 
-export const CallToAction: FunctionComponent<ICallToActionProps> = ({
-  value,
-  data,
-  documentSelection,
-  contextUpdateMethod,
-  revisionReasons,
-  rejectionReasons,
-  onReuploadReset,
-  onDialogClose,
-}) => {
+export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value }) => {
+  const {
+    documentSelection,
+    contextUpdateMethod,
+    revisionReasons,
+    rejectionReasons,
+    onReuploadReset,
+    onDialogClose,
+    id,
+    decision,
+    disabled,
+  } = value?.props || {};
+
   const {
     onMutateTaskDecisionById,
     isLoadingTaskDecisionById,
@@ -70,7 +73,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
     [onDialogClose],
   );
 
-  if (value === 'Reject') {
+  if (value?.text === 'Reject') {
     return (
       <Dialog onOpenChange={handleDialogClose}>
         <AnimatePresence>
@@ -80,11 +83,9 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
               size="wide"
               variant="destructive"
               className={ctw({ loading: isLoadingTaskDecisionById })}
-              disabled={
-                isLoadingTaskDecisionById || data?.disabled || !caseState.actionButtonsEnabled
-              }
+              disabled={isLoadingTaskDecisionById || disabled || !caseState.actionButtonsEnabled}
             >
-              {value}
+              {value.text}
             </MotionButton>
           </DialogTrigger>
         </AnimatePresence>
@@ -163,7 +164,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
                   loading: isLoadingTaskDecisionById,
                 })}
                 onClick={onMutateTaskDecisionById({
-                  id: data?.id,
+                  id,
                   decision: action,
                   reason: comment ? `${reason} - ${comment}` : reason,
                 })}
@@ -177,7 +178,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
     );
   }
 
-  if (value === 'Re-upload needed') {
+  if (value?.text === 'Re-upload needed') {
     return (
       <Dialog onOpenChange={handleDialogClose}>
         <AnimatePresence>
@@ -186,11 +187,11 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
               {...motionProps}
               size="wide"
               variant="warning"
-              disabled={!caseState.actionButtonsEnabled || data?.disabled}
+              disabled={!caseState.actionButtonsEnabled || disabled}
               className={ctw({ 'flex gap-2': isReuploadResetable })}
             >
-              {value}
-              {isReuploadResetable ? (
+              {value.text}
+              {isReuploadResetable && (
                 <X
                   className="h-4 w-4 cursor-pointer"
                   onClick={event => {
@@ -198,7 +199,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
                     onReuploadReset && onReuploadReset();
                   }}
                 />
-              ) : null}
+              )}
             </MotionButton>
           </DialogTrigger>
         </AnimatePresence>
@@ -227,7 +228,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
               </p>
             </DialogDescription>
           </DialogHeader>
-          {documentSelection ? <DocumentPicker {...documentSelection} value={data?.id} /> : null}
+          {documentSelection && <DocumentPicker {...documentSelection} value={id} />}
           {!noReasons && (
             <div>
               <label className={`mb-2 block font-bold`} htmlFor={`reason`}>
@@ -277,7 +278,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
                   loading: isLoadingTaskDecisionById,
                 })}
                 onClick={onMutateTaskDecisionById({
-                  id: data?.id,
+                  id,
                   decision: action,
                   reason: comment ? `${reason} - ${comment}` : reason,
                 })}
@@ -305,13 +306,13 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({
         size="wide"
         variant="success"
         className={ctw({ loading: isLoadingTaskDecisionById })}
-        disabled={isLoadingTaskDecisionById || data?.disabled || !caseState.actionButtonsEnabled}
+        disabled={isLoadingTaskDecisionById || disabled || !caseState.actionButtonsEnabled}
         onClick={onMutateTaskDecisionById({
-          id: data?.id,
-          decision: data?.decision,
+          id,
+          decision,
         })}
       >
-        {value}
+        {value?.text}
       </MotionButton>
     </AnimatePresence>
   );

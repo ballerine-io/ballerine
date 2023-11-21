@@ -1,17 +1,19 @@
+import { StateTag } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import { UseQueryResult } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
+import { ctw } from '../../../../../../common/utils/ctw/ctw';
 import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
-import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
-import { composePickableCategoryType } from '../../../useEntity/utils';
-import { useRemoveDecisionTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
-import { getPostUpdateEventName } from '../../get-post-update-event-name';
-import { selectDirectorsDocuments } from '../../selectors/selectDirectorsDocuments';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useRemoveDecisionTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
+import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
+import { useCaseDecision } from '../../../../../../pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '../../../../../../pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { StateTag } from '@ballerine/common';
+import { composePickableCategoryType } from '../../../useEntity/utils';
+import { getPostUpdateEventName } from '../../get-post-update-event-name';
 import { motionProps } from '../../motion-props';
+import { selectDirectorsDocuments } from '../../selectors/selectDirectorsDocuments';
 
 export type Director = AnyObject;
 
@@ -26,8 +28,9 @@ export const useDirectorsBlocks = (
   );
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
+  const { noAction } = useCaseDecision();
 
-  const directors: Director[] = useMemo(
+  const directors = useMemo(
     () => (workflow?.context?.entity?.data?.additionalInfo?.directors as Director[]) || [],
     [workflow],
   );
@@ -48,6 +51,7 @@ export const useDirectorsBlocks = (
         const { documents } = director.additionalInfo;
 
         const multiDocumentsBlocks = documents.map((document, docIndex) => {
+          const isDoneWithRevision = document?.decision?.status === 'revised';
           const additionalProperties = composePickableCategoryType(
             document.category,
             document.type,
@@ -91,13 +95,16 @@ export const useDirectorsBlocks = (
                       }
                     : {
                         type: 'directorsCallToAction',
-                        value: 'Approve',
-                        documents,
-                        data: {
-                          id: document.id,
-
-                          // disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
-                          decision: 'approve',
+                        value: {
+                          text: 'Approve',
+                          props: {
+                            documents,
+                            decision: 'approve',
+                            id: document.id,
+                            disabled:
+                              (!isDoneWithRevision && Boolean(document?.decision?.status)) ||
+                              noAction,
+                          },
                         },
                       },
                 ],
@@ -133,7 +140,6 @@ export const useDirectorsBlocks = (
                                 type,
                                 format,
                                 pattern,
-                                isEditable = true,
                                 dropdownOptions,
                                 value,
                                 formatMinimum,
@@ -197,11 +203,11 @@ export const useDirectorsBlocks = (
         );
 
         return {
-          className: isDocumentRevision
-            ? `shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning ${
-                workflow?.tags?.includes(StateTag.REVISION) ? '' : 'bg-warning/10'
-              }`
-            : '',
+          className: ctw({
+            'shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning':
+              isDocumentRevision,
+            'bg-warning/10': isDocumentRevision && !workflow?.tags?.includes(StateTag.REVISION),
+          }),
           cells: [
             {
               type: 'container',
@@ -220,11 +226,16 @@ export const useDirectorsBlocks = (
                       value: [
                         {
                           type: 'directorsCallToAction',
+                          value: {
+                            text: 'Re-upload needed',
+                            props: {
+                              documents,
+                              workflow,
+                              onReset: handleRevisionDecisionsReset,
+                            },
+                          },
+
                           // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
-                          value: 'Re-upload needed',
-                          documents,
-                          workflow,
-                          onReset: handleRevisionDecisionsReset,
                         },
                       ],
                     },

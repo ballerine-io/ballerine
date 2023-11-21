@@ -1,5 +1,6 @@
 import { AnyObject } from '@ballerine/ui';
 import { FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { toTitleCase } from 'string-ts';
 import { CallToAction } from '../CallToAction/CallToAction';
 import {
   ICallToActionDocumentOption,
@@ -9,23 +10,27 @@ import {
 import { getRevisionReasonsForDocument } from './helpers';
 
 interface IDirectorsCallToActionProps extends ICallToActionProps {
-  documents: AnyObject[];
-  workflow: AnyObject;
-  onReset?: () => void;
+  value: ICallToActionProps['value'] & {
+    props: ICallToActionProps['value']['props'] & {
+      documents: AnyObject[];
+      workflow: AnyObject;
+      onReset?: () => void;
+    };
+  };
 }
 
 export const DirectorsCallToAction: FunctionComponent<IDirectorsCallToActionProps> = ({
-  documents,
-  workflow,
-  onReset,
+  value,
   ...restProps
 }) => {
+  const { documents, workflow, onReset, ...restValueProps } = value?.props || {};
+
   const [documentId, setDocumentId] = useState<string | null>(null);
 
   const documentsOptions: ICallToActionDocumentOption[] = useMemo(
     () =>
       documents.map(({ category, type, id }) => ({
-        name: `${category as string} - ${type as string}`.replaceAll('_', ' '),
+        name: toTitleCase(`${category as string} - ${type as string}`),
         value: id as string,
       })) as ICallToActionDocumentOption[],
     [documents],
@@ -62,12 +67,18 @@ export const DirectorsCallToAction: FunctionComponent<IDirectorsCallToActionProp
 
   return (
     <CallToAction
-      data={{ id: documentId ?? undefined }}
-      documentSelection={documentSelectionProps}
-      contextUpdateMethod="director"
-      revisionReasons={revisionReasonsByDocument}
-      onReuploadReset={isCanBeReseted ? onReset : undefined}
-      onDialogClose={() => setDocumentId(null)}
+      value={{
+        text: value.text,
+        props: {
+          ...restValueProps,
+          id: documentId ?? undefined,
+          documentSelection: documentSelectionProps,
+          contextUpdateMethod: 'director',
+          revisionReasons: revisionReasonsByDocument,
+          onReuploadReset: isCanBeReseted ? onReset : undefined,
+          onDialogClose: () => setDocumentId(null),
+        },
+      }}
       {...restProps}
     />
   );

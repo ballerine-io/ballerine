@@ -1,15 +1,15 @@
+import { CommonWorkflowEvent } from '@ballerine/common';
+import { useCallback, useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useParams } from 'react-router-dom';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
-import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useCaseState } from '../../../Case/hooks/useCaseState/useCaseState';
-import toast from 'react-hot-toast';
-import { useCallback, useEffect, useState } from 'react';
 import { useApproveTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { useRevisionTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
-import { CommonWorkflowEvent } from '@ballerine/common';
+import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useCaseState } from '../../../Case/hooks/useCaseState/useCaseState';
 
 export interface UseCallToActionLogicParams {
   contextUpdateMethod?: 'base' | 'director';
@@ -44,14 +44,6 @@ export const useCallToActionLogic = (params: UseCallToActionLogicParams) => {
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingRevisionTaskById } =
     useRevisionTaskByIdMutation(workflow?.id, postUpdateEventName);
 
-  // const revisionReasons =
-  //   workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
-  //     ({ enum: enum_ }) => !!enum_,
-  //   )?.enum;
-  // const rejectionReasons =
-  //   workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
-  //     ({ enum: enum_ }) => !!enum_,
-  //   )?.enum;
   const isLoadingTaskDecisionById =
     isLoadingApproveTaskById || isLoadingRejectTaskById || isLoadingRevisionTaskById;
 

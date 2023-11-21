@@ -275,37 +275,41 @@ export const useTasks = ({
             {
               type: 'callToAction',
               // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
-              value: isLegacyReject ? 'Reject' : 'Re-upload needed',
-              data: {
-                id,
-                disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
-                decision: 'reject',
+              value: {
+                text: isLegacyReject ? 'Reject' : 'Re-upload needed',
+                props: {
+                  revisionReasons:
+                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+                      ({ enum: enum_ }) => !!enum_,
+                    )?.enum,
+                  rejectionReasons:
+                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
+                      ({ enum: enum_ }) => !!enum_,
+                    )?.enum,
+                  id,
+                  disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
+                  decision: 'reject',
+                },
               },
-              revisionReasons:
-                workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
-                  ({ enum: enum_ }) => !!enum_,
-                )?.enum,
-              rejectionReasons:
-                workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
-                  ({ enum: enum_ }) => !!enum_,
-                )?.enum,
             },
             {
               type: 'callToAction',
-              value: 'Approve',
-              data: {
-                id,
-                disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
-                decision: 'approve',
+              value: {
+                text: 'Approve',
+                props: {
+                  revisionReasons:
+                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+                      ({ enum: enum_ }) => !!enum_,
+                    )?.enum,
+                  rejectionReasons:
+                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
+                      ({ enum: enum_ }) => !!enum_,
+                    )?.enum,
+                  id,
+                  disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
+                  decision: 'approve',
+                },
               },
-              revisionReasons:
-                workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
-                  ({ enum: enum_ }) => !!enum_,
-                )?.enum,
-              rejectionReasons:
-                workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
-                  ({ enum: enum_ }) => !!enum_,
-                )?.enum,
             },
           ];
         };
