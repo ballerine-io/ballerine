@@ -96,7 +96,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
                     className={ctw(
                       `btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary`,
                     )}
-                    onClick={() => onOpenDocumentInNewTab(selectedImage)}
+                    onClick={() => onOpenDocumentInNewTab(selectedImage.id)}
                   >
                     <ExternalLinkIcon className={`p-0.5`} />
                   </button>
@@ -152,8 +152,9 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
           ? skeletons.map(index => (
               <ImageViewer.SkeletonItem key={`image-viewer-skeleton-${index}`} />
             ))
-          : documents.map(({ imageUrl, title, fileType }) => (
+          : documents.map(({ imageUrl, title, fileType, id }) => (
               <ImageViewer.Item
+                id={id}
                 key={`${imageUrl}-${title}`}
                 src={imageUrl}
                 fileType={fileType}

@@ -66,6 +66,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
   const [selectedImage, setSelectedImage] = useState<{
     imageUrl: string;
     fileType: string;
+    id: string;
   }>();
   const onSelectImage = useCallback(
     (next: { imageUrl: string; fileType: string }) => () => {
@@ -89,9 +90,9 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     [],
   );
 
-  const onOpenDocumentInNewTab = useCallback(document => {
+  const onOpenDocumentInNewTab = useCallback(documentId => {
     const baseUrl = location.href.split('?')[0];
-    const url = `${baseUrl}/document/${document.id}?filterId=${filterId}`;
+    const url = `${baseUrl}/document/${documentId}?filterId=${filterId}`;
 
     window.open(url, '_blank');
   });
