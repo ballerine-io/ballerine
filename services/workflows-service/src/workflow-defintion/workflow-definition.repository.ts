@@ -88,17 +88,25 @@ export class WorkflowDefinitionRepository {
   async updateById<T extends Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>,
-    projectId: TProjectId,
+    projectId: TProjectId | undefined,
+    isPublic = false,
   ): Promise<WorkflowDefinition> {
-    return await this.prisma.workflowDefinition.update(
-      this.scopeService.scopeUpdate(
-        {
-          where: { id },
-          ...args,
-        },
-        projectId,
-      ),
-    );
+    const updateArgs =
+      projectId && !isPublic
+        ? this.scopeService.scopeUpdate(
+            {
+              where: { id },
+              ...args,
+            },
+            projectId,
+          )
+        : {
+            where: { id },
+            ...args,
+            data: { ...args.data, isPublic },
+          };
+
+    return await this.prisma.workflowDefinition.update(updateArgs);
   }
 
   async deleteById<T extends Omit<Prisma.WorkflowDefinitionDeleteArgs, 'where'>>(

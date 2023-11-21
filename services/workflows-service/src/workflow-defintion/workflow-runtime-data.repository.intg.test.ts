@@ -9,7 +9,7 @@ import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
-import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import {
   ArrayMergeOption,
   WorkflowRuntimeDataRepository,
@@ -29,7 +29,6 @@ import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integra
 import { UserRepository } from '@/user/user.repository';
 import { PasswordService } from '@/auth/password/password.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { WorkflowModule } from './workflow.module';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
