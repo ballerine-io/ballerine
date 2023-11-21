@@ -1,7 +1,9 @@
+import util from 'util';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { Catch, ArgumentsHost, UnauthorizedException } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { SessionExpiredException } from '@/errors';
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
@@ -9,15 +11,19 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     super(applicationRef?.httpAdapter);
   }
 
-  catch(exception: unknown, host: ArgumentsHost) {
+  async catch(exception: unknown, host: ArgumentsHost) {
     // if (host.getType() === 'http') return;
     this.logger.error('Global error handler: ', exception as object);
 
-    const response = host.switchToHttp().getResponse<Response>();
-    if (exception instanceof UnauthorizedException) {
-      // Clear the cookie
-      response.clearCookie('session'); // Replace 'your_cookie_name' with the actual name of your cookie
+    const context = host.switchToHttp();
+    const req = context.getRequest<Request>();
+    const response = context.getResponse<Response>();
+
+    if (req.session?.passport?.user && exception instanceof SessionExpiredException) {
+      const asyncLogout = util.promisify(req.logout.bind(req));
+      await asyncLogout();
     }
+
     super.catch(exception, host);
 
     this.logger.error(`Outgoing response (Failure)`, {

@@ -1,8 +1,9 @@
 import { PassportSerializer } from '@nestjs/passport';
-import { Inject, UnauthorizedException } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { UserService } from '@/user/user.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { AuthenticatedEntity, TExpires, UserWithProjects } from '@/types';
+import { SessionExpiredException } from '@/errors';
 
 export class SessionSerializer extends PassportSerializer {
   constructor(@Inject('USER_SERVICE') private readonly userService: UserService) {
@@ -35,10 +36,8 @@ export class SessionSerializer extends PassportSerializer {
     done: (err: unknown, user: AuthenticatedEntity | null) => void,
   ) {
     try {
-      if (!user.expires) {
-        return done(new UnauthorizedException('Session missed expires property'), null);
-      } else if (new Date(user.expires) < new Date()) {
-        return done(new UnauthorizedException(`Session has expired`), null);
+      if (!user.expires || new Date(user.expires) < new Date()) {
+        return done(new SessionExpiredException(`Session has expired`), null);
       }
 
       const userResult = await this.userService.getByIdUnscoped(user.user!.id!, {
