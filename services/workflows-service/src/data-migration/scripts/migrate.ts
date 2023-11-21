@@ -54,6 +54,7 @@ const fetchEnvMigrationFiles = async () => {
 
   return migrationFiles;
 };
+
 export const migrate = async () => {
   const client = new PrismaClient();
   const appContext = await NestFactory.createApplicationContext(AppModule);
