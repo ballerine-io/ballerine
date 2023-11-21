@@ -1,4 +1,5 @@
 import passport from 'passport';
+import dayjs from 'dayjs';
 import cookieSession from 'cookie-session';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
@@ -82,7 +83,7 @@ async function main() {
       httpOnly: env.ENVIRONMENT_NAME === 'production',
       secure: false,
       sameSite: env.ENVIRONMENT_NAME === 'production' ? 'strict' : false,
-      maxAge: 1000 * 60 * 60 * env.SESSION_EXPIRATION_IN_MINUTES,
+      maxAge: 1000 * 60 * env.SESSION_EXPIRATION_IN_MINUTES,
     }),
   );
 
@@ -111,12 +112,8 @@ async function main() {
     ) {
       return next();
     }
-    req.session.nowInMinutes = Math.floor(Date.now() / 60e3);
-    const date = new Date();
-
-    // TODO: extract from config
-    date.setTime(date.getTime() + env.JWT_EXPIRATION); // 1m
-    req.session.passport.user.expires = date;
+    req.session.nowInMinutes = Math.floor(dayjs().unix() / 60);
+    req.session.passport.user.expires = dayjs().add(env.SESSION_EXPIRATION_IN_MINUTES, 'minute');
 
     next();
   });

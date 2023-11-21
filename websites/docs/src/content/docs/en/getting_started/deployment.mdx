@@ -75,8 +75,7 @@ postgresql:
 .
   applicationConfig:
     BCRYPT_SALT: "10"
-    JWT_SECRET_KEY: "secret"
-    JWT_EXPIRATION: "10d"
+        SESSION_EXPIRATION_IN_MINUTES: "10d"
     DB_URL: "<Managed DB_URL with databasename>"
     DB_USER: "<Managed DB_USER>"
     DB_PASSWORD: "<Managed DB_PASSWORD>"

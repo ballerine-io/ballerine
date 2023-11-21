@@ -1,7 +1,7 @@
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { Catch, ArgumentsHost, UnauthorizedException } from '@nestjs/common';
+import { Catch, ArgumentsHost } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
