@@ -118,6 +118,19 @@ export const fetchWorkflowById = async ({
             data: deepCamelKeys(data.context?.pluginsOutput?.website_monitoring?.data ?? {}),
           },
         },
+        entity: {
+          ...data.context?.entity,
+          data: {
+            ...data.context?.entity?.data,
+            additionalInfo: {
+              ...data.context?.entity?.data?.additionalInfo,
+              mainRepresentative: {
+                ...data.context?.entity?.data?.additionalInfo?.mainRepresentative,
+                dateOfBirth: '2024-01-08T18:30:00.000Z',
+              },
+            },
+          },
+        },
       },
     })),
   });

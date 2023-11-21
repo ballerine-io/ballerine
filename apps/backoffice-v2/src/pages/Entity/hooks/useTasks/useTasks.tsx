@@ -665,7 +665,7 @@ export const useTasks = ({
                   data: Object.entries(mainRepresentative)?.map(([title, value]) => ({
                     title,
                     value,
-                    isEditable: false,
+                    isEditable: true,
                   })),
                 },
                 hideSeparator: true,
