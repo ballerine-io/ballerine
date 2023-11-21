@@ -9,10 +9,11 @@ module.exports = {
     },
   },
   create: function (context) {
-    const isRepository = /^(?!.*\/customer\.repository\.(ts|js)$).*\.repository\.(ts|js)$/.test(
-      // Using deprecated .getFilename here because relevant context.filename returns undefined
-      context.getFilename(),
-    );
+    const isRepository =
+      /^(?!.*\/(customer|data-migration)\.repository\.(ts|js)$).*\.repository\.(ts|js)$/.test(
+        // Using deprecated .getFilename here because relevant context.filename returns undefined
+        context.getFilename(),
+      );
 
     return {
       MethodDefinition: function (node) {
