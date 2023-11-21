@@ -6,8 +6,8 @@
   "scripts": {
     "spellcheck": "cspell \"*\"",
     "setup": "npm run docker:db && npm run db:clean && npm run db:migrate-save && npm run seed",
-    "format": "prettier --write . '!**/*.{md}'",
-    "format:check": "prettier --check . '!**/*.{md}'",
+    "format": "prettier --write . '!**/*.{md,hbs}'",
+    "format:check": "prettier --check . '!**/*.{md,hbs}'",
     "lint": "eslint . --fix",
     "start": "nest start",
     "dev": "npm run start:watch",
