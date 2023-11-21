@@ -365,13 +365,16 @@ export const useTasks = ({
           value: {
             isLoading: docsData?.some(({ isLoading }) => isLoading),
             data:
-              documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
-                title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
-                  toTitleCase(docType ?? ''),
-                )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                imageUrl: results[docIndex][pageIndex],
-                fileType: type,
-              })) ?? [],
+              documents?.[docIndex]?.pages?.map(
+                ({ type, metadata, ballerineFileId }, pageIndex) => ({
+                  id: ballerineFileId,
+                  title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
+                    toTitleCase(docType ?? ''),
+                  )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
+                  imageUrl: results[docIndex][pageIndex],
+                  fileType: type,
+                }),
+              ) ?? [],
           },
         };
 
