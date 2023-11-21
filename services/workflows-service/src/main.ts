@@ -102,8 +102,19 @@ async function main() {
     }
     next();
   });
+
   app.use(passport.initialize());
   app.use(passport.session());
+
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (req?.session?.nowInMinutes) {
+      // In order to extend session
+      req.session.nowInMinutes = Math.floor(Date.now() / 60e3);
+    }
+
+    next();
+  });
+
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({

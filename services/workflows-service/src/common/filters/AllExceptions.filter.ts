@@ -1,5 +1,5 @@
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { Catch, ArgumentsHost } from '@nestjs/common';
+import { Catch, ArgumentsHost, UnauthorizedException } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import { Response } from 'express';
 
@@ -12,9 +12,13 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     // if (host.getType() === 'http') return;
     this.logger.error('Global error handler: ', exception as object);
-    super.catch(exception, host);
 
     const response = host.switchToHttp().getResponse<Response>();
+    if (exception instanceof UnauthorizedException) {
+      // Clear the cookie
+      response.clearCookie('session'); // Replace 'your_cookie_name' with the actual name of your cookie
+    }
+    super.catch(exception, host);
 
     this.logger.error(`Outgoing response (Failure)`, {
       response: {
