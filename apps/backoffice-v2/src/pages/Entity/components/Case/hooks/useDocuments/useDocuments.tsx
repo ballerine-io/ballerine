@@ -87,6 +87,15 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     [],
   );
 
+  const onOpenDocumentInNewTab = useCallback(document => {
+    const url = `${location.href.substring(
+      0,
+      location.toString().indexOf(location.search),
+    )}/document/${document.id}?filterId=${new URLSearchParams(location.search).get('filterId')}`;
+
+    window.open(url, '_blank');
+  });
+
   return {
     crop,
     onCrop,
@@ -101,6 +110,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     onSelectImage,
     documentRotation,
     onRotateDocument,
+    onOpenDocumentInNewTab,
     isRotatedOrTransformed,
     onTransformed,
   };

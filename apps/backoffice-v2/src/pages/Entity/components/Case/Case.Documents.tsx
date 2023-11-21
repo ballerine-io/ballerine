@@ -2,12 +2,11 @@ import 'react-image-crop/dist/ReactCrop.css';
 import { FunctionComponent } from 'react';
 import { ImageViewer } from '../../../../common/components/organisms/ImageViewer/ImageViewer';
 import { IDocumentsProps } from './interfaces';
-import { CheckSvg, XMarkSvg } from '../../../../common/components/atoms/icons';
 import { useDocuments } from './hooks/useDocuments/useDocuments';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import ReactCrop from 'react-image-crop';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
-import { FileText } from 'lucide-react';
+import { ExternalLinkIcon, FileText } from 'lucide-react';
 import { isPdf } from '../../../../common/utils/is-pdf/is-pdf';
 
 /**
@@ -20,7 +19,11 @@ import { isPdf } from '../../../../common/utils/is-pdf/is-pdf';
  *
  * @constructor
  */
-export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoading }) => {
+export const Documents: FunctionComponent<IDocumentsProps> = ({
+  documents,
+  isLoading,
+  hideOpenExternalButton,
+}) => {
   const {
     crop,
     onCrop,
@@ -35,6 +38,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
     onSelectImage,
     documentRotation,
     onRotateDocument,
+    onOpenDocumentInNewTab,
     onTransformed,
     isRotatedOrTransformed,
   } = useDocuments(documents);
@@ -86,6 +90,17 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({ documents, isLoa
           <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
             {!isPdf(selectedImage) && !isLoading && (
               <>
+                {!hideOpenExternalButton && (
+                  <button
+                    type={`button`}
+                    className={ctw(
+                      `btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary`,
+                    )}
+                    onClick={() => onOpenDocumentInNewTab(selectedImage)}
+                  >
+                    <ExternalLinkIcon className={`p-0.5`} />
+                  </button>
+                )}
                 <button
                   type={`button`}
                   className={ctw(
