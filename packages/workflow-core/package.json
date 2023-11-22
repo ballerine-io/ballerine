@@ -30,7 +30,7 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@ballerine/common": "0.5.19",
+    "@ballerine/common": "0.7.16",
     "ajv": "^8.12.0",
     "jmespath": "^0.16.0",
     "json-logic-js": "^2.0.2",
