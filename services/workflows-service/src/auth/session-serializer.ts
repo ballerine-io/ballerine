@@ -4,6 +4,7 @@ import { UserService } from '@/user/user.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { AuthenticatedEntity, TExpires, UserWithProjects } from '@/types';
 import { SessionExpiredException } from '@/errors';
+import { env } from '@/env';
 
 export class SessionSerializer extends PassportSerializer {
   constructor(@Inject('USER_SERVICE') private readonly userService: UserService) {
@@ -15,9 +16,7 @@ export class SessionSerializer extends PassportSerializer {
     done: (err: unknown, user: AuthenticatedEntity & TExpires) => void,
   ) {
     const date = new Date();
-    // TODO: extract from config
-    date.setTime(date.getTime() + 1 * 60 * 1000); // 1m
-    // date.setTime(date.getTime() + 1 * 60 * 60 * 1000); // 1h
+    date.setTime(date.getTime() + env.SESSION_EXPIRATION_IN_MINUTES * 60 * 1000);
 
     done(null, {
       user: {

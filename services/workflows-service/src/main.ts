@@ -113,7 +113,9 @@ async function main() {
       return next();
     }
     req.session.nowInMinutes = Math.floor(dayjs().unix() / 60);
-    req.session.passport.user.expires = dayjs().add(env.SESSION_EXPIRATION_IN_MINUTES, 'minute');
+    req.session.passport.user.expires = dayjs()
+      .add(env.SESSION_EXPIRATION_IN_MINUTES, 'minute')
+      .toDate();
 
     next();
   });
