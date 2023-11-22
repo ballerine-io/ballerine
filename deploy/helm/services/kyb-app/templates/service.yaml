@@ -1,0 +1,18 @@
+{{- if .Values.kybapp.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ .Values.kybapp.nameOverride }}
+    namespace: {{ .Release.Namespace | quote }}
+    labels:
+      app: {{ .Values.kybapp.nameOverride }}
+spec:
+    ports:
+    - name: {{ .Values.kybapp.nameOverride }}
+      port: {{ .Values.kybapp.service.port }}
+      protocol: {{ .Values.kybapp.service.protocol }}
+      targetPort: {{ .Values.kybapp.service.port }}
+    selector:
+        app: {{ .Values.kybapp.nameOverride }}
+    type: {{ .Values.kybapp.service.type }}
+{{- end }}

@@ -1,0 +1,17 @@
+{{- $name := .Release.Name }}
+{{- $namespace:= .Release.Namespace }}
+{{- if .Values.kybapp.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: {{ .Values.kybapp.nameOverride }}
+    namespace: {{ .Release.Namespace | quote }}
+    labels:
+      app: {{ .Values.kybapp.nameOverride }}
+data:
+  {{- range $key, $value := .Values.kybapp.applicationConfig }}
+  {{- if $value }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }}
