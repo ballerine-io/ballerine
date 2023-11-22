@@ -251,8 +251,6 @@ workflowService:
       #     - workflowsvc.ballerine.io
   applicationConfig:
     BCRYPT_SALT: "10"
-    JWT_SECRET_KEY: "secret"
-    JWT_EXPIRATION: "10d"
     DB_URL: ""
     DB_USER: ""
     DB_PASSWORD: ""
@@ -260,6 +258,7 @@ workflowService:
     PORT: "3000"
     COMPOSE_PROJECT_NAME: "ballerine-x"
     SESSION_SECRET: "iGdnj4A0YOhj8dHJK7IWSvQKEZsG7P70FFehuddhFPjtg/bSkzFejYILk4Xue6Ilx9y3IAwzR8pV1gb4"
+    SESSION_EXPIRATION_IN_MINUTES: '60'
     BACKOFFICE_CORS_ORIGIN: "http://localhost:5137"
     HEADLESS_EXAMPLE_CORS_ORIGIN: "http://localhost:5173"
     API_KEY: "secret"
