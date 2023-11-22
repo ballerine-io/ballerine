@@ -10,6 +10,6 @@ dist
 scripts/seed_*.ts
 vite.config.ts.timestamp-*.mjs
 prisma/data-migrations/dev/*
-prisma/data-migrations/default/*
+prisma/data-migrations/common/*
 prisma/data-migrations/sb/*
 prisma/data-migrations/prod/*
