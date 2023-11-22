@@ -651,6 +651,7 @@ export const useTasks = ({
             ],
           },
         ];
+
   const mainRepresentativeBlock =
     Object.keys(mainRepresentative ?? {}).length === 0
       ? []

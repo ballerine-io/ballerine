@@ -5,12 +5,8 @@ import { parsePhoneNumber } from 'libphonenumber-js';
  * @param value
  */
 export const getPhoneNumberFormatter = (value: string) => {
-  let formatter: ReturnType<typeof parsePhoneNumber>;
-
   try {
-    formatter = parsePhoneNumber(value);
-
-    return formatter;
+    return parsePhoneNumber(value);
   } catch {
     return;
   }
