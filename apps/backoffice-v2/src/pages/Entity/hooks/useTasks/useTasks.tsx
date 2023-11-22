@@ -34,6 +34,14 @@ import { includesValues } from '../../../../common/utils/includes-values/include
 import { isPhoneNumberRegex } from '../../../../common/constants';
 import { formatPhoneNumber } from '../../../../common/utils/format-phone-number/format-phone-number';
 
+const pluginsOutputBlacklist = [
+  'companySanctions',
+  'directors',
+  'ubo',
+  'businessInformation',
+  'website_monitoring',
+];
+
 export const useTasks = ({
   workflow,
   entity,
@@ -81,17 +89,12 @@ export const useTasks = ({
       results[docIndex][pageIndex] = docsData?.shift()?.data;
     });
   });
-  const pluginsOutputBlacklist = [
-    'companySanctions',
-    'directors',
-    'ubo',
-    'businessInformation',
-    'website_monitoring',
-  ];
+
   const filteredPluginsOutput = useMemo(
     () => omitPropsFromObject(pluginsOutput, ...pluginsOutputBlacklist),
-    [pluginsOutput, pluginsOutputBlacklist],
+    [pluginsOutput],
   );
+
   const pluginsOutputKeys = Object.keys(filteredPluginsOutput ?? {});
   const address = getAddressDeep(filteredPluginsOutput, {
     propertyName: 'registeredAddressInFull',
