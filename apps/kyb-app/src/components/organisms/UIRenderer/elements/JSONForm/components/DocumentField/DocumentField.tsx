@@ -19,7 +19,7 @@ import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 
-interface DocumentFieldParams {
+export interface DocumentFieldParams {
   documentData: Partial<Document>;
 }
 
@@ -40,14 +40,18 @@ export const DocumentField = (
   const documentDefinition = useMemo(
     () => ({
       ...definition,
-      valueDestination: `document-error-${definition.options.documentData.id}`,
+      valueDestination: `document-error-${serializeDocumentId(
+        definition.options.documentData.id,
+        inputIndex,
+      )}`,
     }),
-    [definition],
+    [definition, inputIndex],
   );
 
   const sendEvent = useEventEmitterLogic(definition);
 
-  const { validationErrors, warnings } = useUIElementErrors(documentDefinition);
+  const getErrorKey = useCallback(() => documentDefinition.valueDestination, [documentDefinition]);
+  const { validationErrors, warnings } = useUIElementErrors(documentDefinition, getErrorKey);
   const { isTouched } = elementState;
 
   const fileId = useMemo(() => {

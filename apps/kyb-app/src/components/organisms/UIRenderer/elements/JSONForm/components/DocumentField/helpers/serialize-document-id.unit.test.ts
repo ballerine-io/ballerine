@@ -3,7 +3,7 @@ import { serializeDocumentId } from '@app/components/organisms/UIRenderer/elemen
 describe('serializeDocumentId', () => {
   it('will populate INDEX placeholder with index', () => {
     expect(serializeDocumentId('some-id-with-[{INDEX}]-of-document', 1)).toBe(
-      'some-id-with-1-of-document',
+      'some-id-with-[index:1]-of-document',
     );
   });
 

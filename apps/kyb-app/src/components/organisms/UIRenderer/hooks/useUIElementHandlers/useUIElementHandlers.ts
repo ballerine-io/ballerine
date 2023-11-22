@@ -19,7 +19,6 @@ export const useUIElementHandlers = (definition: UIElement<AnyObject>) => {
 
       setContext(context);
       emitEvent('onChange');
-      debugger;
     },
     [definition, getContext, setContext, emitEvent],
   );
