@@ -3,7 +3,6 @@ FROM node:18.17.1-bullseye-slim as dev
 RUN apt-get update
 RUN apt update
 RUN apt-get install dumb-init
-RUN apt install curl && apt install zip
 
 WORKDIR /app
 
@@ -31,5 +30,7 @@ COPY --from=dev /app/scripts ./scripts
 COPY --from=dev /app/src ./src
 
 EXPOSE 3000
+
+RUN apt install curl && apt install zip
 
 CMD [ "dumb-init", "npm", "run", "prod" ]
