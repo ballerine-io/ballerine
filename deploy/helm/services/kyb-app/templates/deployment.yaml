@@ -1,0 +1,48 @@
+{{- if .Values.kybapp.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ .Values.kybapp.nameOverride }}
+    namespace: {{ .Release.Namespace | quote }}
+    labels:
+      app: {{ .Values.kybapp.nameOverride }}
+spec:
+    replicas: {{ .Values.kybapp.replicas }}
+    {{- if .Values.kybapp.strategyType }}
+    strategy:
+      type: {{ .Values.kybapp.strategyType }}
+    {{- end }}
+    {{- if .Values.kybapp.updateStrategy }}
+      rollingUpdate:
+        {{- if .Values.kybapp.updateStrategy.maxSurge }}
+        maxSurge: {{ .Values.kybapp.updateStrategy.maxSurge}}
+        {{- end }}
+        {{- if .Values.kybapp.updateStrategy.maxUnavailable }}
+        maxUnavailable: {{ .Values.kybapp.updateStrategy.maxUnavailable }}
+        {{- end }}
+    {{- end }}
+    selector:
+        matchLabels:
+            app: {{ .Values.kybapp.nameOverride }}
+    template:
+        metadata:
+            labels:
+                app: {{ .Values.kybapp.nameOverride }}
+        spec:
+            {{- with .Values.nodeSelector }}
+            nodeSelector:
+            {{- toYaml . | nindent 8 }}
+            {{- end }}
+            containers:
+            - name: {{ .Values.kybapp.nameOverride }}
+              image: "{{ .Values.kybapp.image.registry }}/{{ .Values.kybapp.image.repository }}:{{ .Values.kybapp.image.tag }}"
+              imagePullPolicy: {{ .Values.kybapp.image.pullPolicy }}
+              command: ["nginx", "-g", "daemon off;"]
+              envFrom:
+                - configMapRef:
+                    name: {{ .Values.kybapp.nameOverride }}
+            {{- if .Values.kybapp.image.pullSecrets}}
+            imagePullSecrets:
+              - name: {{ .Values.kybapp.image.pullSecrets }}
+            {{- end }}
+{{- end }}
