@@ -31,8 +31,7 @@ import { getPostUpdateEventName } from './get-post-update-event-name';
 import { motionProps } from './motion-props';
 import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
 import { includesValues } from '../../../../common/utils/includes-values/includes-values';
-import { isPhoneNumberRegex } from '../../../../common/constants';
-import { formatPhoneNumber } from '../../../../common/utils/format-phone-number/format-phone-number';
+import { getPhoneNumberFormatter } from '../../../../common/utils/get-phone-number-formatter/get-phone-number-formatter';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -652,6 +651,7 @@ export const useTasks = ({
             ],
           },
         ];
+
   const mainRepresentativeBlock =
     Object.keys(mainRepresentative ?? {}).length === 0
       ? []
@@ -669,11 +669,16 @@ export const useTasks = ({
               {
                 type: 'details',
                 value: {
-                  data: Object.entries(mainRepresentative)?.map(([title, value]) => ({
-                    title,
-                    value: isPhoneNumberRegex.test(value) ? formatPhoneNumber(value) : value,
-                    isEditable: false,
-                  })),
+                  data: Object.entries(mainRepresentative)?.map(([title, value]) => {
+                    const formatter =
+                      getPhoneNumberFormatter(value) ?? getPhoneNumberFormatter(`+${value}`);
+
+                    return {
+                      title,
+                      value: formatter?.formatInternational() ?? value,
+                      isEditable: false,
+                    };
+                  }),
                 },
                 hideSeparator: true,
               },
@@ -697,10 +702,15 @@ export const useTasks = ({
               {
                 type: 'details',
                 value: {
-                  data: Object.entries(mainContact ?? {})?.map(([title, value]) => ({
-                    title,
-                    value: isPhoneNumberRegex.test(value) ? formatPhoneNumber(value) : value,
-                  })),
+                  data: Object.entries(mainContact ?? {})?.map(([title, value]) => {
+                    const formatter =
+                      getPhoneNumberFormatter(value) ?? getPhoneNumberFormatter(`+${value}`);
+
+                    return {
+                      title,
+                      value: formatter?.formatInternational() ?? value,
+                    };
+                  }),
                 },
                 hideSeparator: true,
               },
