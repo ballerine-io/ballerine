@@ -17,7 +17,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
-  BRANCH_NAME: $${{ github.head_ref || github.ref_name }}
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
   SAFE_BRANCH_NAME: ${{ env.BRANCH_NAME // '/' / '-' }}
 
 jobs:
