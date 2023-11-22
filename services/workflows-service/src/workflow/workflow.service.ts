@@ -8,7 +8,7 @@ import { BusinessRepository } from '@/business/business.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { SortOrder } from '@/common/query-filters/sort-order';
-import { TDocumentWithoutPageType, TDocumentsWithoutPageType } from '@/common/types';
+import { TDocumentsWithoutPageType, TDocumentWithoutPageType } from '@/common/types';
 import { aliasIndividualAsEndUser } from '@/common/utils/alias-individual-as-end-user/alias-individual-as-end-user';
 import { logDocumentWithoutId } from '@/common/utils/log-document-without-id/log-document-without-id';
 import { CustomerService } from '@/customer/customer.service';
@@ -17,7 +17,7 @@ import { EndUserService } from '@/end-user/end-user.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { FileService } from '@/providers/file/file.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
-import { IObjectWithId, InputJsonValue, TProjectId, TProjectIds } from '@/types';
+import { InputJsonValue, IObjectWithId, TProjectId, TProjectIds } from '@/types';
 import { UserService } from '@/user/user.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
@@ -34,12 +34,12 @@ import {
   ChildPluginCallbackOutput,
   ChildToParentCallback,
   ChildWorkflowCallback,
+  createWorkflow,
   HelpersTransformer,
   JmespathTransformer,
   SerializableTransformer,
   THelperFormatingLogic,
   Transformer,
-  createWorkflow,
 } from '@ballerine/workflow-core';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {
@@ -245,10 +245,13 @@ export class WorkflowService {
     if (addNextEvents) {
       const service = createWorkflow({
         runtimeId: workflow.id,
+        // @ts-expect-error - error from Prisma types fix
         definition: workflow.workflowDefinition.definition,
-        definitionType: workflow.workflowDefinition.definitionType,
+        // Might want to change to type string in `createWorkflow` or add a type for `workflowDefinition` of 'statechart-json' | 'bpmn-json'
+        definitionType: workflow.workflowDefinition.definitionType as 'statechart-json',
         workflowContext: {
           machineContext: workflow.context,
+          // @ts-expect-error - error from Prisma types fix
           state: workflow.state ?? workflow.workflowDefinition.definition?.initial,
         },
       });
@@ -256,7 +259,6 @@ export class WorkflowService {
       nextEvents = service.getSnapshot().nextEvents;
     }
 
-    // @ts-expect-error - typescript does not like recurrsion over types
     return {
       ...workflow,
       context: {
@@ -278,6 +280,7 @@ export class WorkflowService {
           : workflow.business.approvalState,
       },
       endUser: undefined,
+      // @ts-expect-error - error from Prisma types fix
       business: undefined,
       nextEvents,
       childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
@@ -312,6 +315,7 @@ export class WorkflowService {
         [childWorkflow.workflowRuntimeData.id]: {
           entityId: childWorkflow.workflowRuntimeData.context.entity.id,
           status: childWorkflow.workflowRuntimeData.status || 'active',
+          state: childWorkflow.workflowRuntimeData.state,
         },
       };
       const parentContext = this.composeContextWithChildResponse(
@@ -878,6 +882,7 @@ export class WorkflowService {
         this.workflowEventEmitter.emit('workflow.completed', {
           runtimeData: updatedWorkflow,
           state: updatedWorkflow.state,
+          // @ts-expect-error - error from Prisma types fix
           entityId: updatedWorkflow.businessId || updatedWorkflow.endUserId,
           correlationId,
         });
@@ -1028,6 +1033,7 @@ export class WorkflowService {
         {
           data: {
             status: 'active',
+            // @ts-expect-error - error from Prisma types fix
             state: parentMachine?.workflowDefinition?.definition?.initial as string,
             context: {
               ...parentMachine?.context,
@@ -1081,6 +1087,7 @@ export class WorkflowService {
       this.workflowEventEmitter.emit('workflow.completed', {
         runtimeData: updatedResult,
         state: currentState ?? updatedResult.state,
+        // @ts-ignore - error from Prisma types fix
         entityId: updatedResult.businessId || updatedResult.endUserId,
         correlationId,
       });
@@ -1456,6 +1463,8 @@ export class WorkflowService {
               documents: documentsWithPersistedImages,
             } as InputJsonValue,
             config: mergedConfig as InputJsonValue,
+            // @ts-expect-error - error from Prisma types fix
+            state: workflowDefinition.definition.initial as string,
             status: 'active',
             workflowDefinitionId: workflowDefinition.id,
             ...(parentWorkflowId &&
@@ -1534,9 +1543,9 @@ export class WorkflowService {
 
       if ('salesforceObjectName' in salesforceData && salesforceData.salesforceObjectName) {
         await this.updateSalesforceRecord({
-          workflowRuntimeData: workflowRuntimeData[0].workflowRuntimeData,
+          workflowRuntimeData,
           data: {
-            KYB_Started_At__c: workflowRuntimeData[0].workflowRuntimeData.createdAt,
+            KYB_Started_At__c: workflowRuntimeData.createdAt,
             KYB_Status__c: 'In Progress',
             KYB_Assigned_Agent__c: '',
           },
@@ -1724,6 +1733,7 @@ export class WorkflowService {
   ) {
     if (!Object.keys(workflowDefinition?.contextSchema ?? {}).length) return;
 
+    // @ts-expect-error - error from Prisma types fix
     const validate = ajv.compile(workflowDefinition?.contextSchema?.schema); // TODO: fix type
     const isValid = validate({
       ...context,
@@ -1767,12 +1777,15 @@ export class WorkflowService {
 
     const service = createWorkflow({
       runtimeId: workflowRuntimeData.id,
+      // @ts-expect-error - error from Prisma types fix
       definition: workflowDefinition.definition,
+      // @ts-expect-error - error from Prisma types fix
       definitionType: workflowDefinition.definitionType,
       workflowContext: {
         machineContext: workflowRuntimeData.context,
         state: workflowRuntimeData.state,
       },
+      // @ts-expect-error - error from Prisma types fix
       extensions: workflowDefinition.extensions,
       invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
         const runnableChildWorkflow = await this.persistChildEvent(
@@ -1841,9 +1854,10 @@ export class WorkflowService {
     }
 
     this.workflowEventEmitter.emit('workflow.state.changed', {
+      // @ts-expect-error - error from Prisma types fix
       entityId,
       state: updatedRuntimeData.state,
-      correlationId: updatedRuntimeData.correlationId,
+      correlationId: updatedRuntimeData.context.ballerineEntityId,
       runtimeData: updatedRuntimeData,
     });
 
@@ -1884,6 +1898,7 @@ export class WorkflowService {
         currentProjectId,
       );
     }
+
     return updatedRuntimeData;
   }
 
@@ -1896,66 +1911,71 @@ export class WorkflowService {
     childRuntimeState?: string,
   ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
+      // @ts-expect-error - error from Prisma types fix
       workflowRuntimeData.parentRuntimeDataId,
       { include: { childWorkflowsRuntimeData: true } },
       projectIds,
     );
+
     const parentWorkflowDefinition = await this.getWorkflowDefinitionById(
       parentWorkflowRuntime.workflowDefinitionId,
       {},
       projectIds,
     );
 
-    const callbackTransformation = (
+    const callbackTransformations = (
       parentWorkflowDefinition?.config
         ?.childCallbackResults as ChildToParentCallback['childCallbackResults']
     )
       // @ts-ignore - fix as childCallbackResults[number]
-      ?.find(childCallbackResult => workflowDefinition.id === childCallbackResult.definitionId);
-    const childWorkflowCallback = (callbackTransformation ||
-      workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
-    const childrenOfSameDefinition = (
-      parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>
-    )?.filter(
-      childWorkflow =>
-        childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
-    );
-    const isPersistableState =
-      !!(
-        childRuntimeState &&
-        childWorkflowCallback.persistenceStates &&
-        childWorkflowCallback.persistenceStates.includes(childRuntimeState)
-      ) || isFinal;
-    if (!isPersistableState) return;
+      ?.filter(childCallbackResult => workflowDefinition.id === childCallbackResult.definitionId)
+      ?.map(async callbackTransformation => {
+        const childWorkflowCallback = (callbackTransformation ||
+          workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
 
-    const parentContext = await this.generateParentContextWithInjectedChildContext(
-      childrenOfSameDefinition,
-      childWorkflowCallback.transformers,
-      parentWorkflowRuntime,
-      workflowDefinition,
-      isPersistableState,
-    );
+        const childrenOfSameDefinition = // @ts-ignore - error from Prisma types fix
+          (parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>)?.filter(
+            childWorkflow =>
+              childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
+          );
 
-    await this.updateWorkflowRuntimeData(
-      parentWorkflowRuntime.id,
-      { context: parentContext },
-      currentProjectId,
-    );
+        const isPersistableState =
+          !!(
+            childRuntimeState &&
+            childWorkflowCallback.persistenceStates &&
+            childWorkflowCallback.persistenceStates.includes(childRuntimeState)
+          ) || isFinal;
 
-    if (
-      childWorkflowCallback.deliverEvent &&
-      parentWorkflowRuntime.status !== 'completed' &&
-      isPersistableState
-    ) {
-      await this.event(
-        {
-          id: parentWorkflowRuntime.id,
-          name: childWorkflowCallback.deliverEvent,
-        },
-        projectIds,
-        currentProjectId,
-      );
-    }
+        if (!isPersistableState) return;
+
+        const parentContext = await this.generateParentContextWithInjectedChildContext(
+          childrenOfSameDefinition,
+          childWorkflowCallback.transformers,
+          parentWorkflowRuntime,
+          workflowDefinition,
+        );
+
+        await this.updateWorkflowRuntimeData(
+          parentWorkflowRuntime.id,
+          { context: parentContext },
+          currentProjectId,
+        );
+
+        if (childWorkflowCallback.deliverEvent && parentWorkflowRuntime.status !== 'completed') {
+          await this.event(
+            {
+              id: parentWorkflowRuntime.id,
+              name: childWorkflowCallback.deliverEvent,
+            },
+            projectIds,
+            currentProjectId,
+          );
+        }
+      });
+
+    if (!callbackTransformations?.length) return;
+
+    await Promise.all(callbackTransformations);
   }
 
   private async generateParentContextWithInjectedChildContext(
@@ -1963,14 +1983,7 @@ export class WorkflowService {
     transformers: ChildWorkflowCallback['transformers'],
     parentWorkflowRuntime: WorkflowRuntimeData,
     workflowDefinition: WorkflowDefinition,
-    isPersistableToParent: boolean,
   ) {
-    if (!isPersistableToParent)
-      return this.composeContextWithChildResponse(
-        parentWorkflowRuntime.context,
-        workflowDefinition.id,
-      );
-
     const transformerInstance = (transformers || []).map((transformer: SerializableTransformer) =>
       this.initiateTransformer(transformer),
     );
@@ -1988,7 +2001,8 @@ export class WorkflowService {
       }
       contextToPersist[childWorkflow.id] = {
         entityId: childWorkflow.context.entity.id,
-        status: childContextToPersist.status,
+        status: childWorkflow.status,
+        state: childWorkflow.state,
         result: childContextToPersist,
       };
     }
@@ -2093,8 +2107,11 @@ export class WorkflowService {
     };
   }) {
     return await this.salesforceService.updateRecord({
+      // @ts-expect-error - error from Prisma types fix
       projectId: workflowRuntimeData.projectId,
+      // @ts-expect-error - error from Prisma types fix
       objectName: workflowRuntimeData.salesforceObjectName,
+      // @ts-expect-error - error from Prisma types fix
       recordId: workflowRuntimeData.salesforceRecordId,
       data,
     });

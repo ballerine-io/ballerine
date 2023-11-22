@@ -26,6 +26,7 @@ import { isValidDate } from '../../../../common/utils/is-valid-date';
 import { isValidIsoDate } from '../../../../common/utils/is-valid-iso-date/is-valid-iso-date';
 import { JsonDialog } from '@ballerine/ui';
 import { toTitleCase } from 'string-ts';
+import { isValidDatetime } from '../../../../common/utils/is-valid-datetime';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -129,7 +130,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       type: string | undefined;
       value: unknown;
     }) => {
-      if (format === 'date-time') {
+      if (format === 'date-time' || isValidDatetime(value)) {
         return 'datetime-local';
       }
 
@@ -198,14 +199,14 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
               const displayValue = (value: unknown) => {
                 if (isEditable) return originalValue;
 
-                return isNullish(value) || value === '' ? 'Unavailable' : value;
+                return isNullish(value) || value === '' ? 'N/A' : value;
               };
 
               const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
                 const isCheckbox = event.target.type === 'checkbox';
                 const inputValue = isCheckbox ? event.target.checked : event.target.value;
 
-                form.setValue(title, inputValue === 'Unavailable' ? '' : inputValue);
+                form.setValue(title, inputValue === 'N/A' ? '' : inputValue);
               };
 
               return (
@@ -313,6 +314,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                                     isDecisionComponent,
                                     field.value,
                                   ),
+                                  'text-slate-400': isNullish(field.value) || field.value === '',
                                 },
                               )}
                               {...(pattern && { pattern })}

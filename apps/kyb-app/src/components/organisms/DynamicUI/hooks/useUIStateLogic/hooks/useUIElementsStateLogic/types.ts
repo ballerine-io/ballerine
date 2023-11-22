@@ -4,6 +4,7 @@ export interface UIElementState {
   isLoading?: boolean;
   isCompleted?: boolean;
   isTouched?: boolean;
+  isDisabled?: boolean;
 }
 
 export interface UIElementsState {

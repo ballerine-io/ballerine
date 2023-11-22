@@ -51,6 +51,7 @@ const validationSchema = {
               minimum: 1,
               maximum: 100000,
               errorMessage: {
+                type: 'Number of employees is required.',
                 required: 'Number of employees is required.',
                 minimum: 'Number of employees must be at least 1.',
                 maximum: 'Number of employees cannot exceed 100,000.',
@@ -133,6 +134,7 @@ const dispatchOpenCorporateRule = {
             registrationNumber: {
               type: 'string',
               minLength: 6,
+              maxLength: 20,
             },
             country: {
               type: 'string',
@@ -199,7 +201,7 @@ export const BusinessInfoPage = {
   type: 'page',
   number: 2, // routing number of page
   stateName: 'business_information', // this is the route from xstate
-  name: 'Company Information', // page name ( in stepper )
+  name: 'Business Information', // page name ( in stepper )
   pageValidation: [
     {
       type: 'json-schema',
@@ -437,7 +439,7 @@ export const BusinessInfoPage = {
   actions: [
     {
       type: 'definitionPlugin',
-      params: { pluginName: 'fetch_company_information' },
+      params: { pluginName: 'fetch_company_information', debounce: 700 },
       dispatchOn: {
         uiEvents: [
           { event: 'onChange', uiElementName: 'registration-number-input' },

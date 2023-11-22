@@ -5,7 +5,6 @@ import {
   StrategyParams,
 } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/insert-strategies/abstract.insertion-strategy';
 import { InsertionParams } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/types';
-import { Rule } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
 export class InsertStrategyRunner {
@@ -18,18 +17,6 @@ export class InsertStrategyRunner {
     insertionStrategies.forEach(strategy =>
       this.strategiesMap.set(strategy.STRATEGY_TYPE, strategy),
     );
-  }
-
-  run<TContext extends AnyObject>(context: TContext, params: InsertionParams): TContext {
-    const isCanInsert = this.executeRules(context, params.insertWhen);
-    const isCanRemove = this.executeRules(context, params.removeWhen);
-
-    if (!isCanInsert && !isCanRemove) return context;
-
-    if (isCanInsert) return this.runInsertion(context, params);
-    if (isCanRemove) return this.runRemoval(context, params);
-
-    return context;
   }
 
   runInsertion<TContext extends AnyObject>(context: TContext, params: InsertionParams): TContext {
@@ -62,23 +49,9 @@ export class InsertStrategyRunner {
     const params: StrategyParams = {
       schema: inputParams.schema,
       destination: inputParams.destination,
+      bindingAnchorDestination: inputParams.bindingAnchorDestination,
     };
 
     return params;
-  }
-
-  private executeRules(context: unknown, rules: Rule[]) {
-    if (!rules.length) return true;
-
-    return rules.every(rule => {
-      const ruleEngine = this.engineManager.getEngine(rule.type);
-
-      if (!ruleEngine) {
-        console.warn(`Rule engine with type: ${rule.type} not found.`);
-        return false;
-      }
-
-      return ruleEngine.test(context, rule);
-    });
   }
 }

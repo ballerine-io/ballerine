@@ -2,7 +2,7 @@ import { CollectionFlowService } from '@/collection-flow/collection-flow.service
 import { Public } from '@/common/decorators/public.decorator';
 import { ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
-import { FILE_SIZE_EXCEEDED_MSG, fileFilter } from '@/storage/file-filter';
+import { FILE_SIZE_EXCEEDED_MSG, fileFilter, FILE_MAX_SIZE_IN_BYTE } from '@/storage/file-filter';
 import { getDiskStorage } from '@/storage/get-file-storage-manager';
 import { StorageService } from '@/storage/storage.service';
 import {
@@ -20,7 +20,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import * as errors from '../../errors';
-import { FILE_MAX_SIZE_IN_BYTE } from './../../storage/file-filter';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 
 export const COLLECTION_FLOW_FILES_API_PATH = 'collection-flow/files';

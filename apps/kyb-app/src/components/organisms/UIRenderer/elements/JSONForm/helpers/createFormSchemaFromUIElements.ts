@@ -16,6 +16,7 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
     'ui:submitButtonOptions': {
       norender: true,
     },
+    titleTemplate: 'blah',
   };
 
   if (formSchema.type === 'object') {
@@ -46,14 +47,17 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
   }
 
   if (formSchema.type === 'array') {
+    uiSchema.titleTemplate = formElement.options?.uiSchema?.titleTemplate as string;
     formSchema.items = {
       type: 'object',
       required: formElement.options?.jsonFormDefinition?.required,
+      title: formElement.options?.jsonFormDefinition?.title,
       properties: {},
     };
-
     //@ts-ignore
-    uiSchema.items = {} as AnyObject;
+    uiSchema.items = {
+      'ui:label': false,
+    } as AnyObject;
 
     (formElement.elements as UIElement<JSONFormElementBaseParams>[])?.forEach(uiElement => {
       if (!uiElement.options?.jsonFormDefinition) return;
