@@ -67,10 +67,10 @@ importers:
         specifier: 0.3.14
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.20
+        specifier: 0.5.21
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.20
+        specifier: 0.5.21
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -350,7 +350,7 @@ importers:
         specifier: 0.3.14
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.20
+        specifier: 0.5.21
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -733,7 +733,7 @@ importers:
         specifier: 0.7.22
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.20
+        specifier: 0.5.21
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1685,7 +1685,7 @@ importers:
         specifier: 0.7.22
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.20
+        specifier: 0.5.21
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -1818,7 +1818,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.5.20
+        specifier: 0.5.21
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2057,10 +2057,10 @@ importers:
         specifier: 0.7.22
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.20
+        specifier: 0.5.21
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.20
+        specifier: 0.5.21
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
