@@ -33,6 +33,7 @@ export const useSearch = <TArray extends AnyArray>({
     setSearchParams({
       search: debouncedSearch,
       page: 1,
+      pageSize: debouncedSearch ? 1000 : 50,
     });
   }, [debouncedSearch]);
 
