@@ -56,7 +56,6 @@ export const useActionsProcessingLogic = (
 
         if (action.params?.debounce) {
           toggleElementsLockState(relevantElementNames, true);
-
           const updatedContext = await actionHandler.run(context, action, apiRef.current);
           apiRef.current.setContext(updatedContext);
 

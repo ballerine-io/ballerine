@@ -1,5 +1,6 @@
 import { useEventEmitterLogic } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
 import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useUIElementToolsLogic } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/hooks/useUIElementToolsLogic';
 import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
 import { DocumentValueDestinationParser } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/document-value-destination-parser';
@@ -28,6 +29,7 @@ export const DocumentField = (
     inputIndex: number | null;
   },
 ) => {
+  const { state } = useDynamicUIContext();
   const { definition, formData, inputIndex, onBlur, ...restProps } = props;
   const { stateApi } = useStateManagerContext();
   const { payload } = useStateManagerContext();
@@ -72,7 +74,7 @@ export const DocumentField = (
     const fileId = get(documentPage, fileIdPath) as string | null;
 
     return fileId;
-  }, [payload.documents, definition, inputIndex]);
+  }, [payload, definition, inputIndex]);
   useFileRepository(collectionFlowFileStorage, fileId);
 
   useLayoutEffect(() => {
@@ -137,7 +139,7 @@ export const DocumentField = (
       const context = stateApi.getContext();
       const documents = (get(context, pathToDocumentsList) as Document[]) || [];
 
-      let document = (context.documents as Document[]).find(
+      let document = documents.find(
         document =>
           document &&
           document.id === serializeDocumentId(definition.options.documentData.id, inputIndex),
@@ -176,7 +178,9 @@ export const DocumentField = (
     <div className="flex flex-col gap-2">
       <FileUploaderField
         uploadFile={fileUploader}
-        disabled={elementState.isLoading || restProps.disabled}
+        disabled={
+          state.isRevision && warnings.length ? false : elementState.isLoading || restProps.disabled
+        }
         fileId={fileId}
         fileRepository={collectionFlowFileStorage}
         onBlur={onBlur as () => void}

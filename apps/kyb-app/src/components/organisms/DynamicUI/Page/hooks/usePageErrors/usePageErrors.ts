@@ -1,8 +1,5 @@
 import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
-import {
-  findDefinitionByDestinationPath,
-  findDocumentDefinitionById,
-} from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
+import { findDocumentDefinitionById } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
 import { Document, UIElement, UIPage } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
@@ -44,19 +41,16 @@ export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] 
         ...((context.documents as Document[]) || []),
         ...selectDirectorsDocuments(context),
       ]
-        .filter((document, index) => {
+        .filter(document => {
           if (
             !(document?.decision?.status == 'revision' || document?.decision?.status == 'rejected')
           ) {
             return false;
           }
 
-          const documentPath = `documents[${index}].pages[0].ballerineFileId`;
+          const definition = findDocumentDefinitionById(document.id, pageError._elements);
 
-          return Boolean(
-            findDefinitionByDestinationPath(documentPath, pageError._elements) ||
-              findDocumentDefinitionById(document.id, pageError._elements),
-          );
+          return Boolean(definition);
         })
         .map(document => {
           const documentPath = `document-error-${document.id}`;

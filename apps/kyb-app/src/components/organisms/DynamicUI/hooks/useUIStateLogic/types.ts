@@ -2,5 +2,6 @@ import { UIElementsState } from '@app/components/organisms/DynamicUI/hooks/useUI
 
 export interface UIState {
   isLoading: boolean;
+  isRevision?: boolean;
   elements: UIElementsState;
 }

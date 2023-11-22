@@ -48,6 +48,11 @@ export const CollectionFlowDumb = () => {
   const definition = schema?.definition.definition;
 
   const pageErrors = usePageErrors(context ?? {}, elements);
+  const isRevision = useMemo(
+    () => pageErrors.some(error => error.errors?.some(error => error.type === 'warning')),
+    [pageErrors],
+  );
+
   const filteredNonEmptyErrors = pageErrors?.filter(pageError => !!pageError.errors.length);
   const initialContext: CollectionFlowContext = useMemo(() => {
     const appState =
@@ -67,8 +72,8 @@ export const CollectionFlowDumb = () => {
   }, []);
 
   const initialUIState = useMemo(() => {
-    return prepareInitialUIState(elements || [], context || {});
-  }, [elements, context]);
+    return prepareInitialUIState(elements || [], context || {}, isRevision);
+  }, [elements, context, isRevision]);
 
   if (initialContext.flowConfig?.appState === 'approved') return <Approved />;
   if (initialContext.flowConfig?.appState == 'rejected') return <Rejected />;
@@ -93,6 +98,15 @@ export const CollectionFlowDumb = () => {
                     <DynamicUI.TransitionListener
                       onNext={(tools, prevState) => {
                         tools.setElementCompleted(prevState, true);
+                        const context = stateApi.getContext() as CollectionFlowContext;
+                        if (!context.flowConfig?.completedSteps) {
+                          context.flowConfig.completedSteps = [prevState];
+                        } else {
+                          if (context.flowConfig.completedSteps.includes(prevState)) return;
+                          context.flowConfig.completedSteps.push(prevState);
+                        }
+
+                        stateApi.setContext(context);
                       }}
                     >
                       <DynamicUI.ActionsHandler actions={currentPage.actions} stateApi={stateApi}>

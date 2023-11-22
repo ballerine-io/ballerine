@@ -13,12 +13,13 @@ export const useUIStateLogic = (initialState?: UIState) => {
 
   const uiState: UIState = useMemo(() => {
     const state: UIState = {
+      ...initialState,
       elements: uiElementsState,
       isLoading,
     };
 
     return state;
-  }, [uiElementsState, isLoading]);
+  }, [uiElementsState, isLoading, initialState]);
 
   const overrideUIState: UIStateSetter = useCallback(
     (newState: UIState) => {

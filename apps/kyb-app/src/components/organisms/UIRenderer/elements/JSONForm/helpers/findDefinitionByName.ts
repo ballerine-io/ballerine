@@ -61,3 +61,23 @@ export const findDocumentDefinitionById = (
 
   return undefined;
 };
+
+export const getAllDefinitions = (elements: UIElement<AnyObject>[]) => {
+  const items: UIElement<AnyObject>[] = [];
+
+  const run = (elements: UIElement<AnyObject>[]) => {
+    for (const element of elements) {
+      if (element.valueDestination) {
+        items.push(element);
+      }
+
+      if (element.elements) {
+        run(element.elements);
+      }
+    }
+  };
+
+  run(elements);
+
+  return items;
+};
