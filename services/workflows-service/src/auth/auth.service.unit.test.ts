@@ -5,7 +5,6 @@ import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login';
 import { PasswordService } from './password/password.service';
-import { TokenService } from './token/token.service';
 import { VALID_ID } from './tests/constants';
 
 const VALID_CREDENTIALS: LoginDto = {
@@ -23,8 +22,6 @@ const USER = {
   roles: ['admin'],
   updatedAt: new Date(),
 };
-
-const SIGN_TOKEN = 'SIGN_TOKEN';
 
 const userService = {
   getByEmail(email: string): any | null {
@@ -44,12 +41,6 @@ const passwordService = {
   },
 };
 
-const tokenService = {
-  createToken() {
-    return SIGN_TOKEN;
-  },
-};
-
 describe('AuthService', () => {
   //ARRANGE
   let service: AuthService;
@@ -63,10 +54,6 @@ describe('AuthService', () => {
         {
           provide: PasswordService,
           useValue: passwordService,
-        },
-        {
-          provide: TokenService,
-          useValue: tokenService,
         },
         AuthService,
       ],
