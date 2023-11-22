@@ -70,7 +70,10 @@ import {
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
 import { WorkflowDefinitionRepository } from './workflow-definition.repository';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
-import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import {
+  ArrayMergeOption,
+  WorkflowRuntimeDataRepository,
+} from './workflow-runtime-data.repository';
 
 type TEntityId = string;
 
@@ -844,6 +847,7 @@ export class WorkflowService {
       workflowId,
       this.updateDocumentInContext(runtimeData.context, newDocument, documentsUpdateContextMethod),
       [projectId],
+      documentsUpdateContextMethod === 'director' ? 'by_index' : 'by_id',
     );
 
     const updatedDocuments = this.getDocuments(
@@ -948,24 +952,29 @@ export class WorkflowService {
 
   private getDirectorsDocuments(context: WorkflowRuntimeData['context']): any[] {
     return (
-      ((context?.entity?.data?.additionalInfo?.directors as any[]) || [])
+      this.getDirectors(context)
         .map(director => director.additionalInfo?.documents)
         .filter(Boolean)
         .flat() || ([] as any[])
     );
   }
 
+  private getDirectors(context: WorkflowRuntimeData['context']): any[] {
+    return (context?.entity?.data?.additionalInfo?.directors as any[]) || [];
+  }
+
   async updateContextById(
     id: string,
     context: WorkflowRuntimeData['context'],
     projectIds: TProjectIds,
+    mergeBy: ArrayMergeOption = 'by_id',
   ) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(id, {}, projectIds);
     const correlationId = await this.getCorrelationIdFromWorkflow(runtimeData, projectIds);
     const updatedRuntimeData = await this.workflowRuntimeDataRepository.updateContextById(
       id,
       context,
-      undefined,
+      mergeBy,
       projectIds,
     );
 

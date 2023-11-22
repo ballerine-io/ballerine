@@ -23,4 +23,5 @@ export interface IDetailsProps {
       maximum?: string;
     }>;
   };
+  onSubmit?: (document: AnyObject) => void;
 }

@@ -17,7 +17,6 @@ RETURNS jsonb AS $$
   const mergeArraysById = (arr1, arr2) => {
     const combined = [...arr1, ...arr2];
     const ids = Array.from(new Set(combined.map(item => item.id)));
-
     return ids.map(id => {
       const sameIdItems = combined.filter(item => item.id === id);
       return sameIdItems.reduce(mergeObjects, {});
@@ -50,9 +49,15 @@ RETURNS jsonb AS $$
       if (array_merge_option === 'replace') {
         return val2;
       } else {
+
         switch (array_merge_option) {
-          case 'by_id':
+          case 'by_id': {
+            // Merging arrays of primitives using by_index strategy
+            if(val1.some(val => !Boolean(val?.id)) || val2.some(val => !Boolean(val?.id))) {
+               return mergeArraysByIndex(val1, val2)
+            }
             return mergeArraysById(val1, val2);
+          }
           case 'by_index':
             return mergeArraysByIndex(val1, val2);
           case 'concat':
@@ -71,9 +76,15 @@ RETURNS jsonb AS $$
             result[key] = val2[key];
           } else {
               switch (array_merge_option) {
-                case 'by_id':
+                case 'by_id': {
+                  // Merging arrays of primitives using by_index strategy
+                  if(val1[key]?.some(val => !Boolean(val?.id)) || val2[key]?.some(val => !Boolean(val?.id))) {
+                    result[key] = mergeArraysByIndex(val1[key], val2[key])
+                    break;
+                  }
                   result[key] = mergeArraysById(val1[key] || [], val2[key]);
                   break;
+                }
                 case 'by_index':
                   result[key] = mergeArraysByIndex(val1[key] || [], val2[key]);
                   break;

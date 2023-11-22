@@ -14,6 +14,7 @@ export const Details: FunctionComponent<IDetailsProps> = ({
   hideSeparator,
   documents,
   contextUpdateMethod,
+  onSubmit,
 }) => {
   const { entityId } = useParams();
   const filterId = useFilterId();
@@ -35,6 +36,7 @@ export const Details: FunctionComponent<IDetailsProps> = ({
         title={value?.title}
         data={value?.data}
         contextUpdateMethod={contextUpdateMethod}
+        onSubmit={onSubmit}
       />
       {!hideSeparator && <Separator className={`my-2`} />}
     </div>

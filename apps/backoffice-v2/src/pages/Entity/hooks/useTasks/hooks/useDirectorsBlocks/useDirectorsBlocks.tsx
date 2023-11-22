@@ -26,6 +26,7 @@ export const useDirectorsBlocks = (
     workflow.id,
     getPostUpdateEventName(workflow),
   );
+
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
   const { noAction } = useCaseDecision();
@@ -247,7 +248,14 @@ export const useDirectorsBlocks = (
           ],
         };
       });
-  }, [directors, documentFiles, documentImages, handleRevisionDecisionsReset, workflow]);
+  }, [
+    directors,
+    documentFiles,
+    documentImages,
+    handleRevisionDecisionsReset,
+    workflow,
+    caseState.writeEnabled,
+  ]);
 
   return blocks;
 };

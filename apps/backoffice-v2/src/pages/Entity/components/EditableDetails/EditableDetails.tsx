@@ -43,6 +43,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   title,
   workflowId,
   contextUpdateMethod = 'base',
+  onSubmit: onSubmitCallback,
 }) => {
   const [formData, setFormData] = useState(data);
   const POSITIVE_VALUE_INDICATOR = ['approved'];
@@ -116,6 +117,8 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       category: formData.category,
       properties: properties,
     };
+
+    onSubmitCallback && onSubmitCallback(newDocument);
 
     return onMutateTaskDecisionById({
       document: newDocument,

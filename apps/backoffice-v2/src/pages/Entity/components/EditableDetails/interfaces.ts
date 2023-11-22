@@ -1,3 +1,4 @@
+import { AnyObject } from '@ballerine/ui';
 import { TDropdownOption } from './types';
 
 export interface IEditableDetails {
@@ -23,4 +24,5 @@ export interface IEditableDetails {
   title: string;
   workflowId: string;
   contextUpdateMethod?: 'base' | 'director';
+  onSubmit?: (document: AnyObject) => void;
 }
