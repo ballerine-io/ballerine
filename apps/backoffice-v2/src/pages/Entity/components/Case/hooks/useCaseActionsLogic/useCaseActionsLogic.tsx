@@ -69,7 +69,7 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
 
   const tag = useMemo(() => {
     return workflow?.tags?.find(t => tagToBadgeData[t]);
-  }, [workflow]);
+  }, [workflow]) as keyof typeof tagToBadgeData;
 
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
   const documentsToReviseCount = workflow?.context?.documents?.filter(
