@@ -102,6 +102,7 @@ jobs:
           tags: ${{ steps.branchmeta.outputs.tags }}
 
       - name: Scan Docker Image
+        if: "!contains(env.BRANCH_NAME, '/')"
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BRANCH_NAME }}'
