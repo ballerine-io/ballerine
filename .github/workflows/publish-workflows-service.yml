@@ -29,8 +29,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install jq
-        run: sudo apt-get install jq
+      - name: Update and Install dependencies
+        run: sudo apt update && sudo apt install curl && sudo apt install zip && sudo apt-get install jq
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -55,9 +55,6 @@ jobs:
 
       - name: Print the version
         run: echo "The version was ${{ steps.get_version.outputs.version }}"
-
-      - name: Update and Install dependencies
-        run: apt update && apt install curl && apt install zip
 
       - name: Extract metadata for non Prod Docker images
         if: github.ref != 'refs/heads/prod'
