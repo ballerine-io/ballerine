@@ -31,8 +31,28 @@ backoffice:
     registry: ghcr.io
     repository: 'ballerine-io/backoffice'
     pullPolicy: Always
-    pullSecrets: ''
-    tag: 'dev'
+    pullSecrets: ""
+    tag: "dev"
+  ingress:
+    enabled: true
+    className: "nginx"
+    pathtype: Prefix
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      ingress.annotations.service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "<your aws acm arn>"
+      # acme.cert-manager.io/http01-edit-in-place: "true"
+      # cert-manager.io/common-name: backoffice.ballerine.io
+      # cert-manager.io/cluster-issuer: letsencrypt-staging
+      # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/limit-rps: "15"
+    hosts:
+      - host: backoffice.dev.eu.ballerine.app
+        paths:
+          - path: /
+    tls: false
+      # - secretName: letsencrypt-staging
+      #   hosts:
+      #     - backoffice.ballerine.io
 
 headlessexample:
   enabled: true
@@ -50,8 +70,67 @@ headlessexample:
     registry: ghcr.io
     repository: 'ballerine-io/headless-example'
     pullPolicy: Always
-    pullSecrets: ''
-    tag: 'dev'
+    pullSecrets: ""
+    tag: "dev"
+  ingress:
+    enabled: true
+    className: "nginx"
+    pathtype: Prefix
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      ingress.annotations.service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "<your aws acm arn>"
+      # acme.cert-manager.io/http01-edit-in-place: "true"
+      # cert-manager.io/cluster-issuer: letsencrypt-staging
+      # cert-manager.io/common-name: headlessexample.ballerine.io
+      # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/limit-rps: "15"
+    hosts:
+      - host: headlessexample.dev.eu.ballerine.app
+        paths:
+          - path: /
+    tls: {}
+      # - secretName: letsencrypt-staging
+      #   hosts:
+      #     - headlessexample.ballerine.io
+
+kybapp:
+  enabled: true
+  replicas: 1
+  strategyType: RollingUpdate
+  updateStrategy:
+    maxSurge: 1
+    maxUnavailable: "0"
+  nameOverride: kybapp
+  service:
+    port: 80
+    type: ClusterIP
+    protocol: TCP
+  image:
+    registry: ghcr.io
+    repository: "ballerine-io/kyb-app"
+    pullPolicy: Always
+    pullSecrets: ""
+    tag: "dev"
+  ingress:
+    enabled: true
+    className: "nginx"
+    pathtype: Prefix
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      ingress.annotations.service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "<your aws acm arn>"
+      # acme.cert-manager.io/http01-edit-in-place: "true"
+      # cert-manager.io/cluster-issuer: letsencrypt-staging
+      # cert-manager.io/common-name: workflowdashboard.ballerine.io
+      # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/limit-rps: "15"
+    hosts:
+      - host: kyb.dev.eu.ballerine.app
+        paths:
+          - path: /
+    tls: {}
+      # - secretName: letsencrypt-staging
+      #   hosts:
+      #     - headlessexample.ballerine.io
 
 workflowsdashboard:
   enabled: true
@@ -69,8 +148,28 @@ workflowsdashboard:
     registry: ghcr.io
     repository: 'ballerine-io/workflows-dashboard'
     pullPolicy: Always
-    pullSecrets: ''
-    tag: 'dev'
+    pullSecrets: ""
+    tag: "dev"
+  ingress:
+    enabled: true
+    className: "nginx"
+    pathtype: Prefix
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      ingress.annotations.service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "<your aws acm arn>"
+      # acme.cert-manager.io/http01-edit-in-place: "true"
+      # cert-manager.io/cluster-issuer: letsencrypt-staging
+      # cert-manager.io/common-name: workflowdashboard.ballerine.io
+      # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/limit-rps: "15"
+    hosts:
+      - host: workflowdashboard.dev.eu.ballerine.app
+        paths:
+          - path: /
+    tls: {}
+      # - secretName: letsencrypt-staging
+      #   hosts:
+      #     - workflowdashboard.ballerine.io
 
 websocketService:
   enabled: true
@@ -80,7 +179,6 @@ websocketService:
     maxSurge: 1
     maxUnavailable: '0'
   nameOverride: websocketservice
-  migration: true
   service:
     port: 3500
     type: ClusterIP
@@ -89,7 +187,24 @@ websocketService:
     registry: ghcr.io
     repository: 'ballerine-io/websocket-service'
     pullPolicy: Always
-    tag: 'dev'
+    tag: "dev"
+  ingress:
+    enabled: true
+    className: "nginx"
+    pathtype: Prefix
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      ingress.annotations.service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "<your aws acm arn>"
+      # acme.cert-manager.io/http01-edit-in-place: "true"
+      # cert-manager.io/cluster-issuer: letsencrypt-staging
+      # cert-manager.io/common-name: websocket.ballerine.io
+      # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/limit-rps: "15"
+    tls : {}
+    hosts:
+      - host: websocket.dev.eu.ballerine.app
+        paths:
+          - path: /
   applicationConfig:
     PORT: 3500
     NODE_ENV: development
@@ -112,23 +227,46 @@ workflowService:
     registry: ghcr.io
     repository: 'ballerine-io/workflows-service'
     pullPolicy: Always
-    pullSecrets: ''
-    tag: 'dev'
+    pullSecrets: ""
+    tag: "dev"
+  ingress:
+    enabled: true
+    className: "nginx"
+    pathtype: Prefix
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      ingress.annotations.service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "<your aws acm arn>"
+      # acme.cert-manager.io/http01-edit-in-place: "true"
+      # cert-manager.io/cluster-issuer: letsencrypt-staging
+      # cert-manager.io/common-name: workflowsvc.ballerine.io
+      # nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/limit-rps: "15"
+    hosts:
+      - host: workflowsvc.dev.eu.ballerine.app
+        paths:
+          - path: /
+    tls: {}
+      # - secretName: letsencrypt-staging
+      #   hosts:
+      #     - workflowsvc.ballerine.io
   applicationConfig:
-    BCRYPT_SALT: '10'
-    DB_URL: ''
-    DB_USER: ''
-    DB_PASSWORD: ''
-    DB_PORT: '5432'
-    PORT: '3000'
-    ENVIRONMENT_NAME: 'development'
-    COMPOSE_PROJECT_NAME: 'ballerine-x'
-    SESSION_SECRET: 'iGdnj4A0YOhj8dHJK7IWSvQKEZsG7P70FFehuddhFPjtg/bSkzFejYILk4Xue6Ilx9y3IAwzR8pV1gb4'
+    BCRYPT_SALT: "10"
+    DB_URL: ""
+    DB_USER: ""
+    DB_PASSWORD: ""
+    DB_PORT: "5432"
+    PORT: "3000"
+    COMPOSE_PROJECT_NAME: "ballerine-x"
+    SESSION_SECRET: "iGdnj4A0YOhj8dHJK7IWSvQKEZsG7P70FFehuddhFPjtg/bSkzFejYILk4Xue6Ilx9y3IAwzR8pV1gb4"
     SESSION_EXPIRATION_IN_MINUTES: '60'
-    BACKOFFICE_CORS_ORIGIN: 'http://localhost:5137'
-    API_KEY: 'secret'
-    NODE_ENV: 'development'
-    SENTRY_DSN: ''
-    WEBHOOK_SECRET: 'webhook_secret'
-    WORKFLOW_DASHBOARD_CORS_ORIGIN: 'http://localhost:5200'
-    KYB_EXAMPLE_CORS_ORIGIN: 'http://localhost:5201'
+    BACKOFFICE_CORS_ORIGIN: "http://localhost:5137"
+    HEADLESS_EXAMPLE_CORS_ORIGIN: "http://localhost:5173"
+    API_KEY: "secret"
+    NODE_ENV: "development"
+    SENTRY_DSN: ""
+    WEBHOOK_URL: ""
+    WEBHOOK_SECRET: "webhook_secret"
+    WORKFLOW_DASHBOARD_CORS_ORIGIN: "http://localhost:5200"
+    KYB_EXAMPLE_CORS_ORIGIN: "http://localhost:5201"
+    APP_API_URL: https://alon.ballerine.dev
+    UNIFIED_API_URL: "https://unified-api-test.eu.ballerine.app"
