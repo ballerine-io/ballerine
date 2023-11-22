@@ -30,6 +30,6 @@ COPY --from=dev /app/src ./src
 
 EXPOSE 3000
 
-RUN apt update && \ apt install curl && apt install zip
+RUN apt-get install -y curl zip
 
 CMD [ "dumb-init", "npm", "run", "prod" ]
