@@ -18,7 +18,8 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
   BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-  SAFE_BRANCH_NAME: ${{ github.head_ref || github.ref_name | sed 's/\//-/g' }}
+run: |
+  echo "SAFE_BRANCH_NAME=$(echo $env.BRANCH_NAME | sed 's/\//-/g')" >> $GITHUB_ENV
 
 jobs:
   build-and-push-image:
