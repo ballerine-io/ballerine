@@ -8,7 +8,7 @@ export class DataMigrationRepository {
 
   async getLatestTimestamp() {
     return await this.prisma.dataMigrationVersion.findFirst({
-      where: { success: true },
+      where: { status: 'completed' },
       orderBy: {
         version: 'desc',
       },

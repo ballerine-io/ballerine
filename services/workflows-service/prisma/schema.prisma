@@ -375,13 +375,18 @@ model WorkflowRuntimeDataToken {
   deletedAt             DateTime?
 }
 
+enum DataVersionStatus {
+  completed
+  failed
+}
+
 model DataMigrationVersion {
-  id            Int      @id @default(autoincrement())
+  id            Int               @id @default(autoincrement())
   version       String
-  migratedAt    DateTime @default(now())
-  success       Boolean  @default(true)
+  migratedAt    DateTime          @default(now())
+  status        DataVersionStatus @default(completed)
   failureReason String?
 
   @@index([migratedAt])
-  @@index([success, version])
+  @@index([status, version])
 }

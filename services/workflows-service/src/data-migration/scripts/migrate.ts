@@ -18,6 +18,7 @@ interface IMigrationProcess {
 
 const fetchMigrationFiles = async (migrationFolderPath: string) => {
   if (!fs.existsSync(migrationFolderPath)) {
+    console.log(`Missing Migration Folder ${migrationFolderPath}`);
     return [];
   }
 
@@ -79,19 +80,30 @@ export const migrate = async () => {
       await dataMigrationRepository.create({
         data: {
           version: migrationVersion,
-          success: true,
+          status: 'completed',
         },
       });
     } catch (error) {
-      await dataMigrationRepository.create({
-        data: {
-          version: migrationVersion,
-          success: false,
-          failureReason: `Error in migration file: ${migrationProcess.fileName}: ${
-            isErrorWithMessage(error) && error.message
-          }`,
-        },
-      });
+      if (error instanceof Error) {
+        await dataMigrationRepository.create({
+          data: {
+            version: migrationVersion,
+            status: 'failed',
+            failureReason: `Error in migration file: ${migrationProcess.fileName}: ${
+              isErrorWithMessage(error) && error.message
+            } ${error.stack}`,
+          },
+        });
+      } else {
+        await dataMigrationRepository.create({
+          data: {
+            version: migrationVersion,
+            status: 'failed',
+            failureReason: `Error in migration file: ${migrationProcess.fileName}, ${error}`,
+          },
+        });
+      }
+
       throw error;
     }
   }
