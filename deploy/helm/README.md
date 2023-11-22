@@ -3,7 +3,7 @@
 Ballerine is a collection of services like workflow-service, backoffice.
 In values.yaml we have sections to enable/disable them based on the necessity like below
 
-``` bash
+```bash
 workflowService:
   enabled: true
 .
@@ -69,8 +69,7 @@ postgresql:
 .
   applicationConfig:
     BCRYPT_SALT: "10"
-    JWT_SECRET_KEY: "secret"
-    JWT_EXPIRATION: "10d"
+    SESSION_EXPIRATION_IN_MINUTES: "60"
     DB_URL: "<Managed DB_URL with databasename>"
     DB_USER: "<Managed DB_USER>"
     DB_PASSWORD: "<Managed DB_PASSWORD>"
@@ -79,7 +78,7 @@ postgresql:
 
 ### Installing Ballerine helm chart
 
-``` bash
+```bash
 helm dep build
 helm install ballerine . -n ballerine --create-namespace -f example.values.yaml
 ```
