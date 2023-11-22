@@ -377,7 +377,7 @@ model WorkflowRuntimeDataToken {
 
 model DataMigrationVersion {
   id            Int      @id @default(autoincrement())
-  version       String   @unique
+  version       String
   migratedAt    DateTime @default(now())
   success       Boolean  @default(true)
   failureReason String?
