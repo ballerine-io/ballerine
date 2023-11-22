@@ -1,4 +1,5 @@
 import passport from 'passport';
+import dayjs from 'dayjs';
 import cookieSession from 'cookie-session';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
@@ -58,7 +59,21 @@ async function main() {
     app.use(Sentry.Handlers.tracingHandler());
   }
 
-  app.use(helmet());
+  app.use(
+    helmet({
+      hsts: {
+        maxAge: 31536000, // 1 year in seconds
+        includeSubDomains: true,
+        preload: true,
+      },
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+        },
+      },
+    }),
+  );
+
   app.use(json({ limit: '50mb' }));
   app.use(urlencoded({ limit: '50mb', extended: true }));
   app.use(
@@ -68,16 +83,9 @@ async function main() {
       httpOnly: env.ENVIRONMENT_NAME === 'production',
       secure: false,
       sameSite: env.ENVIRONMENT_NAME === 'production' ? 'strict' : false,
-      maxAge: 1000 * 60 * 60 * 1, // 1 hour(s),
+      maxAge: 1000 * 60 * env.SESSION_EXPIRATION_IN_MINUTES,
     }),
   );
-
-  app.use((req: Request, res: Response, next: NextFunction) => {
-    if (!req.session) return next();
-
-    req.session.nowInMinutes = Math.floor(Date.now() / 60e3);
-    next();
-  });
 
   // register regenerate & save after the cookieSession middleware initialization
   app.use((req: Request, res: Response, next: NextFunction) => {
@@ -95,8 +103,26 @@ async function main() {
     }
     next();
   });
+
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (
+      !req.session ||
+      !req.session?.passport?.user?.expires ||
+      new Date(req.session.passport.user.expires) < new Date()
+    ) {
+      return next();
+    }
+    req.session.nowInMinutes = Math.floor(dayjs().unix() / 60);
+    req.session.passport.user.expires = dayjs()
+      .add(env.SESSION_EXPIRATION_IN_MINUTES, 'minute')
+      .toDate();
+
+    next();
+  });
+
   app.use(passport.initialize());
   app.use(passport.session());
+
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({

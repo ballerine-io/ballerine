@@ -1,5 +1,5 @@
 import * as common from '@nestjs/common';
-import { Body, Controller, HttpCode, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -32,8 +32,8 @@ export class AuthController {
   ): Promise<{ user: undefined }> {
     const asyncLogout = util.promisify(req.logout.bind(req));
     await asyncLogout();
-    res.clearCookie('session', { path: '/', httpOnly: true });
-    res.clearCookie('session.sig', { path: '/', httpOnly: true });
+    res.clearCookie('session');
+    res.clearCookie('session.sig');
 
     return { user: undefined };
   }
