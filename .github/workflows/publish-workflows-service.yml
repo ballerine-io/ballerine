@@ -56,6 +56,9 @@ jobs:
       - name: Print the version
         run: echo "The version was ${{ steps.get_version.outputs.version }}"
 
+      - name: Update and Install dependencies
+        run: apt update && apt install curl && apt install zip
+
       - name: Extract metadata for non Prod Docker images
         if: github.ref != 'refs/heads/prod'
         id: branchmeta
