@@ -1,5 +1,6 @@
 import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
-import { UIElement, UIPage } from '@/domains/collection-flow';
+import { findDocumentDefinitionById } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
+import { Document, UIElement, UIPage } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
@@ -48,16 +49,15 @@ export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] 
             return false;
           }
 
-          //@ts-ignore
-          const definition = findDocumentDefinitionById(document.id, pageError._elements);
+          const definition = findDocumentDefinitionById(document.id as string, pageError._elements);
 
           return Boolean(definition);
         })
         .map(document => {
           //@ts-ignore
-          const documentPath = `document-error-${document.id}`;
+          const documentPath = `document-error-${document.id as string}`;
           //@ts-ignore
-          const message = document?.decision?.revisionReason;
+          const message = document?.decision?.revisionReason as string;
 
           return {
             fieldId: documentPath,
