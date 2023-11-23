@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ServeStaticModuleOptions, ServeStaticModuleOptionsFactory } from '@nestjs/serve-static';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';

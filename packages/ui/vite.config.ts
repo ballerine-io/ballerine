@@ -35,7 +35,7 @@ export default defineConfig({
     port: 5201,
     open: './dev.tsx',
   },
-  plugins: [react(), dts({ copyDtsFiles: true }), tsconfigPaths(), tailwindcss()],
+  plugins: [react(), dts({ copyDtsFiles: true }), tailwindcss(), tsconfigPaths()],
   test: {
     exclude: ['node_modules', 'dist'],
   },

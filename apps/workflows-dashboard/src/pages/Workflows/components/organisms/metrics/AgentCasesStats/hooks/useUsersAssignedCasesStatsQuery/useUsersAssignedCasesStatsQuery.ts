@@ -8,7 +8,6 @@ export const useUsersAssignedCasesStatsQuery = () => {
     ...usersStatsQueryKeys.casesAssignedStats({
       // fromDate: filters.fromDate!,
     }),
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     enabled: Boolean(filters.fromDate),
   });

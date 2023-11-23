@@ -19,7 +19,10 @@
     "watch": "concurrently --kill-others \"rollup --config rollup.config.js -w\" \"tsc -b --watch\"",
     "test": "vitest run --passWithNoTests",
     "test:unit": "vitest run --passWithNoTests",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --fix"
   },
   "engines": {
     "node": ">=12"
@@ -35,6 +38,7 @@
     "@babel/preset-typescript": "7.16.7",
     "@ballerine/config": "^1.0.1",
     "@cspell/cspell-types": "^6.31.1",
+    "@ballerine/eslint-config": "^1.0.0",
     "@rollup/plugin-babel": "5.3.1",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-json": "^6.0.0",

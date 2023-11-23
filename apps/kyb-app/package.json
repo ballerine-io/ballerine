@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "preview": "vite preview",
     "test": "vitest run",
     "test:dev": "vitest"
@@ -53,6 +55,7 @@
   },
   "devDependencies": {
     "@ballerine/config": "^1.0.1",
+    "@ballerine/eslint-config-react": "^1.0.0",
     "@sentry/vite-plugin": "^2.9.0",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^13.3.0",
