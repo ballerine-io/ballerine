@@ -1,5 +1,17 @@
 # @ballerine/common
 
+## 0.7.22
+
+### Patch Changes
+
+- Change document schemas
+
+## 0.7.21
+
+### Patch Changes
+
+- version bump
+
 ## 0.7.20
 
 ### Patch Changes

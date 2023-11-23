@@ -138,8 +138,9 @@ export class WorkflowRunner {
       // @ts-expect-error TODO: fix this
       const responseValidator = this.fetchValidator('json-schema', responseSchema);
 
-      const apiPluginClass = this.pickApiPlugin(apiPluginSchema);
-      const apiPlugin = new apiPluginClass({
+      const apiPluginClass = this.pickApiPluginClass(apiPluginSchema);
+
+      return new apiPluginClass({
         name: apiPluginSchema.name,
         stateNames: apiPluginSchema.stateNames,
         url: apiPluginSchema.url,
@@ -151,8 +152,6 @@ export class WorkflowRunner {
         errorAction: apiPluginSchema.errorAction,
         persistResponseDestination: apiPluginSchema.persistResponseDestination,
       });
-
-      return apiPlugin;
     });
   }
 
@@ -198,7 +197,7 @@ export class WorkflowRunner {
     });
   }
 
-  private pickApiPlugin(apiPluginSchema: ISerializableHttpPluginParams) {
+  private pickApiPluginClass(apiPluginSchema: ISerializableHttpPluginParams) {
     // @ts-ignore
     if (apiPluginSchema.pluginKind === 'kyc') return KycPlugin;
     // @ts-ignore
@@ -213,8 +212,7 @@ export class WorkflowRunner {
     if (apiPluginSchema.pluginKind === 'email') return EmailPlugin;
 
     // @ts-expect-error TODO: fix this
-    const isApiPlugin = this.isPluginWithCallbackAction(apiPluginSchema);
-    return isApiPlugin ? ApiPlugin : WebhookPlugin;
+    return this.isPluginWithCallbackAction(apiPluginSchema) ? ApiPlugin : WebhookPlugin;
   }
 
   private isPluginWithCallbackAction(apiPluginSchema: IApiPluginParams) {
@@ -238,6 +236,7 @@ export class WorkflowRunner {
       }) || []
     );
   }
+
   fetchValidator(
     validatorName: string,
     schema: ConstructorParameters<typeof JsonSchemaValidator>[0],
@@ -415,13 +414,15 @@ export class WorkflowRunner {
   async sendEvent(event: WorkflowEventWithoutState) {
     const workflow = this.#__workflow.withContext(this.#__context);
 
-    console.log('Current state:', this.#__currentState);
+    console.log('Received event:', event, ', Current state:', this.#__currentState);
+
+    const previousState = this.#__currentState;
 
     const service = interpret(workflow)
       .start(this.#__currentState)
       .onTransition((state, context) => {
         if (state.changed) {
-          console.log('Transitioned into', state.value);
+          console.log('Old state:', previousState, 'Transitioned into', state.value);
 
           if (state.done) {
             console.log('Reached final state');
@@ -450,10 +451,14 @@ export class WorkflowRunner {
 
     if (!service.getSnapshot().nextEvents.includes(event.type)) {
       throw new Error(
-        `Event ${event.type} is not allowed in the current state: ${this.#__currentState}`,
+        `Event ${event.type} is not allowed in the current state: ${JSON.stringify(
+          this.#__currentState,
+        )}`,
       );
     }
+
     // Non-blocking plugins are executed as actions
+    // Un-like state plugins, if a state is transitioned into itself, pre-plugins will be executed each time the function is triggered
     const prePlugins =
       this.#__extensions.statePlugins?.filter(
         plugin =>
@@ -461,9 +466,12 @@ export class WorkflowRunner {
           plugin.when === 'pre' &&
           plugin.stateNames.includes(this.#__currentState),
       ) ?? [];
+
     const snapshot = service.getSnapshot();
 
     for (const prePlugin of prePlugins) {
+      console.log('Pre plugins are about to be deprecated. Please contact the team for more info');
+
       await this.#__handleAction({
         type: 'STATE_ACTION_STATUS',
         plugin: prePlugin,
@@ -475,6 +483,11 @@ export class WorkflowRunner {
 
     const postSendSnapshot = service.getSnapshot();
     this.#__context = postSendSnapshot.context;
+
+    if (previousState === postSendSnapshot.value) {
+      console.log('No transition occurred, skipping plugins');
+      return;
+    }
 
     let commonPlugins = (this.#__extensions.commonPlugins as CommonPlugins)?.filter(plugin =>
       plugin.stateNames.includes(this.#__currentState),
@@ -521,21 +534,27 @@ export class WorkflowRunner {
   private async __invokeCommonPlugin(commonPlugin: CommonPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
     const { callbackAction, error } = await commonPlugin.invoke?.(this.#__context);
+
     if (!!error) {
       this.#__context.pluginsOutput = {
         ...(this.#__context.pluginsOutput || {}),
         ...{ [commonPlugin.name]: { error: error } },
       };
     }
-    if (callbackAction) await this.sendEvent({ type: callbackAction });
+
+    if (callbackAction) {
+      await this.sendEvent({ type: callbackAction });
+    }
   }
 
   private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
     const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(this.#__context);
+
     if (error) {
       console.error('Error invoking plugin: ', apiPlugin.name, this.#__context, error);
     }
+
     if (!this.isPluginWithCallbackAction(apiPlugin)) {
       console.log('Plugin does not have callback action: ', apiPlugin.name);
       return;

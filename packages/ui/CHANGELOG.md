@@ -1,5 +1,23 @@
 # @ballerine/ui
 
+## 0.3.14
+
+### Patch Changes
+
+- Workflow changes
+
+## 0.3.13
+
+### Patch Changes
+
+- Change document schemas
+
+## 0.3.12
+
+### Patch Changes
+
+- version bump
+
 ## 0.3.11
 
 ### Patch Changes

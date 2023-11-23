@@ -6,6 +6,7 @@ import * as path from 'path';
 
 export class LocalFileService implements IFileProvider {
   protected client;
+
   constructor(...args: any) {
     this.client = fs;
   }

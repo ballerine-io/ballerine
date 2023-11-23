@@ -18,6 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) implements IAuthSt
     if (!user) {
       throw new UnauthorizedException();
     }
+
     return user;
   }
 }

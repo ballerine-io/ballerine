@@ -25,7 +25,7 @@ import { toTitleCase } from 'string-ts';
  * @param props
  * @param props.id - The id of the entity, passed into the reject/approve mutation.
  * @param props.fullName - The full name of the entity.
- * @param props.avatarUrl - The entity's image url to pass into {@link Avatar}.
+ * @param props.showResolutionButtons - Whether to show the reject/approve buttons.
  *
  * @see {@link Case}
  * @see {@link Avatar}
@@ -35,7 +35,6 @@ import { toTitleCase } from 'string-ts';
 export const Actions: FunctionComponent<IActionsProps> = ({
   id,
   fullName,
-  avatarUrl,
   showResolutionButtons,
 }) => {
   const {
@@ -87,10 +86,13 @@ export const Actions: FunctionComponent<IActionsProps> = ({
                 variant={tagToBadgeData[tag].variant}
                 className={ctw(`text-sm font-bold`, {
                   'bg-info/20 text-info': tag === StateTag.MANUAL_REVIEW,
-                  'bg-violet-500/20 text-violet-500': tag === StateTag.COLLECTION_FLOW,
+                  'bg-violet-500/20 text-violet-500': [
+                    StateTag.COLLECTION_FLOW,
+                    StateTag.DATA_ENRICHMENT,
+                  ].includes(tag),
                 })}
               >
-                {toTitleCase(tagToBadgeData[tag].text)}
+                {tagToBadgeData[tag].text}
               </Badge>
             </div>
           )}

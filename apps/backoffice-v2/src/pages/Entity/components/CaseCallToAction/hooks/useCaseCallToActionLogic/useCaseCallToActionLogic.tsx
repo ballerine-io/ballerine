@@ -58,7 +58,7 @@ export const useCaseCallToActionLogic = ({
   const onMutateRevisionCase = useCallback(() => mutateRevisionCase(), [mutateRevisionCase]);
   // /Callbacks
 
-  const caseState = useCaseState(session.user, parentWorkflow);
+  const caseState = useCaseState(session?.user, parentWorkflow);
   const isLoading = isLoadingApproveCase || isLoadingRevisionCase;
   const isDisabled = !caseState.actionButtonsEnabled || isLoading;
 

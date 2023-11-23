@@ -235,4 +235,8 @@ export default defineConfig({
       entrypoint: 'astro/assets/services/sharp',
     },
   },
+  redirects: {
+    '/': '/en/getting_started/introduction/',
+    '/en': '/en/getting_started/introduction/',
+  },
 });
