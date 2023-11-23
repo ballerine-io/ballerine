@@ -18,9 +18,7 @@ export const selectDirectorsDocuments = (context: unknown): Document[] =>
   //@ts-ignore
   selectDirectors(context)
     .map(director => director.additionalInfo?.documents)
-    //@ts-ignore
     ?.filter(Boolean)
-    //@ts-ignore
     ?.flat() || [];
 
 export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] => {
