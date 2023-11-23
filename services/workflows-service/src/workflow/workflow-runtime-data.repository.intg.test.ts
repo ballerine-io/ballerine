@@ -33,6 +33,7 @@ import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.re
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
+  let userRepository: UserRepository;
   let workflowDefinitionRepository: WorkflowDefinitionRepository;
   let project: Project;
   // beforeEach(cleanupDatabase);
@@ -79,6 +80,10 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       [PrismaModule],
     )) as unknown as WorkflowDefinitionRepository;
 
+    userRepository = (await fetchServiceFromModule(UserRepository, servicesProviders, [
+      PrismaModule,
+    ])) as unknown as UserRepository;
+
     const prismaService = (await fetchServiceFromModule(PrismaService, servicesProviders, [
       PrismaModule,
     ])) as unknown as PrismaService;
@@ -92,6 +97,18 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       'webhook-shared-secret',
     );
     project = await createProject(prismaService, customer, '5');
+
+    await workflowDefinitionRepository.create({
+      data: {
+        id: 'test-definition',
+        name: 'test',
+        version: 1,
+        definitionType: 'statechart-json',
+        definition: {
+          id: 'Manual Review',
+        },
+      },
+    });
   });
 
   afterAll(async () => {
@@ -100,19 +117,6 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
   });
 
   describe('Workflow Runtime Data Repository: Jsonb Merge', () => {
-    beforeAll(async () => {
-      await workflowDefinitionRepository.create({
-        data: {
-          id: 'test-definition',
-          name: 'test',
-          version: 1,
-          definitionType: 'statechart-json',
-          definition: {
-            id: 'Manual Review',
-          },
-        },
-      });
-    });
     it('updateById: Merge context with nested entities - will preserve "replacment" behaviour for merging arrays', async () => {
       // Set up initial data
 
@@ -1049,5 +1053,61 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
 
     const updatedContext = await workflowRuntimeRepository.findContext(createRes.id, [project.id]);
     expect(updatedContext).toEqual(expectedContext);
+  });
+
+  describe('updateById', () => {
+    describe('when updating workflow but not its context', () => {
+      it('should not result in empty context', async () => {
+        // Arrange
+        const userPayload = {
+          data: {
+            id: '1',
+            email: 'test@test.com',
+            firstName: 'Test',
+            lastName: 'User',
+            password: 'test',
+            roles: ['customer'],
+          },
+        } satisfies Parameters<(typeof userRepository)['create']>[0];
+        const createPayload = {
+          data: {
+            workflowDefinitionId: 'test-definition',
+            workflowDefinitionVersion: 1,
+            context: {
+              entity: {
+                id: '1',
+                name: 'Test Entity',
+              },
+              documents: [
+                {
+                  id: 'file1',
+                },
+                {
+                  id: 'file2',
+                },
+              ],
+            },
+          },
+        } satisfies Parameters<(typeof workflowRuntimeRepository)['create']>[0];
+        const updatePayload = {
+          data: {
+            assigneeId: userPayload.data.id,
+            assignedAt: new Date(),
+          },
+        } satisfies Parameters<(typeof workflowRuntimeRepository)['updateById']>[1];
+        const workflow = await workflowRuntimeRepository.create(createPayload, project.id);
+        await userRepository.create(userPayload, project.id);
+
+        // Act
+        const updatedWorkflow = await workflowRuntimeRepository.updateById(
+          workflow.id,
+          updatePayload,
+          project.id,
+        );
+
+        // Assert
+        expect(updatedWorkflow.context).toMatchObject(createPayload.data.context);
+      });
+    });
   });
 });
