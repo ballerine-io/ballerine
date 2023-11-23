@@ -1,5 +1,13 @@
 # @ballerine/workflow-core
 
+## 0.5.22
+
+### Patch Changes
+
+- 8c888cec: Updated tsconfig and types
+- Updated dependencies [8c888cec]
+  - @ballerine/common@0.7.23
+
 ## 0.5.21
 
 ### Patch Changes

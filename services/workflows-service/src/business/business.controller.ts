@@ -33,7 +33,6 @@ export class BusinessControllerExternal {
     @common.Body() data: BusinessCreateDto,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Pick<BusinessModel, 'id' | 'companyName'>> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.service.create({
       data: {
         ...data,

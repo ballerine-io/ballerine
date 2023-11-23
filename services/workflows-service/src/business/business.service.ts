@@ -22,7 +22,6 @@ export class BusinessService {
     protected readonly httpService: HttpService,
   ) {}
   async create(args: Parameters<BusinessRepository['create']>[0]) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await this.repository.create(args);
   }
 
