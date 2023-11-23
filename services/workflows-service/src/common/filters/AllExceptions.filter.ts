@@ -12,9 +12,11 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     // if (host.getType() === 'http') return;
     this.logger.error('Global error handler: ', exception as object);
-    super.catch(exception, host);
 
-    const response = host.switchToHttp().getResponse<Response>();
+    const context = host.switchToHttp();
+    const response = context.getResponse<Response>();
+
+    super.catch(exception, host);
 
     this.logger.error(`Outgoing response (Failure)`, {
       response: {

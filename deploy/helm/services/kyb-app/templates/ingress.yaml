@@ -1,0 +1,63 @@
+{{- if .Values.kybapp.ingress.enabled -}}
+{{- $fullName := .Values.kybapp.nameOverride -}}
+{{- $svcPort := .Values.kybapp.service.port -}}
+{{- $pathtype := .Values.kybapp.ingress.pathtype -}}
+{{- $ingressPath := .Values.kybapp.ingress.path }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ .Values.kybapp.nameOverride }}
+{{- with .Values.kybapp.ingress.annotations }}
+  annotations:
+{{- toYaml . | nindent 4 }}
+{{ end }}
+spec:
+  {{- if .Values.kybapp.ingress.className }}
+  ingressClassName: {{ .Values.kybapp.ingress.className | quote }}
+  {{- end }}
+{{- if .Values.kybapp.ingress.tls }}
+  tls:
+  {{- if .ingressPath }}
+  {{- range .Values.kybapp.ingress.tls }}
+  - hosts:
+    {{- range .hosts }}
+      - {{ . }}
+    {{ end }}
+    secretName: {{ .secretName }}
+  {{ end }}
+{{- else }}
+{{ toYaml .Values.kybapp.ingress.tls | indent 4 }}
+  {{ end }}
+{{ end }}
+  rules:
+  {{- range .Values.kybapp.ingress.hosts }}
+    {{- if $ingressPath }}
+  - host: {{ . }}
+    http:
+      paths:
+      - path: {{ $ingressPath }}
+        pathType: {{ $pathtype }}
+        backend:
+          service:
+            name: {{ $fullName }}
+            port: 
+              number: {{ $svcPort }}
+  {{- else }}
+  - host: {{ .host }}
+    http:
+      paths:
+      {{- range .paths }}
+      - path: {{ .path }}
+        pathType: {{ $pathtype }}
+        backend:
+          service:
+            name: {{ $fullName }}
+            port:
+              number: {{ $svcPort }}
+  {{ end }}
+ {{ end }}
+{{ end }}
+{{ end }}

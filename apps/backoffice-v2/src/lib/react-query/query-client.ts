@@ -35,7 +35,6 @@ export const queryClient = new QueryClient({
         queryClient.setQueryData(authenticatedUser.queryKey, {
           user: undefined,
         });
-        await queryClient.invalidateQueries(authenticatedUser.queryKey);
       }
 
       if (isZodError(error)) {

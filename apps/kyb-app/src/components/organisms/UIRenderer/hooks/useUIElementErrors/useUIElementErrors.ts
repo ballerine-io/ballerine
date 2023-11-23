@@ -15,9 +15,9 @@ export const useUIElementErrors = (
     const pageErrors = _pageErrors[currentPage.stateName] || {};
     const fieldPageError = pageErrors[definition.valueDestination];
 
-    const fieldError = _errors[definition.valueDestination];
+    const fieldError = _errors[definition.valueDestination] || [];
 
-    const allErrors = [fieldPageError, fieldError];
+    const allErrors = [fieldPageError, ...fieldError];
 
     return allErrors.filter(Boolean);
   }, [definition, _errors, _pageErrors, currentPage]);

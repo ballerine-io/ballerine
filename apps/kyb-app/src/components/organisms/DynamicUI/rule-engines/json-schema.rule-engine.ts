@@ -5,23 +5,26 @@ import {
 import { Rule, UIElement } from '@app/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import ajvErrors from 'ajv-errors';
-import addFormats from 'ajv-formats';
-import Ajv from 'ajv/dist/2019';
+import addFormats, { FormatName } from 'ajv-formats';
+import Ajv, { ErrorObject } from 'ajv/dist/2019';
 
 export class JsonSchemaRuleEngine implements RuleEngine {
-  public readonly ENGINE_NAME = 'json-schema';
+  static ALLOWED_FORMATS: FormatName[] = ['email', 'uri', 'date', 'date-time'];
+  static ENGINE_NAME: Rule['type'] = 'json-schema';
+
+  public readonly ENGINE_NAME = JsonSchemaRuleEngine.ENGINE_NAME;
 
   validate(context: unknown, rule: Rule, definition: UIElement<AnyObject>) {
     const validator = new Ajv({ allErrors: true, useDefaults: true });
     addFormats(validator, {
-      formats: ['email', 'uri', 'date', 'date-time'],
+      formats: JsonSchemaRuleEngine.ALLOWED_FORMATS,
       keywords: true,
     });
     ajvErrors(validator, { singleError: true });
 
     const validationResult = validator.validate(rule.value, context);
     if (!validationResult) {
-      const validationErrorMessage = this.__extractErrorsWithFields(validator, definition);
+      const validationErrorMessage = this.extractErrorsWithFields(validator, definition);
 
       return { isValid: false, errors: validationErrorMessage.flat() };
     }
@@ -42,37 +45,80 @@ export class JsonSchemaRuleEngine implements RuleEngine {
     return validationResult;
   }
 
-  private __extractErrorsWithFields(validator: Ajv, definition: UIElement<AnyObject>) {
+  private extractErrorsWithFields(validator: Ajv, definition: UIElement<AnyObject>) {
     const result = validator.errors?.map(error => {
       const erroredParams = Object.values(error.params) as string[];
       const uniqueErroredParams = Array.from(new Set(erroredParams));
+      const fieldErrors: ErrorField[] = [];
 
-      return uniqueErroredParams.map(_ => {
-        const fieldId = error.instancePath.split('/').filter(part => part !== '');
+      uniqueErroredParams.forEach(_ => {
+        const fieldDestination = this.buildFieldDestination(error.instancePath, error);
 
-        if (error.params.missingProperty) {
-          fieldId.push(
-            (error.params.missingProperty as string) ||
-              error.params.errors[0]?.params.missingProperty,
+        const messages = error.message.split(';');
+
+        messages.forEach(messageText => {
+          const sanitizedFieldId = fieldDestination.replaceAll(/\.(\d+)\./g, '[$1].');
+
+          fieldErrors.push(
+            this.createFieldError(
+              sanitizedFieldId,
+              messageText,
+              definition.name,
+              definition.valueDestination,
+            ),
           );
-        }
-
-        if (Array.isArray(error.params.errors) && error.params.errors[0]?.params.missingProperty) {
-          fieldId.push(
-            (error.params.missingProperty as string) ||
-              error.params.errors[0]?.params.missingProperty,
-          );
-        }
-
-        return {
-          fieldId: fieldId.join('.').replaceAll(/\.(\d+)\./g, '[$1].'),
-          message: error.message,
-          definitionName: definition.name,
-          fieldDestination: definition.valueDestination,
-        } as ErrorField;
+        });
       });
+
+      return fieldErrors;
     });
 
     return result.flat().filter(result => Boolean(result.message));
+  }
+
+  private buildFieldDestination(
+    instancePath: string,
+    error: ErrorObject<string, Record<string, any>, unknown>,
+  ): string {
+    const fieldDestination = instancePath.split('/').filter(part => part !== '');
+
+    if (error.params?.missingProperty) {
+      fieldDestination.push(
+        (error.params.missingProperty as string) ||
+          (((error.params.errors as Array<AnyObject>)[0]?.params as AnyObject)
+            .missingProperty as string),
+      );
+    }
+
+    if (
+      Array.isArray(error.params.errors) &&
+      ((error.params.errors as Array<AnyObject>)[0]?.params as AnyObject)?.missingProperty
+    ) {
+      fieldDestination.push(
+        (error.params.missingProperty as string) ||
+          (((error.params.errors as Array<AnyObject>)[0]?.params as AnyObject)
+            .missingProperty as string),
+      );
+    }
+
+    return fieldDestination.join('.');
+  }
+
+  private createFieldError(
+    fieldId: string,
+    message: string,
+    definitionName: string,
+    fieldDestination: string,
+    type: ErrorField['type'] = 'error',
+  ): ErrorField {
+    const fieldError: ErrorField = {
+      fieldId,
+      message,
+      definitionName,
+      fieldDestination,
+      type,
+    };
+
+    return fieldError;
   }
 }
