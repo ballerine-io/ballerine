@@ -14,7 +14,6 @@ interface PackageJson {
 }
 
 // Read the package.json file
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const packageJson: PackageJson = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8'),
 );

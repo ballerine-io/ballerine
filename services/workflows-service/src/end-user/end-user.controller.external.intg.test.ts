@@ -31,7 +31,7 @@ import { UserRepository } from '@/user/user.repository';
 import { PasswordService } from '@/auth/password/password.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
-import { ClsMiddleware, ClsModule, ClsService } from 'nestjs-cls';
+import { ClsModule } from 'nestjs-cls';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;

@@ -7,7 +7,6 @@ export const useActivePerWorkflowStatsQuery = () => {
     isLoading,
     isFetching,
   } = useQuery(
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     workflowMetricsKeys.workflowRuntimeStats(),
   );

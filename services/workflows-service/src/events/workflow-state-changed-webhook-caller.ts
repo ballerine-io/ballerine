@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';

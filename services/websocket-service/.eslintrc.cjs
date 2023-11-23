@@ -34,5 +34,4 @@ module.exports = {
     '@typescript-eslint/no-unsafe-assignment': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
   },
-  ignorePatterns: ['.eslintrc.cjs'],
 };

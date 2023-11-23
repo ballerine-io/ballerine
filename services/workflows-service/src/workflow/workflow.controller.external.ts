@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';

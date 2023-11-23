@@ -219,7 +219,7 @@ export class HookCallbackHandlerService {
       } else {
         current[path[i] as keyof typeof current] =
           (current[path[i] as keyof typeof current] as unknown) || {};
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
         current = current[path[i] as keyof typeof current];
       }
     }

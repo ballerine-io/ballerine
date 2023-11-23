@@ -1,13 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/require-await */
-
 import { BaseFakeRepository } from '../../../../test-utils/src/base-fake-repository';
-
 import { WorkflowService } from './workflow.service';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { DocumentChangedWebhookCaller } from '../events/document-changed-webhook-caller';

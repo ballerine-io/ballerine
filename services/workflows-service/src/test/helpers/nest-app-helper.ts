@@ -4,7 +4,6 @@ import { ACGuard } from 'nest-access-control';
 import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
 import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
 import { CallHandler, ExecutionContext, INestApplication, Provider, Type } from '@nestjs/common';
-import console from 'console';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { ClsMiddleware, ClsModule, ClsService } from 'nestjs-cls';
 import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
