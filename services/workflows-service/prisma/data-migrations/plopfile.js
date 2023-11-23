@@ -7,8 +7,8 @@ module.exports = function (plop) {
         type: 'list',
         name: 'env',
         message: 'Select environment:',
-        choices: ['common', 'local', 'dev', 'sb', 'prod'],
-        default: 'local',
+        choices: ['common', 'dev', 'prod', 'sb'],
+        default: 'common',
       },
       {
         type: 'input',
