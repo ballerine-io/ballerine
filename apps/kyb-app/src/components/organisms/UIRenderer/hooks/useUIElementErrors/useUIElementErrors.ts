@@ -13,20 +13,21 @@ export const useUIElementErrors = (
 
   const errors = useMemo(() => {
     const pageErrors =
-        _pageErrors[
+      _pageErrors[
         // @ts-ignore
         currentPage?.stateName
-        ] || {};
+      ] || {};
     const fieldPageError =
-        pageErrors[
+      pageErrors[
         // @ts-ignore
         definition.valueDestination
-        ];
+      ];
 
-    const fieldError = _errors[
+    const fieldError =
+      _errors[
         // @ts-ignore
         definition.valueDestination
-        ] || [];
+      ] || [];
 
     const allErrors = [fieldPageError, ...fieldError];
 

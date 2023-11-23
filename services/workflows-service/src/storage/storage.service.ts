@@ -3,7 +3,6 @@ import { FileRepository } from './storage.repository';
 import { IFileIds } from './types';
 import { Prisma } from '@prisma/client';
 import type { TProjectId, TProjectIds } from '@/types';
-import { SetOptional } from 'type-fest';
 
 @Injectable()
 export class StorageService {
