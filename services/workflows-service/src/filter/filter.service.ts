@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { FilterRepository } from '@/filter/filter.repository';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 
 @Injectable()
 export class FilterService {

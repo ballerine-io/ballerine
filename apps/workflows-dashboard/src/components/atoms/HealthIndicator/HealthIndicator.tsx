@@ -1,4 +1,4 @@
-import { HealthStatus } from '@app/utils/get-workflow-health-status';
+import { HealthStatus } from '@/utils/get-workflow-health-status';
 import classnames from 'classnames';
 
 interface Props {

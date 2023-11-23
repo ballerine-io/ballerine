@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { File, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { IFileIds } from './types';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()

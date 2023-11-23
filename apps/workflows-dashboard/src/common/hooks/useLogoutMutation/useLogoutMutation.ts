@@ -1,6 +1,6 @@
-import { fetchLogout } from '@app/domains/auth/api/logout';
-import { sessionKeys } from '@app/domains/auth/api/session/query-keys';
-import { queryClient } from '@app/lib/react-query/query-client';
+import { fetchLogout } from '@/domains/auth/api/logout';
+import { sessionKeys } from '@/domains/auth/api/session/query-keys';
+import { queryClient } from '@/lib/react-query/query-client';
 import { useMutation } from '@tanstack/react-query';
 
 export function useLogoutMutation() {

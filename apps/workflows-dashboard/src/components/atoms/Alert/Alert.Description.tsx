@@ -1,4 +1,4 @@
-import { ctw } from '@app/common/utils/ctw/ctw';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { forwardRef, HTMLAttributes } from 'react';
 
 export const AlertDescription = forwardRef<

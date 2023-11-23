@@ -1,4 +1,4 @@
-import { InsertionSchema } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/types';
+import { InsertionSchema } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/types';
 import { AnyObject } from '@ballerine/ui';
 
 export interface StrategyParams {

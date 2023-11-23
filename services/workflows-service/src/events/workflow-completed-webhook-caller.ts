@@ -15,7 +15,7 @@ import { WorkflowRuntimeData } from '@prisma/client';
 import { StateTag } from '@ballerine/common';
 import { env } from '@/env';
 import { sign } from '@/common/utils/sign/sign';
-import { TAuthenticationConfiguration } from '@/customer/types';
+import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
 
 @Injectable()
@@ -58,15 +58,11 @@ export class WorkflowCompletedWebhookCaller {
       'workflow.completed',
     );
 
-    const customer = await this.customerService.getByProjectId(
-      // @ts-expect-error - error from Prisma types fix
-      data.runtimeData.projectId,
-      {
-        select: {
-          authenticationConfiguration: true,
-        },
+    const customer = await this.customerService.getByProjectId(data.runtimeData.projectId, {
+      select: {
+        authenticationConfiguration: true,
       },
-    );
+    });
 
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;

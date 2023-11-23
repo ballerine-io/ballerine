@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
 
 export interface PrismaGeneralQueryArgs {

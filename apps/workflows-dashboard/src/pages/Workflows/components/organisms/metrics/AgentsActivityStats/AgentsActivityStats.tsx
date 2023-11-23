@@ -1,8 +1,8 @@
 import {
   AgentsActivityChart,
   LoggedInAgentsChartData,
-} from '@app/pages/Workflows/components/molecules/AgentsActivityChart';
-import { useActiveUsersQuery } from '@app/pages/Workflows/components/organisms/metrics/AgentsActivityStats/hooks/useActiveUsersQuery';
+} from '@/pages/Workflows/components/molecules/AgentsActivityChart';
+import { useActiveUsersQuery } from '@/pages/Workflows/components/organisms/metrics/AgentsActivityStats/hooks/useActiveUsersQuery';
 import { useMemo } from 'react';
 
 export const AgentsActivityStats = () => {

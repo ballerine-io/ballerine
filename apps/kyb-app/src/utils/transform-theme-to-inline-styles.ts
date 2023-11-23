@@ -1,4 +1,4 @@
-import { ITheme } from '@app/common/types/settings';
+import { ITheme } from '@/common/types/settings';
 
 function createInlineVariable(key: string, value: string): string {
   return `--${key}: ${value};`;

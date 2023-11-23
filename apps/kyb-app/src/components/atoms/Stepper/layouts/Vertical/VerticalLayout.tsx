@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChildrenList } from '@ballerine/ui';
 import { Children, useMemo } from 'react';
-import { VerticalDivider } from '@app/components/atoms/Stepper/layouts/Vertical/VerticalDivider';
+import { VerticalDivider } from '@/components/atoms/Stepper/layouts/Vertical/VerticalDivider';
 
 interface Props {
   children: ChildrenList;

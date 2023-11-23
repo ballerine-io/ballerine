@@ -1,6 +1,6 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { Prisma, UiDefinition, UiDefinitionContext } from '@prisma/client';
 

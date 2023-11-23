@@ -1,11 +1,11 @@
-import { usePageErrors } from '@app/components/organisms/DynamicUI/Page/hooks/usePageErrors';
-import { PageContext } from '@app/components/organisms/DynamicUI/Page/types';
-import { usePageResolverContext } from '@app/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
-import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { useRuleExecutor } from '@app/components/organisms/DynamicUI/hooks/useRuleExecutor';
-import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
-import { UIElement, UIPage } from '@app/domains/collection-flow';
+import { usePageErrors } from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
+import { PageContext } from '@/components/organisms/DynamicUI/Page/types';
+import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { useRuleExecutor } from '@/components/organisms/DynamicUI/hooks/useRuleExecutor';
+import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
+import { UIElement, UIPage } from '@/domains/collection-flow';
 import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 import { pageContext } from './page.context';
@@ -38,7 +38,15 @@ export const Page = ({ page, children }: PageProps) => {
   const { state } = useDynamicUIContext();
   const rulesResult = useRuleExecutor(payload, rules, definition, state);
   const fieldErrors = useMemo(
-    () => rulesResult.reduce((errors, item) => errors.concat(item.errors), [] as ErrorField[]),
+    () =>
+      rulesResult.reduce(
+        (errors, item) =>
+          errors.concat(
+            // @ts-ignore
+            item.errors,
+          ),
+        [] as ErrorField[],
+      ),
     [rulesResult],
   );
 
@@ -52,9 +60,10 @@ export const Page = ({ page, children }: PageProps) => {
         const isExists = map[item.fieldId];
 
         if (isExists) {
-          map[item.fieldId].push(item);
+          // @ts-ignore
+          map[item?.fieldId].push(item);
         } else {
-          map[item.fieldId] = [item];
+          map[item?.fieldId] = [item];
         }
 
         return map;
@@ -63,10 +72,10 @@ export const Page = ({ page, children }: PageProps) => {
         map[pageError.stateName] = pageError.errors.reduce((map, error) => {
           map[error.fieldId] = error;
           return map;
-        }, {});
+        }, {} as PageContext['pageErrors'][string]);
 
         return map;
-      }, {}),
+      }, {} as PageContext['pageErrors']),
     };
 
     return ctx;

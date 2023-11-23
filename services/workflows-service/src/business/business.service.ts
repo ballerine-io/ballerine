@@ -12,7 +12,7 @@ import { env } from '@/env';
 import { lastValueFrom } from 'rxjs';
 import { plainToClass } from 'class-transformer';
 import { AxiosError } from 'axios';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 
 @Injectable()
 export class BusinessService {

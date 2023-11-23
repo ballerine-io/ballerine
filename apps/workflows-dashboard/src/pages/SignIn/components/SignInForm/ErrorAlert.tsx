@@ -1,4 +1,4 @@
-import { ErrorAlert } from '@app/components/atoms/ErrorAlert/ErrorAlert';
+import { ErrorAlert } from '@/components/atoms/ErrorAlert/ErrorAlert';
 
 interface Props {
   errorCode: number;

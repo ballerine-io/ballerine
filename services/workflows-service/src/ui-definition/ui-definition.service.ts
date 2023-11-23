@@ -1,9 +1,9 @@
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 import { getDocumentsByCountry } from '@ballerine/common';
-import { CountryCode } from '@/common/countries';
-import { TSchemaOption } from '@/ui-definition/type';
+import type { CountryCode } from '@/common/countries';
+import type { TSchemaOption } from '@/ui-definition/type';
 import { Prisma, UiDefinitionContext } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { generateEndUserDocumentTask } from '@/ui-definition/utils/generate-end-user-document-task';
