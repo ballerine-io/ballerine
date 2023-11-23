@@ -13,6 +13,4 @@ export const AuthenticatedUserSchema = z
     firstName,
     lastName,
     fullName: `${firstName} ${lastName}`,
-  }))
-  // @ts-expect-error - empty object is desired.
-  .catch({});
+  }));
