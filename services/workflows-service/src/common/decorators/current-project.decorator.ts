@@ -1,4 +1,4 @@
-import { TProjectId } from '@/types';
+import type { TProjectId } from '@/types';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 export const CurrentProject = createParamDecorator(

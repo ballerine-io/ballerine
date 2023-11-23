@@ -1,10 +1,10 @@
-import { SortingParams } from '@app/common/types/sorting-params.types';
+import { SortingParams } from '@/common/types/sorting-params.types';
 import {
   fetchWorkflowDefinition,
   fetchWorkflows,
   GetWorkflowDefinitionDto,
   GetWorkflowsDto,
-} from '@app/domains/workflows/api/workflow';
+} from '@/domains/workflows/api/workflow';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 export const workflowKeys = createQueryKeys('workflows', {

@@ -1,6 +1,6 @@
-import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
-import { findDefinitionByDestinationPath } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
-import { Document, UIElement, UIPage } from '@app/domains/collection-flow';
+import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
+import { findDefinitionByDestinationPath } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
+import { Document, UIElement, UIPage } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
@@ -27,6 +27,7 @@ export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] 
     });
 
     pagesWithErrors.forEach(pageError => {
+      // @ts-ignore
       pageError.errors = ((context.documents as Document[]) || [])
         .filter((document, index) => {
           if (

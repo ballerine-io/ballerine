@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
 import tailwindcss from 'tailwindcss';
 import checker from 'vite-plugin-checker';
 import terminal from 'vite-plugin-terminal';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -24,10 +24,6 @@ export default defineConfig({
       output: ['console', 'terminal'],
       strip: false,
     }),
+    tsconfigPaths(),
   ],
-  resolve: {
-    alias: {
-      '@app': resolve(__dirname, './src'),
-    },
-  },
 });

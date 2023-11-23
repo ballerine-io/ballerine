@@ -6,7 +6,7 @@ export interface SortingData {
   value: 'asc' | 'desc';
 }
 
-export function getSortingDataFromQuery(string: string, regex: RegExp): SortingData | null {
+export function getSortingDataFromQuery(string_: string, regex: RegExp) {
   const sortingQuerySchema = z
     .string()
     .regex(regex)
@@ -26,5 +26,5 @@ export function getSortingDataFromQuery(string: string, regex: RegExp): SortingD
     })
     .catch(null);
 
-  return sortingQuerySchema.parse(string);
+  return sortingQuerySchema.parse(string_);
 }

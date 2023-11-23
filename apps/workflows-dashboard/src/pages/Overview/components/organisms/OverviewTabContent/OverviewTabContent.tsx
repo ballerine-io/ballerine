@@ -1,13 +1,13 @@
-import { MetricCard } from '@app/components/molecules/MetricCard';
+import { MetricCard } from '@/components/molecules/MetricCard';
 import {
   DailyResolvedCasesChart,
   DailyResolvedCasesChartData,
-} from '@app/pages/Overview/components/molecules/DailyResolvedCasesChart';
-import { UsersResolvingStatsList } from '@app/pages/Overview/components/molecules/UsersResolvingStatsList';
-import { UserStats } from '@app/pages/Overview/components/molecules/UserStats';
-import { useCaseResolvingStatsQuery } from '@app/pages/Overview/hooks/useCaseResolvingStatsQuery';
-import { useUserDailyCaseResolvingStatsQuery } from '@app/pages/Overview/hooks/useUserDailyCaseResolvingStatsQuery';
-import { useUserStatsQuery } from '@app/pages/Overview/hooks/useUserStatsQuery';
+} from '@/pages/Overview/components/molecules/DailyResolvedCasesChart';
+import { UsersResolvingStatsList } from '@/pages/Overview/components/molecules/UsersResolvingStatsList';
+import { UserStats } from '@/pages/Overview/components/molecules/UserStats';
+import { useCaseResolvingStatsQuery } from '@/pages/Overview/hooks/useCaseResolvingStatsQuery';
+import { useUserDailyCaseResolvingStatsQuery } from '@/pages/Overview/hooks/useUserDailyCaseResolvingStatsQuery';
+import { useUserStatsQuery } from '@/pages/Overview/hooks/useUserStatsQuery';
 import { useMemo } from 'react';
 
 export const OverviewTabContent = () => {

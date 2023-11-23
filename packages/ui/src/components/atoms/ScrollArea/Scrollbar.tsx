@@ -1,6 +1,6 @@
 import React from 'react';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
-import { ctw } from '@utils/ctw';
+import { ctw } from '@/utils/ctw';
 
 export const ScrollBar = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>,

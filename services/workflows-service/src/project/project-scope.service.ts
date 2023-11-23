@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { isUpdateOrCreateByAssociation } from '@/common/utils/prisma-helpers';
 

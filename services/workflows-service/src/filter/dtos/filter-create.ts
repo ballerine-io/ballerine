@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString } from 'class-validator';
-import { TProjectId } from '@/types';
+import type { TProjectId } from '@/types';
 
 export class FilterCreateDto {
   @ApiProperty({

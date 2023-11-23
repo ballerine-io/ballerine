@@ -1,9 +1,9 @@
-import { MetricCard } from '@app/components/molecules/MetricCard';
-import { ChartProps } from '@app/pages/Workflows/components/molecules/common/types';
+import { MetricCard } from '@/components/molecules/MetricCard';
+import { ChartProps } from '@/pages/Workflows/components/molecules/common/types';
 import {
   WorkflowChart,
   WorkflowChartData,
-} from '@app/pages/Workflows/components/organisms/WorkflowStatusChart';
+} from '@/pages/Workflows/components/organisms/WorkflowStatusChart';
 import { useMemo } from 'react';
 
 export interface ActivePerWorkflowChartData {

@@ -1,4 +1,4 @@
-import { IWorkflowStatus } from '@app/domains/workflows/api/workflow';
+import { IWorkflowStatus } from '@/domains/workflows/api/workflow';
 import { GREEN_CHART_HEX_COLOR, ORANGE_CHART_HEX_COLOR, RED_CHART_HEX_COLOR } from './consts';
 
 export function getChartColorByWorkflowStatus(status: IWorkflowStatus): string {

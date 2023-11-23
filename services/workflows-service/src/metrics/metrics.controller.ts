@@ -16,7 +16,7 @@ import * as common from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 
 @ApiTags('/metrics')
 @Controller('/metrics')

@@ -15,7 +15,7 @@ import { WorkflowRuntimeData } from '@prisma/client';
 import { StateTag } from '@ballerine/common';
 import { env } from '@/env';
 import { sign } from '@/common/utils/sign/sign';
-import { TAuthenticationConfiguration } from '@/customer/types';
+import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
 
 @Injectable()

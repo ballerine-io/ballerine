@@ -1,8 +1,8 @@
-import { FilterComponent } from '@app/pages/Workflows/components/organisms/WorkflowFilters/types';
+import { FilterComponent } from '@/pages/Workflows/components/organisms/WorkflowFilters/types';
 import {
   WorkflowFilterValues,
   WorkflowFiltersUpdater,
-} from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/workflows-filters.types';
+} from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/workflows-filters.types';
 import { memo } from 'react';
 
 interface Props {

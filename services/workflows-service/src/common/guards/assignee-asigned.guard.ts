@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 
 @Injectable()
 export class WorkflowAssigneeGuard implements CanActivate {

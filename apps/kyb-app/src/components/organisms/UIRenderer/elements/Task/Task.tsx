@@ -1,4 +1,4 @@
-import { baseElements } from '@app/components/organisms/UIRenderer/base-elements';
+import { baseElements } from '@/components/organisms/UIRenderer/base-elements';
 import { BlocksComponent } from '@ballerine/blocks';
 import { Card } from '@ballerine/ui';
 import { CSSProperties } from 'react';

@@ -1,24 +1,24 @@
-import { Pagination } from '@app/components/molecules/Pagination';
-import { StatusFilterComponent } from '@app/pages/Workflows/components/molecules/StatusFilterComponent';
-import { useWorkflowsQuery } from '@app/pages/Workflows/hooks/useWorkflowsQuery';
+import { Pagination } from '@/components/molecules/Pagination';
+import { StatusFilterComponent } from '@/pages/Workflows/components/molecules/StatusFilterComponent';
+import { useWorkflowsQuery } from '@/pages/Workflows/hooks/useWorkflowsQuery';
 import { useCallback } from 'react';
-import { WorkflowsList } from '@app/pages/Workflows/components/organisms/WorkflowsList';
-import { WorkflowsLayout } from '@app/pages/Workflows/components/layouts/WorkflowsLayout';
-import { DashboardLayout } from '@app/components/layouts/DashboardLayout';
-import { useSorting } from '@app/common/hooks/useSorting';
-import { WorkflowsMetricLayout } from '@app/pages/Workflows/components/layouts/WorkflowsMetricLayout';
-import { ActivePerWorkflow } from '@app/pages/Workflows/components/organisms/metrics/ActivePerWorkflow';
-import { WorkflowFiltersProps } from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/hocs/withWorkflowFilters/types';
-import { withWorkflowFilters } from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/hocs/withWorkflowFilters';
-import { FilterComponent } from '@app/pages/Workflows/components/organisms/WorkflowFilters/types';
-import { WorkflowFilters } from '@app/pages/Workflows/components/organisms/WorkflowFilters';
-import { AgentCasesStats } from '@app/pages/Workflows/components/organisms/metrics/AgentCasesStats';
-import { CasesPerStatusStats } from '@app/pages/Workflows/components/organisms/metrics/CasesPerStatusStats';
-import { AgentsActivityStats } from '@app/pages/Workflows/components/organisms/metrics/AgentsActivityStats';
+import { WorkflowsList } from '@/pages/Workflows/components/organisms/WorkflowsList';
+import { WorkflowsLayout } from '@/pages/Workflows/components/layouts/WorkflowsLayout';
+import { DashboardLayout } from '@/components/layouts/DashboardLayout';
+import { useSorting } from '@/common/hooks/useSorting';
+import { WorkflowsMetricLayout } from '@/pages/Workflows/components/layouts/WorkflowsMetricLayout';
+import { ActivePerWorkflow } from '@/pages/Workflows/components/organisms/metrics/ActivePerWorkflow';
+import { WorkflowFiltersProps } from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/hocs/withWorkflowFilters/types';
+import { withWorkflowFilters } from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/hocs/withWorkflowFilters';
+import { FilterComponent } from '@/pages/Workflows/components/organisms/WorkflowFilters/types';
+import { WorkflowFilters } from '@/pages/Workflows/components/organisms/WorkflowFilters';
+import { AgentCasesStats } from '@/pages/Workflows/components/organisms/metrics/AgentCasesStats';
+import { CasesPerStatusStats } from '@/pages/Workflows/components/organisms/metrics/CasesPerStatusStats';
+import { AgentsActivityStats } from '@/pages/Workflows/components/organisms/metrics/AgentsActivityStats';
 
 const filterComponents: FilterComponent[] = [StatusFilterComponent];
 
-interface Props extends WorkflowFiltersProps {}
+type Props = WorkflowFiltersProps;
 
 export const Workflows = withWorkflowFilters(({ filters, updateFilters }: Props) => {
   const { sortingKey, sortingDirection } = useSorting('order_by');

@@ -39,7 +39,7 @@ import { aggregateApprovalRateQuery } from '@/metrics/repository/sql/aggregate-a
 import { aggregateAverageAssignmentTimeQuery } from '@/metrics/repository/sql/aggregate-average-assignment-time.sql';
 import { AverageAssignmentTimeModel } from '@/metrics/repository/models/average-assignment-time.model';
 import { aggregateAverageReviewTimeQuery } from '@/metrics/repository/sql/aggregate-average-review-time.sql';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 
 @Injectable()
 export class MetricsRepository {

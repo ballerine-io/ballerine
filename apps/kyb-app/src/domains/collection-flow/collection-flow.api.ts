@@ -1,4 +1,4 @@
-import { request } from '@app/common/utils/request';
+import { request } from '@/common/utils/request';
 import {
   DocumentConfiguration,
   TCustomer,
@@ -7,8 +7,8 @@ import {
   TUser,
   UISchema,
   UpdateFlowDto,
-} from '@app/domains/collection-flow/types';
-import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
+} from '@/domains/collection-flow/types';
+import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 
 export const fetchUser = async (): Promise<TUser> => {
   const result = await request.get('collection-flow/user').json<TUser>();

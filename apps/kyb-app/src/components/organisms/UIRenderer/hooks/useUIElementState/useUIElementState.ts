@@ -1,6 +1,6 @@
-import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { UIElementState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
-import { UIElement } from '@app/domains/collection-flow';
+import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { UIElementState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
+import { UIElement } from '@/domains/collection-flow';
 import { useMemo } from 'react';
 
 export const useUIElementState = (definition: UIElement) => {

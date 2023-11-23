@@ -1,5 +1,5 @@
-import { DisablableListElementDefinition } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/useElementsDisablerLogic';
-import { Rule } from '@app/domains/collection-flow';
+import { DisablableListElementDefinition } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/useElementsDisablerLogic';
+import { Rule } from '@/domains/collection-flow';
 
 export type InsertionSchema = Record<string, string>;
 

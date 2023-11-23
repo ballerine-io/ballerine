@@ -1,6 +1,6 @@
 import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
 import { HealthService } from './health.service';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { Public } from '@/common/decorators/public.decorator';
 
 @Public()

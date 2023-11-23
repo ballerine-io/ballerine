@@ -1,12 +1,12 @@
 import * as childProcess from 'child_process';
 import react from '@vitejs/plugin-react';
-import { resolve } from 'path';
+import * as path from 'path';
 import { sentryVitePlugin, SentryVitePluginOptions } from '@sentry/vite-plugin';
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
 import tailwindcss from 'tailwindcss';
 import { defineConfig, PluginOption } from 'vite';
 import checker from 'vite-plugin-checker';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 interface PackageJson {
   name: string;
@@ -19,7 +19,12 @@ const packageJson: PackageJson = JSON.parse(
   fs.readFileSync(path.resolve(__dirname, 'package.json'), 'utf-8'),
 );
 
-const plugins: PluginOption[] = [react(), tailwindcss(), checker({ typescript: true })];
+const plugins: PluginOption[] = [
+  react(),
+  tailwindcss(),
+  checker({ typescript: true }),
+  tsconfigPaths(),
+];
 
 if (process.env.VITE_SENTRY_AUTH_TOKEN) {
   console.log('Initializing sentry');
@@ -60,11 +65,6 @@ export default defineConfig({
     sourcemap: true,
   },
   plugins,
-  resolve: {
-    alias: {
-      '@app': resolve(__dirname, './src'),
-    },
-  },
   test: {
     environment: 'jsdom',
     globals: true,

@@ -2,14 +2,14 @@ import {
   StepperContext,
   StepperLabelsMap,
   StepperIndicatorMap,
-} from '@app/components/atoms/Stepper/types';
+} from '@/components/atoms/Stepper/types';
 import { AnyChildren } from '@ballerine/ui';
 import { useMemo } from 'react';
 import { Provider } from './stepper.context';
 import { Idle } from './components/atoms/indicators/Idle';
 import { Warning } from './components/atoms/indicators/Warning';
 import { Completed } from './components/atoms/indicators/Completed';
-import { BaseLabel } from '@app/components/atoms/Stepper/components/atoms/BaseLabel/BaseLabel';
+import { BaseLabel } from '@/components/atoms/Stepper/components/atoms/BaseLabel/BaseLabel';
 
 const baseIndicators: StepperIndicatorMap = {
   idle: Idle,

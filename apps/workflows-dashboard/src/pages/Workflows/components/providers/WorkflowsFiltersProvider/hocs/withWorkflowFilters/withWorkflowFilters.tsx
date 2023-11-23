@@ -1,6 +1,6 @@
-import { WorkflowFiltersProps } from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/hocs/withWorkflowFilters/types';
-import { useWorkflowFilters } from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/hooks/useWorkflowFilters';
-import { WorkflowsFiltersProvider } from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/WorkflowsFiltersProvider';
+import { WorkflowFiltersProps } from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/hocs/withWorkflowFilters/types';
+import { useWorkflowFilters } from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/hooks/useWorkflowFilters';
+import { WorkflowsFiltersProvider } from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/WorkflowsFiltersProvider';
 
 type InputComponentProps<TProps> = Omit<TProps, keyof WorkflowFiltersProps>;
 

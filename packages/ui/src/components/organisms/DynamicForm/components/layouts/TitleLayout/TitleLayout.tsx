@@ -1,4 +1,4 @@
-import { getArrayFieldItemTitleIndex } from '@components/organisms/DynamicForm/components/layouts/TitleLayout/helpers';
+import { getArrayFieldItemTitleIndex } from '@/components/organisms/DynamicForm/components/layouts/TitleLayout/helpers';
 import { TitleFieldProps } from '@rjsf/utils';
 import clsx from 'clsx';
 

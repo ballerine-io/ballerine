@@ -1,4 +1,4 @@
-import { WorkflowHealthStatus } from '@common/enums';
+import { WorkflowHealthStatus } from '@/common/enums';
 import { HealthIndicator } from './HealthIndicator';
 
 export default {

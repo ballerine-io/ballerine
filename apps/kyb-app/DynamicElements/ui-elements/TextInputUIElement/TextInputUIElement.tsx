@@ -1,6 +1,6 @@
-import { useDynamicUIContext } from '@app/components/organisms/DynamicElements/hooks/useDynamicUIContext';
-import { useUIElement } from '@app/components/organisms/DynamicElements/hooks/useUIElement';
-import { UIElementComponent } from '@app/components/organisms/DynamicElements/types';
+import { useDynamicUIContext } from '@/components/organisms/DynamicElements/hooks/useDynamicUIContext';
+import { useUIElement } from '@/components/organisms/DynamicElements/hooks/useUIElement';
+import { UIElementComponent } from '@/components/organisms/DynamicElements/types';
 import { AnyObject, Input, Label } from '@ballerine/ui';
 import get from 'lodash/get';
 

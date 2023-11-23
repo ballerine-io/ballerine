@@ -1,6 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
-import { useCustomerQuery } from '@app/hooks/useCustomerQuery';
+import { useCustomerQuery } from '@/hooks/useCustomerQuery';
 
 export const Head = () => {
   const { customer } = useCustomerQuery();

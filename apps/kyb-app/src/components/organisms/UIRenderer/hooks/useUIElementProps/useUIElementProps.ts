@@ -1,8 +1,8 @@
-import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { useRuleExecutor } from '@app/components/organisms/DynamicUI/hooks/useRuleExecutor';
-import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
-import { UIElement } from '@app/domains/collection-flow';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { useRuleExecutor } from '@/components/organisms/DynamicUI/hooks/useRuleExecutor';
+import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
+import { UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
@@ -10,8 +10,20 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
   const { payload } = useStateManagerContext();
   const { state } = useDynamicUIContext();
   const [availabilityTestResulsts, visibilityTestResults] = [
-    useRuleExecutor(payload, definition.availableOn, definition, state),
-    useRuleExecutor(payload, definition.visibleOn, definition, state),
+    useRuleExecutor(
+      payload,
+      // @ts-ignore
+      definition.availableOn,
+      definition,
+      state,
+    ),
+    useRuleExecutor(
+      payload,
+      // @ts-ignore
+      definition.visibleOn,
+      definition,
+      state,
+    ),
   ];
 
   const { state: uiElementState } = useUIElementState(definition);

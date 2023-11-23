@@ -1,5 +1,5 @@
-import { WorkflowsQueryParams } from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/hooks/useWorkflowsQueryParams/types';
-import { WorkflowFilterValues } from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/workflows-filters.types';
+import { WorkflowsQueryParams } from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/hooks/useWorkflowsQueryParams/types';
+import { WorkflowFilterValues } from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/workflows-filters.types';
 
 export const deserializeQueryParams = (query: WorkflowsQueryParams): WorkflowFilterValues => {
   const filters: WorkflowFilterValues = {

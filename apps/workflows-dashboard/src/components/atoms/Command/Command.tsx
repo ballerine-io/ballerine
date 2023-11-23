@@ -4,8 +4,8 @@ import * as React from 'react';
 import { Command as CommandPrimitive } from 'cmdk';
 import { Search } from 'lucide-react';
 
-import { cn } from '@app/lib/utils';
-import { Dialog, DialogContent, DialogProps } from '@app/components/atoms/Dialog';
+import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogProps } from '@/components/atoms/Dialog';
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -22,7 +22,7 @@ const Command = React.forwardRef<
 ));
 Command.displayName = CommandPrimitive.displayName;
 
-interface CommandDialogProps extends DialogProps {}
+type CommandDialogProps = DialogProps;
 
 const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (

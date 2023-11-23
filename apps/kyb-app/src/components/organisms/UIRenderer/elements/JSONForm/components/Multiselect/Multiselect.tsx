@@ -1,8 +1,8 @@
-import { UIElement } from '@app/domains/collection-flow';
+import { UIElement } from '@/domains/collection-flow';
 import {
   Chip,
-  MultiSelectSelectedItemRenderer,
   MultiselectInputAdapter,
+  MultiSelectSelectedItemRenderer,
   RJSFInputProps,
 } from '@ballerine/ui';
 import { X } from 'lucide-react';
@@ -23,8 +23,12 @@ export const Multiselect = ({
 }: RJSFInputProps & { definition?: UIElement<MultiselectParams> }) => {
   const renderSelected: MultiSelectSelectedItemRenderer = useCallback((params, option) => {
     return (
-      <Chip key={option.value} className="h-6" variant={definition.options.variants?.chip?.wrapper}>
-        <Chip.Label text={option.title} variant={definition.options.variants?.chip?.label} />
+      <Chip
+        key={option.value}
+        className="h-6"
+        variant={definition?.options.variants?.chip?.wrapper}
+      >
+        <Chip.Label text={option.title} variant={definition?.options.variants?.chip?.label} />
         <Chip.UnselectButton
           {...params.unselectButtonProps}
           icon={<X className="hover:text-muted-foreground h-3 w-3 text-white" />}

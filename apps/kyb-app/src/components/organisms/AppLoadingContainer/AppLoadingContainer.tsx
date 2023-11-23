@@ -1,5 +1,5 @@
-import { AppDependency } from '@app/components/organisms/AppLoadingContainer/types';
-import { LoadingScreen } from '@app/pages/CollectionFlow/components/atoms/LoadingScreen';
+import { AppDependency } from '@/components/organisms/AppLoadingContainer/types';
+import { LoadingScreen } from '@/pages/CollectionFlow/components/atoms/LoadingScreen';
 import { AnyChildren } from '@ballerine/ui';
 import { useMemo } from 'react';
 

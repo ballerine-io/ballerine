@@ -1,6 +1,6 @@
-import { customerContext } from '@app/components/providers/CustomerProvider/customer.context';
-import { CustomerContext } from '@app/components/providers/CustomerProvider/types';
-import { useCustomerQuery } from '@app/hooks/useCustomerQuery';
+import { customerContext } from '@/components/providers/CustomerProvider/customer.context';
+import { CustomerContext } from '@/components/providers/CustomerProvider/types';
+import { useCustomerQuery } from '@/hooks/useCustomerQuery';
 import { AnyChildren } from '@ballerine/ui';
 import { useMemo } from 'react';
 

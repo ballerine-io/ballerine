@@ -1,4 +1,4 @@
-import { StepStatus } from '@app/components/atoms/Stepper/types';
+import { StepStatus } from '@/components/atoms/Stepper/types';
 
 export type StepIndex = number;
 
@@ -34,7 +34,7 @@ export interface StepperParams {
 
 export interface UseStepperHookCallResult {
   steps: IStep[];
-  currentStep: IStep;
+  currentStep: IStep | undefined;
   prevStep: () => IStep | null;
   nextStep: () => IStep | null;
   warning: (index: number, reason?: string) => void;

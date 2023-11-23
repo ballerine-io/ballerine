@@ -1,4 +1,4 @@
-import { MetricCard } from '@app/components/molecules/MetricCard';
+import { MetricCard } from '@/components/molecules/MetricCard';
 import { memo } from 'react';
 
 interface Props {

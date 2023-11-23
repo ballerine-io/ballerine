@@ -2,13 +2,13 @@ import { set } from 'lodash';
 import { Injectable } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { AnyRecord } from '@ballerine/common';
-import { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
+import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as tmp from 'tmp';
 import fs from 'fs';
 import { CustomerService } from '@/customer/customer.service';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { TDocumentsWithoutPageType } from '@/common/types';
 import { fromBuffer } from 'file-type';
 

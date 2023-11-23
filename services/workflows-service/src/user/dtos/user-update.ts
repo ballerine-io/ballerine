@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional, IsArray } from 'class-validator';
-import { InputJsonValue } from '../../types';
+import type { InputJsonValue } from '../../types';
 
 export class UserUpdateDto {
   @ApiProperty({

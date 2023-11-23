@@ -1,12 +1,12 @@
-import { SortingParams } from '@app/common/types/sorting-params.types';
+import { SortingParams } from '@/common/types/sorting-params.types';
 import {
   GetWorkflowDefinitionDto,
   GetWorkflowDefinitionResponse,
   GetWorkflowResponse,
   GetWorkflowsDto,
   IWorkflowDefinition,
-} from '@app/domains/workflows/api/workflow/workflow.types';
-import { request } from '@app/lib/request';
+} from '@/domains/workflows/api/workflow/workflow.types';
+import { request } from '@/lib/request';
 
 export const fetchWorkflows = async (
   query: GetWorkflowsDto,

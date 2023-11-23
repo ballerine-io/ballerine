@@ -6,12 +6,12 @@ import { EndUserWhereUniqueInput } from './dtos/end-user-where-unique-input';
 import { EndUserFindManyArgs } from './dtos/end-user-find-many-args';
 import { EndUserModel } from './end-user.model';
 import { plainToClass } from 'class-transformer';
-import { Request } from 'express';
+import type { Request } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { EndUserService } from './end-user.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
-import { InputJsonValue, TProjectIds } from '@/types';
-import { JsonValue } from 'type-fest';
+import type { InputJsonValue, TProjectIds } from '@/types';
+import type { JsonValue } from 'type-fest';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 
 @swagger.ApiTags('internal/end-users')

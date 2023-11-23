@@ -1,5 +1,5 @@
-import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
-import { UIPage } from '@app/domains/collection-flow';
+import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
+import { UIPage } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
 export const prepareInitialUIState = (pages: UIPage[], context: AnyObject): UIState => {

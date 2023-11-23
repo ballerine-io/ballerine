@@ -2,8 +2,8 @@ import {
   GetUsersAssignedCasesStatsDto,
   GetUsersCaseResolvingStats,
   IUserCaseResolvingStats,
-} from '@app/domains/user/api/users-stats/users-stats.types';
-import { request } from '@app/lib/request';
+} from '@/domains/user/api/users-stats/users-stats.types';
+import { request } from '@/lib/request';
 
 export const fetchUsersResolvedCasesStats = async (
   query: GetUsersCaseResolvingStats,

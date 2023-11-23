@@ -6,9 +6,9 @@ import {
   nextStepAction,
   updateStepDataAction,
   overrideStepsAction,
-} from '@app/common/hooks/useStepper/hooks/useStepsManager/actions';
-import { stepsRepisotoryReducer } from '@app/common/hooks/useStepper/hooks/useStepsManager/reducer';
-import { StepsRepositoryState } from '@app/common/hooks/useStepper/hooks/useStepsManager/types';
+} from '@/common/hooks/useStepper/hooks/useStepsManager/actions';
+import { stepsRepisotoryReducer } from '@/common/hooks/useStepper/hooks/useStepsManager/reducer';
+import { StepsRepositoryState } from '@/common/hooks/useStepper/hooks/useStepsManager/types';
 import { useReducer } from 'react';
 
 export const useStepsRepository = (initialState: StepsRepositoryState) => {

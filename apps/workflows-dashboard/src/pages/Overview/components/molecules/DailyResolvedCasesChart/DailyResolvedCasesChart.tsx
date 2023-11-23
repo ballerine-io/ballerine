@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { WeeklyBarChart } from '@app/components/molecules/WeeklyBarChart';
+import { WeeklyBarChart } from '@/components/molecules/WeeklyBarChart';
 
 export interface DailyResolvedCasesChartData {
   value: number;

@@ -1,4 +1,4 @@
-import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
+import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
 
 export interface UIElementState {
   isLoading?: boolean;

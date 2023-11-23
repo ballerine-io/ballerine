@@ -1,7 +1,7 @@
 import { ArgumentsHost, Catch, HttpException, HttpServer, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
-import { Response } from 'express';
+import type { Response } from 'express';
 
 export type ErrorCodesStatusMapping = {
   [key: string]: number;

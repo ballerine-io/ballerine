@@ -9,9 +9,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from '@app/components/atoms/Dropdown';
-import { Button } from '@app/components/atoms/Button';
-import { Avatar, AvatarFallback, AvatarImage } from '@app/components/atoms/Avatar';
+} from '@/components/atoms/Dropdown';
+import { Button } from '@/components/atoms/Button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/atoms/Avatar';
 
 interface Props {
   onLogout: () => void;

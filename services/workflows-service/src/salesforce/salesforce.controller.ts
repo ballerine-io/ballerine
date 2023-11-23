@@ -1,9 +1,9 @@
 import * as common from '@nestjs/common';
 import { HttpException, HttpStatus, Res } from '@nestjs/common';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 
 @common.Controller('salesforce')
 export class SalesforceController {

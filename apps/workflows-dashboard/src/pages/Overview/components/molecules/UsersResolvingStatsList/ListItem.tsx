@@ -1,5 +1,5 @@
-import { Avatar, AvatarImage } from '@app/components/atoms/Avatar';
-import { IUserCaseResolvingStats } from '@app/domains/user/api/users-stats';
+import { Avatar, AvatarImage } from '@/components/atoms/Avatar';
+import { IUserCaseResolvingStats } from '@/domains/user/api/users-stats';
 
 interface Props {
   item: IUserCaseResolvingStats;

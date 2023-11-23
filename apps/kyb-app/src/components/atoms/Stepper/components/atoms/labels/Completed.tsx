@@ -1,5 +1,5 @@
-import { BaseLabel } from '@app/components/atoms/Stepper/components/atoms/BaseLabel/BaseLabel';
-import { BaseLabelProps } from '@app/components/atoms/Stepper/labels/types';
+import { BaseLabel } from '@/components/atoms/Stepper/components/atoms/BaseLabel/BaseLabel';
+import { BaseLabelProps } from '@/components/atoms/Stepper/labels/types';
 import clsx from 'clsx';
 
 interface Props {

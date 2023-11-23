@@ -1,4 +1,4 @@
-import { Action, UIElement } from '@app/domains/collection-flow';
+import { Action, UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
 export type UIElementType = 'text' | 'button';

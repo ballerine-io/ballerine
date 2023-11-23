@@ -11,7 +11,7 @@ export const CheckboxList = (props: RJSFInputProps) => {
   const { uiSchema, formData = [], onChange } = props;
 
   const options = useMemo(() => {
-    return (uiSchema['options'] as CheckboxListOption[]) || [];
+    return (uiSchema?.['options'] as CheckboxListOption[]) || [];
   }, [uiSchema]);
 
   return (
@@ -22,7 +22,7 @@ export const CheckboxList = (props: RJSFInputProps) => {
             className="border-secondary data-[state=checked]:bg-secondary data-[state=checked]:text-secondary-foreground bg-white"
             color="primary"
             value={option.value}
-            checked={Array.isArray(formData) && formData.includes(option.value) ? true : false}
+            checked={Array.isArray(formData) && formData.includes(option.value)}
             onCheckedChange={checked => {
               let value = (formData as string[]) || [];
 

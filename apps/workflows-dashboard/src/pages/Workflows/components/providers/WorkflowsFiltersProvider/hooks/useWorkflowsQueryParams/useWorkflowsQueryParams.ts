@@ -1,4 +1,4 @@
-import { IWorkflowStatus } from '@app/domains/workflows/api/workflow';
+import { IWorkflowStatus } from '@/domains/workflows/api/workflow';
 import { useState } from 'react';
 import {
   useQueryParams,

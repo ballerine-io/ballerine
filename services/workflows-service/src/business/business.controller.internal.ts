@@ -6,12 +6,12 @@ import { BusinessWhereUniqueInput } from './dtos/business-where-unique-input';
 import { BusinessFindManyArgs } from './dtos/business-find-many-args';
 import { BusinessModel } from './business.model';
 import { plainToClass } from 'class-transformer';
-import { Request } from 'express';
+import type { Request } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { BusinessService } from './business.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
-import { InputJsonValue, TProjectIds } from '@/types';
-import { JsonValue } from 'type-fest';
+import type { InputJsonValue, TProjectIds } from '@/types';
+import type { JsonValue } from 'type-fest';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { ProjectScopeService } from '@/project/project-scope.service';
 

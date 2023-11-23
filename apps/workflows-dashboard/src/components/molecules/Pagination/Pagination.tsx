@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
-import { Button } from '@app/components/atoms/Button';
+import { Button } from '@/components/atoms/Button';
 import { useCallback } from 'react';
 
 interface Props {

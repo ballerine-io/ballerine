@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { BusinessModel } from './business.model';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class BusinessRepository {

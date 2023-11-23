@@ -1,4 +1,4 @@
-import { IStep, StepIndex, StepMetadata } from '@app/common/hooks/useStepper/types';
+import { IStep, StepIndex, StepMetadata } from '@/common/hooks/useStepper/types';
 
 export interface StepsRepositoryState {
   activeStep: number;

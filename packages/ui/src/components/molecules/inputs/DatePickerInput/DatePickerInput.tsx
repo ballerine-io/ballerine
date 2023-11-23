@@ -5,8 +5,8 @@ import { FocusEvent, useCallback, useMemo, useState } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import dayjs, { Dayjs } from 'dayjs';
 import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
-import { muiTheme } from '@common/mui-theme';
-import { Paper } from '@components/atoms';
+import { muiTheme } from '@/common/mui-theme';
+import { Paper } from '@/components/atoms';
 
 export interface DatePickerChangeEvent {
   target: {

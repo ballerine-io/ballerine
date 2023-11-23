@@ -4,7 +4,7 @@ import {
   fetchFlowContext,
   fetchUISchema,
   getFlowSession,
-} from '@app/domains/collection-flow/collection-flow.api';
+} from '@/domains/collection-flow/collection-flow.api';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 export const collectionFlowQuerykeys = createQueryKeys('collectionFlow', {

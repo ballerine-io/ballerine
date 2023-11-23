@@ -1,10 +1,10 @@
-import { EngineManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
-import { RuleEngine } from '@app/components/organisms/DynamicUI/rule-engines';
+import { EngineManager } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
+import { RuleEngine } from '@/components/organisms/DynamicUI/rule-engines';
 import {
   InsertionStrategy,
   StrategyParams,
-} from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/insert-strategies/abstract.insertion-strategy';
-import { InsertionParams } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/types';
+} from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/insert-strategies/abstract.insertion-strategy';
+import { InsertionParams } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/types';
 import { AnyObject } from '@ballerine/ui';
 
 export class InsertStrategyRunner {

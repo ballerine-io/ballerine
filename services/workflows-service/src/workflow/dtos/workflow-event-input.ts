@@ -1,4 +1,4 @@
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsString } from 'class-validator';
 

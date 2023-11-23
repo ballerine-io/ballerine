@@ -1,4 +1,4 @@
-import { State } from '@app/components/organisms/DynamicUI/StateManager/types';
+import { State } from '@/components/organisms/DynamicUI/StateManager/types';
 import { AnyObject } from '@ballerine/ui';
 import { createWorkflow } from '@ballerine/workflow-browser-sdk';
 

@@ -3,7 +3,7 @@ import * as common from '@nestjs/common';
 import { Param } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
-import { Request } from 'express';
+import type { Request } from 'express';
 import * as errors from '../errors';
 import * as nestAccessControl from 'nest-access-control';
 import { BusinessFindManyArgs } from './dtos/business-find-many-args';
@@ -21,7 +21,7 @@ import { BusinessInformation } from '@/business/dtos/business-information';
 import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('external/businesses')

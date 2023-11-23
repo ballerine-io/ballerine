@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 import { UiDefinitionContext } from '@prisma/client';
 import { oneOf } from '@/common/decorators/one-of.decorator';
-import { ObjectValues } from '@/types';
+import type { ObjectValues } from '@/types';
 
 export const uiDefinitionContextValues = Object.values(UiDefinitionContext);
 

@@ -1,4 +1,4 @@
-import { CardTitle } from '@app/components/atoms/Card';
+import { CardTitle } from '@/components/atoms/Card';
 
 interface Props {
   title: React.ReactNode;

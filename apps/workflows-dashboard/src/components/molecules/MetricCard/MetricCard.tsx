@@ -5,10 +5,10 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-} from '@app/components/atoms/Card';
-import { MetricCardContent } from '@app/components/molecules/MetricCard/MetricCardContent';
-import { MetricCardTitle } from '@app/components/molecules/MetricCard/MetricCardTitle';
-import { Skeleton } from '@app/components/atoms/Skeleton';
+} from '@/components/atoms/Card';
+import { MetricCardContent } from '@/components/molecules/MetricCard/MetricCardContent';
+import { MetricCardTitle } from '@/components/molecules/MetricCard/MetricCardTitle';
+import { Skeleton } from '@/components/atoms/Skeleton';
 
 interface Props {
   className?: string;

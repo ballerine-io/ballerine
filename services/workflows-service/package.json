@@ -96,6 +96,7 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
+    "@ballerine/config": "^1.0.0",
     "@cspell/cspell-types": "^6.31.1",
     "@nestjs/cli": "9.3.0",
     "@nestjs/swagger": "6.2.1",

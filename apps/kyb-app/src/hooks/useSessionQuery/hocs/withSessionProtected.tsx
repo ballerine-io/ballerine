@@ -1,6 +1,6 @@
-import { AppNavigate } from '@app/common/components/organisms/NavigateWithToken';
-import { useSessionQuery } from '@app/hooks/useSessionQuery/useSessionQuery';
-import { LoadingScreen } from '@app/pages/CollectionFlow/components/atoms/LoadingScreen';
+import { AppNavigate } from '@/common/components/organisms/NavigateWithToken';
+import { useSessionQuery } from '@/hooks/useSessionQuery/useSessionQuery';
+import { LoadingScreen } from '@/pages/CollectionFlow/components/atoms/LoadingScreen';
 
 export function withSessionProtected<TComponentProps extends object>(
   Component: React.ComponentType<TComponentProps>,

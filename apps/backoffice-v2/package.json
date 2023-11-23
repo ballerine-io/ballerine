@@ -103,6 +103,7 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
+    "@ballerine/config": "^1.0.0",
     "@cspell/cspell-types": "^6.31.1",
     "@faker-js/faker": "^7.6.0",
     "@playwright/test": "^1.32.1",
@@ -145,6 +146,7 @@
     "typescript": "^4.9.3",
     "vite": "^4.3.9",
     "vite-plugin-mkcert": "^1.16.0",
+    "vite-tsconfig-paths": "^4.0.7",
     "vitest": "^0.29.8"
   },
   "peerDependencies": {

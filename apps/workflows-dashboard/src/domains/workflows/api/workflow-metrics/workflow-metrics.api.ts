@@ -2,8 +2,8 @@ import {
   GetCasesPerStatusDto,
   ICasesPerStatusStats,
   IWorkflowDefinitionStats,
-} from '@app/domains/workflows/api/workflow-metrics/workflow-metrics.types';
-import { request } from '@app/lib/request';
+} from '@/domains/workflows/api/workflow-metrics/workflow-metrics.types';
+import { request } from '@/lib/request';
 
 export const fetchWorkflowStats = async (): Promise<IWorkflowDefinitionStats[]> => {
   const result = await request.get<IWorkflowDefinitionStats[]>(

@@ -1,4 +1,4 @@
-import { fetchSignIn, GetSignInDto, GetSignInResponse } from '@app/domains/auth/api/login';
+import { fetchSignIn, GetSignInDto, GetSignInResponse } from '@/domains/auth/api/login';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 

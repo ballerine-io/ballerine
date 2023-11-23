@@ -12,7 +12,7 @@ import { ListUserCasesResolvedDailyParams } from '@/metrics/repository/types/lis
 import { UserWorkflowProcessingStatisticModel } from '@/metrics/service/models/user-workflow-processing-statistic.model';
 import { GetUserWorkflowProcessingStatisticParams } from '@/metrics/service/types/get-user-workflow-processing-statistic.params';
 import { Injectable } from '@nestjs/common';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 
 @Injectable()
 export class MetricsService {

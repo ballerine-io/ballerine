@@ -1,6 +1,6 @@
-import { useUIStateLogic } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic';
-import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
-import { DynamicUIContext } from '@app/components/organisms/DynamicUI/types';
+import { useUIStateLogic } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic';
+import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
+import { DynamicUIContext } from '@/components/organisms/DynamicUI/types';
 import { useMemo } from 'react';
 
 export const useDynamicUIContextComposer = (initialState?: UIState): DynamicUIContext => {

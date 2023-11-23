@@ -1,4 +1,4 @@
-import { sessionKeys } from '@app/domains/auth/api/session/query-keys';
+import { sessionKeys } from '@/domains/auth/api/session/query-keys';
 import { useQuery } from '@tanstack/react-query';
 
 const ONE_MINUTE_IN_MS = 1000 * 60;
@@ -10,8 +10,10 @@ export function useSession() {
     refetch,
   } = useQuery({
     ...sessionKeys.details(),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     refetchInterval: ONE_MINUTE_IN_MS,
-    retry: retryCount => retryCount < 3,
+    retry: (retryCount: number) => retryCount < 3,
   });
 
   const isAuthenticated = Boolean(!isLoading && user);

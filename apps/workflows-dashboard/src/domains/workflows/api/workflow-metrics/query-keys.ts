@@ -1,8 +1,8 @@
 import {
   fetchCasesPerStatusStats,
   fetchWorkflowStats,
-} from '@app/domains/workflows/api/workflow-metrics/workflow-metrics.api';
-import { GetCasesPerStatusDto } from '@app/domains/workflows/api/workflow-metrics/workflow-metrics.types';
+} from '@/domains/workflows/api/workflow-metrics/workflow-metrics.api';
+import { GetCasesPerStatusDto } from '@/domains/workflows/api/workflow-metrics/workflow-metrics.types';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 export const workflowMetricsKeys = createQueryKeys('workflow-metrics', {

@@ -1,4 +1,4 @@
-import { queryClient } from '@app/lib/react-query/query-client';
+import { queryClient } from '@/lib/react-query/query-client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { QueryParamProvider } from 'use-query-params';
 import { ReactRouter6Adapter } from 'use-query-params/adapters/react-router-6';

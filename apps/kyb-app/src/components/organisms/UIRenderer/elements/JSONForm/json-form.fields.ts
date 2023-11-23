@@ -1,13 +1,13 @@
-import { CheckboxList } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/CheckboxList';
-import { CountryPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/CountryPicker';
-import { DocumentField } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField';
-import { IndustriesPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/IndustriesPicker';
-import { JSONFormArrayFieldLayout } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/JSONFormArrayFieldLayout';
-import { LocalePicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/LocalePicker';
-import { Multiselect } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/Multiselect/Multiselect';
-import { NationalityPicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/NationalityPicker';
-import { StatePicker } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/StatePicker';
-import { withDynamicUIInput } from '@app/components/organisms/UIRenderer/elements/JSONForm/hocs/withDynamicUIInput';
+import { CheckboxList } from '@/components/organisms/UIRenderer/elements/JSONForm/components/CheckboxList';
+import { CountryPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/CountryPicker';
+import { DocumentField } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField';
+import { IndustriesPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/IndustriesPicker';
+import { JSONFormArrayFieldLayout } from '@/components/organisms/UIRenderer/elements/JSONForm/components/JSONFormArrayFieldLayout';
+import { LocalePicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/LocalePicker';
+import { Multiselect } from '@/components/organisms/UIRenderer/elements/JSONForm/components/Multiselect/Multiselect';
+import { NationalityPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/NationalityPicker';
+import { StatePicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/StatePicker';
+import { withDynamicUIInput } from '@/components/organisms/UIRenderer/elements/JSONForm/hocs/withDynamicUIInput';
 import {
   AutocompleteTextInputAdapter,
   baseLayouts,

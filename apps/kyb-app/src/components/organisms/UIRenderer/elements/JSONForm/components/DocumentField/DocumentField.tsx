@@ -1,13 +1,13 @@
-import { useEventEmitterLogic } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
-import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { useUIElementToolsLogic } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/hooks/useUIElementToolsLogic';
-import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
-import { getDocumentFileIdPath } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/getDocumentFileIdPath';
-import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
-import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
-import { Document, UIElement } from '@app/domains/collection-flow';
-import { fetchFile, uploadFile } from '@app/domains/storage/storage.api';
-import { collectionFlowFileStorage } from '@app/pages/CollectionFlow/collection-flow.file-storage';
+import { useEventEmitterLogic } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useUIElementToolsLogic } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/hooks/useUIElementToolsLogic';
+import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
+import { getDocumentFileIdPath } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/getDocumentFileIdPath';
+import { useUIElementErrors } from '@/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
+import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
+import { Document, UIElement } from '@/domains/collection-flow';
+import { fetchFile, uploadFile } from '@/domains/storage/storage.api';
+import { collectionFlowFileStorage } from '@/pages/CollectionFlow/collection-flow.file-storage';
 import { AnyObject, ErrorsList, FileInputAdapter, RJSFInputProps } from '@ballerine/ui';
 import { HTTPError } from 'ky';
 import get from 'lodash/get';
@@ -53,6 +53,7 @@ export const DocumentField = (
 
     const fileIdPath = getDocumentFileIdPath(definition);
 
+    // @ts-ignore
     const fileId = get(document, fileIdPath) as string | null;
 
     return fileId;
@@ -67,6 +68,7 @@ export const DocumentField = (
       setFile(persistedFile);
     } else {
       void fetchFile(fileId).then(file => {
+        // @ts-ignore
         const createdFile = new File([''], file.fileNameInBucket || file.fileNameOnDisk, {
           type: 'text/plain',
         });
@@ -96,6 +98,7 @@ export const DocumentField = (
       try {
         const uploadResult = await uploadFile({ file });
 
+        // @ts-ignore
         set(document, fileIdPath, uploadResult.id);
         // set(document, fileTypePath, file.type);
         set(document, 'decision', {});
@@ -110,6 +113,7 @@ export const DocumentField = (
         if (err instanceof HTTPError) {
           const response = (await err.response.json()) as AnyObject;
           setFieldError({
+            // @ts-ignore
             fieldId: document.id,
             message: response.message as string,
             type: 'warning',

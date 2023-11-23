@@ -1,9 +1,9 @@
-import { IWorkflowStatus } from '@app/domains/workflows/api/workflow';
+import { IWorkflowStatus } from '@/domains/workflows/api/workflow';
 import {
   CasesPerStatusChart,
   CasesPerStatusChartData,
-} from '@app/pages/Workflows/components/molecules/CasesPerStatusChart';
-import { useCasesPerStatusQuery } from '@app/pages/Workflows/components/organisms/metrics/CasesPerStatusStats/hooks/useCasesPerStatusQuery';
+} from '@/pages/Workflows/components/molecules/CasesPerStatusChart';
+import { useCasesPerStatusQuery } from '@/pages/Workflows/components/organisms/metrics/CasesPerStatusStats/hooks/useCasesPerStatusQuery';
 import { useMemo } from 'react';
 
 const statusToTitleMap: Record<IWorkflowStatus, string> = {

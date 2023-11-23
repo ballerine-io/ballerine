@@ -1,5 +1,5 @@
-import { AppNavigate } from '@app/common/components/organisms/NavigateWithToken';
-import { getAccessToken } from '@app/helpers/get-access-token.helper';
+import { AppNavigate } from '@/common/components/organisms/NavigateWithToken';
+import { getAccessToken } from '@/helpers/get-access-token.helper';
 import { useMemo } from 'react';
 
 export function withTokenProtected<TComponentProps>(
@@ -10,6 +10,7 @@ export function withTokenProtected<TComponentProps>(
 
     if (!accessToken) return <AppNavigate to="restricted" />;
 
+    // @ts-ignore
     return <Component {...props} />;
   }
 

@@ -21,7 +21,7 @@ export const transformRJSFErrors = (errors: RJSFValidationError[]): RJSFValidati
     }
 
     // Removing oneOf constant specific errors(they are generated from each item in oneOf array of schema)
-    if (error.message.includes('constant')) {
+    if (error.message?.includes('constant')) {
       error.message = '';
     }
 
