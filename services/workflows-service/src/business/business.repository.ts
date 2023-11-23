@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { BusinessModel } from './business.model';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class BusinessRepository {
@@ -16,7 +16,6 @@ export class BusinessRepository {
     args: Prisma.SelectSubset<T, Prisma.BusinessCreateArgs>,
     projectId: TProjectId,
   ) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await this.prisma.business.create(this.scopeService.scopeCreate(args, projectId));
   }
 

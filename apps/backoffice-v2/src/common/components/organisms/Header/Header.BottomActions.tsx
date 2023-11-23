@@ -28,7 +28,7 @@ export const BottomActions = () => {
         <UserAvatar
           fullName={fullName}
           className={`mr-2 d-6`}
-          avatarUrl={session.user?.avatarUrl}
+          avatarUrl={session?.user?.avatarUrl}
         />
         <div className="text-sm">{fullName}</div>
       </div>

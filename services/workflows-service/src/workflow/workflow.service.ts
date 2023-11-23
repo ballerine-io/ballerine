@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { BusinessRepository } from '@/business/business.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -17,7 +12,7 @@ import { EndUserService } from '@/end-user/end-user.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { FileService } from '@/providers/file/file.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
-import { InputJsonValue, IObjectWithId, TProjectId, TProjectIds } from '@/types';
+import type { InputJsonValue, IObjectWithId, TProjectId, TProjectIds } from '@/types';
 import { UserService } from '@/user/user.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
@@ -34,12 +29,12 @@ import {
   ChildPluginCallbackOutput,
   ChildToParentCallback,
   ChildWorkflowCallback,
-  createWorkflow,
-  HelpersTransformer,
-  JmespathTransformer,
   SerializableTransformer,
   THelperFormatingLogic,
   Transformer,
+  createWorkflow,
+  HelpersTransformer,
+  JmespathTransformer,
 } from '@ballerine/workflow-core';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import {

@@ -51,7 +51,6 @@ export class HelpersTransformer extends BaseContextTransformer {
 
   getNestedProperty(record: Record<string, any>, path: Array<string>) {
     return path.reduce((prev, curr) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return prev ? prev[curr] : null;
     }, record);
   }
@@ -64,7 +63,6 @@ export class HelpersTransformer extends BaseContextTransformer {
       } else {
         current[path[i] as keyof typeof current] =
           (current[path[i] as keyof typeof current] as unknown) || {};
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         current = current[path[i] as keyof typeof current];
       }
     }

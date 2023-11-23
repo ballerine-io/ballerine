@@ -1,5 +1,5 @@
-import { Chip } from '@components/molecules/inputs/MultiSelect/components/Chip';
-import { MultiSelect, MultiSelectSelectedItemRenderer } from './MultiSelect';
+import { Chip } from '@/components/molecules/inputs/MultiSelect/components/Chip';
+import { MultiSelect, MultiSelectSelectedItemRenderer, MultiSelectValue } from './MultiSelect';
 import { useCallback, useState } from 'react';
 import { X } from 'lucide-react';
 
@@ -12,7 +12,7 @@ const options = new Array(20)
   .map((_, index) => ({ value: `item-${index}`, title: `Item-${index}` }));
 
 const DefaultComponent = () => {
-  const [value, setValue] = useState([]);
+  const [value, setValue] = useState<Array<MultiSelectValue>>([]);
 
   const renderSelected: MultiSelectSelectedItemRenderer = useCallback((params, option) => {
     return (

@@ -20,6 +20,9 @@ env:
 
 jobs:
   build-and-push-image:
+    strategy:
+      matrix:
+        platform: ["linux/arm64", "linux/amd64"]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -72,7 +75,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: examples/headless-example
-          platforms: linux/amd64
+          platforms: ${{ matrix.platform }}
           push: true
           cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
           tags: ${{ steps.branchmeta.outputs.tags }}
@@ -95,7 +98,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: examples/headless-example
-          platforms: linux/amd64
+          platforms: ${{ matrix.platform }}
           push: true
           cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
           tags: ${{ steps.prodmeta.outputs.tags }}

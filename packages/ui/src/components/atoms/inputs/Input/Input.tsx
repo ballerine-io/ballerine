@@ -1,4 +1,4 @@
-import { ctw } from '@utils/ctw';
+import { ctw } from '@/utils/ctw';
 import * as React from 'react';
 
 export type InputProps = React.HTMLProps<HTMLInputElement>;

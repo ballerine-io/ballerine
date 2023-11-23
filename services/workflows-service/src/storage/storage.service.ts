@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { FileRepository } from './storage.repository';
 import { IFileIds } from './types';
 import { Prisma } from '@prisma/client';
-import { TProjectId, TProjectIds } from '@/types';
-import { SetOptional } from 'type-fest';
+import type { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class StorageService {

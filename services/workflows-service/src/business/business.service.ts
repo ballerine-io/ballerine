@@ -12,7 +12,7 @@ import { env } from '@/env';
 import { lastValueFrom } from 'rxjs';
 import { plainToClass } from 'class-transformer';
 import { AxiosError } from 'axios';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class BusinessService {
@@ -22,7 +22,6 @@ export class BusinessService {
     protected readonly httpService: HttpService,
   ) {}
   async create(args: Parameters<BusinessRepository['create']>[0], projectId: TProjectId) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return await this.repository.create(args, projectId);
   }
 

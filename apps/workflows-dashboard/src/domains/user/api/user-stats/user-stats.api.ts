@@ -4,8 +4,8 @@ import {
   IResolvedCasesDailyMetric,
   IUserStats,
   UserStats,
-} from '@app/domains/user/api/user-stats/user-stats.types';
-import { request } from '@app/lib/request';
+} from '@/domains/user/api/user-stats/user-stats.types';
+import { request } from '@/lib/request';
 
 export const fetchUserStats = async (query: GetUserStatsDto): Promise<UserStats> => {
   const result = await request.get<IUserStats>(`/metrics/users/workflow-processing-statistic`, {

@@ -230,7 +230,6 @@ export class WorkflowBrowserSDK {
   }
 
   overrideContext<TContext extends Record<string, any>>(context: any): TContext {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.#__service.overrideContext(context);
   }
   async invokePlugin(pluginName: string) {
