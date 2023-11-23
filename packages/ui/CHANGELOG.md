@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.15
+
+### Patch Changes
+
+- 8c888cec: Updated tsconfig and types
+
 ## 0.3.14
 
 ### Patch Changes

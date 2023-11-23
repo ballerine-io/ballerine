@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/ui",
   "private": false,
-  "version": "0.3.14",
+  "version": "0.3.15",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -54,7 +54,7 @@
     "tailwind-merge": "^1.10.0"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.0.0",
+    "@ballerine/config": "^1.0.1",
     "@cspell/cspell-types": "^6.31.1",
     "@storybook/addon-essentials": "^7.0.26",
     "@storybook/addon-interactions": "^7.0.26",

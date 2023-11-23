@@ -1,5 +1,11 @@
 # @ballerine/rules-engine-lib
 
+## 0.4.22
+
+### Patch Changes
+
+- 8c888cec: Updated tsconfig and types
+
 ## 0.4.21
 
 ### Patch Changes
