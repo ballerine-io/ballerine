@@ -1,5 +1,13 @@
 # @ballerine/workflow-node-sdk
 
+## 0.5.22
+
+### Patch Changes
+
+- 8c888cec: Updated tsconfig and types
+- Updated dependencies [8c888cec]
+  - @ballerine/workflow-core@0.5.22
+
 ## 0.5.21
 
 ### Patch Changes
