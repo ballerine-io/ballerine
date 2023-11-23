@@ -34,7 +34,14 @@ const fetchEnvMigrationFiles = async () => {
   migrationFiles = migrationFiles.concat(await fetchMigrationFiles(commonMigrations));
 
   const environmentName = env.ENVIRONMENT_NAME || '';
-  if (['local', 'dev', 'development', 'demo'].includes(environmentName)) {
+
+  if (['local'].includes(environmentName)) {
+    migrationFiles = migrationFiles.concat(
+      await fetchMigrationFiles(path.join(__dirname, DATA_MIGRATION_FOLDER_RELATIVE_PATH, 'local')),
+    );
+  }
+
+  if (['dev', 'development', 'demo'].includes(environmentName)) {
     migrationFiles = migrationFiles.concat(
       await fetchMigrationFiles(path.join(__dirname, DATA_MIGRATION_FOLDER_RELATIVE_PATH, 'dev')),
     );
