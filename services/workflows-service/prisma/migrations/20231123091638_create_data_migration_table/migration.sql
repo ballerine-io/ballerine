@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS "DataVersionStatus";
 -- CreateEnum
 CREATE TYPE "DataVersionStatus" AS ENUM ('in_progress', 'completed', 'failed');
 
