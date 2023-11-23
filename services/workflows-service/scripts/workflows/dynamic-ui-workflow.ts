@@ -387,6 +387,7 @@ export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, proj
     data: kybDynamicExample,
   });
 
+  //@ts-ignore
   await generateDynamicUiTest(prismaClient, workflow.id, projectId || workflow.projectId);
 
   return workflow;

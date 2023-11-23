@@ -20,9 +20,10 @@ export const useUIElementErrors = (
 
     const fieldError =
       _errors[definition.valueDestination as string] ||
-      (errorKeyFallback && _errors[errorKeyFallback()]);
+      (errorKeyFallback && _errors[errorKeyFallback()]) ||
+      ([] as ErrorField[]);
 
-    const allErrors = [fieldPageError, ...(fieldError as ErrorField[])];
+    const allErrors = [fieldPageError, ...fieldError];
 
     return allErrors.filter(Boolean) as ErrorField[];
   }, [definition, _errors, _pageErrors, currentPage, errorKeyFallback]);
