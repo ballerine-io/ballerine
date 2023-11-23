@@ -1,10 +1,10 @@
-import { HealthIndicator } from '@app/components/atoms/HealthIndicator';
-import { ContextViewColumn } from '@app/components/molecules/WorkflowsTable/components/ContextViewColumn';
-import { DataTableColumnHeader } from '@app/components/molecules/WorkflowsTable/components/DataTableColumnHeader';
-import { WorkflowTableColumnDef } from '@app/components/molecules/WorkflowsTable/types';
-import { formatDate } from '@app/components/molecules/WorkflowsTable/utils/format-date';
-import { IWorkflow } from '@app/domains/workflows/api/workflow';
-import { getWorkflowHealthStatus } from '@app/utils/get-workflow-health-status';
+import { HealthIndicator } from '@/components/atoms/HealthIndicator';
+import { ContextViewColumn } from '@/components/molecules/WorkflowsTable/components/ContextViewColumn';
+import { DataTableColumnHeader } from '@/components/molecules/WorkflowsTable/components/DataTableColumnHeader';
+import { WorkflowTableColumnDef } from '@/components/molecules/WorkflowsTable/types';
+import { formatDate } from '@/components/molecules/WorkflowsTable/utils/format-date';
+import { IWorkflow } from '@/domains/workflows/api/workflow';
+import { getWorkflowHealthStatus } from '@/utils/get-workflow-health-status';
 
 export const defaultColumns: WorkflowTableColumnDef<IWorkflow>[] = [
   {

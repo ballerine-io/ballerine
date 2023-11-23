@@ -7,7 +7,7 @@ import { Prisma } from '@prisma/client';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('internal/users')

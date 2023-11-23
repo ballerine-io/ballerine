@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/ui",
   "private": false,
-  "version": "0.3.12",
+  "version": "0.3.14",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,6 +16,7 @@
   "scripts": {
     "spellcheck": "cspell \"*\"",
     "dev": "vite",
+    "clean": "rimraf ./tsconfig.tsbuildinfo && rimraf ./dist",
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
@@ -53,6 +54,7 @@
     "tailwind-merge": "^1.10.0"
   },
   "devDependencies": {
+    "@ballerine/config": "^1.0.0",
     "@cspell/cspell-types": "^6.31.1",
     "@storybook/addon-essentials": "^7.0.26",
     "@storybook/addon-interactions": "^7.0.26",
@@ -78,12 +80,14 @@
     "eslint-plugin-storybook": "^0.6.6",
     "fast-glob": "^3.3.0",
     "prop-types": "^15.8.1",
+    "rimraf": "^5.0.5",
     "storybook": "^7.0.26",
     "tailwindcss": "^3.3.2",
     "tailwindcss-animate": "1.0.5",
     "typescript": "^4.9.5",
     "vite": "^4.3.9",
     "vite-plugin-dts": "^1.6.6",
+    "vite-tsconfig-paths": "^4.0.7",
     "vitest": "^0.33.0"
   }
 }

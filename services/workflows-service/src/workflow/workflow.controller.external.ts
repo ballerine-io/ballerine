@@ -17,7 +17,7 @@ import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { WorkflowRunDto } from './dtos/workflow-run';
 import { plainToClass } from 'class-transformer';
 import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
@@ -27,7 +27,7 @@ import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { EndUserService } from '@/end-user/end-user.service';
@@ -278,7 +278,9 @@ export class WorkflowControllerExternal {
         data: hookResponse,
         resultDestinationPath: query.resultDestination || 'hookResponse',
         processName: query.processName,
+        // @ts-expect-error - error from Prisma types fix
         projectIds: [workflowRuntime.projectId],
+        // @ts-expect-error - error from Prisma types fix
         currentProjectId: workflowRuntime.projectId,
       });
 
@@ -287,6 +289,7 @@ export class WorkflowControllerExternal {
           id: params.id,
           name: params.event,
         },
+        // @ts-expect-error - error from Prisma types fix
         [workflowRuntime.projectId],
         workflowRuntime.projectId,
       );

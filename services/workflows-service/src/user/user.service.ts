@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PasswordService } from '../auth/password/password.service';
 import { UserRepository } from './user.repository';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()

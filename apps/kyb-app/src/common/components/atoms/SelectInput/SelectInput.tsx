@@ -1,4 +1,4 @@
-import { SelectInputOption } from '@app/common/components/atoms/SelectInput/types';
+import { SelectInputOption } from '@/common/components/atoms/SelectInput/types';
 import {
   Button,
   Command,

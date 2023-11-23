@@ -4,13 +4,13 @@ import { recursiveMerge } from '@/collection-flow/helpers/recursive-merge';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UiDefDefinition, UiSchemaStep } from '@/collection-flow/models/flow-step.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { ITokenScope } from '@/common/decorators/token-scope.decorator';
+import { type ITokenScope } from '@/common/decorators/token-scope.decorator';
 import { CustomerService } from '@/customer/customer.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
 import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
@@ -89,7 +89,8 @@ export class CollectionFlowService {
     const providedStepsMap = keyBy(steps, 'key');
 
     const persistedSteps =
-      definition.definition.states?.data_collection?.metadata?.uiSettings?.multiForm?.steps || [];
+      // @ts-expect-error - error from Prisma types fix
+      definition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm?.steps || [];
 
     const mergedSteps = persistedSteps.map((step: any) => {
       const stepToMergeIn = providedStepsMap[step.key];
@@ -106,10 +107,13 @@ export class CollectionFlowService {
       {
         data: {
           definition: {
-            ...definition.definition,
+            // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
+            ...definition?.definition,
             states: {
+              // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
               ...definition.definition?.states,
               data_collection: {
+                // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
                 ...definition.definition?.states?.data_collection,
                 metadata: {
                   uiSettings: {
@@ -129,6 +133,7 @@ export class CollectionFlowService {
     return plainToClass(FlowConfigurationModel, {
       id: updatedDefinition.id,
       steps:
+        // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
         updatedDefinition.definition?.states?.data_collection?.metadata?.uiSettings?.multiForm
           ?.steps || [],
     });

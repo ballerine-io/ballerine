@@ -34,14 +34,12 @@ export type {
   TTransformationLogic,
   TSchemaValidatorResponse,
   TJsonSchema,
-} from './utils';
-export { WebhookPlugin, ApiPlugin } from './plugins';
-export {
   THelperFormatingLogic,
   HelpersTransformer,
   JmespathTransformer,
   JsonSchemaValidator,
   validateDefinitionLogic,
-} from './utils';
+export { WebhookPlugin, ApiPlugin } from './plugins';
+export { HelpersTransformer, JmespathTransformer, JsonSchemaValidator } from './utils';
 export { HttpError } from './errors';
 export { createWorkflow } from './create-workflow';

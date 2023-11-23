@@ -1,7 +1,7 @@
 import { ComponentPropsWithoutRef, ElementRef, forwardRef } from 'react';
 import * as LabelPrimitive from '@radix-ui/react-label';
 import { cva, VariantProps } from 'class-variance-authority';
-import { ctw } from '@app/common/utils/ctw/ctw';
+import { ctw } from '@/common/utils/ctw/ctw';
 
 const labelVariants = cva(
   'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',

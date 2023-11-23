@@ -1,15 +1,15 @@
-import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { useRulesTest } from '@app/components/organisms/DynamicUI/hooks/useRuleTest';
-import { JsonLogicRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines';
-import { JmespathRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
-import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
-import { ArrayInsertionStrategy } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/insert-strategies/array.insertion-strategy';
-import { ObjectInsertionStrategy } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/insert-strategies/object.insertion-strategy';
-import { InsertStrategyRunner } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/insert-strategy-runner';
-import { DefinitionInsertionParams } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/types';
-import { useListElementsDisablerLogic } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/useElementsDisablerLogic';
-import { UIElement } from '@app/domains/collection-flow';
-import { useRefValue } from '@app/hooks/useRefValue';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useRulesTest } from '@/components/organisms/DynamicUI/hooks/useRuleTest';
+import { JsonLogicRuleEngine } from '@/components/organisms/DynamicUI/rule-engines';
+import { JmespathRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/jmespath.rule-engine';
+import { JsonSchemaRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
+import { ArrayInsertionStrategy } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/insert-strategies/array.insertion-strategy';
+import { ObjectInsertionStrategy } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/insert-strategies/object.insertion-strategy';
+import { InsertStrategyRunner } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/insert-strategy-runner';
+import { DefinitionInsertionParams } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/types';
+import { useListElementsDisablerLogic } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/useElementsDisablerLogic';
+import { UIElement } from '@/domains/collection-flow';
+import { useRefValue } from '@/hooks/useRefValue';
 import { useEffect, useMemo } from 'react';
 
 export const useDataInsertionLogic = <TElementParams extends DefinitionInsertionParams>(

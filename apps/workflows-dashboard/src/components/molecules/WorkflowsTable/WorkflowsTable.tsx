@@ -5,20 +5,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@app/components/atoms/Table';
+} from '@/components/atoms/Table';
 import { memo, useMemo } from 'react';
 import classnames from 'classnames';
-import { useReactTable, flexRender, getCoreRowModel, SortingState } from '@tanstack/react-table';
-import { IWorkflow } from '@app/domains/workflows/api/workflow';
-import { defaultColumns } from '@app/components/molecules/WorkflowsTable/columns';
+import { flexRender, getCoreRowModel, SortingState, useReactTable } from '@tanstack/react-table';
+import { IWorkflow } from '@/domains/workflows/api/workflow';
+import { defaultColumns } from '@/components/molecules/WorkflowsTable/columns';
 import Scrollbars from 'react-custom-scrollbars';
 import {
   InputColumn,
   WorkflowsTableSorting,
   WorkflowTableColumnDef,
-} from '@app/components/molecules/WorkflowsTable/types';
+} from '@/components/molecules/WorkflowsTable/types';
 import keyBy from 'lodash/keyBy';
-import { mergeColumns } from '@app/components/molecules/WorkflowsTable/utils/merge-columns';
+import { mergeColumns } from '@/components/molecules/WorkflowsTable/utils/merge-columns';
 
 interface Props {
   items: IWorkflow[];
@@ -65,7 +65,14 @@ export const WorkflowsTable = memo(({ items, isFetching, sorting, columns, onSor
         table.setSorting(newSortingValue);
       } else {
         const sortingState = updater as SortingState;
-        onSort(sortingState[0].id, sortingState[0].desc ? 'desc' : 'asc');
+
+        if (!sortingState[0]?.id) {
+          console.error(`Invalid sorting state: ${JSON.stringify(sortingState)}`);
+
+          return;
+        }
+
+        onSort(sortingState[0]?.id, sortingState[0]?.desc ? 'desc' : 'asc');
       }
     },
     getCoreRowModel: getCoreRowModel(),
