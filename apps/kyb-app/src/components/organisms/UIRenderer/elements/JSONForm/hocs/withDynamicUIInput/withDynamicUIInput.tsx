@@ -1,12 +1,12 @@
-import { usePageResolverContext } from '@app/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
-import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { findDefinitionByName } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
-import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
-import { useUIElementHandlers } from '@app/components/organisms/UIRenderer/hooks/useUIElementHandlers';
-import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
-import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
-import { UIElement } from '@app/domains/collection-flow';
+import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { findDefinitionByName } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
+import { useUIElementErrors } from '@/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
+import { useUIElementHandlers } from '@/components/organisms/UIRenderer/hooks/useUIElementHandlers';
+import { useUIElementProps } from '@/components/organisms/UIRenderer/hooks/useUIElementProps';
+import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
+import { UIElement } from '@/domains/collection-flow';
 import { AnyObject, ErrorsList, RJSFInputAdapter, RJSFInputProps } from '@ballerine/ui';
 import get from 'lodash/get';
 import { useCallback, useMemo } from 'react';
@@ -16,6 +16,7 @@ const findLastDigit = (str: string) => {
   const matches = digitRegex.exec(str);
 
   if (matches && matches.length > 0) {
+    // @ts-ignore
     const result = parseInt(matches[matches.length - 1]);
     return result;
   }
@@ -49,11 +50,15 @@ export const withDynamicUIInput = (
     const inputIndex = useMemo(() => {
       const index = getInputIndex(inputId || '');
 
-      return isNaN(index) ? null : index;
+      return isNaN(index as number) ? null : index;
     }, [inputId]);
 
     const baseDefinition = useMemo(() => {
-      const definition = findDefinitionByName(name, currentPage.elements);
+      const definition = findDefinitionByName(
+        name,
+        // @ts-ignore
+        currentPage?.elements,
+      );
 
       if (!definition) throw new Error('definition not found');
 
@@ -67,6 +72,7 @@ export const withDynamicUIInput = (
         ...baseDefinition,
         name: inputIndex !== null ? `${baseDefinition.name}[${inputIndex}]` : baseDefinition.name,
         valueDestination: injectIndexToDestinationIfNeeded(
+          // @ts-ignore
           baseDefinition.valueDestination,
           inputIndex,
         ),

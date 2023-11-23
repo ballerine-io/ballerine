@@ -1,6 +1,7 @@
 import { SortOrder } from '@/common/query-filters/sort-order';
 import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
 import {
+  ApprovalState,
   Business,
   EndUser,
   WorkflowDefinition,
@@ -8,7 +9,7 @@ import {
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
 import { User } from '@sentry/node';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 
 export interface RunnableWorkflowData {
   workflowDefinition: WorkflowDefinition;
@@ -55,7 +56,7 @@ export interface IWorkflowContextChangedEventData {
   eventName: 'workflow.context.changed';
   oldRuntimeData: WorkflowRuntimeData;
   updatedRuntimeData: WorkflowRuntimeData;
-  state: string;
+  state: string | null;
   entityId: string;
   correlationId: string;
 }
@@ -64,7 +65,7 @@ export interface IWorkflowCompletedEventData {
   eventName: 'workflow.completed';
   // TODO: Move to a shared package
   runtimeData: WorkflowRuntimeData;
-  state: string;
+  state: string | null;
   entityId: string;
   correlationId: string;
 }
@@ -72,7 +73,7 @@ export interface IWorkflowCompletedEventData {
 export interface IWorkflowStateChangedEventData {
   eventName: 'workflow.state.changed';
   runtimeData: WorkflowRuntimeData;
-  state: string;
+  state: string | null;
   entityId: string;
   correlationId: string;
 }

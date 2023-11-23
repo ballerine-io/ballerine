@@ -1,6 +1,6 @@
-import { FacetedFilter, FacetedFilterOption } from '@app/components/molecules/FacetedFilter';
-import { IWorkflowStatus } from '@app/domains/workflows/api/workflow';
-import { FilterComponent } from '@app/pages/Workflows/components/organisms/WorkflowFilters/types';
+import { FacetedFilter, FacetedFilterOption } from '@/components/molecules/FacetedFilter';
+import { IWorkflowStatus } from '@/domains/workflows/api/workflow';
+import { FilterComponent } from '@/pages/Workflows/components/organisms/WorkflowFilters/types';
 
 const options: FacetedFilterOption[] = [
   { label: 'Active', value: 'active' },

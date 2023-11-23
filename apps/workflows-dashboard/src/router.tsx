@@ -1,8 +1,8 @@
-import { App } from '@app/App';
-import { withSessionProtected } from '@app/common/hocs/withSessionProtected';
-import { Overview } from '@app/pages/Overview';
-import { SignIn } from '@app/pages/SignIn';
-import { Workflows } from '@app/pages/Workflows';
+import { App } from '@/App';
+import { withSessionProtected } from '@/common/hocs/withSessionProtected';
+import { Overview } from '@/pages/Overview';
+import { SignIn } from '@/pages/SignIn';
+import { Workflows } from '@/pages/Workflows';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 
 export const router = createBrowserRouter([

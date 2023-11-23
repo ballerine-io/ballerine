@@ -1,6 +1,6 @@
-import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
-import { useRefValue } from '@app/hooks/useRefValue';
+import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
+import { useRefValue } from '@/hooks/useRefValue';
 import { useCallback } from 'react';
 
 export interface DisablableListElementDefinition {

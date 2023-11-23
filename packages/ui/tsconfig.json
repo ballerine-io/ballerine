@@ -1,31 +1,14 @@
 {
+  "extends": "@ballerine/config/tsconfig.dom-bundler.json",
   "compilerOptions": {
+    "outDir": "./dist",
     "baseUrl": ".",
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "moduleResolution": "Node",
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
     "jsx": "react-jsx",
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "esModuleInterop": false,
-    "declaration": true,
-    "types": ["node"],
     "paths": {
-      "@components/*": ["./src/components/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@common/*": ["./src/common/*"],
+      "@/*": ["./src/*"],
       "class-variance-authority": ["node_modules/class-variance-authority"],
       "react": ["./node_modules/@types/react"]
     }
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src"]
 }

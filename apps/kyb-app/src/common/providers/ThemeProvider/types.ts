@@ -1,3 +1,3 @@
-import { ISettings } from '@app/common/types/settings';
+import { ISettings } from '@/common/types/settings';
 
 export type ThemeContext = ISettings['theme'];

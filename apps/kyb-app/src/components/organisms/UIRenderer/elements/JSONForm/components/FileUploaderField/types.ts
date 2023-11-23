@@ -1,5 +1,5 @@
-import { UploadFileFn } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/types';
-import { FileRepository } from '@app/utils/file-repository';
+import { UploadFileFn } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/types';
+import { FileRepository } from '@/utils/file-repository';
 
 export type UploadedFileResult = { fileId: string };
 export type UploadFileCallback = (file: File) => Promise<UploadedFileResult>;

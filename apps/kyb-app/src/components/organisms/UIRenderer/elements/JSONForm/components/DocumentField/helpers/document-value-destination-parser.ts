@@ -7,7 +7,7 @@ export class DocumentValueDestinationParser {
 
     if (!match) return null;
 
-    return match[1];
+    return match[1] || null;
   }
 
   extractPagePath(): string | null {
@@ -16,7 +16,7 @@ export class DocumentValueDestinationParser {
 
     if (!match) return null;
 
-    return match[1];
+    return match[1] || null;
   }
 
   extractFileIdPath(): string | null {

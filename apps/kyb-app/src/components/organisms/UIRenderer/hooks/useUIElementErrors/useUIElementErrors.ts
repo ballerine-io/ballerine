@@ -1,7 +1,7 @@
-import { usePageContext } from '@app/components/organisms/DynamicUI/Page';
-import { usePageResolverContext } from '@app/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
-import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
-import { UIElement } from '@app/domains/collection-flow';
+import { usePageContext } from '@/components/organisms/DynamicUI/Page';
+import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
+import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
+import { UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
@@ -13,17 +13,18 @@ export const useUIElementErrors = (
   const { currentPage } = usePageResolverContext();
 
   const errors = useMemo(() => {
-    const pageErrors = _pageErrors[currentPage.stateName] || {};
+    const pageErrors = _pageErrors[currentPage?.stateName as string] || {};
     const fieldPageError =
-      pageErrors[definition.valueDestination] ||
+      pageErrors[definition.valueDestination as string] ||
       (errorKeyFallback && pageErrors[errorKeyFallback()]);
 
     const fieldError =
-      _errors[definition.valueDestination] || (errorKeyFallback && _errors[errorKeyFallback()]);
+      _errors[definition.valueDestination as string] ||
+      (errorKeyFallback && _errors[errorKeyFallback()]);
 
-    const allErrors = [fieldPageError, fieldError];
+    const allErrors = [fieldPageError, ...(fieldError as ErrorField[])];
 
-    return allErrors.filter(Boolean);
+    return allErrors.filter(Boolean) as ErrorField[];
   }, [definition, _errors, _pageErrors, currentPage, errorKeyFallback]);
 
   const warnings = useMemo(() => errors.filter(error => error.type === 'warning'), [errors]);

@@ -1,4 +1,4 @@
-import { AnyChildren } from '@common/types';
+import { AnyChildren } from '@/common/types';
 import clsx from 'clsx';
 import { forwardRef } from 'react';
 
@@ -8,11 +8,8 @@ export interface PaperProps {
   children: AnyChildren;
 }
 
-export const Paper = forwardRef(
-  (
-    { wrapperClassName, className, children, ...restProps }: PaperProps,
-    ref: React.ForwardRefExoticComponent<HTMLDivElement>,
-  ) => {
+export const Paper = forwardRef<HTMLDivElement, PaperProps>(
+  ({ wrapperClassName, className, children, ...restProps }, ref) => {
     return (
       <div ref={ref} {...restProps} className={clsx(wrapperClassName)}>
         <div

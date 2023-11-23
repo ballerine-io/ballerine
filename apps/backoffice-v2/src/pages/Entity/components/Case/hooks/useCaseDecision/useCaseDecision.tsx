@@ -11,9 +11,8 @@ export const useCaseDecision = () => {
   const filterId = useFilterId();
   const { entityId: workflowId } = useParams();
   const { data: workflow } = useWorkflowQuery({ workflowId, filterId });
-  const {
-    data: { user: authenticatedUser },
-  } = useAuthenticatedUserQuery();
+  const { data: session } = useAuthenticatedUserQuery();
+  const authenticatedUser = session?.user;
   const caseState = useCaseState(authenticatedUser, workflow);
   const hasDecision = safeEvery(
     workflow?.context?.documents,

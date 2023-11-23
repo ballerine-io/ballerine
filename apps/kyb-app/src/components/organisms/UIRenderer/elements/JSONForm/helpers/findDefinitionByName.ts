@@ -1,11 +1,11 @@
-import { deserializeDocumentId } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/serialize-document-id';
-import { UIElement } from '@app/domains/collection-flow';
+import { deserializeDocumentId } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/serialize-document-id';
+import { UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
 export const findDefinitionByName = (
   name: string,
   elements: UIElement<AnyObject>[],
-): UIElement<AnyObject> => {
+): UIElement<AnyObject> | undefined => {
   for (const element of elements) {
     if (element.name === name) {
       return element;
@@ -19,7 +19,7 @@ export const findDefinitionByName = (
     }
   }
 
-  return undefined;
+  return;
 };
 
 export const findDefinitionByDestinationPath = (

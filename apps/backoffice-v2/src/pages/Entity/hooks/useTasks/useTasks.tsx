@@ -35,6 +35,15 @@ import { useDocumentPageImages } from './hooks/useDocumentPageImages';
 import { motionProps } from './motion-props';
 import { selectDirectorsDocuments } from './selectors/selectDirectorsDocuments';
 import { selectWorkflowDocuments } from './selectors/selectWorkflowDocuments';
+import { getPhoneNumberFormatter } from '../../../../common/utils/get-phone-number-formatter/get-phone-number-formatter';
+
+const pluginsOutputBlacklist = [
+  'companySanctions',
+  'directors',
+  'ubo',
+  'businessInformation',
+  'website_monitoring',
+];
 
 export const useTasks = ({
   workflow,
@@ -100,17 +109,11 @@ export const useTasks = ({
     directorsDocsData,
   );
 
-  const pluginsOutputBlacklist = [
-    'companySanctions',
-    'directors',
-    'ubo',
-    'businessInformation',
-    'website_monitoring',
-  ];
   const filteredPluginsOutput = useMemo(
     () => omitPropsFromObject(pluginsOutput, ...pluginsOutputBlacklist),
-    [pluginsOutput, pluginsOutputBlacklist],
+    [pluginsOutput],
   );
+
   const pluginsOutputKeys = Object.keys(filteredPluginsOutput ?? {});
   const address = getAddressDeep(filteredPluginsOutput, {
     propertyName: 'registeredAddressInFull',
@@ -228,10 +231,12 @@ export const useTasks = ({
                     value: (
                       <React.Fragment>
                         Re-upload needed
-                        <X
-                          className="h-4 w-4 cursor-pointer"
-                          onClick={() => removeDecisionById({ documentId: id })}
-                        />
+                        {!isLegacyReject && (
+                          <X
+                            className="h-4 w-4 cursor-pointer"
+                            onClick={() => removeDecisionById({ documentId: id })}
+                          />
+                        )}
                       </React.Fragment>
                     ),
                     props: {
@@ -703,18 +708,22 @@ export const useTasks = ({
               {
                 type: 'details',
                 value: {
-                  data: Object.entries(mainRepresentative)?.map(([title, value]) => ({
-                    title,
-                    value,
-                    isEditable: false,
-                  })),
+                  data: Object.entries(mainRepresentative)?.map(([title, value]) => {
+                    const formatter =
+                      getPhoneNumberFormatter(value) ?? getPhoneNumberFormatter(`+${value}`);
+
+                    return {
+                      title,
+                      value: formatter?.formatInternational() ?? value,
+                      isEditable: false,
+                    };
+                  }),
                 },
                 hideSeparator: true,
               },
             ],
           },
         ];
-
   const mainContactBlock =
     Object.keys(mainContact ?? {}).length === 0
       ? []
@@ -732,10 +741,15 @@ export const useTasks = ({
               {
                 type: 'details',
                 value: {
-                  data: Object.entries(mainContact ?? {})?.map(([title, value]) => ({
-                    title,
-                    value,
-                  })),
+                  data: Object.entries(mainContact ?? {})?.map(([title, value]) => {
+                    const formatter =
+                      getPhoneNumberFormatter(value) ?? getPhoneNumberFormatter(`+${value}`);
+
+                    return {
+                      title,
+                      value: formatter?.formatInternational() ?? value,
+                    };
+                  }),
                 },
                 hideSeparator: true,
               },

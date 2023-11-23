@@ -1,4 +1,4 @@
-import { useFileAssigner } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileAssigner/useFileAssigner';
+import { useFileAssigner } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileAssigner/useFileAssigner';
 import { renderHook, waitFor } from '@testing-library/react';
 
 //@ts-ignore
@@ -8,11 +8,11 @@ window.DataTransfer = function () {};
 jest.spyOn(window, 'DataTransfer', 'get').mockImplementation(function () {
   return function () {
     // Mocking FileList
-    const files = {
+    const files: any = {
       length: 0,
-      item: function (index) {
+      item: function (index: number) {
         //@ts-ignore
-        return this[index];
+        return this[index] as File;
       },
     };
 
@@ -42,7 +42,7 @@ describe('useFileAssigner - hook', () => {
       renderHook(() => useFileAssigner(inputRef, testFile));
 
       await waitFor(() => {
-        expect(inputRef.current.files.length).toBe(1);
+        expect(inputRef.current.files?.length).toBe(1);
       });
     });
   });

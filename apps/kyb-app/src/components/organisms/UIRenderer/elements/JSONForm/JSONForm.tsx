@@ -1,20 +1,20 @@
-import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { createFormSchemaFromUIElements } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/createFormSchemaFromUIElements';
-import { createInitialFormData } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/createInitialFormData';
-import { UIElementComponent } from '@app/components/organisms/UIRenderer/types';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { createFormSchemaFromUIElements } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/createFormSchemaFromUIElements';
+import { createInitialFormData } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/createInitialFormData';
+import { UIElementComponent } from '@/components/organisms/UIRenderer/types';
 
 import {
   jsonFormFields,
   jsonFormLayouts,
-} from '@app/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
-import { JSONFormDefinitionProvider } from '@app/components/organisms/UIRenderer/elements/JSONForm/providers/JSONFormDefinitionProvider';
-import { useDataInsertionLogic } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic';
-import { DefinitionInsertionParams } from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/types';
-import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
-import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
-import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
-import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
-import { transformRJSFErrors } from '@app/helpers/transform-errors';
+} from '@/components/organisms/UIRenderer/elements/JSONForm/json-form.fields';
+import { JSONFormDefinitionProvider } from '@/components/organisms/UIRenderer/elements/JSONForm/providers/JSONFormDefinitionProvider';
+import { useDataInsertionLogic } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic';
+import { DefinitionInsertionParams } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/types';
+import { useUIElementErrors } from '@/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
+import { useUIElementProps } from '@/components/organisms/UIRenderer/hooks/useUIElementProps';
+import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
+import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
+import { transformRJSFErrors } from '@/helpers/transform-errors';
 import { AnyObject, DynamicForm, ErrorsList } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import get from 'lodash/get';
@@ -56,20 +56,26 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
   const formRef = useRef<any>(null);
 
   useEffect(() => {
-    const elementValue = get(payload, definition.valueDestination) as unknown;
+    const elementValue = get(
+      payload,
+      // @ts-ignore
+      definition.valueDestination,
+    ) as unknown;
+
     // TO DO: ADD this logic to jmespath @blokh
     if (definition.options?.jsonFormDefinition?.type === 'array' && Array.isArray(elementValue)) {
       const payload = stateApi.getContext();
       //@ts-ignore
       set(
         payload,
+        // @ts-ignore
         definition.valueDestination,
         elementValue.map((obj: AnyObject) => ({
           ...obj,
           additionalInfo: {
             ...obj.additionalInfo,
             companyName: get(payload, 'entity.data.companyName') as string,
-            customerCompany: (payload as CollectionFlowContext).flowConfig.customerCompany,
+            customerCompany: (payload as CollectionFlowContext).flowConfig?.customerCompany,
           },
         })),
       );
@@ -80,10 +86,19 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
     (values: AnyObject[]) => {
       if (definition.options?.jsonFormDefinition?.type === 'array') {
         const prevContext = stateApi.getContext();
-        const currentValue = get(prevContext, definition.valueDestination);
+        const currentValue = get(
+          prevContext,
+          // @ts-ignore
+          definition.valueDestination,
+        );
 
         if (Array.isArray(currentValue) && currentValue.length !== values.length) {
-          set(prevContext, definition.valueDestination, values);
+          set(
+            prevContext,
+            // @ts-ignore
+            definition.valueDestination,
+            values,
+          );
           stateApi.setContext(prevContext);
         }
       }
@@ -107,6 +122,7 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
             formData={formData}
             ref={formRef}
             transformErrors={transformRJSFErrors}
+            // @ts-ignore - potential bug, does this function even handle arrays?
             onChange={handleArrayInputChange}
             onSubmit={handleSubmit}
           />

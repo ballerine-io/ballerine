@@ -5,6 +5,7 @@
 ### Patch Changes
 
 - Added ZZ schemas
+- Change document schemas
 
 ## 0.7.21
 

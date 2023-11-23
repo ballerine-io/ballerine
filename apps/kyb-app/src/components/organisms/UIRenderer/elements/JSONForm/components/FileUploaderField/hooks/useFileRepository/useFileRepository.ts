@@ -1,9 +1,9 @@
 import {
   RegisterFileFn,
   UseFileRepositoryResult,
-} from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/types';
-import { useRefValue } from '@app/hooks/useRefValue';
-import { FileRepository, FileRepositoryListener } from '@app/utils/file-repository';
+} from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/types';
+import { useRefValue } from '@/hooks/useRefValue';
+import { FileRepository, FileRepositoryListener } from '@/utils/file-repository';
 import { useCallback, useEffect, useState } from 'react';
 
 export const useFileRepository = (
@@ -21,7 +21,7 @@ export const useFileRepository = (
       const registeredFile = fileRepository.getFileById(fileId);
       setFile(registeredFile);
 
-      return registeredFile;
+      return registeredFile as File;
     },
     [fileRepository],
   );

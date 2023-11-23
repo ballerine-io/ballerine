@@ -1,6 +1,5 @@
-import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
-import { findDocumentDefinitionById } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
-import { Document, UIElement, UIPage } from '@app/domains/collection-flow';
+import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
+import { UIElement, UIPage } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
@@ -19,7 +18,9 @@ export const selectDirectorsDocuments = (context: unknown): Document[] =>
   //@ts-ignore
   selectDirectors(context)
     .map(director => director.additionalInfo?.documents)
+    //@ts-ignore
     ?.filter(Boolean)
+    //@ts-ignore
     ?.flat() || [];
 
 export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] => {
@@ -43,17 +44,21 @@ export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] 
       ]
         .filter(document => {
           if (
+            //@ts-ignore
             !(document?.decision?.status == 'revision' || document?.decision?.status == 'rejected')
           ) {
             return false;
           }
 
+          //@ts-ignore
           const definition = findDocumentDefinitionById(document.id, pageError._elements);
 
           return Boolean(definition);
         })
         .map(document => {
+          //@ts-ignore
           const documentPath = `document-error-${document.id}`;
+          //@ts-ignore
           const message = document?.decision?.revisionReason;
 
           return {

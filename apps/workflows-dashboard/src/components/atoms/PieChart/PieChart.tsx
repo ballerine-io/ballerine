@@ -1,5 +1,5 @@
-import { PieChartData } from '@app/components/atoms/PieChart/types';
-import { calculateChartDataSum } from '@app/components/atoms/PieChart/utils/calculateChartDataSum';
+import { PieChartData } from '@/components/atoms/PieChart/types';
+import { calculateChartDataSum } from '@/components/atoms/PieChart/utils/calculateChartDataSum';
 import { useMemo } from 'react';
 import * as RechartPrimitive from 'recharts';
 

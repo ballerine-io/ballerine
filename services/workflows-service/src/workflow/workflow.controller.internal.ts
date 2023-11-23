@@ -9,7 +9,7 @@ import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { FilterService } from '@/filter/filter.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
 import { DocumentDecisionUpdateQueryInput } from '@/workflow/dtos/document-decision-query.input';
 import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';

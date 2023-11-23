@@ -1,5 +1,5 @@
-import { useFileRepository } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileRepository/useFileRepository';
-import { FileRepository } from '@app/utils/file-repository';
+import { useFileRepository } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileRepository/useFileRepository';
+import { FileRepository } from '@/utils/file-repository';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
 describe('useFileRepository - hook', () => {

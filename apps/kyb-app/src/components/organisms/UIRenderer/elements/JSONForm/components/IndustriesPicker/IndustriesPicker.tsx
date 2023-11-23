@@ -1,6 +1,6 @@
 import { RJSFInputProps, TextInputAdapter } from '@ballerine/ui';
 import { useMemo } from 'react';
-import { industries } from '@app/common/static/industries';
+import { industries } from '@/common/static/industries';
 
 export const IndustriesPicker = (props: RJSFInputProps) => {
   const options = useMemo(

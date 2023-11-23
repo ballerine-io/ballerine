@@ -1,4 +1,4 @@
-import { deserializeDocumentId } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/serialize-document-id';
+import { deserializeDocumentId } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/serialize-document-id';
 
 describe('deserializeDocumentId', () => {
   it('will return origin documentId template', () => {

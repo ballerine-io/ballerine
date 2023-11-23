@@ -1,4 +1,4 @@
-import { serializeDocumentId } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/serialize-document-id';
+import { serializeDocumentId } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/serialize-document-id';
 
 describe('serializeDocumentId', () => {
   it('will populate INDEX placeholder with index', () => {

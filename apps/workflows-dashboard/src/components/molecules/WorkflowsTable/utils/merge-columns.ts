@@ -1,7 +1,4 @@
-import {
-  InputColumn,
-  WorkflowTableColumnDef,
-} from '@app/components/molecules/WorkflowsTable/types';
+import { InputColumn, WorkflowTableColumnDef } from '@/components/molecules/WorkflowsTable/types';
 
 export function mergeColumns<TColumnData>(
   leftColumn: WorkflowTableColumnDef<TColumnData>,

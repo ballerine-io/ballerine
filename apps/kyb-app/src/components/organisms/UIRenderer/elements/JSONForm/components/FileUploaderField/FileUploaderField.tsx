@@ -1,7 +1,7 @@
-import { useFileAssigner } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileAssigner';
-import { useFileRepository } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileRepository';
-import { useFileUploading } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading';
-import { DocumentUploadFieldProps } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/types';
+import { useFileAssigner } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileAssigner';
+import { useFileRepository } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileRepository';
+import { useFileUploading } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading';
+import { DocumentUploadFieldProps } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/types';
 import { Input } from '@ballerine/ui';
 import { forwardRef, useCallback, useEffect, useRef } from 'react';
 
@@ -18,8 +18,9 @@ export const FileUploaderField = forwardRef(
     placeholder,
   }: DocumentUploadFieldProps) => {
     const { fileId: uploadedFileId, isUploading, uploadFile } = useFileUploading(_uploadFile);
-    const { file } = useFileRepository(fileStorage, fileId);
+    const { file } = useFileRepository(fileStorage, fileId || undefined);
     const inputRef = useRef<HTMLInputElement>(null);
+    //@ts-ignore
     useFileAssigner(inputRef, file);
 
     useEffect(() => {
@@ -30,7 +31,7 @@ export const FileUploaderField = forwardRef(
 
     const handleChange = useCallback(
       async (event: React.ChangeEvent<HTMLInputElement>) => {
-        void uploadFile(event.target.files[0]);
+        void uploadFile(event.target.files?.[0] as File);
       },
       [uploadFile],
     );

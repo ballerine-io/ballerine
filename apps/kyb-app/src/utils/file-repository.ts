@@ -33,7 +33,7 @@ export class FileRepository {
     }
   }
 
-  getFileId(file: File): string {
+  getFileId(file: File): string | null {
     return this.idsByFiles.get(file) || null;
   }
 

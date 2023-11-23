@@ -26,6 +26,7 @@ import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
 import { useUpdateDocumentByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateDocumentByIdMutation/useUpdateDocumentByIdMutation';
 import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 import { IEditableDetails } from './interfaces';
+import { isValidDatetime } from '../../../../common/utils/is-valid-datetime';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -137,7 +138,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       type: string | undefined;
       value: unknown;
     }) => {
-      if (format === 'date-time') {
+      if (format === 'date-time' || isValidDatetime(value)) {
         return 'datetime-local';
       }
 

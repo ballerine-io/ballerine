@@ -7,7 +7,7 @@ export const useFileAssigner = (
   useEffect(() => {
     if (!ref.current) return;
 
-    if (!ref.current.files.length) {
+    if (!ref.current.files?.length) {
       const files = new DataTransfer();
 
       if (!(file instanceof File)) return;

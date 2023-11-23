@@ -13,5 +13,4 @@ export const AuthenticatedUserSchema = z
     firstName,
     lastName,
     fullName: `${firstName} ${lastName}`,
-  }))
-  .or(z.undefined());
+  }));

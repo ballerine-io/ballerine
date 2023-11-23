@@ -1,4 +1,4 @@
-import { useFileUploading } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/useFileUploading';
+import { useFileUploading } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/useFileUploading';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { HTTPError, NormalizedOptions } from 'ky';
 

@@ -1,4 +1,4 @@
-import { DocumentValueDestinationParser } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/document-value-destination-parser';
+import { DocumentValueDestinationParser } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/document-value-destination-parser';
 
 describe('DocumentValueDestinationParser', () => {
   describe('.extractRootPath', () => {

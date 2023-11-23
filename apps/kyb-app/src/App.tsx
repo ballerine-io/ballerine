@@ -1,14 +1,14 @@
-import { LoadingScreen } from '@app/common/components/molecules/LoadingScreen';
-import { CustomerProviderFallback } from '@app/components/molecules/CustomerProviderFallback';
-import { AppLoadingContainer } from '@app/components/organisms/AppLoadingContainer';
-import { CustomerProvider } from '@app/components/providers/CustomerProvider';
-import { useCustomerQuery } from '@app/hooks/useCustomerQuery';
-import { useFlowContextQuery } from '@app/hooks/useFlowContextQuery';
-import { useUISchemasQuery } from '@app/hooks/useUISchemasQuery';
-import { router } from '@app/router';
 import '@ballerine/ui/dist/style.css';
-import * as Sentry from '@sentry/react';
+import { AppLoadingContainer } from '@/components/organisms/AppLoadingContainer';
+import { useCustomerQuery } from '@/hooks/useCustomerQuery';
+import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
+import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
+import { CustomerProvider } from '@/components/providers/CustomerProvider';
+import { LoadingScreen } from '@/common/components/molecules/LoadingScreen';
+import { CustomerProviderFallback } from '@/components/molecules/CustomerProviderFallback';
 import { RouterProvider } from 'react-router-dom';
+import { router } from '@/router';
+import * as Sentry from '@sentry/react';
 
 export const App = () => {
   const dependancyQueries = [

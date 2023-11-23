@@ -4,6 +4,7 @@ const config = {
     '^@app(.*)$': '<rootDir>/src/$1',
   },
   globals: true,
+  testRegex: '(/__tests__/.*|(\\.|/)(unit|e2e|intg)\\.test)\\.ts$',
 };
 
 export default config;

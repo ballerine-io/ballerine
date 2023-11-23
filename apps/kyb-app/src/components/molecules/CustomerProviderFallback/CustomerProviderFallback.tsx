@@ -1,5 +1,5 @@
-import { AppErrorScreen } from '@app/common/components/molecules/AppErrorScreen';
-import { FallbackComponent } from '@app/components/providers/CustomerProvider';
+import { AppErrorScreen } from '@/common/components/molecules/AppErrorScreen';
+import { FallbackComponent } from '@/components/providers/CustomerProvider';
 
 export const CustomerProviderFallback: FallbackComponent = ({ statusCode }) => {
   if (statusCode === 401) {

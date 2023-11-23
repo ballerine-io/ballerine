@@ -1,4 +1,4 @@
-import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 export const useUIElementToolsLogic = (elementId: string) => {

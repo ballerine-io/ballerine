@@ -1,5 +1,5 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { ClsService } from 'nestjs-cls';
 
@@ -30,6 +30,7 @@ export class WorkflowAssigneeGuard implements CanActivate {
 
     return (
       workflowRuntime.assigneeId === requestingUserId ||
+      // @ts-ignore - fix type from include/select not propagating from repository
       workflowRuntime.parentWorkflowRuntimeData?.assigneeId === requestingUserId
     );
   }

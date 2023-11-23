@@ -1,6 +1,6 @@
-import { setRefererUrl } from '@app/common/hocs/withSessionProtected/utils/set-referer-url';
-import { useSession } from '@app/common/hooks/useSession';
-import { LoadingSpinner } from '@app/components/atoms/LoadingSpinner';
+import { setRefererUrl } from '@/common/hocs/withSessionProtected/utils/set-referer-url';
+import { useSession } from '@/common/hooks/useSession';
+import { LoadingSpinner } from '@/components/atoms/LoadingSpinner';
 import { useLayoutEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 

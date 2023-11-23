@@ -16,6 +16,7 @@ import { AuthenticatedLayout } from '../domains/auth/components/AuthenticatedLay
 import { UnauthenticatedLayout } from '../domains/auth/components/UnauthenticatedLayout';
 import { Locale } from '../pages/Locale/Locale.page';
 import { unauthenticatedLayoutLoader } from '../domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
+import { DocumentLayout } from '../pages/Document/Document.page';
 
 const router = createBrowserRouter([
   {
@@ -81,6 +82,12 @@ const router = createBrowserRouter([
             ],
           },
         ],
+      },
+      {
+        element: <DocumentLayout />,
+        loader: authenticatedLayoutLoader,
+        errorElement: <RouteError />,
+        path: '/:locale/case-management/entities/:entityId/document/:documentId',
       },
     ],
   },

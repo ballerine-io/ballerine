@@ -1,6 +1,6 @@
-import { useEventEmitterLogic } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
-import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { UIElement } from '@app/domains/collection-flow';
+import { useEventEmitterLogic } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import set from 'lodash/set';
 import { useCallback } from 'react';

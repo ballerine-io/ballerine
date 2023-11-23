@@ -1,4 +1,4 @@
-import { FileRepository } from '@app/utils/file-repository';
+import { FileRepository } from '@/utils/file-repository';
 
 describe('FileRepository', () => {
   let repository: FileRepository;

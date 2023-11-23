@@ -43,9 +43,8 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   // Create initials from the first character of the first name, middle name, and last name.
   const initials = createInitials(fullName);
 
-  const {
-    data: { user: authenticatedUser },
-  } = useAuthenticatedUserQuery();
+  const { data: session } = useAuthenticatedUserQuery();
+  const authenticatedUser = session?.user;
   const caseState = useCaseState(authenticatedUser, workflow);
   const { data: assignees } = useUsersQuery();
   const { hasDecision, canApprove, canReject, canRevision } = useCaseDecision();
@@ -71,7 +70,7 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
 
   const tag = useMemo(() => {
     return workflow?.tags?.find(t => tagToBadgeData[t]);
-  }, [workflow]);
+  }, [workflow]) as keyof typeof tagToBadgeData;
 
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
   const allDocuments = useMemo(() => {

@@ -1,7 +1,7 @@
 import {
   UploadFileFn,
   UseFileUploadingResult,
-} from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/types';
+} from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading/types';
 import { HTTPError, NormalizedOptions } from 'ky';
 import { useCallback, useState } from 'react';
 
@@ -20,6 +20,7 @@ const initialState: UseFileUploadingState = {
 export const useFileUploading = (uploader: UploadFileFn): UseFileUploadingResult => {
   const [state, setState] = useState<Partial<UseFileUploadingState>>(initialState);
 
+  //@ts-ignore
   const uploadFile: UploadFileFn = useCallback(
     async (file: File) => {
       try {

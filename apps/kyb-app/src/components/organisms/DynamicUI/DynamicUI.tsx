@@ -1,12 +1,12 @@
-import { PageResolver } from '@app/components/organisms/DynamicUI/PageResolver';
-import { StateManager } from '@app/components/organisms/DynamicUI/StateManager/StateManager';
+import { PageResolver } from '@/components/organisms/DynamicUI/PageResolver';
+import { StateManager } from '@/components/organisms/DynamicUI/StateManager/StateManager';
 import { AnyChildren } from '@ballerine/ui';
 import { dynamicUIContext } from './dynamic-ui.context';
-import { useDynamicUIContextComposer } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContextComposer';
-import { TransitionListener } from '@app/components/organisms/DynamicUI/TransitionListener';
-import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
-import { Page } from '@app/components/organisms/DynamicUI/Page';
-import { ActionsHandler } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
+import { useDynamicUIContextComposer } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContextComposer';
+import { TransitionListener } from '@/components/organisms/DynamicUI/TransitionListener';
+import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
+import { Page } from '@/components/organisms/DynamicUI/Page';
+import { ActionsHandler } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler';
 
 const { Provider } = dynamicUIContext;
 

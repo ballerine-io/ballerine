@@ -1,5 +1,5 @@
-import { FileUploaderField } from '@app/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/FileUploaderField';
-import { FileRepository } from '@app/utils/file-repository';
+import { FileUploaderField } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/FileUploaderField';
+import { FileRepository } from '@/utils/file-repository';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 
 //@ts-ignore
@@ -11,9 +11,9 @@ jest.spyOn(window, 'DataTransfer', 'get').mockImplementation(function () {
     // Mocking FileList
     const files = {
       length: 0,
-      item: function (index) {
+      item: function (index: number) {
         //@ts-ignore
-        return this[index];
+        return (this as Record<number, File>)[index];
       },
     };
 
