@@ -14,13 +14,18 @@ export const definitionValidator = (
   extensions?: WorkflowExtensions,
 ) => {
   if (!definition.states) return;
-  if (definition.initial)
+
+  if (definition.initial) {
     validateTransitionOnEvent({
       stateNames: Object.keys(definition.states),
       currentState: 'NULL_AS_UNINITIATED_STATE',
       targetState: definition.initial,
     });
+  }
 
   statesValidator(definition.states);
-  if (extensions) extensionsValidator(extensions, definition.states);
+
+  if (extensions) {
+    extensionsValidator(extensions, definition.states);
+  }
 };
