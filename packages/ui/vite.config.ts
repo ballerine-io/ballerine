@@ -2,8 +2,8 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import fg from 'fast-glob';
-import { resolve } from 'path';
 import tailwindcss from 'tailwindcss';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 // Defines an array of entry points to be used to search for files.
 const entryPoints = ['src/components/**/*.ts'];
@@ -35,14 +35,7 @@ export default defineConfig({
     port: 5201,
     open: './dev.tsx',
   },
-  plugins: [react(), dts({ copyDtsFiles: true }), tailwindcss()],
-  resolve: {
-    alias: {
-      '@components': resolve(__dirname, './src/components'),
-      '@common': resolve(__dirname, './src/common'),
-      '@utils': resolve(__dirname, './src/utils'),
-    },
-  },
+  plugins: [react(), dts({ copyDtsFiles: true }), tsconfigPaths(), tailwindcss()],
   test: {
     exclude: ['node_modules', 'dist'],
   },

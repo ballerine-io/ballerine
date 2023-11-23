@@ -1,4 +1,4 @@
-import { IWorkflowStatus } from '@app/domains/workflows/api/workflow/workflow.types';
+import { IWorkflowStatus } from '@/domains/workflows/api/workflow/workflow.types';
 
 export type WorkflowStatsPerStatus = Record<IWorkflowStatus, number>;
 export interface IWorkflowDefinitionStats extends WorkflowStatsPerStatus {

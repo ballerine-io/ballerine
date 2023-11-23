@@ -1,4 +1,4 @@
-import { SubmitButton } from '@components/molecules/SubmitButton/SubmitButton';
+import { SubmitButton } from '@/components/molecules/SubmitButton/SubmitButton';
 
 export default {
   component: SubmitButton,

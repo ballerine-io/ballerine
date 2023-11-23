@@ -2,7 +2,7 @@ import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
-import { Request } from 'express';
+import type { Request } from 'express';
 import * as errors from '../errors';
 import * as nestAccessControl from 'nest-access-control';
 import { BusinessFindManyArgs } from './dtos/business-find-many-args';
@@ -13,7 +13,7 @@ import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { BusinessCreateDto } from './dtos/business-create';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('internal/businesses')

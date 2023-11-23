@@ -3,7 +3,7 @@ import { Param, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
-import { Response } from 'express';
+import type { Response } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { StorageService } from './storage.service';
 import * as errors from '../errors';
@@ -20,7 +20,7 @@ import { File } from '@prisma/client';
 import { z } from 'zod';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { isBase64 } from '@/common/utils/is-base64/is-base64';
 

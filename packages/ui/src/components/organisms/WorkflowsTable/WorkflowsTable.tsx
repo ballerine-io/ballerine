@@ -1,20 +1,24 @@
-import { Table } from '@components/atoms/Table/Table';
-import { TableBody } from '@components/atoms/Table/TableBody';
-import { TableCell } from '@components/atoms/Table/TableCell';
-import { TableHead } from '@components/atoms/Table/TableHead';
-import { TableHeader } from '@components/atoms/Table/TableHeader';
-import { TableRow } from '@components/atoms/Table/TableRow';
+import { Table } from '@/components/atoms/Table/Table';
+import { TableBody } from '@/components/atoms/Table/TableBody';
+import { TableCell } from '@/components/atoms/Table/TableCell';
+import { TableHead } from '@/components/atoms/Table/TableHead';
+import { TableHeader } from '@/components/atoms/Table/TableHeader';
+import { TableRow } from '@/components/atoms/Table/TableRow';
 import { useMemo } from 'react';
-import { useReactTable, flexRender, getCoreRowModel } from '@tanstack/react-table';
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { defaultColumns } from './columns';
-import { InputColumn, WorkflowsTableSorting, WorkflowTableColumnDef } from './types';
+import {
+  InputColumn,
+  WorkflowsTableSorting,
+  WorkflowTableColumnDef,
+  WorkflowTableItem,
+} from './types';
 import keyBy from 'lodash/keyBy';
 import { mergeColumns } from './utils/merge-columns';
-import { WorkflowTableItem } from './types';
 import { TableContainer } from './components/TableContainer';
 import { ScrollContainer } from './components/ScrollContainer';
 
-interface Props {
+interface WorkflowsTableProps {
   items: WorkflowTableItem[];
   sorting?: WorkflowsTableSorting;
   isFetching?: boolean;
@@ -22,7 +26,13 @@ interface Props {
   onSort: (key: string, direction: 'asc' | 'desc') => void;
 }
 
-export function WorkflowsTable({ items, isFetching, sorting, columns, onSort }: Props) {
+export function WorkflowsTable({
+  items,
+  isFetching,
+  sorting,
+  columns,
+  onSort,
+}: WorkflowsTableProps) {
   // merging column parameters if provided
   const tableColumns = useMemo((): WorkflowTableColumnDef<WorkflowTableItem>[] => {
     if (!Array.isArray(columns) || !columns.length) return defaultColumns;
@@ -59,7 +69,14 @@ export function WorkflowsTable({ items, isFetching, sorting, columns, onSort }: 
         table.setSorting(newSortingValue);
       } else {
         const sortingState = updater;
-        onSort(sortingState[0].id, sortingState[0].desc ? 'desc' : 'asc');
+
+        if (!sortingState[0]?.id) {
+          console.error(`Invalid sorting state: ${JSON.stringify(sortingState)}`);
+
+          return;
+        }
+
+        onSort(sortingState[0]?.id, sortingState[0]?.desc ? 'desc' : 'asc');
       }
     },
     getCoreRowModel: getCoreRowModel(),

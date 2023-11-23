@@ -1,6 +1,6 @@
-import { PieChart, PieChartData } from '@app/components/atoms/PieChart';
-import { IWorkflowStatus } from '@app/domains/workflows/api/workflow';
-import { WorkflowChartDetails } from '@app/pages/Workflows/components/organisms/WorkflowStatusChart/components/WorkflowChartDetails';
+import { PieChart, PieChartData } from '@/components/atoms/PieChart';
+import { IWorkflowStatus } from '@/domains/workflows/api/workflow';
+import { WorkflowChartDetails } from '@/pages/Workflows/components/organisms/WorkflowStatusChart/components/WorkflowChartDetails';
 import { memo } from 'react';
 
 export interface WorkflowChartData extends PieChartData {

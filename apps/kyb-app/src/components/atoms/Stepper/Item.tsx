@@ -1,7 +1,7 @@
-import { StepStatus } from '@app/components/atoms/Stepper/types';
-import { useStepperContext } from '@app/components/atoms/Stepper/hooks/useStepperContext/useStepperContext';
-import { Current } from '@app/components/atoms/Stepper/components/atoms/indicators/Current';
-import { BaseLabel } from '@app/components/atoms/Stepper/components/atoms/BaseLabel/BaseLabel';
+import { StepStatus } from '@/components/atoms/Stepper/types';
+import { useStepperContext } from '@/components/atoms/Stepper/hooks/useStepperContext/useStepperContext';
+import { Current } from '@/components/atoms/Stepper/components/atoms/indicators/Current';
+import { BaseLabel } from '@/components/atoms/Stepper/components/atoms/BaseLabel/BaseLabel';
 import clsx from 'clsx';
 
 interface Props {

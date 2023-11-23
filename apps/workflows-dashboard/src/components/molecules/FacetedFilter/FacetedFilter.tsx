@@ -1,11 +1,11 @@
 import { Check, LucideIcon, PlusCircle } from 'lucide-react';
 
-import { cn } from '@app/lib/utils';
+import { cn } from '@/lib/utils';
 // import { Separator } from "@/components/ui/separator"
-import { Popover, PopoverContent, PopoverTrigger } from '@app/components/atoms/Popover';
-import { Button } from '@app/components/atoms/Button';
-import { Separator } from '@app/components/atoms/Separator';
-import { Badge } from '@app/components/atoms/Badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/atoms/Popover';
+import { Button } from '@/components/atoms/Button';
+import { Separator } from '@/components/atoms/Separator';
+import { Badge } from '@/components/atoms/Badge';
 import {
   Command,
   CommandEmpty,
@@ -14,7 +14,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from '@app/components/atoms/Command';
+} from '@/components/atoms/Command';
 
 export interface FacetedFilterOption {
   label: string;

@@ -1,4 +1,4 @@
-import { MetricCard } from '@app/components/molecules/MetricCard';
+import { MetricCard } from '@/components/molecules/MetricCard';
 import Scrollbars from 'react-custom-scrollbars';
 
 interface Props {
