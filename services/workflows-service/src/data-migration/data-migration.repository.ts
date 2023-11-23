@@ -20,4 +20,14 @@ export class DataMigrationRepository {
   ): Promise<DataMigrationVersion> {
     return await this.prisma.dataMigrationVersion.create(args);
   }
+
+  async updateById<T extends Omit<Prisma.DataMigrationVersionUpdateArgs, 'where'>>(
+    id: string,
+    args: Prisma.SelectSubset<T, Prisma.DataMigrationVersionUpdateArgs>,
+  ): Promise<DataMigrationVersion> {
+    return await this.prisma.dataMigrationVersion.update({
+      where: { id },
+      data: args.data,
+    });
+  }
 }

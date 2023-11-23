@@ -6,7 +6,6 @@ import * as fs from 'fs';
 import { INestApplicationContext } from '@nestjs/common';
 import { env } from '@/env';
 import { DataMigrationRepository } from '@/data-migration/data-migration.repository';
-import { isErrorWithMessage } from '@ballerine/common';
 import console from 'console';
 import { DATA_MIGRATION_FOLDER_RELATIVE_PATH } from './consts';
 
@@ -74,10 +73,17 @@ export const migrate = async () => {
     console.log(
       `Running Data Migration: ${migrationProcess.fileName.split('/').pop()!.replace('.js', '')}`,
     );
+    const runningMigration = await dataMigrationRepository.create({
+      data: {
+        version: migrationVersion,
+        status: 'in_progress',
+      },
+    });
+
     try {
       await migrationProcess.migrate(client, appContext);
 
-      await dataMigrationRepository.create({
+      await dataMigrationRepository.updateById(runningMigration.id, {
         data: {
           version: migrationVersion,
           status: 'completed',
@@ -85,17 +91,15 @@ export const migrate = async () => {
       });
     } catch (error) {
       if (error instanceof Error) {
-        await dataMigrationRepository.create({
+        await dataMigrationRepository.updateById(runningMigration.id, {
           data: {
             version: migrationVersion,
             status: 'failed',
-            failureReason: `Error in migration file: ${migrationProcess.fileName}: ${
-              isErrorWithMessage(error) && error.message
-            } ${error.stack}`,
+            failureReason: `Error in migration file: ${migrationProcess.fileName}: \n ${error.stack}`,
           },
         });
       } else {
-        await dataMigrationRepository.create({
+        await dataMigrationRepository.updateById(runningMigration.id, {
           data: {
             version: migrationVersion,
             status: 'failed',

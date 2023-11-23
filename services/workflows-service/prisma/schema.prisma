@@ -376,12 +376,13 @@ model WorkflowRuntimeDataToken {
 }
 
 enum DataVersionStatus {
+  in_progress
   completed
   failed
 }
 
 model DataMigrationVersion {
-  id            Int               @id @default(autoincrement())
+  id            String            @id @default(cuid())
   version       String
   migratedAt    DateTime          @default(now())
   status        DataVersionStatus @default(completed)
