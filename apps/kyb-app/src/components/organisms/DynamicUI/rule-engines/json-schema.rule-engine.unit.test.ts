@@ -1,6 +1,6 @@
-import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
-import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
-import { Rule, UIElement } from '@app/domains/collection-flow';
+import { JsonSchemaRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
+import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
+import { Rule, UIElement } from '@/domains/collection-flow';
 
 describe('JsonSchemaRuleEngine', () => {
   let ruleEngine: JsonSchemaRuleEngine;

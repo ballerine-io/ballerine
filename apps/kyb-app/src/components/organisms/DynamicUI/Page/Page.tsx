@@ -60,9 +60,10 @@ export const Page = ({ page, children }: PageProps) => {
         const isExists = map[item.fieldId];
 
         if (isExists) {
-          map[item.fieldId].push(item);
+          // @ts-ignore
+          map[item?.fieldId].push(item);
         } else {
-          map[item.fieldId] = [item];
+          map[item?.fieldId] = [item];
         }
 
         return map;

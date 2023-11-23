@@ -55,9 +55,9 @@ export class JsonSchemaRuleEngine implements RuleEngine {
       uniqueErroredParams.forEach(_ => {
         const fieldDestination = this.buildFieldDestination(error.instancePath, error);
 
-        const messages = error.message.split(';');
+        const messages = error.message?.split(';');
 
-        messages.forEach(messageText => {
+        messages?.forEach(messageText => {
           const sanitizedFieldId = fieldDestination.replaceAll(/\.(\d+)\./g, '[$1].');
 
           fieldErrors.push(
@@ -65,6 +65,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
               sanitizedFieldId,
               messageText,
               definition.name,
+              // @ts-ignore
               definition.valueDestination,
             ),
           );
