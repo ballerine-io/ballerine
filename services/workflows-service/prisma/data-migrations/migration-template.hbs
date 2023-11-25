@@ -1,8 +1,0 @@
-import { PrismaClient } from '@prisma/client';
-import { INestApplicationContext } from "@nestjs/common";
-
-export const migrate = async(client: PrismaClient, app: INestApplicationContext) => {
-    await client.$transaction(async () =>{
-    // put your migration code here
-    });
-};
