@@ -3,7 +3,7 @@ import toastI18nNamespace from '../../public/locales/en/toast.json';
 
 interface TranslationOptions {
   defaultNS: 'translation';
-  errorMessage: string;
+
   resources: {
     translation: typeof translationI18nNamespace;
     toast: typeof toastI18nNamespace;
