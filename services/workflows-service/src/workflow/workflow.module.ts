@@ -3,7 +3,7 @@ import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.servi
 import { BusinessRepository } from '@/business/business.repository';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { EntityRepository } from '@/common/entity/entity.repository';
-import { initHttpMoudle } from '@/common/http-service/http-config.service';
+import { initHttpModule } from '@/common/http-service/http-config.service';
 import { CustomerModule } from '@/customer/customer.module';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { EndUserService } from '@/end-user/end-user.service';
@@ -36,7 +36,7 @@ import { WorkflowService } from './workflow.service';
   imports: [
     ACLModule,
     forwardRef(() => AuthModule),
-    initHttpMoudle(),
+    initHttpModule(),
     ProjectModule,
     PrismaModule,
     CustomerModule,
