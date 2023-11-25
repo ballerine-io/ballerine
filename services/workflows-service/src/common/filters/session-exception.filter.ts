@@ -20,8 +20,8 @@ export class SessionExpiredExceptionFilter extends BaseExceptionFilter {
       const asyncLogout = util.promisify(req.logout.bind(req));
       await asyncLogout();
 
-      response.clearCookie('session');
-      response.clearCookie('session.sig');
+      // response.clearCookie('session');
+      // response.clearCookie('session.sig');
     }
 
     super.catch(exception, host);

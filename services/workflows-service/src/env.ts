@@ -10,6 +10,7 @@ export const env = createEnv({
    */
   clientPrefix: 'PUBLIC_',
   server: {
+    LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
     NODE_ENV: z.enum(['development', 'production', 'test', 'local']), // TODO: remove 'test', 'local'
     ENVIRONMENT_NAME: z.enum(['development', 'production', 'staging', 'test', 'local']),
     ENV_FILE_NAME: z.string().optional(),

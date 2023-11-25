@@ -5,9 +5,10 @@ import { FileRepository } from './storage.repository';
 import { StorageService } from './storage.service';
 import { ProjectModule } from '@/project/project.module';
 import { CustomerModule } from '@/customer/customer.module';
+import { initHttpMoudle } from '@/common/http-service/http-config.service';
 
 @Module({
-  imports: [ProjectModule, CustomerModule],
+  imports: [ProjectModule, CustomerModule, initHttpMoudle()],
   controllers: [StorageControllerInternal, StorageControllerExternal],
   providers: [StorageService, FileRepository],
   exports: [StorageService],

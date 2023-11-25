@@ -87,7 +87,10 @@ export class BusinessService {
         this.logger.error(`Failed to fetch company information.Error ${axiosError.message}`);
 
         if (axiosError.status === 500) {
-          throw new common.InternalServerErrorException();
+          throw new common.InternalServerErrorException({
+            statusCode: 500,
+            ...axiosError,
+          });
         }
 
         throw axiosError;

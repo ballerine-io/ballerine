@@ -40,14 +40,20 @@ export class DocumentChangedWebhookCaller {
   ) {
     this.#__axios = this.httpService.axiosRef;
 
-    workflowEventEmitter.on('workflow.context.changed', async (data, config) => {
-      try {
-        await this.handleWorkflowEvent(data, config);
-      } catch (error) {
-        console.error(error);
-        alertWebhookFailure(error);
-      }
-    });
+    workflowEventEmitter.on(
+      'workflow.context.changed',
+      async (data: ExtractWorkflowEventData<'workflow.context.changed'>, config) => {
+        try {
+          await this.handleWorkflowEvent(data, config);
+        } catch (error) {
+          this.logger.error('workflowEventEmitter::workflow.context.changed::', {
+            correlationId: data.correlationId,
+            error,
+          });
+          alertWebhookFailure(error);
+        }
+      },
+    );
   }
 
   async handleWorkflowEvent(

@@ -2,16 +2,17 @@ import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
 import { HealthService } from './health.service';
 import { Response } from 'express';
 import { Public } from '@/common/decorators/public.decorator';
+import { CONTROLLER_NAME, ROUTES } from './consts';
 
 @Public()
-@Controller('_health')
+@Controller(CONTROLLER_NAME)
 export class HealthController {
   constructor(protected readonly healthService: HealthService) {}
-  @Get('live')
+  @Get(ROUTES.LIVE)
   healthLive(@Res() response: Response): Response<unknown> {
     return response.status(HttpStatus.NO_CONTENT).send();
   }
-  @Get('ready')
+  @Get(ROUTES.READY)
   async healthReady(@Res() response: Response): Promise<Response<void>> {
     const dbConnection = await this.healthService.isDbReady();
     if (!dbConnection) {
