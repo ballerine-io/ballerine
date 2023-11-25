@@ -40,7 +40,7 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     const statusCode = this.errorCodesStatusMapping[exception.code] ?? 500;
-    let message;
+    let message = '';
     if (host.getType() === 'http') {
       // for http requests (REST)
       // Todo : Add all other exception types and also add mapping
@@ -61,9 +61,12 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
         statusCode: statusCode,
       };
       console.error('HTTP exception filter:', errorResponse);
-      response.status(statusCode).send(errorResponse);
+      response
+        .status(statusCode)
+
+        .send(errorResponse);
     }
-    return new HttpException({ statusCode, message }, statusCode);
+    return new HttpException(message, statusCode);
   }
 
   /**

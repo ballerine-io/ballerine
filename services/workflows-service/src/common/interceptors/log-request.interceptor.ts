@@ -1,23 +1,45 @@
-import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor } from '@nestjs/common';
-import { tap } from 'rxjs';
-import { Response } from 'express';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import {
+  CallHandler,
+  ExecutionContext,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NestInterceptor,
+} from '@nestjs/common';
+import { isAxiosError } from 'axios';
+import { catchError, tap, throwError } from 'rxjs';
 
 @Injectable()
-export class LogRequestInterceptor implements NestInterceptor {
+export class AxiosRequestErrorInterceptor implements NestInterceptor {
   constructor(private readonly logger: AppLoggerService) {}
 
   intercept(context: ExecutionContext, next: CallHandler) {
     return next.handle().pipe(
       tap(() => {
-        const response = context.switchToHttp().getResponse<Response>();
+        const req = context.switchToHttp().getRequest();
+        req.startTime = new Date().getTime();
+      }),
+      catchError((exception: Error) => {
+        // Translate axios http error
+        if (isAxiosError(exception)) {
+          const status =
+            exception.response?.status || exception.code === 'ENOTFOUND'
+              ? HttpStatus.NOT_FOUND
+              : HttpStatus.INTERNAL_SERVER_ERROR;
 
-        this.logger.log(`Outgoing response`, {
-          response: {
-            statusCode: response.statusCode,
-          },
-          responseTime: Date.now() - response.req.startTime,
-        });
+          return throwError(
+            () =>
+              new HttpException(
+                exception.code !== 'ENOTFOUND'
+                  ? exception?.cause?.message ?? exception.message
+                  : '',
+                status,
+              ),
+          );
+        }
+
+        return throwError(() => exception);
       }),
     );
   }

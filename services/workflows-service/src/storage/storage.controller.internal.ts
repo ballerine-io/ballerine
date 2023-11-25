@@ -1,5 +1,13 @@
 import * as common from '@nestjs/common';
-import { Param, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Param,
+  Post,
+  Query,
+  Res,
+  UploadedFile,
+  UseInterceptors,
+  HttpException,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
@@ -23,6 +31,9 @@ import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { isBase64 } from '@/common/utils/is-base64/is-base64';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { HttpStatusCode } from 'axios';
+import { HttpService } from '@nestjs/axios';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -32,6 +43,8 @@ export class StorageControllerInternal {
     protected readonly service: StorageService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    protected readonly logger: AppLoggerService,
+    protected readonly httpService: HttpService,
   ) {}
 
   // curl -v -F "file=@a.jpg" http://localhost:3000/api/v1/internal/storage
@@ -78,14 +91,19 @@ export class StorageControllerInternal {
   // curl -v http://localhost:3000/api/v1/internal/storage/1679322938093
   @common.Get('/:id')
   async getFileById(@ProjectIds() projectIds: TProjectIds, @Param('id') id: string) {
-    // currently ignoring user id due to no user info
-    const persistedFile = await this.service.getFileById({ id }, projectIds, {});
+    try {
+      // currently ignoring user id due to no user info
+      const persistedFile = await this.service.getFileById({ id }, projectIds, {});
 
-    if (!persistedFile) {
+      if (!persistedFile) {
+        throw new errors.NotFoundException('file not found');
+      }
+
+      return persistedFile;
+    } catch (error) {
+      this.logger.error('Coudlnt get file from remote', { error });
       throw new errors.NotFoundException('file not found');
     }
-
-    return persistedFile;
   }
 
   // curl -v http://localhost:3000/api/v1/storage/content/1679322938093
@@ -111,7 +129,6 @@ export class StorageControllerInternal {
         fileNameInBucket: persistedFile.fileNameInBucket,
         mimeType: persistedFile.mimeType ?? undefined,
       });
-
       return res.json({ signedUrl, mimeType: persistedFile.mimeType });
     }
 
@@ -126,7 +143,7 @@ export class StorageControllerInternal {
       return res.sendFile(localFilePath, { root: '/' });
     }
 
-    if (!isBase64(persistedFile.uri) && this.__isImageUrl(persistedFile)) {
+    if (!isBase64(persistedFile.uri) && this._isUriScheme(persistedFile)) {
       const downloadFilePath = await this.__downloadFileFromRemote(persistedFile);
 
       return res.sendFile(downloadFilePath, { root: root });
@@ -137,15 +154,15 @@ export class StorageControllerInternal {
 
   private async __downloadFileFromRemote(persistedFile: File) {
     const localeFilePath = `${os.tmpdir()}/${persistedFile.id}`;
-    const downloadedFilePath = await new HttpFileService().download(
-      persistedFile.uri,
-      localeFilePath,
-    );
+    const downloadedFilePath = await new HttpFileService({
+      client: this.httpService,
+      logger: this.logger,
+    }).download(persistedFile.uri, localeFilePath);
 
     return downloadedFilePath;
   }
 
-  __isImageUrl(persistedFile: File) {
+  _isUriScheme(persistedFile: File) {
     return z.string().url().safeParse(persistedFile.uri).success;
   }
 }

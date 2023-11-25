@@ -1,6 +1,6 @@
 export const handlePromise = async <TData>(
   promise: Promise<TData>,
-): Promise<[TData, undefined] | [undefined, Error]> => {
+): Promise<[Response<TData>, undefined] | [undefined, Error]> => {
   try {
     const data = await promise;
 

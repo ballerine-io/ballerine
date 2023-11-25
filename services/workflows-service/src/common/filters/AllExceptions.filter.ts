@@ -1,7 +1,12 @@
+import { env } from '@/env';
+import { isObject } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { Catch, ArgumentsHost } from '@nestjs/common';
+import { util } from 'zod';
+import { inspect } from 'util';
+import { Catch, ArgumentsHost, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { HttpStatusCode } from 'axios';
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
@@ -10,19 +15,88 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   }
 
   catch(exception: unknown, host: ArgumentsHost) {
-    // if (host.getType() === 'http') return;
-    this.logger.error('Global error handler: ', exception as object);
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
 
-    const context = host.switchToHttp();
-    const response = context.getResponse<Response>();
+    return this._handleHttpErrorResponse(exception, request, response);
+  }
 
-    super.catch(exception, host);
+  private _handleHttpErrorResponse(exception: unknown, request: Request, response: Response) {
+    const serverError = this.getHttpException(exception);
 
-    this.logger.error(`Outgoing response (Failure)`, {
-      response: {
-        statusCode: response.statusCode,
-      },
-      responseTime: Date.now() - response.req.startTime,
+    if (this._logErrorIfRelevant(serverError)) {
+      this.logError(request, serverError);
+    }
+
+    response
+      .status(serverError.getStatus())
+      .header({
+        'Content-Type': 'application/json',
+      })
+      .json({
+        errorCode: String(HttpStatusCode[serverError.getStatus()]),
+        message: serverError.message,
+        statusCode: serverError.getStatus(),
+        timestamp: new Date().toISOString(),
+        path: request.url,
+      });
+  }
+
+  private getHttpException(exception: unknown) {
+    let serverError;
+    if (this.isHttpException(exception)) {
+      // Nest http error handler
+      serverError = exception;
+    } else {
+      serverError = new InternalServerErrorException({
+        cause: inspect(exception),
+      });
+    }
+    return serverError;
+  }
+
+  isHttpException(error: unknown): error is HttpException {
+    return (
+      isObject(error) &&
+      'status' in error &&
+      typeof (error as HttpException).getStatus() === 'number'
+    );
+  }
+
+  private _logErrorIfRelevant(error: HttpException) {
+    const status = error.getStatus();
+
+    // Dont log 401/403 errors or log every error if debug
+    return (status >= 400 && ![401, 403].includes(status)) || env.LOG_LEVEL === 'debug';
+  }
+
+  private logError(request: Request<unknown>, error: HttpException) {
+    const status = error.getStatus();
+    const message = this.getLogMesesageForStatus(status);
+
+    const errorRes = error.getResponse() as HttpException | undefined;
+
+    this.logger.error(message, {
+      name: error.name,
+      status,
+      error: inspect(errorRes),
+      message: error.message,
+      responseTime: Date.now() - request.startTime,
     });
+  }
+
+  private _isObject(obj: unknown): obj is object {
+    return obj !== null && typeof obj === 'object';
+  }
+  private getLogMesesageForStatus(status: number) {
+    let message = `Outgoing response - Failure`;
+
+    if (status >= 400 && status < 500) {
+      message = message + ' - Client Error:';
+    } else if (status >= 500) {
+      message = message + ' - Server Error:';
+    }
+    return message;
   }
 }

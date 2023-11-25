@@ -49,8 +49,6 @@ export const fetcher: IFetcher = async ({
         : message;
     }
 
-    console.error(message);
-
     throw new HttpError(res.status, message);
   }
 
@@ -64,6 +62,7 @@ export const fetcher: IFetcher = async ({
     }
 
     if (!res.headers.get('content-length') || res.headers.get('content-length') > '0') {
+      // TODO: make sure its json by checking the content-type in order to safe access to json method
       return await handlePromise(res.json());
     }
 
