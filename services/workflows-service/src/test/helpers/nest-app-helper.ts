@@ -3,7 +3,15 @@ import { ACLModule } from '@/common/access-control/acl.module';
 import { ACGuard } from 'nest-access-control';
 import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
 import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
-import { CallHandler, ExecutionContext, INestApplication, Provider, Type } from '@nestjs/common';
+import {
+  CallHandler,
+  DynamicModule,
+  ExecutionContext,
+  ForwardReference,
+  INestApplication,
+  Provider,
+  Type,
+} from '@nestjs/common';
 import console from 'console';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { ClsMiddleware, ClsModule, ClsService } from 'nestjs-cls';
@@ -40,7 +48,9 @@ const aclFilterResponseInterceptor = {
 export const fetchServiceFromModule = async <T>(
   service: Type<T>,
   dependencies: Provider[] = [],
-  modules: Type<any>[] = [],
+  modules:
+    | Array<Type<any> | DynamicModule | Promise<DynamicModule> | ForwardReference>
+    | Type<unknown>[] = [],
 ) => {
   const moduleRef = await Test.createTestingModule({
     providers: [service, ...dependencies],

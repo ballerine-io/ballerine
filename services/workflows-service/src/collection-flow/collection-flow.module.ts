@@ -10,7 +10,7 @@ import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manag
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { TokenAuthModule } from '@/common/guards/token-guard/token-auth.module';
-import { initHttpMoudle } from '@/common/http-service/http-config.service';
+import { initHttpModule } from '@/common/http-service/http-config.service';
 import { CustomerModule } from '@/customer/customer.module';
 import { CustomerRepository } from '@/customer/customer.repository';
 import { CustomerService } from '@/customer/customer.service';
@@ -38,7 +38,7 @@ import { Module } from '@nestjs/common';
 @Module({
   imports: [
     AppLoggerModule,
-    initHttpMoudle(),
+    initHttpModule(),
     ProjectModule,
     CustomerModule,
     TokenAuthModule,

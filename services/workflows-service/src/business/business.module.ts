@@ -22,14 +22,14 @@ import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.s
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { Module } from '@nestjs/common';
-import { initHttpMoudle } from './../common/http-service/http-config.service';
+import { initHttpModule } from './../common/http-service/http-config.service';
 import { BusinessControllerExternal } from './business.controller.external';
 import { BusinessControllerInternal } from './business.controller.internal';
 import { BusinessRepository } from './business.repository';
 import { BusinessService } from './business.service';
 
 @Module({
-  imports: [initHttpMoudle(), AppLoggerModule, ProjectModule, CustomerModule],
+  imports: [initHttpModule(), AppLoggerModule, ProjectModule, CustomerModule],
   controllers: [BusinessControllerInternal, BusinessControllerExternal],
   providers: [
     BusinessRepository,
