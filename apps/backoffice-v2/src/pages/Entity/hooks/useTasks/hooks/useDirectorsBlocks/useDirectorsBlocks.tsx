@@ -248,6 +248,19 @@ export const useDirectorsBlocks = (
 
                           // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
                         },
+                        ...(workflow?.tags?.includes(StateTag.REVISION)
+                          ? [
+                              {
+                                type: 'badge',
+                                value: 'Pending re-upload',
+                                props: {
+                                  ...motionProps,
+                                  variant: 'warning',
+                                  className: 'text-sm font-bold',
+                                },
+                              },
+                            ]
+                          : []),
                       ],
                     },
                   ],

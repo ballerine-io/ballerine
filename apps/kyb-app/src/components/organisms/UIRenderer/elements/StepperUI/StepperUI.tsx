@@ -5,7 +5,7 @@ import { VerticalLayout } from '@/components/atoms/Stepper/layouts/Vertical';
 import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { usePageContext } from '@/components/organisms/DynamicUI/Page';
 import { UIPage } from '@/domains/collection-flow';
 import { UIElementState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
@@ -17,27 +17,21 @@ export const StepperUI = () => {
   const { state } = useStateManagerContext();
   const { pageErrors } = usePageContext();
 
-  const initialPageNumber = useRef(currentPage?.number);
-
   const computeStepStatus = ({
     uiElement,
-    page,
     pageError,
-    currentPage,
   }: {
     uiElement: UIElementState;
     page: UIPage;
     pageError: Record<string, ErrorField>;
     currentPage: UIPage;
   }) => {
-    if (!!Object.keys(pageError).length && currentPage.number === page.number) return 'warning';
     if (
-      uiElement?.isCompleted ||
-      page.number <=
-        // @ts-ignore
-        initialPageNumber?.current
+      Object.keys(pageError).length &&
+      Object.values(pageError).some(error => error.type === 'warning')
     )
-      return 'completed';
+      return 'warning';
+    if (uiElement?.isCompleted) return 'completed';
 
     return 'idle';
   };
@@ -47,11 +41,8 @@ export const StepperUI = () => {
       const stepStatus = computeStepStatus({
         // @ts-ignore
         uiElement: uiState.elements[page.stateName],
-        page,
         // @ts-ignore
         pageError: pageErrors?.[page.stateName],
-        // @ts-ignore
-        currentPage,
       });
 
       const step: Step = {
