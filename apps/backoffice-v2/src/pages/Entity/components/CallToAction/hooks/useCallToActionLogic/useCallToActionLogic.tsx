@@ -64,6 +64,11 @@ export const useCallToActionLogic = (params: UseCallToActionLogicParams) => {
   const [reason, setReason] = useState(reasons?.[0] ?? '');
   const [comment, setComment] = useState('');
 
+  const resetReasonAndComment = useCallback(() => {
+    setReason('');
+    setComment('');
+  }, []);
+
   const onReasonChange = useCallback((value: string) => setReason(value), [setReason]);
   const onActionChange = useCallback((value: typeof action) => setAction(value), [setAction]);
   const onCommentChange = useCallback((value: string) => setComment(value), [setComment]);
@@ -145,6 +150,7 @@ export const useCallToActionLogic = (params: UseCallToActionLogicParams) => {
     noReasons,
     onMutateTaskDecisionById,
     workflowLevelResolution,
+    resetReasonAndComment,
     isReuploadResetable,
   };
 };

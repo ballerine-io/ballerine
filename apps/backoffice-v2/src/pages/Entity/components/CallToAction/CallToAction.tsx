@@ -23,6 +23,7 @@ import { ctw } from '../../../../common/utils/ctw/ctw';
 import { DocumentPicker } from './components/DocumentPicker';
 import { useCallToActionLogic } from './hooks/useCallToActionLogic/useCallToActionLogic';
 import { ICallToActionProps } from './interfaces';
+import { useDocumentSelection } from '@/pages/Entity/components/CallToAction/hooks/useDocumentSelection';
 
 const motionProps: ComponentProps<typeof MotionButton> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -59,12 +60,15 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value }) =
     noReasons,
     workflowLevelResolution,
     isReuploadResetable,
+    resetReasonAndComment,
   } = useCallToActionLogic({
     contextUpdateMethod,
     revisionReasons,
     rejectionReasons,
     onReuploadReset,
   });
+
+  const documentPickerProps = useDocumentSelection(documentSelection, resetReasonAndComment);
 
   const handleDialogClose = useCallback(
     (open: boolean) => {
@@ -228,7 +232,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value }) =
               </p>
             </DialogDescription>
           </DialogHeader>
-          {documentSelection && <DocumentPicker {...documentSelection} value={id} />}
+          {documentSelection && <DocumentPicker {...documentPickerProps} value={id} />}
           {!noReasons && (
             <div>
               <label className={`mb-2 block font-bold`} htmlFor={`reason`}>
