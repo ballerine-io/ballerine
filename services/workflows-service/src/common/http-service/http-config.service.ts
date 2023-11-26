@@ -46,6 +46,7 @@ export const initHttpMoudle = () =>
     useFactory: (configService: ConfigService) => ({
       timeout: configService.get('HTTP_TIMEOUT_IN_MS', 5000),
       maxRedirects: configService.get('HTTP_MAX_REDIRECTS', 10),
+      retryAttempts: configService.get('HTTP_RETRY_ATTEMPTS', 3),
       validateStatus: (status: number) => {
         return status < 500; // Resolve only if the status code is less than 500
       },

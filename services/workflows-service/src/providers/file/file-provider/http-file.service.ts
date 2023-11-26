@@ -7,8 +7,8 @@ import { IStreamableFileProvider } from '../types/interfaces';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { HttpException } from '@nestjs/common';
 import {
-  RETRY_DELAY_IN_MS,
   getHttpStatusFromAxiosError,
+  RETRY_DELAY_IN_MS,
 } from '@/common/http-service/http-config.service';
 import { removeSensitiveHeaders } from '@/common/utils/request-response/request';
 
@@ -69,7 +69,7 @@ export class HttpFileService implements IStreamableFileProvider {
         });
 
         // Check if the error is a 429 status code
-        if (response && config && response.status === HttpStatusCode.TooManyRequests) {
+        if (this._shouldRetry(error)) {
           // You can implement your retry logic here
           // For example, you can wait for a specific amount of time and then retry the request
 
@@ -78,7 +78,7 @@ export class HttpFileService implements IStreamableFileProvider {
           });
 
           return new Promise(resolve => {
-            setTimeout(() => resolve(this.client(config)), RETRY_DELAY_IN_MS);
+            setTimeout(() => resolve(this.client(config!)), RETRY_DELAY_IN_MS);
           });
         }
 
@@ -90,6 +90,14 @@ export class HttpFileService implements IStreamableFileProvider {
         );
       },
     );
+  }
+
+  private _shouldRetry(error: AxiosError) {
+    const { response } = error;
+    const isTooManyRequests = response?.status === HttpStatusCode.TooManyRequests;
+    const isNetworkIssue = error.code === 'ENETUNREACH';
+
+    return isTooManyRequests || isNetworkIssue;
   }
 
   async download(
