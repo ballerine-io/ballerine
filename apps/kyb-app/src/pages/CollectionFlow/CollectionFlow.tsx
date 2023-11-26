@@ -99,15 +99,6 @@ export const CollectionFlowDumb = () => {
                     <DynamicUI.TransitionListener
                       onNext={(tools, prevState) => {
                         tools.setElementCompleted(prevState, true);
-                        const context = stateApi.getContext() as CollectionFlowContext;
-                        if (context.flowConfig && !context.flowConfig?.completedSteps) {
-                          context.flowConfig.completedSteps = [prevState];
-                        } else {
-                          if (context.flowConfig?.completedSteps.includes(prevState)) return;
-                          context.flowConfig?.completedSteps.push(prevState);
-                        }
-
-                        stateApi.setContext(context);
                       }}
                     >
                       <DynamicUI.ActionsHandler actions={currentPage.actions} stateApi={stateApi}>

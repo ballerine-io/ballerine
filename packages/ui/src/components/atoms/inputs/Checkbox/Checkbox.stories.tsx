@@ -5,3 +5,5 @@ export default {
 };
 
 export const Default = { render: () => <Checkbox /> };
+
+export const Disabled = { render: () => <Checkbox disabled /> };

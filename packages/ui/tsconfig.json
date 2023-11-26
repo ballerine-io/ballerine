@@ -6,8 +6,7 @@
     "jsx": "react-jsx",
     "paths": {
       "@/*": ["./src/*"],
-      "class-variance-authority": ["node_modules/class-variance-authority"],
-      "react": ["./node_modules/@types/react"]
+      "class-variance-authority": ["node_modules/class-variance-authority"]
     }
   },
   "include": ["src"]
