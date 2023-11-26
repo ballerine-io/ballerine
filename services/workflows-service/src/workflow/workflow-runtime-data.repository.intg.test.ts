@@ -1,4 +1,3 @@
-import { initHttpModule } from '@/common/http-service/http-config.service';
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 import { fetchServiceFromModule } from '@/test/helpers/nest-app-helper';
 import { PrismaModule } from 'nestjs-prisma';
@@ -32,6 +31,7 @@ import { PasswordService } from '@/auth/password/password.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowModule } from './workflow.module';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
+import { HttpModule } from '@nestjs/axios';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -72,7 +72,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     workflowRuntimeRepository = (await fetchServiceFromModule(
       WorkflowRuntimeDataRepository,
       servicesProviders,
-      [PrismaModule, initHttpModule()],
+      [PrismaModule, HttpModule],
     )) as unknown as WorkflowRuntimeDataRepository;
 
     workflowDefinitionRepository = (await fetchServiceFromModule(

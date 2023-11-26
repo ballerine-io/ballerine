@@ -10,7 +10,6 @@ import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manag
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { TokenAuthModule } from '@/common/guards/token-guard/token-auth.module';
-import { initHttpModule } from '@/common/http-service/http-config.service';
 import { CustomerModule } from '@/customer/customer.module';
 import { CustomerRepository } from '@/customer/customer.repository';
 import { CustomerService } from '@/customer/customer.service';
@@ -33,12 +32,13 @@ import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.rep
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 
 @Module({
   imports: [
     AppLoggerModule,
-    initHttpModule(),
+    HttpModule,
     ProjectModule,
     CustomerModule,
     TokenAuthModule,

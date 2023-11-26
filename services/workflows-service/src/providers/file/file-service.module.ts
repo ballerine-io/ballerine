@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { FileService } from '@/providers/file/file.service';
 import { WorkflowControllerExternal } from '@/workflow/workflow.controller.external';
-import { initHttpModule } from '@/common/http-service/http-config.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [initHttpModule()],
+  imports: [HttpModule],
   controllers: [WorkflowControllerExternal],
   providers: [FileService],
   exports: [FileService],
