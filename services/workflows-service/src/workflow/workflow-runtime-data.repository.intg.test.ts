@@ -78,11 +78,12 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
     workflowDefinitionRepository = (await fetchServiceFromModule(
       WorkflowDefinitionRepository,
       servicesProviders,
-      [PrismaModule],
+      [PrismaModule, HttpModule],
     )) as unknown as WorkflowDefinitionRepository;
 
     const prismaService = (await fetchServiceFromModule(PrismaService, servicesProviders, [
       PrismaModule,
+      HttpModule,
     ])) as unknown as PrismaService;
 
     const customer = await createCustomer(
