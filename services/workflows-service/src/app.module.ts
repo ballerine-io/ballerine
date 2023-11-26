@@ -33,7 +33,8 @@ import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
 import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 import { SalesforceModule } from '@/salesforce/salesforce.module';
 import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
-import { multerFactory } from './common/multer';
+import { multerFactory } from '@/common/multer';
+import { initHttpMoudle } from '@/common/http-service/http-config.service';
 
 @Module({
   controllers: [MetricsController],
@@ -74,6 +75,7 @@ import { multerFactory } from './common/multer';
     FiltersModule,
     MetricsModule,
     CollectionFlowModule,
+    initHttpMoudle(),
   ],
   providers: [
     {
