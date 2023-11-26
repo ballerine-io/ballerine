@@ -1,7 +1,6 @@
 import { SortOrder } from '@/common/query-filters/sort-order';
 import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-item.model';
 import {
-  ApprovalState,
   Business,
   EndUser,
   WorkflowDefinition,
