@@ -13,4 +13,6 @@ export const AuthenticatedUserSchema = z
     firstName,
     lastName,
     fullName: `${firstName} ${lastName}`,
-  }));
+  }))
+  // @ts-expect-error - null is desired here.
+  .default(null);

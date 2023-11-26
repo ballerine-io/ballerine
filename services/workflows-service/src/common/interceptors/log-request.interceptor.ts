@@ -1,4 +1,4 @@
-import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { tap } from 'rxjs';
 import type { Response } from 'express';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';

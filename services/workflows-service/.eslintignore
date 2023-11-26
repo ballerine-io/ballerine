@@ -4,3 +4,4 @@ prisma/migrations/
 package-lock.json
 coverage/
 scripts/
+.eslintrc.cjs

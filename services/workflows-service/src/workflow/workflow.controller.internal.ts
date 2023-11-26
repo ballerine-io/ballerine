@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
@@ -43,6 +39,7 @@ import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
+import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
