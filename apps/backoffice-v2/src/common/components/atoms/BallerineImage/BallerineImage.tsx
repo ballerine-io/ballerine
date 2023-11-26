@@ -68,7 +68,7 @@ export const BallerineImage = forwardRef<HTMLImageElement, IBallerineImageProps>
         src={src}
         className={ctw(
           // Ensures the alt text doesn't overflow
-          `break-words rounded-md object-cover object-center`,
+          `break-words rounded-md object-fill object-center`,
           className,
         )}
         ref={ref}
