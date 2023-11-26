@@ -1,9 +1,8 @@
 import { env } from '@/env';
 import { isObject } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { util } from 'zod';
 import { inspect } from 'util';
-import { Catch, ArgumentsHost, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import { Request, Response } from 'express';
 import { HttpStatusCode } from 'axios';
@@ -31,9 +30,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
 
     response
       .status(serverError.getStatus())
-      .header({
-        'Content-Type': 'application/json',
-      })
+      .setHeader('Content-Type', 'application/json')
       .json({
         errorCode: String(HttpStatusCode[serverError.getStatus()]),
         message: serverError.message,
@@ -73,7 +70,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
 
   private logError(request: Request<unknown>, error: HttpException) {
     const status = error.getStatus();
-    const message = this.getLogMesesageForStatus(status);
+    const message = this.composeLogMesesageForStatus(status);
 
     const errorRes = error.getResponse() as HttpException | undefined;
 
@@ -89,7 +86,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   private _isObject(obj: unknown): obj is object {
     return obj !== null && typeof obj === 'object';
   }
-  private getLogMesesageForStatus(status: number) {
+  private composeLogMesesageForStatus(status: number) {
     let message = `Outgoing response - Failure`;
 
     if (status >= 400 && status < 500) {
