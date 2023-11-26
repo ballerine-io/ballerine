@@ -1010,7 +1010,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
         const userPayload = {
           data: {
             id: '1',
-            email: 'test@test.com',
+            email: 'test2@test.com',
             firstName: 'Test',
             lastName: 'User',
             password: 'test',
@@ -1035,6 +1035,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
                 },
               ],
             },
+            projectId: project.id,
           },
         } satisfies Parameters<(typeof workflowRuntimeRepository)['create']>[0];
         const updatePayload = {
@@ -1043,14 +1044,13 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
             assignedAt: new Date(),
           },
         } satisfies Parameters<(typeof workflowRuntimeRepository)['updateById']>[1];
-        const workflow = await workflowRuntimeRepository.create(createPayload, project.id);
+        const workflow = await workflowRuntimeRepository.create(createPayload);
         await userRepository.create(userPayload, project.id);
 
         // Act
         const updatedWorkflow = await workflowRuntimeRepository.updateById(
           workflow.id,
           updatePayload,
-          project.id,
         );
 
         // Assert

@@ -3,7 +3,14 @@ import { ACLModule } from '@/common/access-control/acl.module';
 import { ACGuard } from 'nest-access-control';
 import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
 import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
-import { CallHandler, ExecutionContext, INestApplication, Provider, Type } from '@nestjs/common';
+import {
+  CallHandler,
+  ExecutionContext,
+  INestApplication,
+  NestMiddleware,
+  Provider,
+  Type,
+} from '@nestjs/common';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { ClsMiddleware, ClsModule, ClsService } from 'nestjs-cls';
 import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
@@ -54,6 +61,7 @@ export const initiateNestApp = async (
   providers: Provider[] = [],
   controllers: Array<Type>,
   modules: Array<Type>,
+  middlewares: Array<NestMiddleware['use']> = [],
 ) => {
   const moduleRef = await Test.createTestingModule({
     providers: providers,
@@ -72,6 +80,7 @@ export const initiateNestApp = async (
   const middlewareInstnace = new AuthKeyMiddleware(app.get(CustomerService), app.get(ClsService));
   const clsMiddleware = new ClsMiddleware();
 
+  middlewares.forEach(middleware => app.use(middleware));
   app.use(clsMiddleware.use.bind(clsMiddleware));
   app.use(middlewareInstnace.use.bind(middlewareInstnace));
   await app.init();

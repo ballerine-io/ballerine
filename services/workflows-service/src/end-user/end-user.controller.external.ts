@@ -42,7 +42,7 @@ export class EndUserControllerExternal {
     @common.Body() data: EndUserCreateDto,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Pick<EndUserModel, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>> {
-    return this.service.create({
+    const endUser = await this.service.create({
       data: {
         ...data,
         correlationId: data.correlationId || randomUUID(),
@@ -50,7 +50,7 @@ export class EndUserControllerExternal {
         phone: data.phone || faker.phone.number('+##########'),
         dateOfBirth: data.dateOfBirth || faker.date.past(60),
         avatarUrl: data.avatarUrl || faker.image.avatar(),
-        projectId: currentProjectId,
+        project: { connect: { id: currentProjectId } },
       },
       select: {
         id: true,
@@ -59,6 +59,7 @@ export class EndUserControllerExternal {
         avatarUrl: true,
       },
     });
+    return endUser;
   }
 
   @common.Post('/create-with-business')
