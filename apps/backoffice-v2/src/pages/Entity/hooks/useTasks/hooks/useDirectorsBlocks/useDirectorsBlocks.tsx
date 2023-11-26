@@ -1,4 +1,4 @@
-import { StateTag } from '@ballerine/common';
+import { StateTag, getDocumentsByCountry } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import { UseQueryResult } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
@@ -10,7 +10,10 @@ import { useRemoveDecisionTaskByIdMutation } from '../../../../../../domains/ent
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { useCaseDecision } from '../../../../../../pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '../../../../../../pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { composePickableCategoryType } from '../../../useEntity/utils';
+import {
+  composePickableCategoryType,
+  extractCountryCodeFromWorkflow,
+} from '../../../useEntity/utils';
 import { getPostUpdateEventName } from '../../get-post-update-event-name';
 import { motionProps } from '../../motion-props';
 import { selectDirectorsDocuments } from '../../selectors/selectDirectorsDocuments';
@@ -37,6 +40,13 @@ export const useDirectorsBlocks = (
   );
   const documents = useMemo(() => selectDirectorsDocuments(workflow), [workflow]);
 
+  const documentSchemas = useMemo(() => {
+    const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
+    const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
+
+    return documentsSchemas;
+  }, [workflow]);
+
   const handleRevisionDecisionsReset = useCallback(() => {
     const documentsToReset = documents.filter(document => document.decision?.status);
 
@@ -56,7 +66,7 @@ export const useDirectorsBlocks = (
           const additionalProperties = composePickableCategoryType(
             document.category,
             document.type,
-            documents,
+            documentSchemas,
           );
 
           const decisionCell = {
