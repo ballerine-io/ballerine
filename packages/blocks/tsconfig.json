@@ -1,26 +1,12 @@
 {
+  "extends": "@ballerine/config/tsconfig.dom-bundler.json",
   "compilerOptions": {
+    "jsx": "react-jsx",
     "outDir": "./dist/types",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "target": "ESNext",
-    "module": "CommonJS",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "strictNullChecks": true,
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "noImplicitReturns": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
     "baseUrl": ".",
-    "pretty": true,
     "paths": {
       "@/*": ["src/*"]
-    },
-    "jsx": "react-jsx"
+    }
   },
-  "files": ["src/index.ts"],
   "include": ["src"]
 }

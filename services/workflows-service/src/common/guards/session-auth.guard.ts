@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { Reflector } from '@nestjs/core';
 import { DISABLE_SESSION_AUTH } from '@/common/disable-session-auth';
 import { AuthenticatedEntity } from '@/types';

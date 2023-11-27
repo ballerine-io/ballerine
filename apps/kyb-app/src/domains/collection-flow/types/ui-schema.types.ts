@@ -9,7 +9,7 @@ export type EventRuleValue = {
 };
 
 export interface BaseRule {
-  type: 'json-logic' | 'jmespath' | 'event' | 'documents-validator';
+  type: 'json-logic' | 'jmespath' | 'event' | 'documents-validator' | 'json-schema';
 }
 
 export interface JSONLogicRule extends BaseRule {

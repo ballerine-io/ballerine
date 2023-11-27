@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ApprovalState } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsEmail, IsObject, IsOptional, IsPhoneNumber } from 'class-validator';
-import { JsonValue } from 'type-fest';
+import type { JsonValue } from 'type-fest';
 
 export class EndUserModel {
   @ApiProperty({

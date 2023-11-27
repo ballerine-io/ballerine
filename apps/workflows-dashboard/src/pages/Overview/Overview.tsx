@@ -1,6 +1,6 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@app/components/atoms/Tabs';
-import { DashboardLayout } from '@app/components/layouts/DashboardLayout';
-import { OverviewTabContent } from '@app/pages/Overview/components/organisms/OverviewTabContent';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/atoms/Tabs';
+import { DashboardLayout } from '@/components/layouts/DashboardLayout';
+import { OverviewTabContent } from '@/pages/Overview/components/organisms/OverviewTabContent';
 
 export const Overview = () => {
   return (

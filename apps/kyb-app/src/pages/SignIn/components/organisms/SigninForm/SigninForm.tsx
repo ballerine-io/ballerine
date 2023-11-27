@@ -1,8 +1,8 @@
 import { DynamicForm } from '@ballerine/ui';
 import { signinSchema } from './signin.schema';
 import { signinUISchema } from './signin.ui-schema';
-import { SigninFormValues } from '@app/pages/SignIn/components/organisms/SigninForm/types';
-import { transformRJSFErrors } from '@app/helpers/transform-errors';
+import { SigninFormValues } from '@/pages/SignIn/components/organisms/SigninForm/types';
+import { transformRJSFErrors } from '@/helpers/transform-errors';
 
 interface Props {
   isLoading?: boolean;
@@ -17,7 +17,7 @@ export const SigninForm = ({ isLoading, onSubmit }: Props) => {
       uiSchema={signinUISchema}
       transformErrors={transformRJSFErrors}
       disabled={isLoading}
-      onSubmit={onSubmit}
+      onSubmit={onSubmit as (values: Record<PropertyKey, any>) => void}
     />
   );
 };

@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/rules-engine-lib",
   "author": "Ballerine <dev@ballerine.com>",
-  "version": "0.4.21",
+  "version": "0.4.22",
   "description": "rules-engine-lib",
   "module": "./dist/esm/index.js",
   "main": "./dist/cjs/index.js",
@@ -15,23 +15,28 @@
   "keywords": [],
   "scripts": {
     "spellcheck": "cspell \"*\"",
-    "build": "rollup --config rollup.config.js",
+    "clean": "rimraf ./tsconfig.tsbuildinfo && rimraf ./dist",
+    "build": "pnpm clean && rollup --config rollup.config.js",
     "watch": "concurrently --kill-others \"rollup --config rollup.config.js -w\" \"tsc -b --watch\"",
     "test": "vitest run",
+    "lint": "eslint . --fix",
     "test:unit": "vitest run"
   },
   "engines": {
     "node": ">=12"
   },
   "dependencies": {
-    "json-logic-js": "^2.0.2",
     "jmespath": "^0.16.0",
+    "json-logic-js": "^2.0.2",
     "xstate": "^4.35.2"
   },
   "devDependencies": {
     "@babel/core": "7.17.9",
     "@babel/preset-env": "7.16.11",
     "@babel/preset-typescript": "7.16.7",
+    "@ballerine/config": "^1.0.1",
+    "@cspell/cspell-types": "^6.31.1",
+    "@ballerine/eslint-config": "^1.0.0",
     "@rollup/plugin-babel": "5.3.1",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-node-resolve": "13.2.1",
@@ -44,7 +49,6 @@
     "@vitest/coverage-istanbul": "^0.28.4",
     "concurrently": "^7.6.0",
     "cspell": "^6.31.2",
-    "@cspell/cspell-types": "^6.31.1",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8.32.0",
     "eslint-config-prettier": "^6.11.0",
@@ -54,6 +58,7 @@
     "eslint-plugin-unused-imports": "^2.0.0",
     "fs-extra": "^11.1.0",
     "prettier": "^2.1.1",
+    "rimraf": "^4.4.1",
     "rollup": "2.70.2",
     "rollup-plugin-dts": "4.2.2",
     "rollup-plugin-size": "0.2.2",

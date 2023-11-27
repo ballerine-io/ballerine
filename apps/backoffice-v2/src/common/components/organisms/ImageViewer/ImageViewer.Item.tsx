@@ -55,6 +55,7 @@ export const Item: FunctionComponent<IItemProps> = ({
             src={src}
             className={ctw(
               `
+            object-cover
             group-hover:outline
             group-focus:outline
             group-hover:outline-2

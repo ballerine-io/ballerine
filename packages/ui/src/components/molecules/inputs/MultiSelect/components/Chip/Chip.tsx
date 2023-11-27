@@ -1,6 +1,6 @@
-import { BadgeProps, Badge } from '@components/atoms/Badge';
-import { Label } from '@components/molecules/inputs/MultiSelect/components/Chip/Label';
-import { UnselectButton } from '@components/molecules/inputs/MultiSelect/components/Chip/UnselectButton';
+import { Badge, BadgeProps } from '@/components/atoms/Badge';
+import { Label } from '@/components/molecules/inputs/MultiSelect/components/Chip/Label';
+import { UnselectButton } from '@/components/molecules/inputs/MultiSelect/components/Chip/UnselectButton';
 
 export type MultiselectChipProps = BadgeProps;
 

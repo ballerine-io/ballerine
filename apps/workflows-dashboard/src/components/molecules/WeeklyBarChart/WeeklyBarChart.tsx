@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-import { getWeekDayName } from '@app/components/molecules/WeeklyBarChart/utils/get-week-day-name';
+import { getWeekDayName } from '@/components/molecules/WeeklyBarChart/utils/get-week-day-name';
 
 export interface WeeklyBarChartData {
   value: number;
@@ -27,9 +27,19 @@ export const WeeklyBarChart = memo(({ data }: Props) => {
   return (
     <ResponsiveContainer width="100%" height={'100%'}>
       <BarChart data={chartData}>
-        <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+        <XAxis
+          dataKey="name"
+          stroke="#888888"
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          fontSize={12}
+          tickLine={false}
+          axisLine={false}
+        />
         <YAxis
           stroke="#888888"
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           fontSize={12}
           tickLine={false}
           axisLine={false}

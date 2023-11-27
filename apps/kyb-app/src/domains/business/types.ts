@@ -1,4 +1,4 @@
-import { BusinessData } from '@app/domains/collection-flow';
+import { BusinessData } from '@/domains/collection-flow';
 
 export interface UpdateBusinessDto extends BusinessData {
   businessId: string;

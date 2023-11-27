@@ -1,3 +1,3 @@
-import { FileStorage } from '@app/utils/file-storage';
+import { FileStorage } from '@/utils/file-storage';
 
 export const collectionFlowFileStorage = new FileStorage();

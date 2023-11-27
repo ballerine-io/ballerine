@@ -15,10 +15,13 @@ module.exports = {
         context.getFilename(),
       );
 
+    const UNSCOPED_METHOD_NAMES = ['unscoped', 'create', 'update'];
     return {
       MethodDefinition: function (node) {
         if (!isRepository || node.key.name === 'constructor') return;
-        const isUnscoped = node.key.name.toLowerCase().includes('unscoped');
+        const isUnscoped = UNSCOPED_METHOD_NAMES.some(name =>
+          node.key.name.toLowerCase().includes(name),
+        );
 
         if (isUnscoped) return;
 

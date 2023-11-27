@@ -5,8 +5,8 @@ import {
   MultiSelectProps,
   MultiSelectSelectedItemRenderer,
   MultiSelectValue,
-} from '@components/molecules';
-import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
+} from '@/components/molecules';
+import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { X } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 
@@ -21,11 +21,12 @@ export const MultiselectInputAdapter: RJSFInputAdapter<MultiSelectValue[], Multi
   renderSelected,
 }) => {
   const options = useMemo(() => {
-    return (Array.isArray(uiSchema.options) ? uiSchema.options : []) as MultiSelectOption[];
-  }, [uiSchema.options]);
+    return (Array.isArray(uiSchema?.options) ? uiSchema?.options : []) as MultiSelectOption[];
+  }, [uiSchema?.options]);
   const inputValue = useMemo(() => (Array.isArray(formData) ? formData : []), [formData]);
 
   const handleBlur = useCallback(() => {
+    // @ts-ignore
     onBlur && onBlur(id, formData);
   }, [id, onBlur, formData]);
 

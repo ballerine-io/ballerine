@@ -3,7 +3,7 @@ import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import * as errors from '../errors';
 import { plainToClass } from 'class-transformer';
-import { Request } from 'express';
+import type { Request } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { FilterFindManyArgs } from '@/filter/dtos/filter-find-many-args';
@@ -11,7 +11,7 @@ import { FilterModel } from '@/filter/filter.model';
 import { FilterWhereUniqueInput } from '@/filter/dtos/filter-where-unique-input';
 import { FilterService } from '@/filter/filter.service';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 
 @swagger.ApiTags('internal/filters')
 @common.Controller('internal/filters')
