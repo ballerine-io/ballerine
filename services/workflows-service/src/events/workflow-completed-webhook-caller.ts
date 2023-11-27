@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
@@ -15,7 +12,7 @@ import { WorkflowRuntimeData } from '@prisma/client';
 import { StateTag } from '@ballerine/common';
 import { env } from '@/env';
 import { sign } from '@/common/utils/sign/sign';
-import { TAuthenticationConfiguration } from '@/customer/types';
+import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
 
 @Injectable()
@@ -150,6 +147,7 @@ export class WorkflowCompletedWebhookCaller {
 
     let status: (typeof statusMap)[keyof typeof statusMap] | undefined;
 
+    // @ts-expect-error - error from Prisma types fix
     workflowRuntimeData.tags?.some((tag: string) => {
       if (tag in statusMap) {
         status = statusMap[tag as keyof typeof statusMap];

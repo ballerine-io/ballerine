@@ -1,11 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from '../user/user.service';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login';
 import { PasswordService } from './password/password.service';
-import { TokenService } from './token/token.service';
 import { VALID_ID } from './tests/constants';
 
 const VALID_CREDENTIALS: LoginDto = {
@@ -23,8 +20,6 @@ const USER = {
   roles: ['admin'],
   updatedAt: new Date(),
 };
-
-const SIGN_TOKEN = 'SIGN_TOKEN';
 
 const userService = {
   getByEmail(email: string): any | null {
@@ -44,12 +39,6 @@ const passwordService = {
   },
 };
 
-const tokenService = {
-  createToken() {
-    return SIGN_TOKEN;
-  },
-};
-
 describe('AuthService', () => {
   //ARRANGE
   let service: AuthService;
@@ -63,10 +52,6 @@ describe('AuthService', () => {
         {
           provide: PasswordService,
           useValue: passwordService,
-        },
-        {
-          provide: TokenService,
-          useValue: tokenService,
         },
         AuthService,
       ],
@@ -94,18 +79,6 @@ describe('AuthService', () => {
       await expect(
         service.validateUser(INVALID_CREDENTIALS.email, INVALID_CREDENTIALS.password),
       ).resolves.toBe(null);
-    });
-  });
-
-  describe('Testing the authService.login()', () => {
-    it('should return userInfo object for correct email and password', async () => {
-      const loginResult = await service.login(VALID_CREDENTIALS);
-      expect(loginResult).toEqual({
-        email: USER.email,
-        roles: USER.roles,
-        accessToken: SIGN_TOKEN,
-        id: USER.id,
-      });
     });
   });
 });

@@ -1,8 +1,7 @@
 import { CSSProperties, useMemo } from 'react';
 import chunk from 'lodash/chunk';
 import { BlocksComponent } from '@ballerine/blocks';
-import { Column } from '@app/components/organisms/UIRenderer/elements/Cell/Column';
-import { useUIRendererContext } from '@app/components/organisms/UIRenderer/hooks/useUIRendererContext/useUIRendererContext';
+import { useUIRendererContext } from '@/components/organisms/UIRenderer/hooks/useUIRendererContext/useUIRendererContext';
 import clsx from 'clsx';
 import { Fragment } from 'react';
 

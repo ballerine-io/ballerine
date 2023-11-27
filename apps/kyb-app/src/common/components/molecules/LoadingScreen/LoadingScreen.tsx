@@ -1,4 +1,4 @@
-import { LoadingSpinner } from '@app/common/components/atoms/LoadingSpinner';
+import { LoadingSpinner } from '@/common/components/atoms/LoadingSpinner';
 
 export const LoadingScreen = () => {
   return (

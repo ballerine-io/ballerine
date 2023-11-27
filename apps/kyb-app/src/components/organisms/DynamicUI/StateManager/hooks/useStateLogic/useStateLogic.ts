@@ -1,11 +1,12 @@
 import { AnyObject } from '@ballerine/ui';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import isEqual from 'lodash/isEqual';
-import { StateMachineAPI } from '@app/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
-import { getAccessToken } from '@app/helpers/get-access-token.helper';
-import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { CollectionFlowContext } from '@app/domains/collection-flow/types/flow-context.types';
-import { useCustomer } from '@app/components/providers/CustomerProvider';
+import { StateMachineAPI } from '@/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
+import { getAccessToken } from '@/helpers/get-access-token.helper';
+import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
+import { useCustomer } from '@/components/providers/CustomerProvider';
+import { isErrorWithMessage } from '@ballerine/common';
 
 interface State {
   machineState: string;
@@ -34,7 +35,7 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
         ...ctx?.flowConfig,
         apiUrl: `${protocol}//${host}`,
         tokenId: getAccessToken(),
-        customerCompany: customer.displayName,
+        customerCompany: customer?.displayName,
       } as CollectionFlowContext['flowConfig'],
     } as CollectionFlowContext);
 
@@ -90,7 +91,10 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
 
         setState(prev => ({ ...prev, machineState: machineApi.getState() }));
       } catch (error) {
-        console.error(`Error occured on attempt to send event ${eventName}`, error.message);
+        console.error(
+          `Error occured on attempt to send event ${eventName}`,
+          isErrorWithMessage(error) ? error.message : error,
+        );
       } finally {
         helpers.setLoading(false);
       }

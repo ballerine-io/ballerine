@@ -1,5 +1,21 @@
 # @ballerine/blocks
 
+## 0.1.21
+
+### Patch Changes
+
+- 8c888cec: Updated tsconfig and types
+- Updated dependencies [8c888cec]
+  - @ballerine/common@0.7.23
+
+## 0.1.20
+
+### Patch Changes
+
+- Change document schemas
+- Updated dependencies
+  - @ballerine/common@0.7.22
+
 ## 0.1.19
 
 ### Patch Changes

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ctw } from '@utils/ctw';
+import { ctw } from '@/utils/ctw';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const badgeVariants = cva(
@@ -14,6 +14,7 @@ const badgeVariants = cva(
         success: 'bg-success/20 text-success',
         warning: 'bg-warning/20 text-warning',
         destructive: 'bg-destructive/20 text-destructive',
+        violet: 'bg-violet/20 text-violet',
       },
     },
     defaultVariants: {

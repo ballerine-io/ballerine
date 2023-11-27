@@ -1,6 +1,5 @@
-import { TProjectIds } from '@/types';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class WorkflowEventInput {
   @ApiProperty({

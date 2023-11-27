@@ -1,4 +1,4 @@
-import { UIPage } from '@app/domains/collection-flow';
+import { UIPage } from '@/domains/collection-flow';
 import { AnyChildren } from '@ballerine/ui';
 
 export interface PageResolverContext {
@@ -6,7 +6,7 @@ export interface PageResolverContext {
   pages: UIPage[];
 }
 
-export type PageResolverRenderCallback = (currentPage: PageResolverContext) => JSX.Element;
+export type PageResolverRenderCallback = (currentPage: PageResolverContext) => JSX.Element | null;
 
 export interface PageResolverProps {
   state: string;

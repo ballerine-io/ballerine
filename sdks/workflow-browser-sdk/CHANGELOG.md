@@ -1,5 +1,31 @@
 # @ballerine/workflow-browser-sdk
 
+## 0.5.22
+
+### Patch Changes
+
+- 8c888cec: Updated tsconfig and types
+- Updated dependencies [8c888cec]
+  - @ballerine/workflow-core@0.5.22
+  - @ballerine/common@0.7.23
+
+## 0.5.21
+
+### Patch Changes
+
+- Workflow changes
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.21
+
+## 0.5.20
+
+### Patch Changes
+
+- Change document schemas
+- Updated dependencies
+  - @ballerine/common@0.7.22
+  - @ballerine/workflow-core@0.5.20
+
 ## 0.5.19
 
 ### Patch Changes

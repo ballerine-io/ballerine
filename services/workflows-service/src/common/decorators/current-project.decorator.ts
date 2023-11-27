@@ -1,4 +1,4 @@
-import { AuthenticatedEntityWithProjects, TProjectId } from '@/types';
+import type { AuthenticatedEntityWithProjects, TProjectId } from '@/types';
 import { createParamDecorator, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { z } from 'zod';
 

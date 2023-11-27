@@ -16,11 +16,11 @@ export class FileStorage {
     }
   }
 
-  getFileId(file: File): string {
+  getFileId(file: File) {
     return this.idsByFiles.get(file);
   }
 
-  getFileById(fileId: string): File | null {
+  getFileById(fileId: string) {
     return this.filesById.get(fileId);
   }
 }

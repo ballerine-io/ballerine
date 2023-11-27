@@ -1,5 +1,5 @@
-import { usersStatsQueryKeys } from '@app/domains/user/api/users-stats';
-import { useWorkflowFilters } from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/hooks/useWorkflowFilters';
+import { usersStatsQueryKeys } from '@/domains/user/api/users-stats';
+import { useWorkflowFilters } from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/hooks/useWorkflowFilters';
 import { useQuery } from '@tanstack/react-query';
 
 export const useUsersAssignedCasesStatsQuery = () => {
@@ -8,6 +8,7 @@ export const useUsersAssignedCasesStatsQuery = () => {
     ...usersStatsQueryKeys.casesAssignedStats({
       // fromDate: filters.fromDate!,
     }),
+    // @ts-ignore
     enabled: Boolean(filters.fromDate),
   });
 

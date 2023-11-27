@@ -1,7 +1,7 @@
-import { ctw } from '@utils/ctw';
+import { ctw } from '@/utils/ctw';
 import * as React from 'react';
 
-export interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+export type TextAreaProps = React.TextareaHTMLAttributes<HTMLTextAreaElement>;
 
 export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ({ className, ...props }, ref) => {

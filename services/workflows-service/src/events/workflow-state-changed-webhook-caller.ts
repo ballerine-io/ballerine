@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
@@ -13,7 +10,7 @@ import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { sign } from '@/common/utils/sign/sign';
 import { env } from '@/env';
 import { CustomerService } from '@/customer/customer.service';
-import { TAuthenticationConfiguration } from '@/customer/types';
+import type { TAuthenticationConfiguration } from '@/customer/types';
 
 @Injectable()
 export class WorkflowStateChangedWebhookCaller {
