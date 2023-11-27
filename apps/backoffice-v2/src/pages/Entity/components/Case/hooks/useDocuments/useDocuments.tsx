@@ -8,6 +8,7 @@ import { t } from 'i18next';
 import { useToggle } from '../../../../../../common/hooks/useToggle/useToggle';
 import { TransformWrapper } from 'react-zoom-pan-pinch';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
+import { DOWNLOAD_ONLY_MIME_TYPES } from '@/common/constants';
 
 export const useDocuments = (documents: IDocumentsProps['documents']) => {
   const initialImage = documents?.[0];
@@ -96,13 +97,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
 
     window.open(url, '_blank');
   }, []);
-  const shouldDownload = [
-    'text/csv',
-    // xls
-    'application/vnd.ms-excel',
-    // xlsx0
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  ].includes(selectedImage?.fileType);
+  const shouldDownload = DOWNLOAD_ONLY_MIME_TYPES.includes(selectedImage?.fileType);
 
   return {
     crop,

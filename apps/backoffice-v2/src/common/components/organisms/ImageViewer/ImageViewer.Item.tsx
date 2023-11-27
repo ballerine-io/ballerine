@@ -4,6 +4,7 @@ import { useImageViewerContext } from './hooks/useImageViewerContext/useImageVie
 import { BallerineImage } from '../../atoms/BallerineImage';
 import { PrimaryButton } from '../../atoms/PrimaryButton/PrimaryButton';
 import { ctw } from '../../../utils/ctw/ctw';
+import { DOWNLOAD_ONLY_MIME_TYPES } from '@/common/constants';
 
 /**
  * @description To be used by {@link ImageViewer}, and be wrapped by {@link ImageViewer.List}. Uses an li element with default styling to display a single image which sets the selected image on click.
@@ -52,7 +53,7 @@ export const Item: FunctionComponent<IItemProps> = ({
         <div className={`flex h-[4.375rem] w-[4rem]`}>
           <BallerineImage
             withPlaceholder
-            src={src}
+            src={DOWNLOAD_ONLY_MIME_TYPES.includes(fileType) ? '' : src}
             className={ctw(
               `
             object-cover
