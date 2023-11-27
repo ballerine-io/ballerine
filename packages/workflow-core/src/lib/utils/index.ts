@@ -4,3 +4,4 @@ export type { TContext, Transformer, Transformers, Validator } from './types';
 export { JmespathTransformer } from './context-transformers';
 export { HelpersTransformer } from './context-transformers';
 export { JsonSchemaValidator } from './context-validator';
+export { validateDefinitionLogic } from './definition-validator';

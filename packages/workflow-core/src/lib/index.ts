@@ -37,6 +37,11 @@ export type {
   THelperFormatingLogic,
 } from './utils';
 export { WebhookPlugin, ApiPlugin } from './plugins';
-export { HelpersTransformer, JmespathTransformer, JsonSchemaValidator } from './utils';
+export {
+  HelpersTransformer,
+  JmespathTransformer,
+  JsonSchemaValidator,
+  validateDefinitionLogic,
+} from './utils';
 export { HttpError } from './errors';
 export { createWorkflow } from './create-workflow';
