@@ -374,3 +374,20 @@ model WorkflowRuntimeDataToken {
   expiresAt             DateTime
   deletedAt             DateTime?
 }
+
+enum DataVersionStatus {
+  in_progress
+  completed
+  failed
+}
+
+model DataMigrationVersion {
+  id            String            @id @default(cuid())
+  version       String
+  migratedAt    DateTime          @default(now())
+  status        DataVersionStatus @default(completed)
+  failureReason String?
+
+  @@index([migratedAt])
+  @@index([status, version])
+}
