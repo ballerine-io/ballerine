@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.24
+
+### Patch Changes
+
+- Removed imageUrl property from ZZ document schemas
+
 ## 0.7.23
 
 ### Patch Changes

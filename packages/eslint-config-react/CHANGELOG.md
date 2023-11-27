@@ -1,5 +1,11 @@
 # @ballerine/eslint-config-react
 
+## 1.0.2
+
+### Patch Changes
+
+- 48a5a1f49: added missing eslint plugin
+
 ## 1.0.1
 
 ### Patch Changes
