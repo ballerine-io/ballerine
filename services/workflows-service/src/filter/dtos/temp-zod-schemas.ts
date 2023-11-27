@@ -151,19 +151,6 @@ export const NestedEnumApprovalStateFilter = z.lazy(() =>
     not: z.union([NestedEnumApprovalStateFilter, zApprovalStateEnum]).optional(),
   }),
 );
-// @ts-expect-error - It is expected for z.lazy to be any.
-const NestedIntFilterSchema = z.lazy(() =>
-  z.object({
-    equals: z.number().optional(),
-    in: z.array(z.number()).optional(),
-    notIn: z.array(z.number()).optional(),
-    lt: z.number().optional(),
-    lte: z.number().optional(),
-    gt: z.number().optional(),
-    gte: z.number().optional(),
-    not: z.union([NestedIntFilterSchema, z.number()]).optional(),
-  }),
-);
 
 const IntFilterSchema = z.lazy(() =>
   z.object({

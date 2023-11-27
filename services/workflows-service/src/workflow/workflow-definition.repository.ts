@@ -1,6 +1,6 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import type { TProjectId, TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { Prisma, WorkflowDefinition } from '@prisma/client';
 import { validateDefinitionLogic } from '@ballerine/workflow-core';
@@ -14,12 +14,10 @@ export class WorkflowDefinitionRepository {
 
   async create<T extends Prisma.WorkflowDefinitionCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionCreateArgs>,
-    projectId?: TProjectId,
   ): Promise<WorkflowDefinition> {
     validateDefinitionLogic(args.data);
-    return await this.prisma.workflowDefinition.create<T>(
-      this.scopeService.scopeCreate(args, projectId),
-    );
+
+    return await this.prisma.workflowDefinition.create<T>(args);
   }
 
   async createUnscoped<T extends Prisma.WorkflowDefinitionCreateArgs>(
@@ -43,7 +41,7 @@ export class WorkflowDefinitionRepository {
           },
           {
             ...queryArgs.where,
-            project: { is: null },
+            projectId: null,
             isPublic: true,
           },
         ],
@@ -91,19 +89,13 @@ export class WorkflowDefinitionRepository {
   async updateById<T extends Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>,
-    projectId: TProjectId,
   ): Promise<WorkflowDefinition> {
     args.data.definition && validateDefinitionLogic(args.data);
 
-    return await this.prisma.workflowDefinition.update(
-      this.scopeService.scopeUpdate(
-        {
-          where: { id },
-          ...args,
-        },
-        projectId,
-      ),
-    );
+    return await this.prisma.workflowDefinition.update({
+      where: { id },
+      ...args,
+    });
   }
 
   async deleteById<T extends Omit<Prisma.WorkflowDefinitionDeleteArgs, 'where'>>(

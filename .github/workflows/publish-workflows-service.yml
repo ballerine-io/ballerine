@@ -17,6 +17,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 jobs:
   build-and-push-image:
@@ -32,7 +33,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install jq
+      - name: Install JQ
         run: sudo apt-get install jq
 
       - name: Set up Docker Buildx
@@ -66,9 +67,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ github.head_ref || github.ref_name }}
-            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
-            type=raw,value=${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
+            type=raw,value=${{ env.BRANCH_NAME }}
+            type=raw,value=commit-${{ github.sha }}-${{ env.BRANCH_NAME }}
+            type=raw,value=${{ steps.get_version.outputs.version }}-${{ env.BRANCH_NAME }}
 
       - name: Extract metadata (tags, labels) for prod Docker images
         if: github.ref == 'refs/heads/prod'
@@ -90,7 +91,7 @@ jobs:
           context: services/workflows-service
           platforms: ${{ matrix.platform }}
           push: true
-          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
+          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BRANCH_NAME }}'
           tags: ${{ steps.prodmeta.outputs.tags }}
 
       - name: Build and push Docker image for non Prod
@@ -100,13 +101,14 @@ jobs:
           context: services/workflows-service
           platforms: ${{ matrix.platform }}
           push: true
-          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
+          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BRANCH_NAME }}'
           tags: ${{ steps.branchmeta.outputs.tags }}
 
       - name: Scan Docker Image
+        if: "!contains(env.BRANCH_NAME, '/')"
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
+          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BRANCH_NAME }}'
           format: 'table'
           ignore-unfixed: true
           exit-code: 1
