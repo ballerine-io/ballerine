@@ -67,10 +67,10 @@ importers:
         specifier: 0.3.15
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.22
+        specifier: 0.5.23
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.22
+        specifier: 0.5.23
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -218,7 +218,7 @@ importers:
         specifier: ^1.0.1
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^1.0.0
+        specifier: ^1.0.2
         version: link:../../packages/eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -365,7 +365,7 @@ importers:
         specifier: 0.3.15
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.22
+        specifier: 0.5.23
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -474,7 +474,7 @@ importers:
         specifier: ^1.0.1
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^1.0.0
+        specifier: ^1.0.2
         version: link:../../packages/eslint-config-react
       '@sentry/vite-plugin':
         specifier: ^2.9.0
@@ -769,7 +769,7 @@ importers:
         specifier: 0.7.23
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.22
+        specifier: 0.5.23
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1792,7 +1792,7 @@ importers:
         specifier: 0.7.23
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.22
+        specifier: 0.5.23
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -1931,7 +1931,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.5.22
+        specifier: 0.5.23
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2176,10 +2176,10 @@ importers:
         specifier: 0.7.23
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.22
+        specifier: 0.5.23
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.22
+        specifier: 0.5.23
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
