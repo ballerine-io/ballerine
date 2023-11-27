@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
 
-config({ path: '.env' });
+config({ path: process.env.CI ? '.env.example' : '.env' });
 
 export const env = createEnv({
   /*
