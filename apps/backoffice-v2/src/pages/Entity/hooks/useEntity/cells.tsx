@@ -12,7 +12,6 @@ import { CaseCallToAction } from '../../components/CaseCallToAction/CaseCallToAc
 import { BadgeCell } from '../../components/BadgeCell/BadgeCell';
 import { TableCell } from '../../components/TableCell/TableCell';
 import { Paragraph } from '../../components/Paragraph/Paragraph';
-import { DownloadFile } from '@/common/components/molecules/DownloadFile/DownloadFile';
 
 export const cells = {
   heading: Heading,
@@ -29,5 +28,4 @@ export const cells = {
   caseCallToAction: CaseCallToAction,
   table: TableCell,
   paragraph: Paragraph,
-  downloadFile: DownloadFile,
 };
