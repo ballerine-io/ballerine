@@ -7,7 +7,7 @@ import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { FindLastActiveFlowParams } from '@/workflow/types/params';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { SortOrder } from '@/common/query-filters/sort-order';
-import type { TProjectId, TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 
 export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 
@@ -21,23 +21,17 @@ export class WorkflowRuntimeDataRepository {
 
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
-    projectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.create<T>(
-      this.scopeService.scopeCreate(
-        {
-          ...args,
-          data: {
-            ...args.data,
-            context: {
-              ...((args.data?.context ?? {}) as any),
-              documents: assignIdToDocuments((args.data?.context as any)?.documents),
-            },
-          },
-        } as any,
-        projectId,
-      ),
-    );
+    return await this.prisma.workflowRuntimeData.create<T>({
+      ...args,
+      data: {
+        ...args.data,
+        context: {
+          ...((args.data?.context ?? {}) as any),
+          documents: assignIdToDocuments((args.data?.context as any)?.documents),
+        },
+      },
+    } as any);
   }
 
   async findMany<T extends Prisma.WorkflowRuntimeDataFindManyArgs>(
@@ -75,17 +69,11 @@ export class WorkflowRuntimeDataRepository {
   async updateById<T extends Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>,
-    projectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.update(
-      this.scopeService.scopeUpdate(
-        {
-          where: { id },
-          ...args,
-        },
-        projectId,
-      ),
-    );
+    return await this.prisma.workflowRuntimeData.update({
+      where: { id },
+      ...args,
+    });
   }
 
   async updateContextById(

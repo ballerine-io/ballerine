@@ -375,7 +375,7 @@ export const dynamicUiWorkflowDefinition = {
   isPublic: true,
 };
 
-export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, projectId?: string) => {
+export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, projectId: string) => {
   const kybDynamicExample = {
     ...dynamicUiWorkflowDefinition,
     isPublic: !projectId,

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { File, Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { IFileIds } from './types';
-import type { TProjectId, TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
@@ -14,9 +14,8 @@ export class FileRepository {
 
   async create<T extends Prisma.FileCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.FileCreateArgs>,
-    projectId: TProjectId,
   ): Promise<File> {
-    return await this.prisma.file.create<T>(this.scopeService.scopeCreate(args, projectId));
+    return await this.prisma.file.create<T>(args);
   }
 
   async findMany<T extends Prisma.FileFindManyArgs>(

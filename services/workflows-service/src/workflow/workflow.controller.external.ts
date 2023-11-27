@@ -276,9 +276,7 @@ export class WorkflowControllerExternal {
         data: hookResponse,
         resultDestinationPath: query.resultDestination || 'hookResponse',
         processName: query.processName,
-        // @ts-expect-error - error from Prisma types fix
         projectIds: [workflowRuntime.projectId],
-        // @ts-expect-error - error from Prisma types fix
         currentProjectId: workflowRuntime.projectId,
       });
 
@@ -287,7 +285,6 @@ export class WorkflowControllerExternal {
           id: params.id,
           name: params.event,
         },
-        // @ts-expect-error - error from Prisma types fix
         [workflowRuntime.projectId],
         workflowRuntime.projectId,
       );

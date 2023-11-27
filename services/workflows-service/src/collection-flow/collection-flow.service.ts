@@ -84,7 +84,6 @@ export class CollectionFlowService {
       {},
       projectIds,
     );
-    if (!definition) throw new NotFoundException();
 
     const providedStepsMap = keyBy(steps, 'key');
 
@@ -102,33 +101,30 @@ export class CollectionFlowService {
       return step;
     });
 
-    const updatedDefinition = await this.workflowDefinitionRepository.updateById(
-      configurationId,
-      {
-        data: {
-          definition: {
+    const updatedDefinition = await this.workflowDefinitionRepository.updateById(configurationId, {
+      data: {
+        definition: {
+          // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
+          ...definition?.definition,
+          states: {
             // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-            ...definition?.definition,
-            states: {
+            ...definition.definition?.states,
+            data_collection: {
               // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-              ...definition.definition?.states,
-              data_collection: {
-                // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-                ...definition.definition?.states?.data_collection,
-                metadata: {
-                  uiSettings: {
-                    multiForm: {
-                      steps: mergedSteps,
-                    },
+              ...definition.definition?.states?.data_collection,
+              metadata: {
+                uiSettings: {
+                  multiForm: {
+                    steps: mergedSteps,
                   },
                 },
               },
             },
           },
         },
+        projectId,
       },
-      projectId,
-    );
+    });
 
     return plainToClass(FlowConfigurationModel, {
       id: updatedDefinition.id,
@@ -161,19 +157,15 @@ export class CollectionFlowService {
     );
 
     if (payload.data.endUser) {
-      await this.endUserService.updateById(
-        tokenScope.endUserId,
-        { data: payload.data.endUser },
-        tokenScope.projectId,
-      );
+      await this.endUserService.updateById(tokenScope.endUserId, {
+        data: { ...payload.data.endUser, projectId: tokenScope.projectId },
+      });
     }
 
     if (payload.data.ballerineEntityId && payload.data.business) {
-      await this.businessService.updateById(
-        payload.data.ballerineEntityId,
-        { data: payload.data.business },
-        tokenScope.projectId,
-      );
+      await this.businessService.updateById(payload.data.ballerineEntityId, {
+        data: { ...payload.data.business, projectId: tokenScope.projectId },
+      });
     }
 
     const { state, ...resetContext } = payload.data.context as Record<string, any>;
@@ -192,19 +184,13 @@ export class CollectionFlowService {
 
   async syncWorkflow(payload: UpdateFlowDto, tokenScope: ITokenScope) {
     if (payload.data.endUser) {
-      await this.endUserService.updateById(
-        tokenScope.endUserId,
-        { data: payload.data.endUser },
-        tokenScope.projectId,
-      );
+      await this.endUserService.updateById(tokenScope.endUserId, { data: payload.data.endUser });
     }
 
     if (payload.data.ballerineEntityId && payload.data.business) {
-      await this.businessService.updateById(
-        payload.data.ballerineEntityId,
-        { data: payload.data.business },
-        tokenScope.projectId,
-      );
+      await this.businessService.updateById(payload.data.ballerineEntityId, {
+        data: payload.data.business,
+      });
     }
 
     return await this.workflowService.syncContextById(

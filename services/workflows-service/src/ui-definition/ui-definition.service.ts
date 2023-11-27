@@ -1,6 +1,6 @@
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
-import type { TProjectId, TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 import { getDocumentsByCountry } from '@ballerine/common';
 import type { CountryCode } from '@/common/countries';
 import type { TSchemaOption } from '@/ui-definition/type';
@@ -15,8 +15,8 @@ export class UiDefinitionService {
     protected readonly workflowRuntimeRepository: WorkflowRuntimeDataRepository,
   ) {}
 
-  async create(args: Parameters<UiDefinitionRepository['create']>[0], projectId: TProjectId) {
-    return await this.repository.create(args, projectId);
+  async create(args: Parameters<UiDefinitionRepository['create']>[0]) {
+    return await this.repository.create(args);
   }
 
   async getById(
