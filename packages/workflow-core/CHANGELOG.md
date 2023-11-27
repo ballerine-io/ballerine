@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.5.23
+
+### Patch Changes
+
+- Added TransformerPlugin
+
 ## 0.5.22
 
 ### Patch Changes
