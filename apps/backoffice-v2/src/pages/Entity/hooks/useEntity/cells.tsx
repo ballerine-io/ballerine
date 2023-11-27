@@ -12,7 +12,7 @@ import { CaseCallToAction } from '../../components/CaseCallToAction/CaseCallToAc
 import { BadgeCell } from '../../components/BadgeCell/BadgeCell';
 import { TableCell } from '../../components/TableCell/TableCell';
 import { Paragraph } from '../../components/Paragraph/Paragraph';
-import { DownloadFile } from '../../components/DownloadFile/DownloadFile';
+import { DownloadFile } from '@/common/components/molecules/DownloadFile/DownloadFile';
 
 export const cells = {
   heading: Heading,

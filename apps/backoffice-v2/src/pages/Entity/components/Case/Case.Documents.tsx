@@ -8,7 +8,7 @@ import ReactCrop, { Crop } from 'react-image-crop';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import { Download, ExternalLinkIcon, FileText } from 'lucide-react';
 import { isPdf } from '../../../../common/utils/is-pdf/is-pdf';
-import { DownloadFile } from '@/pages/Entity/components/DownloadFile/DownloadFile';
+import { DownloadFile } from '@/common/components/molecules/DownloadFile/DownloadFile';
 import { FunctionComponentWithChildren } from '@/common/types';
 
 interface IImageEditorProps {

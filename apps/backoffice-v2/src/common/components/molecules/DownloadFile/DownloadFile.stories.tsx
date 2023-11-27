@@ -10,10 +10,6 @@ type Story = StoryObj<typeof DownloadFile>;
 
 export const Default: Story = {
   args: {
-    value: {
-      href: 'https://picsum.photos/200',
-      heading: 'Bank statement aug 10 2023.xlsx',
-      callToAction: 'Download',
-    },
+    heading: 'Bank statement aug 10 2023.xlsx',
   },
 };
