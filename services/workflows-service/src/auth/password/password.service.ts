@@ -14,7 +14,7 @@ export class PasswordService {
   salt: Salt;
 
   constructor() {
-    this.salt = env.BCRYPT_SALT;
+    this.salt = env.BCRYPT_SALT || 10;
   }
 
   /**
@@ -32,9 +32,6 @@ export class PasswordService {
    * @return encrypted password
    */
   hash(password: string): Promise<string> {
-    console.log('Password:', password);
-    console.log('Salt:', this.salt);
-
     return hash(password, this.salt);
   }
 }
