@@ -87,8 +87,8 @@ describe('#EndUserControllerExternal', () => {
 
     customer = await createCustomer(
       await app.get(PrismaService),
-      String(Date.now()),
-      'secret2',
+      'someRandomId',
+      'secret3',
       '',
       '',
       'webhook-shared-secret',

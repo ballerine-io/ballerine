@@ -106,7 +106,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       '',
       'webhook-shared-secret',
     );
-    project = await createProject(await app.get(PrismaService), customer, '1');
+    project = await createProject(await app.get(PrismaService), customer, '4');
   });
 
   describe('PATCH /:id/decision/:documentId', () => {
