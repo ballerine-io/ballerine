@@ -7,17 +7,9 @@ export interface ValidatableTransformer {
   transformers: Transformers;
   schemaValidator?: Validator;
 }
-
-export interface SerializableValidatableTransformer {
-  transform: Array<{
-    transformer: string;
-    mapping: string | THelperFormatingLogic;
-  }>;
-  schema?: TJsonSchema;
-}
-
 export interface IApiPluginParams {
   name: string;
+  pluginKind?: string;
   stateNames: Array<string>;
   url: string;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
@@ -30,17 +22,9 @@ export interface IApiPluginParams {
 
   invoke?(...args: Array<any>): any;
 }
-
-export interface ISerializableHttpPluginParams
-  extends Omit<IApiPluginParams, 'request' | 'response'> {
-  request: SerializableValidatableTransformer;
-  response: SerializableValidatableTransformer;
-
-  invoke?(...args: Array<any>): any;
-}
-
 export interface WebhookPluginParams {
   name: string;
+  pluginKind: string;
   stateNames: Array<string>;
   url: string;
   method: IApiPluginParams['method'];
@@ -50,26 +34,56 @@ export interface WebhookPluginParams {
 
 export interface IterativePluginParams {
   name: string;
+  pluginKind: string;
   stateNames: Array<string>;
   iterateOn: Omit<IApiPluginParams['request'], 'schemaValidator'>;
   actionPlugin: ActionablePlugin;
-  invoke?(...args: Array<any>): any;
   successAction?: string;
   errorAction?: string;
+
+  invoke?(...args: Array<any>): any;
 }
 
-export interface ISerializableChildPluginParams
-  extends Omit<ChildWorkflowPluginParams, 'action' | 'transformers' | 'parentWorkflowRuntimeId'> {
-  transformers: Omit<SerializableValidatableTransformer, 'schema'>['transform'];
+export interface SerializableValidatableTransformer {
+  transform: Array<{
+    transformer: string;
+    mapping: string | THelperFormatingLogic;
+  }>;
+  schema?: TJsonSchema;
+}
 
-  invoke?(...args: Array<any>): Promise<any>;
+export interface ISerializableHttpPluginParams
+  extends Omit<IApiPluginParams, 'request' | 'response'> {
+  request: SerializableValidatableTransformer;
+  response: SerializableValidatableTransformer;
+
+  invoke?(...args: Array<any>): any;
 }
 
 export interface SerializableWebhookPluginParams extends Omit<WebhookPluginParams, 'request'> {
   name: string;
   stateNames: Array<string>;
   url: string;
-  method: IApiPluginParams['method'];
-  headers: IApiPluginParams['headers'];
+  method: ISerializableHttpPluginParams['method'];
+  headers: ISerializableHttpPluginParams['headers'];
   request: SerializableValidatableTransformer;
 }
+
+export interface ISerializableChildPluginParams
+  extends Omit<ChildWorkflowPluginParams, 'action' | 'transformers' | 'parentWorkflowRuntimeId'> {
+  pluginKind: string;
+  transformers: Omit<SerializableValidatableTransformer, 'schema'>['transform'];
+
+  invoke?(...args: Array<any>): Promise<any>;
+}
+
+export interface SerializableIterativePluginParams {
+  name: string;
+  stateNames: Array<string>;
+  iterateOn: Omit<SerializableValidatableTransformer['transform'], 'schema'>;
+  successAction?: string;
+  errorAction?: string;
+
+  invoke?(...args: any): void;
+}
+

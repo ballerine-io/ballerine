@@ -143,6 +143,7 @@ export class WorkflowRunner {
       return new apiPluginClass({
         name: apiPluginSchema.name,
         stateNames: apiPluginSchema.stateNames,
+        pluginKind: apiPluginSchema.pluginKind,
         url: apiPluginSchema.url,
         method: apiPluginSchema.method,
         headers: apiPluginSchema.headers,
