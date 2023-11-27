@@ -55,15 +55,11 @@ export class WorkflowCompletedWebhookCaller {
       'workflow.completed',
     );
 
-    const customer = await this.customerService.getByProjectId(
-      // @ts-expect-error - error from Prisma types fix
-      data.runtimeData.projectId,
-      {
-        select: {
-          authenticationConfiguration: true,
-        },
+    const customer = await this.customerService.getByProjectId(data.runtimeData.projectId, {
+      select: {
+        authenticationConfiguration: true,
       },
-    );
+    });
 
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;

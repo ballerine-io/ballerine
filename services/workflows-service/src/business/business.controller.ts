@@ -33,23 +33,21 @@ export class BusinessControllerExternal {
     @common.Body() data: BusinessCreateDto,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Pick<BusinessModel, 'id' | 'companyName'>> {
-    return this.service.create(
-      {
-        data: {
-          ...data,
-          legalForm: 'name',
-          countryOfIncorporation: 'US',
-          address: 'addess',
-          industry: 'telecom',
-          documents: 's',
-        },
-        select: {
-          id: true,
-          companyName: true,
-        },
+    return this.service.create({
+      data: {
+        ...data,
+        legalForm: 'name',
+        countryOfIncorporation: 'US',
+        address: 'addess',
+        industry: 'telecom',
+        documents: 's',
+        projectId: currentProjectId,
       },
-      currentProjectId,
-    );
+      select: {
+        id: true,
+        companyName: true,
+      },
+    });
   }
 
   @common.Get()
