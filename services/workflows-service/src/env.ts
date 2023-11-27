@@ -13,7 +13,7 @@ export const env = createEnv({
     NODE_ENV: z.enum(['development', 'production', 'test', 'local']), // TODO: remove 'test', 'local'
     ENVIRONMENT_NAME: z.enum(['development', 'production', 'staging', 'test', 'local']),
     ENV_FILE_NAME: z.string().optional(),
-    BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()).default(10),
+    BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
     PORT: z.coerce.number(),
     DB_USER: z.string(),
     DB_PASSWORD: z.string(),
