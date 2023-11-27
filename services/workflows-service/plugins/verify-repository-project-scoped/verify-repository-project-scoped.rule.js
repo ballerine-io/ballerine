@@ -18,7 +18,7 @@ module.exports = {
     return {
       MethodDefinition: function (node) {
         if (!isRepository || node.key.name === 'constructor') return;
-        const isUnscoped = UNSCOPED_METHOD_NAMES.any(name =>
+        const isUnscoped = UNSCOPED_METHOD_NAMES.some(name =>
           node.key.name.toLowerCase().includes(name),
         );
 
