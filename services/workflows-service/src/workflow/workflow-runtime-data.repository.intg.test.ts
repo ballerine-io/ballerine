@@ -1015,6 +1015,11 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
             lastName: 'User',
             password: 'test',
             roles: ['customer'],
+            userToProjects: {
+              create: {
+                projectId: project.id,
+              },
+            },
           },
         } satisfies Parameters<(typeof userRepository)['create']>[0];
         const createPayload = {
