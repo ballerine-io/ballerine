@@ -68,7 +68,6 @@ export const env = createEnv({
    * Often `process.env` or `import.meta.env`
    */
   runtimeEnv: process.env,
-  skipValidation: !!process.env.CI,
 });
 
 export const configs = () => {
