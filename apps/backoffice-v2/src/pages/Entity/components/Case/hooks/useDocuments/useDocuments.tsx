@@ -1,14 +1,13 @@
 import { useCrop } from '../../../../../../common/hooks/useCrop/useCrop';
-import { ComponentProps, useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useTesseract } from '../../../../../../common/hooks/useTesseract/useTesseract';
 import { IDocumentsProps } from '../../interfaces';
 import { createArrayOfNumbers } from '../../../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
 import { useToggle } from '../../../../../../common/hooks/useToggle/useToggle';
-import { TransformWrapper } from 'react-zoom-pan-pinch';
+import { ReactZoomPanPinchContentRef } from 'react-zoom-pan-pinch';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
-import { DOWNLOAD_ONLY_MIME_TYPES } from '@/common/constants';
 
 export const useDocuments = (documents: IDocumentsProps['documents']) => {
   const initialImage = documents?.[0];
@@ -83,8 +82,8 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
   const isRotatedOrTransformed = documentRotation !== 0 || isTransformed;
   const onTransformed = useCallback(
     (
-      ref: Parameters<ComponentProps<typeof TransformWrapper>['onTransformed']>[0],
-      state: Parameters<ComponentProps<typeof TransformWrapper>['onTransformed']>[1],
+      ref: ReactZoomPanPinchContentRef,
+      state: ReactZoomPanPinchContentRef['instance']['transformState'],
     ) => {
       setIsTransformed(state?.scale !== 1 || state?.positionX !== 0 || state?.positionY !== 0);
     },
@@ -96,8 +95,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     const url = `${baseUrl}/document/${documentId}?filterId=${filterId}`;
 
     window.open(url, '_blank');
-  }, []);
-  const shouldDownload = DOWNLOAD_ONLY_MIME_TYPES.includes(selectedImage?.fileType);
+  });
 
   return {
     crop,
@@ -116,6 +114,5 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     onOpenDocumentInNewTab,
     isRotatedOrTransformed,
     onTransformed,
-    shouldDownload,
   };
 };

@@ -368,8 +368,8 @@ export const useTasks = ({
           type: 'multiDocuments',
           value: {
             isLoading: docsData?.some(({ isLoading }) => isLoading),
-            data: [
-              ...(documents?.[docIndex]?.pages?.map(
+            data:
+              documents?.[docIndex]?.pages?.map(
                 ({ type, metadata, ballerineFileId }, pageIndex) => ({
                   id: ballerineFileId,
                   title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
@@ -378,14 +378,7 @@ export const useTasks = ({
                   imageUrl: results[docIndex][pageIndex],
                   fileType: type,
                 }),
-              ) ?? []),
-              {
-                id: 'decision',
-                title: 'Decision',
-                imageUrl: 'https://picsum.photos/200',
-                fileType: 'text/csv',
-              },
-            ],
+              ) ?? [],
           },
         };
 
