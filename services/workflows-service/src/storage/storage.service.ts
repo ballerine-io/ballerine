@@ -22,22 +22,21 @@ export class StorageService {
   > & {
     projectId: TProjectId;
   }) {
-    const file = await this.fileRepository.create(
-      {
-        data: {
-          uri,
-          fileNameOnDisk,
-          fileName,
-          userId,
-          fileNameInBucket,
-          mimeType,
+    const file = await this.fileRepository.create({
+      data: {
+        uri,
+        fileNameOnDisk,
+        fileName,
+        userId,
+        fileNameInBucket,
+        mimeType,
         projectId,
-        },
-        select: {
-          id: true,
-          mimeType: true,
-        },
-      });
+      },
+      select: {
+        id: true,
+        mimeType: true,
+      },
+    });
 
     return file;
   }
