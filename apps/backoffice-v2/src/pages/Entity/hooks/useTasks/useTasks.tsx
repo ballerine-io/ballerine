@@ -368,17 +368,17 @@ export const useTasks = ({
           type: 'multiDocuments',
           value: {
             isLoading: docsData?.some(({ isLoading }) => isLoading),
-            data:
-              documents?.[docIndex]?.pages?.map(
-                ({ type, metadata, ballerineFileId }, pageIndex) => ({
-                  id: ballerineFileId,
-                  title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
-                    toTitleCase(docType ?? ''),
-                  )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                  imageUrl: results[docIndex][pageIndex],
-                  fileType: type,
+            data: (documents?.[docIndex]?.pages?.map(
+                ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
+                    id: ballerineFileId,
+                    title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
+                        toTitleCase(docType ?? ''),
+                    )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
+                    imageUrl: results[docIndex][pageIndex],
+                    fileName,
+                    fileType: type,
                 }),
-              ) ?? [],
+            ) ?? []),
           },
         };
 
