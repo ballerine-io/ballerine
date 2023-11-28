@@ -231,7 +231,7 @@ export class CollectionFlowService {
     const entityId = runtimeDataId.businessId || runtimeDataId.endUserId;
 
     if (!entityId) {
-      throw new NotFoundException("Workflow does't exists");
+      throw new NotFoundException("Workflow doesn't exists");
     }
 
     // Remove file extension (get everything before the last dot)
@@ -240,7 +240,12 @@ export class CollectionFlowService {
     const alphabeticOnlyName = nameWithoutExtension.replace(/\W/g, '');
 
     const persistedFile = await this.fileService.copyToDestinationAndCreate(
-      { id: alphabeticOnlyName, uri: file.path, provider: 'file-system' },
+      {
+        id: alphabeticOnlyName,
+        uri: file.path,
+        provider: 'file-system',
+        fileName: file.originalname,
+      },
       entityId,
       projectId,
       customer.name,

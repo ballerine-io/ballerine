@@ -222,6 +222,7 @@ model File {
   mimeType         String?
   userId           String
   fileNameOnDisk   String
+  fileName         String?
   uri              String
   fileNameInBucket String?
   createdAt        DateTime @default(now())
