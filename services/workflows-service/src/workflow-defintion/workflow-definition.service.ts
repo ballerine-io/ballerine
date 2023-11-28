@@ -31,13 +31,47 @@ export class WorkflowDefinitionService {
     const createArgs = merge(restArgs, updateArgs, {
       version: version + 1,
     }) as Prisma.WorkflowDefinitionCreateArgs['data'];
-    const updatedWorkflowVersion = await this.repository.create({ data: createArgs });
+    const newVersionDefinition = await this.repository.create({ data: createArgs });
 
-    const filters = await this.filterService.list({ where: { projectId: projectId, query: {} } }, [
+    const relevantFilters = (
+      await this.filterService.list({ where: { projectId: projectId } }, [projectId])
+    ).filter(filter => {
+      const { where: whereQuery } = filter.query as {
+        where: { workflowDefinitionId: string | { in: Array<string> } };
+      };
+      if (typeof whereQuery.workflowDefinitionId === 'string') {
+        return whereQuery.workflowDefinitionId === id;
+      }
+
+      return whereQuery.workflowDefinitionId.in.includes(id);
+    });
+
+    for (const filter of relevantFilters) {
+      const { where: whereQuery, ...rest } = filter.query as any;
+
+      if (typeof whereQuery.workflowDefinitionId === 'string') {
+        whereQuery.workflowDefinitionId = {
+          in: [whereQuery.workflowDefinitionId, newVersionDefinition.id],
+        };
+      } else {
+        whereQuery.workflowDefinitionId = whereQuery.workflowDefinitionId.in.concat(
+          newVersionDefinition.id,
+        );
+      }
+
+      await this.filterService.updatedById(filter.id, {
+        data: { query: { ...rest, where: whereQuery } },
+        where: {},
+      });
+    }
+  }
+
+  async getLatestVersion(id: string, projectId: TProjectId) {
+    const workflowDefinition = await this.repository.findById(id, {}, [projectId]);
+    const latestVersion = await this.repository.findLatestVersion(workflowDefinition.name, [
       projectId,
     ]);
 
-    for (const filter in filters) {
-    }
+    return latestVersion;
   }
 }
