@@ -105,8 +105,6 @@ export const defaultContextSchema = Type.Object({
                 type: Type.Optional(
                   Type.String({
                     enum: [
-                      'text/csv',
-                      'application/csv',
                       'application/pdf',
                       'image/png',
                       'image/jpg',
@@ -129,8 +127,6 @@ export const defaultContextSchema = Type.Object({
                 type: Type.Optional(
                   Type.String({
                     enum: [
-                      'text/csv',
-                      'application/csv',
                       'application/pdf',
                       'image/png',
                       'image/jpg',
