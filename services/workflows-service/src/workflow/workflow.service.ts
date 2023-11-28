@@ -257,7 +257,10 @@ export class WorkflowService {
         ...workflow.context,
         documents: workflow.context?.documents?.map(
           (document: DefaultContextSchema['documents'][number]) => {
-            return addPropertiesSchemaToDocument(document);
+            return addPropertiesSchemaToDocument(
+              document,
+              workflow.workflowDefinition.documentsSchema,
+            );
           },
         ),
       },
@@ -804,7 +807,7 @@ export class WorkflowService {
       id: documentId,
     };
 
-    const newDocument = addPropertiesSchemaToDocument(document);
+    const newDocument = addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
     const propertiesSchema = newDocument?.propertiesSchema ?? {};
     if (Object.keys(propertiesSchema)?.length) {
       let propertiesSchemaForValidation = propertiesSchema;
