@@ -68,7 +68,7 @@ const ImageEditor: FunctionComponentWithChildren<IImageEditorProps> = ({
 };
 
 const ImageToolbar: FunctionComponent<{
-  image: { imageUrl: string; fileType: string; id: string };
+  image: { id: string; imageUrl: string; fileType: string; fileName: string };
   isLoading?: boolean;
   hideOpenExternalButton?: boolean;
   onRotateDocument: () => void;
@@ -77,6 +77,7 @@ const ImageToolbar: FunctionComponent<{
   shouldDownload: boolean;
   // isCropping: boolean;
   // isLoadingOCR: boolean;
+  fileToDownloadBase64: string;
 }> = ({
   image,
   isLoading,
@@ -156,7 +157,7 @@ const ImageToolbar: FunctionComponent<{
             'pointer-events-none opacity-50': !shouldDownload,
           },
         )}
-        download={image?.imageUrl}
+        download={image?.fileName}
         href={fileToDownloadBase64}
       >
         <Download className={`p-0.5`} />
@@ -255,12 +256,13 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
             <ImageViewer.SkeletonItem key={`image-viewer-skeleton-${index}`} />
           ))}
         {!isLoading &&
-          documents?.map(({ imageUrl, title, fileType, id }) => (
+          documents?.map(({ imageUrl, title, fileType, fileName, id }) => (
             <ImageViewer.Item
               id={id}
               key={`${imageUrl}-${title}`}
               src={imageUrl}
               fileType={fileType}
+              fileName={fileName}
               alt={title}
               caption={title}
             />

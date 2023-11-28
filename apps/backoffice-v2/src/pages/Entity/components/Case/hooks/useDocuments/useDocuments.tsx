@@ -99,7 +99,6 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
 
     window.open(url, '_blank');
   }, []);
-  console.log(selectedImage?.fileType);
   const shouldDownload = DOWNLOAD_ONLY_MIME_TYPES.includes(selectedImage?.fileType);
   const { data: fileToDownloadBase64 } = useStorageFileByIdQuery(selectedImage?.id, {
     isEnabled: shouldDownload,
