@@ -10,7 +10,7 @@ export const CurrentProject = createParamDecorator(
     const authenticatedEntity = request.user as AuthenticatedEntityWithProjects;
     const userAssociatedProjectIds = authenticatedEntity.projectIds;
     const requestedProjectId = RequestedProjectIdSchema.parse(
-      request.payload.projectId || request.query.projectId,
+      request.payload?.projectId || request.query?.projectId,
     );
 
     const isUnauthorizedProjectId =
