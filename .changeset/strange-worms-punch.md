@@ -2,4 +2,4 @@
 '@ballerine/common': patch
 ---
 
-added functionality of replacing null with unfined
+added functionality of replacing null with undefined
