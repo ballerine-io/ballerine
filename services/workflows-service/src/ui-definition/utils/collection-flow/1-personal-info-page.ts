@@ -18,11 +18,11 @@ const validationSchema = {
                   required: ['phone', 'dateOfBirth', 'firstName', 'lastName', 'additionalInfo'],
                   errorMessage: {
                     required: {
-                      phone: 'A valid phone number is required.',
-                      dateOfBirth: 'Date of birth is required.',
-                      firstName: 'First name is required.',
-                      lastName: 'Last name is required.',
-                      additionalInfo: 'Additional information is required.',
+                      phone: 'errorMessage.required.phone',
+                      dateOfBirth: 'errorMessage.required.dateOfBirth',
+                      firstName: 'errorMessage.required.firstName',
+                      lastName: 'errorMessage.required.lastName',
+                      additionalInfo: 'errorMessage.required.additionalInfo',
                     },
                   },
                   properties: {
@@ -30,28 +30,27 @@ const validationSchema = {
                       type: 'string',
                       pattern: '^[+]?[0-9]{10,15}$',
                       errorMessage: {
-                        pattern:
-                          'Phone number must be 10 to 15 digits long and may start with a +.',
+                        pattern: 'errorMessage.properties.phone.pattern',
                       },
                     },
                     dateOfBirth: {
                       type: 'string',
                       errorMessage: {
-                        type: 'Date of birth must be a string.',
+                        type: 'errorMessage.properties.dateOfBirth.type',
                       },
                     },
                     firstName: {
                       type: 'string',
                       minLength: 2,
                       errorMessage: {
-                        minLength: 'First name must be at least 2 characters long.',
+                        minLength: 'errorMessage.properties.dateOfBirth.minLength',
                       },
                     },
                     lastName: {
                       type: 'string',
                       minLength: 2,
                       errorMessage: {
-                        minLength: 'Last name must be at least 2 characters long.',
+                        minLength: 'errorMessage.properties.lastName.minLength',
                       },
                     },
                     additionalInfo: {
@@ -60,7 +59,7 @@ const validationSchema = {
                       default: {},
                       errorMessage: {
                         required: {
-                          jobTitle: 'Job title is a required',
+                          jobTitle: 'errorMessage.properties.additionalInfo.required.jobTitle',
                         },
                       },
                       properties: {
@@ -68,7 +67,8 @@ const validationSchema = {
                           type: 'string',
                           minLength: 2,
                           errorMessage: {
-                            minLength: 'Job title must be at least 2 characters long.',
+                            minLength:
+                              'errorMessage.properties.additionalInfo.properties.jobTitle.minLength',
                           },
                         },
                       },
@@ -86,7 +86,7 @@ const validationSchema = {
 
 export const PersonalInfoPage = {
   type: 'page',
-  name: 'Personal details',
+  name: 'text.personalDetails',
   number: 1,
   stateName: 'personal_details',
   pageValidation: [
@@ -105,7 +105,7 @@ export const PersonalInfoPage = {
             {
               type: 'h1',
               options: {
-                text: 'Personal information',
+                text: 'text.personalInformation',
               },
             },
           ],
@@ -137,8 +137,8 @@ export const PersonalInfoPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.firstName',
               options: {
-                label: 'Name',
-                hint: 'First Name',
+                label: 'text.name',
+                hint: 'text.firstName',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -149,7 +149,7 @@ export const PersonalInfoPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.lastName',
               options: {
-                hint: 'Last Name',
+                hint: 'text.lastName',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -161,8 +161,8 @@ export const PersonalInfoPage = {
               valueDestination:
                 'entity.data.additionalInfo.mainRepresentative.additionalInfo.jobTitle',
               options: {
-                label: 'Title',
-                hint: 'CEO / Manager / Partner',
+                label: 'text.jobTitle.title',
+                hint: 'text.jobTitle.hint',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -173,8 +173,8 @@ export const PersonalInfoPage = {
               type: 'json-form:date',
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.dateOfBirth',
               options: {
-                label: 'Date of Birth',
-                hint: 'DD/MM/YYYY',
+                label: 'text.dateOfBirth.title',
+                hint: 'text.dateOfBirth.hint',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -189,7 +189,7 @@ export const PersonalInfoPage = {
               type: 'international-phone-number',
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.phone',
               options: {
-                label: 'Phone number',
+                label: 'text.phoneNumber',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -215,7 +215,7 @@ export const PersonalInfoPage = {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],
                 },
-                text: 'Continue',
+                text: 'text.continue',
               },
               availableOn: [
                 {

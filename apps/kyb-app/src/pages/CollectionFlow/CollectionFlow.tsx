@@ -1,3 +1,5 @@
+import { useMemo } from 'react';
+
 import { StepperProgress } from '@/common/components/atoms/StepperProgress';
 import { ProgressBar } from '@/common/components/molecules/ProgressBar';
 import { AppShell } from '@/components/layouts/AppShell';
@@ -20,7 +22,6 @@ import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
-import { useMemo } from 'react';
 
 const elems = {
   h1: Title,
@@ -40,7 +41,7 @@ const elems = {
   divider: Divider,
 };
 
-export const CollectionFlowDumb = () => {
+export const CollectionFlow = withSessionProtected(() => {
   const { data: schema } = useUISchemasQuery();
   const { data: context } = useFlowContextQuery();
   const { customer } = useCustomer();
@@ -52,7 +53,9 @@ export const CollectionFlowDumb = () => {
     // @ts-ignore
     elements,
   );
+
   const filteredNonEmptyErrors = pageErrors?.filter(pageError => !!pageError.errors.length);
+
   // @ts-ignore
   const initialContext: CollectionFlowContext | null = useMemo(() => {
     const appState =
@@ -178,6 +181,4 @@ export const CollectionFlowDumb = () => {
       </DynamicUI.StateManager>
     </DynamicUI>
   ) : null;
-};
-
-export const CollectionFlow = withSessionProtected(CollectionFlowDumb);
+});

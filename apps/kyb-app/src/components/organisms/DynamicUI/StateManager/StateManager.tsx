@@ -62,7 +62,7 @@ export const StateManager = ({
   );
 
   if (import.meta.env.MODE === 'development') {
-    console.log('Context', contextPayload);
+    // console.log('Context', contextPayload);
   }
 
   return <StateProvider context={context}>{child}</StateProvider>;

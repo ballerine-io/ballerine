@@ -1,0 +1,52 @@
+{
+  "text": {
+    "personalDetails": "Personal Details",
+    "personalInformation": "Personal Information",
+    "name": "Name",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phoneNumber": "Phone Number",
+    "continue": "Continue",
+    "jobTitle": {
+      "label": "Title",
+      "hint": "CEO / Manager / Partner"
+    },
+    "dateOfBirth": {
+      "label": "Date of Birth",
+      "hint": "DD/MM/YYYY"
+    }
+  },
+  "errorMessage": {
+    "required": {
+      "phone": "A valid phone number is required.",
+      "dateOfBirth": "Date of birth is required.",
+      "firstName": "First name is required.",
+      "lastName": "Last name is required.",
+      "additionalInfo": "Additional information is required."
+    },
+    "properties": {
+      "phone": {
+        "pattern": "Phone number must be 10 to 15 digits long and may start with a +."
+      },
+      "dateOfBirth": {
+        "type": "Date of birth must be a string."
+      },
+      "firstName": {
+        "minLength": "First name must be at least 2 characters long."
+      },
+      "lastName": {
+        "minLength": "Last name must be at least 2 characters long."
+      },
+      "additionalInfo": {
+        "required": {
+          "jobTitle": "Job title is required."
+        },
+        "properties": {
+          "jobTitle": {
+            "minLength": "Job title must be at least 2 characters long."
+          }
+        }
+      }
+    }
+  }
+}

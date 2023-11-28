@@ -11,6 +11,7 @@ import { queryClient } from '@/common/utils/query-client';
 import { Head } from './Head';
 import * as Sentry from '@sentry/react';
 import { sentyRouterInstrumentation } from './router';
+import './i18n';
 
 Sentry.init({
   // @ts-ignore

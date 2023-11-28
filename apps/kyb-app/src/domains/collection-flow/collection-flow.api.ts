@@ -36,9 +36,9 @@ export const fetchCollectionFlowSchema = async (): Promise<{
   };
 };
 
-export const fetchUISchema = async (): Promise<UISchema> => {
+export const fetchUISchema = async (lng: string): Promise<UISchema> => {
   const result = await request
-    .get('collection-flow/configuration', {
+    .get(`collection-flow/configuration/${lng}`, {
       searchParams: {
         uiContext: 'collection_flow',
       },

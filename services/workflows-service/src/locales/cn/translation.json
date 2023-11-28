@@ -1,4 +1,55 @@
 {
+  "text": {
+    "personalDetails": "个人详情",
+    "personalInformation": "个人信息",
+    "name": "名称",
+    "firstName": "名字",
+    "lastName": "姓氏",
+    "phoneNumber": "电话号码",
+    "continue": "继续",
+    "jobTitle": {
+      "label": "标题",
+      "hint": "首席执行官 / 经理 / 合伙人"
+    },
+    "dateOfBirth": {
+      "label": "出生日期",
+      "hint": "日/月/年"
+    }
+  },
+  "errorMessage": {
+    "required": {
+      "phone": "需要一个有效的电话号码。",
+      "dateOfBirth": "需要出生日期。",
+      "firstName": "名字是必填项。",
+      "lastName": "姓氏是必填项。",
+      "additionalInfo": "需要更多信息。"
+    },
+    "properties": {
+      "phone": {
+        "pattern": "电话号码必须是10到15位数字，并且可以以+开始。"
+      },
+      "dateOfBirth": {
+        "type": "出生日期必须是字符串。"
+      },
+      "firstName": {
+        "minLength": "名字至少需要2个字符。"
+      },
+      "lastName": {
+        "minLength": "姓氏至少需要2个字符。"
+      },
+      "additionalInfo": {
+        "required": {
+          "jobTitle": "工作职称是必填项。"
+        },
+        "properties": {
+          "jobTitle": {
+            "minLength": "工作职称至少需要2个字符。"
+          }
+        }
+      }
+    }
+  },
+  "tomer": "KAKI",
   "4": "4",
   "10": "10",
   "25": "25",

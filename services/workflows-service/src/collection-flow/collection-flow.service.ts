@@ -49,6 +49,7 @@ export class CollectionFlowService {
 
   async getFlowConfiguration(
     configurationId: string,
+    language: string,
     projectIds: TProjectIds,
   ): Promise<FlowConfigurationModel> {
     const workflowDefinition = await this.workflowService.getWorkflowDefinitionById(
