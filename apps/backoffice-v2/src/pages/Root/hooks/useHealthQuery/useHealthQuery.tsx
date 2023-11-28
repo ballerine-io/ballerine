@@ -4,6 +4,6 @@ import { healthQueryKeys } from './query-keys';
 export const useHealthQuery = () => {
   return useQuery({
     ...healthQueryKeys.live(),
-    staleTime: 10_000,
+    staleTime: 100_000,
   });
 };

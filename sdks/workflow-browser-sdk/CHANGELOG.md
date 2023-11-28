@@ -1,5 +1,24 @@
 # @ballerine/workflow-browser-sdk
 
+## 0.5.23
+
+### Patch Changes
+
+- d5cca1e8: added defintion validation
+- Updated dependencies [d5cca1e8]
+- Updated dependencies [f4b5c0df]
+  - @ballerine/workflow-core@0.5.23
+  - @ballerine/common@0.7.24
+
+## 0.5.22
+
+### Patch Changes
+
+- 8c888cec: Updated tsconfig and types
+- Updated dependencies [8c888cec]
+  - @ballerine/workflow-core@0.5.22
+  - @ballerine/common@0.7.23
+
 ## 0.5.21
 
 ### Patch Changes

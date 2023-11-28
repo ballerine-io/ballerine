@@ -1,9 +1,9 @@
-import { deserializeQueryParams } from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/helpers/deserializeQueryParams';
-import { useWorkflowsQueryParams } from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/hooks/useWorkflowsQueryParams';
+import { deserializeQueryParams } from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/helpers/deserializeQueryParams';
+import { useWorkflowsQueryParams } from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/hooks/useWorkflowsQueryParams';
 import {
   WorkflowFilterValues,
   WorkflowFiltersContext,
-} from '@app/pages/Workflows/components/providers/WorkflowsFiltersProvider/workflows-filters.types';
+} from '@/pages/Workflows/components/providers/WorkflowsFiltersProvider/workflows-filters.types';
 import { useCallback, useMemo } from 'react';
 import { workflowsFilterContext } from './workflows-filters.context';
 

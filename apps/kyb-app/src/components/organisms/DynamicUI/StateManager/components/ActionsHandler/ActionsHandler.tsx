@@ -1,8 +1,8 @@
-import { useActionsHandlerLogic } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/hooks/useActionsHandlerLogic';
+import { useActionsHandlerLogic } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/hooks/useActionsHandlerLogic';
 import {
   ActionsHandlerContext,
   ActionsHandlerProps,
-} from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/types';
+} from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/types';
 import { useMemo } from 'react';
 import { actionsHandlerContext } from './actions-handler.context';
 

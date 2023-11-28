@@ -1,5 +1,5 @@
-import { calculateChartDataSum } from '@app/components/atoms/PieChart/utils/calculateChartDataSum';
-import { WorkflowChartData } from '@app/pages/Workflows/components/organisms/WorkflowStatusChart/WorkflowStatusChart';
+import { calculateChartDataSum } from '@/components/atoms/PieChart/utils/calculateChartDataSum';
+import { WorkflowChartData } from '@/pages/Workflows/components/organisms/WorkflowStatusChart/WorkflowStatusChart';
 import { useMemo } from 'react';
 
 interface Props {

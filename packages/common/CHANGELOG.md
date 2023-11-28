@@ -1,5 +1,18 @@
 # @ballerine/common
 
+## 0.7.24
+
+### Patch Changes
+
+- d5cca1e8: added defintion validation
+- f4b5c0df: added defintion validation
+
+## 0.7.23
+
+### Patch Changes
+
+- 8c888cec: Updated tsconfig and types
+
 ## 0.7.22
 
 ### Patch Changes

@@ -1,4 +1,4 @@
-import { UIElement, UIPage } from '@app/domains/collection-flow';
+import { UIElement, UIPage } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
 export const getElementNames = (page: UIPage) => {

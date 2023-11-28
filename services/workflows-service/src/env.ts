@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
 
-config({ path: '.env' });
+config({ path: process.env.CI ? '.env.example' : '.env' });
 
 export const env = createEnv({
   /*
@@ -14,14 +14,13 @@ export const env = createEnv({
     ENVIRONMENT_NAME: z.enum(['development', 'production', 'staging', 'test', 'local']),
     ENV_FILE_NAME: z.string().optional(),
     BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
-    JWT_SECRET_KEY: z.string(),
-    JWT_EXPIRATION: z.string(),
     PORT: z.coerce.number(),
     DB_USER: z.string(),
     DB_PASSWORD: z.string(),
     DB_PORT: z.coerce.number(),
     DB_URL: z.string().url(),
     SESSION_SECRET: z.string(),
+    SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().default(60),
     BACKOFFICE_CORS_ORIGIN: z.string().url(),
     WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().url(),
     KYB_EXAMPLE_CORS_ORIGIN: z.string().url(),
@@ -62,6 +61,10 @@ export const env = createEnv({
     SALESFORCE_CONSUMER_KEY: z.string().optional().describe('Salesforce consumer key'),
     SALESFORCE_CONSUMER_SECRET: z.string().optional().describe('Salesforce consumer secret'),
     APP_API_URL: z.string().url().describe('The URL of the workflows-service API'),
+    DATA_MIGRATION_BUCKET_NAME: z
+      .string()
+      .optional()
+      .describe('Bucket name of Data migration folders'),
   },
   client: {},
   /**
@@ -69,7 +72,6 @@ export const env = createEnv({
    * Often `process.env` or `import.meta.env`
    */
   runtimeEnv: process.env,
-  skipValidation: !!process.env.CI,
 });
 
 export const configs = () => {

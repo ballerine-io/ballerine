@@ -401,14 +401,13 @@ describe('Workflows with conditions', () => {
   it('should not proceed with transition if json logic condition falsy', async () => {
     const workflow = createEventCollectingWorkflow(createCondMachine(0.9));
     await workflow.sendEvent({ type: 'EVENT' });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     expect(workflow.events[0].state).toEqual('initial');
   });
   it('should proceed with transition if json logic condition truthy', async () => {
     const workflowArgs = createCondMachine(0.5);
     const workflow = createEventCollectingWorkflow(workflowArgs);
     await workflow.sendEvent({ type: 'EVENT' });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     expect(workflow.events[0].state).toEqual('final');
     // expect(workflow.#__context).toContain({ manualReviewReason: 'name not matching ... ' });
   });
@@ -419,7 +418,7 @@ describe('Workflows with conditions', () => {
     workflowArgs.definition.states.initial.on.EVENT.push({ target: 'middle' });
     const workflow = createEventCollectingWorkflow(workflowArgs);
     await workflow.sendEvent({ type: 'EVENT' });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     expect(workflow.events[0].state).toEqual('final');
     // expect(workflow.#__context).toContain({ manualReviewReason: 'name not matching ... ' });
   });
@@ -432,7 +431,7 @@ describe('Workflows with conditions', () => {
 
     const workflow = createEventCollectingWorkflow(workflowArgs);
     await workflow.sendEvent({ type: 'EVENT' });
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
     expect(workflow.events[0].state).toEqual('initial');
     // expect(workflow.#__context).toContain({ manualReviewReason: 'name not matching ... ' });
   });
