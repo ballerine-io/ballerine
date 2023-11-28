@@ -1,37 +1,43 @@
 import { Injectable } from '@nestjs/common';
 import { CustomerService } from '@/customer/customer.service';
-import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { Prisma } from '@prisma/client';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
-import { TProjectIds } from '@/types';
+import { TProjectId } from '@/types';
+import { merge } from 'lodash';
+import { FilterService } from '@/filter/filter.service';
 
 @Injectable()
 export class WorkflowDefinitionService {
   constructor(
     protected readonly repository: WorkflowDefinitionRepository,
     protected readonly customerService: CustomerService,
-    protected readonly workflowEventEmitter: WorkflowEventEmitterService,
+    protected readonly filterService: FilterService,
   ) {}
 
   async upgrateDefintionVersion(
     id: string,
-    updateArgs: Pick<
-      Prisma.WorkflowDefinitionUpdateArgs['data'],
-      'definition' | 'config' | 'extensions' | 'submitStates'
+    updateArgs: Partial<
+      Pick<
+        Prisma.WorkflowDefinitionUpdateArgs['data'],
+        'definition' | 'config' | 'extensions' | 'submitStates'
+      >
     >,
-    projectIds: TProjectIds,
+    projectId: TProjectId,
   ) {
-    const workflowDefintionToUpdate = await this.repository.findById(id, {}, projectIds);
+    const workflowDefintionToUpdate = await this.repository.findById(id, {}, [projectId]);
 
-    const { version } = workflowDefintionToUpdate;
+    const { id: _id, version, ...restArgs } = workflowDefintionToUpdate;
 
-    const updatedWorkflowDefinition = await this.repository.updateById(
-      id,
-      { data: { ...updateArgs, version: version + 1 } },
-      workflowDefintionToUpdate.projectId ? workflowDefintionToUpdate.projectId : undefined,
-      !workflowDefintionToUpdate.projectId,
-    );
+    const createArgs = merge(restArgs, updateArgs, {
+      version: version + 1,
+    }) as Prisma.WorkflowDefinitionCreateArgs['data'];
+    const updatedWorkflowVersion = await this.repository.create({ data: createArgs });
 
-    return updatedWorkflowDefinition;
+    const filters = await this.filterService.list({ where: { projectId: projectId, query: {} } }, [
+      projectId,
+    ]);
+
+    for (const filter in filters) {
+    }
   }
 }
