@@ -5,6 +5,7 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { TProjectId } from '@/types';
 import { merge } from 'lodash';
 import { FilterService } from '@/filter/filter.service';
+import { replaceNullsWithUndefined } from '@ballerine/common';
 
 @Injectable()
 export class WorkflowDefinitionService {
@@ -14,23 +15,31 @@ export class WorkflowDefinitionService {
     protected readonly filterService: FilterService,
   ) {}
 
-  async upgrateDefintionVersion(
+  async upgradeDefinitionVersion(
     id: string,
     updateArgs: Partial<
       Pick<
         Prisma.WorkflowDefinitionUpdateArgs['data'],
-        'definition' | 'config' | 'extensions' | 'submitStates'
+        'definition' | 'config' | 'extensions' | 'submitStates' | 'contextSchema'
       >
     >,
     projectId: TProjectId,
   ) {
     const workflowDefintionToUpdate = await this.repository.findById(id, {}, [projectId]);
 
-    const { id: _id, version, ...restArgs } = workflowDefintionToUpdate;
+    const {
+      id: _id,
+      version,
+      createdAt: _createdAt,
+      updatedAt: _updatedAt,
+      ...restArgs
+    } = workflowDefintionToUpdate;
 
-    const createArgs = merge(restArgs, updateArgs, {
-      version: version + 1,
-    }) as Prisma.WorkflowDefinitionCreateArgs['data'];
+    const createArgs = replaceNullsWithUndefined(
+      merge(restArgs, updateArgs, {
+        version: version + 1,
+      }),
+    ) as Prisma.WorkflowDefinitionCreateArgs['data'];
     const newVersionDefinition = await this.repository.create({ data: createArgs });
 
     const relevantFilters = (
@@ -54,7 +63,7 @@ export class WorkflowDefinitionService {
           in: [whereQuery.workflowDefinitionId, newVersionDefinition.id],
         };
       } else {
-        whereQuery.workflowDefinitionId = whereQuery.workflowDefinitionId.in.concat(
+        whereQuery.workflowDefinitionId.in = whereQuery.workflowDefinitionId.in.concat(
           newVersionDefinition.id,
         );
       }
@@ -64,6 +73,8 @@ export class WorkflowDefinitionService {
         where: {},
       });
     }
+
+    return newVersionDefinition;
   }
 
   async getLatestVersion(id: string, projectId: TProjectId) {

@@ -31,6 +31,8 @@ import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.servi
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
+import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definition.module';
 
 @Module({
   imports: [
@@ -40,6 +42,7 @@ import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integra
     ProjectModule,
     PrismaModule,
     CustomerModule,
+    WorkflowDefinitionModule,
   ],
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
   providers: [
@@ -67,6 +70,7 @@ import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integra
     WorkflowTokenService,
     SalesforceService,
     SalesforceIntegrationRepository,
+    WorkflowDefinitionService,
   ],
   exports: [
     WorkflowService,
