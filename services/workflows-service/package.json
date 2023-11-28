@@ -135,6 +135,7 @@
     "plop": "^4.0.0",
     "prettier": "^2.8.4",
     "prisma": "4.13.0",
+    "rimraf": "^5.0.5",
     "supertest": "4.0.2",
     "testcontainers": "^9.8.0",
     "ts-jest": "27.0.3",
