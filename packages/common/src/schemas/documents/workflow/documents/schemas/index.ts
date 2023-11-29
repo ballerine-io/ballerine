@@ -1,5 +1,5 @@
 import { getGhanaDocuments } from './GH';
-import { TDocument } from '../types';
+import { TDocument, TDocumentsWithAvailability } from '../types';
 import { countryCodes } from '@/countries';
 import { DefaultContextSchema } from '@/schemas';
 import { getCanadaDocuments } from './CA';
@@ -15,6 +15,17 @@ const documentIdsByCountry: Partial<Record<(typeof countryCodes)[number], () => 
 
 export const getDocumentsByCountry = (countryCode: (typeof countryCodes)[number]): TDocument[] => {
   return documentIdsByCountry[countryCode]?.() || [];
+};
+
+export const getDocumentSchemaByDefinition = (
+  countryCode: (typeof countryCodes)[number],
+  documentsSchema: TDocumentsWithAvailability | undefined,
+): TDocument[] => {
+  return (
+    documentsSchema?.schema?.filter(
+      documentSchema => documentSchema.issuer.country === countryCode,
+    ) || []
+  );
 };
 
 export const getDocumentId = (

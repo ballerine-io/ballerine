@@ -21,12 +21,18 @@ export {
 
 export type { IErrorWithMessage } from './utils';
 export type { Serializable, AnyRecord } from './types';
-export type { DefaultContextSchema, TDefaultSchemaDocumentPage, TDocument } from './schemas';
+export type {
+  DefaultContextSchema,
+  TDefaultSchemaDocumentPage,
+  TDocument,
+  TDocumentsWithAvailability,
+} from './schemas';
 
 export {
   getGhanaDocuments,
   getDocumentsByCountry,
   getDocumentId,
+  getDocumentSchemaByDefinition,
   defaultContextSchema,
 } from './schemas';
 

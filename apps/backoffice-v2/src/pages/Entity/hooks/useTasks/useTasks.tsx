@@ -12,8 +12,11 @@ import {
 import {
   CommonWorkflowStates,
   getDocumentsByCountry,
+  getDocumentSchemaByDefinition,
   isNullish,
   StateTag,
+  TDocument,
+  TDocumentsWithAvailability,
 } from '@ballerine/common';
 import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
@@ -40,6 +43,35 @@ const pluginsOutputBlacklist = [
   'businessInformation',
   'website_monitoring',
 ];
+
+function getDocumentsSchemas(issuerCountryCode, workflow: TWorkflowById) {
+  return (
+    issuerCountryCode &&
+    getDocumentSchemaByDefinition(
+      issuerCountryCode,
+      workflow.workflowDefinition?.documentsSchema as TDocumentsWithAvailability,
+    )
+      .concat(getDocumentsByCountry(issuerCountryCode))
+      .reduce((unique: TDocument[], item: TDocument) => {
+        const isDuplicate = unique.some(u => u.type === item.type && u.category === item.category);
+        if (!isDuplicate) {
+          unique.push(item);
+        }
+        return unique;
+      }, [] as TDocument[])
+      .filter((documentSchema: TDocument) => {
+        if (!workflow.workflowDefinition.documentsSchema?.availableDocuments) return true;
+
+        const isInside = !!workflow.workflowDefinition.documentsSchema?.availableDocuments.find(
+          (availableDocument: TDocumentsWithAvailability['availableDocuments'][number]) =>
+            availableDocument.type === documentSchema.type &&
+            availableDocument.category === documentSchema.category,
+        );
+
+        return isInside;
+      })
+  );
+}
 
 export const useTasks = ({
   workflow,
@@ -100,7 +132,8 @@ export const useTasks = ({
   });
   const { data: locations } = useNominatimQuery(address);
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
-  const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
+
+  const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
 
   const registryInfoBlock =
     Object.keys(filteredPluginsOutput ?? {}).length === 0
@@ -181,7 +214,12 @@ export const useTasks = ({
       ({ id, type: docType, category, properties, propertiesSchema, decision }, docIndex) => {
         const additionProperties =
           isExistingSchemaForDocument(documentsSchemas) &&
-          composePickableCategoryType(category, docType, documentsSchemas);
+          composePickableCategoryType(
+            category,
+            docType,
+            documentsSchemas,
+            workflow.workflowDefinition?.config,
+          );
 
         const isDoneWithRevision =
           decision?.status === 'revised' && parentMachine?.status === 'completed';
@@ -1567,3 +1605,7 @@ export const useTasks = ({
     removeDecisionById,
   ]);
 };
+
+function uniqueArrayByKey(arg0: any) {
+  throw new Error('Function not implemented.');
+}

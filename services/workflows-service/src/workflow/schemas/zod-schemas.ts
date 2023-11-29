@@ -16,6 +16,7 @@ export const ConfigSchema = z
     subscriptions: z.array(SubscriptionSchema).optional(),
     completedWhenTasksResolved: z.boolean().optional(),
     workflowLevelResolution: z.boolean().optional(),
+    isLockedDocumentCategoryAndType: z.boolean().optional(),
     allowMultipleActiveWorkflows: z.boolean().optional(),
     initialEvent: z.string().optional(),
     callbackResult: z
