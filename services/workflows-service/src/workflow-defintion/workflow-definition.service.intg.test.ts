@@ -64,7 +64,8 @@ describe('WorkflowDefinitionService', () => {
   });
 
   describe('#upgradeDefinitionVersion', () => {
-    it('should generate a new definition with the new version and updates the filter', async () => {
+    it('should generate a new definition with the new version and updates only the relevant filters', async () => {
+      // Arrange
       const workflowDefintion = await prismaService.workflowDefinition.create({
         data: buildWorkflowDefinition(2, project.id),
       });
@@ -165,12 +166,14 @@ describe('WorkflowDefinitionService', () => {
         } as any,
       });
 
+      // Act
       const updatedWorkflowDefintiion = await workflowDefinitionService.upgradeDefinitionVersion(
         id,
         updateArgs as Parameters<WorkflowDefinitionService['upgradeDefinitionVersion']>[1],
         project.id,
       );
 
+      // Assert
       const updatedFilter1 = await filterService.getById(filter1.id, {}, [filter1.id]);
       const updatedFilter2 = await filterService.getById(filter2.id, {}, [filter2.id]);
       const otherProjectId = await filterService.getById(otherProjectFilter.id, {}, [
