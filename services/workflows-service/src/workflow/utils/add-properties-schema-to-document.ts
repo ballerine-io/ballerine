@@ -5,14 +5,21 @@ import {
   isObject,
   TDocument,
 } from '@ballerine/common';
+import { WorkflowDefinition } from '@prisma/client';
 
 export const addPropertiesSchemaToDocument = (
   document: DefaultContextSchema['documents'][number],
-  documentSchema: WorkflowDefinition.documentSchema,
+  documentSchema: WorkflowDefinition['documentsSchema'],
 ) => {
-  const propertiesSchema = documentSchema
-    ? getPropertiesFromDefinition(document, documentSchema, document?.issuer?.country)
-    : getPropertiesSchemaForDocument(document);
+  // if does not have document specific for specific country/category -> go to default
+  const propertiesSchema =
+    (documentSchema &&
+      getPropertiesFromDefinition(
+        document,
+        documentSchema as TDocument[],
+        document?.issuer?.country,
+      )) ||
+    getPropertiesSchemaForDocument(document);
 
   return {
     ...document,
@@ -31,23 +38,27 @@ const getPropertiesFromDefinition = (
   document: DefaultContextSchema['documents'][number],
   documentsSchema: TDocument[],
   countryCode: string,
-): ReturnType<typeof getPropertiesSchemaForDocument> => {
+): ReturnType<typeof getPropertiesSchemaForDocument> | undefined => {
   const localizedDocumentSchemas = documentsSchema.filter(
     documentSchema => documentSchema.countryCode === countryCode,
   );
 
-  if (localizedDocumentSchemas.length === 0 && countryCode !== 'ZZ') {
-    return getPropertiesFromDefinition(document, documentsSchema, 'ZZ');
-  }
-
   if (localizedDocumentSchemas.length === 0) {
-    throw new Error(`Document schema not found for document: ${JSON.stringify(document)}`);
+    console.info(`No localized document schemas found for ${countryCode}`);
+
+    return;
   }
 
   const documentSchemaForDocument = findDocumentSchemaForDocument(
     localizedDocumentSchemas,
     document,
   );
+
+  if (!documentSchemaForDocument) {
+    console.info(`No document schema in definition found for document ${JSON.stringify(document)}`);
+
+    return;
+  }
 
   return composePropertiesSchema(documentSchemaForDocument);
 };
