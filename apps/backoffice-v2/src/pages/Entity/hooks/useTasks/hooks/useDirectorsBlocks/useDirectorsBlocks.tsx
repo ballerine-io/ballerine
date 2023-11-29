@@ -42,7 +42,7 @@ export const useDirectorsBlocks = (
 
   const documentSchemas = useMemo(() => {
     const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
-    const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
+    const documentsSchemas = issuerCountryCode ? getDocumentsByCountry(issuerCountryCode) : [];
 
     return documentsSchemas;
   }, [workflow]);
