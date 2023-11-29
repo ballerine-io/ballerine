@@ -13,9 +13,11 @@ export const DownloadFile: FunctionComponent<IDownloadFile> = ({
 }) => (
   <div
     {...props}
-    className={ctw(`d-full flex flex-col items-center rounded-lg bg-gray-50 px-4 py-6`, className)}
+    className={ctw(`d-full grid place-content-center rounded-lg bg-gray-50 px-4 py-6`, className)}
   >
-    <DownloadFileSvg />
-    <h4 className={`mb-3.5 font-bold`}> {heading}</h4>
+    <div className={`mb-40`}>
+      <DownloadFileSvg />
+      <h4 className={`mb-3.5 text-xs font-bold`}> {heading}</h4>
+    </div>
   </div>
 );
