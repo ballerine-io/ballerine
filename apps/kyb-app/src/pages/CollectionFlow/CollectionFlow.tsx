@@ -22,6 +22,7 @@ import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
+import { useTranslation } from 'react-i18next';
 
 const elems = {
   h1: Title,
@@ -45,6 +46,8 @@ export const CollectionFlow = withSessionProtected(() => {
   const { data: schema } = useUISchemasQuery();
   const { data: context } = useFlowContextQuery();
   const { customer } = useCustomer();
+  const { t } = useTranslation();
+
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
@@ -125,10 +128,16 @@ export const CollectionFlow = withSessionProtected(() => {
                               </div>
                               <div>
                                 <div>
-                                  <div className="border-b pb-12">
-                                    Contact {customer?.displayName || 'PayLynk'} for support <br />{' '}
-                                    example@example.com (000) 123-4567
-                                  </div>
+                                  <div
+                                    className="border-b pb-12"
+                                    dangerouslySetInnerHTML={{
+                                      // @ts-expect-error - weird typescript error
+                                      __html: t('contact', {
+                                        companyName: customer?.displayName || 'PayLynk',
+                                        interpolation: { escapeValue: false },
+                                      }),
+                                    }}
+                                  />
                                   <img src={'/poweredby.svg'} className="mt-6" />
                                 </div>
                               </div>

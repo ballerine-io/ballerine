@@ -30,27 +30,27 @@ const validationSchema = {
                       type: 'string',
                       pattern: '^[+]?[0-9]{10,15}$',
                       errorMessage: {
-                        pattern: 'errorMessage.properties.phone.pattern',
+                        pattern: 'errorMessage.pattern.phone',
                       },
                     },
                     dateOfBirth: {
                       type: 'string',
                       errorMessage: {
-                        type: 'errorMessage.properties.dateOfBirth.type',
+                        type: 'errorMessage.type.dateOfBirth',
                       },
                     },
                     firstName: {
                       type: 'string',
                       minLength: 2,
                       errorMessage: {
-                        minLength: 'errorMessage.properties.dateOfBirth.minLength',
+                        minLength: 'errorMessage.minLength.firstName',
                       },
                     },
                     lastName: {
                       type: 'string',
                       minLength: 2,
                       errorMessage: {
-                        minLength: 'errorMessage.properties.lastName.minLength',
+                        minLength: 'errorMessage.minLength.lastName',
                       },
                     },
                     additionalInfo: {
@@ -59,7 +59,7 @@ const validationSchema = {
                       default: {},
                       errorMessage: {
                         required: {
-                          jobTitle: 'errorMessage.properties.additionalInfo.required.jobTitle',
+                          jobTitle: 'errorMessage.required.jobTitle',
                         },
                       },
                       properties: {
@@ -67,8 +67,7 @@ const validationSchema = {
                           type: 'string',
                           minLength: 2,
                           errorMessage: {
-                            minLength:
-                              'errorMessage.properties.additionalInfo.properties.jobTitle.minLength',
+                            minLength: 'errorMessage.minLength.jobTitle',
                           },
                         },
                       },
@@ -161,7 +160,7 @@ export const PersonalInfoPage = {
               valueDestination:
                 'entity.data.additionalInfo.mainRepresentative.additionalInfo.jobTitle',
               options: {
-                label: 'text.jobTitle.title',
+                label: 'text.jobTitle.label',
                 hint: 'text.jobTitle.hint',
                 jsonFormDefinition: {
                   type: 'string',
@@ -173,7 +172,7 @@ export const PersonalInfoPage = {
               type: 'json-form:date',
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.dateOfBirth',
               options: {
-                label: 'text.dateOfBirth.title',
+                label: 'text.dateOfBirth.label',
                 hint: 'text.dateOfBirth.hint',
                 jsonFormDefinition: {
                   type: 'string',

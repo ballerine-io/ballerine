@@ -1,0 +1,114 @@
+{
+  "text": {
+    "personalDetails": "Personal Details",
+    "personalInformation": "Personal Information",
+    "businessInformation": "Business Information",
+    "name": "Name",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phoneNumber": "Phone Number",
+    "country": "Country",
+    "continue": "Continue",
+    "choose": "Choose",
+    "jobTitle": {
+      "label": "Title",
+      "hint": "CEO / Manager / Partner"
+    },
+    "dateOfBirth": {
+      "label": "Date of Birth",
+      "hint": "DD/MM/YYYY"
+    },
+    "registrationNumber": {
+      "label": "Registration Number",
+      "hint": "1000000032985"
+    },
+    "state": {
+      "label": "State",
+      "hint": "California"
+    },
+    "companyName": {
+      "label": "Company English Name",
+      "hint": "English Name"
+    },
+    "taxIdentificationNumber": {
+      "label": "Tax Identity Number",
+      "hint": "1234567898765"
+    },
+    "numberOfEmployees": {
+      "label": "Amount of Employees",
+      "hint": "20"
+    },
+    "businessType": {
+      "label": "Corporate type",
+      "options": {
+        "sole_proprietorship": "Sole Proprietorship",
+        "partnership": "Partnership",
+        "corporation": "Corporation",
+        "limited_liability_company": "Limited Liability Company (LLC)",
+        "limited_partnership": "Limited Partnership (LP)",
+        "limited_liability_partnership": "Limited Liability Partnership (LLP)",
+        "public_limited_company": "Public Limited Company (PLC)",
+        "private_limited_company": "Private Limited Company (Ltd)",
+        "non_profit_organization": "Non-Profit Organization",
+        "cooperative": "Cooperative",
+        "trust": "Trust",
+        "government": "Government",
+        "other": "Other"
+      }
+    },
+    "registeredCapitalInYuan": {
+      "label": "Registered capital (in Chinese Yuan)",
+      "hint": "2,000,000"
+    }
+  },
+  "errorMessage": {
+    "required": {
+      "phone": "A valid phone number is required.",
+      "dateOfBirth": "Date of birth is required.",
+      "firstName": "First name is required.",
+      "lastName": "Last name is required.",
+      "additionalInfo": "Additional information is required.",
+      "jobTitle": "Job title is required.",
+      "registeredCapitalInYuan": "Registered capital in yuan is required.",
+      "businessType": "Business type is required.",
+      "numberOfEmployees": "Number of employees is required.",
+      "taxIdentificationNumber": "Tax identification number is required.",
+      "companyName": "Company name is required.",
+      "country": "Country is required.",
+      "registrationNumber": "Registration number is required."
+    },
+    "minLength": {
+      "firstName": "First name must be at least 2 characters long.",
+      "lastName": "Last name must be at least 2 characters long.",
+      "jobTitle": "Job title must be at least 2 characters long.",
+      "businessType": "Business type should have at least 3 characters.",
+      "taxIdentificationNumber": "Tax ID should have at least 8 characters.",
+      "companyName": "Company name should have at least 2 characters.",
+      "country": "Country code should have exactly 2 characters.",
+      "registrationNumber": "Registration number should have at least 4 characters."
+    },
+    "maxLength": {
+      "businessType": "Business type should not exceed 50 characters.",
+      "taxIdentificationNumber": "Tax ID should not exceed 15 characters.",
+      "companyName": "Company name should not exceed 100 characters.",
+      "country": "Country code should have exactly 2 characters.",
+      "registrationNumber": "Registration number should not exceed 20 characters."
+    },
+    "pattern": {
+      "phone": "Phone number must be 10 to 15 digits long and may start with a +.",
+      "taxIdentificationNumber": "Tax ID must be in valid format",
+      "country": "Please enter a valid country code."
+    },
+    "type": {
+      "dateOfBirth": "Date of birth must be a string.",
+      "numberOfEmployees": "Number of employees must be a number."
+    },
+    "minimum": {
+      "registeredCapitalInYuan": "Registered capital must be non-negative.",
+      "numberOfEmployees": "Number of employees must be at least 1."
+    },
+    "maximum": {
+      "numberOfEmployees": "Number of employees cannot exceed 100,000."
+    }
+  }
+}

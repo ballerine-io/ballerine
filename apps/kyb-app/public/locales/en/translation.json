@@ -1,1 +1,4 @@
-{}
+{
+  "back": "Back",
+  "contact": "Contact {{companyName}} for support<br />example@example.com<br />(000) 123-4567"
+}
