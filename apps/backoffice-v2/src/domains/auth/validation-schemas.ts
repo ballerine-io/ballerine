@@ -15,4 +15,4 @@ export const AuthenticatedUserSchema = z
     fullName: `${firstName} ${lastName}`,
   }))
   .or(z.null())
-  .default(null);
+  .default
