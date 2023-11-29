@@ -1,27 +1,43 @@
-import { getFileExtensionWithFallback } from '@/common/get-file-extension-with-fallback/get-file-extension-with-fallback';
-import { getMimeType } from '@/common/get-mime-type/get-mime-type';
+import { getFileType } from '@/common/get-file-type/get-file-type';
+import { MimeType } from 'file-type';
+import mime from 'mime';
+import { getFileExtension } from '@/common/get-file-extension/get-file-extension';
 
 /**
  *
  * @param file - file's path or buffer
  * @param fileName - file's name with extension
- * @param preferFileName - if false, will prefer extracting the file's extension from the file's mime type over file's name
  */
 export const getFileMetadata = async ({
   file,
   fileName,
-  preferFileName = true,
 }: {
   file: string | Buffer;
   fileName?: string;
-  preferFileName?: boolean;
 }) => {
-  const mimeType = await getMimeType({ file, fileName });
-  const extension = await getFileExtensionWithFallback({
-    file,
-    fileName,
-    preferFileName,
-  });
+  const fileMetadata = await getFileType(file);
+  let mimeType: MimeType | string | null = null;
+  let extension;
+
+  if (fileMetadata?.mime) {
+    mimeType = fileMetadata.mime;
+  }
+
+  if (!fileMetadata?.mime && fileName) {
+    mimeType = mime.getType(fileName);
+  }
+
+  if (fileMetadata?.ext) {
+    extension = fileMetadata.ext;
+  }
+
+  if (!fileMetadata?.ext && fileName) {
+    extension = getFileExtension(fileName);
+  }
+
+  if (!fileMetadata?.ext && !fileName && mimeType) {
+    extension = mime.getExtension(mimeType);
+  }
 
   return {
     mimeType,

@@ -1,6 +1,4 @@
-import { MimeType } from 'file-type';
 import mime from 'mime';
-
 import { getFileType } from '@/common/get-file-type/get-file-type';
 
 /**
@@ -16,15 +14,14 @@ export const getMimeType = async ({
   fileName?: string;
 }) => {
   const fileMetadata = await getFileType(file);
-  let mimeType: MimeType | string | null = null;
 
   if (fileMetadata?.mime) {
-    mimeType = fileMetadata.mime;
+    return fileMetadata?.mime;
   }
 
   if (!fileMetadata?.mime && fileName) {
-    mimeType = mime.getType(fileName);
+    return mime.getType(fileName);
   }
 
-  return mimeType;
+  return null;
 };

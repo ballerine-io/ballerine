@@ -24,6 +24,7 @@ import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { isBase64 } from '@/common/utils/is-base64/is-base64';
 import mime from 'mime';
+import { getMimeType } from '@/common/get-mime-type/get-mime-type';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -71,7 +72,7 @@ export class StorageControllerInternal {
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
       projectId: currentProjectId,
-      mimeType: file.mimetype || mime.getType(file.originalname || ''),
+      mimeType: file.mimetype || (await getMimeType({ file: file.originalname || '' })),
     });
 
     return fileInfo;

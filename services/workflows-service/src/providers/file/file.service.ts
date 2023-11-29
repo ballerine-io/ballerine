@@ -96,7 +96,6 @@ export class FileService {
     const remoteFileConfig = await targetServiceProvider.uploadStream(stream, targetFileConfig);
     const fileType = await getFileMetadata({
       file: buffer,
-      preferFileName: false,
     });
 
     return {
@@ -118,7 +117,6 @@ export class FileService {
     );
     const { mimeType } = await getFileMetadata({
       file: localFilePath,
-      preferFileName: false,
     });
     const remoteFilePath = await targetServiceProvider.upload(
       localFilePath,
