@@ -117,27 +117,3 @@ export class WorkflowDefinitionModel {
   @Type(() => Date)
   updatedAt!: Date;
 }
-
-export const replaceNullWithUndefined = (value: unknown) => {
-  if (value !== null) return value;
-
-  return;
-};
-
-export const replaceNullWithUndefinedDeep = (obj: unknown) => {
-  if (obj === null) {
-    return undefined;
-  }
-
-  if (typeof obj !== 'object' || Array.isArray(obj)) {
-    return obj;
-  }
-
-  const newObj = Object.entries(obj).reduce((acc, [key, value]) => {
-    acc[key] = replaceNullWithUndefinedDeep(value);
-
-    return acc;
-  }, {} as Record<PropertyKey, unknown>);
-
-  return newObj;
-};
