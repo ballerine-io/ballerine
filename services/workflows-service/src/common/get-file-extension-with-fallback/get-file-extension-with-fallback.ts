@@ -1,6 +1,5 @@
 import { getFileExtension } from '@/common/get-file-extension/get-file-extension';
 import mime from 'mime';
-import { getMimeType } from '@/common/get-mime-type/get-mime-type';
 import { getFileType } from '@/common/get-file-type/get-file-type';
 
 /**
@@ -16,7 +15,6 @@ export const getFileExtensionWithFallback = async ({
   fileName?: string;
 }) => {
   const fileMetadata = await getFileType(file);
-  const mimeType = await getMimeType({ file, fileName });
 
   if (fileMetadata?.ext) {
     return fileMetadata.ext;
@@ -26,8 +24,8 @@ export const getFileExtensionWithFallback = async ({
     return getFileExtension(fileName);
   }
 
-  if (!fileMetadata?.ext && !fileName && mimeType) {
-    return mime.getExtension(mimeType);
+  if (!fileMetadata?.ext && !fileName && fileMetadata?.mime) {
+    return mime.getExtension(fileMetadata.mime);
   }
 
   return null;
