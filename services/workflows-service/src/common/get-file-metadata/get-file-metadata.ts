@@ -16,7 +16,7 @@ export const getFileMetadata = async ({
   fileName?: string;
 }) => {
   const fileMetadata = await getFileType(file);
-  let mimeType: MimeType | string | null = null;
+  let mimeType: MimeType | string | undefined;
   let extension;
 
   if (fileMetadata?.mime) {
@@ -24,7 +24,7 @@ export const getFileMetadata = async ({
   }
 
   if (!fileMetadata?.mime && fileName) {
-    mimeType = mime.getType(fileName);
+    mimeType = mime.getType(fileName) ?? undefined;
   }
 
   if (fileMetadata?.ext) {
@@ -36,7 +36,7 @@ export const getFileMetadata = async ({
   }
 
   if (!fileMetadata?.ext && !fileName && mimeType) {
-    extension = mime.getExtension(mimeType);
+    extension = mime.getExtension(mimeType) ?? undefined;
   }
 
   return {

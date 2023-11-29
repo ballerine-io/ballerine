@@ -96,6 +96,10 @@ export class FileService {
     const remoteFileConfig = await targetServiceProvider.uploadStream(stream, targetFileConfig);
     const fileType = await getFileMetadata({
       file: buffer,
+      fileName:
+        typeof sourceRemoteFileConfig === 'string'
+          ? sourceRemoteFileConfig
+          : sourceRemoteFileConfig.uri,
     });
 
     return {
@@ -117,17 +121,21 @@ export class FileService {
     );
     const { mimeType } = await getFileMetadata({
       file: localFilePath,
+      fileName:
+        typeof sourceRemoteFileConfig === 'string'
+          ? sourceRemoteFileConfig
+          : sourceRemoteFileConfig.uri,
     });
     const remoteFilePath = await targetServiceProvider.upload(
       localFilePath,
       targetFileConfig,
-      mimeType ?? undefined,
+      mimeType,
     );
 
     try {
       await fs.unlink(localFilePath);
     } catch (err) {
-      // TODO: should we log non succesful deletetion ?
+      // TODO: should we log non successful deletion ?
     }
 
     return {

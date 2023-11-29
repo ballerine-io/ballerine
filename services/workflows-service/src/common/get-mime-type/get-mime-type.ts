@@ -20,8 +20,8 @@ export const getMimeType = async ({
   }
 
   if (fileName) {
-    return mime.getType(fileName);
+    return mime.getType(fileName) ?? undefined;
   }
 
-  return null;
+  return;
 };

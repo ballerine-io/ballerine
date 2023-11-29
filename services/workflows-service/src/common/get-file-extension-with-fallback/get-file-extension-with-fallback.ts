@@ -25,8 +25,8 @@ export const getFileExtensionWithFallback = async ({
   }
 
   if (fileMetadata?.mime) {
-    return mime.getExtension(fileMetadata.mime);
+    return mime.getExtension(fileMetadata.mime) ?? undefined;
   }
 
-  return null;
+  return;
 };
