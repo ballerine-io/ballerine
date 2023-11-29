@@ -20,11 +20,11 @@ export const getFileExtensionWithFallback = async ({
     return fileMetadata.ext;
   }
 
-  if (!fileMetadata?.ext && fileName) {
+  if (fileName) {
     return getFileExtension(fileName);
   }
 
-  if (!fileMetadata?.ext && !fileName && fileMetadata?.mime) {
+  if (fileMetadata?.mime) {
     return mime.getExtension(fileMetadata.mime);
   }
 

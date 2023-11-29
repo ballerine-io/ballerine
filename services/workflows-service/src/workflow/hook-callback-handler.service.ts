@@ -180,7 +180,6 @@ export class HookCallbackHandlerService {
       const buffer = Buffer.from(base64ImageContent as string, 'base64');
       const fileType = await getFileMetadata({
         file: buffer,
-        preferFileName: false,
       });
       const fileWithExtension = `${tmpFile}${fileType?.extension ? `.${fileType?.extension}` : ''}`;
 
