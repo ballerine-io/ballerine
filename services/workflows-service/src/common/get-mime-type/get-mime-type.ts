@@ -19,7 +19,7 @@ export const getMimeType = async ({
     return fileMetadata?.mime;
   }
 
-  if (!fileMetadata?.mime && fileName) {
+  if (fileName) {
     return mime.getType(fileName);
   }
 
