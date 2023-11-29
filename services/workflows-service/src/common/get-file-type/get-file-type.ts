@@ -1,7 +1,7 @@
 import * as fileType from 'file-type';
 
 /**
- * @param file
+ * @param file - file's path or buffer
  */
 export const getFileType = async (file: string | Buffer) => {
   if (typeof file === 'string') {
