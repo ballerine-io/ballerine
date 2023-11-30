@@ -5,9 +5,11 @@
     "businessAddress": "Business Address",
     "registeredAddress": "Registered Address",
     "directorsAndUBOs": "Directors and UBOs",
-    "directors&UBOs": "Directors & UBOs",
     "ubos": "UBOs",
     "directors": "Directors",
+    "contacts": "Contacts",
+    "mainContact": "Main Contact",
+    "bankingDetails": "Banking Details",
     "directorsDescription": "Add all of the directors of the company.",
     "imShareholder": "I own 25% or more of the company",
     "imDirector": "I'm director of the company",
@@ -18,6 +20,7 @@
     "name": "Name",
     "firstName": "First Name",
     "lastName": "Last Name",
+    "legalName": "Legal Name",
     "phoneNumber": "Phone Number",
     "country": "Country",
     "nationality": "Nationality",
@@ -98,6 +101,49 @@
     "registeredCapitalInUsd": {
       "label": "Registered capital (in USD)",
       "hint": "2,000,000"
+    },
+    "holderName": {
+      "label": "Cardholder Name",
+      "hint": "John W. Doe"
+    },
+    "holderFullAddress": {
+      "label": "Resident Address",
+      "hint": "Fla 5A, Tower 2, The Peak, 123 Queens Road, Hong Kong"
+    },
+    "accountNumber": {
+      "label": "Account Number",
+      "hint": "0123456789"
+    },
+    "iban": {
+      "label": "IBAN",
+      "hint": "HK00HKB01234567890123"
+    },
+    "swiftCode": {
+      "label": "SWIFT Code",
+      "hint": "BBBBCCDDXXX"
+    },
+    "routeNumber": {
+      "label": "Route Number",
+      "hint": "123456789"
+    },
+    "bankName": {
+      "label": "Bank Name",
+      "hint": "Hong Kong Bank"
+    },
+    "bankCode": {
+      "label": "Bank Code",
+      "hint": "1234"
+    },
+    "bankAddress": {
+      "label": "Bank Address",
+      "hint": "456 King's Road, North Point, Hong Kong"
+    },
+    "subBranch": {
+      "label": "Sub-Branch Number",
+      "hint": "0012"
+    },
+    "currency": {
+      "label": "Account Currency"
     }
   },
   "errorMessage": {
@@ -126,7 +172,14 @@
       "fullAddress": "Full address is required.",
       "percentageOfOwnership": "Percentage of ownership is required.",
       "ubos": "UBOs are required.",
-      "directors": "Directors are required."
+      "directors": "Directors are required.",
+      "holderName": "Holder name is required.",
+      "holderFullAddress": "Holder full address is required.",
+      "accountNumber": "Account number is required.",
+      "swiftCode": "SWIFT code is required.",
+      "bankName": "Bank name is required.",
+      "bankAddress": "Bank address is required.",
+      "currency": "Account currency is required"
     },
     "minLength": {
       "firstName": "First name must be at least 2 characters long.",
@@ -142,7 +195,17 @@
       "registrationNumber": "Registration number should have at least 4 characters.",
       "nationalId": "Identity number should be at least 5 characters long.",
       "nationality": "Invalid nationality. Please select from the available options.",
-      "fullAddress": "Full address should be at least 10 characters long."
+      "fullAddress": "Full address should be at least 10 characters long.",
+      "holderName": "Holder name should be at least 5 characters long.",
+      "holderFullAddress": "Holder full address should be at least 10 characters long.",
+      "accountNumber": "Account number should be at least 6 characters long.",
+      "iban": "IBAN should be at least 15 characters long.",
+      "swiftCode": "SWIFT code should be at least 8 characters long.",
+      "routeNumber": "Route Number should be at least 8 characters long.",
+      "bankName": "Bank name should be at least 3 characters long.",
+      "bankCode": "Bank Code should be at least 2 characters long.",
+      "bankAddress": "Bank address should be at least 10 characters long.",
+      "currency": "Account currency is required"
     },
     "maxLength": {
       "firstName": "First name should not exceed 50 characters.",
@@ -157,7 +220,16 @@
       "streetNumber": "Street number should not exceed 10 characters.",
       "registrationNumber": "Registration number should not exceed 20 characters.",
       "nationalId": "Identity number should not exceed 20 characters.",
-      "fullAddress": "Full address should not exceed 200 characters."
+      "fullAddress": "Full address should not exceed 200 characters.",
+      "holderName": "Holder name should not exceed 50 characters.",
+      "holderFullAddress": "Holder full address should not exceed 200 characters.",
+      "accountNumber": "Account number should not exceed 34 characters.",
+      "iban": "IBAN should not exceed 34 characters.",
+      "swiftCode": "SWIFT code should not exceed 11 characters.",
+      "routeNumber": "Route Number should not exceed 10 characters.",
+      "bankName": "Bank name should not exceed 100 characters.",
+      "bankCode": "Bank Code should not exceed 13 characters.",
+      "bankAddress": "Bank address should not exceed 200 characters."
     },
     "minItems": {
       "ubos": "UBOs are required."
@@ -168,7 +240,8 @@
     "pattern": {
       "phone": "Phone number must be 10 to 15 digits long and may start with a +.",
       "taxIdentificationNumber": "Tax ID must be in valid format",
-      "country": "Please enter a valid country code."
+      "country": "Please enter a valid country code.",
+      "subBranch": "Sub-branch should contain only numbers."
     },
     "type": {
       "dateOfBirth": "Date of birth must be a string.",

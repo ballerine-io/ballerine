@@ -231,7 +231,7 @@ export const DirectorsAndUbosPage = {
             {
               type: 'h1',
               options: {
-                text: 'text.directors&UBOs',
+                text: 'text.directorsAndUBOs',
               },
             },
             {

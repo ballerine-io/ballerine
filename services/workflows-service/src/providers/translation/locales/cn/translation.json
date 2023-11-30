@@ -5,9 +5,11 @@
     "businessAddress": "商业地址",
     "registeredAddress": "注册地址",
     "directorsAndUBOs": "董事与最终受益人",
-    "directors&UBOs": "董事&最终受益人",
     "ubos": "最终受益人",
     "directors": "董事",
+    "contacts": "联系方式",
+    "mainContact": "主要联系人",
+    "bankingDetails": "银行详情",
     "directorsDescription": "添加公司的所有董事。",
     "imShareholder": "我拥有该公司25%或以上的股份",
     "imDirector": "我是该公司的董事",
@@ -18,6 +20,7 @@
     "name": "姓名",
     "firstName": "名字",
     "lastName": "姓氏",
+    "legalName": "法定名称",
     "phoneNumber": "电话号码",
     "country": "国家",
     "nationality": "国籍",
@@ -98,6 +101,49 @@
     "registeredCapitalInUsd": {
       "label": "以美元注册的资本",
       "hint": "2,000,000"
+    },
+    "holderName": {
+      "label": "持卡人姓名",
+      "hint": "约翰·W·多伊"
+    },
+    "holderFullAddress": {
+      "label": "居住地址",
+      "hint": "香港皇后大道123号山顶2座5A室"
+    },
+    "accountNumber": {
+      "label": "账号",
+      "hint": "0123456789"
+    },
+    "iban": {
+      "label": "国际银行账户号码",
+      "hint": "HK00HKB01234567890123"
+    },
+    "swiftCode": {
+      "label": "SWIFT代码",
+      "hint": "BBBBCCDDXXX"
+    },
+    "routeNumber": {
+      "label": "路由号码",
+      "hint": "123456789"
+    },
+    "bankName": {
+      "label": "银行名称",
+      "hint": "香港银行"
+    },
+    "bankCode": {
+      "label": "银行代码",
+      "hint": "1234"
+    },
+    "bankAddress": {
+      "label": "银行地址",
+      "hint": "香港北角英皇道456号"
+    },
+    "subBranch": {
+      "label": "分行号码",
+      "hint": "0012"
+    },
+    "currency": {
+      "label": "账户货币"
     }
   },
   "errorMessage": {
@@ -126,7 +172,14 @@
       "fullAddress": "需要完整地址。",
       "percentageOfOwnership": "需要所有权百分比。",
       "ubos": "需要最终受益人。",
-      "directors": "需要董事。"
+      "directors": "董事是必需的。",
+      "holderName": "需要持卡人姓名。",
+      "holderFullAddress": "需要持卡人的完整地址。",
+      "accountNumber": "需要账号。",
+      "swiftCode": "需要SWIFT代码。",
+      "bankName": "需要银行名称。",
+      "bankAddress": "需要银行地址。",
+      "currency": "需要账户货币"
     },
     "minLength": {
       "firstName": "名字至少需要2个字符。",
@@ -142,7 +195,17 @@
       "registrationNumber": "注册号至少需要4个字符。",
       "nationalId": "身份证号至少需要5个字符。",
       "nationality": "无效的国籍。请从可用选项中选择。",
-      "fullAddress": "完整地址至少需要10个字符。"
+      "fullAddress": "完整地址至少需要10个字符。",
+      "holderName": "持卡人姓名至少需要5个字符。",
+      "holderFullAddress": "持卡人的完整地址至少需要10个字符。",
+      "accountNumber": "账号至少需要6个字符。",
+      "iban": "国际银行账户号码至少需要15个字符。",
+      "swiftCode": "SWIFT代码至少需要8个字符。",
+      "routeNumber": "路由号码至少需要8个字符。",
+      "bankName": "银行名称至少需要3个字符。",
+      "bankCode": "银行代码至少需要2个字符。",
+      "bankAddress": "银行地址至少需要10个字符。",
+      "currency": "需要账户货币"
     },
     "maxLength": {
       "firstName": "名字不应超过50个字符。",
@@ -157,7 +220,16 @@
       "streetNumber": "街道号码不应超过10个字符。",
       "registrationNumber": "注册号不应超过20个字符。",
       "nationalId": "身份证号不应超过20个字符。",
-      "fullAddress": "完整地址不应超过200个字符。"
+      "fullAddress": "完整地址不应超过200个字符。",
+      "holderName": "持卡人姓名不应超过50个字符。",
+      "holderFullAddress": "持卡人完整地址不应超过200个字符。",
+      "accountNumber": "账号不应超过34个字符。",
+      "iban": "国际银行账户号码不应超过34个字符。",
+      "swiftCode": "SWIFT代码不应超过11个字符。",
+      "routeNumber": "路由号码不应超过10个字符。",
+      "bankName": "银行名称不应超过100个字符。",
+      "bankCode": "银行代码不应超过13个字符。",
+      "bankAddress": "银行地址不应超过200个字符。"
     },
     "minItems": {
       "ubos": "需要最终受益人。"
@@ -168,7 +240,8 @@
     "pattern": {
       "phone": "电话号码必须为10至15位数字，可以以+开头。",
       "taxIdentificationNumber": "税务识别号必须为有效格式",
-      "country": "请输入有效的国家代码。"
+      "country": "请输入有效的国家代码。",
+      "subBranch": "分行号码只应包含数字。"
     },
     "type": {
       "dateOfBirth": "出生日期必须是一个字符串。",
