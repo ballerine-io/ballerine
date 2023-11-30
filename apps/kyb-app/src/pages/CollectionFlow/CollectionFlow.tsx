@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import DOMPurify from 'dompurify';
+import { useTranslation } from 'react-i18next';
 
 import { StepperProgress } from '@/common/components/atoms/StepperProgress';
 import { ProgressBar } from '@/common/components/molecules/ProgressBar';
@@ -22,7 +24,6 @@ import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
-import { useTranslation } from 'react-i18next';
 
 const elems = {
   h1: Title,
@@ -31,7 +32,9 @@ const elems = {
   description: (props: AnyObject) => (
     <p
       className="font-inter pb-2 text-sm text-slate-500"
-      dangerouslySetInnerHTML={{ __html: props.options.descriptionRaw as string }}
+      dangerouslySetInnerHTML={{
+        __html: DOMPurify.sanitize(props.options.descriptionRaw) as string,
+      }}
     ></p>
   ),
   'json-form': JSONForm,
@@ -131,11 +134,12 @@ export const CollectionFlow = withSessionProtected(() => {
                                   <div
                                     className="border-b pb-12"
                                     dangerouslySetInnerHTML={{
-                                      // @ts-expect-error - weird typescript error
-                                      __html: t('contact', {
-                                        companyName: customer?.displayName || 'PayLynk',
-                                        interpolation: { escapeValue: false },
-                                      }),
+                                      __html: DOMPurify.sanitize(
+                                        t('contact', {
+                                          companyName: customer?.displayName || 'PayLynk',
+                                          interpolation: { escapeValue: false },
+                                        }) as string,
+                                      ),
                                     }}
                                   />
                                   <img src={'/poweredby.svg'} className="mt-6" />

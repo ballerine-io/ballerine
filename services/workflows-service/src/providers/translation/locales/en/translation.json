@@ -3,13 +3,53 @@
     "personalDetails": "Personal Details",
     "personalInformation": "Personal Information",
     "businessInformation": "Business Information",
+    "businessAddress": "Business Address",
+    "registeredAddress": "Registered Address",
+    "directorsAndUBOs": "Directors and UBOs",
+    "directors&UBOs": "Directors & UBOs",
+    "ubos": "UBOs",
+    "directors": "Directors",
+    "directorsDescription": "Add all of the directors of the company.",
+    "imShareholder": "I own 25% or more of the company",
+    "imDirector": "I'm director of the company",
+    "shareholder": "Shareholder",
+    "shareholdersDescription": "Add all of the natural persons that own or control, <br /><b>directly or indirectly</b> more than 25% of the company.",
+    "uboIndex": "UBO {{INDEX}}",
+    "directorIndex": "Director {{INDEX}}",
     "name": "Name",
     "firstName": "First Name",
     "lastName": "Last Name",
     "phoneNumber": "Phone Number",
     "country": "Country",
+    "nationality": "Nationality",
+    "number": "Number",
     "continue": "Continue",
     "choose": "Choose",
+    "differentFromPhysicalAddress": "Different from physical address",
+    "email": {
+      "label": "Email",
+      "hint": "name@companyhk.com"
+    },
+    "nationalId": {
+      "label": "Identity Number",
+      "hint": "11010219820519759X"
+    },
+    "city": {
+      "label": "City",
+      "hint": "London"
+    },
+    "addressOfResidence": {
+      "label": "Address of Residence",
+      "hint": "22, Choyangmen, Chaoyang District, Beijing, China"
+    },
+    "ownershipPercentage": {
+      "label": "% of Ownership",
+      "hint": "25"
+    },
+    "street": {
+      "label": "Street",
+      "hint": "Downing Street"
+    },
     "jobTitle": {
       "label": "Title",
       "hint": "CEO / Manager / Partner"
@@ -67,6 +107,7 @@
       "dateOfBirth": "Date of birth is required.",
       "firstName": "First name is required.",
       "lastName": "Last name is required.",
+      "email": "Email is required.",
       "additionalInfo": "Additional information is required.",
       "jobTitle": "Job title is required.",
       "registeredCapitalInYuan": "Registered capital in yuan is required.",
@@ -75,7 +116,18 @@
       "taxIdentificationNumber": "Tax identification number is required.",
       "companyName": "Company name is required.",
       "country": "Country is required.",
-      "registrationNumber": "Registration number is required."
+      "city": "City is required.",
+      "street": "Street is required.",
+      "streetNumber": "Street number is required.",
+      "registrationNumber": "Registration number is required.",
+      "physical": "Physical address details are required.",
+      "requiredField": "This field is required.",
+      "nationality": "Nationality is required.",
+      "nationalId": "Identity number is required.",
+      "fullAddress": "Full address is required.",
+      "percentageOfOwnership": "Percentage of ownership is required.",
+      "ubos": "UBOs are required.",
+      "directors": "Directors are required."
     },
     "minLength": {
       "firstName": "First name must be at least 2 characters long.",
@@ -85,14 +137,34 @@
       "taxIdentificationNumber": "Tax ID should have at least 8 characters.",
       "companyName": "Company name should have at least 2 characters.",
       "country": "Country code should have exactly 2 characters.",
-      "registrationNumber": "Registration number should have at least 4 characters."
+      "city": "City should be at least 2 characters long.",
+      "street": "Street should be at least 3 characters long.",
+      "streetNumber": "Street number is required.",
+      "registrationNumber": "Registration number should have at least 4 characters.",
+      "nationalId": "Identity number should be at least 5 characters long.",
+      "nationality": "Invalid nationality. Please select from the available options.",
+      "fullAddress": "Full address should be at least 10 characters long."
     },
     "maxLength": {
+      "firstName": "First name should not exceed 50 characters.",
+      "lastName": "Last name should not exceed 50 characters.",
+      "email": "Email should not exceed 100 characters.",
       "businessType": "Business type should not exceed 50 characters.",
       "taxIdentificationNumber": "Tax ID should not exceed 15 characters.",
       "companyName": "Company name should not exceed 100 characters.",
       "country": "Country code should have exactly 2 characters.",
-      "registrationNumber": "Registration number should not exceed 20 characters."
+      "city": "City should not exceed 50 characters.",
+      "street": "Street should not exceed 100 characters.",
+      "streetNumber": "Street number should not exceed 10 characters.",
+      "registrationNumber": "Registration number should not exceed 20 characters.",
+      "nationalId": "Identity number should not exceed 20 characters.",
+      "fullAddress": "Full address should not exceed 200 characters."
+    },
+    "minItems": {
+      "ubos": "UBOs are required."
+    },
+    "format": {
+      "email": "Invalid email address."
     },
     "pattern": {
       "phone": "Phone number must be 10 to 15 digits long and may start with a +.",
@@ -105,10 +177,12 @@
     },
     "minimum": {
       "registeredCapitalInYuan": "Registered capital must be non-negative.",
-      "numberOfEmployees": "Number of employees must be at least 1."
+      "numberOfEmployees": "Number of employees must be at least 1.",
+      "percentageOfOwnership": "Percentage of ownership must be 25 or greater."
     },
     "maximum": {
-      "numberOfEmployees": "Number of employees cannot exceed 100,000."
+      "numberOfEmployees": "Number of employees cannot exceed 100,000.",
+      "percentageOfOwnership": "Percentage of ownership must not exceed 100."
     }
   }
 }

@@ -18,11 +18,11 @@ const validationSchema = {
                   required: ['street', 'streetNumber', 'city', 'country'],
                   errorMessage: {
                     required: {
-                      street: 'Street is required.',
-                      streetNumber: 'Street number is required.',
-                      city: 'City is required.',
-                      country: 'Country is required.',
-                      isDifferentFromPhysical: 'This field is required.',
+                      street: 'errorMessage.required.street',
+                      streetNumber: 'errorMessage.required.streetNumber',
+                      city: 'errorMessage.required.city',
+                      country: 'errorMessage.required.country',
+                      isDifferentFromPhysical: 'errorMessage.required.requiredField',
                     },
                   },
                   if: {
@@ -43,8 +43,8 @@ const validationSchema = {
                       minLength: 3,
                       maxLength: 100,
                       errorMessage: {
-                        minLength: 'Street should be at least 3 characters long.',
-                        maxLength: 'Street should not exceed 100 characters.',
+                        minLength: 'errorMessage.minLength.street',
+                        maxLength: 'errorMessage.maxLength.street',
                       },
                     },
                     streetNumber: {
@@ -52,8 +52,8 @@ const validationSchema = {
                       minLength: 1,
                       maxLength: 10,
                       errorMessage: {
-                        minLength: 'Street number is required.',
-                        maxLength: 'Street number should not exceed 10 characters.',
+                        minLength: 'errorMessage.minLength.streetNumber',
+                        maxLength: 'errorMessage.maxLength.streetNumber',
                       },
                     },
                     city: {
@@ -61,8 +61,8 @@ const validationSchema = {
                       minLength: 2,
                       maxLength: 50,
                       errorMessage: {
-                        minLength: 'City should be at least 2 characters long.',
-                        maxLength: 'City should not exceed 50 characters.',
+                        minLength: 'errorMessage.minLength.city',
+                        maxLength: 'errorMessage.maxLength.city',
                       },
                     },
                     country: {
@@ -71,9 +71,9 @@ const validationSchema = {
                       maxLength: 2,
                       pattern: '^[A-Z]{2}$',
                       errorMessage: {
-                        minLength: 'Country code should be exactly 2 characters.',
-                        maxLength: 'Country code should be exactly 2 characters.',
-                        pattern: 'Invalid country code.',
+                        minLength: 'errorMessage.minLength.country',
+                        maxLength: 'errorMessage.maxLength,country',
+                        pattern: 'errorMessage.pattern.country',
                       },
                     },
                     physical: {
@@ -81,12 +81,12 @@ const validationSchema = {
                       required: ['street', 'streetNumber', 'city', 'country'],
                       errorMessage: {
                         required: {
-                          street: 'Street is required.',
-                          streetNumber: 'Street number is required.',
-                          city: 'City is required.',
-                          country: 'Country is required.',
-                          isDifferentFromPhysical: 'This field is required.',
-                          physical: 'Physical address details are required.',
+                          street: 'errorMessage.required.street',
+                          streetNumber: 'errorMessage.required.streetNumber',
+                          city: 'errorMessage.required.city',
+                          country: 'errorMessage.required.country',
+                          isDifferentFromPhysical: 'errorMessage.required.requiredField',
+                          physical: 'errorMessage.required.physical',
                         },
                       },
                       properties: {
@@ -95,8 +95,8 @@ const validationSchema = {
                           minLength: 3,
                           maxLength: 100,
                           errorMessage: {
-                            minLength: 'Street should be at least 3 characters long.',
-                            maxLength: 'Street should not exceed 100 characters.',
+                            minLength: 'errorMessage.minLength.street',
+                            maxLength: 'errorMessage.maxLength.street',
                           },
                         },
                         streetNumber: {
@@ -104,8 +104,8 @@ const validationSchema = {
                           minLength: 1,
                           maxLength: 10,
                           errorMessage: {
-                            minLength: 'Street number is required.',
-                            maxLength: 'Street number should not exceed 10 characters.',
+                            minLength: 'errorMessage.minLength.streetNumber',
+                            maxLength: 'errorMessage.maxLength.streetNumber',
                           },
                         },
                         city: {
@@ -113,8 +113,8 @@ const validationSchema = {
                           minLength: 2,
                           maxLength: 50,
                           errorMessage: {
-                            minLength: 'City should be at least 2 characters long.',
-                            maxLength: 'City should not exceed 50 characters.',
+                            minLength: 'errorMessage.minLength.city',
+                            maxLength: 'errorMessage.maxLength.city',
                           },
                         },
                         country: {
@@ -123,9 +123,9 @@ const validationSchema = {
                           maxLength: 2,
                           pattern: '^[A-Z]{2}$',
                           errorMessage: {
-                            minLength: 'Country code should be exactly 2 characters.',
-                            maxLength: 'Country code should be exactly 2 characters.',
-                            pattern: 'Invalid country code.',
+                            minLength: 'errorMessage.minLength.country',
+                            maxLength: 'errorMessage.maxLength,country',
+                            pattern: 'errorMessage.pattern.country',
                           },
                         },
                       },
@@ -167,13 +167,13 @@ export const BusinessAddressInfoPage = {
             {
               type: 'h1',
               options: {
-                text: 'Business Address',
+                text: 'text.businessAddress',
               },
             },
             {
               type: 'h3',
               options: {
-                text: 'Registered Address',
+                text: 'text.registeredAddress',
                 classNames: ['padding-top-10'],
               },
             },
@@ -201,8 +201,8 @@ export const BusinessAddressInfoPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Street',
-                hint: 'Downing Street',
+                label: 'text.street.label',
+                hint: 'text.street.hint',
               },
             },
             {
@@ -213,7 +213,7 @@ export const BusinessAddressInfoPage = {
                 jsonFormDefinition: {
                   type: 'number',
                 },
-                label: 'Number',
+                label: 'text.Number',
                 hint: '10',
               },
             },
@@ -225,8 +225,8 @@ export const BusinessAddressInfoPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'City',
-                hint: 'London',
+                label: 'text.city.label',
+                hint: 'text.city.hint',
               },
             },
             {
@@ -234,15 +234,15 @@ export const BusinessAddressInfoPage = {
               type: 'json-form:country-picker',
               valueDestination: 'entity.data.additionalInfo.headquarters.country',
               options: {
-                label: 'Country',
-                hint: 'Choose',
+                label: 'text.country',
+                hint: 'text.choose',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
                   'ui:field': 'CountryPicker',
                   'ui:label': true,
-                  'ui:placeholder': 'Choose',
+                  'ui:placeholder': 'text.choose',
                 },
               },
             },
@@ -251,7 +251,7 @@ export const BusinessAddressInfoPage = {
               type: 'checkbox',
               valueDestination: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical',
               options: {
-                label: 'Different from physical address',
+                label: 'text.differentFromPhysicalAddress',
                 jsonFormDefinition: {
                   type: 'boolean',
                 },
@@ -287,8 +287,8 @@ export const BusinessAddressInfoPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.physical.street',
               options: {
-                label: 'Street',
-                hint: 'Downing Street',
+                label: 'text.street.label',
+                hint: 'text.street.hint',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -302,7 +302,7 @@ export const BusinessAddressInfoPage = {
                 jsonFormDefinition: {
                   type: 'number',
                 },
-                label: 'Number',
+                label: 'text.number',
                 hint: '10',
               },
             },
@@ -311,8 +311,8 @@ export const BusinessAddressInfoPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.physical.city',
               options: {
-                label: 'City',
-                hint: 'London',
+                label: 'text.city.label',
+                hint: 'text.city.hint',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -323,15 +323,15 @@ export const BusinessAddressInfoPage = {
               type: 'json-form:country-picker',
               valueDestination: 'entity.data.additionalInfo.headquarters.physical.country',
               options: {
-                label: 'Country',
-                hint: 'Choose',
+                label: 'text.country',
+                hint: 'text.choose',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
                   'ui:field': 'CountryPicker',
                   'ui:label': true,
-                  'ui:placeholder': 'Choose',
+                  'ui:placeholder': 'text.choose',
                 },
               },
             },
@@ -351,7 +351,7 @@ export const BusinessAddressInfoPage = {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],
                 },
-                text: 'Continue',
+                text: 'text.continue',
               },
               availableOn: [
                 {

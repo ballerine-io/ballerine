@@ -15,7 +15,7 @@ const validationSchema = {
                   type: 'array',
                   minItems: 1,
                   errorMessage: {
-                    minItems: 'UBOs are required.',
+                    minItems: 'errorMessage.minItems.ubos',
                   },
                   items: {
                     type: 'object',
@@ -26,8 +26,8 @@ const validationSchema = {
                         minLength: 2,
                         maxLength: 50,
                         errorMessage: {
-                          minLength: 'First name should be at least 2 characters long.',
-                          maxLength: 'First name should not exceed 50 characters.',
+                          minLength: 'errorMessage.minLength.firstName',
+                          maxLength: 'errorMessage.maxLength.firstName',
                         },
                       },
                       lastName: {
@@ -35,8 +35,8 @@ const validationSchema = {
                         minLength: 2,
                         maxLength: 50,
                         errorMessage: {
-                          minLength: 'Last name should be at least 2 characters long.',
-                          maxLength: 'Last name should not exceed 50 characters.',
+                          minLength: 'errorMessage.minLength.lastName',
+                          maxLength: 'errorMessage.maxLength.lastName',
                         },
                       },
                       email: {
@@ -44,8 +44,8 @@ const validationSchema = {
                         format: 'email',
                         maxLength: 100,
                         errorMessage: {
-                          format: 'Invalid email address.',
-                          maxLength: 'Email should not exceed 100 characters.',
+                          format: 'errorMessage.format.email',
+                          maxLength: 'errorMessage.maxLength.email',
                         },
                       },
                       nationalId: {
@@ -53,8 +53,8 @@ const validationSchema = {
                         minLength: 5,
                         maxLength: 20,
                         errorMessage: {
-                          minLength: 'Identity number should be at least 5 characters long.',
-                          maxLength: 'Identity number should not exceed 20 characters.',
+                          minLength: 'errorMessage.minLength.nationalId',
+                          maxLength: 'errorMessage.maxLength.nationalId',
                         },
                       },
                       additionalInfo: {
@@ -63,9 +63,9 @@ const validationSchema = {
                         required: ['nationality', 'fullAddress', 'percentageOfOwnership'],
                         errorMessage: {
                           required: {
-                            nationality: 'Nationality is required.',
-                            fullAddress: 'Full address is required.',
-                            percentageOfOwnership: 'Percentage of ownership is required.',
+                            nationality: 'errorMessage.required.nationality',
+                            fullAddress: 'errorMessage.required.fullAddress',
+                            percentageOfOwnership: 'errorMessage.required.percentageOfOwnership',
                           },
                         },
                         properties: {
@@ -73,8 +73,7 @@ const validationSchema = {
                             type: 'string',
                             minLength: 1,
                             errorMessage: {
-                              minLength:
-                                'Invalid nationality. Please select from the available options.',
+                              minLength: 'errorMessage.minLength.nationality',
                             },
                           },
                           fullAddress: {
@@ -82,8 +81,8 @@ const validationSchema = {
                             minLength: 10,
                             maxLength: 200,
                             errorMessage: {
-                              minLength: 'Full address should be at least 10 characters long.',
-                              maxLength: 'Full address should not exceed 200 characters.',
+                              minLength: 'errorMessage.minLength.fullAddress',
+                              maxLength: 'errorMessage.maxLength.fullAddress',
                             },
                           },
                           percentageOfOwnership: {
@@ -91,8 +90,8 @@ const validationSchema = {
                             minimum: 25,
                             maximum: 100,
                             errorMessage: {
-                              minimum: 'Percentage of ownership must be 25 or greater.',
-                              maximum: 'Percentage of ownership must not exceed 100.',
+                              minimum: 'errorMessage.minimum.percentageOfOwnership',
+                              maximum: 'errorMessage.maximum.percentageOfOwnership',
                             },
                           },
                         },
@@ -100,10 +99,10 @@ const validationSchema = {
                     },
                     errorMessage: {
                       required: {
-                        firstName: 'First name is required.',
-                        lastName: 'Last name is required.',
-                        nationalId: 'Identity number is required.',
-                        email: 'Email is required.',
+                        firstName: 'errorMessage.required.firstName',
+                        lastName: 'errorMessage.required.lastName',
+                        nationalId: 'errorMessage.required.nationalId',
+                        email: 'errorMessage.required.email',
                       },
                     },
                   },
@@ -123,8 +122,8 @@ const validationSchema = {
                         minLength: 2,
                         maxLength: 50,
                         errorMessage: {
-                          minLength: 'First name should be at least 2 characters long.',
-                          maxLength: 'First name should not exceed 50 characters.',
+                          minLength: 'errorMessage.minLength.firstName',
+                          maxLength: 'errorMessage.maxLength.firstName',
                         },
                       },
                       lastName: {
@@ -132,8 +131,8 @@ const validationSchema = {
                         minLength: 2,
                         maxLength: 50,
                         errorMessage: {
-                          minLength: 'Last name should be at least 2 characters long.',
-                          maxLength: 'Last name should not exceed 50 characters.',
+                          minLength: 'errorMessage.minLength.lastName',
+                          maxLength: 'errorMessage.maxLength.lastName',
                         },
                       },
                       email: {
@@ -141,8 +140,8 @@ const validationSchema = {
                         format: 'email',
                         maxLength: 100,
                         errorMessage: {
-                          format: 'Invalid email address.',
-                          maxLength: 'Email should not exceed 100 characters.',
+                          format: 'errorMessage.format.email',
+                          maxLength: 'errorMessage.maxLength.email',
                         },
                       },
                       nationalId: {
@@ -150,8 +149,8 @@ const validationSchema = {
                         minLength: 5,
                         maxLength: 20,
                         errorMessage: {
-                          minLength: 'Identity number should be at least 5 characters long.',
-                          maxLength: 'Identity number should not exceed 20 characters.',
+                          minLength: 'errorMessage.minLength.nationalId',
+                          maxLength: 'errorMessage.maxLength.nationalId',
                         },
                       },
                       additionalInfo: {
@@ -160,9 +159,9 @@ const validationSchema = {
                         required: ['nationality', 'fullAddress'],
                         errorMessage: {
                           required: {
-                            nationality: 'Nationality is required.',
-                            fullAddress: 'Full address is required.',
-                            percentageOfOwnership: 'Percentage of ownership is required.',
+                            nationality: 'error.required.nationality',
+                            fullAddress: 'error.required.fullAddress',
+                            percentageOfOwnership: 'error.required.percentageOfOwnership',
                           },
                         },
                         properties: {
@@ -170,8 +169,7 @@ const validationSchema = {
                             type: 'string',
                             minLength: 1,
                             errorMessage: {
-                              minLength:
-                                'Invalid nationality. Please select from the available options.',
+                              minLength: 'error.minLength.nationality',
                             },
                           },
                           fullAddress: {
@@ -179,8 +177,8 @@ const validationSchema = {
                             minLength: 10,
                             maxLength: 200,
                             errorMessage: {
-                              minLength: 'Full address should be at least 10 characters long.',
-                              maxLength: 'Full address should not exceed 200 characters.',
+                              minLength: 'error.minLength.fullAddress',
+                              maxLength: 'error.maxLength.fullAddress',
                             },
                           },
                         },
@@ -188,10 +186,10 @@ const validationSchema = {
                     },
                     errorMessage: {
                       required: {
-                        firstName: 'First name is required.',
-                        lastName: 'Last name is required.',
-                        nationalId: 'Identity number is required.',
-                        email: 'Email is required.',
+                        firstName: 'error.required.firstName',
+                        lastName: 'error.required.lastName',
+                        nationalId: 'error.required.nationalId',
+                        email: 'error.required.email',
                       },
                     },
                   },
@@ -199,8 +197,8 @@ const validationSchema = {
               },
               errorMessage: {
                 required: {
-                  ubos: 'UBOs are required.',
-                  directors: 'Directors are required.',
+                  ubos: 'errorMessage.required.ubos',
+                  directors: 'errorMessage.required.directors',
                 },
               },
             },
@@ -211,11 +209,12 @@ const validationSchema = {
   },
   required: ['entity'],
 };
+
 export const DirectorsAndUbosPage = {
   type: 'page',
   number: 4,
   stateName: 'directors_and_ubos',
-  name: 'Directors and UBOs',
+  name: 'text.directorsAndUBOs',
   pageValidation: [
     {
       type: 'json-schema',
@@ -232,13 +231,13 @@ export const DirectorsAndUbosPage = {
             {
               type: 'h1',
               options: {
-                text: 'Directors & UBOs',
+                text: 'text.directors&UBOs',
               },
             },
             {
               type: 'h3',
               options: {
-                text: 'UBOs',
+                text: 'text.ubos',
                 classNames: ['padding-top-10'],
               },
             },
@@ -260,7 +259,7 @@ export const DirectorsAndUbosPage = {
                 jsonFormDefinition: {
                   type: 'boolean',
                 },
-                label: 'I own 25% or more of the company',
+                label: 'text.imShareholder',
                 uiSchema: {
                   'ui:label': false,
                 },
@@ -272,8 +271,7 @@ export const DirectorsAndUbosPage = {
           type: 'description',
           name: 'checkbox-description-1',
           options: {
-            descriptionRaw:
-              'Add all of the natural persons that own or control, <br /><b>directly or indirectly</b> more than 25% of the company.',
+            descriptionRaw: 'text.shareholdersDescription',
           },
         },
         {
@@ -284,7 +282,7 @@ export const DirectorsAndUbosPage = {
             description:
               '<p>add all the natural persons that own or control, <bold>Directly Or Indirectly</bold> more than 25% of the company.</p>',
             jsonFormDefinition: {
-              title: 'Shareholder',
+              title: 'text.shareholder',
               type: 'array',
               required: [
                 'ubos:first-name-input',
@@ -297,7 +295,7 @@ export const DirectorsAndUbosPage = {
               ],
             },
             uiSchema: {
-              titleTemplate: 'UBO {{INDEX}}',
+              titleTemplate: 'text.uboIndex',
             },
             insertionParams: {
               insertionStrategy: 'array',
@@ -350,8 +348,8 @@ export const DirectorsAndUbosPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.ubos[{INDEX}].firstName', //entity.data.additionalInfo.ubos[0].firstName
               options: {
-                label: 'First Name',
-                hint: 'First Name',
+                label: 'text.firstName',
+                hint: 'text.firstName',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -362,8 +360,8 @@ export const DirectorsAndUbosPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.ubos[{INDEX}].lastName',
               options: {
-                label: 'Last Name',
-                hint: 'Last Name',
+                label: 'text.lastName',
+                hint: 'text.lastName',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -375,8 +373,8 @@ export const DirectorsAndUbosPage = {
               valueDestination:
                 'entity.data.additionalInfo.ubos[{INDEX}].additionalInfo.nationality',
               options: {
-                label: 'Nationality',
-                hint: 'Choose',
+                label: 'text.ationality',
+                hint: 'text.choose',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -390,8 +388,8 @@ export const DirectorsAndUbosPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.ubos[{INDEX}].nationalId',
               options: {
-                label: 'Identity Number',
-                hint: '11010219820519759X',
+                label: 'text.nationalId.label',
+                hint: 'text.nationalId.hint',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -406,8 +404,8 @@ export const DirectorsAndUbosPage = {
                   type: 'string',
                   format: 'email',
                 },
-                label: 'Email',
-                hint: 'name@companyhk.com',
+                label: 'text.email.label',
+                hint: 'text.email.hint',
               },
             },
             {
@@ -416,8 +414,8 @@ export const DirectorsAndUbosPage = {
               valueDestination:
                 'entity.data.additionalInfo.ubos[{INDEX}].additionalInfo.fullAddress',
               options: {
-                label: 'Address of Residence',
-                hint: '22, Choyangmen, Chaoyang District, Beijing, China',
+                label: 'text.addressOfResidence.label',
+                hint: 'text.addressOfResidence.hint',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -432,8 +430,8 @@ export const DirectorsAndUbosPage = {
                 jsonFormDefinition: {
                   type: 'number',
                 },
-                label: '% of Ownership',
-                hint: '25',
+                label: 'text.ownershipPercentage.label',
+                hint: 'text.ownershipPercentage.hint',
               },
             },
           ],
@@ -444,7 +442,7 @@ export const DirectorsAndUbosPage = {
         {
           type: 'h3',
           options: {
-            text: 'Directors',
+            text: 'text.directors',
             classNames: ['padding-top-10'],
           },
         },
@@ -467,7 +465,7 @@ export const DirectorsAndUbosPage = {
                     jsonFormDefinition: {
                       type: 'boolean',
                     },
-                    label: "I'm director of the company",
+                    label: 'text.imDirector',
                     uiSchema: {
                       'ui:label': false,
                     },
@@ -479,7 +477,7 @@ export const DirectorsAndUbosPage = {
               type: 'description',
               name: 'checkbox-description-2',
               options: {
-                descriptionRaw: 'Add all of the directors of the company.',
+                descriptionRaw: 'text.directorsDescription',
               },
             },
             {
@@ -500,7 +498,7 @@ export const DirectorsAndUbosPage = {
                   ],
                 },
                 uiSchema: {
-                  titleTemplate: 'Director {{INDEX}}',
+                  titleTemplate: 'text.directorIndex',
                 },
                 insertionParams: {
                   insertionStrategy: 'array',
@@ -556,8 +554,8 @@ export const DirectorsAndUbosPage = {
                     jsonFormDefinition: {
                       type: 'string',
                     },
-                    label: 'First Name',
-                    hint: 'First Name',
+                    label: 'text.firstName',
+                    hint: 'text.firstName',
                   },
                 },
                 {
@@ -568,8 +566,8 @@ export const DirectorsAndUbosPage = {
                     jsonFormDefinition: {
                       type: 'string',
                     },
-                    label: 'Last Name',
-                    hint: 'Last Name',
+                    label: 'text.lastName',
+                    hint: 'text.lastName',
                   },
                 },
                 {
@@ -584,8 +582,8 @@ export const DirectorsAndUbosPage = {
                     uiSchema: {
                       'ui:field': 'NationalityPicker',
                     },
-                    label: 'Nationality',
-                    hint: 'Choose',
+                    label: 'text.nationality',
+                    hint: 'text.choose',
                   },
                 },
                 {
@@ -596,8 +594,8 @@ export const DirectorsAndUbosPage = {
                     jsonFormDefinition: {
                       type: 'string',
                     },
-                    label: 'Identity Number',
-                    hint: '11010219820519759X',
+                    label: 'text.nationalId.label',
+                    hint: 'text.nationalId.hint',
                   },
                 },
                 {
@@ -609,8 +607,8 @@ export const DirectorsAndUbosPage = {
                     jsonFormDefinition: {
                       type: 'string',
                     },
-                    label: 'Address of Residence',
-                    hint: '22, Choyangmen, Chaoyang District, Beijing, China',
+                    label: 'text.addressOfResidence.label',
+                    hint: 'text.addressOfResidence.hint',
                   },
                 },
                 {
@@ -622,8 +620,8 @@ export const DirectorsAndUbosPage = {
                       type: 'string',
                       format: 'email',
                     },
-                    label: 'Email',
-                    hint: 'name@companyhk.com',
+                    label: 'text.email.label',
+                    hint: 'text.email.hint',
                   },
                 },
               ],
@@ -647,7 +645,7 @@ export const DirectorsAndUbosPage = {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],
                 },
-                text: 'Continue',
+                text: 'text.continue',
               },
               availableOn: [
                 {
