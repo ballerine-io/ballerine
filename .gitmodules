@@ -1,4 +1,3 @@
 [submodule "services/workflows-service/prisma/data-migrations"]
 	path = services/workflows-service/prisma/data-migrations
 	url = git@github.com:ballerine-io/wf-data-migration.git
-

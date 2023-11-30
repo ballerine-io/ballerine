@@ -61,16 +61,16 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.25
+        specifier: 0.7.26
         version: link:../../packages/common
       '@ballerine/ui':
         specifier: 0.3.16
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.24
+        specifier: 0.5.25
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.24
+        specifier: 0.5.25
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -359,13 +359,13 @@ importers:
         specifier: 0.1.21
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: ^0.7.25
+        specifier: ^0.7.26
         version: link:../../packages/common
       '@ballerine/ui':
         specifier: 0.3.16
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.24
+        specifier: 0.5.25
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -766,10 +766,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.25
+        specifier: 0.7.26
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.24
+        specifier: 0.5.25
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1505,7 +1505,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.25
+        specifier: 0.7.26
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -1662,7 +1662,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.25
+        specifier: 0.7.26
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -1789,10 +1789,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.25
+        specifier: 0.7.26
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.24
+        specifier: 0.5.25
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -1931,7 +1931,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.5.24
+        specifier: 0.5.25
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2173,13 +2173,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.7.25
+        specifier: 0.7.26
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.24
+        specifier: 0.5.25
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.24
+        specifier: 0.5.25
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2477,7 +2477,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@3.3.3)(tailwindcss@3.3.5)(ts-node@10.9.1)
       '@ballerine/common':
-        specifier: ^0.7.25
+        specifier: ^0.7.26
         version: link:../../packages/common
       astro:
         specifier: 3.3.3
@@ -14150,7 +14150,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.23.3(@babel/core@7.23.3)
       magic-string: 0.27.0
       react-refresh: 0.14.0
-      vite: 4.5.0(@types/node@20.9.2)(less@4.2.0)
+      vite: 4.5.0(@types/node@18.17.19)(less@4.2.0)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -14166,7 +14166,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.23.3(@babel/core@7.23.3)
       '@types/babel__core': 7.20.4
       react-refresh: 0.14.0
-      vite: 4.5.0(@types/node@20.9.2)(less@4.2.0)
+      vite: 4.5.0(@types/node@18.17.19)(less@4.2.0)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -30580,7 +30580,7 @@ packages:
       kolorist: 1.8.0
       sirv: 2.0.3
       ufo: 1.3.2
-      vite: 4.5.0(@types/node@18.17.19)(less@4.2.0)
+      vite: 4.5.0(@types/node@20.9.2)(less@4.2.0)
     transitivePeerDependencies:
       - rollup
       - supports-color
