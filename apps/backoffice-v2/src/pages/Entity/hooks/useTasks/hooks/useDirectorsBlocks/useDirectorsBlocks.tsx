@@ -123,7 +123,7 @@ export const useDirectorsBlocks = (
                 ],
               },
               {
-                id: 'kyc-block',
+                id: 'header',
                 type: 'container',
                 value: [
                   {
@@ -136,11 +136,9 @@ export const useDirectorsBlocks = (
                         )}`,
                       },
                       {
-                        title: 'Details test',
                         type: 'details',
                         value: {
                           id: document.id,
-                          title: 'Details test',
                           data: Object.entries(
                             {
                               ...additionalProperties,
@@ -161,8 +159,7 @@ export const useDirectorsBlocks = (
                             ]) => {
                               const fieldValue = value || (document.properties?.[title] ?? '');
                               const isDoneWithRevision = document?.decision?.status === 'revised';
-                              const isEditableDecision =
-                                isDoneWithRevision || !document?.decision?.status;
+                              const isEditable = isDoneWithRevision || !document?.decision?.status;
 
                               return {
                                 title,
@@ -171,7 +168,7 @@ export const useDirectorsBlocks = (
                                 format,
                                 pattern,
                                 dropdownOptions,
-                                isEditable: isEditableDecision && caseState.writeEnabled,
+                                isEditable: isEditable && caseState.writeEnabled,
                                 minimum: formatMinimum,
                                 maximum: formatMaximum,
                               };
