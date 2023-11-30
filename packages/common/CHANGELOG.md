@@ -1,5 +1,12 @@
 # @ballerine/common
 
+## 0.7.26
+
+### Patch Changes
+
+- bfded451: added functionality of replacing null with undefined
+- updated version of defintion
+
 ## 0.7.25
 
 ### Patch Changes
