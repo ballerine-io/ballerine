@@ -56,6 +56,7 @@ export const StepperUI = () => {
         pageError: pageErrors?.[page.stateName],
         page,
         context: initialContext,
+        currentPage,
       });
 
       const step: BreadcrumbItemInput = {
@@ -67,6 +68,13 @@ export const StepperUI = () => {
       return step;
     });
   }, [pages, uiState, pageErrors, initialContext]);
+
+  const activeStep = useMemo(() => {
+    const activeStep = steps.find(step => step.id === currentPage?.stateName);
+    if (!activeStep) return null;
+
+    return activeStep;
+  }, [steps, currentPage]);
 
   const activeStep = useMemo(() => {
     const activeStep = steps.find(step => step.id === currentPage?.stateName);
