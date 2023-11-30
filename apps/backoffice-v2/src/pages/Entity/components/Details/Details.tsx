@@ -3,22 +3,16 @@ import { Separator } from '../../../../common/components/atoms/Separator/Separat
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { EditableDetails } from '../EditableDetails/EditableDetails';
 import { IDetailsProps } from './interfaces';
-import { TWorkflowById } from '@/domains/workflows/fetchers';
-
-export const baseDetailsDocumentsSelector = (workflow: TWorkflowById) =>
-  workflow?.context?.documents;
 
 export const Details: FunctionComponent<IDetailsProps> = ({
   id,
   value,
   hideSeparator,
   contextUpdateMethod,
-  workflow,
-  selectDocuments = baseDetailsDocumentsSelector,
+  workflowId,
+  documents = [],
   onSubmit,
 }) => {
-  const documents = selectDocuments(workflow);
-
   if (!value.data?.length) return null;
 
   return (
@@ -28,7 +22,7 @@ export const Details: FunctionComponent<IDetailsProps> = ({
       })}
     >
       <EditableDetails
-        workflowId={workflow?.id}
+        workflowId={workflowId}
         id={id}
         valueId={value?.id}
         documents={documents}

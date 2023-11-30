@@ -82,7 +82,8 @@ export const useDirectorsBlocks = (
                   }))
                 : [],
             },
-            workflow,
+            workflowId: workflow?.id,
+            documents,
           };
 
           return {
@@ -177,9 +178,8 @@ export const useDirectorsBlocks = (
                             },
                           ),
                         },
-                        selectDocuments: () => documents,
-                        contextUpdateMethod: 'director',
-                        workflow,
+                        documents,
+                        workflowId: workflow?.id,
                       },
                       decisionCell,
                     ],
