@@ -1,6 +1,4 @@
-import { Step } from '@/common/hooks/useStepper';
 import { Stepper } from '@/components/atoms/Stepper';
-import { Item } from '@/components/atoms/Stepper/Item';
 import { VerticalLayout } from '@/components/atoms/Stepper/layouts/Vertical';
 import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
@@ -10,6 +8,11 @@ import { usePageContext } from '@/components/organisms/DynamicUI/Page';
 import { UIPage } from '@/domains/collection-flow';
 import { UIElementState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
 import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
+import {
+  BreadcrumbItemInput,
+  Breadcrumbs,
+} from '@/components/atoms/Stepper/components/atoms/Breadcrumbs';
+import clsx from 'clsx';
 
 export const StepperUI = () => {
   const { state: uiState } = useDynamicUIContext();
@@ -42,7 +45,7 @@ export const StepperUI = () => {
     return 'idle';
   };
 
-  const steps: Step[] = useMemo(() => {
+  const steps: BreadcrumbItemInput[] = useMemo(() => {
     return pages.map(page => {
       const stepStatus = computeStepStatus({
         // @ts-ignore
@@ -54,35 +57,52 @@ export const StepperUI = () => {
         currentPage,
       });
 
-      const step: Step = {
-        index: page.number - 1,
+      const step: BreadcrumbItemInput = {
+        id: page.stateName,
         label: page.name,
-        dataAlias: page.stateName,
-        status: stepStatus,
-        meta: { status: stepStatus },
-        // @ts-ignore
-        isCurrent: currentPage?.number === page.number,
+        state: stepStatus,
       };
 
       return step;
     });
   }, [pages, uiState.elements, pageErrors, currentPage]);
 
+  const activeStep = useMemo(() => {
+    const activeStep = steps.find(step => step.id === currentPage?.stateName);
+    if (!activeStep) return null;
+
+    return activeStep;
+  }, [steps, currentPage]);
+
   return (
     <Stepper>
-      <VerticalLayout>
-        {steps.map(step => {
-          return step.hidden ? null : (
-            <Item
-              key={`step-${step.index}`}
-              active={state === step.dataAlias}
-              label={step.label}
-              // @ts-ignore
-              status={step.meta?.status}
-            />
+      <Breadcrumbs items={steps} active={activeStep}>
+        {(items, theme) => {
+          return (
+            <VerticalLayout>
+              {items.map(itemProps => {
+                return (
+                  <div
+                    className={clsx('last:bg- flex flex-row items-center gap-4 first:bg-white')}
+                    key={itemProps.id}
+                  >
+                    <Breadcrumbs.Item
+                      active={itemProps.active}
+                      state={itemProps.state}
+                      theme={theme}
+                    />
+                    <Breadcrumbs.Label
+                      active={itemProps.active}
+                      text={itemProps.label}
+                      state={itemProps.state}
+                    />
+                  </div>
+                );
+              })}
+            </VerticalLayout>
           );
-        })}
-      </VerticalLayout>
+        }}
+      </Breadcrumbs>
     </Stepper>
   );
 };

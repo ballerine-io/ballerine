@@ -14,14 +14,12 @@ import { BaseLabel } from '@/components/atoms/Stepper/components/atoms/BaseLabel
 const baseIndicators: StepperIndicatorMap = {
   idle: Idle,
   warning: Warning,
-  error: Warning,
   completed: Completed,
 };
 
 const baseLabelsMap: StepperLabelsMap = {
   idle: ({ text }) => <BaseLabel variant="idle" text={text} />,
   warning: ({ text }) => <BaseLabel variant="warning" text={text} />,
-  error: ({ text }) => <BaseLabel variant="warning" text={text} />,
   completed: ({ text }) => <BaseLabel variant="completed" text={text} />,
 };
 

@@ -1,4 +1,4 @@
-import { AuthGuard, IAuthModuleOptions } from '@nestjs/passport';
+import { AuthGuard } from '@nestjs/passport';
 import { ExecutionContext } from '@nestjs/common';
 import type { Request } from 'express';
 
