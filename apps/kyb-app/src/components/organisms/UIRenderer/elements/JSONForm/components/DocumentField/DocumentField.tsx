@@ -157,9 +157,8 @@ export const DocumentField = (
 
       let document = documents.find(
         document =>
-          document &&
-          //@ts-ignore
-          document.id === serializeDocumentId(definition.options.documentData.id, inputIndex),
+          document?.id ===
+          serializeDocumentId(definition.options?.documentData?.id || '', Number(inputIndex)),
       );
 
       if (!document) {

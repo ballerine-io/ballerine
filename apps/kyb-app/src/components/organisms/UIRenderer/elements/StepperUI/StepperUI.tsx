@@ -34,11 +34,7 @@ export const StepperUI = () => {
     currentPage: UIPage;
     context: CollectionFlowContext;
   }) => {
-    if (
-      Object.keys(pageError).length &&
-      Object.values(pageError).some(error => error.type === 'warning')
-    )
-      return 'warning';
+    if (Object.values(pageError || {}).some(error => error.type === 'warning')) return 'warning';
 
     if (isPageCompleted(page, context) || uiElementState?.isCompleted) return 'completed';
 
