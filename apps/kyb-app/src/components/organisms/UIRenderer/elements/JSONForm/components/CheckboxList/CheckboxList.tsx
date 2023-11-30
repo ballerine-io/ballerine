@@ -1,5 +1,4 @@
-import { Checkbox, RJSFInputProps } from '@ballerine/ui';
-import clsx from 'clsx';
+import { Checkbox, RJSFInputProps, ctw } from '@ballerine/ui';
 import { useMemo } from 'react';
 
 interface CheckboxListOption {
@@ -16,7 +15,7 @@ export const CheckboxList = (props: RJSFInputProps) => {
   }, [uiSchema]);
 
   return (
-    <div className={clsx('flex flex-col gap-4', { 'pointer-events-none opacity-50': disabled })}>
+    <div className={ctw('flex flex-col gap-4', { 'pointer-events-none opacity-50': disabled })}>
       {options.map(option => (
         <label className="flex items-center gap-2" key={option.value}>
           <Checkbox

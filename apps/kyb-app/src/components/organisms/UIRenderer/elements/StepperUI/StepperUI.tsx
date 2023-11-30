@@ -14,12 +14,12 @@ import {
   BreadcrumbItemInput,
   Breadcrumbs,
 } from '@/components/atoms/Stepper/components/atoms/Breadcrumbs';
-import clsx from 'clsx';
+import { ctw } from '@ballerine/ui';
 
 export const StepperUI = () => {
   const { state: uiState } = useDynamicUIContext();
   const { pages, currentPage } = usePageResolverContext();
-  const { state, payload } = useStateManagerContext();
+  const { payload } = useStateManagerContext();
   const { pageErrors } = usePageContext();
 
   const computeStepStatus = ({
@@ -56,7 +56,7 @@ export const StepperUI = () => {
         pageError: pageErrors?.[page.stateName],
         page,
         context: initialContext,
-        currentPage,
+        currentPage: currentPage as UIPage,
       });
 
       const step: BreadcrumbItemInput = {
@@ -67,14 +67,7 @@ export const StepperUI = () => {
 
       return step;
     });
-  }, [pages, uiState, pageErrors, initialContext]);
-
-  const activeStep = useMemo(() => {
-    const activeStep = steps.find(step => step.id === currentPage?.stateName);
-    if (!activeStep) return null;
-
-    return activeStep;
-  }, [steps, currentPage]);
+  }, [pages, uiState, pageErrors, initialContext, currentPage]);
 
   const activeStep = useMemo(() => {
     const activeStep = steps.find(step => step.id === currentPage?.stateName);
@@ -92,7 +85,7 @@ export const StepperUI = () => {
               {items.map(itemProps => {
                 return (
                   <div
-                    className={clsx('last:bg- flex flex-row items-center gap-4 first:bg-white')}
+                    className={ctw('last:bg- flex flex-row items-center gap-4 first:bg-white')}
                     key={itemProps.id}
                   >
                     <Breadcrumbs.Item

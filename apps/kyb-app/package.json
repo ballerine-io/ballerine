@@ -30,7 +30,6 @@
     "ajv-errors": "^3.0.0",
     "ajv-formats": "^2.1.1",
     "class-variance-authority": "^0.6.0",
-    "clsx": "^1.2.1",
     "country-state-city": "^3.1.4",
     "currency-codes": "^2.1.0",
     "dayjs": "^1.11.6",
