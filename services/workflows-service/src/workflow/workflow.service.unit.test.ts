@@ -1,6 +1,5 @@
 import { BaseFakeRepository } from '../../../../test-utils/src/base-fake-repository';
 import { WorkflowService } from './workflow.service';
-import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { DocumentChangedWebhookCaller } from '../events/document-changed-webhook-caller';
 import { Test, TestingModule } from '@nestjs/testing';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
@@ -16,7 +15,7 @@ class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
 
 class FakeWorkflowDefinitionRepo extends BaseFakeRepository {
   constructor() {
-    super(WorkflowDefinitionModel);
+    super(Object);
   }
 }
 

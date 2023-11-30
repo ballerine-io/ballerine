@@ -93,6 +93,7 @@ async function createProject(client: PrismaClient, customer: Customer, id: strin
 }
 
 const DEFAULT_INITIAL_STATE = CommonWorkflowStates.MANUAL_REVIEW;
+
 async function seed(bcryptSalt: string | number) {
   console.info('Seeding database...');
   const client = new PrismaClient();
@@ -774,7 +775,7 @@ async function seed(bcryptSalt: string | number) {
         },
       },
       where: {
-        workflowDefinitionId: 'dynamic_external_request_example',
+        workflowDefinitionId: { in: ['dynamic_external_request_example'] },
         businessId: { not: null },
       },
     },
@@ -830,7 +831,7 @@ async function seed(bcryptSalt: string | number) {
         },
       },
       where: {
-        workflowDefinitionId: kycManualMachineId,
+        workflowDefinitionId: { in: [kycManualMachineId] },
         endUserId: { not: null },
       },
     },
@@ -934,7 +935,7 @@ async function seed(bcryptSalt: string | number) {
         },
       },
       where: {
-        workflowDefinitionId: riskScoreMachineKybId,
+        workflowDefinitionId: { in: [riskScoreMachineKybId] },
         endUserId: { not: null },
       },
     },
@@ -996,7 +997,7 @@ async function seed(bcryptSalt: string | number) {
         },
       },
       where: {
-        workflowDefinitionId: riskScoreMachineKybId,
+        workflowDefinitionId: { in: [riskScoreMachineKybId] },
         businessId: { not: null },
       },
     },

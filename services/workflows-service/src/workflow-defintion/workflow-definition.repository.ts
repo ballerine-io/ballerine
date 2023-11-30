@@ -113,4 +113,14 @@ export class WorkflowDefinitionRepository {
       ),
     );
   }
+
+  async findByLatestVersion(name: string, projectIds: TProjectIds) {
+    return await this.prisma.workflowDefinition.findFirstOrThrow({
+      where: {
+        name,
+        projectId: { in: projectIds },
+      },
+      orderBy: { version: 'desc' },
+    });
+  }
 }

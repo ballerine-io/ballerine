@@ -5,7 +5,7 @@ import { BusinessControllerInternal } from './business.controller.internal';
 import { BusinessControllerExternal } from './business.controller.external';
 import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
-import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { FileRepository } from '@/storage/storage.repository';

@@ -14,6 +14,7 @@ export {
   safeEvery,
   someDocumentDecisionStatus,
   everyDocumentDecisionStatus,
+  replaceNullsWithUndefined,
   raise,
   log,
   dump,

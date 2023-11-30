@@ -24,4 +24,8 @@ export class FilterService {
 
     return filter;
   }
+
+  async updatedById(id: string, args: Parameters<FilterRepository['updateById']>[1]) {
+    return await this.repository.updateById(id, args);
+  }
 }

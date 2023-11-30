@@ -13,6 +13,7 @@ import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 
 const acGuard = {
   canActivate: () => {
@@ -56,6 +57,10 @@ describe('Workflow (external)', () => {
         {
           provide: HookCallbackHandlerService,
           useValue: {} as HookCallbackHandlerService,
+        },
+        {
+          provide: WorkflowDefinitionService,
+          useValue: {} as WorkflowDefinitionService,
         },
         {
           provide: EndUserService,

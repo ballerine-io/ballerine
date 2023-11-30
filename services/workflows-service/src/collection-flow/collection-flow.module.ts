@@ -17,7 +17,7 @@ import { StorageService } from '@/storage/storage.service';
 import { UserRepository } from '@/user/user.repository';
 import { UserService } from '@/user/user.service';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
-import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
