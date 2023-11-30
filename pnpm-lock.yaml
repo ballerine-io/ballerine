@@ -64,7 +64,7 @@ importers:
         specifier: 0.7.24
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.3.15
+        specifier: 0.3.16
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.5.23
@@ -362,7 +362,7 @@ importers:
         specifier: ^0.7.24
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.3.15
+        specifier: 0.3.16
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.5.23
@@ -1403,7 +1403,7 @@ importers:
         specifier: ^1.0.1
         version: link:../config
       '@ballerine/eslint-config-react':
-        specifier: ^1.0.0
+        specifier: ^1.0.2
         version: link:../eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
