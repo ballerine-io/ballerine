@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.28
+
+### Patch Changes
+
+- ea423a22: updated validation to allow file type on document page
+
 ## 0.7.27
 
 ### Patch Changes
