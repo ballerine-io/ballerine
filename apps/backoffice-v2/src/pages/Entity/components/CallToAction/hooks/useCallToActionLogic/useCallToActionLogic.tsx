@@ -10,12 +10,16 @@ import { useRevisionTaskByIdMutation } from '../../../../../../domains/entities/
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useCaseState } from '../../../Case/hooks/useCaseState/useCaseState';
+import { ICallToActionDocumentSelection } from '@/pages/Entity/components/CallToAction/interfaces';
+import { useDocumentSelection } from '@/pages/Entity/components/CallToAction/hooks/useDocumentSelection';
 
 export interface UseCallToActionLogicParams {
   contextUpdateMethod?: 'base' | 'director';
   revisionReasons?: string[];
   rejectionReasons?: string[];
+  documentSelection?: ICallToActionDocumentSelection;
   onReuploadReset?: () => void;
+  onDialogClose?: () => void;
 }
 
 const getPostUpdateEventNameEvent = (workflow: TWorkflowById) => {
@@ -28,7 +32,9 @@ export const useCallToActionLogic = (params: UseCallToActionLogicParams) => {
     contextUpdateMethod = 'base',
     rejectionReasons,
     revisionReasons,
+    documentSelection,
     onReuploadReset,
+    onDialogClose,
   } = params;
   const { entityId } = useParams();
   const filterId = useFilterId();
@@ -136,6 +142,16 @@ export const useCallToActionLogic = (params: UseCallToActionLogicParams) => {
 
   const isReuploadResetable = Boolean(onReuploadReset);
 
+  const documentPickerProps = useDocumentSelection(documentSelection, resetReasonAndComment);
+
+  const handleDialogClose = useCallback(
+    (open: boolean) => {
+      // Calling callback only when dialog is closed.
+      if (open === false) onDialogClose && onDialogClose();
+    },
+    [onDialogClose],
+  );
+
   return {
     isLoadingTaskDecisionById,
     caseState,
@@ -144,13 +160,14 @@ export const useCallToActionLogic = (params: UseCallToActionLogicParams) => {
     reasons,
     reason,
     comment,
+    documentPickerProps,
     onReasonChange,
     onActionChange,
     onCommentChange,
+    handleDialogClose,
     noReasons,
     onMutateTaskDecisionById,
     workflowLevelResolution,
-    resetReasonAndComment,
     isReuploadResetable,
   };
 };

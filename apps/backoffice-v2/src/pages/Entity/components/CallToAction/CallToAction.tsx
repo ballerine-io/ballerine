@@ -1,6 +1,6 @@
 import { DialogClose } from '@radix-ui/react-dialog';
 import { AnimatePresence } from 'framer-motion';
-import { ComponentProps, FunctionComponent, useCallback } from 'react';
+import { ComponentProps, FunctionComponent } from 'react';
 
 import { Send, X } from 'lucide-react';
 import { Button } from '../../../../common/components/atoms/Button/Button';
@@ -23,7 +23,6 @@ import { ctw } from '../../../../common/utils/ctw/ctw';
 import { DocumentPicker } from './components/DocumentPicker';
 import { useCallToActionLogic } from './hooks/useCallToActionLogic/useCallToActionLogic';
 import { ICallToActionProps } from './interfaces';
-import { useDocumentSelection } from '@/pages/Entity/components/CallToAction/hooks/useDocumentSelection';
 
 const motionProps: ComponentProps<typeof MotionButton> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -60,22 +59,16 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value }) =
     noReasons,
     workflowLevelResolution,
     isReuploadResetable,
-    resetReasonAndComment,
+    documentPickerProps,
+    handleDialogClose,
   } = useCallToActionLogic({
     contextUpdateMethod,
     revisionReasons,
     rejectionReasons,
+    documentSelection,
+    onDialogClose,
     onReuploadReset,
   });
-
-  const documentPickerProps = useDocumentSelection(documentSelection, resetReasonAndComment);
-
-  const handleDialogClose = useCallback(
-    (open: boolean) => {
-      if (!open) onDialogClose && onDialogClose();
-    },
-    [onDialogClose],
-  );
 
   if (value?.text === 'Reject') {
     return (
