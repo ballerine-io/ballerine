@@ -1,6 +1,12 @@
 import { AnyObject } from '@ballerine/ui';
 import { TDropdownOption } from './types';
 
+export type IEditableDetailsDocument = {
+  propertiesSchema: Record<string, unknown>;
+  id: string;
+  properties: Record<string, string>;
+};
+
 export interface IEditableDetails {
   data: Array<{
     title: string;
@@ -16,11 +22,7 @@ export interface IEditableDetails {
   }>;
   valueId: string;
   id: string;
-  documents: Array<{
-    propertiesSchema: Record<string, unknown>;
-    id: string;
-    properties: Record<string, string>;
-  }>;
+  documents: Array<IEditableDetailsDocument>;
   title: string;
   workflowId: string;
   contextUpdateMethod?: 'base' | 'director';

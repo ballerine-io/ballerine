@@ -1,9 +1,11 @@
+import { IEditableDetailsDocument } from '@/pages/Entity/components/EditableDetails/interfaces';
 import { AnyObject } from '@ballerine/ui';
 
 export interface IDetailsProps {
   id: string;
+  workflowId: string;
   hideSeparator?: boolean;
-  documents?: AnyObject[];
+  documents?: IEditableDetailsDocument[];
   contextUpdateMethod?: 'base' | 'director';
   value: {
     id: string;
