@@ -1,5 +1,12 @@
 # @ballerine/common
 
+## 0.7.29
+
+### Patch Changes
+
+- 340d9d4e: added xlsx and xls to file type schema
+- ea423a22: updated validation to allow file type on document page
+
 ## 0.7.28
 
 ### Patch Changes

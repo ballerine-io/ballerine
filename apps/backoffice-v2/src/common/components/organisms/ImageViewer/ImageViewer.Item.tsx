@@ -24,6 +24,7 @@ export const Item: FunctionComponent<IItemProps> = ({
   id,
   src,
   fileType,
+  fileName,
   alt,
   caption,
   imageProps = {},
@@ -46,6 +47,7 @@ export const Item: FunctionComponent<IItemProps> = ({
           id,
           imageUrl: src,
           fileType,
+          fileName,
         })}
         {...restButton}
       >

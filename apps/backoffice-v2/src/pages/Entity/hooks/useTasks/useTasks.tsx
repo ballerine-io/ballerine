@@ -408,12 +408,13 @@ export const useTasks = ({
             isLoading: docsData?.some(({ isLoading }) => isLoading),
             data:
               documents?.[docIndex]?.pages?.map(
-                ({ type, metadata, ballerineFileId }, pageIndex) => ({
+                ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
                   id: ballerineFileId,
                   title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
                     toTitleCase(docType ?? ''),
                   )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
                   imageUrl: results[docIndex][pageIndex],
+                  fileName,
                   fileType: type,
                 }),
               ) ?? [],
@@ -787,7 +788,10 @@ export const useTasks = ({
                           const value = props.getValue();
 
                           return (
-                            <Badge variant={'warning'} className={`rounded-lg py-4 font-bold`}>
+                            <Badge
+                              variant={'warning'}
+                              className={`mb-1 rounded-lg px-2 py-1 font-bold`}
+                            >
                               {value} {value === 1 ? 'match' : 'matches'}
                             </Badge>
                           );

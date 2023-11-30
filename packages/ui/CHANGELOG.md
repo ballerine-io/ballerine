@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.17
+
+### Patch Changes
+
+- added csv, xlsx, and xls to the file input accept attribute
+
 ## 0.3.16
 
 ### Patch Changes
