@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
 
-config({ path: '.env' });
+config({ path: process.env.CI ? '.env.example' : '.env' });
 
 export const env = createEnv({
   /*
@@ -61,6 +61,10 @@ export const env = createEnv({
     SALESFORCE_CONSUMER_KEY: z.string().optional().describe('Salesforce consumer key'),
     SALESFORCE_CONSUMER_SECRET: z.string().optional().describe('Salesforce consumer secret'),
     APP_API_URL: z.string().url().describe('The URL of the workflows-service API'),
+    DATA_MIGRATION_BUCKET_NAME: z
+      .string()
+      .optional()
+      .describe('Bucket name of Data migration folders'),
   },
   client: {},
   /**
@@ -68,7 +72,6 @@ export const env = createEnv({
    * Often `process.env` or `import.meta.env`
    */
   runtimeEnv: process.env,
-  skipValidation: !!process.env.CI,
 });
 
 export const configs = () => {

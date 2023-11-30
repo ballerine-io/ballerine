@@ -7,7 +7,7 @@ WORKDIR /app
 
 COPY ./package.json .
 
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 COPY . .
 
@@ -27,7 +27,10 @@ COPY --from=dev /app/dist ./dist
 COPY --from=dev /app/prisma ./prisma
 COPY --from=dev /app/scripts ./scripts
 COPY --from=dev /app/src ./src
+COPY --from=dev /app/tsconfig.build.json ./tsconfig.build.json
+COPY --from=dev /app/tsconfig.json ./tsconfig.json
 
 EXPOSE 3000
 
 CMD [ "dumb-init", "npm", "run", "prod" ]
+
