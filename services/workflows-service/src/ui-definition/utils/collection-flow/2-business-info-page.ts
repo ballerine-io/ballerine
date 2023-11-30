@@ -19,20 +19,20 @@ const validationSchema = {
           properties: {
             additionalInfo: {
               type: 'object',
-              required: ['registeredCapitalInYuan'],
+              required: ['registeredCapitalInUsd'],
               properties: {
-                registeredCapitalInYuan: {
+                registeredCapitalInUsd: {
                   type: 'number',
                   minimum: 0,
                   errorMessage: {
-                    required: 'errorMessage.required.registeredCapitalInYuan',
-                    minimum: 'errorMessage.minimum.registeredCapitalInYuan',
+                    required: 'errorMessage.required.registeredCapitalInUsd',
+                    minimum: 'errorMessage.minimum.registeredCapitalInUsd',
                   },
                 },
               },
               errorMessage: {
                 required: {
-                  registeredCapitalInYuan: 'errorMessage.required.registeredCapitalInYuan',
+                  registeredCapitalInUsd: 'errorMessage.required.registeredCapitalInUsd',
                 },
               },
             },
@@ -310,7 +310,7 @@ export const BusinessInfoPage = {
                 'tax-identification-number-input',
                 'number-of-employees-input',
                 'business-type-input',
-                'registered-capital-in-yuan-type-input',
+                'registered-capital-in-usd-type-input',
               ],
             },
           },
@@ -405,16 +405,16 @@ export const BusinessInfoPage = {
               },
             },
             {
-              name: 'registered-capital-in-yuan-type-input',
+              name: 'registered-capital-in-usd-type-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.registeredCapitalInYuan',
+              valueDestination: 'entity.data.additionalInfo.registeredCapitalInUsd',
               options: {
                 jsonFormDefinition: {
                   type: 'integer',
                 },
                 format: 'currency',
-                hint: 'text.registeredCapitalInYuan.hint',
-                label: 'text.registeredCapitalInYuan.label',
+                hint: 'text.registeredCapitalInUsd.hint',
+                label: 'text.registeredCapitalInUsd.label',
               },
             },
           ],

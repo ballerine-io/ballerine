@@ -21,7 +21,7 @@ const packageJson: PackageJson = JSON.parse(
 const plugins: PluginOption[] = [
   react(),
   tailwindcss(),
-  checker({ typescript: true }),
+  checker({ typescript: true, overlay: false }),
   tsconfigPaths(),
 ];
 
