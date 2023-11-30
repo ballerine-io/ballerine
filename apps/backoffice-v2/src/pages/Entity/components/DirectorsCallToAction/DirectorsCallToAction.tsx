@@ -8,6 +8,7 @@ import {
   ICallToActionProps,
 } from '../CallToAction/interfaces';
 import { getRevisionReasonsForDocument } from './helpers';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 
 interface IDirectorsCallToActionProps extends ICallToActionProps {
   value: ICallToActionProps['value'] & {
@@ -30,7 +31,7 @@ export const DirectorsCallToAction: FunctionComponent<IDirectorsCallToActionProp
   const documentsOptions: ICallToActionDocumentOption[] = useMemo(
     () =>
       documents.map(({ category, type, id }) => ({
-        name: toTitleCase(`${category as string} - ${type as string}`),
+        name: toTitleCase(`${valueOrNA(category)} - ${valueOrNA(type)}`),
         value: id as string,
       })) as ICallToActionDocumentOption[],
     [documents],
