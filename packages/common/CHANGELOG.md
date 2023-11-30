@@ -4,6 +4,7 @@
 
 ### Patch Changes
 
+- Removed imageUrl property from ZZ document schemas
 - d5cca1e8: added defintion validation
 - f4b5c0df: added defintion validation
 
