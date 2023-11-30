@@ -923,6 +923,8 @@ export class WorkflowService {
         return context.documents;
       case 'director':
         return this.getDirectorsDocuments(context);
+      default:
+        'base';
     }
   }
 
