@@ -22,4 +22,5 @@ export interface IEditableDetails {
   }>;
   title: string;
   workflowId: string;
+  config: Record<string, unknown>;
 }
