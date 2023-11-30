@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 48a5a1f49: added missing eslint plugin
+- 48a5a1f4: added missing eslint plugin
 
 ## 1.0.1
 
