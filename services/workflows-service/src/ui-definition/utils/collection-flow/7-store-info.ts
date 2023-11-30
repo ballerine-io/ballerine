@@ -28,7 +28,7 @@ const validationSchema = {
                     required: ['mobileAppName'],
                     errorMessage: {
                       required: {
-                        mobileAppName: 'Mobile App Name should not be empty.',
+                        mobileAppName: 'errorMessages.required.mobileAppName',
                       },
                     },
                   },
@@ -38,27 +38,27 @@ const validationSchema = {
                       pattern: multipleUrlsPattern,
                       minLength: 1,
                       errorMessage: {
-                        minLength: 'Website URL(s) should not be empty.',
-                        pattern: 'Website URL(s) should be valid URL(s) separated by comma.',
+                        minLength: 'errorMessages.required.websiteUrls',
+                        pattern: 'errorMessages.pattern.websiteUrls',
                       },
                     },
                     dba: {
                       type: 'string',
                       not: { enum: [''] },
-                      errorMessage: 'Doing Business As (DBA) should not be empty.',
+                      errorMessage: 'errorMessages.required.dba',
                     },
                     products: {
                       type: 'string',
                       not: { enum: [''] },
-                      errorMessage: 'Products information should not be empty.',
+                      errorMessage: 'errorMessages.required.products',
                     },
                     established: {
                       type: 'string',
-                      errorMessage: 'Establishment date should be a valid string.',
+                      errorMessage: 'errorMessages.required.established',
                     },
                     hasMobileApp: {
                       type: 'boolean',
-                      errorMessage: 'Has Mobile App should be either true or false.',
+                      errorMessage: 'errorMessages.required.hasMobileApp',
                       default: false,
                     },
                     mobileAppName: {
@@ -68,7 +68,7 @@ const validationSchema = {
                       type: 'string',
                       minLength: 1,
                       errorMessage: {
-                        minLength: 'Industry is required.',
+                        minLength: 'errorMessages.minLength.industry',
                       },
                     },
                   },
@@ -82,12 +82,12 @@ const validationSchema = {
                   ],
                   errorMessage: {
                     required: {
-                      websiteUrls: 'Website URL(s) is required.',
-                      dba: 'Doing Business As (DBA) is required.',
-                      products: 'Products information is required.',
-                      established: 'Establishment date is required.',
-                      hasMobileApp: 'Information on mobile app availability is required.',
-                      industry: 'Industry is required.',
+                      websiteUrls: 'errorMessage.required.websiteUrls',
+                      dba: 'errorMessage.required.dba',
+                      products: 'errorMessage.required.products',
+                      established: 'errorMessage.required.established',
+                      hasMobileApp: 'errorMessage.required.hasMobileApp',
+                      industry: 'errorMessages.required.industry',
                     },
                   },
                 },
@@ -109,7 +109,7 @@ export const StoreInfoPage = {
   type: 'page',
   number: 7,
   stateName: 'store_info',
-  name: 'Store Info',
+  name: 'text.storeInfo',
   pageValidation: [
     {
       type: 'json-schema',
@@ -126,7 +126,7 @@ export const StoreInfoPage = {
             {
               type: 'h1',
               options: {
-                text: 'Store Info',
+                text: 'text.storeInfo',
               },
             },
           ],
@@ -154,8 +154,8 @@ export const StoreInfoPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Website URLs (divide with comma if more than one)',
-                hint: 'www.example.cn',
+                label: 'text.websiteUrls.label',
+                hint: 'text.websiteUrls.hint',
               },
             },
             {
@@ -166,8 +166,8 @@ export const StoreInfoPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'DBA (Descriptor)',
-                hint: 'Barclays',
+                label: 'text.dba.label',
+                hint: 'text.dba.hint',
               },
             },
             {
@@ -175,8 +175,8 @@ export const StoreInfoPage = {
               type: 'json-form:dropdown',
               valueDestination: 'entity.data.additionalInfo.store.industry',
               options: {
-                label: 'Industry',
-                hint: 'Choose',
+                label: 'text.industry',
+                hint: 'text.choose',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -194,8 +194,8 @@ export const StoreInfoPage = {
                   type: 'string',
                 },
                 classNames: ['min-width-40px'],
-                label: 'Products (divide with comma if more than one)',
-                hint: 'Smart Watches, Wireless Earbuds, Portable Chargers.',
+                label: 'text.products.label',
+                hint: 'text.products.hint',
               },
             },
             {
@@ -210,8 +210,8 @@ export const StoreInfoPage = {
                   'ui:field': 'DateInput',
                   'ui:label': true,
                 },
-                label: 'Established Date',
-                hint: 'DD/MM/YYYY',
+                label: 'text.established.label',
+                hint: 'text.dateHint',
               },
             },
             {
@@ -222,7 +222,7 @@ export const StoreInfoPage = {
                 jsonFormDefinition: {
                   type: 'boolean',
                 },
-                label: 'I have mobile application',
+                label: 'text.hasMobileApp.label',
                 uiSchema: {
                   'ui:label': false,
                 },
@@ -252,8 +252,8 @@ export const StoreInfoPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'App Name',
-                hint: 'App Name',
+                label: 'text.mobileAppName',
+                hint: 'text.mobileAppName',
               },
             },
           ],
@@ -274,7 +274,7 @@ export const StoreInfoPage = {
                 jsonFormDefinition: {
                   type: 'boolean',
                 },
-                label: "I declare that the website's business activity does not require a license",
+                label: 'text.hasActiveWebsite',
                 uiSchema: {
                   'ui:label': false,
                 },
@@ -286,8 +286,7 @@ export const StoreInfoPage = {
           type: 'description',
           name: 'description-1',
           options: {
-            descriptionRaw:
-              "Leaving the last checkbox 'Unchecked' will require providing extra licenses documents",
+            descriptionRaw: 'text.storeInfoDescription',
           },
         },
         {
@@ -304,7 +303,7 @@ export const StoreInfoPage = {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],
                 },
-                text: 'Continue',
+                text: 'text.continue',
               },
               availableOn: [
                 {

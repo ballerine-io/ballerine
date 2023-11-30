@@ -10,6 +10,7 @@
     "contacts": "Contacts",
     "mainContact": "Main Contact",
     "bankingDetails": "Banking Details",
+    "storeInfo": "Store Info",
     "directorsDescription": "Add all of the directors of the company.",
     "imShareholder": "I own 25% or more of the company",
     "imDirector": "I'm director of the company",
@@ -25,9 +26,14 @@
     "country": "Country",
     "nationality": "Nationality",
     "number": "Number",
+    "industry": "Industry",
     "continue": "Continue",
     "choose": "Choose",
+    "dateHint": "DD/MM/YYYY",
+    "mobileAppName": "App Name",
     "differentFromPhysicalAddress": "Different from physical address",
+    "hasActiveWebsite": "I declare that the website's business activity does not require a license",
+    "storeInfoDescription": "Leaving the last checkbox 'Unchecked' will require providing extra licenses documents",
     "email": {
       "label": "Email",
       "hint": "name@companyhk.com"
@@ -57,8 +63,7 @@
       "hint": "CEO / Manager / Partner"
     },
     "dateOfBirth": {
-      "label": "Date of Birth",
-      "hint": "DD/MM/YYYY"
+      "label": "Date of Birth"
     },
     "registrationNumber": {
       "label": "Registration Number",
@@ -144,6 +149,24 @@
     },
     "currency": {
       "label": "Account Currency"
+    },
+    "websiteUrls": {
+      "label": "Website URLs (divide with comma if more than one)",
+      "hint": "www.example.cn"
+    },
+    "dba": {
+      "label": "DBA (Descriptor)",
+      "hint": "Barclays"
+    },
+    "products": {
+      "label": "Products (divide with comma if more than one)",
+      "hint": "Smart Watches, Wireless Earbuds, Portable Chargers."
+    },
+    "established": {
+      "label": "Established Date"
+    },
+    "hasMobileApp": {
+      "label": "I have mobile application"
     }
   },
   "errorMessage": {
@@ -179,7 +202,14 @@
       "swiftCode": "SWIFT code is required.",
       "bankName": "Bank name is required.",
       "bankAddress": "Bank address is required.",
-      "currency": "Account currency is required"
+      "currency": "Account currency is required",
+      "mobileAppName": "Mobile App Name should not be empty.",
+      "websiteUrls": "Website URL(s) is required.",
+      "dba": "Doing Business As (DBA) is required.",
+      "products": "Products information is required.",
+      "established": "Establishment date is required.",
+      "hasMobileApp": "Information on mobile app availability is required.",
+      "industry": "Industry is required."
     },
     "minLength": {
       "firstName": "First name must be at least 2 characters long.",
@@ -205,7 +235,8 @@
       "bankName": "Bank name should be at least 3 characters long.",
       "bankCode": "Bank Code should be at least 2 characters long.",
       "bankAddress": "Bank address should be at least 10 characters long.",
-      "currency": "Account currency is required"
+      "currency": "Account currency is required.",
+      "websiteUrls": "Website URL(s) should not be empty."
     },
     "maxLength": {
       "firstName": "First name should not exceed 50 characters.",
@@ -239,9 +270,10 @@
     },
     "pattern": {
       "phone": "Phone number must be 10 to 15 digits long and may start with a +.",
-      "taxIdentificationNumber": "Tax ID must be in valid format",
+      "taxIdentificationNumber": "Tax ID must be in valid format.",
       "country": "Please enter a valid country code.",
-      "subBranch": "Sub-branch should contain only numbers."
+      "subBranch": "Sub-branch should contain only numbers.",
+      "websiteUrls": "Website URL(s) should be valid URL(s) separated by comma."
     },
     "type": {
       "dateOfBirth": "Date of birth must be a string.",

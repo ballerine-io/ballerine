@@ -173,7 +173,7 @@ export const PersonalInfoPage = {
               valueDestination: 'entity.data.additionalInfo.mainRepresentative.dateOfBirth',
               options: {
                 label: 'text.dateOfBirth.label',
-                hint: 'text.dateOfBirth.hint',
+                hint: 'text.dateHint',
                 jsonFormDefinition: {
                   type: 'string',
                 },

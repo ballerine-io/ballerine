@@ -10,6 +10,7 @@
     "contacts": "联系方式",
     "mainContact": "主要联系人",
     "bankingDetails": "银行详情",
+    "storeInfo": "商店信息",
     "directorsDescription": "添加公司的所有董事。",
     "imShareholder": "我拥有该公司25%或以上的股份",
     "imDirector": "我是该公司的董事",
@@ -25,9 +26,14 @@
     "country": "国家",
     "nationality": "国籍",
     "number": "号码",
+    "industry": "行业",
     "continue": "继续",
     "choose": "选择",
+    "dateHint": "日/月/年",
+    "mobileAppName": "应用名称",
     "differentFromPhysicalAddress": "与实际地址不同",
+    "hasActiveWebsite": "我声明该网站的业务活动不需要许可证",
+    "storeInfoDescription": "最后一个复选框未勾选将需要提供额外的许可证文件",
     "email": {
       "label": "电子邮件",
       "hint": "name@companyhk.com"
@@ -57,8 +63,7 @@
       "hint": "CEO / 经理 / 合伙人"
     },
     "dateOfBirth": {
-      "label": "出生日期",
-      "hint": "日/月/年"
+      "label": "出生日期"
     },
     "registrationNumber": {
       "label": "注册号",
@@ -144,6 +149,24 @@
     },
     "currency": {
       "label": "账户货币"
+    },
+    "websiteUrls": {
+      "label": "网站网址（如果有多个，请用逗号分隔）",
+      "hint": "www.example.cn"
+    },
+    "dba": {
+      "label": "经营名称 (DBA)",
+      "hint": "巴克莱"
+    },
+    "products": {
+      "label": "产品（如果有多个，请用逗号分隔）",
+      "hint": "智能手表，无线耳机，便携式充电器。"
+    },
+    "established": {
+      "label": "成立日期"
+    },
+    "hasMobileApp": {
+      "label": "我有移动应用"
     }
   },
   "errorMessage": {
@@ -179,7 +202,14 @@
       "swiftCode": "需要SWIFT代码。",
       "bankName": "需要银行名称。",
       "bankAddress": "需要银行地址。",
-      "currency": "需要账户货币"
+      "currency": "需要账户货币。",
+      "mobileAppName": "移动应用名称不能为空。",
+      "websiteUrls": "网站网址是必需的。",
+      "dba": "经营名称 (DBA) 是必需的。",
+      "products": "产品信息是必需的。",
+      "established": "成立日期是必需的。",
+      "hasMobileApp": "移动应用的信息是必需的。",
+      "industry": "行业是必需的。"
     },
     "minLength": {
       "firstName": "名字至少需要2个字符。",
@@ -205,7 +235,8 @@
       "bankName": "银行名称至少需要3个字符。",
       "bankCode": "银行代码至少需要2个字符。",
       "bankAddress": "银行地址至少需要10个字符。",
-      "currency": "需要账户货币"
+      "currency": "账户货币是必需的。",
+      "websiteUrls": "网站网址不应为空。"
     },
     "maxLength": {
       "firstName": "名字不应超过50个字符。",
@@ -239,9 +270,10 @@
     },
     "pattern": {
       "phone": "电话号码必须为10至15位数字，可以以+开头。",
-      "taxIdentificationNumber": "税务识别号必须为有效格式",
+      "taxIdentificationNumber": "税务识别号必须为有效格式。",
       "country": "请输入有效的国家代码。",
-      "subBranch": "分行号码只应包含数字。"
+      "subBranch": "分行号码只应包含数字。",
+      "websiteUrls": "网站网址应为有效的网址，用逗号分隔。"
     },
     "type": {
       "dateOfBirth": "出生日期必须是一个字符串。",
