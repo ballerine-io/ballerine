@@ -1,9 +1,23 @@
 # @ballerine/common
 
+## 0.7.26
+
+### Patch Changes
+
+- bfded451: added functionality of replacing null with undefined
+- updated version of defintion
+
+## 0.7.25
+
+### Patch Changes
+
+- updated schemas
+
 ## 0.7.24
 
 ### Patch Changes
 
+- Removed imageUrl property from ZZ document schemas
 - d5cca1e8: added defintion validation
 - f4b5c0df: added defintion validation
 
