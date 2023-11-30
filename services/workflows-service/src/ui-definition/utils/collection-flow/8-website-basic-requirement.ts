@@ -36,21 +36,21 @@ const validationSchema = {
                           pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
-                            minLength: 'Main Website should not be empty.',
-                            pattern: 'Main Website should be a valid URL.',
+                            minLength: 'errorMessage.minLength.mainWebsite',
+                            pattern: 'errorMessage.pattern.mainWebsite',
                           },
                         },
                         contactDetails: {
                           type: 'string',
-                          errorMessage: 'Contact details should not be empty.',
+                          errorMessage: 'errorMessage.required.contactDetails',
                         },
                         returnPolicyUrl: {
                           type: 'string',
                           pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
-                            minLength: 'Return Policy URL should not be empty.',
-                            pattern: 'Return Policy URL should be a valid URL.',
+                            minLength: 'errorMessage.minLength.returnPolicyUrl',
+                            pattern: 'errorMessage.pattern.returnPolicyUrl',
                           },
                         },
                         shippingPolicyUrl: {
@@ -58,8 +58,8 @@ const validationSchema = {
                           pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
-                            minLength: 'Shipping Policy URL should not be empty.',
-                            pattern: 'Shipping Policy URL should be a valid URL.',
+                            minLength: 'errorMessage.minLength.shippingPolicyUrl',
+                            pattern: 'errorMessage.pattern.shippingPolicyUrl',
                           },
                         },
                         aboutUsUrl: {
@@ -67,8 +67,8 @@ const validationSchema = {
                           pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
-                            minLength: 'About Us URL should not be empty.',
-                            pattern: 'About Us URL should be a valid URL.',
+                            minLength: 'errorMessage.minLength.aboutUsUrl',
+                            pattern: 'errorMessage.pattern.aboutUsUrl',
                           },
                         },
                         termsOfUseUrl: {
@@ -76,8 +76,8 @@ const validationSchema = {
                           pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
-                            minLength: 'Terms of Use URL should not be empty.',
-                            pattern: 'Terms of Use URL should be a valid URL.',
+                            minLength: 'errorMessage.minLength.termsOfUseUrl',
+                            pattern: 'errorMessage.pattern.termsOfUseUrl',
                           },
                         },
                         privacyPolicyUrl: {
@@ -85,8 +85,8 @@ const validationSchema = {
                           pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
-                            minLength: 'Privacy Policy URL should not be empty.',
-                            pattern: 'Privacy Policy URL should be a valid URL.',
+                            minLength: 'errorMessage.minLength.privacyPolicyUrl',
+                            pattern: 'errorMessage.pattern.privacyPolicyUrl',
                           },
                         },
                         productQuantity: {
@@ -108,11 +108,11 @@ const validationSchema = {
                       },
                       errorMessage: {
                         required: {
-                          mainWebsite: 'Main website URL is required.',
-                          contactDetails: 'Contact details are required.',
-                          productQuantity: 'Product quantity is required.',
-                          productDescription: 'Product description is required.',
-                          productPrice: 'Product price is required.',
+                          mainWebsite: 'errorMessage.required.mainWebsite',
+                          contactDetails: 'errorMessage.required.contactDetails',
+                          productQuantity: 'errorMessage.required.productQuantity',
+                          productDescription: 'errorMessage.required.productDescription',
+                          productPrice: 'errorMessage.required.productPrice',
                         },
                       },
                     },

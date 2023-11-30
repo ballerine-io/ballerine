@@ -209,7 +209,12 @@
       "products": "Products information is required.",
       "established": "Establishment date is required.",
       "hasMobileApp": "Information on mobile app availability is required.",
-      "industry": "Industry is required."
+      "industry": "Industry is required.",
+      "mainWebsite": "Main website URL is required.",
+      "contactDetails": "Contact details are required.",
+      "productQuantity": "Product quantity is required.",
+      "productDescription": "Product description is required.",
+      "productPrice": "Product price is required."
     },
     "minLength": {
       "firstName": "First name must be at least 2 characters long.",
@@ -236,7 +241,13 @@
       "bankCode": "Bank Code should be at least 2 characters long.",
       "bankAddress": "Bank address should be at least 10 characters long.",
       "currency": "Account currency is required.",
-      "websiteUrls": "Website URL(s) should not be empty."
+      "websiteUrls": "Website URL(s) should not be empty.",
+      "mainWebsite": "Main Website should not be empty.",
+      "returnPolicyUrl": "Return Policy URL should not be empty.",
+      "shippingPolicyUrl": "Shipping Policy URL should not be empty.",
+      "aboutUsUrl": "About Us URL should not be empty.",
+      "termsOfUseUrl": "Terms of Use URL should not be empty.",
+      "privacyPolicyUrl": "Privacy Policy URL should not be empty."
     },
     "maxLength": {
       "firstName": "First name should not exceed 50 characters.",
@@ -273,7 +284,13 @@
       "taxIdentificationNumber": "Tax ID must be in valid format.",
       "country": "Please enter a valid country code.",
       "subBranch": "Sub-branch should contain only numbers.",
-      "websiteUrls": "Website URL(s) should be valid URL(s) separated by comma."
+      "websiteUrls": "Website URL(s) should be valid URL(s) separated by comma.",
+      "mainWebsite": "Main Website should be a valid URL.",
+      "returnPolicyUrl": "Return Policy URL should be a valid URL.",
+      "shippingPolicyUrl": "Shipping Policy URL should be a valid URL.",
+      "aboutUsUrl": "About Us URL should be a valid URL.",
+      "termsOfUseUrl": "Terms of Use URL should be a valid URL.",
+      "privacyPolicyUrl": "Privacy Policy URL should be a valid URL."
     },
     "type": {
       "dateOfBirth": "Date of birth must be a string.",
