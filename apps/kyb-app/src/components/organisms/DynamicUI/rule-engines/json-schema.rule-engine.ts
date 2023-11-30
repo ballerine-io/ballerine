@@ -59,7 +59,6 @@ export class JsonSchemaRuleEngine implements RuleEngine {
 
         messages?.forEach(messageText => {
           const sanitizedFieldId = fieldDestination.replaceAll(/\.(\d+)\./g, '[$1].');
-
           fieldErrors.push(
             this.createFieldError(
               sanitizedFieldId,
