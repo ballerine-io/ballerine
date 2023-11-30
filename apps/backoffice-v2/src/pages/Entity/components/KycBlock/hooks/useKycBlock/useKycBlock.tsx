@@ -113,6 +113,7 @@ export const useKycBlock = ({
               dropdownOptions: undefined,
             })),
           },
+          workflow: childWorkflow,
         }),
       ) ?? []
     : [];
@@ -273,6 +274,7 @@ export const useKycBlock = ({
                         title: `Details`,
                         data: details,
                       },
+                      workflow: childWorkflow,
                     },
                   ],
                 },
@@ -304,6 +306,7 @@ export const useKycBlock = ({
                         title: `Decision`,
                         data: decision,
                       },
+                      workflow: childWorkflow,
                     },
                   ],
                 },

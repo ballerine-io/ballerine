@@ -1,3 +1,4 @@
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { AnyObject } from '@ballerine/ui';
 
 export interface IDetailsProps {
@@ -5,6 +6,8 @@ export interface IDetailsProps {
   hideSeparator?: boolean;
   documents?: AnyObject[];
   contextUpdateMethod?: 'base' | 'director';
+  workflow: TWorkflowById;
+  selectDocuments?: (workflow: TWorkflowById) => AnyObject[];
   value: {
     id: string;
     title: string;

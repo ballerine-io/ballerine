@@ -82,6 +82,7 @@ export const useDirectorsBlocks = (
                   }))
                 : [],
             },
+            workflow,
           };
 
           return {
@@ -176,8 +177,9 @@ export const useDirectorsBlocks = (
                             },
                           ),
                         },
-                        documents,
+                        selectDocuments: () => documents,
                         contextUpdateMethod: 'director',
+                        workflow,
                       },
                       decisionCell,
                     ],
@@ -278,6 +280,8 @@ export const useDirectorsBlocks = (
     handleRevisionDecisionsReset,
     workflow,
     caseState.writeEnabled,
+    documentSchemas,
+    noAction,
   ]);
 
   return blocks;

@@ -156,6 +156,7 @@ export const useTasks = ({
                     value,
                   })),
                 },
+                workflow,
               },
             ],
           }));
@@ -191,6 +192,7 @@ export const useTasks = ({
                     }),
                   ),
                 },
+                workflow,
               },
             ],
           },
@@ -350,6 +352,7 @@ export const useTasks = ({
                 }))
               : [],
           },
+          workflow,
         };
         const detailsCell = {
           type: 'container',
@@ -399,6 +402,7 @@ export const useTasks = ({
                   },
                 ),
               },
+              workflow,
             },
             decisionCell,
           ],
@@ -473,6 +477,7 @@ export const useTasks = ({
                     // TO DO: Remove this as soon as BE updated
                     .filter(elem => !elem.title.startsWith('__')),
                 },
+                workflow,
               },
             ],
           },
@@ -514,6 +519,7 @@ export const useTasks = ({
                                 isEditable: false,
                               })),
                       },
+                      workflow,
                     },
                     {
                       type: 'map',
@@ -579,6 +585,7 @@ export const useTasks = ({
                         }),
                       ),
                     },
+                    workflow,
                     hideSeparator: true,
                   },
                   {
@@ -627,6 +634,7 @@ export const useTasks = ({
                     isEditable: false,
                   })),
                 },
+                workflow,
                 hideSeparator: true,
               },
             ],
@@ -656,6 +664,7 @@ export const useTasks = ({
                     isEditable: false,
                   })),
                 },
+                workflow,
                 hideSeparator: true,
               },
             ],
@@ -685,6 +694,7 @@ export const useTasks = ({
                     isEditable: false,
                   })),
                 },
+                workflow,
                 hideSeparator: true,
               },
             ],
@@ -719,6 +729,7 @@ export const useTasks = ({
                     };
                   }),
                 },
+                workflow,
                 hideSeparator: true,
               },
             ],
@@ -751,6 +762,7 @@ export const useTasks = ({
                     };
                   }),
                 },
+                workflow,
                 hideSeparator: true,
               },
             ],
@@ -1567,6 +1579,7 @@ export const useTasks = ({
                         }),
                       ),
                     },
+                    workflow,
                   },
                 ],
               },
