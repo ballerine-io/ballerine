@@ -45,13 +45,12 @@ const pluginsOutputBlacklist = [
 ];
 
 function getDocumentsSchemas(issuerCountryCode, workflow: TWorkflowById) {
-  const data = getDocumentSchemaByDefinition(
-    issuerCountryCode,
-    workflow.workflowDefinition?.documentsSchema as TDocument[],
-  );
-  const filters =
+  return (
     issuerCountryCode &&
-    data
+    getDocumentSchemaByDefinition(
+      issuerCountryCode,
+      workflow.workflowDefinition?.documentsSchema as TDocument[],
+    )
       .concat(getDocumentsByCountry(issuerCountryCode))
       .reduce((unique: TDocument[], item: TDocument) => {
         const isDuplicate = unique.some(u => u.type === item.type && u.category === item.category);
@@ -59,21 +58,19 @@ function getDocumentsSchemas(issuerCountryCode, workflow: TWorkflowById) {
           unique.push(item);
         }
         return unique;
-      }, [] as TDocument[]);
+      }, [] as TDocument[])
+      .filter((documentSchema: TDocument) => {
+        if (!workflow.workflowDefinition.config?.availableDocuments) return true;
 
-  const filteredDocs = filters.filter((documentSchema: TDocument) => {
-    if (!workflow.workflowDefinition.config?.availableDocuments) return true;
+        const isIncludes = !!workflow.workflowDefinition.config?.availableDocuments.find(
+          (availableDocument: TAvailableDocuments[number]) =>
+            availableDocument.type === documentSchema.type &&
+            availableDocument.category === documentSchema.category,
+        );
 
-    const isIncludes = !!workflow.workflowDefinition.config?.availableDocuments.find(
-      (availableDocument: TAvailableDocuments[number]) =>
-        availableDocument.type === documentSchema.type &&
-        availableDocument.category === documentSchema.category,
-    );
-
-    return isIncludes;
-  });
-  debugger;
-  return filteredDocs;
+        return isIncludes;
+      })
+  );
 }
 
 export const useTasks = ({
@@ -137,7 +134,7 @@ export const useTasks = ({
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
 
   const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
-  debugger;
+
   const registryInfoBlock =
     Object.keys(filteredPluginsOutput ?? {}).length === 0
       ? []
