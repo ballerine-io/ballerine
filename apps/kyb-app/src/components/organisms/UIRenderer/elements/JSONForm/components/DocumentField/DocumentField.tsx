@@ -13,6 +13,7 @@ import { HTTPError } from 'ky';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { getDocumentFileTypePath } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField/helpers/getDocumentFileTypePath';
 
 interface DocumentFieldParams {
   documentData: Partial<Document>;
@@ -94,13 +95,15 @@ export const DocumentField = (
       }
 
       const fileIdPath = getDocumentFileIdPath(definition);
+      const fileTypePath = getDocumentFileTypePath(definition);
 
       try {
         const uploadResult = await uploadFile({ file });
 
         // @ts-ignore
         set(document, fileIdPath, uploadResult.id);
-        // set(document, fileTypePath, file.type);
+        // @ts-ignore
+        set(document, fileTypePath, file.type);
         set(document, 'decision', {});
 
         stateApi.setContext(context);

@@ -77,7 +77,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
   async upload(
     localFilePath: TLocalFilePath,
     remoteFileConfig: TRemoteFileConfig,
-    mimeType: MimeType | undefined,
+    mimeType: MimeType | string | undefined,
   ): Promise<TS3BucketConfig> {
     const ts3BucketConfig = remoteFileConfig as TS3BucketConfig;
     const { remoteFileName, isPrivate, putObjectCommand } = this._initiatePutObject(
@@ -151,7 +151,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
     remoteFileConfig: TS3BucketConfig,
     fileName: string,
     readableStream: Readable,
-    mimeType: MimeType | undefined,
+    mimeType: MimeType | string | undefined,
   ) {
     const s3FileConfig = remoteFileConfig;
     const getObjectCommandInput = this.__fetchBucketPath(s3FileConfig);

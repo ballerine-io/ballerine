@@ -99,7 +99,26 @@ export const defaultContextSchema = Type.Object({
         version: Type.Optional(Type.Number()),
         pages: Type.Array(
           Type.Union([
-            Type.Object({ ballerineFileId: Type.String() }, { additionalProperties: false }),
+            Type.Object(
+              {
+                ballerineFileId: Type.String(),
+                type: Type.Optional(
+                  Type.String({
+                    enum: [
+                      'application/pdf',
+                      'image/png',
+                      'image/jpg',
+                      'image/jpeg',
+                      // Backwards compatibility
+                      'pdf',
+                      'png',
+                      'jpg',
+                    ],
+                  }),
+                ),
+              },
+              { additionalProperties: false },
+            ),
             Type.Object(
               {
                 ballerineFileId: Type.Optional(Type.String()),

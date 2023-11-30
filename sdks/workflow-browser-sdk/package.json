@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflow-browser-sdk",
   "author": "Ballerine <dev@ballerine.com>",
-  "version": "0.5.26",
+  "version": "0.5.27",
   "description": "workflow-browser-sdk",
   "module": "./dist/esm/index.js",
   "main": "./dist/cjs/index.js",
@@ -33,8 +33,8 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@ballerine/common": "0.7.27",
-    "@ballerine/workflow-core": "0.5.26",
+    "@ballerine/common": "0.7.28",
+    "@ballerine/workflow-core": "0.5.27",
     "xstate": "^4.37.0"
   },
   "devDependencies": {
