@@ -150,7 +150,7 @@ export const BusinessAddressInfoPage = {
   type: 'page',
   number: 3,
   stateName: 'business_address_information',
-  name: 'Business Address',
+  name: 'text.businessAddress',
   pageValidation: [
     {
       type: 'json-schema',
@@ -213,7 +213,7 @@ export const BusinessAddressInfoPage = {
                 jsonFormDefinition: {
                   type: 'number',
                 },
-                label: 'text.Number',
+                label: 'text.number',
                 hint: '10',
               },
             },

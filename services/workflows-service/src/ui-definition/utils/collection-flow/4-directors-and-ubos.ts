@@ -373,7 +373,7 @@ export const DirectorsAndUbosPage = {
               valueDestination:
                 'entity.data.additionalInfo.ubos[{INDEX}].additionalInfo.nationality',
               options: {
-                label: 'text.ationality',
+                label: 'text.nationality',
                 hint: 'text.choose',
                 jsonFormDefinition: {
                   type: 'string',

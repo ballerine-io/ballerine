@@ -430,6 +430,9 @@ importers:
       i18next:
         specifier: ^22.4.9
         version: 22.5.1
+      i18next-browser-languagedetector:
+        specifier: ^7.0.1
+        version: 7.2.0
       i18next-http-backend:
         specifier: ^2.1.1
         version: 2.4.1

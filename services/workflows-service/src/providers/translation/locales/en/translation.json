@@ -1,6 +1,5 @@
 {
   "text": {
-    "personalDetails": "Personal Details",
     "personalInformation": "Personal Information",
     "businessInformation": "Business Information",
     "businessAddress": "Business Address",
@@ -96,8 +95,8 @@
         "other": "Other"
       }
     },
-    "registeredCapitalInYuan": {
-      "label": "Registered capital (in Chinese Yuan)",
+    "registeredCapitalInUsd": {
+      "label": "Registered capital (in USD)",
       "hint": "2,000,000"
     }
   },
@@ -110,7 +109,7 @@
       "email": "Email is required.",
       "additionalInfo": "Additional information is required.",
       "jobTitle": "Job title is required.",
-      "registeredCapitalInYuan": "Registered capital in yuan is required.",
+      "registeredCapitalInUsd": "Registered capital in USD is required.",
       "businessType": "Business type is required.",
       "numberOfEmployees": "Number of employees is required.",
       "taxIdentificationNumber": "Tax identification number is required.",
@@ -176,7 +175,7 @@
       "numberOfEmployees": "Number of employees must be a number."
     },
     "minimum": {
-      "registeredCapitalInYuan": "Registered capital must be non-negative.",
+      "registeredCapitalInUsd": "Registered capital must be non-negative.",
       "numberOfEmployees": "Number of employees must be at least 1.",
       "percentageOfOwnership": "Percentage of ownership must be 25 or greater."
     },

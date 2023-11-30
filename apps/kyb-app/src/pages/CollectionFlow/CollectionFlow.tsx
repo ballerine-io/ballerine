@@ -24,6 +24,7 @@ import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
+import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 
 const elems = {
   h1: Title,
@@ -46,7 +47,8 @@ const elems = {
 };
 
 export const CollectionFlow = withSessionProtected(() => {
-  const { data: schema } = useUISchemasQuery();
+  const lng = useLanguageParam();
+  const { data: schema } = useUISchemasQuery(lng || 'en');
   const { data: context } = useFlowContextQuery();
   const { customer } = useCustomer();
   const { t } = useTranslation();

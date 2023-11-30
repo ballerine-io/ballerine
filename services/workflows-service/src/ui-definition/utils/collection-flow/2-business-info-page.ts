@@ -381,7 +381,7 @@ export const BusinessInfoPage = {
                       const: 'limited_partnership_(lp)',
                     },
                     {
-                      title: 'text.businessType.options.limitied_liability_partnership',
+                      title: 'text.businessType.options.limited_liability_partnership',
                       const: 'limited_liability_partnership_(llp)',
                     },
                     {
