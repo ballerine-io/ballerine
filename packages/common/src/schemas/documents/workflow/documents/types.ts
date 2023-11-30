@@ -5,7 +5,4 @@ export type TDocument = Omit<DefaultContextSchema['documents'][number], 'pages' 
   propertiesSchema: JSONSchema7;
 };
 
-export type TDocumentsWithAvailability = {
-  availableDocuments: Array<{ category: string; type: string }>;
-  schema: TDocument[];
-};
+export type TAvailableDocuments = Array<{ category: string; type: string }>;

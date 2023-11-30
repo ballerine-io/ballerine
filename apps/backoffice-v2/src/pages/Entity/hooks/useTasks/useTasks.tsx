@@ -15,8 +15,8 @@ import {
   getDocumentSchemaByDefinition,
   isNullish,
   StateTag,
+  TAvailableDocuments,
   TDocument,
-  TDocumentsWithAvailability,
 } from '@ballerine/common';
 import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
@@ -45,12 +45,13 @@ const pluginsOutputBlacklist = [
 ];
 
 function getDocumentsSchemas(issuerCountryCode, workflow: TWorkflowById) {
-  return (
+  const data = getDocumentSchemaByDefinition(
+    issuerCountryCode,
+    workflow.workflowDefinition?.documentsSchema as TDocument[],
+  );
+  const filters =
     issuerCountryCode &&
-    getDocumentSchemaByDefinition(
-      issuerCountryCode,
-      workflow.workflowDefinition?.documentsSchema as TDocumentsWithAvailability,
-    )
+    data
       .concat(getDocumentsByCountry(issuerCountryCode))
       .reduce((unique: TDocument[], item: TDocument) => {
         const isDuplicate = unique.some(u => u.type === item.type && u.category === item.category);
@@ -58,19 +59,21 @@ function getDocumentsSchemas(issuerCountryCode, workflow: TWorkflowById) {
           unique.push(item);
         }
         return unique;
-      }, [] as TDocument[])
-      .filter((documentSchema: TDocument) => {
-        if (!workflow.workflowDefinition.documentsSchema?.availableDocuments) return true;
+      }, [] as TDocument[]);
 
-        const isInside = !!workflow.workflowDefinition.documentsSchema?.availableDocuments.find(
-          (availableDocument: TDocumentsWithAvailability['availableDocuments'][number]) =>
-            availableDocument.type === documentSchema.type &&
-            availableDocument.category === documentSchema.category,
-        );
+  const filteredDocs = filters.filter((documentSchema: TDocument) => {
+    if (!workflow.workflowDefinition.config?.availableDocuments) return true;
 
-        return isInside;
-      })
-  );
+    const isIncludes = !!workflow.workflowDefinition.config?.availableDocuments.find(
+      (availableDocument: TAvailableDocuments[number]) =>
+        availableDocument.type === documentSchema.type &&
+        availableDocument.category === documentSchema.category,
+    );
+
+    return isIncludes;
+  });
+  debugger;
+  return filteredDocs;
 }
 
 export const useTasks = ({
@@ -134,7 +137,7 @@ export const useTasks = ({
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
 
   const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
-
+  debugger;
   const registryInfoBlock =
     Object.keys(filteredPluginsOutput ?? {}).length === 0
       ? []

@@ -19,6 +19,7 @@ export const ConfigSchema = z
     isLockedDocumentCategoryAndType: z.boolean().optional(),
     allowMultipleActiveWorkflows: z.boolean().optional(),
     initialEvent: z.string().optional(),
+    availableDocuments: z.array(z.object({ category: z.string(), type: z.string() })).optional(),
     callbackResult: z
       .object({
         transformers: z.array(z.any()),

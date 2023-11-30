@@ -25,7 +25,7 @@ export type {
   DefaultContextSchema,
   TDefaultSchemaDocumentPage,
   TDocument,
-  TDocumentsWithAvailability,
+  TAvailableDocuments,
 } from './schemas';
 
 export {

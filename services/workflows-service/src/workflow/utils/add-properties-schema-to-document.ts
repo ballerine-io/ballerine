@@ -4,7 +4,6 @@ import {
   getDocumentsByCountry,
   isObject,
   TDocument,
-  type TDocumentsWithAvailability,
 } from '@ballerine/common';
 import { WorkflowDefinition } from '@prisma/client';
 
@@ -17,7 +16,7 @@ export const addPropertiesSchemaToDocument = (
     (documentSchema &&
       getPropertiesFromDefinition(
         document,
-        documentSchema as TDocumentsWithAvailability,
+        documentSchema as TDocument[],
         document?.issuer?.country,
       )) ||
     getPropertiesSchemaForDocument(document);
@@ -37,10 +36,10 @@ function getPropertiesSchemaForDocument(document: DefaultContextSchema['document
 
 const getPropertiesFromDefinition = (
   document: DefaultContextSchema['documents'][number],
-  documentsSchema: TDocumentsWithAvailability,
+  documentsSchema: TDocument[],
   countryCode: string,
 ): ReturnType<typeof getPropertiesSchemaForDocument> | undefined => {
-  const localizedDocumentSchemas = documentsSchema.schema.filter(
+  const localizedDocumentSchemas = documentsSchema.filter(
     documentSchema => documentSchema.issuer.country === countryCode,
   );
 
