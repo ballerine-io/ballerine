@@ -258,7 +258,10 @@ export class WorkflowService {
         ...workflow.context,
         documents: workflow.context?.documents?.map(
           (document: DefaultContextSchema['documents'][number]) => {
-            return addPropertiesSchemaToDocument(document);
+            return addPropertiesSchemaToDocument(
+              document,
+              workflow.workflowDefinition.documentsSchema,
+            );
           },
         ),
       },
@@ -805,8 +808,8 @@ export class WorkflowService {
       id: documentId,
     };
 
-    const newDocument = addPropertiesSchemaToDocument(document);
-    const propertiesSchema = newDocument?.propertiesSchema ?? {};
+    const documentSchema = addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
+    const propertiesSchema = documentSchema?.propertiesSchema ?? {};
     if (Object.keys(propertiesSchema)?.length) {
       let propertiesSchemaForValidation = propertiesSchema;
       if (!checkRequiredFields) {
@@ -815,7 +818,7 @@ export class WorkflowService {
       }
       const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation);
 
-      const isValidPropertiesSchema = validatePropertiesSchema(newDocument?.properties);
+      const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
 
       if (!isValidPropertiesSchema) {
         throw new BadRequestException(
@@ -831,7 +834,7 @@ export class WorkflowService {
     const updatedWorkflow = await this.updateContextById(
       workflowId,
       {
-        documents: [newDocument],
+        documents: [documentSchema],
       },
       [projectId],
     );
