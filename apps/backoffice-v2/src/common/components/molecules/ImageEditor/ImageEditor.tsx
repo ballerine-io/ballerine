@@ -10,7 +10,6 @@ export interface IImageEditorProps {
   image: { imageUrl: string; fileType: string; id: string };
   crop: Crop | undefined;
   onCrop: (crop: Crop) => void;
-  // onCancelCrop: (crop: Crop) => void;
   isCropping: boolean;
   isRotatedOrTransformed: boolean;
   imageRotation: number;
@@ -22,7 +21,6 @@ export const ImageEditor: FunctionComponentWithChildren<IImageEditorProps> = ({
   image,
   crop,
   onCrop,
-  // onCancelCrop,
   isCropping,
   isRotatedOrTransformed,
   imageRotation,
