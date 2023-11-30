@@ -2,6 +2,7 @@ import { getFileType } from '@/common/get-file-type/get-file-type';
 import { MimeType } from 'file-type';
 import mime from 'mime';
 import { getFileExtension } from '@/common/get-file-extension/get-file-extension';
+import { log } from '@ballerine/common';
 
 /**
  *
@@ -38,6 +39,12 @@ export const getFileMetadata = async ({
   if (!fileMetadata?.ext && !fileName && mimeType) {
     extension = mime.getExtension(mimeType) ?? undefined;
   }
+
+  log(!mimeType, `Could not extract mime type from file: ${file} with a file name of: ${fileName}`);
+  log(
+    !extension,
+    `Could not extract file extension from file: ${file} with a file name of: ${fileName}`,
+  );
 
   return {
     mimeType,

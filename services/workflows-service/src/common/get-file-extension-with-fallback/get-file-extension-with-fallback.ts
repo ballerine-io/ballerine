@@ -28,5 +28,9 @@ export const getFileExtensionWithFallback = async ({
     return mime.getExtension(fileMetadata.mime) ?? undefined;
   }
 
+  console.warn(
+    `Could not extract file extension from file: ${file} with a file name of: ${fileName}`,
+  );
+
   return;
 };
