@@ -58,11 +58,10 @@ export class ApiPlugin {
 
       if (apiResponse.ok) {
         const result = await apiResponse.json();
-        let responseBody = result as AnyRecord;
-
-        if (this.response?.transformers) {
-          responseBody = await this.transformData(this.response.transformers, result as AnyRecord);
-        }
+        const responseBody = await this.transformData(
+          this.response!.transformers,
+          result as AnyRecord,
+        );
 
         const { isValidResponse, errorMessage } = await this.validateContent(
           this.response!.schemaValidator,
@@ -144,15 +143,9 @@ export class ApiPlugin {
 
   async transformData(transformers: Transformers, record: AnyRecord) {
     let mutatedRecord = record;
-
-    if (!transformers) {
-      throw new Error('No transformers were provided');
-    }
-
     for (const transformer of transformers) {
       mutatedRecord = await this.transformByTransformer(transformer, mutatedRecord);
     }
-
     return mutatedRecord;
   }
 
