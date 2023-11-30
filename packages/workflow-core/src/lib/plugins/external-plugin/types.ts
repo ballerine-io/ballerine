@@ -86,4 +86,3 @@ export interface SerializableIterativePluginParams {
 
   invoke?(...args: any): void;
 }
-
