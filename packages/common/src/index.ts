@@ -32,7 +32,7 @@ export {
   getGhanaDocuments,
   getDocumentsByCountry,
   getDocumentId,
-  getDocumentSchemaByDefinition,
+  getDocumentSchemaByCountry,
   defaultContextSchema,
 } from './schemas';
 

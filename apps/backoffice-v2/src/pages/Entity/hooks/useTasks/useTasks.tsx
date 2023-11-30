@@ -12,7 +12,7 @@ import {
 import {
   CommonWorkflowStates,
   getDocumentsByCountry,
-  getDocumentSchemaByDefinition,
+  getDocumentSchemaByCountry,
   isNullish,
   StateTag,
   TAvailableDocuments,
@@ -47,7 +47,7 @@ const pluginsOutputBlacklist = [
 function getDocumentsSchemas(issuerCountryCode, workflow: TWorkflowById) {
   return (
     issuerCountryCode &&
-    getDocumentSchemaByDefinition(
+    getDocumentSchemaByCountry(
       issuerCountryCode,
       workflow.workflowDefinition?.documentsSchema as TDocument[],
     )

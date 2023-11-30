@@ -17,7 +17,7 @@ export const getDocumentsByCountry = (countryCode: (typeof countryCodes)[number]
   return documentIdsByCountry[countryCode]?.() || [];
 };
 
-export const getDocumentSchemaByDefinition = (
+export const getDocumentSchemaByCountry = (
   countryCode: (typeof countryCodes)[number],
   documentsSchema: TDocument[] | undefined,
 ): TDocument[] => {
