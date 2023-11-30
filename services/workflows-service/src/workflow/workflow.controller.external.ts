@@ -196,7 +196,7 @@ export class WorkflowControllerExternal {
     });
   }
 
-  // POST /event
+  /// POST /event
   @common.Post('/:id/event')
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
