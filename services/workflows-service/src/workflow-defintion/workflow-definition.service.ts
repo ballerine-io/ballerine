@@ -79,7 +79,7 @@ export class WorkflowDefinitionService {
 
   async getLatestVersion(id: string, projectId: TProjectId) {
     const workflowDefinition = await this.repository.findById(id, {}, [projectId]);
-    const latestVersion = await this.repository.findLatestVersion(workflowDefinition.name, [
+    const latestVersion = await this.repository.findByLatestVersion(workflowDefinition.name, [
       projectId,
     ]);
 

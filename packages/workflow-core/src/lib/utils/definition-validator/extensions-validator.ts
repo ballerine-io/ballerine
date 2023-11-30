@@ -85,9 +85,9 @@ const validateTransformers = (
         validateMapping('json-logic', transform.mapping as unknown as Record<string, unknown>);
     } catch (ex) {
       throw new Error(
-        `Invalid transform for ${pluginName} - type: ${transform.transformer} transformer: ${
-          isErrorWithMessage(ex) ? ex.message : ''
-        }`,
+        `Invalid transform for ${pluginName} - type: ${JSON.stringify(
+          transform.transformer,
+        )} transformer: ${isErrorWithMessage(ex) ? ex.message : ''}`,
       );
     }
   });

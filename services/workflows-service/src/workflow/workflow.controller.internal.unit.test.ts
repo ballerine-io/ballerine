@@ -64,7 +64,7 @@ export function buildWorkflowDefinition(sequenceNum: number, projectId?: string)
       schema: {},
     },
     projectId: projectId,
-    isPublic: !projectId,
+    isPublic: false,
   };
 }
 

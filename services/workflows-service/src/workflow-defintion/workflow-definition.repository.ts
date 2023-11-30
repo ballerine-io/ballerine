@@ -114,7 +114,7 @@ export class WorkflowDefinitionRepository {
     );
   }
 
-  async findLatestVersion(name: string, projectIds: TProjectIds) {
+  async findByLatestVersion(name: string, projectIds: TProjectIds) {
     return await this.prisma.workflowDefinition.findFirstOrThrow({
       where: {
         name,

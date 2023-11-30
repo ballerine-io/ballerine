@@ -1,4 +1,4 @@
-export const replaceNullsWithUndefined = (obj: Record<string, object>) => {
+export const replaceNullsWithUndefined = (obj: unknown) => {
   if (obj === null) {
     return undefined;
   }
@@ -7,11 +7,10 @@ export const replaceNullsWithUndefined = (obj: Record<string, object>) => {
     return obj;
   }
 
-  const newObj: any = {};
-  for (const [key, value] of Object.entries(obj)) {
-    newObj[key] =
-      value === null ? undefined : replaceNullsWithUndefined(value as Record<string, object>);
-  }
+  const objWithoutNulls = Object.entries(obj).reduce((acc, [key, value]) => {
+    acc[key] = replaceNullsWithUndefined(value);
+    return acc;
+  }, {} as Record<PropertyKey, unknown>);
 
-  return newObj;
+  return objWithoutNulls;
 };
