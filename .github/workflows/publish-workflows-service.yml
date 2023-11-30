@@ -17,13 +17,9 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
 
 jobs:
   build-and-push-image:
-    strategy:
-      matrix:
-        platform: ["linux/arm64", "linux/amd64"]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -33,7 +29,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install JQ
+      - name: Install jq
         run: sudo apt-get install jq
 
       - name: Set up Docker Buildx
@@ -56,7 +52,6 @@ jobs:
         run: |
           PACKAGE_VERSION=$(jq -r '.version' services/workflows-service/package.json)
           echo "::set-output name=version::$PACKAGE_VERSION"
-
       - name: Print the version
         run: echo "The version was ${{ steps.get_version.outputs.version }}"
 
@@ -67,10 +62,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ env.BRANCH_NAME }}
-            type=raw,value=commit-${{ github.sha }}-${{ env.BRANCH_NAME }}
-            type=raw,value=${{ steps.get_version.outputs.version }}-${{ env.BRANCH_NAME }}
-
+            type=raw,value=${{ github.head_ref || github.ref_name }}
+            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
+            type=raw,value=${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
       - name: Extract metadata (tags, labels) for prod Docker images
         if: github.ref == 'refs/heads/prod'
         # This branch will have the tag latest
@@ -83,15 +77,14 @@ jobs:
             type=raw,value=commit-${{ github.sha }}-prod
             type=raw,value=${{ steps.get_version.outputs.version }}-prod
             type=raw,value=latest
-
       - name: Build and push Docker image for Prod
         if: github.ref == 'refs/heads/prod'
         uses: docker/build-push-action@v4
         with:
           context: services/workflows-service
-          platforms: ${{ matrix.platform }}
+          platforms: linux/amd64
           push: true
-          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BRANCH_NAME }}'
+          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
           tags: ${{ steps.prodmeta.outputs.tags }}
 
       - name: Build and push Docker image for non Prod
@@ -99,16 +92,15 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: services/workflows-service
-          platforms: ${{ matrix.platform }}
+          platforms: linux/amd64
           push: true
-          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BRANCH_NAME }}'
+          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
           tags: ${{ steps.branchmeta.outputs.tags }}
 
       - name: Scan Docker Image
-        if: "!contains(env.BRANCH_NAME, '/')"
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.BRANCH_NAME }}'
+          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
           format: 'table'
           ignore-unfixed: true
           exit-code: 1
