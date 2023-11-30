@@ -23,5 +23,6 @@ export type AuthenticatedEntity = {
   customer?: Partial<Customer>;
   type: 'user' | 'customer' | 'admin';
 };
+export type AuthenticatedEntityWithProjects = AuthenticatedEntity & { projectIds: TProjectIds };
 
 export type ObjectValues<TObject extends Record<PropertyKey, any>> = TObject[keyof TObject];

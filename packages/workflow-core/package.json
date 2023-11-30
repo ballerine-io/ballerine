@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflow-core",
   "author": "Ballerine <dev@ballerine.com>",
-  "version": "0.5.22",
+  "version": "0.5.23",
   "description": "workflow-core",
   "module": "./dist/esm/index.js",
   "main": "./dist/cjs/index.js",
@@ -31,7 +31,7 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@ballerine/common": "0.7.23",
+    "@ballerine/common": "0.7.24",
     "ajv": "^8.12.0",
     "i18n-iso-countries": "^7.6.0",
     "jmespath": "^0.16.0",

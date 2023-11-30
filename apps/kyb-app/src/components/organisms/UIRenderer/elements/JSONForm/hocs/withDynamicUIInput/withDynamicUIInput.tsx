@@ -1,3 +1,4 @@
+import { ARRAY_VALUE_INDEX_PLACEHOLDER } from '@/common/consts/consts';
 import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
@@ -29,7 +30,7 @@ const getInputIndex = (inputId: string) => findLastDigit(inputId);
 const injectIndexToDestinationIfNeeded = (destination: string, index: number | null): string => {
   if (index === null) return destination;
 
-  const result = destination.replace(`{INDEX}`, `${index}`);
+  const result = destination.replace(ARRAY_VALUE_INDEX_PLACEHOLDER, `${index}`);
 
   return result;
 };

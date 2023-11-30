@@ -376,7 +376,7 @@ export const dynamicUiWorkflowDefinition = {
   isPublic: true,
 };
 
-export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, projectId?: string) => {
+export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, projectId: string) => {
   const kybDynamicExample = {
     ...dynamicUiWorkflowDefinition,
     isPublic: !projectId,
@@ -387,8 +387,12 @@ export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, proj
     data: kybDynamicExample,
   });
 
-  //@ts-ignore
-  await generateDynamicUiTest(prismaClient, workflow.id, projectId || workflow.projectId);
+  await generateDynamicUiTest(
+    prismaClient,
+    workflow.id,
+    // @ts-ignore - is null expected?
+    projectId || workflow.projectId,
+  );
 
   return workflow;
 };

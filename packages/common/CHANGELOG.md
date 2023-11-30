@@ -1,5 +1,13 @@
 # @ballerine/common
 
+## 0.7.24
+
+### Patch Changes
+
+- Removed imageUrl property from ZZ document schemas
+- d5cca1e8: added defintion validation
+- f4b5c0df: added defintion validation
+
 ## 0.7.23
 
 ### Patch Changes

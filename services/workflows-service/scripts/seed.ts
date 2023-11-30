@@ -44,11 +44,11 @@ const persistImageFile = async (client: PrismaClient, uri: string, projectId: st
 
 function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number, pdf = false) {
   if (pdf) {
-    return `https://backoffice-demo.ballerine.app/images/mock-documents/set_1_doc_pdf.pdf`;
+    return `https://www.africau.edu/images/default/sample.pdf`;
   }
 
   if (countOfBusiness < 4) {
-    return `https://backoffice-demo.ballerine.app/images/mock-documents/${imageTemplate}`;
+    return faker.image.business(1000, 2000, true);
   }
 
   return faker.image.people(1000, 2000, true);

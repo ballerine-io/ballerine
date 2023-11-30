@@ -79,7 +79,6 @@ export const getUniversalDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object({
         businessName: Type.Optional(Type.String()),
-        imageUrl: Type.Optional(Type.String()),
       }),
     },
     {
@@ -116,7 +115,6 @@ export const getUniversalDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object({
         businessName: Type.Optional(Type.String()),
-        imageUrl: Type.Optional(Type.String()),
       }),
     },
     {
@@ -127,7 +125,6 @@ export const getUniversalDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object({
         businessName: Type.Optional(Type.String()),
-        imageUrl: Type.Optional(Type.String()),
       }),
     },
     {
