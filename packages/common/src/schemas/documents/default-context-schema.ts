@@ -105,6 +105,10 @@ export const defaultContextSchema = Type.Object({
                 type: Type.Optional(
                   Type.String({
                     enum: [
+                      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                      'application/vnd.ms-excel',
+                      'text/csv',
+                      'application/csv',
                       'application/pdf',
                       'image/png',
                       'image/jpg',
@@ -116,6 +120,7 @@ export const defaultContextSchema = Type.Object({
                     ],
                   }),
                 ),
+                fileName: Type.Optional(Type.String()),
               },
               { additionalProperties: false },
             ),
@@ -127,6 +132,10 @@ export const defaultContextSchema = Type.Object({
                 type: Type.Optional(
                   Type.String({
                     enum: [
+                      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                      'application/vnd.ms-excel',
+                      'text/csv',
+                      'application/csv',
                       'application/pdf',
                       'image/png',
                       'image/jpg',
@@ -138,6 +147,7 @@ export const defaultContextSchema = Type.Object({
                     ],
                   }),
                 ),
+                fileName: Type.Optional(Type.String()),
                 data: Type.Optional(Type.String()),
                 metadata: Type.Optional(
                   Type.Object(

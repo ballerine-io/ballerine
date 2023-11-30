@@ -1598,7 +1598,7 @@ export class WorkflowService {
             id: documentId,
             uri: documentPage.uri,
             provider: documentPage.provider,
-            // Will be solved once DefaultContextSchema is typed by Typebox
+            // TODO: Solve once DefaultContextSchema is typed by Typebox
             fileName: (
               documentPage as typeof documentPage & {
                 fileName: string;
