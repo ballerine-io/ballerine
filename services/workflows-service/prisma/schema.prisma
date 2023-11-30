@@ -149,6 +149,7 @@ model WorkflowDefinition {
   definitionType     String
   definition         Json
   contextSchema      Json?
+  documentsSchema    Json?
   config             Json?
   supportedPlatforms Json?
   extensions         Json?

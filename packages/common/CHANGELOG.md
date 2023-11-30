@@ -1,5 +1,12 @@
 # @ballerine/common
 
+## 0.7.27
+
+### Patch Changes
+
+- added types and functionality to documents
+- 59afd0b4: updated types and functionalities
+
 ## 0.7.26
 
 ### Patch Changes
