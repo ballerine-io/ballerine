@@ -1,5 +1,36 @@
 # @ballerine/workflow-core
 
+## 0.5.27
+
+### Patch Changes
+
+- 85d24981: fixed error on trying to transform optional response and added a clearer error message
+- Updated dependencies [ea423a22]
+  - @ballerine/common@0.7.28
+
+## 0.5.26
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies [59afd0b4]
+  - @ballerine/common@0.7.27
+
+## 0.5.25
+
+### Patch Changes
+
+- Updated dependencies [bfded451]
+- Updated dependencies
+  - @ballerine/common@0.7.26
+
+## 0.5.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.25
+
 ## 0.5.23
 
 ### Patch Changes

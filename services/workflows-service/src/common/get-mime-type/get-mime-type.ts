@@ -23,5 +23,7 @@ export const getMimeType = async ({
     return mime.getType(fileName) ?? undefined;
   }
 
+  console.warn(`Could not extract mime type from file: ${file} with a file name of: ${fileName}`);
+
   return;
 };

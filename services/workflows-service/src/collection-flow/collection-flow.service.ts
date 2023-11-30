@@ -12,7 +12,7 @@ import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
 import type { TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { DefaultContextSchema } from '@ballerine/common';

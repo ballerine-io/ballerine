@@ -15,5 +15,6 @@ export { someDocumentDecisionStatus } from './some-document-decision-status';
 export { everyDocumentDecisionStatus } from './every-document-decision-status';
 export { raise } from './raise';
 export { log } from './log';
+export { replaceNullsWithUndefined } from './replace-null-with-undefined';
 export { dump } from './dump';
 export { type IErrorWithMessage } from './is-error-with-message';

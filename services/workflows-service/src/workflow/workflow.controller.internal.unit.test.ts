@@ -38,7 +38,7 @@ class FakeEntityRepo extends BaseFakeRepository {
   }
 }
 
-function buildWorkflowDeifintion(sequenceNum) {
+export function buildWorkflowDefinition(sequenceNum: number, projectId?: string) {
   return {
     id: sequenceNum.toString(),
     name: `name ${sequenceNum}`,
@@ -63,6 +63,8 @@ function buildWorkflowDeifintion(sequenceNum) {
       type: 'json-schema',
       schema: {},
     },
+    projectId: projectId,
+    isPublic: false,
   };
 }
 
@@ -142,7 +144,7 @@ describe('WorkflowControllerInternal', () => {
           data: initialRuntimeData,
         });
 
-        await controller.createWorkflowDefinition(buildWorkflowDeifintion(2));
+        await controller.createWorkflowDefinition(buildWorkflowDefinition(2));
         await controller.event({ id: '2' }, { name: 'COMPLETE' });
 
         const runtimeData = await workflowRuntimeDataRepo.findById('2');
@@ -163,7 +165,7 @@ describe('WorkflowControllerInternal', () => {
           data: initialRuntimeData,
         });
 
-        await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDeifintion(2));
+        await controller.createWorkflowDefinition(numbUserInfo, buildWorkflowDefinition(2));
         await controller.event({ id: '2' }, { name: 'COMPLETE' });
 
         expect(eventEmitterSpy.emitted).toEqual([

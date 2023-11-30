@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/headless-example",
   "private": true,
-  "version": "0.1.23",
+  "version": "0.1.27",
   "type": "module",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -34,8 +34,8 @@
     "vite": "^4.1.0"
   },
   "dependencies": {
-    "@ballerine/common": "0.7.24",
-    "@ballerine/workflow-browser-sdk": "0.5.23",
+    "@ballerine/common": "0.7.28",
+    "@ballerine/workflow-browser-sdk": "0.5.27",
     "@felte/reporter-svelte": "^1.1.5",
     "@felte/validator-zod": "^1.0.13",
     "@fontsource/inter": "^4.5.15",
