@@ -1,7 +1,6 @@
 import { config } from 'dotenv';
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
-import { parse as pgConnectionParser } from 'pg-connection-string';
 
 config({ path: process.env.CI ? '.env.example' : '.env' });
 
