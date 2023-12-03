@@ -1,7 +1,25 @@
-import { TWorkflowById } from '../../../../domains/workflows/fetchers';
+import {
+  CommonWorkflowStates,
+  StateTag,
+  getDocumentsByCountry,
+  isNullish,
+  TDocument,
+} from '@ballerine/common';
+import { Badge } from '@ballerine/ui';
+import { X } from 'lucide-react';
+import * as React from 'react';
+import { ComponentProps, useMemo } from 'react';
+import { toTitleCase, toUpperCase } from 'string-ts';
+import { WarningFilledSvg } from '../../../../common/components/atoms/icons';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { includesValues } from '../../../../common/utils/includes-values/includes-values';
+import { isValidUrl } from '../../../../common/utils/is-valid-url';
+import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
+import { useRemoveDecisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
+import { TWorkflowById } from '../../../../domains/workflows/fetchers';
+import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
 import {
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
@@ -9,31 +27,15 @@ import {
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from '../useEntity/utils';
-import {
-  CommonWorkflowStates,
-  getDocumentsByCountry,
-  getDocumentSchemaByCountry,
-  isNullish,
-  StateTag,
-  TAvailableDocuments,
-  TDocument,
-} from '@ballerine/common';
-import * as React from 'react';
-import { ComponentProps, useMemo } from 'react';
 import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
-import { X } from 'lucide-react';
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
-import { Badge } from '@ballerine/ui';
-import { WarningFilledSvg } from '../../../../common/components/atoms/icons';
-import { ctw } from '../../../../common/utils/ctw/ctw';
-import { toTitleCase, toUpperCase } from 'string-ts';
-import { isValidUrl } from '../../../../common/utils/is-valid-url';
-import { useRemoveDecisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { getPostUpdateEventName } from './get-post-update-event-name';
+import { useDirectorsBlocks } from './hooks/useDirectorsBlocks';
+import { useDocumentPageImages } from './hooks/useDocumentPageImages';
 import { motionProps } from './motion-props';
-import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
-import { includesValues } from '../../../../common/utils/includes-values/includes-values';
+import { selectDirectorsDocuments } from './selectors/selectDirectorsDocuments';
+import { selectWorkflowDocuments } from './selectors/selectWorkflowDocuments';
 import { getPhoneNumberFormatter } from '../../../../common/utils/get-phone-number-formatter/get-phone-number-formatter';
 
 const pluginsOutputBlacklist = [
@@ -89,7 +91,7 @@ export const useTasks = ({
   const {
     store,
     bank: bankDetails,
-    directors: directorsUserProvided,
+    directors: directorsUserProvided = [],
     mainRepresentative,
     mainContact,
     openCorporate: _openCorporate,
@@ -100,26 +102,42 @@ export const useTasks = ({
   const caseState = useCaseState(session?.user, workflow);
   const postUpdateEventName = getPostUpdateEventName(workflow);
   // const deliverEvent = workflow?.workflowDefinition?.config?.deliverEvent;
-  const docsData = useStorageFilesQuery(
-    workflow?.context?.documents?.flatMap(({ pages }) =>
-      pages?.map(({ ballerineFileId }) => ballerineFileId),
-    ),
+  const workflowDocuments = useMemo(() => selectWorkflowDocuments(workflow), [workflow]);
+  const directorsDocuments = useMemo(() => selectDirectorsDocuments(workflow), [workflow]);
+  const workflowDocumentPages = useMemo(
+    () =>
+      workflowDocuments.flatMap(({ pages }) =>
+        pages?.map(({ ballerineFileId }) => ballerineFileId),
+      ),
+    [workflowDocuments],
   );
+
+  const directorDocumentPages = useMemo(
+    () =>
+      directorsDocuments.flatMap(({ pages }) =>
+        pages?.map(({ ballerineFileId }) => ballerineFileId),
+      ),
+    [directorsDocuments],
+  );
+
+  const workflowDocsData = useStorageFilesQuery(workflowDocumentPages);
+  const directorsDocsData = useStorageFilesQuery(directorDocumentPages);
+
   const { noAction } = useCaseDecision();
   const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(
     workflow?.id,
     postUpdateEventName,
   );
 
-  const results: Array<Array<string>> = [];
-  workflow?.context?.documents?.forEach((document, docIndex) => {
-    document?.pages?.forEach((page, pageIndex: number) => {
-      if (!results[docIndex]) {
-        results[docIndex] = [];
-      }
-      results[docIndex][pageIndex] = docsData?.shift()?.data;
-    });
-  });
+  const workflowDocumentPagesResults: Array<Array<string>> = useDocumentPageImages(
+    workflowDocuments,
+    workflowDocsData,
+  );
+
+  const directorsDocumentPagesResults: Array<Array<string>> = useDocumentPageImages(
+    directorsDocuments,
+    directorsDocsData,
+  );
 
   const filteredPluginsOutput = useMemo(
     () => omitPropsFromObject(pluginsOutput, ...pluginsOutputBlacklist),
@@ -169,6 +187,8 @@ export const useTasks = ({
                     value,
                   })),
                 },
+                workflowId: workflow?.id,
+                documents: workflow?.context?.documents,
               },
             ],
           }));
@@ -204,6 +224,8 @@ export const useTasks = ({
                     }),
                   ),
                 },
+                workflowId: workflow?.id,
+                documents: workflow?.context?.documents,
               },
             ],
           },
@@ -298,20 +320,40 @@ export const useTasks = ({
             {
               type: 'callToAction',
               // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
-              value: isLegacyReject ? 'Reject' : 'Re-upload needed',
-              data: {
-                id,
-                disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
-                decision: 'reject',
+              value: {
+                text: isLegacyReject ? 'Reject' : 'Re-upload needed',
+                props: {
+                  revisionReasons:
+                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+                      ({ enum: enum_ }) => !!enum_,
+                    )?.enum,
+                  rejectionReasons:
+                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
+                      ({ enum: enum_ }) => !!enum_,
+                    )?.enum,
+                  id,
+                  disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
+                  decision: 'reject',
+                },
               },
             },
             {
               type: 'callToAction',
-              value: 'Approve',
-              data: {
-                id,
-                disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
-                decision: 'approve',
+              value: {
+                text: 'Approve',
+                props: {
+                  revisionReasons:
+                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+                      ({ enum: enum_ }) => !!enum_,
+                    )?.enum,
+                  rejectionReasons:
+                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
+                      ({ enum: enum_ }) => !!enum_,
+                    )?.enum,
+                  id,
+                  disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
+                  decision: 'approve',
+                },
               },
             },
           ];
@@ -348,6 +390,8 @@ export const useTasks = ({
                 }))
               : [],
           },
+          workflowId: workflow?.id,
+          documents: workflow?.context?.documents,
         };
         const detailsCell = {
           type: 'container',
@@ -397,6 +441,8 @@ export const useTasks = ({
                   },
                 ),
               },
+              workflowId: workflow?.id,
+              documents: workflow?.context?.documents,
             },
             decisionCell,
           ],
@@ -405,7 +451,7 @@ export const useTasks = ({
         const documentsCell = {
           type: 'multiDocuments',
           value: {
-            isLoading: docsData?.some(({ isLoading }) => isLoading),
+            isLoading: workflowDocsData?.some(({ isLoading }) => isLoading),
             data:
               documents?.[docIndex]?.pages?.map(
                 ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
@@ -413,9 +459,9 @@ export const useTasks = ({
                   title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
                     toTitleCase(docType ?? ''),
                   )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                  imageUrl: results[docIndex][pageIndex],
-                  fileName,
+                  imageUrl: workflowDocumentPagesResults[docIndex][pageIndex],
                   fileType: type,
+                  fileName,
                 }),
               ) ?? [],
           },
@@ -475,6 +521,8 @@ export const useTasks = ({
                     // TO DO: Remove this as soon as BE updated
                     .filter(elem => !elem.title.startsWith('__')),
                 },
+                workflowId: workflow?.id,
+                documents: workflow?.context?.documents,
               },
             ],
           },
@@ -516,6 +564,8 @@ export const useTasks = ({
                                 isEditable: false,
                               })),
                       },
+                      workflowId: workflow?.id,
+                      documents: workflow?.context?.documents,
                     },
                     {
                       type: 'map',
@@ -581,6 +631,8 @@ export const useTasks = ({
                         }),
                       ),
                     },
+                    workflowId: workflow?.id,
+                    documents: workflow?.context?.documents,
                     hideSeparator: true,
                   },
                   {
@@ -629,6 +681,8 @@ export const useTasks = ({
                     isEditable: false,
                   })),
                 },
+                workflowId: workflow?.id,
+                documents: workflow?.context?.documents,
                 hideSeparator: true,
               },
             ],
@@ -658,6 +712,8 @@ export const useTasks = ({
                     isEditable: false,
                   })),
                 },
+                workflowId: workflow?.id,
+                documents: workflow?.context?.documents,
                 hideSeparator: true,
               },
             ],
@@ -687,6 +743,8 @@ export const useTasks = ({
                     isEditable: false,
                   })),
                 },
+                workflowId: workflow?.id,
+                documents: workflow?.context?.documents,
                 hideSeparator: true,
               },
             ],
@@ -721,6 +779,8 @@ export const useTasks = ({
                     };
                   }),
                 },
+                workflowId: workflow?.id,
+                documents: workflow?.context?.documents,
                 hideSeparator: true,
               },
             ],
@@ -753,6 +813,8 @@ export const useTasks = ({
                     };
                   }),
                 },
+                workflowId: workflow?.id,
+                documents: workflow?.context?.documents,
                 hideSeparator: true,
               },
             ],
@@ -1157,6 +1219,12 @@ export const useTasks = ({
             ],
           },
         ];
+
+  const directorsDocumentsBlocks = useDirectorsBlocks(
+    workflow,
+    directorsDocsData,
+    directorsDocumentPagesResults,
+  );
 
   const directorsRegistryProvidedBlock = directorsRegistryProvided
     ? [
@@ -1566,6 +1634,8 @@ export const useTasks = ({
                         }),
                       ),
                     },
+                    workflowId: workflow?.id,
+                    documents: workflow?.context?.documents,
                   },
                 ],
               },
@@ -1583,6 +1653,7 @@ export const useTasks = ({
           ...companySanctionsBlock,
           ...directorsUserProvidedBlock,
           ...directorsRegistryProvidedBlock,
+          ...directorsDocumentsBlocks,
           ...ubosBlock,
           ...storeInfoBlock,
           ...websiteBasicRequirementBlock,
@@ -1597,14 +1668,14 @@ export const useTasks = ({
   }, [
     address,
     caseState.writeEnabled,
-    docsData,
+    workflowDocsData,
     documents,
     documentsSchemas,
     entity,
     parentMachine?.status,
     pluginsOutput,
     pluginsOutputKeys,
-    results,
+    workflowDocumentPagesResults,
     noAction,
     removeDecisionById,
   ]);

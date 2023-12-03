@@ -5,6 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger, ScrollArea } from '@/component
 import { ClickAwayListener } from '@mui/material';
 import { SelectedElementParams } from '@/components/molecules/inputs/MultiSelect/types';
 import { UnselectButtonProps } from '@/components/molecules/inputs/MultiSelect/components/Chip/UnselectButton';
+import { ctw } from '@/utils/ctw';
 
 export type MultiSelectValue = string | number;
 
@@ -23,6 +24,7 @@ export interface MultiSelectProps {
   value?: MultiSelectValue[];
   options: MultiSelectOption[];
   searchPlaceholder?: string;
+  disabled?: boolean;
   renderSelected: MultiSelectSelectedItemRenderer;
   onChange: (selected: MultiSelectValue[], inputName: string) => void;
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
@@ -33,6 +35,7 @@ export const MultiSelect = ({
   value,
   options,
   searchPlaceholder = 'Select more...',
+  disabled,
   renderSelected,
   onChange,
   onBlur,
@@ -141,7 +144,12 @@ export const MultiSelect = ({
       <ClickAwayListener onClickAway={handleOutsidePopupClick}>
         <Command onKeyDown={handleKeyDown} className="overflow-visible">
           <PopoverTrigger asChild>
-            <div className="border-input ring-offset-background focus-within:ring-ring min-10 group flex items-center rounded-md border py-2 text-sm focus-within:ring-1 focus-within:ring-offset-1">
+            <div
+              className={ctw(
+                'border-input ring-offset-background focus-within:ring-ring min-10 group flex items-center rounded-md border py-2 text-sm focus-within:ring-1 focus-within:ring-offset-1',
+                { 'pointer-events-none opacity-50': disabled },
+              )}
+            >
               <div className="flex flex-wrap gap-2 px-2">
                 {selected.map(option => {
                   return renderSelected(

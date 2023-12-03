@@ -367,6 +367,7 @@ export const dynamicUiWorkflowDefinition = {
         deliverEvent: 'KYC_REVISION',
       },
     ],
+    workflowLevelResolution: true,
   },
   contextSchema: {
     type: 'json-schema',

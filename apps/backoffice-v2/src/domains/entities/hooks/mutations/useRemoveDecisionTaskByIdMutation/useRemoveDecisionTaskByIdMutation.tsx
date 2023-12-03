@@ -14,7 +14,13 @@ export const useRemoveDecisionTaskByIdMutation = (
   const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
 
   return useMutation({
-    mutationFn: ({ documentId }: { documentId: string }) =>
+    mutationFn: ({
+      documentId,
+      contextUpdateMethod,
+    }: {
+      documentId: string;
+      contextUpdateMethod: 'base' | 'director';
+    }) =>
       updateWorkflowDecision({
         workflowId,
         documentId,
@@ -23,6 +29,7 @@ export const useRemoveDecisionTaskByIdMutation = (
           reason: null,
           postUpdateEventName,
         },
+        contextUpdateMethod,
       }),
     onMutate: async ({ documentId }) => {
       await queryClient.cancelQueries({

@@ -60,6 +60,7 @@
 
 ### Patch Changes
 
+- @ballerine/workflow-core@0.5.20
 - Change document schemas
 - Updated dependencies
   - @ballerine/workflow-core@0.5.20

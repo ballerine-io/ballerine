@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { ctw } from '@ballerine/ui';
 import { BaseLabelProps } from './types';
 import { cva, VariantProps } from 'class-variance-authority';
 
@@ -19,7 +19,7 @@ type Props = BaseLabelProps & BaseLabelVariantProps;
 
 export const BaseLabel = ({ text, variant, className }: Props) => {
   return (
-    <span className={clsx(baseLabelVariants({ variant }), 'text-sm leading-4', className)}>
+    <span className={ctw(baseLabelVariants({ variant }), 'text-sm leading-4', className)}>
       {text}
     </span>
   );

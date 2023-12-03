@@ -3,58 +3,56 @@ import { VerticalLayout } from '@/components/atoms/Stepper/layouts/Vertical';
 import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { useMemo, useRef } from 'react';
+import { useMemo, useState } from 'react';
 import { usePageContext } from '@/components/organisms/DynamicUI/Page';
 import { UIPage } from '@/domains/collection-flow';
-import { UIElementState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
 import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
+import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
+import { isPageCompleted } from '@/helpers/prepareInitialUIState';
+import { UIElementState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
 import {
   BreadcrumbItemInput,
   Breadcrumbs,
 } from '@/components/atoms/Stepper/components/atoms/Breadcrumbs';
-import clsx from 'clsx';
+import { ctw } from '@ballerine/ui';
 
 export const StepperUI = () => {
   const { state: uiState } = useDynamicUIContext();
   const { pages, currentPage } = usePageResolverContext();
-  const { state } = useStateManagerContext();
+  const { payload } = useStateManagerContext();
   const { pageErrors } = usePageContext();
 
-  const initialPageNumber = useRef(currentPage?.number);
-
   const computeStepStatus = ({
-    uiElement,
-    page,
     pageError,
-    currentPage,
+    page,
+    context,
+    uiElementState,
   }: {
-    uiElement: UIElementState;
     page: UIPage;
+    uiElementState: UIElementState;
     pageError: Record<string, ErrorField>;
     currentPage: UIPage;
+    context: CollectionFlowContext;
   }) => {
-    if (!!Object.keys(pageError).length && currentPage.number === page.number) return 'warning';
-    if (
-      uiElement?.isCompleted ||
-      page.number <=
-        // @ts-ignore
-        initialPageNumber?.current
-    )
-      return 'completed';
+    if (Object.values(pageError || {}).some(error => error.type === 'warning')) return 'warning';
+
+    if (isPageCompleted(page, context) || uiElementState?.isCompleted) return 'completed';
 
     return 'idle';
   };
+
+  const [initialContext] = useState(() => structuredClone(payload));
 
   const steps: BreadcrumbItemInput[] = useMemo(() => {
     return pages.map(page => {
       const stepStatus = computeStepStatus({
         // @ts-ignore
-        uiElement: uiState.elements[page.stateName],
-        page,
+        uiElementState: uiState.elements[page.stateName],
         // @ts-ignore
         pageError: pageErrors?.[page.stateName],
-        // @ts-ignore
-        currentPage,
+        page,
+        context: initialContext,
+        currentPage: currentPage as UIPage,
       });
 
       const step: BreadcrumbItemInput = {
@@ -65,7 +63,7 @@ export const StepperUI = () => {
 
       return step;
     });
-  }, [pages, uiState.elements, pageErrors, currentPage]);
+  }, [pages, uiState, pageErrors, initialContext, currentPage]);
 
   const activeStep = useMemo(() => {
     const activeStep = steps.find(step => step.id === currentPage?.stateName);
@@ -83,7 +81,7 @@ export const StepperUI = () => {
               {items.map(itemProps => {
                 return (
                   <div
-                    className={clsx('last:bg- flex flex-row items-center gap-4 first:bg-white')}
+                    className={ctw('last:bg- flex flex-row items-center gap-4 first:bg-white')}
                     key={itemProps.id}
                   >
                     <Breadcrumbs.Item

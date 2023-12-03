@@ -7,32 +7,26 @@ import { useMemo } from 'react';
 
 export const useUIElementErrors = (
   definition: UIElement<AnyObject>,
+  errorKeyFallback?: () => string,
 ): { warnings: ErrorField[]; validationErrors: ErrorField[] } => {
   const { errors: _errors, pageErrors: _pageErrors } = usePageContext();
   const { currentPage } = usePageResolverContext();
 
   const errors = useMemo(() => {
-    const pageErrors =
-      _pageErrors[
-        // @ts-ignore
-        currentPage?.stateName
-      ] || {};
+    const pageErrors = _pageErrors[currentPage?.stateName as string] || {};
     const fieldPageError =
-      pageErrors[
-        // @ts-ignore
-        definition.valueDestination
-      ];
+      pageErrors[definition.valueDestination as string] ||
+      (errorKeyFallback && pageErrors[errorKeyFallback()]);
 
     const fieldError =
-      _errors[
-        // @ts-ignore
-        definition.valueDestination
-      ] || [];
+      _errors[definition.valueDestination as string] ||
+      (errorKeyFallback && _errors[errorKeyFallback()]) ||
+      ([] as ErrorField[]);
 
     const allErrors = [fieldPageError, ...fieldError];
 
-    return allErrors.filter(Boolean);
-  }, [definition, _errors, _pageErrors, currentPage]);
+    return allErrors.filter(Boolean) as ErrorField[];
+  }, [definition, _errors, _pageErrors, currentPage, errorKeyFallback]);
 
   const warnings = useMemo(() => errors.filter(error => error.type === 'warning'), [errors]);
 

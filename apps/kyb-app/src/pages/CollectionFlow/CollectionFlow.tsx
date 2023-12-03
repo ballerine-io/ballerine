@@ -47,11 +47,12 @@ export const CollectionFlowDumb = () => {
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
-  const pageErrors = usePageErrors(
-    context ?? {},
-    // @ts-ignore
-    elements,
+  const pageErrors = usePageErrors(context ?? {}, elements || []);
+  const isRevision = useMemo(
+    () => pageErrors.some(error => error.errors?.some(error => error.type === 'warning')),
+    [pageErrors],
   );
+
   const filteredNonEmptyErrors = pageErrors?.filter(pageError => !!pageError.errors.length);
   // @ts-ignore
   const initialContext: CollectionFlowContext | null = useMemo(() => {
@@ -72,8 +73,8 @@ export const CollectionFlowDumb = () => {
   }, []);
 
   const initialUIState = useMemo(() => {
-    return prepareInitialUIState(elements || [], context || {});
-  }, [elements, context]);
+    return prepareInitialUIState(elements || [], context || {}, isRevision);
+  }, [elements, context, isRevision]);
 
   if (initialContext?.flowConfig?.appState === 'approved') return <Approved />;
   if (initialContext?.flowConfig?.appState == 'rejected') return <Rejected />;

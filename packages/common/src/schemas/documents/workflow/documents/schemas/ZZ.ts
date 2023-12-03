@@ -1,5 +1,5 @@
-import { TDocument } from '../types';
 import { Type } from '@sinclair/typebox';
+import { TDocument } from '../types';
 
 export const getUniversalDocuments = (): TDocument[] => {
   const OptionalTypeAlphanumericString = Type.Optional(Type.String({ pattern: '^[a-zA-Z0-9]*$' }));
@@ -140,6 +140,66 @@ export const getUniversalDocuments = (): TDocument[] => {
         issueDate: OptionalTypePastDate,
         expiryDate: Type.Optional(Type.String({ format: 'date' })),
         permittedProductsOrServices: Type.Optional(Type.String()),
+      }),
+    },
+    {
+      category: 'proof_of_identity',
+      type: 'passport',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        documentNumber: Type.Optional(Type.String()),
+        firstName: Type.Optional(Type.String()),
+        lastName: Type.Optional(Type.String()),
+      }),
+    },
+    {
+      category: 'proof_of_identity',
+      type: 'national_id',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        documentNumber: Type.Optional(Type.String()),
+        firstName: Type.Optional(Type.String()),
+        lastName: Type.Optional(Type.String()),
+      }),
+    },
+    {
+      category: 'proof_of_identity',
+      type: 'driver_licence',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        documentNumber: Type.Optional(Type.String()),
+        firstName: Type.Optional(Type.String()),
+        lastName: Type.Optional(Type.String()),
+      }),
+    },
+    {
+      category: 'proof_of_identity',
+      type: 'resident_card',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        documentNumber: Type.Optional(Type.String()),
+        firstName: Type.Optional(Type.String()),
+        lastName: Type.Optional(Type.String()),
+      }),
+    },
+    {
+      category: 'proof_of_identity_ownership',
+      type: 'selfie',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        documentNumber: Type.Optional(Type.String()),
+        firstName: Type.Optional(Type.String()),
+        lastName: Type.Optional(Type.String()),
       }),
     },
   ];

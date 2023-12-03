@@ -39,13 +39,20 @@ export type DynamicUIComponent<TProps, TParams = AnyObject> = React.ComponentTyp
   TProps & { definition: UIElement<TParams> }
 >;
 
-export const withDynamicUIInput = (Component: RJSFInputAdapter<any, any>) => {
+export const withDynamicUIInput = (
+  Component: RJSFInputAdapter<any, any> & { inputIndex?: number | null },
+) => {
   function Wrapper(props: RJSFInputProps) {
     const inputId = (props.idSchema as AnyObject)?.$id as string;
     const { name, onChange } = props;
     const { payload } = useStateManagerContext();
     const { currentPage } = usePageResolverContext();
     const { state } = useDynamicUIContext();
+    const inputIndex = useMemo(() => {
+      const index = getInputIndex(inputId || '');
+
+      return isNaN(index as number) ? null : index;
+    }, [inputId]);
 
     const baseDefinition = useMemo(() => {
       const definition = findDefinitionByName(
@@ -117,6 +124,7 @@ export const withDynamicUIInput = (Component: RJSFInputAdapter<any, any>) => {
           disabled={disabled || props.disabled || state.isLoading}
           formData={value}
           definition={definition}
+          inputIndex={inputIndex}
           onChange={handleChange}
           onBlur={handleBlur}
         />
