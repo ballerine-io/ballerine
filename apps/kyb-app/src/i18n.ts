@@ -9,7 +9,7 @@ i18n
   .use(initReactI18next)
   // For all options read: https://www.i18next.com/overview/configuration-options
   .init({
-    debug: true,
+    debug: import.meta.env.VITE_I18N_DEBUG === 'true',
     fallbackLng: 'en',
     interpolation: {
       escapeValue: true,

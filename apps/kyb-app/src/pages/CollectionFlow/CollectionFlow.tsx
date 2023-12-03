@@ -133,17 +133,16 @@ export const CollectionFlow = withSessionProtected(() => {
                               </div>
                               <div>
                                 <div>
-                                  <div
-                                    className="border-b pb-12"
-                                    dangerouslySetInnerHTML={{
-                                      __html: DOMPurify.sanitize(
+                                  {customer?.displayName && (
+                                    <div className="border-b pb-12">
+                                      {
                                         t('contact', {
-                                          companyName: customer?.displayName || 'PayLynk',
+                                          companyName: customer.displayName,
                                           interpolation: { escapeValue: false },
-                                        }) as string,
-                                      ),
-                                    }}
-                                  />
+                                        }) as string
+                                      }
+                                    </div>
+                                  )}
                                   <img src={'/poweredby.svg'} className="mt-6" />
                                 </div>
                               </div>
