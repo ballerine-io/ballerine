@@ -23,7 +23,7 @@ export const selectDirectorsDocuments = (context: unknown): Document[] =>
     ?.flat() || [];
 
 export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] => {
-  const pageErrors = useMemo(() => {
+  return useMemo(() => {
     const pagesWithErrors: PageError[] = pages.map(page => {
       const pageErrorBase: PageError = {
         page: page.number,
@@ -70,6 +70,4 @@ export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] 
 
     return pagesWithErrors;
   }, [pages, context]);
-
-  return pageErrors;
 };

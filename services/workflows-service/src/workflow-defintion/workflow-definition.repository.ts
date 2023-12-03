@@ -117,8 +117,17 @@ export class WorkflowDefinitionRepository {
   async findByLatestVersion(name: string, projectIds: TProjectIds) {
     return await this.prisma.workflowDefinition.findFirstOrThrow({
       where: {
-        name,
-        projectId: { in: projectIds },
+        OR: [
+          {
+            name,
+            projectId: { in: projectIds },
+          },
+          {
+            name,
+            projectId: null,
+            isPublic: true,
+          },
+        ],
       },
       orderBy: { version: 'desc' },
     });
