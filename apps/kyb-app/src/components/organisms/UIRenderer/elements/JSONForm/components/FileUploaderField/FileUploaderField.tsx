@@ -24,14 +24,14 @@ export const FileUploaderField = forwardRef(
     useFileAssigner(inputRef, file);
 
     useEffect(() => {
-      if (!uploadedFileId) return;
+      if (!uploadedFileId || !file) return;
 
+      registerFile(file, uploadedFileId);
       onChange(uploadedFileId);
-    }, [uploadedFileId]);
+    }, [uploadedFileId, file]);
 
     const handleChange = useCallback(
       async (event: React.ChangeEvent<HTMLInputElement>) => {
-        registerFile(uploadedFileId, event.target.files?.[0] as File);
         void uploadFile(event.target.files?.[0] as File);
       },
       [uploadFile],
