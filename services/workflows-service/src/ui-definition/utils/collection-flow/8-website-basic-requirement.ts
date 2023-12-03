@@ -132,7 +132,7 @@ export const WebsiteBasicRequirement = {
   type: 'page',
   number: 8,
   stateName: 'website_basic_requirement',
-  name: 'Website Basic Requirement',
+  name: 'text.websiteBasicRequirement',
   pageValidation: [
     {
       type: 'json-schema',

@@ -191,8 +191,8 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions',
               options: {
-                label: 'Monthly Number Of Transactions',
-                hint: '500',
+                label: 'text.monthlyTransactions.label',
+                hint: 'text.monthlyTransactions.hint',
                 jsonFormDefinition: {
                   type: 'number',
                 },

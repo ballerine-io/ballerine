@@ -28,7 +28,7 @@ const validationSchema = {
                     required: ['mobileAppName'],
                     errorMessage: {
                       required: {
-                        mobileAppName: 'errorMessages.required.mobileAppName',
+                        mobileAppName: 'errorMessage.required.mobileAppName',
                       },
                     },
                   },
@@ -38,27 +38,27 @@ const validationSchema = {
                       pattern: multipleUrlsPattern,
                       minLength: 1,
                       errorMessage: {
-                        minLength: 'errorMessages.required.websiteUrls',
-                        pattern: 'errorMessages.pattern.websiteUrls',
+                        minLength: 'errorMessage.required.websiteUrls',
+                        pattern: 'errorMessage.pattern.websiteUrls',
                       },
                     },
                     dba: {
                       type: 'string',
                       not: { enum: [''] },
-                      errorMessage: 'errorMessages.required.dba',
+                      errorMessage: 'errorMessage.required.dba',
                     },
                     products: {
                       type: 'string',
                       not: { enum: [''] },
-                      errorMessage: 'errorMessages.required.products',
+                      errorMessage: 'errorMessage.required.products',
                     },
                     established: {
                       type: 'string',
-                      errorMessage: 'errorMessages.required.established',
+                      errorMessage: 'errorMessage.required.established',
                     },
                     hasMobileApp: {
                       type: 'boolean',
-                      errorMessage: 'errorMessages.required.hasMobileApp',
+                      errorMessage: 'errorMessage.required.hasMobileApp',
                       default: false,
                     },
                     mobileAppName: {
@@ -68,7 +68,7 @@ const validationSchema = {
                       type: 'string',
                       minLength: 1,
                       errorMessage: {
-                        minLength: 'errorMessages.minLength.industry',
+                        minLength: 'errorMessage.minLength.industry',
                       },
                     },
                   },
@@ -87,7 +87,7 @@ const validationSchema = {
                       products: 'errorMessage.required.products',
                       established: 'errorMessage.required.established',
                       hasMobileApp: 'errorMessage.required.hasMobileApp',
-                      industry: 'errorMessages.required.industry',
+                      industry: 'errorMessage.required.industry',
                     },
                   },
                 },

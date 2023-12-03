@@ -25,6 +25,14 @@
     "customerCategory": "Customer Category",
     "mainCategory": "Main Category",
     "websiteBusinessModel": "Website Business Model",
+    "companyDocuments": "Company Documents",
+    "merchantCompanyDocuments": "Merchant Company Documents",
+    "websiteDocuments": "Website documents",
+    "officePictures": "Office Pictures",
+    "financialDocuments": "Financial Documents",
+    "declarationOfAccuracy": "Declaration of Accuracy and Authenticity",
+    "declarationOfAccuracyDescription": "By checking the checkbox below I/we hereby declare that the information which was submitted in the attached Merchant application is truthful and genuine in regards to my/our business, legal status and registration, business practices and all other submitted information.",
+    "emailDescription": "By clicking 'Finish', an email containing an identity verification link will be sent to the shareholders listed.",
     "name": "Name",
     "firstName": "First Name",
     "lastName": "Last Name",
@@ -35,7 +43,9 @@
     "number": "Number",
     "industry": "Industry",
     "continue": "Continue",
+    "finish": "Finish",
     "choose": "Choose",
+    "iConfirm": "I confirm",
     "b2b": "B2B",
     "b2c": "B2C",
     "c2c": "C2C",
@@ -269,11 +279,50 @@
     "volumeInRegion": {
       "label": "Split of volume by regions in % (divided by comma)",
       "hint": "Asia 70%, Europe 30%"
+    },
+    "certificateOfIncorporation": {
+      "label": "Certificate of Incorporation",
+      "description": "Not older than 6 months."
+    },
+    "businessRegistrationCertificate": {
+      "label": "Business Registration Certificate",
+      "description": "Notarized document"
+    },
+    "corporateTaxCertificate": {
+      "label": "Corporate Tax Certificate"
+    },
+    "certificateOfGoodStanding": {
+      "label": "Certificate of Good Standing",
+      "description": "If the company is older than 12 months"
+    },
+    "certificateOfDirectorsAndShareholders": {
+      "label": "Certificate of Directors and Shareholders"
+    },
+    "pictureOfCompanySeal": {
+      "label": "Picture of the company seal"
+    },
+    "domainCertificate": {
+      "label": "Domain purchase record / certificate"
+    },
+    "permittedSalesLicense": {
+      "label": "Business activity license for website’s business"
+    },
+    "frontDoorPhoto": {
+      "label": "Front door photo showing the company name"
+    },
+    "officeInteriorPhoto1": {
+      "label": "Photo showing interior of the office - #1"
+    },
+    "officeInteriorPhoto2": {
+      "label": "Photo showing interior of the office - #2"
+    },
+    "transactionData": {
+      "label": "Transaction data for the last 3-6 months",
+      "description": "All electric documents must be complete and legible."
     }
   },
   "errorMessage": {
     "error": {
-      "contactDetails": "Contact details are required.",
       "productQuantity": "Product quantity should be a valid number.",
       "productPrice": "Product price should be a valid number.",
       "productDescription": "Product description should not be empty.",
@@ -284,7 +333,8 @@
       "mainCategory": "Customer Category is required.",
       "businessModel": "Business Model is required.",
       "spikeSalesAverageVolume": "Spike Sales Volume must be positive.",
-      "spikeTransactionNumber": "Spike Transaction Number must be positive."
+      "spikeTransactionNumber": "Spike Transaction Number must be positive.",
+      "requiredField": "This field is required."
     },
     "required": {
       "phone": "A valid phone number is required.",
@@ -337,7 +387,8 @@
       "businessModel": "Website Business Model is required.",
       "spikeSalesAverageVolume": "Spike Sales Average Volume is required.",
       "spikeTransactionNumber": "Spike Transaction Number is required.",
-      "volumeInRegion": "Split of volume by regions is required."
+      "volumeInRegion": "Split of volume by regions is required.",
+      "contactDetails": "Contact details are required."
     },
     "minLength": {
       "firstName": "First name must be at least 2 characters long.",
