@@ -1,4 +1,5 @@
 import { ARRAY_VALUE_INDEX_PLACEHOLDER } from '@/common/consts/consts';
+import { DocumentFieldParams } from '@/components/organisms/UIRenderer/elements/JSONForm/components/DocumentField';
 import { UIElement, UIPage } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
@@ -39,4 +40,28 @@ export const getElementByValueDestination = (
   }
 
   return findByElementDefinitionByDestination(destination, page.elements);
+};
+
+export const getDocumentElementByDocumentError = (
+  id: string,
+  page: UIPage,
+): UIElement<AnyObject> | null => {
+  const findElement = (
+    id: string,
+    elements: UIElement<AnyObject>[],
+  ): UIElement<DocumentFieldParams> | null => {
+    for (const element of elements) {
+      //@ts-ignore
+      if (element.options?.documentData?.id === id.replace('document-error-', '')) return element;
+
+      if (element.elements) {
+        const foundInElements = findElement(id, element.elements);
+        if (foundInElements) return foundInElements;
+      }
+    }
+
+    return null;
+  };
+
+  return findElement(id, page.elements);
 };
