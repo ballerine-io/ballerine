@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
+import { parse as pgConnectionParser } from 'pg-connection-string';
 
 config({ path: process.env.CI ? '.env.example' : '.env' });
 
@@ -16,12 +17,17 @@ export const env = createEnv({
     ENV_FILE_NAME: z.string().optional(),
     BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
     PORT: z.coerce.number(),
-    DB_USER: z.string(),
-    DB_PASSWORD: z.string(),
-    DB_PORT: z.coerce.number(),
-    DB_URL: z.string().url(),
+    DB_URL: z
+      .string()
+      .url()
+      .refine(
+        url =>
+          url.startsWith('mysql://') ||
+          (url.startsWith('postgresql://') && !!pgConnectionParser(url)),
+        `DB_URL must be uri with db schema prefix '<mysql,postgesql>://'`,
+      ),
     SESSION_SECRET: z.string(),
-    SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().default(60),
+    SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().nonnegative().gt(0).default(60),
     BACKOFFICE_CORS_ORIGIN: z.string().url(),
     WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().url(),
     KYB_EXAMPLE_CORS_ORIGIN: z.string().url(),
