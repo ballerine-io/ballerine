@@ -4,6 +4,7 @@ import {
   getDocumentsByCountry,
   isNullish,
   TDocument,
+  getDocumentSchemaByCountry,
 } from '@ballerine/common';
 import { Badge } from '@ballerine/ui';
 import { X } from 'lucide-react';
@@ -31,12 +32,12 @@ import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/use
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
 import { getPostUpdateEventName } from './get-post-update-event-name';
-import { useDirectorsBlocks } from './hooks/useDirectorsBlocks';
-import { useDocumentPageImages } from './hooks/useDocumentPageImages';
 import { motionProps } from './motion-props';
 import { selectDirectorsDocuments } from './selectors/selectDirectorsDocuments';
-import { selectWorkflowDocuments } from './selectors/selectWorkflowDocuments';
 import { getPhoneNumberFormatter } from '../../../../common/utils/get-phone-number-formatter/get-phone-number-formatter';
+import { selectWorkflowDocuments } from './selectors/selectWorkflowDocuments';
+import { useDocumentPageImages } from '@/pages/Entity/hooks/useTasks/hooks/useDocumentPageImages';
+import { useDirectorsBlocks } from '@/pages/Entity/hooks/useTasks/hooks/useDirectorsBlocks';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
