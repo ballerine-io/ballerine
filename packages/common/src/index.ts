@@ -1,6 +1,5 @@
 export {
   dump,
-  everyDocumentDecisionStatus,
   handlePromise,
   isEmptyObject,
   isErrorWithCode,
@@ -9,6 +8,8 @@ export {
   isFunction,
   isNullish,
   isObject,
+  everyDocumentDecisionStatus,
+  replaceNullsWithUndefined,
   log,
   noNullish,
   raise,
@@ -19,11 +20,18 @@ export {
   zodErrorToReadable,
 } from './utils';
 
-export type { DefaultContextSchema, TDefaultSchemaDocumentPage, TDocument } from './schemas';
-export type { AnyRecord, Serializable } from './types';
 export type { IErrorWithMessage } from './utils';
 
+export type { Serializable, AnyRecord } from './types';
+export type {
+  DefaultContextSchema,
+  TDefaultSchemaDocumentPage,
+  TDocument,
+  TAvailableDocuments,
+} from './schemas';
+
 export {
+  getDocumentSchemaByCountry,
   defaultContextSchema,
   findDocumentSchemaByTypeAndCategory,
   getDocumentId,

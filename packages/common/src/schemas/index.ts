@@ -8,3 +8,5 @@ export {
   getDocumentsByCountry,
 } from './documents/workflow/documents/schemas/index';
 export { type TDocument } from './documents/workflow/documents/types';
+export { type TAvailableDocuments } from './documents/workflow/documents/types';
+export { getDocumentSchemaByCountry } from './documents/workflow/documents/schemas/index';

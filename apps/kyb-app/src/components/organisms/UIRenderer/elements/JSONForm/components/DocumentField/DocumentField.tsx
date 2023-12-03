@@ -83,7 +83,7 @@ export const DocumentField = (
     return fileId;
   }, [payload, definition, inputIndex]);
   //@ts-ignore
-  useFileRepository(collectionFlowFileStorage, fileId);
+  const { file } = useFileRepository(collectionFlowFileStorage, fileId);
 
   useLayoutEffect(() => {
     if (!fileId) return;
@@ -185,8 +185,12 @@ export const DocumentField = (
         //@ts-ignore
         ({} as Document['pages'][number]);
 
+      // Assigning file properties
       //@ts-ignore
       set(documentPage, pathToFileId, fileId);
+      set(documentPage, 'fileName', file?.name);
+      set(documentPage, 'type', file?.type);
+
       //@ts-ignore
       set(document, pathToPage, documentPage);
       set(document, 'decision', {});
@@ -195,7 +199,7 @@ export const DocumentField = (
 
       sendEvent('onChange');
     },
-    [stateApi, options, definition, inputIndex, sendEvent],
+    [stateApi, options, definition, inputIndex, file, sendEvent],
   );
 
   return (

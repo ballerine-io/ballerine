@@ -3,6 +3,7 @@ import {
   StateTag,
   getDocumentsByCountry,
   isNullish,
+  TDocument,
 } from '@ballerine/common';
 import { Badge } from '@ballerine/ui';
 import { X } from 'lucide-react';
@@ -18,9 +19,7 @@ import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/querie
 import { useRemoveDecisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '../../../../domains/workflows/fetchers';
-import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
-import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import {
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
@@ -28,6 +27,8 @@ import {
   isExistingSchemaForDocument,
   omitPropsFromObject,
 } from '../useEntity/utils';
+import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
+import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
 import { getPostUpdateEventName } from './get-post-update-event-name';
 import { useDirectorsBlocks } from './hooks/useDirectorsBlocks';
@@ -44,6 +45,35 @@ const pluginsOutputBlacklist = [
   'businessInformation',
   'website_monitoring',
 ];
+
+function getDocumentsSchemas(issuerCountryCode, workflow: TWorkflowById) {
+  return (
+    issuerCountryCode &&
+    getDocumentSchemaByCountry(
+      issuerCountryCode,
+      workflow.workflowDefinition?.documentsSchema as TDocument[],
+    )
+      .concat(getDocumentsByCountry(issuerCountryCode))
+      .reduce((unique: TDocument[], item: TDocument) => {
+        const isDuplicate = unique.some(u => u.type === item.type && u.category === item.category);
+        if (!isDuplicate) {
+          unique.push(item);
+        }
+        return unique;
+      }, [] as TDocument[])
+      .filter((documentSchema: TDocument) => {
+        if (!workflow.workflowDefinition.config?.availableDocuments) return true;
+
+        const isIncludes = !!workflow.workflowDefinition.config?.availableDocuments.find(
+          (availableDocument: TAvailableDocuments[number]) =>
+            availableDocument.type === documentSchema.type &&
+            availableDocument.category === documentSchema.category,
+        );
+
+        return isIncludes;
+      })
+  );
+}
 
 export const useTasks = ({
   workflow,
@@ -120,7 +150,8 @@ export const useTasks = ({
   });
   const { data: locations } = useNominatimQuery(address);
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
-  const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
+
+  const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
 
   const registryInfoBlock =
     Object.keys(filteredPluginsOutput ?? {}).length === 0
@@ -205,7 +236,12 @@ export const useTasks = ({
       ({ id, type: docType, category, properties, propertiesSchema, decision }, docIndex) => {
         const additionProperties =
           isExistingSchemaForDocument(documentsSchemas) &&
-          composePickableCategoryType(category, docType, documentsSchemas);
+          composePickableCategoryType(
+            category,
+            docType,
+            documentsSchemas,
+            workflow.workflowDefinition?.config,
+          );
 
         const isDoneWithRevision =
           decision?.status === 'revised' && parentMachine?.status === 'completed';
@@ -417,13 +453,17 @@ export const useTasks = ({
           value: {
             isLoading: workflowDocsData?.some(({ isLoading }) => isLoading),
             data:
-              documents?.[docIndex]?.pages?.map(({ type, metadata, data }, pageIndex) => ({
-                title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
-                  toTitleCase(docType ?? ''),
-                )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                imageUrl: workflowDocumentPagesResults[docIndex][pageIndex],
-                fileType: type,
-              })) ?? [],
+              documents?.[docIndex]?.pages?.map(
+                ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
+                  id: ballerineFileId,
+                  title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
+                    toTitleCase(docType ?? ''),
+                  )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
+                  imageUrl: workflowDocumentPagesResults[docIndex][pageIndex],
+                  fileType: type,
+                  fileName,
+                }),
+              ) ?? [],
           },
         };
 
@@ -810,7 +850,10 @@ export const useTasks = ({
                           const value = props.getValue();
 
                           return (
-                            <Badge variant={'warning'} className={`rounded-lg py-4 font-bold`}>
+                            <Badge
+                              variant={'warning'}
+                              className={`mb-1 rounded-lg px-2 py-1 font-bold`}
+                            >
                               {value} {value === 1 ? 'match' : 'matches'}
                             </Badge>
                           );
@@ -1637,3 +1680,7 @@ export const useTasks = ({
     removeDecisionById,
   ]);
 };
+
+function uniqueArrayByKey(arg0: any) {
+  throw new Error('Function not implemented.');
+}

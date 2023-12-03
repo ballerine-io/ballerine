@@ -13,10 +13,10 @@ import { StorageService } from '@/storage/storage.service';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
 import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.service';
 import { LocalFileService } from '@/providers/file/file-provider/local-file.service';
-import { fromBuffer, fromFile } from 'file-type';
 import { streamToBuffer } from '@/common/stream-to-buffer/stream-to-buffer';
 import { Readable } from 'stream';
 import * as fs from 'fs/promises';
+import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 
 @Injectable()
 export class FileService {
@@ -94,11 +94,17 @@ export class FileService {
     const buffer = await streamToBuffer(streamableDownstream);
     const stream = Readable.from(buffer);
     const remoteFileConfig = await targetServiceProvider.uploadStream(stream, targetFileConfig);
-    const fileType = await fromBuffer(buffer);
+    const fileType = await getFileMetadata({
+      file: buffer,
+      fileName:
+        typeof sourceRemoteFileConfig === 'string'
+          ? sourceRemoteFileConfig
+          : sourceRemoteFileConfig.uri,
+    });
 
     return {
       remoteFileConfig,
-      mimeType: fileType?.mime,
+      mimeType: fileType?.mimeType,
     };
   }
 
@@ -113,22 +119,28 @@ export class FileService {
       sourceRemoteFileConfig,
       tmpFile.name,
     );
-    const fileType = await fromFile(localFilePath);
+    const { mimeType } = await getFileMetadata({
+      file: localFilePath,
+      fileName:
+        typeof sourceRemoteFileConfig === 'string'
+          ? sourceRemoteFileConfig
+          : sourceRemoteFileConfig.uri,
+    });
     const remoteFilePath = await targetServiceProvider.upload(
       localFilePath,
       targetFileConfig,
-      fileType?.mime,
+      mimeType,
     );
 
     try {
       await fs.unlink(localFilePath);
     } catch (err) {
-      // TODO: should we log non succesful deletetion ?
+      // TODO: should we log non successful deletion ?
     }
 
     return {
       remoteFilePath,
-      mimeType: fileType?.mime,
+      mimeType,
     };
   }
 
@@ -249,7 +261,7 @@ export class FileService {
   }
 
   async copyToDestinationAndCreate(
-    fileDetails: { id: string; uri: string; provider: string },
+    fileDetails: { id: string; uri: string; provider: string; fileName: string },
     entityId: string,
     projectId: TProjectId,
     customerName: string,
@@ -266,22 +278,26 @@ export class FileService {
     const remoteFileNamePrefix = fileDetails.id || getDocumentId(fileDetails, false);
 
     let tmpLocalFilePath;
+
     if (shouldDownloadFromSource) {
       const tmpFile = tmp.fileSync();
+
       tmpLocalFilePath = await sourceServiceProvider.download(sourceRemoteFileConfig, tmpFile.name);
     }
 
-    const file = await fromFile(tmpLocalFilePath ?? fileDetails.uri);
-
+    const fileType = await getFileMetadata({
+      file: tmpLocalFilePath || fileDetails.uri,
+      fileName: fileDetails.fileName || fileDetails.uri || '',
+    });
     const remoteFileName = `${remoteFileNamePrefix}_${randomUUID()}${
-      file?.ext ? `.${file?.ext}` : ''
+      fileType?.extension ? `.${fileType?.extension}` : ''
     }`;
 
     if (tmpLocalFilePath) {
       try {
         await fs.unlink(tmpLocalFilePath);
       } catch (err) {
-        // TODO: should we log non succesful deletetion ?
+        // TODO: should we log non successful deletion ?
       }
     }
 
@@ -312,6 +328,7 @@ export class FileService {
         : undefined,
       projectId,
       mimeType: fileInfo?.mimeType,
+      fileName: fileDetails.fileName,
     });
 
     return persistedFile;

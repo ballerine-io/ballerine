@@ -27,4 +27,5 @@ export interface IEditableDetails {
   workflowId: string;
   contextUpdateMethod?: 'base' | 'director';
   onSubmit?: (document: AnyObject) => void;
+  config: Record<string, unknown>;
 }

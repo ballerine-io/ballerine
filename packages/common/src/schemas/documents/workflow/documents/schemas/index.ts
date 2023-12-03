@@ -17,6 +17,15 @@ export const getDocumentsByCountry = (countryCode: (typeof countryCodes)[number]
   return documentIdsByCountry[countryCode]?.() || [];
 };
 
+export const getDocumentSchemaByCountry = (
+  countryCode: (typeof countryCodes)[number],
+  documentsSchema: TDocument[] | undefined,
+): TDocument[] => {
+  return (
+    documentsSchema?.filter(documentSchema => documentSchema.issuer.country === countryCode) || []
+  );
+};
+
 export const getDocumentId = (
   document: TDocument | DefaultContextSchema['documents'][number],
   useUuid = true,
