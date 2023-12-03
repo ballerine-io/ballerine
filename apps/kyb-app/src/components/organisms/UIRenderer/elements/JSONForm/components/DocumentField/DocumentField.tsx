@@ -54,7 +54,13 @@ export const DocumentField = (
 
   const sendEvent = useEventEmitterLogic(definition);
 
-  const getErrorKey = useCallback(() => documentDefinition.valueDestination, [documentDefinition]);
+  const getErrorKey = useCallback(
+    () =>
+      inputIndex === null
+        ? (documentDefinition?.options?.documentData.id as string)
+        : (documentDefinition.valueDestination as string),
+    [documentDefinition],
+  );
   const { validationErrors, warnings } = useUIElementErrors(documentDefinition, getErrorKey);
   const { isTouched } = elementState;
 
