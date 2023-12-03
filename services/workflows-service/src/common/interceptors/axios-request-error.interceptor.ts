@@ -1,9 +1,7 @@
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import {
   CallHandler,
   ExecutionContext,
   HttpException,
-  HttpStatus,
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
@@ -13,8 +11,6 @@ import { getHttpStatusFromAxiosError } from '../http-service/http-config.service
 
 @Injectable()
 export class AxiosRequestErrorInterceptor implements NestInterceptor {
-  constructor(private readonly logger: AppLoggerService) {}
-
   intercept(context: ExecutionContext, next: CallHandler) {
     return next.handle().pipe(
       tap(() => {
