@@ -15,21 +15,13 @@ export const fetcher: IFetcher = async ({
   timeout = 10000,
   schema,
   isBlob = false,
-}: {
-  url: string;
-  method: string;
-  body: BodyInit | null;
-  headers: HeadersInit;
-  timeout: number;
-  options: Partial<RequestInit>;
-  isBlob: boolean;
 }) => {
   const controller = new AbortController();
   const { signal } = controller;
   const timeoutRef = setTimeout(() => {
     controller.abort(`Request timed out after ${timeout}ms`);
   }, timeout);
-  const [res, fetchError] = await handlePromise<Response>(
+  const [res, fetchError] = await handlePromise(
     fetch(url, {
       ...options,
       method,
@@ -79,7 +71,6 @@ export const fetcher: IFetcher = async ({
 
     return [undefined, undefined];
   };
-
   const [data, jsonError] = await parseResponse();
 
   if (jsonError) {
