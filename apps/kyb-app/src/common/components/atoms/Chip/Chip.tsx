@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { ctw } from '@ballerine/ui';
 import { cva, VariantProps } from 'class-variance-authority';
 
 type BaseChipVariantProps = VariantProps<typeof baseChipVariants>;
@@ -23,7 +23,7 @@ type Props = BaseChipVariantProps & ComponentProps;
 
 export const Chip = ({ variant = 'default', icon, text, className }: Props) => {
   return (
-    <div className={clsx(baseChipVariants({ variant }), className)}>
+    <div className={ctw(baseChipVariants({ variant }), className)}>
       <div>{icon}</div>
       <span className="text-xs font-bold">{text}</span>
     </div>
