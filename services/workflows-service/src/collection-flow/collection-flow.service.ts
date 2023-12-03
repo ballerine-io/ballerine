@@ -21,7 +21,6 @@ import { Customer, EndUser, UiDefinitionContext } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { randomUUID } from 'crypto';
 import keyBy from 'lodash/keyBy';
-import { includes } from 'lodash';
 
 @Injectable()
 export class CollectionFlowService {
@@ -43,9 +42,7 @@ export class CollectionFlowService {
   }
 
   async getUser(endUserId: string, projectId: TProjectId): Promise<EndUser> {
-    const endUser = await this.endUserService.getById(endUserId, {}, [projectId]);
-
-    return endUser;
+    return await this.endUserService.getById(endUserId, {}, [projectId]);
   }
 
   private traverseUiSchema(uiSchema: Record<string, unknown>, language: string) {
@@ -189,7 +186,7 @@ export class CollectionFlowService {
 
     const { state, ...resetContext } = payload.data.context as Record<string, any>;
 
-    const updateResult = await this.workflowService.createOrUpdateWorkflowRuntime({
+    return await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: workflowRuntime.workflowDefinitionId,
       context: resetContext as DefaultContextSchema,
       config: workflowRuntime.config,
@@ -197,8 +194,6 @@ export class CollectionFlowService {
       projectIds: [tokenScope.projectId],
       currentProjectId: tokenScope.projectId,
     });
-
-    return updateResult;
   }
 
   async syncWorkflow(payload: UpdateFlowDto, tokenScope: ITokenScope) {

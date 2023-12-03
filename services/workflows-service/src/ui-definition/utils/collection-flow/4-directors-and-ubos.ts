@@ -159,9 +159,9 @@ const validationSchema = {
                         required: ['nationality', 'fullAddress'],
                         errorMessage: {
                           required: {
-                            nationality: 'error.required.nationality',
-                            fullAddress: 'error.required.fullAddress',
-                            percentageOfOwnership: 'error.required.percentageOfOwnership',
+                            nationality: 'errorMessage.required.nationality',
+                            fullAddress: 'errorMessage.required.fullAddress',
+                            percentageOfOwnership: 'errorMessage.required.percentageOfOwnership',
                           },
                         },
                         properties: {
@@ -186,10 +186,10 @@ const validationSchema = {
                     },
                     errorMessage: {
                       required: {
-                        firstName: 'error.required.firstName',
-                        lastName: 'error.required.lastName',
-                        nationalId: 'error.required.nationalId',
-                        email: 'error.required.email',
+                        firstName: 'errorMessage.required.firstName',
+                        lastName: 'errorMessage.required.lastName',
+                        nationalId: 'errorMessage.required.nationalId',
+                        email: 'errorMessage.required.email',
                       },
                     },
                   },

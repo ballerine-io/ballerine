@@ -1,4 +1,7 @@
 {
+  "step": "Step",
   "back": "Back",
+  "saving": "Saving",
+  "progressSaved": "Progress saved",
   "contact": "Contact {{companyName}} for support"
 }
