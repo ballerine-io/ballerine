@@ -41,7 +41,7 @@ const validationSchema = [
     required: {
       type: 'json-logic',
       value: {
-        '==': [{ var: 'entity.data.additionalInfo.store.hasActiveWebsite' }, true, false],
+        '==': [{ var: 'entity.data.additionalInfo.store.hasActiveWebsite' }, false, true],
       },
     },
     errorMessage: 'errorMessage.error.requiredField',
