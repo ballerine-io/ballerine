@@ -95,8 +95,7 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       (acc, curr) => {
         let propertyValue = formData?.[curr];
         const isDateProperty =
-          document?.propertiesSchema?.properties?.[curr]?.format === 'date-time' ||
-          document?.propertiesSchema?.properties?.[curr]?.format === 'date';
+          document?.propertiesSchema?.properties?.[curr]?.format === 'date-time';
 
         if (isNullish(propertyValue)) return acc;
 
