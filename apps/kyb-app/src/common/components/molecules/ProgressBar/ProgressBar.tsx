@@ -4,12 +4,14 @@ import { LoadingSpinner } from '@/common/components/atoms/LoadingSpinner';
 import { Check } from 'lucide-react';
 import { ctw } from '@ballerine/ui';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   className?: string;
 }
 
 export const ProgressBar = ({ className }: Props) => {
+  const { t } = useTranslation();
   const { state } = useDynamicUIContext();
   const { isLoading } = state;
 
@@ -31,7 +33,7 @@ export const ProgressBar = ({ className }: Props) => {
       }
       className={className}
       variant={isLoading ? 'primary' : 'success'}
-      text={isLoading ? 'Saving' : 'Progress saved'}
+      text={isLoading ? t('saving') : t('progressSaved')}
     />
   );
 };
