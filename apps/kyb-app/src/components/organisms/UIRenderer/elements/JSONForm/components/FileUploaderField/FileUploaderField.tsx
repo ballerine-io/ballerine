@@ -32,7 +32,11 @@ export const FileUploaderField = forwardRef(
 
     const handleChange = useCallback(
       async (event: React.ChangeEvent<HTMLInputElement>) => {
-        void uploadFile(event.target.files?.[0] as File);
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const uploadResult = await uploadFile(file);
+        registerFile(file, uploadResult.fileId);
       },
       [uploadFile],
     );
