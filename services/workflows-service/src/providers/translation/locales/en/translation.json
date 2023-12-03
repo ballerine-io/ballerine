@@ -319,6 +319,14 @@
     "transactionData": {
       "label": "Transaction data for the last 3-6 months",
       "description": "All electric documents must be complete and legible."
+    },
+    "passportDocument": {
+      "label": "ID / Passport photo,",
+      "description": "Valid identification document"
+    },
+    "passportSelfie": {
+      "label": "Selfie with ID / Passport photo",
+      "description": "The same document held next to the director's face"
     }
   },
   "errorMessage": {

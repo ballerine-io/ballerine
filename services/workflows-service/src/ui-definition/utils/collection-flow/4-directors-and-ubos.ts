@@ -630,8 +630,8 @@ export const DirectorsAndUbosPage = {
                   valueDestination:
                     'entity.data.additionalInfo.directors[{INDEX}].additionalInfo.documents[0].pages[0].ballerineFileId',
                   options: {
-                    label: 'ID/Passport photo',
-                    description: 'Valid identification document',
+                    label: 'text.passportDocument.label',
+                    description: 'text.passportDocument.description',
                     jsonFormDefinition: {
                       type: 'string',
                     },
@@ -657,8 +657,8 @@ export const DirectorsAndUbosPage = {
                   valueDestination:
                     'entity.data.additionalInfo.directors[{INDEX}].additionalInfo.documents[1].pages[0].ballerineFileId',
                   options: {
-                    label: 'Selfie with ID/Passport photo',
-                    description: "The same document held next to the director's face",
+                    label: 'text.passportSelfie.label',
+                    description: 'text.passportSelfie.description',
                     jsonFormDefinition: {
                       type: 'string',
                     },
