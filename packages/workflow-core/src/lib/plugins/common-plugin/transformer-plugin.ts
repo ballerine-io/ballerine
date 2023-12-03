@@ -25,7 +25,6 @@ export class TransformerPlugin implements ISerializableMappingPluginParams {
     this.name = params.name;
     this.transformers = params.transformers;
     this.stateNames = params.stateNames;
-    console.log(`Constructed TransformerPlugin with params: ${JSON.stringify(params)}`);
   }
 
   async invoke(context: TContext) {
