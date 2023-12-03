@@ -8,7 +8,7 @@ import { swaggerDocumentOptions, swaggerPath, swaggerSetupOptions } from './swag
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore - there is an issue with helemet types
+// @ts-ignore - there is an issue with helmet types
 import helmet from 'helmet';
 import { env } from '@/env';
 import { json, NextFunction, Request, Response, urlencoded } from 'express';
