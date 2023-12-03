@@ -1,49 +1,68 @@
 version: '3'
+
+x-db-environment: &db-environment
+  POSTGRES_USER: '${DB_USER:-admin}'
+  POSTGRES_PASSWORD: '${DB_PASSWORD:-admin}'
+  POSTGRES_DB: '${DB_NAME:-db}'
+  DB_PORT: ${DB_PORT:-5432}
+
+x-pg-environment: &pg-environment
+  DB_USER: ${DB_USER:-admin}
+  DB_PASSWORD: ${DB_PASSWORD:-admin}
+  DB_PORT: ${DB_PORT:-5432}
+  DB_NAME: ${DB_NAME:-db}
+
+x-environment: &wf-environment
+  <<: *pg-environment
+  DB_URL: postgres://${DB_USER:-admin}:${DB_PASSWORD:-admin}@${DB_NAME:-db}:${DB_PORT:-5432}
+  BCRYPT_SALT: ${BCRYPT_SALT}
+  SESSION_EXPIRATION_IN_MINUTES: ${SESSION_EXPIRATION_IN_MINUTES}
+  SESSION_SECRET: ${SESSION_SECRET}iGdnj4A0YOhj8dHJK7IWSvQKEZsG7P70FFehuddhFPjtg/bSkzFejYILk4Xue6Ilx9y3IAwzR8pV1gb4
+  WORKFLOW_DASHBOARD_CORS_ORIGIN: ${WORKFLOW_DASHBOARD_CORS_ORIGIN}
+  BACKOFFICE_CORS_ORIGIN: ${BACKOFFICE_CORS_ORIGIN}
+  COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
+  API_KEY: ${API_KEY}
+  NODE_ENV: ${NODE_ENV}
+  ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
+
+x-wf-defaults: &wf-defaults
+  environment:
+    DB_USER: ${DB_USER:-admin}
+    DB_PASSWORD: ${DB_PASSWORD:-admin}
+    DB_PORT: ${DB_PORT:-5432}
+    DB_NAME: ${DB_NAME:-db}
+    DB_URL: postgres://${DB_USER}:${DB_PASSWORD}@${DB_NAME}:${DB_PORT}
+    BCRYPT_SALT: ${BCRYPT_SALT}
+    SESSION_EXPIRATION_IN_MINUTES: ${SESSION_EXPIRATION_IN_MINUTES}
+    SESSION_SECRET: ${SESSION_SECRET}iGdnj4A0YOhj8dHJK7IWSvQKEZsG7P70FFehuddhFPjtg/bSkzFejYILk4Xue6Ilx9y3IAwzR8pV1gb4
+    WORKFLOW_DASHBOARD_CORS_ORIGIN: ${WORKFLOW_DASHBOARD_CORS_ORIGIN}
+    BACKOFFICE_CORS_ORIGIN: ${BACKOFFICE_CORS_ORIGIN}
+    COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
+    API_KEY: ${API_KEY}
+    NODE_ENV: ${NODE_ENV}
+    ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
+  env_file:
+    - .env
+
 services:
+  #  ----------------------------------------   Workflow Service    ----------------------------------------
   server:
+    env_file:
+      - .env
     build:
       context: .
       args:
         NPM_LOG_LEVEL: notice
     ports:
-      - ${PORT}:3000
-    environment:
-      BCRYPT_SALT: ${BCRYPT_SALT}
-      SESSION_EXPIRATION_IN_MINUTES: ${SESSION_EXPIRATION_IN_MINUTES}
-      DB_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}
-      PORT: ${PORT}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_PORT: ${DB_PORT}
-      SESSION_SECRET: ${SESSION_SECRET}iGdnj4A0YOhj8dHJK7IWSvQKEZsG7P70FFehuddhFPjtg/bSkzFejYILk4Xue6Ilx9y3IAwzR8pV1gb4
-      WORKFLOW_DASHBOARD_CORS_ORIGIN: ${WORKFLOW_DASHBOARD_CORS_ORIGIN}
-      BACKOFFICE_CORS_ORIGIN: ${BACKOFFICE_CORS_ORIGIN}
-      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
-      API_KEY: ${API_KEY}
-      NODE_ENV: ${NODE_ENV}
-      ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
+      - ${PORT:-3000}:3000
     depends_on:
       - migrate
-  migrate:
-    build:
-      context: .
-      args:
-        NPM_LOG_LEVEL: notice
-    command: npm run db:init
-    working_dir: /app/server
-    environment:
-      BCRYPT_SALT: ${BCRYPT_SALT}
-      DB_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}
-    depends_on:
-      db:
-        condition: service_healthy
   db:
     image: docker pull sibedge/postgres-plv8:15.3-3.1.7
     ports:
-      - ${DB_PORT}:5432
+      - '${DB_PORT:-5432}:5432'
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      <<: *db-environment
     volumes:
       - postgres15:/var/lib/postgresql/data
     healthcheck:
@@ -52,11 +71,25 @@ services:
         - pg_isready
         - -q
         - -d
-        - ${DB_NAME}
+        - ${DB_NAME:-db}
         - -U
-        - ${DB_USER}
+        - ${DB_USER:-admin}
       timeout: 45s
       interval: 10s
       retries: 10
+
+  #  ----------------------------------------   Migration Service   ----------------------------------------
+  migrate:
+    build:
+      context: .
+      args:
+        NPM_LOG_LEVEL: notice
+    command: npm run db:init
+    working_dir: /app/server
+    depends_on:
+      db:
+        condition: service_healthy
+
+#  ------------------------------------------   Persistent          ----------------------------------------
 volumes:
   postgres15: ~

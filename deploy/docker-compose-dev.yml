@@ -115,6 +115,11 @@ services:
       test:
         - CMD
         - pg_isready
+        - -q
+        - -d
+        - db
+        - -U
+        - admin
       timeout: 45s
       interval: 10s
       retries: 10
