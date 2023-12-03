@@ -62,6 +62,7 @@
 ### Patch Changes
 
 - Updated dependencies [8c888cec]
+- Updated dependencies
   - @ballerine/workflow-browser-sdk@0.5.22
   - @ballerine/blocks@0.1.21
   - @ballerine/common@0.7.23
@@ -85,6 +86,8 @@
 
 ### Patch Changes
 
+- @ballerine/blocks@0.1.20
+- @ballerine/workflow-browser-sdk@0.5.20
 - Change document schemas
 - Updated dependencies
   - @ballerine/blocks@0.1.20

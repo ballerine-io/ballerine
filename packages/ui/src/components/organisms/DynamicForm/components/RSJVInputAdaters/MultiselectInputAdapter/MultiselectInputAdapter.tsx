@@ -18,6 +18,7 @@ export const MultiselectInputAdapter: RJSFInputAdapter<MultiSelectValue[], Multi
   onChange,
   name,
   searchPlaceholder,
+  disabled,
   renderSelected,
 }) => {
   const options = useMemo(() => {
@@ -60,6 +61,7 @@ export const MultiselectInputAdapter: RJSFInputAdapter<MultiSelectValue[], Multi
       searchPlaceholder={searchPlaceholder}
       value={inputValue}
       options={options}
+      disabled={disabled}
       onChange={handleChange}
       onBlur={handleBlur}
       renderSelected={selectedItemRenderer}

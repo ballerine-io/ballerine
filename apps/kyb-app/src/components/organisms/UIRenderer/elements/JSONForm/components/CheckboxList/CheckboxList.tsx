@@ -1,4 +1,4 @@
-import { Checkbox, RJSFInputProps } from '@ballerine/ui';
+import { Checkbox, RJSFInputProps, ctw } from '@ballerine/ui';
 import { useMemo } from 'react';
 
 interface CheckboxListOption {
@@ -8,14 +8,14 @@ interface CheckboxListOption {
 
 export const CheckboxList = (props: RJSFInputProps) => {
   //@ts-nocheck
-  const { uiSchema, formData = [], onChange } = props;
+  const { uiSchema, formData = [], onChange, disabled } = props;
 
   const options = useMemo(() => {
     return (uiSchema?.['options'] as CheckboxListOption[]) || [];
   }, [uiSchema]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className={ctw('flex flex-col gap-4', { 'pointer-events-none opacity-50': disabled })}>
       {options.map(option => (
         <label className="flex items-center gap-2" key={option.value}>
           <Checkbox
