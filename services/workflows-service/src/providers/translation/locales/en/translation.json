@@ -18,6 +18,13 @@
     "shareholdersDescription": "Add all of the natural persons that own or control, <br /><b>directly or indirectly</b> more than 25% of the company.",
     "uboIndex": "UBO {{INDEX}}",
     "directorIndex": "Director {{INDEX}}",
+    "websiteBasicRequirement": "Website Basic Requirement",
+    "websiteBasicRequirementDescription": "This list is intended only as a basic pre-entry check of the<br /> websites and does not refer to specific product<br /> application requirements.",
+    "websiteBasicRequirementHint": "This list is intended only as a basic pre-entry check of the websites and does not refer to specific product application requirements.",
+    "processingDetails": "Processing Details",
+    "customerCategory": "Customer Category",
+    "mainCategory": "Main Category",
+    "websiteBusinessModel": "Website Business Model",
     "name": "Name",
     "firstName": "First Name",
     "lastName": "Last Name",
@@ -29,6 +36,13 @@
     "industry": "Industry",
     "continue": "Continue",
     "choose": "Choose",
+    "b2b": "B2B",
+    "b2c": "B2C",
+    "c2c": "C2C",
+    "other": "Other",
+    "membership": "Membership",
+    "directPurchase": "Direct Purchase",
+    "businessModel": "Business Model",
     "dateHint": "DD/MM/YYYY",
     "mobileAppName": "App Name",
     "differentFromPhysicalAddress": "Different from physical address",
@@ -167,9 +181,111 @@
     },
     "hasMobileApp": {
       "label": "I have mobile application"
+    },
+    "mainWebsite": {
+      "label": "Company's Main Website Address",
+      "hint": "www.example.cn",
+      "description": "The same as the application Entities"
+    },
+    "contactDetails": {
+      "label": "Contact Details (or Return Address)",
+      "hint": "22, Choyangmen, Chaoyang District, Beijing, China"
+    },
+    "returnPolicyUrl": {
+      "label": "Return / Exchange Policy URL",
+      "hint": "www.example.com/return-policy"
+    },
+    "shippingPolicyUrl": {
+      "label": "Shipping Policy URL",
+      "hint": "www.example.com/shipping-policy"
+    },
+    "aboutUsUrl": {
+      "label": "About Us / Brand Intro URL",
+      "hint": "www.example.com/about-us"
+    },
+    "termsOfUseUrl": {
+      "label": "Terms of Use URL",
+      "hint": "www.example.com/terms"
+    },
+    "privacyPolicyUrl": {
+      "label": "Privacy Policy URL",
+      "hint": "www.example.com/privacy"
+    },
+    "productQuantity": {
+      "label": "Quantity (not less than 5)",
+      "hint": "100"
+    },
+    "productDescription": {
+      "label": "Adequate Product / Service Descriptio",
+      "hint": "Offers a range of organic skincare products, including moisturizers, serums, and cleansers. Each product is made using natural ingredients sourced sustainably."
+    },
+    "productPrice": {
+      "label": "Reasonable Product / Service Price (USD)",
+      "hint": "100"
+    },
+    "websiteLanguage": {
+      "label": "Website Language"
+    },
+    "monthlySalesVolume": {
+      "label": "Monthly Sales Volume (USD)",
+      "hint": "5,000,000"
+    },
+    "monthlyTransactions": {
+      "label": "Monthly Number of Transactions",
+      "hint": "500"
+    },
+    "estimatedMonthlySalesClipsPay": {
+      "label": "Est. Monthly Sales Volume through ClipsPay (USD)",
+      "hint": "400,000"
+    },
+    "estimatedMonthlyTransactionsClipsPay": {
+      "label": "Est. Monthly Number of Transactions through ClipsPay",
+      "hint": "150"
+    },
+    "averageTicketAmount": {
+      "label": "Average Ticket Amount (USD)",
+      "hint": "25"
+    },
+    "minimumTicketAmount": {
+      "label": "Minimum Ticket Amount (USD)",
+      "hint": "300"
+    },
+    "maximumTicketAmount": {
+      "label": "Maximum Ticket Amount (USD)",
+      "hint": "2000"
+    },
+    "isSpikeInSales": {
+      "label": "There are spikes in transactions (e.g., promotions, events, etc.)",
+      "hint": "Yes"
+    },
+    "spikeSalesAverageVolume": {
+      "label": "Spike Sales Average Volume (USD)",
+      "hint": "150,000"
+    },
+    "spikeTransactionNumber": {
+      "label": "Spike Transaction Number",
+      "hint": "200"
+    },
+    "volumeInRegion": {
+      "label": "Split of volume by regions in % (divided by comma)",
+      "hint": "Asia 70%, Europe 30%"
     }
   },
   "errorMessage": {
+    "error": {
+      "contactDetails": "Contact details are required.",
+      "productQuantity": "Product quantity should be a valid number.",
+      "productPrice": "Product price should be a valid number.",
+      "productDescription": "Product description should not be empty.",
+      "websiteLanguage": "Website language should not be empty.",
+      "monthlySalesVolume": "Monthly Sales Volume must be positive.",
+      "monthlyTransactions": "Monthly Number Of Transactions must be positive.",
+      "averageTicketAmount": "Average Ticket Amount must be positive.",
+      "mainCategory": "Customer Category is required.",
+      "businessModel": "Business Model is required.",
+      "spikeSalesAverageVolume": "Spike Sales Volume must be positive.",
+      "spikeTransactionNumber": "Spike Transaction Number must be positive."
+    },
     "required": {
       "phone": "A valid phone number is required.",
       "dateOfBirth": "Date of birth is required.",
@@ -211,10 +327,17 @@
       "hasMobileApp": "Information on mobile app availability is required.",
       "industry": "Industry is required.",
       "mainWebsite": "Main website URL is required.",
-      "contactDetails": "Contact details are required.",
       "productQuantity": "Product quantity is required.",
       "productDescription": "Product description is required.",
-      "productPrice": "Product price is required."
+      "productPrice": "Product price is required.",
+      "monthlySalesVolume": "Monthly Sales Volume is required.",
+      "monthlyTransactions": "Monthly Number Of Transactions is required.",
+      "averageTicketAmount": "Average Ticket Amount is required.",
+      "mainCategory": "Customer Category is required.",
+      "businessModel": "Website Business Model is required.",
+      "spikeSalesAverageVolume": "Spike Sales Average Volume is required.",
+      "spikeTransactionNumber": "Spike Transaction Number is required.",
+      "volumeInRegion": "Split of volume by regions is required."
     },
     "minLength": {
       "firstName": "First name must be at least 2 characters long.",

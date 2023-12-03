@@ -42,7 +42,7 @@ const validationSchema = {
                         },
                         contactDetails: {
                           type: 'string',
-                          errorMessage: 'errorMessage.required.contactDetails',
+                          errorMessage: 'errorMessage.error.contactDetails',
                         },
                         returnPolicyUrl: {
                           type: 'string',
@@ -91,19 +91,19 @@ const validationSchema = {
                         },
                         productQuantity: {
                           type: 'number',
-                          errorMessage: 'Product quantity should be a valid number.',
+                          errorMessage: 'errorMessage.error.productQuantity',
                         },
                         productPrice: {
                           type: 'number',
-                          errorMessage: 'Product price should be a valid number.',
+                          errorMessage: 'errorMessage.error.productPrice',
                         },
                         productDescription: {
                           type: 'string',
-                          errorMessage: 'Product description should not be empty.',
+                          errorMessage: 'errorMessage.error.productDescription',
                         },
                         websiteLanguage: {
                           type: 'string',
-                          errorMessage: 'Website language should not be empty.',
+                          errorMessage: 'errorMessage.error.websiteLanguage',
                         },
                       },
                       errorMessage: {
@@ -149,15 +149,14 @@ export const WebsiteBasicRequirement = {
             {
               type: 'h1',
               options: {
-                text: 'Website Basic Requirement',
+                text: 'text.websiteBasicRequirement',
               },
             },
             {
               type: 'description',
               name: 'heading-description',
               options: {
-                descriptionRaw:
-                  'This list is intended only as a basic pre-entry check of the<br /> websites and does not refer to specific product<br /> application requirements.',
+                descriptionRaw: 'text.websiteBasicRequirementDescription',
               },
             },
           ],
@@ -181,8 +180,7 @@ export const WebsiteBasicRequirement = {
             {
               type: 'json-form:hint',
               options: {
-                label:
-                  'This list is intended only as a basic pre-entry check of the websites and does not refer to specific product application requirements.',
+                label: 'text.websiteBasicRequirementHint',
               },
             },
             {
@@ -193,9 +191,9 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: "Company's Main Website Address",
-                hint: 'www.example.cn',
-                description: 'the same as the application Entities',
+                label: 'text.mainWebsite.label',
+                hint: 'text.mainWebsite.hint',
+                description: 'text.mainWebsite.description',
               },
             },
             {
@@ -206,8 +204,8 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Contact Details (or Return Address)',
-                hint: '22, chaoyangmen, chaoyan district, beijing, china',
+                label: 'text.contactDetails.label',
+                hint: 'text.contactDetails.hint',
               },
             },
             {
@@ -218,8 +216,8 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Return / Exchange Policy URL',
-                hint: 'www.example.com/return-policy',
+                label: 'text.returnPolicyUrl.label',
+                hint: 'text.returnPolicyUrl.hint',
               },
             },
             {
@@ -230,8 +228,8 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Shipping Policy URL',
-                hint: 'www.example.com/shipping-policy',
+                label: 'text.shippingPolicyUrl.label',
+                hint: 'text.shippingPolicyUrl.hint',
               },
             },
             {
@@ -242,8 +240,8 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'About Us / Brand Intro URL',
-                hint: 'www.example.com/about-us',
+                label: 'text.aboutUsUrl.label',
+                hint: 'text.aboutUsUrl.hint',
               },
             },
             {
@@ -254,8 +252,8 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Terms of Use URL',
-                hint: 'www.example.com/terms',
+                label: 'text.termsOfUseUrl.label',
+                hint: 'text.termsOfUseUrl.hint',
               },
             },
             {
@@ -266,8 +264,8 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Privacy Policy URL',
-                hint: 'www.example.com/privacy',
+                label: 'text.privacyPolicyUrl.label',
+                hint: 'text.privacyPolicyUrl.hint',
               },
             },
             {
@@ -278,8 +276,8 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'number',
                 },
-                label: 'Product Quantity (not less than 5)',
-                hint: '100',
+                label: 'text.productQuantity.label',
+                hint: 'text.productQuantity.hint',
               },
             },
             {
@@ -293,8 +291,8 @@ export const WebsiteBasicRequirement = {
                 uiSchema: {
                   'ui:widget': 'textarea',
                 },
-                label: 'Adequate Product/Service Description',
-                hint: 'offers a range of organic skincare products, including moisturizers, serums, and cleansers. Each product is made using natural ingredients sourced sustainably.',
+                label: 'text.productDescription.label',
+                hint: 'text.productDescription.hint',
                 classNames: ['min-width-40px'],
               },
             },
@@ -303,8 +301,8 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.productPrice',
               options: {
-                label: 'Reasonable Product / Service Price (USD)',
-                hint: '100',
+                label: 'text.productPrice.label',
+                hint: 'text.productPrice.hint',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -315,13 +313,13 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:dropdown',
               valueDestination: 'entity.data.additionalInfo.store.website.websiteLanguage',
               options: {
-                hint: 'Choose',
-                label: 'Website Language',
+                hint: 'text.choose',
+                label: 'text.websiteLanguage.label',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:placeholder': 'Choose',
+                  'ui:placeholder': 'text.choose',
                   'ui:field': 'LocalePicker',
                   'ui:label': true,
                 },
@@ -343,7 +341,7 @@ export const WebsiteBasicRequirement = {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],
                 },
-                text: 'Continue',
+                text: 'text.continue',
               },
               availableOn: [
                 {

@@ -28,7 +28,7 @@ import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 
 const elems = {
   h1: Title,
-  h3: (props: AnyObject) => <h3 className="pb-3 text-xl font-bold">{props?.options?.text}</h3>,
+  h3: (props: AnyObject) => <h3 className="pt-4 text-xl font-bold">{props?.options?.text}</h3>,
   h4: (props: AnyObject) => <h4 className="pb-3 text-base font-bold">{props?.options?.text}</h4>,
   description: (props: AnyObject) => (
     <p
@@ -80,7 +80,7 @@ export const CollectionFlow = withSessionProtected(() => {
       },
       state: appState,
     };
-  }, []);
+  }, [context, elements, filteredNonEmptyErrors]);
 
   const initialUIState = useMemo(() => {
     return prepareInitialUIState(elements || [], context || {});
