@@ -52,7 +52,8 @@ RETURNS jsonb AS $$
 
         switch (array_merge_option) {
           case 'by_id': {
-            // Merging arrays of primitives using by_index strategy
+            // Merge by_id could not be performed on primite or falsy (null, undefined) values.
+            // Checking of some of value within array doesnt include id or falsy and forcing merge by_index strategy
             if(val1.some(val => !Boolean(val?.id)) || val2.some(val => !Boolean(val?.id))) {
                return mergeArraysByIndex(val1, val2)
             }
