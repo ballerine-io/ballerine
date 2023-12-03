@@ -1,10 +1,11 @@
 import { HttpService } from '@nestjs/axios';
 import { TLocalFilePath, TRemoteFileConfig, TRemoteUri } from '@/providers/file/types/files-types';
 import { promises as fsPromises } from 'fs';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { Readable } from 'stream';
 import { IStreamableFileProvider } from '../types/interfaces';
 import { removeSensitiveHeaders } from '@/common/utils/request-response/request';
+import { handleAxiosError } from '@/common/http-service/utils';
 import { LoggerService } from '@nestjs/common';
 
 export class HttpFileService implements IStreamableFileProvider {
@@ -36,7 +37,6 @@ export class HttpFileService implements IStreamableFileProvider {
         data: response.data,
         url: response.config.url,
         method: response.config.method?.toUpperCase(),
-        status: response.status,
         // TODO: should we add also response's headers?
       });
       return response;

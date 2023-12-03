@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import axios, { isAxiosError } from 'axios';
+import { AxiosError, isAxiosError } from 'axios';
 
 const _httpStatusFromAxiosMap = {
   ENOTFOUND: HttpStatus.NOT_FOUND,
@@ -8,7 +8,7 @@ const _httpStatusFromAxiosMap = {
   ERR_NETWORK: HttpStatus.INTERNAL_SERVER_ERROR, // connection problems
 };
 
-export function getLightweightAxiosError(error: axios.AxiosError) {
+export function getLightweightAxiosError(error: AxiosError) {
   const { config } = error; // request + response can be extraced from error
 
   return {
@@ -17,7 +17,7 @@ export function getLightweightAxiosError(error: axios.AxiosError) {
     stack: error.stack,
     status: error?.response?.status,
     config: {
-      method: config?.method,
+      method: config?.method?.toUpperCase(),
       url: config?.url,
       timeout: config?.timeout,
     },
@@ -35,7 +35,7 @@ export const getHttpStatusFromAxiosError = (
   return _httpStatusFromAxiosMap[code];
 };
 
-export function handleAxiosError(error: axios.AxiosError) {
+export function handleAxiosError(error: AxiosError) {
   if (!isAxiosError(error)) {
     throw error;
   }
