@@ -18,7 +18,7 @@ import { FilterModule } from '@/filter/filter.module';
 import { configs, env } from '@/env';
 import { SentryModule } from '@/sentry/sentry.module';
 import { RequestIdMiddleware } from '@/common/middlewares/request-id.middleware';
-import { AxiosRequestErrorInterceptor } from '@/common/interceptors/log-request.interceptor';
+import { AxiosRequestErrorInterceptor } from '@/common/interceptors/axios-request-error.interceptor';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { ClsModule } from 'nestjs-cls';
 import { FiltersModule } from '@/common/filters/filters.module';
