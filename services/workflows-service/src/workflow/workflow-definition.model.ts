@@ -2,14 +2,14 @@ import { UserModel } from '@/user/user.model';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsString,
-  IsOptional,
-  IsDate,
-  ValidateNested,
-  IsNumber,
   IsArray,
-  IsObject,
+  IsDate,
   IsNotEmptyObject,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
 } from 'class-validator';
 import type { JsonValue } from 'type-fest';
 

@@ -14,6 +14,7 @@ export {
   safeEvery,
   someDocumentDecisionStatus,
   everyDocumentDecisionStatus,
+  replaceNullsWithUndefined,
   raise,
   log,
   dump,
@@ -21,12 +22,18 @@ export {
 
 export type { IErrorWithMessage } from './utils';
 export type { Serializable, AnyRecord } from './types';
-export type { DefaultContextSchema, TDefaultSchemaDocumentPage, TDocument } from './schemas';
+export type {
+  DefaultContextSchema,
+  TDefaultSchemaDocumentPage,
+  TDocument,
+  TAvailableDocuments,
+} from './schemas';
 
 export {
   getGhanaDocuments,
   getDocumentsByCountry,
   getDocumentId,
+  getDocumentSchemaByCountry,
   defaultContextSchema,
 } from './schemas';
 

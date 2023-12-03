@@ -19,20 +19,20 @@ const validationSchema = {
           properties: {
             additionalInfo: {
               type: 'object',
-              required: ['registeredCapitalInYuan'],
+              required: ['registeredCapitalInUsd'],
               properties: {
-                registeredCapitalInYuan: {
+                registeredCapitalInUsd: {
                   type: 'number',
                   minimum: 0,
                   errorMessage: {
-                    required: 'Registered capital in yuan is required.',
+                    required: 'Registered capital in USD is required.',
                     minimum: 'Registered capital must be non-negative.',
                   },
                 },
               },
               errorMessage: {
                 required: {
-                  registeredCapitalInYuan: 'Registered capital in yuan is required.',
+                  registeredCapitalInUsd: 'Registered capital in USD is required.',
                 },
               },
             },
@@ -315,7 +315,7 @@ export const BusinessInfoPage = {
                 'tax-identification-number-input',
                 'number-of-employees-input',
                 'business-type-input',
-                'registered-capital-in-yuan-type-input',
+                'registered-capital-in-usd-type-input',
               ],
             },
           },
@@ -401,16 +401,16 @@ export const BusinessInfoPage = {
               },
             },
             {
-              name: 'registered-capital-in-yuan-type-input',
+              name: 'registered-capital-in-usd-type-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.registeredCapitalInYuan',
+              valueDestination: 'entity.data.additionalInfo.registeredCapitalInUsd',
               options: {
                 jsonFormDefinition: {
                   type: 'integer',
                 },
                 format: 'currency',
                 hint: '2,000,000',
-                label: 'Registered capital (in Chinese Yuan)',
+                label: 'Registered capital (in USD)',
               },
             },
           ],

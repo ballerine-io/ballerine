@@ -29,11 +29,10 @@ export const useCaseDecision = () => {
     !canRevision &&
     caseState.actionButtonsEnabled &&
     workflow?.nextEvents?.includes(Action.APPROVE);
-  const noAction =
-    workflow?.workflowDefinition?.config?.workflowLevelResolution &&
-    !canApprove &&
-    !canReject &&
-    !canRevision;
+  const workflowLevelResolution =
+    workflow?.workflowDefinition?.config?.workflowLevelResolution ??
+    workflow?.context?.entity?.type === 'business';
+  const noAction = workflowLevelResolution && !canApprove && !canReject && !canRevision;
 
   return {
     hasDecision,

@@ -1,10 +1,61 @@
 # kyb-app
 
+## 0.1.25
+
+### Patch Changes
+
+- Updated dependencies [340d9d4e]
+- Updated dependencies [ea423a22]
+- Updated dependencies
+  - @ballerine/common@0.7.29
+  - @ballerine/ui@0.3.17
+  - @ballerine/workflow-browser-sdk@0.5.28
+
+## 0.1.24
+
+### Patch Changes
+
+- Updated dependencies [ea423a22]
+  - @ballerine/common@0.7.28
+  - @ballerine/workflow-browser-sdk@0.5.27
+
+## 0.1.23
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies [59afd0b4]
+  - @ballerine/common@0.7.27
+  - @ballerine/workflow-browser-sdk@0.5.26
+
+## 0.1.22
+
+### Patch Changes
+
+- Updated dependencies [bfded451]
+- Updated dependencies
+  - @ballerine/common@0.7.26
+  - @ballerine/workflow-browser-sdk@0.5.25
+
+## 0.1.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.25
+  - @ballerine/workflow-browser-sdk@0.5.24
+
 ## 0.1.20
 
 ### Patch Changes
 
 - @ballerine/workflow-browser-sdk@0.5.23
+- Updated dependencies
+  - @ballerine/ui@0.3.16
+- Updated dependencies [d5cca1e8]
+- Updated dependencies [f4b5c0df]
+  - @ballerine/workflow-browser-sdk@0.5.23
+  - @ballerine/common@0.7.24
 
 ## 0.1.19
 

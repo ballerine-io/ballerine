@@ -1,10 +1,45 @@
 # @ballerine/workflow-node-sdk
 
+## 0.5.28
+
+### Patch Changes
+
+- Updated dependencies [85d24981]
+  - @ballerine/workflow-core@0.5.28
+
+## 0.5.27
+
+### Patch Changes
+
+- Updated dependencies [85d24981]
+  - @ballerine/workflow-core@0.5.27
+
+## 0.5.26
+
+### Patch Changes
+
+- @ballerine/workflow-core@0.5.26
+
+## 0.5.25
+
+### Patch Changes
+
+- @ballerine/workflow-core@0.5.25
+
+## 0.5.24
+
+### Patch Changes
+
+- @ballerine/workflow-core@0.5.24
+
 ## 0.5.23
 
 ### Patch Changes
 
 - Updated dependencies
+- d5cca1e8: added defintion validation
+- Updated dependencies [d5cca1e8]
+- Updated dependencies [f4b5c0df]
   - @ballerine/workflow-core@0.5.23
 
 ## 0.5.22

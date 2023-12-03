@@ -12,7 +12,7 @@ import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
 import type { TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { DefaultContextSchema } from '@ballerine/common';
@@ -231,7 +231,7 @@ export class CollectionFlowService {
     const entityId = runtimeDataId.businessId || runtimeDataId.endUserId;
 
     if (!entityId) {
-      throw new NotFoundException("Workflow does't exists");
+      throw new NotFoundException("Workflow doesn't exists");
     }
 
     // Remove file extension (get everything before the last dot)
@@ -240,7 +240,12 @@ export class CollectionFlowService {
     const alphabeticOnlyName = nameWithoutExtension.replace(/\W/g, '');
 
     const persistedFile = await this.fileService.copyToDestinationAndCreate(
-      { id: alphabeticOnlyName, uri: file.path, provider: 'file-system' },
+      {
+        id: alphabeticOnlyName,
+        uri: file.path,
+        provider: 'file-system',
+        fileName: file.originalname,
+      },
       entityId,
       projectId,
       customer.name,
