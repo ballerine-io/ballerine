@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { isAxiosError } from 'axios';
 import { catchError, tap, throwError } from 'rxjs';
+import { getHttpStatusFromAxiosError } from '../http-service/http-config.service';
 
 @Injectable()
 export class AxiosRequestErrorInterceptor implements NestInterceptor {
@@ -23,10 +24,7 @@ export class AxiosRequestErrorInterceptor implements NestInterceptor {
       catchError((exception: Error) => {
         // Translate axios http error
         if (isAxiosError(exception)) {
-          const status =
-            exception.response?.status || exception.code === 'ENOTFOUND'
-              ? HttpStatus.NOT_FOUND
-              : HttpStatus.INTERNAL_SERVER_ERROR;
+          const status = exception.response?.status || getHttpStatusFromAxiosError(exception.code);
 
           return throwError(
             () =>

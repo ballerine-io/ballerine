@@ -143,7 +143,7 @@ export class StorageControllerInternal {
       return res.sendFile(localFilePath, { root: '/' });
     }
 
-    if (!isBase64(persistedFile.uri) && this._isUriScheme(persistedFile)) {
+    if (!isBase64(persistedFile.uri) && this._isUri(persistedFile)) {
       const downloadFilePath = await this.__downloadFileFromRemote(persistedFile);
 
       return res.sendFile(downloadFilePath, { root: root });
@@ -162,7 +162,7 @@ export class StorageControllerInternal {
     return downloadedFilePath;
   }
 
-  _isUriScheme(persistedFile: File) {
+  _isUri(persistedFile: File) {
     return z.string().url().safeParse(persistedFile.uri).success;
   }
 }
