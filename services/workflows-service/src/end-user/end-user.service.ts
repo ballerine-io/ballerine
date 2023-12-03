@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EndUserRepository } from './end-user.repository';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { Business, EndUser, Prisma } from '@prisma/client';
 
@@ -12,8 +12,8 @@ export class EndUserService {
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
-  async create(args: Parameters<EndUserRepository['create']>[0], projectId: TProjectId) {
-    return await this.repository.create(args, projectId);
+  async create(args: Parameters<EndUserRepository['create']>[0]) {
+    return await this.repository.create(args);
   }
 
   async list(args: Parameters<EndUserRepository['findMany']>[0], projectIds: TProjectIds) {
@@ -35,25 +35,23 @@ export class EndUserService {
   ): Promise<EndUser & { businesses: Business[] }> {
     const { companyName = '', ...userData } = endUser;
 
-    const user = await this.repository.create(
-      {
-        data: {
-          ...userData,
-          businesses: {
-            connectOrCreate: {
-              where: {
-                id: businessId,
-              },
-              create: { companyName, projectId: projectId },
+    const user = await this.repository.create({
+      data: {
+        ...userData,
+        businesses: {
+          connectOrCreate: {
+            where: {
+              id: businessId,
             },
+            create: { companyName, projectId },
           },
         },
-        include: {
-          businesses: true,
-        },
+        projectId,
       },
-      projectId,
-    );
+      include: {
+        businesses: true,
+      },
+    });
 
     return user as any;
   }
@@ -74,11 +72,7 @@ export class EndUserService {
       projectIds,
     );
   }
-  async updateById(
-    id: string,
-    endUser: Omit<Prisma.EndUserUpdateArgs, 'where'>,
-    projectId: TProjectId,
-  ) {
-    return await this.repository.updateById(id, endUser, projectId);
+  async updateById(id: string, endUser: Omit<Prisma.EndUserUpdateArgs, 'where'>) {
+    return await this.repository.updateById(id, endUser);
   }
 }

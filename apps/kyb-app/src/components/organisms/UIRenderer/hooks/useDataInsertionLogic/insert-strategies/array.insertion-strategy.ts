@@ -1,7 +1,7 @@
 import {
   InsertionStrategy,
   StrategyParams,
-} from '@app/components/organisms/UIRenderer/hooks/useDataInsertionLogic/insert-strategies/abstract.insertion-strategy';
+} from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/insert-strategies/abstract.insertion-strategy';
 import { AnyObject } from '@ballerine/ui';
 import get from 'lodash/get';
 import set from 'lodash/set';

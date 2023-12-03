@@ -1,6 +1,6 @@
-import { Skeleton } from '@app/components/atoms/Skeleton';
-import { IUserCaseResolvingStats } from '@app/domains/user/api/users-stats';
-import { ListItem } from '@app/pages/Overview/components/molecules/UsersResolvingStatsList/ListItem';
+import { Skeleton } from '@/components/atoms/Skeleton';
+import { IUserCaseResolvingStats } from '@/domains/user/api/users-stats';
+import { ListItem } from '@/pages/Overview/components/molecules/UsersResolvingStatsList/ListItem';
 import Scrollbars from 'react-custom-scrollbars';
 
 export interface Props {

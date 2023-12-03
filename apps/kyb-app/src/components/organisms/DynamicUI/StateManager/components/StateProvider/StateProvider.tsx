@@ -1,4 +1,4 @@
-import { StateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/types';
+import { StateManagerContext } from '@/components/organisms/DynamicUI/StateManager/types';
 import { AnyChildren } from '@ballerine/ui';
 import { stateContext } from './state.context';
 

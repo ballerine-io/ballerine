@@ -165,10 +165,10 @@ export const dynamicUiWorkflowDefinition = {
               companyName: entity.data.companyName,
               customerName: metadata.customerName,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token]),
+              collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=cn']),
               from: 'no-reply@ballerine.com',
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
-              templateId: 'd-8949519316074e03909042cfc5eb4f02',
+              templateId: 'd-add814d1a97e4ea8b6db47c8f80de3cd',
               adapter: '{secret.MAIL_ADAPTER}'
               }`, // jmespath
             },
@@ -367,6 +367,7 @@ export const dynamicUiWorkflowDefinition = {
         deliverEvent: 'KYC_REVISION',
       },
     ],
+    workflowLevelResolution: true,
   },
   contextSchema: {
     type: 'json-schema',
@@ -375,7 +376,7 @@ export const dynamicUiWorkflowDefinition = {
   isPublic: true,
 };
 
-export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, projectId?: string) => {
+export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, projectId: string) => {
   const kybDynamicExample = {
     ...dynamicUiWorkflowDefinition,
     isPublic: !projectId,
@@ -386,7 +387,12 @@ export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, proj
     data: kybDynamicExample,
   });
 
-  await generateDynamicUiTest(prismaClient, workflow.id, projectId || workflow.projectId);
+  await generateDynamicUiTest(
+    prismaClient,
+    workflow.id,
+    // @ts-ignore - is null expected?
+    projectId || workflow.projectId,
+  );
 
   return workflow;
 };

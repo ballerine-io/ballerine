@@ -2,7 +2,7 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import * as fs from 'fs';
-import { Request } from 'express';
+import type { Request } from 'express';
 
 @Injectable()
 export class RemoveTempFileInterceptor implements NestInterceptor {

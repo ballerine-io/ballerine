@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import * as swagger from '@nestjs/swagger';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 import { UiDefinitionModel } from '@/ui-definition/ui-definition.model';
 import { WhereIdInput } from '@/common/where-id-input';
 import { UiDefinitionByRuntimeIdDto } from '@/ui-definition/dtos/ui-definition-by-runtime-id.dto';

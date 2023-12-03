@@ -1,6 +1,6 @@
 import { calculateHourDifference } from './calculate-hour-difference';
 import { WorkflowTableItem } from '../types';
-import { IWorkflowHealthStatus, WorkflowHealthStatus } from '@common/enums';
+import { IWorkflowHealthStatus, WorkflowHealthStatus } from '@/common/enums';
 
 export function getWorkflowHealthStatus(workflow: WorkflowTableItem): IWorkflowHealthStatus {
   const { status, createdAt } = workflow;

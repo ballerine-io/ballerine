@@ -4,7 +4,7 @@ import * as swagger from '@nestjs/swagger';
 import { CustomerService } from '@/customer/customer.service';
 import { CustomerModel } from '@/customer/customer.model';
 import { Customer } from '@prisma/client';
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 
 @swagger.ApiTags('internal/customers')

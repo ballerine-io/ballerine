@@ -1,8 +1,8 @@
-import { useCurrentPageElement } from '@app/components/organisms/DynamicUI/PageResolver/hooks/useCurrentPageElement';
+import { useCurrentPageElement } from '@/components/organisms/DynamicUI/PageResolver/hooks/useCurrentPageElement';
 import {
   PageResolverContext,
   PageResolverProps,
-} from '@app/components/organisms/DynamicUI/PageResolver/types';
+} from '@/components/organisms/DynamicUI/PageResolver/types';
 import { pageResolverContext } from './page-resolver.context';
 import { useMemo } from 'react';
 

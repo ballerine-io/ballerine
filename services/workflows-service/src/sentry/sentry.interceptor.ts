@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
 import { catchError, throwError } from 'rxjs';
-import { Request } from 'express';
+import type { Request } from 'express';
 
 @Injectable()
 export class SentryInterceptor implements NestInterceptor {

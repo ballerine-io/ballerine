@@ -1,11 +1,11 @@
-import { StateProvider } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { useMachineLogic } from '@app/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
-import { useStateLogic } from '@app/components/organisms/DynamicUI/StateManager/hooks/useStateLogic';
-import { createStateMachine } from '@app/components/organisms/DynamicUI/StateManager/state-machine.factory';
+import { StateProvider } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useMachineLogic } from '@/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
+import { useStateLogic } from '@/components/organisms/DynamicUI/StateManager/hooks/useStateLogic';
+import { createStateMachine } from '@/components/organisms/DynamicUI/StateManager/state-machine.factory';
 import {
   StateManagerContext,
   StateManagerProps,
-} from '@app/components/organisms/DynamicUI/StateManager/types';
+} from '@/components/organisms/DynamicUI/StateManager/types';
 import { useMemo } from 'react';
 
 export const StateManager = ({
@@ -36,7 +36,11 @@ export const StateManager = ({
 
   const { machineApi } = useMachineLogic(machine);
   const { contextPayload, state, sendEvent, invokePlugin, setContext, getContext, getState } =
-    useStateLogic(machineApi, initialContext);
+    useStateLogic(
+      machineApi,
+      // @ts-ignore
+      initialContext,
+    );
   const context: StateManagerContext = useMemo(() => {
     const ctx: StateManagerContext = {
       stateApi: {
@@ -56,10 +60,6 @@ export const StateManager = ({
     () => (typeof children === 'function' ? children(context) : children),
     [children, context],
   );
-
-  if (import.meta.env.MODE === 'development') {
-    console.log('Context', contextPayload);
-  }
 
   return <StateProvider context={context}>{child}</StateProvider>;
 };

@@ -1,5 +1,5 @@
-const cjs = process.env.NODE_ENV === 'test' || process.env.BABEL_ENV === 'commonjs'
-const loose = true
+const cjs = process.env.NODE_ENV === 'test' || process.env.BABEL_ENV === 'commonjs';
+const loose = true;
 
 module.exports = {
   presets: [
@@ -13,7 +13,5 @@ module.exports = {
     ],
     '@babel/preset-typescript',
   ],
-  plugins: [
-    cjs && ['@babel/transform-modules-commonjs', { loose }],
-  ].filter(Boolean),
-}
+  plugins: [cjs && ['@babel/transform-modules-commonjs', { loose }]].filter(Boolean),
+};

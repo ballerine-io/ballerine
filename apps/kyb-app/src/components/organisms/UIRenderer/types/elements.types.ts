@@ -1,5 +1,5 @@
-import { CellOptions } from '@app/components/organisms/UIRenderer/elements/Cell';
-import { TaskOptions } from '@app/components/organisms/UIRenderer/elements/Task';
+import { CellOptions } from '@/components/organisms/UIRenderer/elements/Cell';
+import { TaskOptions } from '@/components/organisms/UIRenderer/elements/Task';
 import { AnyChildren } from '@ballerine/ui';
 import React from 'react';
 

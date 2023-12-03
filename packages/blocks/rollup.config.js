@@ -1,7 +1,3 @@
-require('ts-node').register({
-  compilerOptions: {
-    esModuleInterop: true,
-  },
-});
+require('ts-node').register();
 
 module.exports = require('./rollup.config.ts');

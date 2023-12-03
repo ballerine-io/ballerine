@@ -1,6 +1,6 @@
-import { AnyObject } from '@common/types';
-import { ArrayFieldLayoutItem } from '@components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayout';
-import { ctw } from '@utils/ctw';
+import { AnyObject } from '@/common/types';
+import { ArrayFieldLayoutItem } from '@/components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayout';
+import { ctw } from '@/utils/ctw';
 
 interface ArrayFieldsLayoutItemProps {
   element: ArrayFieldLayoutItem;

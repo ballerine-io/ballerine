@@ -1,9 +1,10 @@
-import { DynamicForm } from '@components/organisms/DynamicForm/DynamicForm';
+import { DynamicForm } from '@/components/organisms/DynamicForm/DynamicForm';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
+import { Meta } from '@storybook/react';
 
 export default {
   component: DynamicForm,
-};
+} satisfies Meta<typeof DynamicForm>;
 
 const simpleFormSchema: RJSFSchema = {
   type: 'object',

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEnum, IsObject, IsString } from 'class-validator';
-import { JsonValue } from 'type-fest';
+import type { JsonValue } from 'type-fest';
 
 export class FilterModel {
   @ApiProperty({

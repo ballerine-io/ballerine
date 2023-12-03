@@ -10,7 +10,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   ScrollArea,
-} from '@components/atoms';
+} from '@/components/atoms';
 import { CaretSortIcon } from '@radix-ui/react-icons';
 import clsx from 'clsx';
 import { CheckIcon } from 'lucide-react';

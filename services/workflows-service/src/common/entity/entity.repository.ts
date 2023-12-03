@@ -5,10 +5,7 @@ import { BusinessRepository } from '@/business/business.repository';
 @Injectable()
 export class EntityRepository {
   constructor(
-    private readonly endUserRepository: EndUserRepository,
-    private readonly businessRepository: BusinessRepository,
+    public readonly endUser: EndUserRepository,
+    public readonly business: BusinessRepository,
   ) {}
-
-  endUser = this.endUserRepository;
-  business = this.businessRepository;
 }

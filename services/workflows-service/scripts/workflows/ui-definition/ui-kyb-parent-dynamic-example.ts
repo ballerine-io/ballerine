@@ -11,7 +11,7 @@ import { WebsiteBasicRequirement } from '../../../src/ui-definition/utils/collec
 import { ProcessingDetails } from '../../../src/ui-definition/utils/collection-flow/9-process-details';
 import { CompanyDocuments } from '../../../src/ui-definition/utils/collection-flow/10-company-documents';
 
-export const uiKybParentUiSchema = (workflowDefinitionId: string) =>
+export const uiKybParentUiSchema = (workflowDefinitionId: string, projectId: string) =>
   ({
     uiContext: 'collection_flow',
     uiSchema: {
@@ -30,14 +30,15 @@ export const uiKybParentUiSchema = (workflowDefinitionId: string) =>
     },
     definition: definition,
     workflowDefinitionId: workflowDefinitionId,
+    projectId: projectId,
   } as const satisfies Prisma.UiDefinitionUncheckedCreateInput);
 
 export const generateDynamicUiTest = async (
   prismaClient: PrismaClient,
   workflowDefinitionId: string,
-  projectId?: string | null,
+  projectId: string,
 ) => {
   return await prismaClient.uiDefinition.create({
-    data: { ...uiKybParentUiSchema(workflowDefinitionId), ...{ projectId: projectId } },
+    data: uiKybParentUiSchema(workflowDefinitionId, projectId),
   });
 };

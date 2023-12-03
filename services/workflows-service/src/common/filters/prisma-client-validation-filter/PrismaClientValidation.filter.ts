@@ -1,5 +1,5 @@
 import { PrismaValidationExceptionParser } from './utils/PrismaValidationExceptionParser';
-import { ArgumentsHost, Catch, HttpStatus, Injectable, Logger } from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
 import { PrismaClientValidationError } from '@prisma/client/runtime';

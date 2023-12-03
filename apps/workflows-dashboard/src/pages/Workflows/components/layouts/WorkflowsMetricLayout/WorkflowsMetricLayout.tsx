@@ -1,4 +1,4 @@
-import { WorkflowsMetricLayoutItem } from '@app/pages/Workflows/components/layouts/WorkflowsMetricLayout/WorkflowsMetricLayoutItem';
+import { WorkflowsMetricLayoutItem } from '@/pages/Workflows/components/layouts/WorkflowsMetricLayout/WorkflowsMetricLayoutItem';
 
 interface Props {
   children: React.ReactNode | React.ReactNode[];

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
-import { InputJsonValue } from '../../types';
+import type { InputJsonValue } from '../../types';
 
 export class JsonFilter {
   @ApiProperty({

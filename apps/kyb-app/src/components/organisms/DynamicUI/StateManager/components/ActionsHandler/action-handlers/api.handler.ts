@@ -1,9 +1,9 @@
-import { ActionHandler } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/action-handler.abstract';
-import { EngineManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
-import { EventEngine } from '@app/components/organisms/DynamicUI/rule-engines/event.engine';
-import { JsonLogicRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
-import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
-import { Action, BaseActionParams, IRule } from '@app/domains/collection-flow';
+import { ActionHandler } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/action-handler.abstract';
+import { EngineManager } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/helpers/engine-manager';
+import { EventEngine } from '@/components/organisms/DynamicUI/rule-engines/event.engine';
+import { JsonLogicRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-logic.rule-engine';
+import { JsonSchemaRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
+import { Action, BaseActionParams, IRule } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import jmespath from 'jmespath';
 import ky from 'ky';
@@ -25,11 +25,15 @@ export class ApiActionHandler implements ActionHandler {
   public readonly ACTION_TYPE = 'api';
   private readonly engineManager = new EngineManager([
     new JsonLogicRuleEngine(),
+    // @ts-ignore
     new JsonSchemaRuleEngine(),
     new EventEngine(),
   ]);
 
-  async run<TContext>(context: TContext, action: Action<ApiActionParams>): Promise<TContext> {
+  async run<TContext extends AnyObject>(
+    context: TContext,
+    action: Action<ApiActionParams>,
+  ): Promise<TContext> {
     const isCanInvoke = this.canInvoke(context, action);
 
     if (!isCanInvoke) return Promise.resolve(context);
@@ -44,7 +48,12 @@ export class ApiActionHandler implements ActionHandler {
     });
 
     const json = await requestResult.json();
-    const updatedContext = this.updateContext(context, params, json);
+    const updatedContext = this.updateContext(
+      context,
+      params,
+      // @ts-ignore
+      json,
+    );
 
     return updatedContext;
   }
@@ -68,10 +77,14 @@ export class ApiActionHandler implements ActionHandler {
     params: ApiActionParams,
     requestResult: AnyObject = {},
   ): TContext {
-    if (!params.map.toContext) return context;
-    const requestPayload = jmespath.search(requestResult, params.map.fromResponse) as AnyObject;
+    if (!params.map?.toContext) return context;
+    const requestPayload = jmespath.search(
+      requestResult,
+      // @ts-ignore
+      params.map?.fromResponse,
+    ) as AnyObject;
 
-    const toContextMapSchema = params.map.toContext
+    const toContextMapSchema = params.map?.toContext
       ? (JSON.parse(params.map.toContext) as AnyObject)
       : {};
 

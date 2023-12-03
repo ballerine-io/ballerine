@@ -1,6 +1,6 @@
 // import Scrollbars from 'react-custom-scrollbars';
 
-import { ScrollArea } from '@components/atoms/ScrollArea';
+import { ScrollArea } from '@/components/atoms/ScrollArea';
 
 interface Props {
   children: React.ReactNode;

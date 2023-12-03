@@ -1,11 +1,11 @@
 import {
   fetchUserDailyCasesResolvedStats,
   fetchUserStats,
-} from '@app/domains/user/api/user-stats/user-stats.api';
+} from '@/domains/user/api/user-stats/user-stats.api';
 import {
   GetUserDailyCasesResolvedStatsDto,
   GetUserStatsDto,
-} from '@app/domains/user/api/user-stats/user-stats.types';
+} from '@/domains/user/api/user-stats/user-stats.types';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 export const userStatsQueryKeys = createQueryKeys('user-stats', {

@@ -1,4 +1,4 @@
-import { TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 
 export interface BaseParams {
   fromDate?: Date;

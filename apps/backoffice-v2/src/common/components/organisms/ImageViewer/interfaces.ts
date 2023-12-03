@@ -28,6 +28,7 @@ export interface IItemProps extends Omit<ComponentProps<'li'>, 'children'> {
   caption: string;
   src: string;
   fileType: string;
+  fileName: string;
   alt: string;
   buttonProps?: ButtonComponent;
   imageProps?: Omit<ComponentPropsWithoutRef<'img'>, 'src' | 'alt'>;

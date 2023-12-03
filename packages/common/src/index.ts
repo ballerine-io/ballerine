@@ -1,33 +1,42 @@
 export {
+  dump,
   handlePromise,
   isEmptyObject,
+  isErrorWithCode,
   isErrorWithMessage,
   isErrorWithName,
-  isErrorWithCode,
   isFunction,
   isNullish,
   isObject,
-  noNullish,
-  zodErrorToReadable,
-  sleep,
-  uniqueArray,
-  safeEvery,
-  someDocumentDecisionStatus,
   everyDocumentDecisionStatus,
-  raise,
+  replaceNullsWithUndefined,
   log,
-  dump,
+  noNullish,
+  raise,
+  safeEvery,
+  sleep,
+  someDocumentDecisionStatus,
+  uniqueArray,
+  zodErrorToReadable,
 } from './utils';
 
 export type { IErrorWithMessage } from './utils';
+
 export type { Serializable, AnyRecord } from './types';
-export type { DefaultContextSchema, TDefaultSchemaDocumentPage, TDocument } from './schemas';
+export type {
+  DefaultContextSchema,
+  TDefaultSchemaDocumentPage,
+  TDocument,
+  TAvailableDocuments,
+} from './schemas';
 
 export {
-  getGhanaDocuments,
-  getDocumentsByCountry,
-  getDocumentId,
+  getDocumentSchemaByCountry,
   defaultContextSchema,
+  findDocumentSchemaByTypeAndCategory,
+  getDocumentId,
+  getDocumentsByCountry,
+  getGhanaDocuments,
 } from './schemas';
 
 export * from './consts';

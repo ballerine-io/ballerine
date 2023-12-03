@@ -1,8 +1,8 @@
-import { Button } from '@app/components/atoms/Button';
-import { Dialog, DialogContent, DialogTrigger } from '@app/components/atoms/Dialog';
-import { XstateVisualizer } from '@app/components/organisms/XstateVisualizer';
-import { IWorkflow } from '@app/domains/workflows/api/workflow';
-import { useWorkflowDefinitionQuery } from '@app/pages/Workflows/hooks/useWorkflowDefinitionQuery';
+import { Button } from '@/components/atoms/Button';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/atoms/Dialog';
+import { XstateVisualizer } from '@/components/organisms/XstateVisualizer';
+import { IWorkflow } from '@/domains/workflows/api/workflow';
+import { useWorkflowDefinitionQuery } from '@/pages/Workflows/hooks/useWorkflowDefinitionQuery';
 import { NetworkIcon } from 'lucide-react';
 import { useState } from 'react';
 

@@ -1,5 +1,5 @@
-import { MetricCard } from '@app/components/molecules/MetricCard';
-import { DurationCardContent } from '@app/pages/Overview/components/molecules/UserStats/components/DurationCard/DurationCardContent';
+import { MetricCard } from '@/components/molecules/MetricCard';
+import { DurationCardContent } from '@/pages/Overview/components/molecules/UserStats/components/DurationCard/DurationCardContent';
 import { memo } from 'react';
 
 interface Props {

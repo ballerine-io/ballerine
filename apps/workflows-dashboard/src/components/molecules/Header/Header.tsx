@@ -1,8 +1,8 @@
-import { useLogoutMutation } from '@app/common/hooks/useLogoutMutation';
-import { Input } from '@app/components/atoms/Input';
-import { headerNavigationLinks } from '@app/components/molecules/Header/header-navigation-links';
-import { Navigation } from '@app/components/molecules/Navigation';
-import { UserNavigation } from '@app/components/molecules/UserNavigation';
+import { useLogoutMutation } from '@/common/hooks/useLogoutMutation';
+import { Input } from '@/components/atoms/Input';
+import { headerNavigationLinks } from '@/components/molecules/Header/header-navigation-links';
+import { Navigation } from '@/components/molecules/Navigation';
+import { UserNavigation } from '@/components/molecules/UserNavigation';
 
 export const Header = () => {
   const { logout } = useLogoutMutation();

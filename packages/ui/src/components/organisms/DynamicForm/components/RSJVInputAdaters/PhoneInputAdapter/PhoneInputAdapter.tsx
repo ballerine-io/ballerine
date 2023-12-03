@@ -1,5 +1,5 @@
-import { PhoneNumberInput } from '@components/atoms';
-import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
+import { PhoneNumberInput } from '@/components/atoms';
+import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { useCallback } from 'react';
 
 export const PhoneInputAdapter: RJSFInputAdapter = ({
@@ -10,6 +10,7 @@ export const PhoneInputAdapter: RJSFInputAdapter = ({
   onBlur,
 }) => {
   const handleBlur = useCallback(() => {
+    // @ts-ignore
     onBlur && onBlur(id, formData);
   }, [id, onBlur, formData]);
 

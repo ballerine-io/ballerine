@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react-swc';
-import { resolve } from 'path';
 import { defineConfig } from 'vitest/config';
 import terminal from 'vite-plugin-terminal';
+import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig(configEnv => {
   const isDevelopment = configEnv.mode === 'development';
@@ -23,15 +23,9 @@ export default defineConfig(configEnv => {
         strip: false,
       }),
       react(),
+      tsconfigPaths(),
       // mkcert(),
     ],
-    resolve: {
-      alias: {
-        app: resolve(__dirname, 'src', 'app'),
-        components: resolve(__dirname, 'src', 'components'),
-        hooks: resolve(__dirname, 'src', 'hooks'),
-      },
-    },
     css: {
       modules: {
         generateScopedName: isDevelopment ? '[name]__[local]__[hash:base64:5]' : '[hash:base64:5]',

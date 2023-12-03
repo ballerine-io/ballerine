@@ -1,8 +1,8 @@
 import {
   ErrorField,
   RuleEngine,
-} from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
-import { Rule, UIElement } from '@app/domains/collection-flow';
+} from '@/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
+import { Rule, UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import ajvErrors from 'ajv-errors';
 import addFormats, { FormatName } from 'ajv-formats';
@@ -14,6 +14,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
 
   public readonly ENGINE_NAME = JsonSchemaRuleEngine.ENGINE_NAME;
 
+  // @ts-ignore
   validate(context: unknown, rule: Rule, definition: UIElement<AnyObject>) {
     const validator = new Ajv({ allErrors: true, useDefaults: true });
     addFormats(validator, {
@@ -26,7 +27,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
     if (!validationResult) {
       const validationErrorMessage = this.extractErrorsWithFields(validator, definition);
 
-      return { isValid: false, errors: validationErrorMessage.flat() };
+      return { isValid: false, errors: validationErrorMessage?.flat() };
     }
 
     return { isValid: true, errors: [] };
@@ -54,16 +55,16 @@ export class JsonSchemaRuleEngine implements RuleEngine {
       uniqueErroredParams.forEach(_ => {
         const fieldDestination = this.buildFieldDestination(error.instancePath, error);
 
-        const messages = error.message.split(';');
+        const messages = error.message?.split(';');
 
-        messages.forEach(messageText => {
+        messages?.forEach(messageText => {
           const sanitizedFieldId = fieldDestination.replaceAll(/\.(\d+)\./g, '[$1].');
-
           fieldErrors.push(
             this.createFieldError(
               sanitizedFieldId,
               messageText,
               definition.name,
+              // @ts-ignore
               definition.valueDestination,
             ),
           );
@@ -73,7 +74,7 @@ export class JsonSchemaRuleEngine implements RuleEngine {
       return fieldErrors;
     });
 
-    return result.flat().filter(result => Boolean(result.message));
+    return result?.flat()?.filter(result => Boolean(result.message));
   }
 
   private buildFieldDestination(

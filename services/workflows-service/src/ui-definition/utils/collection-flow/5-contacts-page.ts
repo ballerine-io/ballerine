@@ -17,10 +17,10 @@ const validationSchema = {
                   default: {},
                   errorMessage: {
                     required: {
-                      firstName: 'First name is required.',
-                      lastName: 'Last name is required.',
-                      phone: 'Phone is required.',
-                      email: 'Email is required',
+                      firstName: 'errorMessage.required.firstName',
+                      lastName: 'errorMessage.required.lastName',
+                      phone: 'errorMessage.required.phone',
+                      email: 'errorMessage.required.email',
                     },
                   },
                   properties: {
@@ -36,14 +36,13 @@ const validationSchema = {
                       type: 'string',
                       pattern: '^[+]?[0-9]{10,15}$',
                       errorMessage: {
-                        pattern:
-                          'Phone number must be 10 to 15 digits long and may start with a +.',
+                        pattern: 'errorMessage.pattern.phone',
                       },
                     },
                     email: {
                       type: 'string',
                       format: 'email',
-                      errorMessage: 'Please enter valid email address.',
+                      errorMessage: 'errorMessage.format.email',
                     },
                   },
                 },
@@ -61,7 +60,7 @@ export const ContactsPage = {
   type: 'page',
   number: 5,
   stateName: 'contacts_page',
-  name: 'Contacts',
+  name: 'text.contacts',
   pageValidation: [
     {
       type: 'json-schema',
@@ -78,13 +77,13 @@ export const ContactsPage = {
             {
               type: 'h1',
               options: {
-                text: 'Contacts',
+                text: 'text.contacts',
               },
             },
             {
               type: 'h4',
               options: {
-                text: 'Main Contact',
+                text: 'text.mainContact',
                 classNames: ['padding-top-10'],
               },
             },
@@ -108,8 +107,8 @@ export const ContactsPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainContact.firstName',
               options: {
-                label: 'Legal Name',
-                hint: 'First Name',
+                label: 'text.legalName',
+                hint: 'text.firstName',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -120,7 +119,7 @@ export const ContactsPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.mainContact.lastName',
               options: {
-                hint: 'Last Name',
+                hint: 'text.lastName',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -135,8 +134,8 @@ export const ContactsPage = {
                   type: 'string',
                   format: 'email',
                 },
-                label: 'Email',
-                hint: 'example@example.cn',
+                label: 'text.email.label',
+                hint: 'text.email.hint',
               },
             },
             {
@@ -144,7 +143,7 @@ export const ContactsPage = {
               type: 'international-phone-number',
               valueDestination: 'entity.data.additionalInfo.mainContact.phone',
               options: {
-                label: 'Phone Number',
+                label: 'text.phoneNumber',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -170,7 +169,7 @@ export const ContactsPage = {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],
                 },
-                text: 'Continue',
+                text: 'text.continue',
               },
               availableOn: [
                 {

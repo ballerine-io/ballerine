@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
-import { TProjectId } from '@/types';
+import type { TProjectId } from '@/types';
 
 @Injectable()
 export class WorkflowTokenService {

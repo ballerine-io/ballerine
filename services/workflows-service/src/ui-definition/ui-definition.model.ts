@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsJSON, IsObject, IsOptional, IsString } from 'class-validator';
-import { JsonValue } from 'type-fest';
+import type { JsonValue } from 'type-fest';
 
 export class UiDefinitionModel {
   @ApiProperty({

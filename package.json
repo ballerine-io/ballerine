@@ -64,6 +64,7 @@
     "prepare": "husky install",
     "changeset": "changeset",
     "version-packages": "changeset version",
+    "update-packages": "pnpm run changeset && pnpm run version-packages && pnpm install",
     "release": "pnpm build && changeset publish",
     "upload-sourcemaps": "nx run-many --target=upload-sourcemaps --all"
   },

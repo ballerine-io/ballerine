@@ -11,7 +11,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
-import { Response } from 'express';
+import type { Response } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { StorageService } from './storage.service';
 import * as errors from '../errors';
@@ -28,12 +28,13 @@ import { File } from '@prisma/client';
 import { z } from 'zod';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { isBase64 } from '@/common/utils/is-base64/is-base64';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { HttpStatusCode } from 'axios';
 import { HttpService } from '@nestjs/axios';
+import mime from 'mime';
+import { getMimeType } from '@/common/get-mime-type/get-mime-type';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -79,10 +80,11 @@ export class StorageControllerInternal {
       uri: file.location || String(file.path),
       fileNameOnDisk: String(file.path),
       fileNameInBucket: file.key,
+      fileName: file.originalname,
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
       projectId: currentProjectId,
-      mimeType: file.mimetype,
+      mimeType: file.mimetype || (await getMimeType({ file: file.originalname || '' })),
     });
 
     return fileInfo;
@@ -121,18 +123,22 @@ export class StorageControllerInternal {
       throw new errors.NotFoundException('file not found');
     }
 
+    const mimeType =
+      persistedFile.mimeType ||
+      mime.getType(persistedFile.fileName || persistedFile.uri || '') ||
+      undefined;
     const root = path.parse(os.homedir()).root;
 
     if (persistedFile.fileNameInBucket && format === 'signed-url') {
       const signedUrl = await createPresignedUrlWithClient({
         bucketName: AwsS3FileConfig.getBucketName(process.env) as string,
         fileNameInBucket: persistedFile.fileNameInBucket,
-        mimeType: persistedFile.mimeType ?? undefined,
+        mimeType,
       });
-      return res.json({ signedUrl, mimeType: persistedFile.mimeType });
+      return res.json({ signedUrl, mimeType });
     }
 
-    res.set('Content-Type', persistedFile.mimeType ?? 'application/octet-stream');
+    res.set('Content-Type', mimeType || 'application/octet-stream');
 
     if (persistedFile.fileNameInBucket) {
       const localFilePath = await downloadFileFromS3(

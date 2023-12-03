@@ -2,15 +2,15 @@ import { set } from 'lodash';
 import { Injectable } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { AnyRecord } from '@ballerine/common';
-import { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
+import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
 import * as tmp from 'tmp';
 import fs from 'fs';
 import { CustomerService } from '@/customer/customer.service';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { TDocumentsWithoutPageType } from '@/common/types';
-import { fromBuffer } from 'file-type';
+import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -173,19 +173,22 @@ export class HookCallbackHandlerService {
 
   async formatPages(data: AnyRecord) {
     const documentImages: AnyRecord[] = [];
+
     for (const image of data.images as { context?: string; content: string }[]) {
       const tmpFile = tmp.fileSync().name;
       const base64ImageContent = image.content.split(',')[1];
       const buffer = Buffer.from(base64ImageContent as string, 'base64');
-      const fileType = await fromBuffer(buffer);
-      const fileExtension = fileType?.ext ? `.${fileType?.ext}` : '';
-      const fileWithExtension = `${tmpFile}${fileExtension}`;
+      const fileType = await getFileMetadata({
+        file: buffer,
+      });
+      const fileWithExtension = `${tmpFile}${fileType?.extension ? `.${fileType?.extension}` : ''}`;
+
       fs.writeFileSync(fileWithExtension, buffer);
 
       documentImages.push({
         uri: `file://${fileWithExtension}`,
         provider: 'file-system',
-        type: fileType?.mime,
+        type: fileType?.mimeType,
         metadata: {
           side: image.context?.replace('document-', ''),
         },
@@ -219,7 +222,7 @@ export class HookCallbackHandlerService {
       } else {
         current[path[i] as keyof typeof current] =
           (current[path[i] as keyof typeof current] as unknown) || {};
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
         current = current[path[i] as keyof typeof current];
       }
     }

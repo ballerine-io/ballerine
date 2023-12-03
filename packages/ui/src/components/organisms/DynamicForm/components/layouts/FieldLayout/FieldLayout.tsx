@@ -1,8 +1,9 @@
-import { Label } from '@components/atoms';
-import { ErrorsList } from '@components/molecules/ErrorsList';
-import { useWarnings } from '@components/organisms/DynamicForm/hooks/useWarnings/useWarnings';
+import { Label } from '@/components/atoms';
+import { ErrorsList } from '@/components/molecules/ErrorsList';
+import { useWarnings } from '@/components/organisms/DynamicForm/hooks/useWarnings/useWarnings';
 import { FieldTemplateProps } from '@rjsf/utils';
 import { useMemo } from 'react';
+import { InputWarning } from '@/components';
 
 export const FieldLayout = ({
   id,
@@ -22,7 +23,7 @@ export const FieldLayout = ({
   const errors = useMemo(() => Array.from(new Set(rawErrors)), [rawErrors]);
 
   return (
-    <div className="flex flex-col gap-1 py-1">
+    <div className="flex flex-col gap-1 py-3">
       {isLabelEnabled ? (
         <Label htmlFor={id}>
           {label}
@@ -33,7 +34,11 @@ export const FieldLayout = ({
       {rawErrors ? <ErrorsList errors={errors} /> : null}
       {fieldWarnings ? (
         <ErrorsList
-          errors={Array.isArray(fieldWarnings) ? fieldWarnings : [fieldWarnings]}
+          errors={
+            Array.isArray(fieldWarnings)
+              ? (fieldWarnings as unknown as Extract<InputWarning, string[]>)
+              : [fieldWarnings as unknown as Extract<InputWarning, string>]
+          }
           type="warning"
         />
       ) : null}

@@ -1,4 +1,4 @@
-import { Action, UIElement } from '@app/domains/collection-flow';
+import { Action, UIElement } from '@/domains/collection-flow';
 
 export interface UIElementComponentProps<T> {
   params: T;

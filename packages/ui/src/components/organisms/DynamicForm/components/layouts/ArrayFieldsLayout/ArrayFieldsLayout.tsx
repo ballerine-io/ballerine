@@ -1,7 +1,7 @@
-import { AnyObject } from '@common/types';
-import { Button } from '@components/atoms';
-import { ArrayFieldsLayoutItem } from '@components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayoutItem';
-import { ArrayFieldsLayoutItemTitle } from '@components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayoutItemTitle';
+import { AnyObject } from '@/common/types';
+import { Button } from '@/components/atoms';
+import { ArrayFieldsLayoutItem } from '@/components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayoutItem';
+import { ArrayFieldsLayoutItemTitle } from '@/components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayoutItemTitle';
 import { ArrayFieldTemplateItemType, ArrayFieldTemplateProps, RJSFSchema } from '@rjsf/utils';
 import { Plus } from 'lucide-react';
 
@@ -23,14 +23,18 @@ export const ArrayFieldsLayout = ({
     <div>
       <p className="pb-1 text-xl font-semibold">{title}</p>
       {children
-        ? children(items, uiSchema)
+        ? // @ts-ignore
+          children(items, uiSchema)
         : items.map((element, index) => (
             <ArrayFieldsLayoutItem
               key={`field-template-item-${index}`}
               element={element}
+              // @ts-ignore
               uiSchema={uiSchema}
               title={
+                // @ts-ignore
                 typeof uiSchema.titleTemplate === 'string' ? (
+                  // @ts-ignore
                   <ArrayFieldsLayoutItemTitle template={uiSchema.titleTemplate} index={index} />
                 ) : null
               }

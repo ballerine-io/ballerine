@@ -1,17 +1,18 @@
-import { Heading } from '../../components/Heading/Heading';
-import { Subheading } from '../../components/Subheading/Subheading';
 import { Alert } from '../../components/Alert/Alert';
-import { Container } from '../../components/Container/Container';
+import { BadgeCell } from '../../components/BadgeCell/BadgeCell';
 import { CallToAction } from '../../components/CallToAction/CallToAction';
-import { FaceComparison } from '../../components/FaceComparison/FaceComparison';
+import { CaseCallToAction } from '../../components/CaseCallToAction/CaseCallToAction';
+import { Container } from '../../components/Container/Container';
 import { Details } from '../../components/Details/Details';
+import { DirectorsCallToAction } from '../../components/DirectorsCallToAction';
+import { FaceComparison } from '../../components/FaceComparison/FaceComparison';
+import { Heading } from '../../components/Heading/Heading';
+import { MapCell } from '../../components/MapCell/MapCell';
 import { MultiDocuments } from '../../components/MultiDocuments/MultiDocuments';
 import { NestedDetails } from '../../components/NestedDetails/NestedDetails';
-import { MapCell } from '../../components/MapCell/MapCell';
-import { CaseCallToAction } from '../../components/CaseCallToAction/CaseCallToAction';
-import { BadgeCell } from '../../components/BadgeCell/BadgeCell';
-import { TableCell } from '../../components/TableCell/TableCell';
 import { Paragraph } from '../../components/Paragraph/Paragraph';
+import { Subheading } from '../../components/Subheading/Subheading';
+import { TableCell } from '../../components/TableCell/TableCell';
 
 export const cells = {
   heading: Heading,
@@ -20,6 +21,7 @@ export const cells = {
   badge: BadgeCell,
   container: Container,
   callToAction: CallToAction,
+  directorsCallToAction: DirectorsCallToAction,
   faceComparison: FaceComparison,
   details: Details,
   nestedDetails: NestedDetails,

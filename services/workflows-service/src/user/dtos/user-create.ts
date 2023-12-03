@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsString } from 'class-validator';
-import { InputJsonValue } from '../../types';
+import type { InputJsonValue } from '../../types';
 
 export class UserCreateDto {
   @ApiProperty({

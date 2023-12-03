@@ -9,6 +9,7 @@ import {
   ExecutionContext,
   ForwardReference,
   INestApplication,
+  NestMiddleware,
   Provider,
   Type,
 } from '@nestjs/common';
@@ -65,6 +66,7 @@ export const initiateNestApp = async (
   providers: Provider[] = [],
   controllers: Array<Type>,
   modules: Array<Type>,
+  middlewares: Array<NestMiddleware['use']> = [],
 ) => {
   const moduleRef = await Test.createTestingModule({
     providers: providers,
@@ -83,6 +85,7 @@ export const initiateNestApp = async (
   const middlewareInstnace = new AuthKeyMiddleware(app.get(CustomerService), app.get(ClsService));
   const clsMiddleware = new ClsMiddleware();
 
+  middlewares.forEach(middleware => app.use(middleware));
   app.use(clsMiddleware.use.bind(clsMiddleware));
   app.use(middlewareInstnace.use.bind(middlewareInstnace));
   await app.init();

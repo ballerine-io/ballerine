@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import nodeResolve from '@rollup/plugin-node-resolve';
@@ -167,7 +163,7 @@ function umdProd({ input, umdExternal, packageDir, banner, jsName }: Options): R
       nodeResolve({ extensions: ['.ts'] }),
       umdDevPlugin('production'),
       terser(),
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+
       size({}),
       visualizer({
         filename: `${packageDir}/dist/stats-html.html`,

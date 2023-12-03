@@ -5,7 +5,7 @@ import { UserService } from '@/user/user.service';
 import { UserRepository } from '@/user/user.repository';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Project, User } from '@prisma/client';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import dayjs from 'dayjs';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { Injectable } from '@nestjs/common';

@@ -1,7 +1,7 @@
 import classnames from 'classnames';
 import dayjs from 'dayjs';
-import { ChartProps } from '@app/pages/Workflows/components/molecules/common/types';
-import { MetricListChart } from '@app/pages/Workflows/components/molecules/MetricListChart';
+import { ChartProps } from '@/pages/Workflows/components/molecules/common/types';
+import { MetricListChart } from '@/pages/Workflows/components/molecules/MetricListChart';
 import { useMemo } from 'react';
 
 export interface LoggedInAgentsChartData {

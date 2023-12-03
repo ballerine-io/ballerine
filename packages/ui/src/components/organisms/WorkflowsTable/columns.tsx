@@ -2,7 +2,7 @@ import { WorkflowTableColumnDef, WorkflowTableItem } from './types';
 import { getWorkflowHealthStatus } from './utils/get-workflow-health-status';
 import { formatDate } from './utils/format-date';
 import { DataTableColumnHeader } from './components/DataTableColumnHeader';
-import { HealthIndicator } from '@components/atoms/HealthIndicator';
+import { HealthIndicator } from '@/components/atoms/HealthIndicator';
 import { JsonDialog } from '../../molecules/JsonDialog';
 import { CodeIcon } from 'lucide-react';
 

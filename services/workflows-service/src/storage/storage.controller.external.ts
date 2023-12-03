@@ -3,7 +3,7 @@ import { Param, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
-import { Response } from 'express';
+import type { Response } from 'express';
 import * as nestAccessControl from 'nest-access-control';
 import { StorageService } from './storage.service';
 import * as errors from '../errors';
@@ -13,11 +13,12 @@ import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.conf
 import * as os from 'os';
 import * as path from 'path';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { CustomerService } from '@/customer/customer.service';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { getMimeType } from '@/common/get-mime-type/get-mime-type';
 
 // Temporarily identical to StorageControllerInternal
 @swagger.ApiTags('Storage')
@@ -62,10 +63,11 @@ export class StorageControllerExternal {
       uri: file.location || String(file.path),
       fileNameOnDisk: String(file.path),
       fileNameInBucket: file.key,
+      fileName: file.originalname,
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
       projectId: currentProjectId,
-      mimeType: file.mimetype,
+      mimeType: file.mimetype || (await getMimeType({ file: file.originalname || '' })),
     });
 
     return fileInfo;

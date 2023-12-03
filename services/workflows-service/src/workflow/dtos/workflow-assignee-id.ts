@@ -1,4 +1,4 @@
-import { IsOptional, IsString, ValidateIf } from 'class-validator';
+import { IsString, ValidateIf } from 'class-validator';
 
 export class WorkflowAssigneeId {
   @IsString()

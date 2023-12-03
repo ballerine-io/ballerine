@@ -1,6 +1,6 @@
-import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines';
-import { findDefinitionByDestinationPath } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
-import { Document, UIElement, UIPage } from '@app/domains/collection-flow';
+import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
+import { findDocumentDefinitionById } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
+import { Document, UIElement, UIPage } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 
@@ -11,6 +11,16 @@ export interface PageError {
   errors: ErrorField[];
   _elements: UIElement<AnyObject>[];
 }
+
+export const selectDirectors = (context: AnyObject) =>
+  (context?.entity?.data?.additionalInfo?.directors as AnyObject[]) || [];
+
+export const selectDirectorsDocuments = (context: unknown): Document[] =>
+  //@ts-ignore
+  selectDirectors(context)
+    .map(director => director.additionalInfo?.documents)
+    ?.filter(Boolean)
+    ?.flat() || [];
 
 export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] => {
   const pageErrors = useMemo(() => {
@@ -27,21 +37,27 @@ export const usePageErrors = (context: AnyObject, pages: UIPage[]): PageError[] 
     });
 
     pagesWithErrors.forEach(pageError => {
-      pageError.errors = ((context.documents as Document[]) || [])
-        .filter((document, index) => {
+      pageError.errors = [
+        ...((context.documents as Document[]) || []),
+        ...selectDirectorsDocuments(context),
+      ]
+        .filter(document => {
           if (
+            //@ts-ignore
             !(document?.decision?.status == 'revision' || document?.decision?.status == 'rejected')
           ) {
             return false;
           }
 
-          const documentPath = `documents[${index}].pages[0].ballerineFileId`;
+          const definition = findDocumentDefinitionById(document.id as string, pageError._elements);
 
-          return Boolean(findDefinitionByDestinationPath(documentPath, pageError._elements));
+          return Boolean(definition);
         })
         .map(document => {
-          const documentPath = `document-error-${document.id}`;
-          const message = document?.decision?.revisionReason;
+          //@ts-ignore
+          const documentPath = `document-error-${document.id as string}`;
+          //@ts-ignore
+          const message = document?.decision?.revisionReason as string;
 
           return {
             fieldId: documentPath,

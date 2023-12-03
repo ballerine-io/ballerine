@@ -1,5 +1,5 @@
 import React from 'react';
-import { ctw } from '@utils/ctw';
+import { ctw } from '@/utils/ctw';
 
 export const TableBody = React.forwardRef<
   HTMLTableSectionElement,

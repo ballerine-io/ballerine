@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
@@ -13,7 +10,7 @@ import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { sign } from '@/common/utils/sign/sign';
 import { env } from '@/env';
 import { CustomerService } from '@/customer/customer.service';
-import { TAuthenticationConfiguration } from '@/customer/types';
+import type { TAuthenticationConfiguration } from '@/customer/types';
 
 @Injectable()
 export class WorkflowStateChangedWebhookCaller {
@@ -52,15 +49,11 @@ export class WorkflowStateChangedWebhookCaller {
       'workflow.state.changed',
     );
 
-    const customer = await this.customerService.getByProjectId(
-      // @ts-expect-error - error from Prisma types fix
-      data.runtimeData.projectId,
-      {
-        select: {
-          authenticationConfiguration: true,
-        },
+    const customer = await this.customerService.getByProjectId(data.runtimeData.projectId, {
+      select: {
+        authenticationConfiguration: true,
       },
-    );
+    });
 
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;

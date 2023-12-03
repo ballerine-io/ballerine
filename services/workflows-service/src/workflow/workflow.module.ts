@@ -4,7 +4,7 @@ import { WorkflowControllerExternal } from './workflow.controller.external';
 import { WorkflowControllerInternal } from './workflow.controller.internal';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { AuthModule } from '../auth/auth.module';
-import { WorkflowDefinitionRepository } from './workflow-definition.repository';
+import { WorkflowDefinitionRepository } from '../workflow-defintion/workflow-definition.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { DocumentChangedWebhookCaller } from '@/events/document-changed-webhook-caller';
@@ -31,6 +31,8 @@ import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.servi
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
+import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definition.module';
 
 @Module({
   imports: [
@@ -40,6 +42,7 @@ import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integra
     ProjectModule,
     PrismaModule,
     CustomerModule,
+    WorkflowDefinitionModule,
   ],
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
   providers: [
@@ -67,6 +70,7 @@ import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integra
     WorkflowTokenService,
     SalesforceService,
     SalesforceIntegrationRepository,
+    WorkflowDefinitionService,
   ],
   exports: [
     WorkflowService,

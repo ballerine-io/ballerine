@@ -1,6 +1,6 @@
-import { JsonSchemaRuleEngine } from '@app/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
-import { ErrorField } from '@app/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
-import { Rule, UIElement } from '@app/domains/collection-flow';
+import { JsonSchemaRuleEngine } from '@/components/organisms/DynamicUI/rule-engines/json-schema.rule-engine';
+import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines/rule-engine.abstract';
+import { Rule, UIElement } from '@/domains/collection-flow';
 
 describe('JsonSchemaRuleEngine', () => {
   let ruleEngine: JsonSchemaRuleEngine;
@@ -77,7 +77,7 @@ describe('JsonSchemaRuleEngine', () => {
         };
 
         expect(testResult.isValid).toBe(false);
-        expect(testResult.errors.length).toBe(1);
+        expect(testResult.errors?.length).toBe(1);
         expect(testResult.errors).toContainEqual(expectedError);
       });
 
@@ -121,7 +121,7 @@ describe('JsonSchemaRuleEngine', () => {
         const testResult = ruleEngine.validate(testData, rule, {} as UIElement);
 
         expect(testResult.isValid).toBe(false);
-        expect(testResult.errors.length).toBe(2);
+        expect(testResult.errors?.length).toBe(2);
         expect(testResult.errors).toContainEqual(barError);
         expect(testResult.errors).toContainEqual(fooError);
       });
@@ -170,7 +170,7 @@ describe('JsonSchemaRuleEngine', () => {
 
           const testResult = ruleEngine.validate(testData, rule, {} as UIElement);
 
-          expect(testResult.errors.length).toBe(1);
+          expect(testResult.errors?.length).toBe(1);
           expect(testResult.errors).toContainEqual(testError);
         });
       });
@@ -205,8 +205,8 @@ describe('JsonSchemaRuleEngine', () => {
               const testResult = ruleEngine.validate(testData, rule, {} as UIElement);
 
               expect(testResult.isValid).toBe(false);
-              expect(testResult.errors.length).toBe(1);
-              expect(testResult.errors[0].fieldId).toBe(expected);
+              expect(testResult.errors?.length).toBe(1);
+              expect(testResult.errors?.[0]?.fieldId).toBe(expected);
             });
           });
         });
@@ -249,8 +249,8 @@ describe('JsonSchemaRuleEngine', () => {
             const testResult = ruleEngine.validate(testData, rule, {} as UIElement);
 
             expect(testResult.isValid).toBe(false);
-            expect(testResult.errors.length).toBe(1);
-            expect(testResult.errors[0].fieldId).toBe(expectedFileId);
+            expect(testResult.errors?.length).toBe(1);
+            expect(testResult.errors?.[0]?.fieldId).toBe(expectedFileId);
           });
 
           it('will build path to empty array', () => {
@@ -284,8 +284,8 @@ describe('JsonSchemaRuleEngine', () => {
             const testResult = ruleEngine.validate(testData, rule, {} as UIElement);
 
             expect(testResult.isValid).toBe(false);
-            expect(testResult.errors.length).toBe(1);
-            expect(testResult.errors[0].fieldId).toBe('foo.list');
+            expect(testResult.errors?.length).toBe(1);
+            expect(testResult.errors?.[0]?.fieldId).toBe('foo.list');
           });
         });
       });

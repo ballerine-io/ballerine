@@ -8,6 +8,7 @@ const composeDataFormCell = (
   cellName: string,
   categoryDropdownOptions: TDropdownOption[],
   value: string,
+  isEditable: boolean,
 ) => {
   return {
     [cellName]: {
@@ -15,6 +16,7 @@ const composeDataFormCell = (
       type: 'string',
       dropdownOptions: categoryDropdownOptions,
       value: value,
+      isEditable,
     },
   };
 };
@@ -33,6 +35,7 @@ export const composePickableCategoryType = (
   categoryValue: string,
   typeValue: string,
   documentsSchemas: TDocument[],
+  config?: Record<any, any> | null,
 ) => {
   const documentCategoryDropdownOptions: Array<TDropdownOption> = [];
   const documentTypesDropdownOptions: Array<TDropdownOption> = [];
@@ -57,10 +60,11 @@ export const composePickableCategoryType = (
 
   const categoryDropdownOptions = uniqueArrayByKey(documentCategoryDropdownOptions, 'value');
   const typeDropdownOptions = documentTypesDropdownOptions;
+  const isEditable = !(config?.isLockedDocumentCategoryAndType === true);
 
   return {
-    ...composeDataFormCell('category', categoryDropdownOptions, categoryValue),
-    ...composeDataFormCell('type', typeDropdownOptions, typeValue),
+    ...composeDataFormCell('category', categoryDropdownOptions, categoryValue, isEditable),
+    ...composeDataFormCell('type', typeDropdownOptions, typeValue, isEditable),
   };
 };
 export const isExistingSchemaForDocument = (documentsSchemas: Array<TDocument>) => {

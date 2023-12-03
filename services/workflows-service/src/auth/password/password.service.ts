@@ -14,7 +14,7 @@ export class PasswordService {
   salt: Salt;
 
   constructor() {
-    this.salt = env.BCRYPT_SALT;
+    this.salt = env.BCRYPT_SALT || 10;
   }
 
   /**

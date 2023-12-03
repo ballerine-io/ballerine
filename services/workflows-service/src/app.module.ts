@@ -35,6 +35,7 @@ import { SalesforceModule } from '@/salesforce/salesforce.module';
 import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
 import { multerFactory } from '@/common/multer';
 import { initHttpMoudle } from '@/common/http-service/http-config.service';
+import { DataMigrationModule } from '@/data-migration/data-migration.module';
 
 @Module({
   controllers: [MetricsController],
@@ -50,6 +51,7 @@ import { initHttpMoudle } from '@/common/http-service/http-config.service';
     WorkflowModule,
     UiDefinitionModule,
     StorageModule,
+    DataMigrationModule,
     EndUserModule,
     CustomerModule,
     BusinessModule,

@@ -1,15 +1,15 @@
 import * as common from '@nestjs/common';
-import { Body, Controller, HttpCode, Post, Req, Res, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Req, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dtos/login';
 import { UserModel } from '@/user/user.model';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { LocalAuthGuard } from '@/auth/local/local-auth.guard';
 import util from 'util';
 import { Public } from '@/common/decorators/public.decorator';
-import { AuthenticatedEntity } from '@/types';
+import type { AuthenticatedEntity } from '@/types';
 import { User } from '@prisma/client';
 
 @Public()

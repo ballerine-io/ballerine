@@ -1,5 +1,5 @@
-import { UIEvent } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/hooks/useEventEmitterLogic/types';
-import { Action } from '@app/domains/collection-flow';
+import { UIEvent } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/hooks/useEventEmitterLogic/types';
+import { Action } from '@/domains/collection-flow';
 
 export const getTriggeredActions = (event: UIEvent, actions: Action[]): Action[] => {
   return actions.filter(action => {

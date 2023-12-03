@@ -1,6 +1,6 @@
-import { ActionDispatcher } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/types';
-import { Action } from '@app/domains/collection-flow';
-import { useRefValue } from '@app/hooks/useRefValue';
+import { ActionDispatcher } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/types';
+import { Action } from '@/domains/collection-flow';
+import { useRefValue } from '@/hooks/useRefValue';
 import _debounce from 'lodash/debounce';
 import { useCallback, useMemo } from 'react';
 

@@ -25,4 +25,5 @@ export {
   JmespathTransformer,
   JsonSchemaValidator,
   HelpersTransformer,
+  validateDefinitionLogic,
 } from './lib';

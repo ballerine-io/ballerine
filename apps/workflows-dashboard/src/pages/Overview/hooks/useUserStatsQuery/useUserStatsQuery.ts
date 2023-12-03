@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { UserStats, userStatsQueryKeys } from '@app/domains/user/api/user-stats';
+import { UserStats, userStatsQueryKeys } from '@/domains/user/api/user-stats';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
@@ -13,6 +13,7 @@ const defaultValues: UserStats = {
 export const useUserStatsQuery = () => {
   const initialDate = useMemo(() => +dayjs().subtract(30, 'days').toDate(), []);
   const { data = defaultValues, isLoading } = useQuery(
+    // @ts-ignore
     userStatsQueryKeys.userStats({ fromDate: initialDate }),
   );
 

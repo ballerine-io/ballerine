@@ -5,6 +5,7 @@ import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/quer
 import { useParams } from 'react-router-dom';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../useCaseState/useCaseState';
+import { selectDirectorsDocuments } from '../../../../hooks/useTasks/selectors/selectDirectorsDocuments';
 
 export const useCaseDecision = () => {
   const filterId = useFilterId();
@@ -24,16 +25,19 @@ export const useCaseDecision = () => {
   const canRevision =
     caseState.actionButtonsEnabled &&
     workflow?.nextEvents?.includes(Action.REVISION) &&
-    someDocumentDecisionStatus(workflow?.context?.documents, 'revision');
+    someDocumentDecisionStatus(
+      [...((selectDirectorsDocuments(workflow) as any) || []), ...workflow?.context?.documents],
+      'revision',
+    );
+
   const canApprove =
     !canRevision &&
     caseState.actionButtonsEnabled &&
     workflow?.nextEvents?.includes(Action.APPROVE);
-  const noAction =
-    workflow?.workflowDefinition?.config?.workflowLevelResolution &&
-    !canApprove &&
-    !canReject &&
-    !canRevision;
+  const workflowLevelResolution =
+    workflow?.workflowDefinition?.config?.workflowLevelResolution ??
+    workflow?.context?.entity?.type === 'business';
+  const noAction = workflowLevelResolution && !canApprove && !canReject && !canRevision;
 
   return {
     hasDecision,

@@ -1,4 +1,4 @@
-import { convertMsDurationToTime } from '@app/common/utils/convert-ms-duration-to-time/convert-ms-duration-to-time';
+import { convertMsDurationToTime } from '@/common/utils/convert-ms-duration-to-time/convert-ms-duration-to-time';
 import { memo, useMemo } from 'react';
 
 interface Props {

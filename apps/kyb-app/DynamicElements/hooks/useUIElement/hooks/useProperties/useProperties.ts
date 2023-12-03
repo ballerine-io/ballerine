@@ -1,10 +1,10 @@
-import { ruleEngines } from '@app/components/organisms/DynamicElements/engines';
-import { EngineManager } from '@app/components/organisms/DynamicElements/helpers/engine-manager';
+import { ruleEngines } from '@/components/organisms/DynamicElements/engines';
+import { EngineManager } from '@/components/organisms/DynamicElements/helpers/engine-manager';
 import { AnyObject } from '@ballerine/ui';
 import { useMemo } from 'react';
 import get from 'lodash/get';
-import { useDynamicUIContext } from '@app/components/organisms/DynamicElements/hooks/useDynamicUIContext';
-import { UIElement } from '@app/domains/collection-flow';
+import { useDynamicUIContext } from '@/components/organisms/DynamicElements/hooks/useDynamicUIContext';
+import { UIElement } from '@/domains/collection-flow';
 
 export const useProperties = <TContext>(definition: UIElement<AnyObject>, context: TContext) => {
   const { errors } = useDynamicUIContext();

@@ -1,8 +1,8 @@
 import {
   ActivePerWorkflowChart,
   ActivePerWorkflowChartData,
-} from '@app/pages/Workflows/components/molecules/ActivePerWorkflowChart';
-import { useActivePerWorkflowStatsQuery } from '@app/pages/Workflows/components/organisms/metrics/ActivePerWorkflow/hooks/useActivePerWorkflowStatsQuery';
+} from '@/pages/Workflows/components/molecules/ActivePerWorkflowChart';
+import { useActivePerWorkflowStatsQuery } from '@/pages/Workflows/components/organisms/metrics/ActivePerWorkflow/hooks/useActivePerWorkflowStatsQuery';
 import { useMemo } from 'react';
 
 const colorScheme = ['#52D726', '#FFEC00', '#FF7300', '#FF0000'];

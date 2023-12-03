@@ -1,5 +1,5 @@
-import { fetchBusinessInformation } from '@app/domains/business/business.api';
-import { GetBusinessInformationDto } from '@app/domains/business/types';
+import { fetchBusinessInformation } from '@/domains/business/business.api';
+import { GetBusinessInformationDto } from '@/domains/business/types';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 export const businessQueryKeys = createQueryKeys('business', {

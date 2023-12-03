@@ -1,5 +1,5 @@
-import { IWorkflow } from '@app/domains/workflows/api/workflow';
-import { calculateHourDifference } from '@app/utils/calculate-hour-difference';
+import { IWorkflow } from '@/domains/workflows/api/workflow';
+import { calculateHourDifference } from '@/utils/calculate-hour-difference';
 
 export enum HealthStatus {
   'healthy',

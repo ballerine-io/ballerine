@@ -1,6 +1,6 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { Prisma, UiDefinition, UiDefinitionContext } from '@prisma/client';
 
@@ -13,9 +13,8 @@ export class UiDefinitionRepository {
 
   async create<T extends Prisma.UiDefinitionCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UiDefinitionCreateArgs>,
-    projectId?: TProjectId,
   ): Promise<UiDefinition> {
-    return await this.prisma.uiDefinition.create<T>(this.scopeService.scopeCreate(args, projectId));
+    return await this.prisma.uiDefinition.create<T>(args);
   }
 
   async findById<T extends Omit<Prisma.UiDefinitionFindFirstOrThrowArgs, 'where'>>(
@@ -56,17 +55,11 @@ export class UiDefinitionRepository {
   async updateById<T extends Omit<Prisma.UiDefinitionUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.UiDefinitionUpdateArgs, 'where'>>,
-    projectId: TProjectId,
   ): Promise<UiDefinition> {
-    return await this.prisma.uiDefinition.update(
-      this.scopeService.scopeUpdate(
-        {
-          where: { id },
-          ...args,
-        },
-        projectId,
-      ),
-    );
+    return await this.prisma.uiDefinition.update({
+      where: { id },
+      ...args,
+    });
   }
 
   async deleteById<T extends Omit<Prisma.UiDefinitionDeleteArgs, 'where'>>(

@@ -1,6 +1,6 @@
-import { useUIElementsStateLogic } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic';
-import { UIStateSetter } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
-import { UIState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
+import { useUIElementsStateLogic } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic';
+import { UIStateSetter } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
+import { UIState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/types';
 import { useCallback, useMemo, useState } from 'react';
 
 export const useUIStateLogic = (initialState?: UIState) => {
@@ -13,12 +13,13 @@ export const useUIStateLogic = (initialState?: UIState) => {
 
   const uiState: UIState = useMemo(() => {
     const state: UIState = {
+      ...initialState,
       elements: uiElementsState,
       isLoading,
     };
 
     return state;
-  }, [uiElementsState, isLoading]);
+  }, [uiElementsState, isLoading, initialState]);
 
   const overrideUIState: UIStateSetter = useCallback(
     (newState: UIState) => {

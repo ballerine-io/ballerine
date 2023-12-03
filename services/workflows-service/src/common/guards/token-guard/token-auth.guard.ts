@@ -1,7 +1,7 @@
 import { ClsService } from 'nestjs-cls';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
-import { Request } from 'express';
+import type { Request } from 'express';
 
 @Injectable()
 export class TokenAuthGuard implements CanActivate {

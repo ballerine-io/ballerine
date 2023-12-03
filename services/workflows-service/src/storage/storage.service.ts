@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { FileRepository } from './storage.repository';
 import { IFileIds } from './types';
 import { Prisma } from '@prisma/client';
-import { TProjectId, TProjectIds } from '@/types';
-import { SetOptional } from 'type-fest';
+import type { TProjectId, TProjectIds } from '@/types';
 
 @Injectable()
 export class StorageService {
@@ -12,32 +11,32 @@ export class StorageService {
   async createFileLink({
     uri,
     fileNameOnDisk,
+    fileName,
     userId,
     fileNameInBucket,
     projectId,
     mimeType,
   }: Pick<
     Prisma.FileCreateInput,
-    'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket' | 'mimeType'
+    'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket' | 'mimeType' | 'fileName'
   > & {
     projectId: TProjectId;
   }) {
-    const file = await this.fileRepository.create(
-      {
-        data: {
-          uri,
-          fileNameOnDisk,
-          userId,
-          fileNameInBucket,
-          mimeType,
-        },
-        select: {
-          id: true,
-          mimeType: true,
-        },
+    const file = await this.fileRepository.create({
+      data: {
+        uri,
+        fileNameOnDisk,
+        fileName,
+        userId,
+        fileNameInBucket,
+        mimeType,
+        projectId,
       },
-      projectId,
-    );
+      select: {
+        id: true,
+        mimeType: true,
+      },
+    });
 
     return file;
   }

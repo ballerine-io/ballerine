@@ -1,4 +1,4 @@
-import { ErrorMessage } from '@components/atoms';
+import { ErrorMessage } from '@/components/atoms';
 import clsx from 'clsx';
 
 interface Props {

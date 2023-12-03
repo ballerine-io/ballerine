@@ -15,6 +15,13 @@ export class BaseFakeRepository {
     return __deepCopy(model, args.select);
   }
 
+  async createUnscoped(args: any) {
+    const model = await this.__initModel(args.data);
+    this.#__rows.push(model);
+
+    return __deepCopy(model, args.select);
+  }
+
   async __initModel(data: any) {
     const model = new this.#__ModelClass();
     Object.assign(model, data);

@@ -1,8 +1,8 @@
-import { Content } from '@app/components/layouts/AppShell/Content';
-import { FormContainer } from '@app/components/layouts/AppShell/FormContainer';
-import { Logo } from '@app/components/layouts/AppShell/Logo';
-import { Navigation } from '@app/components/layouts/AppShell/Navigation';
-import { Sidebar } from '@app/components/layouts/AppShell/Sidebar';
+import { Content } from '@/components/layouts/AppShell/Content';
+import { FormContainer } from '@/components/layouts/AppShell/FormContainer';
+import { Logo } from '@/components/layouts/AppShell/Logo';
+import { Navigation } from '@/components/layouts/AppShell/Navigation';
+import { Sidebar } from '@/components/layouts/AppShell/Sidebar';
 
 interface Props {
   children: React.ReactNode | React.ReactNode[];

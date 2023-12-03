@@ -1,6 +1,6 @@
-import { AnyObject } from '@common/types';
-import { AutocompleteInput } from '@components/molecules';
-import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
+import { AnyObject } from '@/common/types';
+import { AutocompleteInput } from '@/components/molecules';
+import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { useCallback, useMemo } from 'react';
 
 export const AutocompleteTextInputAdapter: RJSFInputAdapter = ({
@@ -13,14 +13,15 @@ export const AutocompleteTextInputAdapter: RJSFInputAdapter = ({
   onBlur,
 }) => {
   const options = useMemo(() => {
-    return uiSchema.options && Array.isArray(uiSchema.options)
-      ? (uiSchema.options as AnyObject[]).map(item => ({
+    return uiSchema?.options && Array.isArray(uiSchema?.options)
+      ? (uiSchema?.options as AnyObject[]).map(item => ({
           value: item.title as string,
         }))
       : [];
   }, [uiSchema]);
 
   const handleBlur = useCallback(() => {
+    // @ts-ignore
     onBlur && onBlur(id, formData);
   }, [id, onBlur, formData]);
 
@@ -30,7 +31,7 @@ export const AutocompleteTextInputAdapter: RJSFInputAdapter = ({
       disabled={disabled}
       value={formData}
       options={options}
-      placeholder={placeholder || uiSchema['ui:placeholder']}
+      placeholder={placeholder || uiSchema?.['ui:placeholder']}
       onChange={event => void onChange(event.target.value || '')}
       onBlur={handleBlur}
     />

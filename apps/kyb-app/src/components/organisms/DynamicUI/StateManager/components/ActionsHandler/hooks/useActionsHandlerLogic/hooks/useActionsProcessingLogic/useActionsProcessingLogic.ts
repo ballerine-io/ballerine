@@ -1,10 +1,10 @@
-import { ActionHandler } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/action-handler.abstract';
-import { ActionHandlerManager } from '@app/components/organisms/DynamicUI/StateManager/components/ActionsHandler/hooks/useActionsHandlerLogic/hooks/helpers/action-handler-manager';
-import { StateMachineAPI } from '@app/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
-import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { UIElementsState } from '@app/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
-import { Action } from '@app/domains/collection-flow';
-import { useRefValue } from '@app/hooks/useRefValue';
+import { ActionHandler } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/action-handlers/action-handler.abstract';
+import { ActionHandlerManager } from '@/components/organisms/DynamicUI/StateManager/components/ActionsHandler/hooks/useActionsHandlerLogic/hooks/helpers/action-handler-manager';
+import { StateMachineAPI } from '@/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
+import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { UIElementsState } from '@/components/organisms/DynamicUI/hooks/useUIStateLogic/hooks/useUIElementsStateLogic/types';
+import { Action } from '@/domains/collection-flow';
+import { useRefValue } from '@/hooks/useRefValue';
 import PQueue from 'p-queue';
 import { useCallback, useMemo } from 'react';
 
@@ -57,12 +57,15 @@ export const useActionsProcessingLogic = (
         if (action.params?.debounce) {
           toggleElementsLockState(relevantElementNames, true);
 
-          const updatedContext = await actionHandler.run(context, action, apiRef.current);
-          apiRef.current.setContext(updatedContext);
+          const updatedContext = await actionHandler?.run(context, action, apiRef.current);
+          apiRef.current.setContext(
+            // @ts-ignore
+            updatedContext,
+          );
 
           toggleElementsLockState(relevantElementNames, false);
         } else {
-          await actionHandler.run(context, action, apiRef.current);
+          await actionHandler?.run(context, action, apiRef.current);
         }
       };
 

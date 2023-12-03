@@ -1,5 +1,5 @@
 //@ts-nocheck
-import { UIElement } from '@app/domains/collection-flow';
+import { UIElement } from '@/domains/collection-flow';
 import { ElementsMap } from '../types/elements.types';
 import { createBlocks } from '@ballerine/blocks';
 import { v4 } from 'uuid';

@@ -1,12 +1,12 @@
-import { BallerineLogo } from '@app/components/atoms/icons/BallerineLogo';
-import { env } from '@app/common/env/env';
-import { SignInForm } from '@app/pages/SignIn/components/SignInForm';
-import { useSignInMutation } from '@app/pages/SignIn/hooks/useSignInMutation';
+import { BallerineLogo } from '@/components/atoms/icons/BallerineLogo';
+import { env } from '@/common/env/env';
+import { SignInForm } from '@/pages/SignIn/components/SignInForm';
+import { useSignInMutation } from '@/pages/SignIn/hooks/useSignInMutation';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { getRefererUrl } from '@app/common/hocs/withSessionProtected/utils/get-referer-url';
-import { clearRefererUrl } from '@app/common/hocs/withSessionProtected/utils/clear-referer-url';
-import { useSession } from '@app/common/hooks/useSession';
-import { LoadingSpinner } from '@app/components/atoms/LoadingSpinner';
+import { getRefererUrl } from '@/common/hocs/withSessionProtected/utils/get-referer-url';
+import { clearRefererUrl } from '@/common/hocs/withSessionProtected/utils/clear-referer-url';
+import { useSession } from '@/common/hooks/useSession';
+import { LoadingSpinner } from '@/components/atoms/LoadingSpinner';
 
 export function SignIn() {
   const navigate = useNavigate();

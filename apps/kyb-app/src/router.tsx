@@ -1,11 +1,10 @@
-import { withTokenProtected } from '@app/hocs/withTokenProtected';
-import { CollectionFlow } from '@app/pages/CollectionFlow';
-import { Approved } from '@app/pages/CollectionFlow/components/pages/Approved';
-import { Rejected } from '@app/pages/CollectionFlow/components/pages/Rejected';
-import { SignIn } from '@app/pages/SignIn';
-import { createBrowserRouter } from 'react-router-dom';
-
+import { withTokenProtected } from '@/hocs/withTokenProtected';
+import { CollectionFlow } from '@/pages/CollectionFlow';
+import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
+import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
+import { SignIn } from '@/pages/SignIn';
 import {
+  createBrowserRouter,
   createRoutesFromChildren,
   matchRoutes,
   useLocation,

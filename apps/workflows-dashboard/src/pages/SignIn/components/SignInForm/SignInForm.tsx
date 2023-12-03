@@ -1,16 +1,16 @@
-import { Button } from '@app/components/atoms/Button';
-import { Card, CardContent, CardHeader } from '@app/components/atoms/Card';
-import { Input } from '@app/components/atoms/Input';
-import { Form } from '@app/components/organisms/Form/Form';
-import { FormControl } from '@app/components/organisms/Form/Form.Control';
-import { FormField } from '@app/components/organisms/Form/Form.Field';
-import { FormItem } from '@app/components/organisms/Form/Form.Item';
-import { FormLabel } from '@app/components/organisms/Form/Form.Label';
-import { FormMessage } from '@app/components/organisms/Form/Form.Message';
-import { SignInFormValues } from '@app/pages/SignIn/components/SignInForm/types';
+import { Button } from '@/components/atoms/Button';
+import { Card, CardContent, CardHeader } from '@/components/atoms/Card';
+import { Input } from '@/components/atoms/Input';
+import { Form } from '@/components/organisms/Form/Form';
+import { FormControl } from '@/components/organisms/Form/Form.Control';
+import { FormField } from '@/components/organisms/Form/Form.Field';
+import { FormItem } from '@/components/organisms/Form/Form.Item';
+import { FormLabel } from '@/components/organisms/Form/Form.Label';
+import { FormMessage } from '@/components/organisms/Form/Form.Message';
+import { SignInFormValues } from '@/pages/SignIn/components/SignInForm/types';
 import { useForm } from 'react-hook-form';
 import classnames from 'classnames';
-import { FormErrorAlert } from '@app/pages/SignIn/components/SignInForm/ErrorAlert';
+import { FormErrorAlert } from '@/pages/SignIn/components/SignInForm/ErrorAlert';
 
 interface Props {
   isSubmitting: boolean;

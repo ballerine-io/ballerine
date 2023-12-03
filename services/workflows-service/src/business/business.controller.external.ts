@@ -3,7 +3,7 @@ import * as common from '@nestjs/common';
 import { Param } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
-import { Request } from 'express';
+import type { Request } from 'express';
 import * as errors from '../errors';
 import * as nestAccessControl from 'nest-access-control';
 import { BusinessFindManyArgs } from './dtos/business-find-many-args';
@@ -21,7 +21,7 @@ import { BusinessInformation } from '@/business/dtos/business-information';
 import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @swagger.ApiTags('external/businesses')
@@ -42,24 +42,21 @@ export class BusinessControllerExternal {
     @common.Body() data: BusinessCreateDto,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<Pick<BusinessModel, 'id' | 'companyName'>> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return this.service.create(
-      {
-        data: {
-          ...data,
-          legalForm: 'name',
-          countryOfIncorporation: 'US',
-          address: 'addess',
-          industry: 'telecom',
-          documents: 's',
-        },
-        select: {
-          id: true,
-          companyName: true,
-        },
+    return this.service.create({
+      data: {
+        ...data,
+        legalForm: 'name',
+        countryOfIncorporation: 'US',
+        address: 'addess',
+        industry: 'telecom',
+        documents: 's',
+        projectId: currentProjectId,
       },
-      currentProjectId,
-    );
+      select: {
+        id: true,
+        companyName: true,
+      },
+    });
   }
 
   @common.Get()
@@ -115,23 +112,20 @@ export class BusinessControllerExternal {
     @common.Body() data: BusinessUpdateDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    return this.service.updateById(
-      businessId,
-      {
-        data: {
-          companyName: data.companyName,
-          address: data.address,
-          registrationNumber: data.registrationNumber,
-          website: data.website,
-          documents: data.documents ? JSON.stringify(data.documents) : undefined,
-          shareholderStructure:
-            data.shareholderStructure && data.shareholderStructure.length
-              ? JSON.stringify(data.shareholderStructure)
-              : undefined,
-        },
+    return this.service.updateById(businessId, {
+      data: {
+        companyName: data.companyName,
+        address: data.address,
+        registrationNumber: data.registrationNumber,
+        website: data.website,
+        documents: data.documents ? JSON.stringify(data.documents) : undefined,
+        shareholderStructure:
+          data.shareholderStructure && data.shareholderStructure.length
+            ? JSON.stringify(data.shareholderStructure)
+            : undefined,
+        projectId: currentProjectId,
       },
-      currentProjectId,
-    );
+    });
   }
 
   // curl -v http://localhost:3000/api/v1/external/businesses/:businessId/workflows
