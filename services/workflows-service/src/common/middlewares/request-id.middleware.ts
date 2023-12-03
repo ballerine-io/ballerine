@@ -37,18 +37,19 @@ export class RequestIdMiddleware implements NestMiddleware {
       if (isRelevantReq) {
         reqMetadata = {
           ...reqMetadata,
+          statusCode: res.statusCode,
           // @ts-ignore TODO: ask omri to fix tslint
           endTime: endTime.toISOString(),
           responseTime: endTime.valueOf() - startTime.valueOf(),
         };
 
-        this.logger.log(`Outgoing response`, reqMetadata);
+        this.logger.debug(`Outgoing response`, reqMetadata);
       }
     };
 
     const abortFn = () => {
       cleanup();
-      this.logger.warn('Request aborted by the client');
+      this.logger.warn('Request aborted by the client', reqMetadata);
     };
 
     const errorFn = (error: Error) => {

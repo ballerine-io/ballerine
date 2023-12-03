@@ -5,22 +5,6 @@ import { AppLoggerService } from '../app-logger/app-logger.service';
 
 export const RETRY_DELAY_IN_MS = 1500; // extract to config, delay retry
 
-const _httpStatusFromAxiosMap = {
-  ENOTFOUND: HttpStatus.NOT_FOUND,
-  ECONNABORTED: HttpStatus.INTERNAL_SERVER_ERROR,
-};
-
-export const getHttpStatusFromAxiosError = (
-  code?: keyof typeof _httpStatusFromAxiosMap | string,
-) => {
-  if (!code || !(code in _httpStatusFromAxiosMap)) {
-    return HttpStatus.INTERNAL_SERVER_ERROR;
-  }
-
-  // @ts-ignore
-  return _httpStatusFromAxiosMap[code];
-};
-
 @Injectable()
 export class HttpConfigService implements HttpModuleOptionsFactory {
   constructor(

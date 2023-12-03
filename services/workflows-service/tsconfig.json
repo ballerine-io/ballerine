@@ -3,6 +3,7 @@
   "compilerOptions": {
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "useUnknownInCatchVariables": false,
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {

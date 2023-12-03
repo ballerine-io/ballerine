@@ -1,13 +1,7 @@
-import {
-  CallHandler,
-  ExecutionContext,
-  HttpException,
-  Injectable,
-  NestInterceptor,
-} from '@nestjs/common';
-import { isAxiosError } from 'axios';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
+import { AxiosError, isAxiosError } from 'axios';
 import { catchError, tap, throwError } from 'rxjs';
-import { getHttpStatusFromAxiosError } from '../http-service/http-config.service';
+import { handleAxiosError } from '../http-service/utils';
 
 @Injectable()
 export class AxiosRequestErrorInterceptor implements NestInterceptor {
@@ -17,23 +11,19 @@ export class AxiosRequestErrorInterceptor implements NestInterceptor {
         const req = context.switchToHttp().getRequest();
         req.startTime = new Date().getTime();
       }),
-      catchError((exception: Error) => {
+      catchError((error: AxiosError) => {
         // Translate axios http error
-        if (isAxiosError(exception)) {
-          const status = exception.response?.status || getHttpStatusFromAxiosError(exception.code);
-
-          return throwError(
-            () =>
-              new HttpException(
-                exception.code !== 'ENOTFOUND'
-                  ? exception?.cause?.message ?? exception.message
-                  : '',
-                status,
-              ),
-          );
+        if (isAxiosError(error)) {
+          return throwError(() => {
+            try {
+              handleAxiosError(error);
+            } catch (err) {
+              return err;
+            }
+          });
         }
 
-        return throwError(() => exception);
+        return throwError(() => error);
       }),
     );
   }

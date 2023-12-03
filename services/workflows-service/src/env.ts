@@ -17,15 +17,7 @@ export const env = createEnv({
     ENV_FILE_NAME: z.string().optional(),
     BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
     PORT: z.coerce.number(),
-    DB_URL: z
-      .string()
-      .url()
-      .refine(
-        url =>
-          url.startsWith('mysql://') ||
-          (url.startsWith('postgresql://') && !!pgConnectionParser(url)),
-        `DB_URL must be uri with db schema prefix '<mysql,postgesql>://'`,
-      ),
+    DB_URL: z.string().url(),
     SESSION_SECRET: z.string(),
     SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().nonnegative().gt(0).default(60),
     BACKOFFICE_CORS_ORIGIN: z.string().url(),

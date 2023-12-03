@@ -75,7 +75,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     this.logger.error(message, {
       name: error.name,
       status,
-      error: inspect(errorRes),
+      error: errorRes,
       message: error.message,
       responseTime: Date.now() - request.startTime,
     });

@@ -1,26 +1,21 @@
 import { HttpService } from '@nestjs/axios';
 import { TLocalFilePath, TRemoteFileConfig, TRemoteUri } from '@/providers/file/types/files-types';
 import { promises as fsPromises } from 'fs';
-import axios, { AxiosError, AxiosResponse, HttpStatusCode, isAxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Readable } from 'stream';
 import { IStreamableFileProvider } from '../types/interfaces';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { HttpException } from '@nestjs/common';
-import {
-  getHttpStatusFromAxiosError,
-  RETRY_DELAY_IN_MS,
-} from '@/common/http-service/http-config.service';
 import { removeSensitiveHeaders } from '@/common/utils/request-response/request';
+import { LoggerService } from '@nestjs/common';
 
 export class HttpFileService implements IStreamableFileProvider {
-  protected logger;
-  protected client;
-  constructor({ client, logger }: { client: HttpService; logger: AppLoggerService }) {
+  protected logger: LoggerService;
+  protected client: AxiosInstance;
+  constructor({ client, logger }: { client: HttpService; logger: LoggerService }) {
     this.logger = logger;
     this.client = client.axiosRef;
 
     this.client.interceptors.request.use(config => {
-      this.logger.log('Axios outgoing request interceptor', {
+      this.logger.debug?.('Axios outgoing request interceptor', {
         headers: removeSensitiveHeaders(config.headers),
         url: config.url,
         method: config.method?.toUpperCase(),
@@ -29,76 +24,33 @@ export class HttpFileService implements IStreamableFileProvider {
       return config;
     });
 
-    this.client.interceptors.response.use(
-      response => {
-        if (
-          Buffer.isBuffer(response.data) ||
-          response.headers['Content-Type'] === 'application/json'
-        ) {
-          return response;
-        }
-
-        this.logger.log('Axios outgoing response interceptor', {
-          data: response.data,
-          url: response.config.url,
-          method: response.config.method?.toUpperCase(),
-          // TODO: should we add also response's headers?
-        });
+    this.client.interceptors.response.use(response => {
+      if (
+        Buffer.isBuffer(response.data) ||
+        response.headers['Content-Type'] !== 'application/json'
+      ) {
         return response;
-      },
-      async (error: unknown) => {
-        if (!isAxiosError(error)) {
-          return Promise.reject(error);
-        }
+      }
 
-        const { config, response } = error;
-
-        const lightweightError = {
-          message: error.message,
-          code: error.code,
-          stack: error.stack,
-          config: {
-            method: config?.method,
-            url: config?.url,
-            timeout: config?.timeout,
-          },
-        };
-
-        this.logger.error('Axios outgoing fault', {
-          error: lightweightError,
-        });
-
-        // Check if the error is a 429 status code
-        if (this._shouldRetry(error)) {
-          // You can implement your retry logic here
-          // For example, you can wait for a specific amount of time and then retry the request
-
-          this.logger.warn(`Retrying after ${RETRY_DELAY_IN_MS} milliseconds...`, {
-            config,
-          });
-
-          return new Promise(resolve => {
-            setTimeout(() => resolve(this.client(config!)), RETRY_DELAY_IN_MS);
-          });
-        }
-
-        return Promise.reject(
-          new HttpException(
-            lightweightError.message,
-            getHttpStatusFromAxiosError(lightweightError.code),
-          ),
-        );
-      },
-    );
+      this.logger.debug?.('Axios outgoing response interceptor', {
+        data: response.data,
+        url: response.config.url,
+        method: response.config.method?.toUpperCase(),
+        status: response.status,
+        // TODO: should we add also response's headers?
+      });
+      return response;
+    });
   }
 
-  private _shouldRetry(error: AxiosError) {
-    const { response } = error;
-    const isTooManyRequests = response?.status === HttpStatusCode.TooManyRequests;
-    const isNetworkIssue = error.code === 'ENETUNREACH';
+  // private _shouldRetry(error: AxiosError) {
+  //   const { response } = error;
+  //   const isTooManyRequests =
+  //     response?.status === HttpStatusCode.TooManyRequests;
+  //   const isNetworkIssue = error.code === 'ENETUNREACH';
 
-    return isTooManyRequests || isNetworkIssue;
-  }
+  //   return isTooManyRequests || isNetworkIssue;
+  // }
 
   async download(
     remoteFileConfig: TRemoteFileConfig,

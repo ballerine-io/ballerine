@@ -39,17 +39,16 @@ export const fetcher: IFetcher = async ({
   }
 
   if (!res.ok) {
-    let message = `${res.statusText} (${res.status}) - ${url}`;
+    let message = `${res.statusText} (${res.status})`;
 
     if (res.status === 400) {
       const json = await res.json();
 
-      if (Array.isArray(json?.message)) {
-        message = [message, json?.message?.map(({ message }) => `${message}\n`)?.join('')]
-          .filter(x => x)
-          .join(' - ');
-      }
+      message = Array.isArray(json?.message)
+        ? json?.message?.map(({ message }) => `${message}\n`)?.join('')
+        : message;
     }
+
     console.error(message);
 
     throw new HttpError(res.status, message);
