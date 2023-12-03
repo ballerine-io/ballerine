@@ -48,7 +48,7 @@ export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: stri
     onSuccess: (data, { action }) => {
       toast.success(t(`toast:${action}.success`));
     },
-    onError: (error: Error, { action }, context) => {
+    onError: (error, { action }, context) => {
       const translatedError = t(`toast:${action}.error`, { errorMessage: error.message });
 
       toast.error(translatedError);

@@ -137,6 +137,7 @@
     "jest": "27.0.6",
     "jest-mock-extended": "^2.0.4",
     "json-schema-to-typescript": "^13.0.1",
+    "pg-connection-string": "^2.6.2",
     "plop": "^4.0.0",
     "prettier": "^2.8.4",
     "prisma": "4.13.0",

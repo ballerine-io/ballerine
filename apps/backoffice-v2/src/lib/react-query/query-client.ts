@@ -1,23 +1,10 @@
-import { IErrorWithMessage, isObject } from '@ballerine/common';
+import { isErrorWithMessage, isErrorWithCode } from '@ballerine/common';
 import { QueryCache, QueryClient } from '@tanstack/react-query';
 import { t } from 'i18next';
 import toast from 'react-hot-toast';
 import { isZodError } from '../../common/utils/is-zod-error/is-zod-error';
 import { env } from '../../common/env/env';
 import { authQueryKeys } from '../../domains/auth/query-keys';
-
-interface IErrorWithCode {
-  code: number;
-}
-
-// Use from `@ballerine/common` when a new version is released.
-export const isErrorWithCode = (error: unknown): error is IErrorWithCode => {
-  return isObject(error) && 'code' in error && typeof error.code === 'number';
-};
-
-export const isErrorWithMessage = (error: unknown): error is IErrorWithMessage => {
-  return isObject(error) && 'message' in error && typeof error.message === 'string';
-};
 
 async function clearAuthenticatedUser(queryClient: QueryClient) {
   try {
@@ -46,14 +33,9 @@ export const queryClient = new QueryClient({
     },
   },
   queryCache: new QueryCache({
-    onError: (error: IErrorWithCode | IErrorWithMessage) => {
+    onError: (error: unknown) => {
       if (isZodError(error)) {
         toast.error(t('toast:validation_error'));
-        return;
-      }
-
-      if (!isErrorWithMessage(error) || error.message === 'undefined' || error.message === 'null') {
-        return;
       }
 
       if (isErrorWithCode(error)) {
@@ -62,14 +44,17 @@ export const queryClient = new QueryClient({
           void clearAuthenticatedUser(queryClient);
         }
 
-        // Dont toast for no important errors
         if (
-          statusCode === undefined ||
-          (statusCode >= 400 && ![401, 403, 404].includes(statusCode))
+          isErrorWithMessage(error) &&
+          error.message !== 'undefined' &&
+          error.message !== 'null'
         ) {
-          toast.error(error.message, {
-            id: error.message,
-          });
+          // Dont toast for no important errors
+          if (![401, 403, 404].includes(statusCode)) {
+            toast.error(error.message, {
+              id: error.message,
+            });
+          }
         }
       }
     },
