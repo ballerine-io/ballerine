@@ -35,8 +35,8 @@ const validationSchema = {
                       minLength: 5,
                       maxLength: 50,
                       errorMessage: {
-                        minLength: 'Holder name should be at least 5 characters long.',
-                        maxLength: 'Holder name should not exceed 50 characters.',
+                        minLength: 'errorMessage.minLength.holderName',
+                        maxLength: 'errorMessage.maxLength.holderName',
                       },
                     },
                     holderFullAddress: {
@@ -44,8 +44,8 @@ const validationSchema = {
                       minLength: 10,
                       maxLength: 200,
                       errorMessage: {
-                        minLength: 'Holder full address should be at least 10 characters long.',
-                        maxLength: 'Holder full address should not exceed 200 characters.',
+                        minLength: 'errorMessage.minLength.holderFullAddress',
+                        maxLength: 'errorMessage.maxLength.holderFullAddress',
                       },
                     },
                     accountNumber: {
@@ -53,8 +53,8 @@ const validationSchema = {
                       minLength: 6,
                       maxLength: 34,
                       errorMessage: {
-                        minLength: 'Account number should be at least 6 characters long.',
-                        maxLength: 'Account number should not exceed 34 characters.',
+                        minLength: 'errorMessage.minLength.accountNumber',
+                        maxLength: 'errorMessage.maxLength.accountNumber',
                       },
                     },
                     iban: {
@@ -62,8 +62,8 @@ const validationSchema = {
                       minLength: 15,
                       maxLength: 34,
                       errorMessage: {
-                        minLength: 'IBAN should be at least 15 characters long.',
-                        maxLength: 'IBAN should not exceed 34 characters.',
+                        minLength: 'errorMessage.minLength.iban',
+                        maxLength: 'errorMessage.maxLength.iban',
                       },
                     },
                     swiftCode: {
@@ -71,8 +71,8 @@ const validationSchema = {
                       minLength: 8,
                       maxLength: 11,
                       errorMessage: {
-                        minLength: 'SWIFT code should be at least 8 characters long.',
-                        maxLength: 'SWIFT code should not exceed 11 characters.',
+                        minLength: 'errorMessage.minLength.swiftCode',
+                        maxLength: 'errorMessage.maxLength.swiftCode',
                       },
                     },
                     routeNumber: {
@@ -80,8 +80,8 @@ const validationSchema = {
                       minLength: 8,
                       maxLength: 10,
                       errorMessage: {
-                        minLength: 'Route Number should be at least 8 characters long.',
-                        maxLength: 'Route Number should not exceed 10 characters.',
+                        minLength: 'errorMessage.minLength.routeNumber',
+                        maxLength: 'errorMessage.maxLength.routeNumber',
                       },
                     },
                     bankName: {
@@ -89,8 +89,8 @@ const validationSchema = {
                       minLength: 3,
                       maxLength: 100,
                       errorMessage: {
-                        minLength: 'Bank name should be at least 3 characters long.',
-                        maxLength: 'Bank name should not exceed 100 characters.',
+                        minLength: 'errorMessage.minLength.bankName',
+                        maxLength: 'errorMessage.maxLength.bankName',
                       },
                     },
                     bankCode: {
@@ -98,8 +98,8 @@ const validationSchema = {
                       minLength: 2,
                       maxLength: 13,
                       errorMessage: {
-                        minLength: 'Bank Code should be at least 2 characters long.',
-                        maxLength: 'Bank Code should not exceed 13 characters.',
+                        minLength: 'errorMessage.minLength.bankCode',
+                        maxLength: 'errorMessage.maxLength.bankCode',
                       },
                     },
                     bankAddress: {
@@ -107,33 +107,33 @@ const validationSchema = {
                       minLength: 10,
                       maxLength: 200,
                       errorMessage: {
-                        minLength: 'Bank address should be at least 10 characters long.',
-                        maxLength: 'Bank address should not exceed 200 characters.',
+                        minLength: 'errorMessage.minLength.bankAddress',
+                        maxLength: 'errorMessage.maxLength.bankAddress',
                       },
                     },
                     subBranch: {
                       type: 'string',
                       pattern: '^[0-9]+$',
                       errorMessage: {
-                        pattern: 'Sub-branch should contain only numbers.',
+                        pattern: 'errorMessage.pattern.subBranch',
                       },
                     },
                     currency: {
                       type: 'string',
                       errorMessage: {
-                        minLength: 'Account currency is required',
+                        minLength: 'errorMessage.minLength.currency',
                       },
                     },
                   },
                   errorMessage: {
                     required: {
-                      holderName: 'Holder name is required.',
-                      holderFullAddress: 'Holder full address is required.',
-                      accountNumber: 'Account number is required.',
-                      swiftCode: 'SWIFT code is required.',
-                      bankName: 'Bank name is required.',
-                      bankAddress: 'Bank address is required.',
-                      currency: 'Account currency is required',
+                      holderName: 'errorMessage.required.holderName',
+                      holderFullAddress: 'errorMessage.required.holderFullAddress',
+                      accountNumber: 'errorMessage.required.accountNumber',
+                      swiftCode: 'errorMessage.required.swiftCode',
+                      bankName: 'errorMessage.required.bankName',
+                      bankAddress: 'errorMessage.required.bankAddress',
+                      currency: 'errorMessage.required.currency',
                     },
                   },
                 },
@@ -149,7 +149,7 @@ export const BankingDetailsPage = {
   type: 'page',
   number: 6,
   stateName: 'banking_details',
-  name: 'Banking Details',
+  name: 'text.bankingDetails',
   pageValidation: [
     {
       type: 'json-schema',
@@ -166,7 +166,7 @@ export const BankingDetailsPage = {
             {
               type: 'h1',
               options: {
-                text: 'Banking Details',
+                text: 'text.bankingDetails',
               },
             },
           ],
@@ -195,8 +195,8 @@ export const BankingDetailsPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Cardholder Name',
-                hint: 'John W. Doe',
+                label: 'text.holderName.label',
+                hint: 'text.holderName.hint',
               },
             },
             {
@@ -207,8 +207,8 @@ export const BankingDetailsPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Resident Address',
-                hint: 'Fla 5A, Tower 2, The Peak, 123 Queens Road, Hong Kong',
+                label: 'text.holderFullAddress.label',
+                hint: 'text.holderFullAddress.hint',
               },
             },
             {
@@ -219,8 +219,8 @@ export const BankingDetailsPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Account Number',
-                hint: '0123456789',
+                label: 'text.accountNumber.label',
+                hint: 'text.accountNumber.hint',
               },
             },
             {
@@ -231,8 +231,8 @@ export const BankingDetailsPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'IBAN',
-                hint: 'HK00HKB01234567890123',
+                label: 'text.iban.label',
+                hint: 'text.iban.hint',
               },
             },
             {
@@ -243,8 +243,8 @@ export const BankingDetailsPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'SWIFT Code',
-                hint: 'BBBBCCDDXXX',
+                label: 'text.swiftCode.label',
+                hint: 'text.swiftCode.hint',
               },
             },
             {
@@ -255,8 +255,8 @@ export const BankingDetailsPage = {
                 jsonFormDefinition: {
                   type: 'integer',
                 },
-                label: 'Route Number',
-                hint: '123456789',
+                label: 'text.routeNumber.label',
+                hint: 'text.routeNumber.hint',
               },
             },
             {
@@ -267,8 +267,8 @@ export const BankingDetailsPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Bank Name',
-                hint: 'Honk Kong Bank',
+                label: 'text.bankName.label',
+                hint: 'text.bankName.hint',
               },
             },
             {
@@ -279,8 +279,8 @@ export const BankingDetailsPage = {
                 jsonFormDefinition: {
                   type: 'integer',
                 },
-                label: 'Bank Code',
-                hint: '1234',
+                label: 'text.bankCode.label',
+                hint: 'text.bankCode.hint',
               },
             },
             {
@@ -291,8 +291,8 @@ export const BankingDetailsPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Bank Address',
-                hint: "456 King's Road, North Point, Hong Kong",
+                label: 'text.bankAddress.label',
+                hint: 'text.bankAddress.hint',
               },
             },
             {
@@ -303,8 +303,8 @@ export const BankingDetailsPage = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Sub-Branch Number',
-                hint: '0012',
+                label: 'text.subBranch.label',
+                hint: 'text.subBranch.hint',
               },
             },
             {
@@ -322,8 +322,8 @@ export const BankingDetailsPage = {
                     })),
                   ],
                 },
-                label: 'Account Currency',
-                hint: 'Choose',
+                label: 'text.currency.label',
+                hint: 'text.choose',
               },
             },
           ],
@@ -342,7 +342,7 @@ export const BankingDetailsPage = {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],
                 },
-                text: 'Continue',
+                text: 'text.continue',
               },
               availableOn: [
                 {
