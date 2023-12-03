@@ -51,7 +51,7 @@ export const FileInputAdapter: RJSFInputAdapter<File> = ({
         placeholder={uiSchema?.['ui:placeholder']}
         //@ts-ignore
         onChange={handleChange}
-        accept="image/jpeg, image/png, application/pdf, .docx"
+        accept="image/jpeg, image/png, application/pdf, .docx, .csv, .xlsx, .xls"
         className="line-1 flex items-center"
         disabled={disabled}
         onBlur={handleBlur}

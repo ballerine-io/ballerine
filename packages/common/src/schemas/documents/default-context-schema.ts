@@ -99,15 +99,16 @@ export const defaultContextSchema = Type.Object({
         version: Type.Optional(Type.Number()),
         pages: Type.Array(
           Type.Union([
-            Type.Object({ ballerineFileId: Type.String() }, { additionalProperties: false }),
             Type.Object(
               {
-                ballerineFileId: Type.Optional(Type.String()),
-                provider: Type.String({ enum: ['gcs', 'http', 'stream', 'file-system', 'ftp'] }),
-                uri: Type.String({ format: 'uri' }),
+                ballerineFileId: Type.String(),
                 type: Type.Optional(
                   Type.String({
                     enum: [
+                      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                      'application/vnd.ms-excel',
+                      'text/csv',
+                      'application/csv',
                       'application/pdf',
                       'image/png',
                       'image/jpg',
@@ -119,6 +120,34 @@ export const defaultContextSchema = Type.Object({
                     ],
                   }),
                 ),
+                fileName: Type.Optional(Type.String()),
+              },
+              { additionalProperties: false },
+            ),
+            Type.Object(
+              {
+                ballerineFileId: Type.Optional(Type.String()),
+                provider: Type.String({ enum: ['gcs', 'http', 'stream', 'file-system', 'ftp'] }),
+                uri: Type.String({ format: 'uri' }),
+                type: Type.Optional(
+                  Type.String({
+                    enum: [
+                      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                      'application/vnd.ms-excel',
+                      'text/csv',
+                      'application/csv',
+                      'application/pdf',
+                      'image/png',
+                      'image/jpg',
+                      'image/jpeg',
+                      // Backwards compatibility
+                      'pdf',
+                      'png',
+                      'jpg',
+                    ],
+                  }),
+                ),
+                fileName: Type.Optional(Type.String()),
                 data: Type.Optional(Type.String()),
                 metadata: Type.Optional(
                   Type.Object(

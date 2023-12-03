@@ -12,8 +12,11 @@ import {
 import {
   CommonWorkflowStates,
   getDocumentsByCountry,
+  getDocumentSchemaByCountry,
   isNullish,
   StateTag,
+  TAvailableDocuments,
+  TDocument,
 } from '@ballerine/common';
 import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
@@ -40,6 +43,35 @@ const pluginsOutputBlacklist = [
   'businessInformation',
   'website_monitoring',
 ];
+
+function getDocumentsSchemas(issuerCountryCode, workflow: TWorkflowById) {
+  return (
+    issuerCountryCode &&
+    getDocumentSchemaByCountry(
+      issuerCountryCode,
+      workflow.workflowDefinition?.documentsSchema as TDocument[],
+    )
+      .concat(getDocumentsByCountry(issuerCountryCode))
+      .reduce((unique: TDocument[], item: TDocument) => {
+        const isDuplicate = unique.some(u => u.type === item.type && u.category === item.category);
+        if (!isDuplicate) {
+          unique.push(item);
+        }
+        return unique;
+      }, [] as TDocument[])
+      .filter((documentSchema: TDocument) => {
+        if (!workflow.workflowDefinition.config?.availableDocuments) return true;
+
+        const isIncludes = !!workflow.workflowDefinition.config?.availableDocuments.find(
+          (availableDocument: TAvailableDocuments[number]) =>
+            availableDocument.type === documentSchema.type &&
+            availableDocument.category === documentSchema.category,
+        );
+
+        return isIncludes;
+      })
+  );
+}
 
 export const useTasks = ({
   workflow,
@@ -100,7 +132,8 @@ export const useTasks = ({
   });
   const { data: locations } = useNominatimQuery(address);
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
-  const documentsSchemas = !!issuerCountryCode && getDocumentsByCountry(issuerCountryCode);
+
+  const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
 
   const registryInfoBlock =
     Object.keys(filteredPluginsOutput ?? {}).length === 0
@@ -181,7 +214,12 @@ export const useTasks = ({
       ({ id, type: docType, category, properties, propertiesSchema, decision }, docIndex) => {
         const additionProperties =
           isExistingSchemaForDocument(documentsSchemas) &&
-          composePickableCategoryType(category, docType, documentsSchemas);
+          composePickableCategoryType(
+            category,
+            docType,
+            documentsSchemas,
+            workflow.workflowDefinition?.config,
+          );
 
         const isDoneWithRevision =
           decision?.status === 'revised' && parentMachine?.status === 'completed';
@@ -370,12 +408,13 @@ export const useTasks = ({
             isLoading: docsData?.some(({ isLoading }) => isLoading),
             data:
               documents?.[docIndex]?.pages?.map(
-                ({ type, metadata, ballerineFileId }, pageIndex) => ({
+                ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
                   id: ballerineFileId,
                   title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
                     toTitleCase(docType ?? ''),
                   )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
                   imageUrl: results[docIndex][pageIndex],
+                  fileName,
                   fileType: type,
                 }),
               ) ?? [],
@@ -749,7 +788,10 @@ export const useTasks = ({
                           const value = props.getValue();
 
                           return (
-                            <Badge variant={'warning'} className={`rounded-lg py-4 font-bold`}>
+                            <Badge
+                              variant={'warning'}
+                              className={`mb-1 rounded-lg px-2 py-1 font-bold`}
+                            >
                               {value} {value === 1 ? 'match' : 'matches'}
                             </Badge>
                           );
@@ -1567,3 +1609,7 @@ export const useTasks = ({
     removeDecisionById,
   ]);
 };
+
+function uniqueArrayByKey(arg0: any) {
+  throw new Error('Function not implemented.');
+}

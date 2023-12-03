@@ -1,5 +1,38 @@
 # @ballerine/common
 
+## 0.7.29
+
+### Patch Changes
+
+- 340d9d4e: added xlsx and xls to file type schema
+- ea423a22: updated validation to allow file type on document page
+
+## 0.7.28
+
+### Patch Changes
+
+- ea423a22: updated validation to allow file type on document page
+
+## 0.7.27
+
+### Patch Changes
+
+- added types and functionality to documents
+- 59afd0b4: updated types and functionalities
+
+## 0.7.26
+
+### Patch Changes
+
+- bfded451: added functionality of replacing null with undefined
+- updated version of defintion
+
+## 0.7.25
+
+### Patch Changes
+
+- updated schemas
+
 ## 0.7.24
 
 ### Patch Changes
