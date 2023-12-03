@@ -52,7 +52,7 @@
     "@nestjs/devtools-integration": "^0.1.4",
     "@nestjs/event-emitter": "^1.4.1",
     "@nestjs/graphql": "^10.0.0",
-    "@nestjs/jwt": "10.0.3",
+    "@nestjs/jwt": "10.2.0",
     "@nestjs/passport": "9.0.3",
     "@nestjs/platform-express": "^9.3.12",
     "@nestjs/serve-static": "3.0.1",
