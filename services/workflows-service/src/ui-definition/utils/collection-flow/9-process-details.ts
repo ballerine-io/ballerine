@@ -31,51 +31,51 @@ const validationSchema = {
                       ],
                       errorMessage: {
                         required: {
-                          monthlySalesVolume: 'Monthly Sales Volume is required.',
-                          monthlyTransactions: 'Monthly Number Of Transactions is required.',
-                          averageTicketAmount: 'Average Ticket Amount is required.',
-                          mainCategory: 'Customer Category is required.',
-                          businessModel: 'Website Business Model is required.',
+                          monthlySalesVolume: 'errorMessage.required.monthlySalesVolume',
+                          monthlyTransactions: 'errorMessage.required.monthlyTransactions',
+                          averageTicketAmount: 'errorMessage.required.averageTicketAmount',
+                          mainCategory: 'errorMessage.required.mainCategory',
+                          businessModel: 'errorMessage.required.businessModel',
                         },
                       },
                       properties: {
                         monthlySalesVolume: {
                           type: 'number',
                           minimum: 1,
-                          errorMessage: 'Monthly Sales Volume must be positive.',
+                          errorMessage: 'errorMessage.error.monthlySalesVolume',
                         },
                         monthlyTransactions: {
                           type: 'number',
                           minimum: 1,
-                          errorMessage: 'Monthly Number Of Transactions must be positive.',
+                          errorMessage: 'errorMessage.error.monthlyTransactions',
                         },
                         averageTicketAmount: {
                           type: 'number',
                           minimum: 1,
-                          errorMessage: 'Average Ticket Amount must be positive.',
+                          errorMessage: 'errorMessage.error.averageTicketAmount',
                         },
                         mainCategory: {
                           type: 'array',
                           items: { type: 'string' },
                           minItems: 1,
-                          errorMessage: 'Customer Category is required.',
+                          errorMessage: 'errorMessage.error.mainCategory',
                         },
                         businessModel: {
                           type: 'array',
                           items: { type: 'string' },
                           minItems: 1,
-                          errorMessage: 'Business Model is required.',
+                          errorMessage: 'errorMessage.error.businessModel',
                         },
                         isSpikeInSales: { type: 'boolean', default: false },
                         spikeSalesAverageVolume: {
                           type: 'number',
                           minimum: 1,
-                          errorMessage: 'Spike Sales Volume must be positive.',
+                          errorMessage: 'errorMessage.error.spikeSalesAverageVolume',
                         },
                         spikeTransactionNumber: {
                           type: 'number',
                           minimum: 1,
-                          errorMessage: 'Spike Transaction Number must be positive.',
+                          errorMessage: 'errorMessage.error.spikeTransactionNumber',
                         },
                       },
                       if: {
@@ -99,14 +99,15 @@ const validationSchema = {
                         ],
                         errorMessage: {
                           required: {
-                            monthlySalesVolume: 'Monthly Sales Volume is required.',
-                            monthlyTransactions: 'Monthly Number Of Transactions is required.',
-                            averageTicketAmount: 'Average Ticket Amount is required.',
-                            spikeSalesAverageVolume: 'Spike Sales Average Volume is required.',
-                            spikeTransactionNumber: 'Spike Transaction Number is required.',
-                            mainCategory: 'Customer Category is required.',
-                            businessModel: 'Website Business Model is required.',
-                            volumeInRegion: 'Split of volume by regions is required.',
+                            monthlySalesVolume: 'errorMessage.required.monthlySalesVolume',
+                            monthlyTransactions: 'errorMessage.required.monthlyTransactions',
+                            averageTicketAmount: 'errorMessage.required.averageTicketAmount',
+                            spikeSalesAverageVolume:
+                              'errorMessage.required.spikeSalesAverageVolume',
+                            spikeTransactionNumber: 'errorMessage.required.spikeTransactionNumber',
+                            mainCategory: 'errorMessage.required.mainCategory',
+                            businessModel: 'errorMessage.required.businessModel',
+                            volumeInRegion: 'errorMessage.required.volumeInRegion',
                           },
                         },
                       },
@@ -137,7 +138,7 @@ export const ProcessingDetails = {
   type: 'page',
   number: 9,
   stateName: 'processing_details',
-  name: 'Processing Details',
+  name: 'text.processingDetails',
   pageValidation: [
     {
       type: 'json-schema',
@@ -154,7 +155,7 @@ export const ProcessingDetails = {
             {
               type: 'h1',
               options: {
-                text: 'Processing Details',
+                text: 'text.processingDetails',
               },
             },
           ],
@@ -177,8 +178,8 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.monthlySalesVolume',
               options: {
-                label: 'Monthly Sales Volume (USD)',
-                hint: '5,000,000',
+                label: 'text.monthlySalesVolume.label',
+                hint: 'text.monthlySalesVolume.hint',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -190,8 +191,8 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.monthlyTransactions',
               options: {
-                label: 'Monthly Number Of Transactions',
-                hint: '500',
+                label: 'text.monthlyTransactions.label',
+                hint: 'text.monthlyTransactions.hint',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -203,8 +204,8 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlySalesClipsPay',
               options: {
-                label: 'Est. Monthly Sales Volume through ClipsPay (USD)',
-                hint: '400,000',
+                label: 'text.estimatedMonthlySalesClipsPay.label',
+                hint: 'text.estimatedMonthlySalesClipsPay.hint',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -216,8 +217,8 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.estimatedMonthlyTransactionsClipsPay',
               options: {
-                label: 'Est. Monthly Number of Transactions through ClipsPay',
-                hint: '150',
+                label: 'text.estimatedMonthlyTransactionsClipsPay.label',
+                hint: 'text.estimatedMonthlyTransactionsClipsPay.hint',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -229,8 +230,8 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.averageTicketAmount',
               options: {
-                label: 'Average Ticket Amount (USD)',
-                hint: '25',
+                label: 'text.averageTicketAmount.label',
+                hint: 'text.averageTicketAmount.hint',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -242,8 +243,8 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.minimumTicketAmount',
               options: {
-                label: 'Minimum Ticket Amount (USD)',
-                hint: '300',
+                label: 'text.minimumTicketAmount.label',
+                hint: 'text.minimumTicketAmount.hint',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -255,8 +256,8 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.maximumTicketAmount',
               options: {
-                label: 'Maximum Ticket Amount (USD)',
-                hint: '2000',
+                label: 'text.maximumTicketAmount.label',
+                hint: 'text.maximumTicketAmount.hint',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -267,7 +268,7 @@ export const ProcessingDetails = {
               type: 'checkbox',
               valueDestination: 'entity.data.additionalInfo.store.processingDetails.isSpikeInSales',
               options: {
-                label: 'There are spikes in transactions (e.g., promotions, events, etc.)',
+                label: 'text.isSpikeInSales.label',
                 jsonFormDefinition: {
                   type: 'boolean',
                 },
@@ -298,8 +299,8 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.spikeSalesAverageVolume',
               options: {
-                label: 'Spike Sales Average Volume',
-                hint: '150,000',
+                label: 'text.spikeSalesAverageVolume.label',
+                hint: 'text.spikeSalesAverageVolume.hint',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -311,8 +312,8 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.spikeTransactionNumber',
               options: {
-                label: 'Spike Transaction Number',
-                hint: '200',
+                label: 'text.spikeTransactionNumber.label',
+                hint: 'text.spikeTransactionNumber.hint',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -333,8 +334,8 @@ export const ProcessingDetails = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.processingDetails.volumeInRegion',
               options: {
-                label: 'Split of volume by regions in % (divided by comma)',
-                hint: 'Asia 70%, Europe 30%',
+                label: 'text.volumeInRegion.label',
+                hint: 'text.volumeInRegion.hint',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -345,7 +346,7 @@ export const ProcessingDetails = {
         {
           type: 'h3',
           options: {
-            text: 'Customer Category',
+            text: 'text.customerCategory',
           },
         },
         {
@@ -364,19 +365,19 @@ export const ProcessingDetails = {
                   'ui:field': 'Multiselect',
                   options: [
                     {
-                      title: 'B2C',
+                      title: 'text.b2c',
                       value: 'B2C',
                     },
                     {
-                      title: 'B2B',
+                      title: 'text.b2b',
                       value: 'B2B',
                     },
                     {
-                      title: 'C2C',
+                      title: 'text.c2c',
                       value: 'C2C',
                     },
                     {
-                      title: 'Other',
+                      title: 'text.other',
                       value: 'Other',
                     },
                   ],
@@ -411,7 +412,7 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.otherMainCategory',
               options: {
-                label: 'Main Category',
+                label: 'text.mainCategory',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -422,7 +423,7 @@ export const ProcessingDetails = {
         {
           type: 'h3',
           options: {
-            text: 'Website Business Model',
+            text: 'text.websiteBusinessModel',
           },
         },
         {
@@ -441,15 +442,15 @@ export const ProcessingDetails = {
                   'ui:field': 'CheckboxList',
                   options: [
                     {
-                      title: 'Membership',
+                      title: 'text.membership',
                       value: 'Membership',
                     },
                     {
-                      title: 'Direct Purchase',
+                      title: 'text.directPurchase',
                       value: 'Direct Purchase',
                     },
                     {
-                      title: 'Other',
+                      title: 'text.other',
                       value: 'Other',
                     },
                   ],
@@ -478,7 +479,7 @@ export const ProcessingDetails = {
               valueDestination:
                 'entity.data.additionalInfo.store.processingDetails.otherBusinessModel',
               options: {
-                label: 'Business Model',
+                label: 'text.businessModel',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -500,7 +501,7 @@ export const ProcessingDetails = {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],
                 },
-                text: 'Continue',
+                text: 'text.continue',
               },
               availableOn: [
                 {

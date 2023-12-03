@@ -21,10 +21,7 @@ export const sentyRouterInstrumentation = Sentry.reactRouterV6Instrumentation(
   matchRoutes,
 );
 
-const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouter(
-  // @ts-ignore
-  createBrowserRouter,
-);
+const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouter(createBrowserRouter);
 
 export const router = sentryCreateBrowserRouter([
   {

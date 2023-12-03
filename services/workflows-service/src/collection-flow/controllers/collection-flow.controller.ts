@@ -13,6 +13,7 @@ import { Public } from '@/common/decorators/public.decorator';
 import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
+import { GetFlowConfigurationInputDto } from '@/collection-flow/dto/get-flow-configuration-input.dto';
 
 @Public()
 @UseTokenAuthGuard()
@@ -66,17 +67,22 @@ export class ColectionFlowController {
     );
   }
 
-  @common.Get('/configuration')
+  @common.Get('/configuration/:language')
   async getFlowConfiguration(
     @TokenScope() tokenScope: ITokenScope,
+    @common.Param() params: GetFlowConfigurationInputDto,
   ): Promise<FlowConfigurationModel> {
     const workflow = await this.service.getActiveFlow(tokenScope.workflowRuntimeDataId, [
       tokenScope.projectId,
     ]);
 
-    if (!workflow) throw new common.InternalServerErrorException('Workflow not found.');
+    if (!workflow) {
+      throw new common.InternalServerErrorException('Workflow not found.');
+    }
 
-    return this.service.getFlowConfiguration(workflow.workflowDefinitionId, [tokenScope.projectId]);
+    return this.service.getFlowConfiguration(workflow.workflowDefinitionId, params.language, [
+      tokenScope.projectId,
+    ]);
   }
 
   @common.Put('/configuration/:configurationId')

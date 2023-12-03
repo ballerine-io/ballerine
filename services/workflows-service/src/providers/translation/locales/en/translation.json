@@ -1,0 +1,491 @@
+{
+  "text": {
+    "personalInformation": "Personal Information",
+    "businessInformation": "Business Information",
+    "businessAddress": "Business Address",
+    "registeredAddress": "Registered Address",
+    "directorsAndUBOs": "Directors and UBOs",
+    "ubos": "UBOs",
+    "directors": "Directors",
+    "contacts": "Contacts",
+    "mainContact": "Main Contact",
+    "bankingDetails": "Banking Details",
+    "storeInfo": "Store Info",
+    "directorsDescription": "Add all of the directors of the company.",
+    "imShareholder": "I own 25% or more of the company",
+    "imDirector": "I'm director of the company",
+    "shareholder": "Shareholder",
+    "shareholdersDescription": "Add all of the natural persons that own or control, <br /><b>directly or indirectly</b> more than 25% of the company.",
+    "uboIndex": "UBO {{INDEX}}",
+    "directorIndex": "Director {{INDEX}}",
+    "websiteBasicRequirement": "Website Basic Requirement",
+    "websiteBasicRequirementDescription": "This list is intended only as a basic pre-entry check of the<br /> websites and does not refer to specific product<br /> application requirements.",
+    "websiteBasicRequirementHint": "This list is intended only as a basic pre-entry check of the websites and does not refer to specific product application requirements.",
+    "processingDetails": "Processing Details",
+    "customerCategory": "Customer Category",
+    "mainCategory": "Main Category",
+    "websiteBusinessModel": "Website Business Model",
+    "companyDocuments": "Company Documents",
+    "merchantCompanyDocuments": "Merchant Company Documents",
+    "websiteDocuments": "Website documents",
+    "officePictures": "Office Pictures",
+    "financialDocuments": "Financial Documents",
+    "declarationOfAccuracy": "Declaration of Accuracy and Authenticity",
+    "declarationOfAccuracyDescription": "By checking the checkbox below I/we hereby declare that the information which was submitted in the attached Merchant application is truthful and genuine in regards to my/our business, legal status and registration, business practices and all other submitted information.",
+    "emailDescription": "By clicking 'Finish', an email containing an identity verification link will be sent to the shareholders listed.",
+    "name": "Name",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "legalName": "Legal Name",
+    "phoneNumber": "Phone Number",
+    "country": "Country",
+    "nationality": "Nationality",
+    "number": "Number",
+    "industry": "Industry",
+    "continue": "Continue",
+    "finish": "Finish",
+    "choose": "Choose",
+    "iConfirm": "I confirm",
+    "b2b": "B2B",
+    "b2c": "B2C",
+    "c2c": "C2C",
+    "other": "Other",
+    "membership": "Membership",
+    "directPurchase": "Direct Purchase",
+    "businessModel": "Business Model",
+    "dateHint": "DD/MM/YYYY",
+    "mobileAppName": "App Name",
+    "differentFromPhysicalAddress": "Different from physical address",
+    "hasActiveWebsite": "I declare that the website's business activity does not require a license",
+    "storeInfoDescription": "Leaving the last checkbox 'Unchecked' will require providing extra licenses documents",
+    "email": {
+      "label": "Email",
+      "hint": "name@companyhk.com"
+    },
+    "nationalId": {
+      "label": "Identity Number",
+      "hint": "11010219820519759X"
+    },
+    "city": {
+      "label": "City",
+      "hint": "London"
+    },
+    "addressOfResidence": {
+      "label": "Address of Residence",
+      "hint": "22, Choyangmen, Chaoyang District, Beijing, China"
+    },
+    "ownershipPercentage": {
+      "label": "% of Ownership",
+      "hint": "25"
+    },
+    "street": {
+      "label": "Street",
+      "hint": "Downing Street"
+    },
+    "jobTitle": {
+      "label": "Title",
+      "hint": "CEO / Manager / Partner"
+    },
+    "dateOfBirth": {
+      "label": "Date of Birth"
+    },
+    "registrationNumber": {
+      "label": "Registration Number",
+      "hint": "1000000032985"
+    },
+    "state": {
+      "label": "State",
+      "hint": "California"
+    },
+    "companyName": {
+      "label": "Company English Name",
+      "hint": "English Name"
+    },
+    "taxIdentificationNumber": {
+      "label": "Tax Identity Number",
+      "hint": "1234567898765"
+    },
+    "numberOfEmployees": {
+      "label": "Amount of Employees",
+      "hint": "20"
+    },
+    "businessType": {
+      "label": "Corporate type",
+      "options": {
+        "sole_proprietorship": "Sole Proprietorship",
+        "partnership": "Partnership",
+        "corporation": "Corporation",
+        "limited_liability_company": "Limited Liability Company (LLC)",
+        "limited_partnership": "Limited Partnership (LP)",
+        "limited_liability_partnership": "Limited Liability Partnership (LLP)",
+        "public_limited_company": "Public Limited Company (PLC)",
+        "private_limited_company": "Private Limited Company (Ltd)",
+        "non_profit_organization": "Non-Profit Organization",
+        "cooperative": "Cooperative",
+        "trust": "Trust",
+        "government": "Government",
+        "other": "Other"
+      }
+    },
+    "registeredCapitalInUsd": {
+      "label": "Registered capital (in USD)",
+      "hint": "2,000,000"
+    },
+    "holderName": {
+      "label": "Cardholder Name",
+      "hint": "John W. Doe"
+    },
+    "holderFullAddress": {
+      "label": "Resident Address",
+      "hint": "Fla 5A, Tower 2, The Peak, 123 Queens Road, Hong Kong"
+    },
+    "accountNumber": {
+      "label": "Account Number",
+      "hint": "0123456789"
+    },
+    "iban": {
+      "label": "IBAN",
+      "hint": "HK00HKB01234567890123"
+    },
+    "swiftCode": {
+      "label": "SWIFT Code",
+      "hint": "BBBBCCDDXXX"
+    },
+    "routeNumber": {
+      "label": "Route Number",
+      "hint": "123456789"
+    },
+    "bankName": {
+      "label": "Bank Name",
+      "hint": "Hong Kong Bank"
+    },
+    "bankCode": {
+      "label": "Bank Code",
+      "hint": "1234"
+    },
+    "bankAddress": {
+      "label": "Bank Address",
+      "hint": "456 King's Road, North Point, Hong Kong"
+    },
+    "subBranch": {
+      "label": "Sub-Branch Number",
+      "hint": "0012"
+    },
+    "currency": {
+      "label": "Account Currency"
+    },
+    "websiteUrls": {
+      "label": "Website URLs (divide with comma if more than one)",
+      "hint": "www.example.cn"
+    },
+    "dba": {
+      "label": "DBA (Descriptor)",
+      "hint": "Barclays"
+    },
+    "products": {
+      "label": "Products (divide with comma if more than one)",
+      "hint": "Smart Watches, Wireless Earbuds, Portable Chargers."
+    },
+    "established": {
+      "label": "Established Date"
+    },
+    "hasMobileApp": {
+      "label": "I have mobile application"
+    },
+    "mainWebsite": {
+      "label": "Company's Main Website Address",
+      "hint": "www.example.cn",
+      "description": "The same as the application Entities"
+    },
+    "contactDetails": {
+      "label": "Contact Details (or Return Address)",
+      "hint": "22, Choyangmen, Chaoyang District, Beijing, China"
+    },
+    "returnPolicyUrl": {
+      "label": "Return / Exchange Policy URL",
+      "hint": "www.example.com/return-policy"
+    },
+    "shippingPolicyUrl": {
+      "label": "Shipping Policy URL",
+      "hint": "www.example.com/shipping-policy"
+    },
+    "aboutUsUrl": {
+      "label": "About Us / Brand Intro URL",
+      "hint": "www.example.com/about-us"
+    },
+    "termsOfUseUrl": {
+      "label": "Terms of Use URL",
+      "hint": "www.example.com/terms"
+    },
+    "privacyPolicyUrl": {
+      "label": "Privacy Policy URL",
+      "hint": "www.example.com/privacy"
+    },
+    "productQuantity": {
+      "label": "Quantity (not less than 5)",
+      "hint": "100"
+    },
+    "productDescription": {
+      "label": "Adequate Product / Service Descriptio",
+      "hint": "Offers a range of organic skincare products, including moisturizers, serums, and cleansers. Each product is made using natural ingredients sourced sustainably."
+    },
+    "productPrice": {
+      "label": "Reasonable Product / Service Price (USD)",
+      "hint": "100"
+    },
+    "websiteLanguage": {
+      "label": "Website Language"
+    },
+    "monthlySalesVolume": {
+      "label": "Monthly Sales Volume (USD)",
+      "hint": "5,000,000"
+    },
+    "monthlyTransactions": {
+      "label": "Monthly Number of Transactions",
+      "hint": "500"
+    },
+    "estimatedMonthlySalesClipsPay": {
+      "label": "Est. Monthly Sales Volume through ClipsPay (USD)",
+      "hint": "400,000"
+    },
+    "estimatedMonthlyTransactionsClipsPay": {
+      "label": "Est. Monthly Number of Transactions through ClipsPay",
+      "hint": "150"
+    },
+    "averageTicketAmount": {
+      "label": "Average Ticket Amount (USD)",
+      "hint": "25"
+    },
+    "minimumTicketAmount": {
+      "label": "Minimum Ticket Amount (USD)",
+      "hint": "300"
+    },
+    "maximumTicketAmount": {
+      "label": "Maximum Ticket Amount (USD)",
+      "hint": "2000"
+    },
+    "isSpikeInSales": {
+      "label": "There are spikes in transactions (e.g., promotions, events, etc.)",
+      "hint": "Yes"
+    },
+    "spikeSalesAverageVolume": {
+      "label": "Spike Sales Average Volume (USD)",
+      "hint": "150,000"
+    },
+    "spikeTransactionNumber": {
+      "label": "Spike Transaction Number",
+      "hint": "200"
+    },
+    "volumeInRegion": {
+      "label": "Split of volume by regions in % (divided by comma)",
+      "hint": "Asia 70%, Europe 30%"
+    },
+    "certificateOfIncorporation": {
+      "label": "Certificate of Incorporation",
+      "description": "Not older than 6 months."
+    },
+    "businessRegistrationCertificate": {
+      "label": "Business Registration Certificate",
+      "description": "Notarized document"
+    },
+    "corporateTaxCertificate": {
+      "label": "Corporate Tax Certificate"
+    },
+    "certificateOfGoodStanding": {
+      "label": "Certificate of Good Standing",
+      "description": "If the company is older than 12 months"
+    },
+    "certificateOfDirectorsAndShareholders": {
+      "label": "Certificate of Directors and Shareholders"
+    },
+    "pictureOfCompanySeal": {
+      "label": "Picture of the company seal"
+    },
+    "domainCertificate": {
+      "label": "Domain purchase record / certificate"
+    },
+    "permittedSalesLicense": {
+      "label": "Business activity license for website’s business"
+    },
+    "frontDoorPhoto": {
+      "label": "Front door photo showing the company name"
+    },
+    "officeInteriorPhoto1": {
+      "label": "Photo showing interior of the office - #1"
+    },
+    "officeInteriorPhoto2": {
+      "label": "Photo showing interior of the office - #2"
+    },
+    "transactionData": {
+      "label": "Transaction data for the last 3-6 months",
+      "description": "All electric documents must be complete and legible."
+    },
+    "passportDocument": {
+      "label": "ID / Passport photo,",
+      "description": "Valid identification document"
+    },
+    "passportSelfie": {
+      "label": "Selfie with ID / Passport photo",
+      "description": "The same document held next to the director's face"
+    }
+  },
+  "errorMessage": {
+    "error": {
+      "productQuantity": "Product quantity should be a valid number.",
+      "productPrice": "Product price should be a valid number.",
+      "productDescription": "Product description should not be empty.",
+      "websiteLanguage": "Website language should not be empty.",
+      "monthlySalesVolume": "Monthly Sales Volume must be positive.",
+      "monthlyTransactions": "Monthly Number Of Transactions must be positive.",
+      "averageTicketAmount": "Average Ticket Amount must be positive.",
+      "mainCategory": "Customer Category is required.",
+      "businessModel": "Business Model is required.",
+      "spikeSalesAverageVolume": "Spike Sales Volume must be positive.",
+      "spikeTransactionNumber": "Spike Transaction Number must be positive.",
+      "requiredField": "This field is required."
+    },
+    "required": {
+      "phone": "A valid phone number is required.",
+      "dateOfBirth": "Date of birth is required.",
+      "firstName": "First name is required.",
+      "lastName": "Last name is required.",
+      "email": "Email is required.",
+      "additionalInfo": "Additional information is required.",
+      "jobTitle": "Job title is required.",
+      "registeredCapitalInUsd": "Registered capital in USD is required.",
+      "businessType": "Business type is required.",
+      "numberOfEmployees": "Number of employees is required.",
+      "taxIdentificationNumber": "Tax identification number is required.",
+      "companyName": "Company name is required.",
+      "country": "Country is required.",
+      "city": "City is required.",
+      "street": "Street is required.",
+      "streetNumber": "Street number is required.",
+      "registrationNumber": "Registration number is required.",
+      "physical": "Physical address details are required.",
+      "requiredField": "This field is required.",
+      "nationality": "Nationality is required.",
+      "nationalId": "Identity number is required.",
+      "fullAddress": "Full address is required.",
+      "percentageOfOwnership": "Percentage of ownership is required.",
+      "ubos": "UBOs are required.",
+      "directors": "Directors are required.",
+      "holderName": "Holder name is required.",
+      "holderFullAddress": "Holder full address is required.",
+      "accountNumber": "Account number is required.",
+      "swiftCode": "SWIFT code is required.",
+      "bankName": "Bank name is required.",
+      "bankAddress": "Bank address is required.",
+      "currency": "Account currency is required",
+      "mobileAppName": "Mobile App Name should not be empty.",
+      "websiteUrls": "Website URL(s) is required.",
+      "dba": "Doing Business As (DBA) is required.",
+      "products": "Products information is required.",
+      "established": "Establishment date is required.",
+      "hasMobileApp": "Information on mobile app availability is required.",
+      "industry": "Industry is required.",
+      "mainWebsite": "Main website URL is required.",
+      "productQuantity": "Product quantity is required.",
+      "productDescription": "Product description is required.",
+      "productPrice": "Product price is required.",
+      "monthlySalesVolume": "Monthly Sales Volume is required.",
+      "monthlyTransactions": "Monthly Number Of Transactions is required.",
+      "averageTicketAmount": "Average Ticket Amount is required.",
+      "mainCategory": "Customer Category is required.",
+      "businessModel": "Website Business Model is required.",
+      "spikeSalesAverageVolume": "Spike Sales Average Volume is required.",
+      "spikeTransactionNumber": "Spike Transaction Number is required.",
+      "volumeInRegion": "Split of volume by regions is required.",
+      "contactDetails": "Contact details are required."
+    },
+    "minLength": {
+      "firstName": "First name must be at least 2 characters long.",
+      "lastName": "Last name must be at least 2 characters long.",
+      "jobTitle": "Job title must be at least 2 characters long.",
+      "businessType": "Business type should have at least 3 characters.",
+      "taxIdentificationNumber": "Tax ID should have at least 8 characters.",
+      "companyName": "Company name should have at least 2 characters.",
+      "country": "Country code should have exactly 2 characters.",
+      "city": "City should be at least 2 characters long.",
+      "street": "Street should be at least 3 characters long.",
+      "streetNumber": "Street number is required.",
+      "registrationNumber": "Registration number should have at least 4 characters.",
+      "nationalId": "Identity number should be at least 5 characters long.",
+      "nationality": "Invalid nationality. Please select from the available options.",
+      "fullAddress": "Full address should be at least 10 characters long.",
+      "holderName": "Holder name should be at least 5 characters long.",
+      "holderFullAddress": "Holder full address should be at least 10 characters long.",
+      "accountNumber": "Account number should be at least 6 characters long.",
+      "iban": "IBAN should be at least 15 characters long.",
+      "swiftCode": "SWIFT code should be at least 8 characters long.",
+      "routeNumber": "Route Number should be at least 8 characters long.",
+      "bankName": "Bank name should be at least 3 characters long.",
+      "bankCode": "Bank Code should be at least 2 characters long.",
+      "bankAddress": "Bank address should be at least 10 characters long.",
+      "currency": "Account currency is required.",
+      "websiteUrls": "Website URL(s) should not be empty.",
+      "mainWebsite": "Main Website should not be empty.",
+      "returnPolicyUrl": "Return Policy URL should not be empty.",
+      "shippingPolicyUrl": "Shipping Policy URL should not be empty.",
+      "aboutUsUrl": "About Us URL should not be empty.",
+      "termsOfUseUrl": "Terms of Use URL should not be empty.",
+      "privacyPolicyUrl": "Privacy Policy URL should not be empty."
+    },
+    "maxLength": {
+      "firstName": "First name should not exceed 50 characters.",
+      "lastName": "Last name should not exceed 50 characters.",
+      "email": "Email should not exceed 100 characters.",
+      "businessType": "Business type should not exceed 50 characters.",
+      "taxIdentificationNumber": "Tax ID should not exceed 15 characters.",
+      "companyName": "Company name should not exceed 100 characters.",
+      "country": "Country code should have exactly 2 characters.",
+      "city": "City should not exceed 50 characters.",
+      "street": "Street should not exceed 100 characters.",
+      "streetNumber": "Street number should not exceed 10 characters.",
+      "registrationNumber": "Registration number should not exceed 20 characters.",
+      "nationalId": "Identity number should not exceed 20 characters.",
+      "fullAddress": "Full address should not exceed 200 characters.",
+      "holderName": "Holder name should not exceed 50 characters.",
+      "holderFullAddress": "Holder full address should not exceed 200 characters.",
+      "accountNumber": "Account number should not exceed 34 characters.",
+      "iban": "IBAN should not exceed 34 characters.",
+      "swiftCode": "SWIFT code should not exceed 11 characters.",
+      "routeNumber": "Route Number should not exceed 10 characters.",
+      "bankName": "Bank name should not exceed 100 characters.",
+      "bankCode": "Bank Code should not exceed 13 characters.",
+      "bankAddress": "Bank address should not exceed 200 characters."
+    },
+    "minItems": {
+      "ubos": "UBOs are required."
+    },
+    "format": {
+      "email": "Invalid email address."
+    },
+    "pattern": {
+      "phone": "Phone number must be 10 to 15 digits long and may start with a +.",
+      "taxIdentificationNumber": "Tax ID must be in valid format.",
+      "country": "Please enter a valid country code.",
+      "subBranch": "Sub-branch should contain only numbers.",
+      "websiteUrls": "Website URL(s) should be valid URL(s) separated by comma.",
+      "mainWebsite": "Main Website should be a valid URL.",
+      "returnPolicyUrl": "Return Policy URL should be a valid URL.",
+      "shippingPolicyUrl": "Shipping Policy URL should be a valid URL.",
+      "aboutUsUrl": "About Us URL should be a valid URL.",
+      "termsOfUseUrl": "Terms of Use URL should be a valid URL.",
+      "privacyPolicyUrl": "Privacy Policy URL should be a valid URL."
+    },
+    "type": {
+      "dateOfBirth": "Date of birth must be a string.",
+      "numberOfEmployees": "Number of employees must be a number."
+    },
+    "minimum": {
+      "registeredCapitalInUsd": "Registered capital must be non-negative.",
+      "numberOfEmployees": "Number of employees must be at least 1.",
+      "percentageOfOwnership": "Percentage of ownership must be 25 or greater."
+    },
+    "maximum": {
+      "numberOfEmployees": "Number of employees cannot exceed 100,000.",
+      "percentageOfOwnership": "Percentage of ownership must not exceed 100."
+    }
+  }
+}

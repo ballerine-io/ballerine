@@ -34,6 +34,7 @@ import { CustomerRepository } from '@/customer/customer.repository';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { CollectionFlowEndUserController } from '@/collection-flow/controllers/collection-flow.end-user.controller';
+import { TranslationService } from '@/providers/translation/translation.service';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { CollectionFlowEndUserController } from '@/collection-flow/controllers/c
     CollectionFlowEndUserController,
   ],
   providers: [
+    TranslationService,
     CollectionFlowService,
     EndUserService,
     EndUserRepository,

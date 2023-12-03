@@ -1,3 +1,7 @@
+import { useMemo } from 'react';
+import DOMPurify from 'dompurify';
+import { useTranslation } from 'react-i18next';
+
 import { StepperProgress } from '@/common/components/atoms/StepperProgress';
 import { ProgressBar } from '@/common/components/molecules/ProgressBar';
 import { AppShell } from '@/components/layouts/AppShell';
@@ -20,16 +24,18 @@ import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
-import { useMemo } from 'react';
+import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 
 const elems = {
   h1: Title,
-  h3: (props: AnyObject) => <h3 className="pb-3 text-xl font-bold">{props?.options?.text}</h3>,
+  h3: (props: AnyObject) => <h3 className="pt-4 text-xl font-bold">{props?.options?.text}</h3>,
   h4: (props: AnyObject) => <h4 className="pb-3 text-base font-bold">{props?.options?.text}</h4>,
   description: (props: AnyObject) => (
     <p
       className="font-inter pb-2 text-sm text-slate-500"
-      dangerouslySetInnerHTML={{ __html: props.options.descriptionRaw as string }}
+      dangerouslySetInnerHTML={{
+        __html: DOMPurify.sanitize(props.options.descriptionRaw) as string,
+      }}
     ></p>
   ),
   'json-form': JSONForm,
@@ -40,10 +46,13 @@ const elems = {
   divider: Divider,
 };
 
-export const CollectionFlowDumb = () => {
-  const { data: schema } = useUISchemasQuery();
+export const CollectionFlow = withSessionProtected(() => {
+  const lng = useLanguageParam();
+  const { data: schema } = useUISchemasQuery(lng || 'en');
   const { data: context } = useFlowContextQuery();
   const { customer } = useCustomer();
+  const { t } = useTranslation();
+
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
@@ -54,6 +63,7 @@ export const CollectionFlowDumb = () => {
   );
 
   const filteredNonEmptyErrors = pageErrors?.filter(pageError => !!pageError.errors.length);
+
   // @ts-ignore
   const initialContext: CollectionFlowContext | null = useMemo(() => {
     const appState =
@@ -70,7 +80,7 @@ export const CollectionFlowDumb = () => {
       },
       state: appState,
     };
-  }, []);
+  }, [context, elements, filteredNonEmptyErrors]);
 
   const initialUIState = useMemo(() => {
     return prepareInitialUIState(elements || [], context || {}, isRevision);
@@ -123,10 +133,16 @@ export const CollectionFlowDumb = () => {
                               </div>
                               <div>
                                 <div>
-                                  <div className="border-b pb-12">
-                                    Contact {customer?.displayName || 'PayLynk'} for support <br />{' '}
-                                    example@example.com (000) 123-4567
-                                  </div>
+                                  {customer?.displayName && (
+                                    <div className="border-b pb-12">
+                                      {
+                                        t('contact', {
+                                          companyName: customer.displayName,
+                                          interpolation: { escapeValue: false },
+                                        }) as string
+                                      }
+                                    </div>
+                                  )}
                                   <img src={'/poweredby.svg'} className="mt-6" />
                                 </div>
                               </div>
@@ -179,6 +195,4 @@ export const CollectionFlowDumb = () => {
       </DynamicUI.StateManager>
     </DynamicUI>
   ) : null;
-};
-
-export const CollectionFlow = withSessionProtected(CollectionFlowDumb);
+});

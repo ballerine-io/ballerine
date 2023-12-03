@@ -81,6 +81,8 @@
     "file-type": "^16.5.4",
     "helmet": "^6.0.1",
     "i18n-iso-countries": "^7.6.0",
+    "i18next": "^22.4.9",
+    "i18next-fs-backend": "^2.3.0",
     "is-what": "^4.1.15",
     "lodash": "^4.17.21",
     "merge-anything": "^5.1.7",

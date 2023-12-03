@@ -9,7 +9,7 @@ import { CustomerService } from '@/customer/customer.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
 import { FileService } from '@/providers/file/file.service';
-import { StorageService } from '@/storage/storage.service';
+import { TranslationService } from '@/providers/translation/translation.service';
 import type { TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
@@ -21,10 +21,12 @@ import { Customer, EndUser, UiDefinitionContext } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { randomUUID } from 'crypto';
 import keyBy from 'lodash/keyBy';
+import { includes } from 'lodash';
 
 @Injectable()
 export class CollectionFlowService {
   constructor(
+    protected readonly translationService: TranslationService,
     protected readonly logger: AppLoggerService,
     protected readonly endUserService: EndUserService,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
@@ -33,7 +35,6 @@ export class CollectionFlowService {
     protected readonly businessService: BusinessService,
     protected readonly uiDefinitionService: UiDefinitionService,
     protected readonly customerService: CustomerService,
-    protected readonly storageService: StorageService,
     protected readonly fileService: FileService,
   ) {}
 
@@ -47,8 +48,23 @@ export class CollectionFlowService {
     return endUser;
   }
 
+  private traverseUiSchema(uiSchema: Record<string, unknown>, language: string) {
+    for (const key in uiSchema) {
+      if (typeof uiSchema[key] === 'object' && uiSchema[key] !== null) {
+        // If the property is an object (including arrays), recursively traverse it
+        // @ts-expect-error - error from Prisma types fix
+        this.traverseUiSchema(uiSchema[key], language);
+      } else if (typeof uiSchema[key] === 'string') {
+        uiSchema[key] = this.translationService.translate(uiSchema[key] as string, language);
+      }
+    }
+
+    return uiSchema;
+  }
+
   async getFlowConfiguration(
     configurationId: string,
+    language: string,
     projectIds: TProjectIds,
   ): Promise<FlowConfigurationModel> {
     const workflowDefinition = await this.workflowService.getWorkflowDefinitionById(
@@ -66,7 +82,10 @@ export class CollectionFlowService {
 
     return {
       id: workflowDefinition.id,
-      uiSchema: uiDefintion.uiSchema as unknown as UiSchemaStep[],
+      uiSchema: {
+        // @ts-expect-error - error from Prisma types fix
+        elements: this.traverseUiSchema(uiDefintion.uiSchema.elements, language) as UiSchemaStep[],
+      },
       definition: uiDefintion.definition
         ? (uiDefintion.definition as unknown as UiDefDefinition)
         : undefined,

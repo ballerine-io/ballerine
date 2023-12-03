@@ -31,16 +31,13 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
         description: uiElement.options.description,
       };
 
-      // @ts-ignore
-
       if (!formSchema.properties) {
         formSchema.properties = {};
       }
 
-      // @ts-ignore
       formSchema.properties[uiElement.name] = elementDefinition;
 
-      const elementUISchema = {
+      uiSchema[uiElement.name] = {
         ...uiElement?.options?.uiSchema,
         'ui:label':
           (uiElement.options?.uiSchema || {})['ui:label'] === undefined
@@ -48,8 +45,6 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
             : (uiElement.options?.uiSchema || {})['ui:label'],
         'ui:placeholder': uiElement?.options?.hint,
       };
-
-      uiSchema[uiElement.name] = elementUISchema;
     });
   }
 
@@ -61,7 +56,7 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
       title: formElement.options?.jsonFormDefinition?.title,
       properties: {},
     };
-    //@ts-ignore
+
     uiSchema.items = {
       'ui:label': false,
     } as AnyObject;
@@ -82,13 +77,11 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
       // @ts-ignore
       (formSchema.items as RJSFSchema).properties[uiElement.name] = elementDefinition;
 
-      const elementUISchema = {
+      uiSchema.items[uiElement.name] = {
         ...uiElement?.options?.uiSchema,
         'ui:label': Boolean(uiElement?.options?.label),
         'ui:placeholder': uiElement?.options?.hint,
       };
-
-      uiSchema.items[uiElement.name] = elementUISchema;
     });
   }
 

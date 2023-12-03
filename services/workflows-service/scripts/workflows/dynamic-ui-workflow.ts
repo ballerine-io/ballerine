@@ -165,10 +165,10 @@ export const dynamicUiWorkflowDefinition = {
               companyName: entity.data.companyName,
               customerName: metadata.customerName,
               firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token]),
+              collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=cn']),
               from: 'no-reply@ballerine.com',
               receivers: [entity.data.additionalInfo.mainRepresentative.email],
-              templateId: 'd-8949519316074e03909042cfc5eb4f02',
+              templateId: 'd-add814d1a97e4ea8b6db47c8f80de3cd',
               adapter: '{secret.MAIL_ADAPTER}'
               }`, // jmespath
             },
