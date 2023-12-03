@@ -13,7 +13,7 @@
     "storeInfo": "Store Info",
     "directorsDescription": "Add all of the directors of the company.",
     "imShareholder": "I own 25% or more of the company",
-    "imDirector": "I'm director of the company",
+    "imDirector": "I am a director in the company",
     "shareholder": "Shareholder",
     "shareholdersDescription": "Add all of the natural persons that own or control, <br /><b>directly or indirectly</b> more than 25% of the company.",
     "uboIndex": "UBO {{INDEX}}",
@@ -321,11 +321,11 @@
       "description": "All electric documents must be complete and legible."
     },
     "passportDocument": {
-      "label": "ID / Passport photo,",
+      "label": "ID / Passport Photo",
       "description": "Valid identification document"
     },
     "passportSelfie": {
-      "label": "Selfie with ID / Passport photo",
+      "label": "Selfie with ID / Passport Photo",
       "description": "The same document held next to the director's face"
     }
   },
