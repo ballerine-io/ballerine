@@ -2467,6 +2467,9 @@ importers:
       json-schema-to-typescript:
         specifier: ^13.0.1
         version: 13.1.1
+      pg-connection-string:
+        specifier: ^2.6.2
+        version: 2.6.2
       plop:
         specifier: ^4.0.0
         version: 4.0.0
@@ -25892,6 +25895,10 @@ packages:
       estree-walker: 3.0.3
       is-reference: 3.0.2
     dev: false
+
+  /pg-connection-string@2.6.2:
+    resolution: {integrity: sha512-ch6OwaeaPYcova4kKZ15sbJ2hKb/VP48ZD2gE7i1J+L4MspCtBMAx8nMgz7bksc7IojCIIWuEhHibSMFH8m8oA==}
+    dev: true
 
   /picocolors@1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
