@@ -1,7 +1,7 @@
 import { BaseContextTransformer, THelperFormatingLogic } from './types';
 import { TContext } from '../types';
 
-export type THelperMethod = 'regex' | 'imageUrlToBase64';
+export type THelperMethod = 'regex' | 'imageUrlToBase64' | 'remove';
 export class HelpersTransformer extends BaseContextTransformer {
   name = 'helpers-transformer';
   mapping: THelperFormatingLogic;
@@ -24,11 +24,14 @@ export class HelpersTransformer extends BaseContextTransformer {
         sourceAttributeValue,
         mappingLogic.value,
       );
-
       this.setNestedProperty(context, targetPath, transformedValue);
     }
 
     return context;
+  }
+
+  remove() {
+    return undefined;
   }
 
   regex(attribute: string, value: string) {

@@ -206,5 +206,24 @@ export const definition = {
         },
       },
     ],
+    commonPlugins: [
+      {
+        name: 'state_value_removal',
+        pluginKind: 'transformer',
+        transformers: [
+          {
+            transformer: 'helpers',
+            mapping: [
+              {
+                method: 'remove',
+                source: 'entity.data.additionalInfo.state',
+                target: 'entity.data.additionalInfo.state',
+              },
+            ],
+          },
+        ],
+        stateNames: ['business_information'],
+      },
+    ],
   },
 };

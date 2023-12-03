@@ -95,6 +95,7 @@ export const useStateLogic = (machineApi: StateMachineAPI, initialContext = {}) 
           `Error occured on attempt to send event ${eventName}`,
           isErrorWithMessage(error) ? error.message : error,
         );
+        throw error;
       } finally {
         helpers.setLoading(false);
       }

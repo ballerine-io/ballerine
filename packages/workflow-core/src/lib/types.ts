@@ -7,6 +7,7 @@ import {
 import {
   ChildWorkflowPluginParams,
   ISerializableCommonPluginParams,
+  ISerializableMappingPluginParams,
 } from './plugins/common-plugin/types';
 import { TContext } from './utils';
 import { ChildCallabackable } from './workflow-runner';
@@ -32,7 +33,10 @@ export interface WorkflowEvent {
 export interface WorkflowExtensions {
   statePlugins?: StatePlugins;
   apiPlugins?: HttpPlugins | Array<ISerializableHttpPluginParams>;
-  commonPlugins?: CommonPlugins | Array<ISerializableCommonPluginParams>;
+  commonPlugins?:
+    | CommonPlugins
+    | Array<ISerializableCommonPluginParams>
+    | Array<ISerializableMappingPluginParams>;
   childWorkflowPlugins?: Array<ISerializableChildPluginParams>;
 }
 export interface ChildWorkflowCallback {

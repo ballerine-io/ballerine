@@ -11,6 +11,15 @@ export interface ISerializableCommonPluginParams
   invoke?(...args: Array<any>): any;
 }
 
+export interface ISerializableMappingPluginParams
+  extends Omit<
+    IterativePluginParams,
+    'action' | 'iterateOn' | 'iterateOn' | 'action' | 'successAction' | 'errorAction'
+  > {
+  transformers: Omit<SerializableValidatableTransformer, 'schema'>['transform'];
+  invoke?(...args: Array<any>): any;
+}
+
 export interface IterativePluginParams {
   name: string;
   stateNames: Array<string>;
