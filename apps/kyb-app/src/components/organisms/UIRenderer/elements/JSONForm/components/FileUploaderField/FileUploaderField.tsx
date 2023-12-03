@@ -18,7 +18,7 @@ export const FileUploaderField = forwardRef(
     placeholder,
   }: DocumentUploadFieldProps) => {
     const { fileId: uploadedFileId, isUploading, uploadFile } = useFileUploading(_uploadFile);
-    const { file } = useFileRepository(fileStorage, fileId || undefined);
+    const { file, registerFile } = useFileRepository(fileStorage, fileId || undefined);
     const inputRef = useRef<HTMLInputElement>(null);
     //@ts-ignore
     useFileAssigner(inputRef, file);
@@ -31,6 +31,7 @@ export const FileUploaderField = forwardRef(
 
     const handleChange = useCallback(
       async (event: React.ChangeEvent<HTMLInputElement>) => {
+        registerFile(uploadedFileId, event.target.files?.[0] as File);
         void uploadFile(event.target.files?.[0] as File);
       },
       [uploadFile],
