@@ -1,8 +1,8 @@
 import {
   JSONFormElementBaseParams,
   JSONFormElementParams,
-} from '@app/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
-import { UIElement } from '@app/domains/collection-flow';
+} from '@/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
+import { UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 
@@ -31,9 +31,13 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
         description: uiElement.options.description,
       };
 
+      if (!formSchema.properties) {
+        formSchema.properties = {};
+      }
+
       formSchema.properties[uiElement.name] = elementDefinition;
 
-      const elementUISchema = {
+      uiSchema[uiElement.name] = {
         ...uiElement?.options?.uiSchema,
         'ui:label':
           (uiElement.options?.uiSchema || {})['ui:label'] === undefined
@@ -41,8 +45,6 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
             : (uiElement.options?.uiSchema || {})['ui:label'],
         'ui:placeholder': uiElement?.options?.hint,
       };
-
-      uiSchema[uiElement.name] = elementUISchema;
     });
   }
 
@@ -54,7 +56,7 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
       title: formElement.options?.jsonFormDefinition?.title,
       properties: {},
     };
-    //@ts-ignore
+
     uiSchema.items = {
       'ui:label': false,
     } as AnyObject;
@@ -68,17 +70,18 @@ export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormEl
         description: uiElement.options.description,
       };
 
-      //@ts-nocheck
+      if (!(formSchema.items as RJSFSchema)?.properties) {
+        (formSchema.items as RJSFSchema).properties = {};
+      }
+
+      // @ts-ignore
       (formSchema.items as RJSFSchema).properties[uiElement.name] = elementDefinition;
 
-      const elementUISchema = {
+      uiSchema.items[uiElement.name] = {
         ...uiElement?.options?.uiSchema,
         'ui:label': Boolean(uiElement?.options?.label),
         'ui:placeholder': uiElement?.options?.hint,
       };
-
-      //@ts-nocheck
-      uiSchema.items[uiElement.name] = elementUISchema;
     });
   }
 

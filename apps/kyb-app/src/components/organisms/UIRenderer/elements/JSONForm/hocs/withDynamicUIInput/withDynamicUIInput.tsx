@@ -1,12 +1,13 @@
-import { usePageResolverContext } from '@app/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
-import { useStateManagerContext } from '@app/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import { useDynamicUIContext } from '@app/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { findDefinitionByName } from '@app/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
-import { useUIElementErrors } from '@app/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
-import { useUIElementHandlers } from '@app/components/organisms/UIRenderer/hooks/useUIElementHandlers';
-import { useUIElementProps } from '@app/components/organisms/UIRenderer/hooks/useUIElementProps';
-import { useUIElementState } from '@app/components/organisms/UIRenderer/hooks/useUIElementState';
-import { UIElement } from '@app/domains/collection-flow';
+import { ARRAY_VALUE_INDEX_PLACEHOLDER } from '@/common/consts/consts';
+import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
+import { findDefinitionByName } from '@/components/organisms/UIRenderer/elements/JSONForm/helpers/findDefinitionByName';
+import { useUIElementErrors } from '@/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
+import { useUIElementHandlers } from '@/components/organisms/UIRenderer/hooks/useUIElementHandlers';
+import { useUIElementProps } from '@/components/organisms/UIRenderer/hooks/useUIElementProps';
+import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
+import { UIElement } from '@/domains/collection-flow';
 import { AnyObject, ErrorsList, RJSFInputAdapter, RJSFInputProps } from '@ballerine/ui';
 import get from 'lodash/get';
 import { useCallback, useMemo } from 'react';
@@ -16,6 +17,7 @@ const findLastDigit = (str: string) => {
   const matches = digitRegex.exec(str);
 
   if (matches && matches.length > 0) {
+    // @ts-ignore
     const result = parseInt(matches[matches.length - 1]);
     return result;
   }
@@ -28,7 +30,7 @@ const getInputIndex = (inputId: string) => findLastDigit(inputId);
 const injectIndexToDestinationIfNeeded = (destination: string, index: number | null): string => {
   if (index === null) return destination;
 
-  const result = destination.replace(`{INDEX}`, `${index}`);
+  const result = destination.replace(ARRAY_VALUE_INDEX_PLACEHOLDER, `${index}`);
 
   return result;
 };
@@ -37,16 +39,27 @@ export type DynamicUIComponent<TProps, TParams = AnyObject> = React.ComponentTyp
   TProps & { definition: UIElement<TParams> }
 >;
 
-export const withDynamicUIInput = (Component: RJSFInputAdapter<any, any>) => {
+export const withDynamicUIInput = (
+  Component: RJSFInputAdapter<any, any> & { inputIndex?: number | null },
+) => {
   function Wrapper(props: RJSFInputProps) {
     const inputId = (props.idSchema as AnyObject)?.$id as string;
     const { name, onChange } = props;
     const { payload } = useStateManagerContext();
     const { currentPage } = usePageResolverContext();
     const { state } = useDynamicUIContext();
+    const inputIndex = useMemo(() => {
+      const index = getInputIndex(inputId || '');
+
+      return isNaN(index as number) ? null : index;
+    }, [inputId]);
 
     const baseDefinition = useMemo(() => {
-      const definition = findDefinitionByName(name, currentPage.elements);
+      const definition = findDefinitionByName(
+        name,
+        // @ts-ignore
+        currentPage?.elements,
+      );
 
       if (!definition) throw new Error('definition not found');
 
@@ -60,6 +73,7 @@ export const withDynamicUIInput = (Component: RJSFInputAdapter<any, any>) => {
         ...baseDefinition,
         name: inputIndex !== null ? `${baseDefinition.name}[${inputIndex}]` : baseDefinition.name,
         valueDestination: injectIndexToDestinationIfNeeded(
+          // @ts-ignore
           baseDefinition.valueDestination,
           inputIndex,
         ),
@@ -110,6 +124,7 @@ export const withDynamicUIInput = (Component: RJSFInputAdapter<any, any>) => {
           disabled={disabled || props.disabled || state.isLoading}
           formData={value}
           definition={definition}
+          inputIndex={inputIndex}
           onChange={handleChange}
           onBlur={handleBlur}
         />

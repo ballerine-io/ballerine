@@ -2,8 +2,8 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { UserService } from '@/user/user.service';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { User } from '@prisma/client';
-import { Request, Response } from 'express';
-import { AuthenticatedEntity } from '@/types';
+import type { Request, Response } from 'express';
+import type { AuthenticatedEntity } from '@/types';
 
 @Injectable()
 export class UserSessionAuditMiddleware implements NestMiddleware {

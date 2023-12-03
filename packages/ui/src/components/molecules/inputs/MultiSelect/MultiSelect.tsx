@@ -1,10 +1,11 @@
 import { FocusEvent, useCallback, useMemo, useRef, useState } from 'react';
-import { Command, CommandGroup, CommandInput, CommandItem } from '@components/atoms/Command';
+import { Command, CommandGroup, CommandInput, CommandItem } from '@/components/atoms/Command';
 import keyBy from 'lodash/keyBy';
-import { Popover, PopoverContent, ScrollArea, PopoverTrigger } from '@components/atoms';
+import { Popover, PopoverContent, PopoverTrigger, ScrollArea } from '@/components/atoms';
 import { ClickAwayListener } from '@mui/material';
-import { SelectedElementParams } from '@components/molecules/inputs/MultiSelect/types';
-import { UnselectButtonProps } from '@components/molecules/inputs/MultiSelect/components/Chip/UnselectButton';
+import { SelectedElementParams } from '@/components/molecules/inputs/MultiSelect/types';
+import { UnselectButtonProps } from '@/components/molecules/inputs/MultiSelect/components/Chip/UnselectButton';
+import { ctw } from '@/utils/ctw';
 
 export type MultiSelectValue = string | number;
 
@@ -23,6 +24,7 @@ export interface MultiSelectProps {
   value?: MultiSelectValue[];
   options: MultiSelectOption[];
   searchPlaceholder?: string;
+  disabled?: boolean;
   renderSelected: MultiSelectSelectedItemRenderer;
   onChange: (selected: MultiSelectValue[], inputName: string) => void;
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
@@ -33,6 +35,7 @@ export const MultiSelect = ({
   value,
   options,
   searchPlaceholder = 'Select more...',
+  disabled,
   renderSelected,
   onChange,
   onBlur,
@@ -53,7 +56,11 @@ export const MultiSelect = ({
   const handleSelect = useCallback(
     (option: MultiSelectOption) => {
       setInputValue('');
-      onChange(value ? [...value, option.value] : [option.value], name);
+      onChange(
+        value ? [...value, option.value] : [option.value],
+        // @ts-ignore
+        name,
+      );
     },
     [value, name, onChange],
   );
@@ -62,8 +69,10 @@ export const MultiSelect = ({
     (option: MultiSelectOption) => {
       onChange(
         selected
-          .filter(selectedOption => selectedOption.value !== option.value)
+          .filter(selectedOption => selectedOption?.value !== option.value)
+          // @ts-ignore
           .map(option => option.value),
+        // @ts-ignore
         name,
       );
     },
@@ -78,7 +87,9 @@ export const MultiSelect = ({
           if (input.value === '') {
             selected.pop();
             onChange(
-              selected.map(option => option.value),
+              // @ts-ignore
+              selected.map(option => option?.value),
+              // @ts-ignore
               name,
             );
           }
@@ -133,13 +144,20 @@ export const MultiSelect = ({
       <ClickAwayListener onClickAway={handleOutsidePopupClick}>
         <Command onKeyDown={handleKeyDown} className="overflow-visible">
           <PopoverTrigger asChild>
-            <div className="border-input ring-offset-background focus-within:ring-ring min-10 group flex items-center rounded-md border py-2 text-sm focus-within:ring-1 focus-within:ring-offset-1">
+            <div
+              className={ctw(
+                'border-input ring-offset-background focus-within:ring-ring min-10 group flex items-center rounded-md border py-2 text-sm focus-within:ring-1 focus-within:ring-offset-1',
+                { 'pointer-events-none opacity-50': disabled },
+              )}
+            >
               <div className="flex flex-wrap gap-2 px-2">
                 {selected.map(option => {
                   return renderSelected(
                     {
+                      // @ts-ignore
                       unselectButtonProps: buildUnselectButtonProps(option),
                     },
+                    // @ts-ignore
                     option,
                   );
                 })}

@@ -1,4 +1,4 @@
-import { fetchSession } from '@app/domains/auth/api/session/session.api';
+import { fetchSession } from '@/domains/auth/api/session/session.api';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 export const sessionKeys = createQueryKeys('session', {

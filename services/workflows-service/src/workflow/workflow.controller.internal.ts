@@ -1,46 +1,45 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-import * as common from '@nestjs/common';
-import { UseGuards, UsePipes } from '@nestjs/common';
-import * as swagger from '@nestjs/swagger';
-import * as nestAccessControl from 'nest-access-control';
-import { isRecordNotFoundError } from '../prisma/prisma.util';
-import * as errors from '../errors';
-import { WorkflowService } from './workflow.service';
-import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
-import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
-import { WorkflowDefinitionModel } from './workflow-definition.model';
-import { WorkflowEventInput } from './dtos/workflow-event-input';
-import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
-import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
-import {
-  FindWorkflowsListDto,
-  FindWorkflowsListLogicSchema,
-  FindWorkflowsListSchema,
-} from '@/workflow/dtos/find-workflows-list.dto';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { FilterService } from '@/filter/filter.service';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import type { TProjectId, TProjectIds } from '@/types';
+import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
+import { DocumentDecisionUpdateQueryInput } from '@/workflow/dtos/document-decision-query.input';
+import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';
+import { DocumentUpdateQueryInput } from '@/workflow/dtos/document-update-query-input';
 import {
   FindWorkflowParamsDto,
   FindWorkflowQueryDto,
   FindWorkflowQuerySchema,
 } from '@/workflow/dtos/find-workflow.dto';
-import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
+import {
+  FindWorkflowsListDto,
+  FindWorkflowsListLogicSchema,
+  FindWorkflowsListSchema,
+} from '@/workflow/dtos/find-workflows-list.dto';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
+import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
+import { WorkflowDefinitionUpdateInput } from '@/workflow/dtos/workflow-definition-update-input';
 import { WorkflowEventDecisionInput } from '@/workflow/dtos/workflow-event-decision-input';
-import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { TProjectId, TProjectIds } from '@/types';
-import { ProjectScopeService } from '@/project/project-scope.service';
-import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';
-import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
+import * as common from '@nestjs/common';
+import { UseGuards, UsePipes } from '@nestjs/common';
+import * as swagger from '@nestjs/swagger';
+import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
+import * as nestAccessControl from 'nest-access-control';
+import * as errors from '../errors';
+import { isRecordNotFoundError } from '../prisma/prisma.util';
 import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
 import { DocumentUpdateInput } from './dtos/document-update-update-input';
-import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { EmitSystemBodyInput, EmitSystemParamInput } from './dtos/emit-system-event-input';
+import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
+import { WorkflowEventInput } from './dtos/workflow-event-input';
+import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
+import { WorkflowDefinitionModel } from './workflow-definition.model';
+import { WorkflowService } from './workflow.service';
+import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -208,12 +207,14 @@ export class WorkflowControllerInternal {
     @common.Param() params: DocumentUpdateParamsInput,
     @common.Body() data: DocumentUpdateInput,
     @CurrentProject() currentProjectId: TProjectId,
+    @common.Query() query: DocumentUpdateQueryInput,
   ) {
     return await this.service.updateDocumentById(
       {
         workflowId: params?.id,
         documentId: params?.documentId,
         checkRequiredFields: false,
+        documentsUpdateContextMethod: query.contextUpdateMethod,
       },
       data.document,
       currentProjectId,
@@ -248,6 +249,7 @@ export class WorkflowControllerInternal {
   async updateDocumentDecisionById(
     @common.Param() params: DocumentDecisionParamsInput,
     @common.Body() data: DocumentDecisionUpdateInput,
+    @common.Query() query: DocumentDecisionUpdateQueryInput,
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
@@ -256,6 +258,7 @@ export class WorkflowControllerInternal {
         {
           workflowId: params?.id,
           documentId: params?.documentId,
+          documentsUpdateContextMethod: query.contextUpdateMethod,
         },
         {
           status: data?.decision,

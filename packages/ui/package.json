@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/ui",
   "private": false,
-  "version": "0.3.14",
+  "version": "0.3.18",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,8 +16,10 @@
   "scripts": {
     "spellcheck": "cspell \"*\"",
     "dev": "vite",
+    "clean": "rimraf ./tsconfig.tsbuildinfo && rimraf ./dist",
     "build": "tsc && vite build",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --fix",
+    "format": "prettier --write .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
@@ -40,7 +42,7 @@
     "@rjsf/utils": "^5.9.0",
     "@rjsf/validator-ajv8": "^5.9.0",
     "@tanstack/react-table": "^8.9.2",
-    "class-variance-authority": "^0.6.0",
+    "class-variance-authority": "^0.6.1",
     "clsx": "^1.2.1",
     "cmdk": "^0.2.0",
     "dayjs": "^1.11.6",
@@ -53,6 +55,8 @@
     "tailwind-merge": "^1.10.0"
   },
   "devDependencies": {
+    "@ballerine/config": "^1.0.2",
+    "@ballerine/eslint-config-react": "^1.0.3",
     "@cspell/cspell-types": "^6.31.1",
     "@storybook/addon-essentials": "^7.0.26",
     "@storybook/addon-interactions": "^7.0.26",
@@ -78,12 +82,14 @@
     "eslint-plugin-storybook": "^0.6.6",
     "fast-glob": "^3.3.0",
     "prop-types": "^15.8.1",
+    "rimraf": "^5.0.5",
     "storybook": "^7.0.26",
     "tailwindcss": "^3.3.2",
     "tailwindcss-animate": "1.0.5",
     "typescript": "^4.9.5",
     "vite": "^4.3.9",
     "vite-plugin-dts": "^1.6.6",
+    "vite-tsconfig-paths": "^4.0.7",
     "vitest": "^0.33.0"
   }
 }

@@ -17,7 +17,7 @@ import { StorageService } from '@/storage/storage.service';
 import { UserRepository } from '@/user/user.repository';
 import { UserService } from '@/user/user.service';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
-import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
@@ -34,6 +34,7 @@ import { CustomerRepository } from '@/customer/customer.repository';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { CollectionFlowEndUserController } from '@/collection-flow/controllers/collection-flow.end-user.controller';
+import { TranslationService } from '@/providers/translation/translation.service';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { CollectionFlowEndUserController } from '@/collection-flow/controllers/c
     CollectionFlowEndUserController,
   ],
   providers: [
+    TranslationService,
     CollectionFlowService,
     EndUserService,
     EndUserRepository,

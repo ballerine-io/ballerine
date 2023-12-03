@@ -1,0 +1,11 @@
+{
+  "private": false,
+  "name": "@ballerine/config",
+  "version": "1.0.2",
+  "description": "",
+  "main": "index.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0"
+}

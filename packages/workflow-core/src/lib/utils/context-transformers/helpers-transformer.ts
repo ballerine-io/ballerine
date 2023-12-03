@@ -1,7 +1,7 @@
 import { BaseContextTransformer, THelperFormatingLogic } from './types';
 import { TContext } from '../types';
 
-export type THelperMethod = 'regex' | 'imageUrlToBase64';
+export type THelperMethod = 'regex' | 'imageUrlToBase64' | 'remove';
 export class HelpersTransformer extends BaseContextTransformer {
   name = 'helpers-transformer';
   mapping: THelperFormatingLogic;
@@ -24,11 +24,14 @@ export class HelpersTransformer extends BaseContextTransformer {
         sourceAttributeValue,
         mappingLogic.value,
       );
-
       this.setNestedProperty(context, targetPath, transformedValue);
     }
 
     return context;
+  }
+
+  remove() {
+    return undefined;
   }
 
   regex(attribute: string, value: string) {
@@ -51,7 +54,6 @@ export class HelpersTransformer extends BaseContextTransformer {
 
   getNestedProperty(record: Record<string, any>, path: Array<string>) {
     return path.reduce((prev, curr) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return prev ? prev[curr] : null;
     }, record);
   }
@@ -64,7 +66,6 @@ export class HelpersTransformer extends BaseContextTransformer {
       } else {
         current[path[i] as keyof typeof current] =
           (current[path[i] as keyof typeof current] as unknown) || {};
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         current = current[path[i] as keyof typeof current];
       }
     }

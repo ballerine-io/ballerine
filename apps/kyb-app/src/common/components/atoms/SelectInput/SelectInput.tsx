@@ -1,4 +1,4 @@
-import { SelectInputOption } from '@app/common/components/atoms/SelectInput/types';
+import { SelectInputOption } from '@/common/components/atoms/SelectInput/types';
 import {
   Button,
   Command,
@@ -12,7 +12,7 @@ import {
   ScrollArea,
 } from '@ballerine/ui';
 import { CaretSortIcon } from '@radix-ui/react-icons';
-import clsx from 'clsx';
+import { ctw } from '@ballerine/ui';
 import { CheckIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
@@ -46,7 +46,7 @@ export const SelectInput = ({
         <Button
           variant="outline"
           role="combobox"
-          className={clsx(
+          className={ctw(
             'w-full justify-between bg-white',
             !selectedOption && 'text-muted-foreground',
           )}
@@ -76,7 +76,7 @@ export const SelectInput = ({
                 >
                   {option.label}
                   <CheckIcon
-                    className={clsx(
+                    className={ctw(
                       'ml-auto h-4 w-4',
                       option.value === value ? 'opacity-100' : 'opacity-0',
                     )}

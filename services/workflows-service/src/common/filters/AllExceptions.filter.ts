@@ -4,7 +4,7 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { inspect } from 'util';
 import { ArgumentsHost, Catch, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { HttpStatusCode } from 'axios';
 
 @Catch()

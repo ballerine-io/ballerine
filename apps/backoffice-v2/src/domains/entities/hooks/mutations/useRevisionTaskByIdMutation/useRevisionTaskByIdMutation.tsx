@@ -17,14 +17,17 @@ export const useRevisionTaskByIdMutation = (workflowId: string, postUpdateEventN
       documentId,
       decision,
       reason,
+      contextUpdateMethod,
     }: {
       documentId: string;
       decision: TObjectValues<typeof Action> | null;
       reason?: string;
+      contextUpdateMethod?: 'base' | 'director';
     }) =>
       updateWorkflowDecision({
         workflowId,
         documentId,
+        contextUpdateMethod,
         body: {
           decision,
           reason,

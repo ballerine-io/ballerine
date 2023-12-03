@@ -24,6 +24,7 @@ export const Item: FunctionComponent<IItemProps> = ({
   id,
   src,
   fileType,
+  fileName,
   alt,
   caption,
   imageProps = {},
@@ -46,6 +47,7 @@ export const Item: FunctionComponent<IItemProps> = ({
           id,
           imageUrl: src,
           fileType,
+          fileName,
         })}
         {...restButton}
       >
@@ -55,6 +57,7 @@ export const Item: FunctionComponent<IItemProps> = ({
             src={src}
             className={ctw(
               `
+            object-cover
             group-hover:outline
             group-focus:outline
             group-hover:outline-2

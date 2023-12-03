@@ -36,21 +36,21 @@ const validationSchema = {
                           pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
-                            minLength: 'Main Website should not be empty.',
-                            pattern: 'Main Website should be a valid URL.',
+                            minLength: 'errorMessage.minLength.mainWebsite',
+                            pattern: 'errorMessage.pattern.mainWebsite',
                           },
                         },
                         contactDetails: {
                           type: 'string',
-                          errorMessage: 'Contact details should not be empty.',
+                          errorMessage: 'errorMessage.error.contactDetails',
                         },
                         returnPolicyUrl: {
                           type: 'string',
                           pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
-                            minLength: 'Return Policy URL should not be empty.',
-                            pattern: 'Return Policy URL should be a valid URL.',
+                            minLength: 'errorMessage.minLength.returnPolicyUrl',
+                            pattern: 'errorMessage.pattern.returnPolicyUrl',
                           },
                         },
                         shippingPolicyUrl: {
@@ -58,8 +58,8 @@ const validationSchema = {
                           pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
-                            minLength: 'Shipping Policy URL should not be empty.',
-                            pattern: 'Shipping Policy URL should be a valid URL.',
+                            minLength: 'errorMessage.minLength.shippingPolicyUrl',
+                            pattern: 'errorMessage.pattern.shippingPolicyUrl',
                           },
                         },
                         aboutUsUrl: {
@@ -67,8 +67,8 @@ const validationSchema = {
                           pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
-                            minLength: 'About Us URL should not be empty.',
-                            pattern: 'About Us URL should be a valid URL.',
+                            minLength: 'errorMessage.minLength.aboutUsUrl',
+                            pattern: 'errorMessage.pattern.aboutUsUrl',
                           },
                         },
                         termsOfUseUrl: {
@@ -76,8 +76,8 @@ const validationSchema = {
                           pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
-                            minLength: 'Terms of Use URL should not be empty.',
-                            pattern: 'Terms of Use URL should be a valid URL.',
+                            minLength: 'errorMessage.minLength.termsOfUseUrl',
+                            pattern: 'errorMessage.pattern.termsOfUseUrl',
                           },
                         },
                         privacyPolicyUrl: {
@@ -85,34 +85,34 @@ const validationSchema = {
                           pattern: singleUrlPattern,
                           minLength: 1,
                           errorMessage: {
-                            minLength: 'Privacy Policy URL should not be empty.',
-                            pattern: 'Privacy Policy URL should be a valid URL.',
+                            minLength: 'errorMessage.minLength.privacyPolicyUrl',
+                            pattern: 'errorMessage.pattern.privacyPolicyUrl',
                           },
                         },
                         productQuantity: {
                           type: 'number',
-                          errorMessage: 'Product quantity should be a valid number.',
+                          errorMessage: 'errorMessage.error.productQuantity',
                         },
                         productPrice: {
                           type: 'number',
-                          errorMessage: 'Product price should be a valid number.',
+                          errorMessage: 'errorMessage.error.productPrice',
                         },
                         productDescription: {
                           type: 'string',
-                          errorMessage: 'Product description should not be empty.',
+                          errorMessage: 'errorMessage.error.productDescription',
                         },
                         websiteLanguage: {
                           type: 'string',
-                          errorMessage: 'Website language should not be empty.',
+                          errorMessage: 'errorMessage.error.websiteLanguage',
                         },
                       },
                       errorMessage: {
                         required: {
-                          mainWebsite: 'Main website URL is required.',
-                          contactDetails: 'Contact details are required.',
-                          productQuantity: 'Product quantity is required.',
-                          productDescription: 'Product description is required.',
-                          productPrice: 'Product price is required.',
+                          mainWebsite: 'errorMessage.required.mainWebsite',
+                          contactDetails: 'errorMessage.required.contactDetails',
+                          productQuantity: 'errorMessage.required.productQuantity',
+                          productDescription: 'errorMessage.required.productDescription',
+                          productPrice: 'errorMessage.required.productPrice',
                         },
                       },
                     },
@@ -132,7 +132,7 @@ export const WebsiteBasicRequirement = {
   type: 'page',
   number: 8,
   stateName: 'website_basic_requirement',
-  name: 'Website Basic Requirement',
+  name: 'text.websiteBasicRequirement',
   pageValidation: [
     {
       type: 'json-schema',
@@ -149,15 +149,14 @@ export const WebsiteBasicRequirement = {
             {
               type: 'h1',
               options: {
-                text: 'Website Basic Requirement',
+                text: 'text.websiteBasicRequirement',
               },
             },
             {
               type: 'description',
               name: 'heading-description',
               options: {
-                descriptionRaw:
-                  'This list is intended only as a basic pre-entry check of the<br /> websites and does not refer to specific product<br /> application requirements.',
+                descriptionRaw: 'text.websiteBasicRequirementDescription',
               },
             },
           ],
@@ -181,8 +180,7 @@ export const WebsiteBasicRequirement = {
             {
               type: 'json-form:hint',
               options: {
-                label:
-                  'This list is intended only as a basic pre-entry check of the websites and does not refer to specific product application requirements.',
+                label: 'text.websiteBasicRequirementHint',
               },
             },
             {
@@ -193,9 +191,9 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: "Company's Main Website Address",
-                hint: 'www.example.cn',
-                description: 'the same as the application Entities',
+                label: 'text.mainWebsite.label',
+                hint: 'text.mainWebsite.hint',
+                description: 'text.mainWebsite.description',
               },
             },
             {
@@ -206,8 +204,8 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Contact Details (or Return Address)',
-                hint: '22, chaoyangmen, chaoyan district, beijing, china',
+                label: 'text.contactDetails.label',
+                hint: 'text.contactDetails.hint',
               },
             },
             {
@@ -218,8 +216,8 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Return / Exchange Policy URL',
-                hint: 'www.example.com/return-policy',
+                label: 'text.returnPolicyUrl.label',
+                hint: 'text.returnPolicyUrl.hint',
               },
             },
             {
@@ -230,8 +228,8 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Shipping Policy URL',
-                hint: 'www.example.com/shipping-policy',
+                label: 'text.shippingPolicyUrl.label',
+                hint: 'text.shippingPolicyUrl.hint',
               },
             },
             {
@@ -242,8 +240,8 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'About Us / Brand Intro URL',
-                hint: 'www.example.com/about-us',
+                label: 'text.aboutUsUrl.label',
+                hint: 'text.aboutUsUrl.hint',
               },
             },
             {
@@ -254,8 +252,8 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Terms of Use URL',
-                hint: 'www.example.com/terms',
+                label: 'text.termsOfUseUrl.label',
+                hint: 'text.termsOfUseUrl.hint',
               },
             },
             {
@@ -266,8 +264,8 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'string',
                 },
-                label: 'Privacy Policy URL',
-                hint: 'www.example.com/privacy',
+                label: 'text.privacyPolicyUrl.label',
+                hint: 'text.privacyPolicyUrl.hint',
               },
             },
             {
@@ -278,8 +276,8 @@ export const WebsiteBasicRequirement = {
                 jsonFormDefinition: {
                   type: 'number',
                 },
-                label: 'Product Quantity (not less than 5)',
-                hint: '100',
+                label: 'text.productQuantity.label',
+                hint: 'text.productQuantity.hint',
               },
             },
             {
@@ -293,8 +291,8 @@ export const WebsiteBasicRequirement = {
                 uiSchema: {
                   'ui:widget': 'textarea',
                 },
-                label: 'Adequate Product/Service Description',
-                hint: 'offers a range of organic skincare products, including moisturizers, serums, and cleansers. Each product is made using natural ingredients sourced sustainably.',
+                label: 'text.productDescription.label',
+                hint: 'text.productDescription.hint',
                 classNames: ['min-width-40px'],
               },
             },
@@ -303,8 +301,8 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.store.website.productPrice',
               options: {
-                label: 'Reasonable Product / Service Price (USD)',
-                hint: '100',
+                label: 'text.productPrice.label',
+                hint: 'text.productPrice.hint',
                 jsonFormDefinition: {
                   type: 'number',
                 },
@@ -315,13 +313,13 @@ export const WebsiteBasicRequirement = {
               type: 'json-form:dropdown',
               valueDestination: 'entity.data.additionalInfo.store.website.websiteLanguage',
               options: {
-                hint: 'Choose',
-                label: 'Website Language',
+                hint: 'text.choose',
+                label: 'text.websiteLanguage.label',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:placeholder': 'Choose',
+                  'ui:placeholder': 'text.choose',
                   'ui:field': 'LocalePicker',
                   'ui:label': true,
                 },
@@ -343,7 +341,7 @@ export const WebsiteBasicRequirement = {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],
                 },
-                text: 'Continue',
+                text: 'text.continue',
               },
               availableOn: [
                 {

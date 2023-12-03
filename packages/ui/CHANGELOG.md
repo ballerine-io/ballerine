@@ -1,5 +1,30 @@
 # @ballerine/ui
 
+## 0.3.18
+
+### Patch Changes
+
+- Version bump
+
+## 0.3.17
+
+### Patch Changes
+
+- added csv, xlsx, and xls to the file input accept attribute
+
+## 0.3.16
+
+### Patch Changes
+
+- Added ctw export
+
+## 0.3.15
+
+### Patch Changes
+
+- 8c888cec: Updated tsconfig and types
+- Fixed missing disabled state on inputs
+
 ## 0.3.14
 
 ### Patch Changes

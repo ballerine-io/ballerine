@@ -1,9 +1,8 @@
 import { CSSProperties, useMemo } from 'react';
 import chunk from 'lodash/chunk';
 import { BlocksComponent } from '@ballerine/blocks';
-import { Column } from '@app/components/organisms/UIRenderer/elements/Cell/Column';
-import { useUIRendererContext } from '@app/components/organisms/UIRenderer/hooks/useUIRendererContext/useUIRendererContext';
-import clsx from 'clsx';
+import { useUIRendererContext } from '@/components/organisms/UIRenderer/hooks/useUIRendererContext/useUIRendererContext';
+import { ctw } from '@ballerine/ui';
 import { Fragment } from 'react';
 
 export interface CellOptions {
@@ -40,7 +39,7 @@ export const Cell = ({ options = {}, childrens: _childrens = [] }: CellProps) =>
 
   return (
     <div
-      className={clsx('grid' + className, {
+      className={ctw('grid' + className, {
         'justify-start': align === 'left',
         'justify-end': align === 'right',
       })}

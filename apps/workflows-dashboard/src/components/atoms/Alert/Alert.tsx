@@ -1,6 +1,6 @@
 import { forwardRef, HTMLAttributes } from 'react';
 import { cva, VariantProps } from 'class-variance-authority';
-import { ctw } from '@app/common/utils/ctw/ctw';
+import { ctw } from '@/common/utils/ctw/ctw';
 
 const alertVariants = cva(
   'relative w-full rounded-lg border p-4 [&>svg]:absolute [&>svg]:text-foreground [&>svg]:left-4 [&>svg]:top-4 [&>svg+div]:translate-y-[-3px] [&:has(svg)]:pl-11',

@@ -1,13 +1,15 @@
 import { useCrop } from '../../../../../../common/hooks/useCrop/useCrop';
-import { useCallback, useRef, useState } from 'react';
+import { ComponentProps, useCallback, useRef, useState } from 'react';
 import { useTesseract } from '../../../../../../common/hooks/useTesseract/useTesseract';
 import { IDocumentsProps } from '../../interfaces';
 import { createArrayOfNumbers } from '../../../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
 import { useToggle } from '../../../../../../common/hooks/useToggle/useToggle';
-import { ReactZoomPanPinchContentRef } from 'react-zoom-pan-pinch';
+import { TransformWrapper } from 'react-zoom-pan-pinch';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
+import { DOWNLOAD_ONLY_MIME_TYPES } from '@/common/constants';
+import { useStorageFileByIdQuery } from '@/domains/storage/hooks/queries/useStorageFileByIdQuery/useStorageFileByIdQuery';
 
 export const useDocuments = (documents: IDocumentsProps['documents']) => {
   const initialImage = documents?.[0];
@@ -66,10 +68,11 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
   const [selectedImage, setSelectedImage] = useState<{
     imageUrl: string;
     fileType: string;
+    fileName: string;
     id: string;
   }>();
   const onSelectImage = useCallback(
-    (next: { imageUrl: string; fileType: string }) => () => {
+    (next: { imageUrl: string; fileType: string; fileName: string }) => () => {
       setSelectedImage(next);
     },
     [],
@@ -82,8 +85,8 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
   const isRotatedOrTransformed = documentRotation !== 0 || isTransformed;
   const onTransformed = useCallback(
     (
-      ref: ReactZoomPanPinchContentRef,
-      state: ReactZoomPanPinchContentRef['instance']['transformState'],
+      ref: Parameters<ComponentProps<typeof TransformWrapper>['onTransformed']>[0],
+      state: Parameters<ComponentProps<typeof TransformWrapper>['onTransformed']>[1],
     ) => {
       setIsTransformed(state?.scale !== 1 || state?.positionX !== 0 || state?.positionY !== 0);
     },
@@ -95,6 +98,11 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     const url = `${baseUrl}/document/${documentId}?filterId=${filterId}`;
 
     window.open(url, '_blank');
+  }, []);
+  const shouldDownload = DOWNLOAD_ONLY_MIME_TYPES.includes(selectedImage?.fileType);
+  const { data: fileToDownloadBase64 } = useStorageFileByIdQuery(selectedImage?.id, {
+    isEnabled: shouldDownload,
+    withSignedUrl: false,
   });
 
   return {
@@ -114,5 +122,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     onOpenDocumentInNewTab,
     isRotatedOrTransformed,
     onTransformed,
+    shouldDownload,
+    fileToDownloadBase64,
   };
 };

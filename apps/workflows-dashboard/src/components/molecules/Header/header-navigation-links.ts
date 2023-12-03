@@ -1,4 +1,4 @@
-import { NavigationLink } from '@app/components/molecules/Navigation';
+import { NavigationLink } from '@/components/molecules/Navigation';
 
 export const headerNavigationLinks: NavigationLink[] = [
   {

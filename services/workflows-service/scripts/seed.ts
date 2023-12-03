@@ -20,7 +20,7 @@ import { env } from '../src/env';
 import { generateKybKycWorkflowDefinition } from './workflows/kyb-kyc-workflow-definition';
 import { generateBaseTaskLevelStates } from './workflows/generate-base-task-level-states';
 import { generateBaseCaseLevelStates } from './workflows/generate-base-case-level-states';
-import { InputJsonValue } from '../src/types';
+import type { InputJsonValue } from '../src/types';
 import { generateDynamicUiWorkflow } from './workflows/dynamic-ui-workflow';
 import { generateWebsiteMonitoringExample } from './workflows/website-monitoring-workflow';
 
@@ -44,11 +44,11 @@ const persistImageFile = async (client: PrismaClient, uri: string, projectId: st
 
 function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number, pdf = false) {
   if (pdf) {
-    return `https://backoffice-demo.ballerine.app/images/mock-documents/set_1_doc_pdf.pdf`;
+    return `https://www.africau.edu/images/default/sample.pdf`;
   }
 
   if (countOfBusiness < 4) {
-    return `https://backoffice-demo.ballerine.app/images/mock-documents/${imageTemplate}`;
+    return faker.image.business(1000, 2000, true);
   }
 
   return faker.image.people(1000, 2000, true);
@@ -93,6 +93,7 @@ async function createProject(client: PrismaClient, customer: Customer, id: strin
 }
 
 const DEFAULT_INITIAL_STATE = CommonWorkflowStates.MANUAL_REVIEW;
+
 async function seed(bcryptSalt: string | number) {
   console.info('Seeding database...');
   const client = new PrismaClient();
@@ -774,7 +775,7 @@ async function seed(bcryptSalt: string | number) {
         },
       },
       where: {
-        workflowDefinitionId: 'dynamic_external_request_example',
+        workflowDefinitionId: { in: ['dynamic_external_request_example'] },
         businessId: { not: null },
       },
     },
@@ -830,7 +831,7 @@ async function seed(bcryptSalt: string | number) {
         },
       },
       where: {
-        workflowDefinitionId: kycManualMachineId,
+        workflowDefinitionId: { in: [kycManualMachineId] },
         endUserId: { not: null },
       },
     },
@@ -934,7 +935,7 @@ async function seed(bcryptSalt: string | number) {
         },
       },
       where: {
-        workflowDefinitionId: riskScoreMachineKybId,
+        workflowDefinitionId: { in: [riskScoreMachineKybId] },
         endUserId: { not: null },
       },
     },
@@ -996,7 +997,7 @@ async function seed(bcryptSalt: string | number) {
         },
       },
       where: {
-        workflowDefinitionId: riskScoreMachineKybId,
+        workflowDefinitionId: { in: [riskScoreMachineKybId] },
         businessId: { not: null },
       },
     },

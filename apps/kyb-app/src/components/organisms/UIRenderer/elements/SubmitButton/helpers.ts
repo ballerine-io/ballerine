@@ -1,22 +1,42 @@
-import { UIElement, UIPage } from '@app/domains/collection-flow';
+import { ARRAY_VALUE_INDEX_PLACEHOLDER } from '@/common/consts/consts';
+import { UIElement, UIPage } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 
-export const getElementNames = (page: UIPage) => {
-  const elementNames: string[] = [];
+export const getElementByValueDestination = (
+  destination: string,
+  page: UIPage,
+): UIElement<AnyObject> | null => {
+  const arrayIndexRegex = /[(\d)]/g;
+  const isIndexValue = destination.match(arrayIndexRegex);
 
-  const pickNames = (elements: UIElement<AnyObject>[]) => {
-    elements.forEach(element => {
-      if (element.name) {
-        elementNames.push(element.name);
-      }
+  const findByElementDefinitionByDestination = (
+    targetDestination: string,
+    elements: UIElement<AnyObject>[],
+  ): UIElement<AnyObject> | null => {
+    for (const element of elements) {
+      if (element.valueDestination === targetDestination) return element;
 
       if (element.elements) {
-        pickNames(element.elements);
+        const foundElement = findByElementDefinitionByDestination(
+          targetDestination,
+          element.elements,
+        );
+        if (foundElement) return foundElement;
       }
-    });
+    }
+
+    return null;
   };
 
-  pickNames(page.elements);
+  if (isIndexValue) {
+    const originArrayDestinationPath = destination.replace(
+      /\[(\d+)\]/,
+      `[${ARRAY_VALUE_INDEX_PLACEHOLDER}]`,
+    );
 
-  return elementNames;
+    const element = findByElementDefinitionByDestination(originArrayDestinationPath, page.elements);
+    return element;
+  }
+
+  return findByElementDefinitionByDestination(destination, page.elements);
 };

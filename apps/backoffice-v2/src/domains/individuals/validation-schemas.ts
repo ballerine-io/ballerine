@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ObjectWithIdSchema } from '../../lib/zod/utils/object-with-id/object-with-id';
-import { CaseStatuses, State, States } from '../../common/enums';
+import { State, States } from '../../common/enums';
 
 export const IndividualByIdSchema = ObjectWithIdSchema.extend({
   avatarUrl: z.string().nullable().default(''),

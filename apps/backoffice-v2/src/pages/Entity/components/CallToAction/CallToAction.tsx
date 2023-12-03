@@ -1,27 +1,28 @@
-import { AnimatePresence } from 'framer-motion';
-import React, { ComponentProps, FunctionComponent } from 'react';
 import { DialogClose } from '@radix-ui/react-dialog';
+import { AnimatePresence } from 'framer-motion';
+import { ComponentProps, FunctionComponent } from 'react';
 
-import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
-import { ctw } from '../../../../common/utils/ctw/ctw';
-import { DialogContent } from '../../../../common/components/organisms/Dialog/Dialog.Content';
+import { Send, X } from 'lucide-react';
+import { Button } from '../../../../common/components/atoms/Button/Button';
+import { Input } from '../../../../common/components/atoms/Input/Input';
 import { Select } from '../../../../common/components/atoms/Select/Select';
-import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
-import { ICallToActionProps } from './interfaces';
-import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
 import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
+import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
 import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
-import { Input } from '../../../../common/components/atoms/Input/Input';
-import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
-import { useCallToActionLogic } from './hooks/useCallToActionLogic/useCallToActionLogic';
 import { MotionButton } from '../../../../common/components/molecules/MotionButton/MotionButton';
-import { Button } from '../../../../common/components/atoms/Button/Button';
+import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
+import { DialogContent } from '../../../../common/components/organisms/Dialog/Dialog.Content';
+import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
+import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
 import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
 import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
-import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
+import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
 import { capitalize } from '../../../../common/utils/capitalize/capitalize';
-import { Send } from 'lucide-react';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { DocumentPicker } from './components/DocumentPicker';
+import { useCallToActionLogic } from './hooks/useCallToActionLogic/useCallToActionLogic';
+import { ICallToActionProps } from './interfaces';
 
 const motionProps: ComponentProps<typeof MotionButton> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -30,7 +31,19 @@ const motionProps: ComponentProps<typeof MotionButton> = {
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
 };
 
-export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, data }) => {
+export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value }) => {
+  const {
+    documentSelection,
+    contextUpdateMethod,
+    revisionReasons,
+    rejectionReasons,
+    onReuploadReset,
+    onDialogClose,
+    id,
+    decision,
+    disabled,
+  } = value?.props || {};
+
   const {
     onMutateTaskDecisionById,
     isLoadingTaskDecisionById,
@@ -45,11 +58,21 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
     onCommentChange,
     noReasons,
     workflowLevelResolution,
-  } = useCallToActionLogic();
+    isReuploadResetable,
+    documentPickerProps,
+    handleDialogClose,
+  } = useCallToActionLogic({
+    contextUpdateMethod,
+    revisionReasons,
+    rejectionReasons,
+    documentSelection,
+    onDialogClose,
+    onReuploadReset,
+  });
 
-  if (value === 'Reject') {
+  if (value?.text === 'Reject') {
     return (
-      <Dialog>
+      <Dialog onOpenChange={handleDialogClose}>
         <AnimatePresence>
           <DialogTrigger asChild>
             <MotionButton
@@ -57,11 +80,9 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
               size="wide"
               variant="destructive"
               className={ctw({ loading: isLoadingTaskDecisionById })}
-              disabled={
-                isLoadingTaskDecisionById || data?.disabled || !caseState.actionButtonsEnabled
-              }
+              disabled={isLoadingTaskDecisionById || disabled || !caseState.actionButtonsEnabled}
             >
-              {value}
+              {value.text}
             </MotionButton>
           </DialogTrigger>
         </AnimatePresence>
@@ -140,7 +161,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
                   loading: isLoadingTaskDecisionById,
                 })}
                 onClick={onMutateTaskDecisionById({
-                  id: data?.id,
+                  id,
                   decision: action,
                   reason: comment ? `${reason} - ${comment}` : reason,
                 })}
@@ -154,18 +175,28 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
     );
   }
 
-  if (value === 'Re-upload needed') {
+  if (value?.text === 'Re-upload needed') {
     return (
-      <Dialog>
+      <Dialog onOpenChange={handleDialogClose}>
         <AnimatePresence>
           <DialogTrigger asChild>
             <MotionButton
               {...motionProps}
               size="wide"
               variant="warning"
-              disabled={!caseState.actionButtonsEnabled || data?.disabled}
+              disabled={!caseState.actionButtonsEnabled || disabled}
+              className={ctw({ 'flex gap-2': isReuploadResetable })}
             >
-              {value}
+              {value.text}
+              {isReuploadResetable && (
+                <X
+                  className="h-4 w-4 cursor-pointer"
+                  onClick={event => {
+                    event.stopPropagation();
+                    onReuploadReset && onReuploadReset();
+                  }}
+                />
+              )}
             </MotionButton>
           </DialogTrigger>
         </AnimatePresence>
@@ -194,6 +225,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
               </p>
             </DialogDescription>
           </DialogHeader>
+          {documentSelection && <DocumentPicker {...documentPickerProps} value={id} />}
           {!noReasons && (
             <div>
               <label className={`mb-2 block font-bold`} htmlFor={`reason`}>
@@ -243,7 +275,7 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
                   loading: isLoadingTaskDecisionById,
                 })}
                 onClick={onMutateTaskDecisionById({
-                  id: data?.id,
+                  id,
                   decision: action,
                   reason: comment ? `${reason} - ${comment}` : reason,
                 })}
@@ -270,13 +302,13 @@ export const CallToAction: FunctionComponent<ICallToActionProps> = ({ value, dat
         size="wide"
         variant="success"
         className={ctw({ loading: isLoadingTaskDecisionById })}
-        disabled={isLoadingTaskDecisionById || data?.disabled || !caseState.actionButtonsEnabled}
+        disabled={isLoadingTaskDecisionById || disabled || !caseState.actionButtonsEnabled}
         onClick={onMutateTaskDecisionById({
-          id: data?.id,
-          decision: data?.decision,
+          id,
+          decision,
         })}
       >
-        {value}
+        {value?.text}
       </MotionButton>
     </AnimatePresence>
   );

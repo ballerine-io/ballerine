@@ -1,5 +1,5 @@
-import { Input } from '@components/atoms';
-import { RJSFInputAdapter } from '@components/organisms/DynamicForm/components/RSJVInputAdaters/types';
+import { Input } from '@/components/atoms';
+import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { useCallback, useEffect, useRef } from 'react';
 
 export const FileInputAdapter: RJSFInputAdapter<File> = ({
@@ -16,7 +16,7 @@ export const FileInputAdapter: RJSFInputAdapter<File> = ({
   useEffect(() => {
     if (!inputRef.current) return;
 
-    if (!inputRef.current.files.length) {
+    if (!inputRef.current.files?.length) {
       const files = new DataTransfer();
 
       if (!(formData instanceof File)) return;
@@ -28,7 +28,7 @@ export const FileInputAdapter: RJSFInputAdapter<File> = ({
 
   const handleChange = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files[0];
+      const file = event.target.files?.[0];
       if (!file) return;
 
       onChange(file);
@@ -37,6 +37,7 @@ export const FileInputAdapter: RJSFInputAdapter<File> = ({
   );
 
   const handleBlur = useCallback(() => {
+    // @ts-ignore
     onBlur && onBlur(id, formData);
   }, [id, onBlur, formData]);
 
@@ -47,10 +48,10 @@ export const FileInputAdapter: RJSFInputAdapter<File> = ({
         type="file"
         id={id}
         name={name}
-        placeholder={uiSchema['ui:placeholder']}
+        placeholder={uiSchema?.['ui:placeholder']}
         //@ts-ignore
         onChange={handleChange}
-        accept="image/jpeg, image/png, application/pdf, .docx"
+        accept="image/jpeg, image/png, application/pdf, .docx, .csv, .xlsx, .xls"
         className="line-1 flex items-center"
         disabled={disabled}
         onBlur={handleBlur}

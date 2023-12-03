@@ -1,5 +1,5 @@
-import { Chip } from '@components/molecules/inputs/MultiSelect/components/Chip';
-import { MultiSelect, MultiSelectSelectedItemRenderer } from './MultiSelect';
+import { Chip } from '@/components/molecules/inputs/MultiSelect/components/Chip';
+import { MultiSelect, MultiSelectSelectedItemRenderer, MultiSelectValue } from './MultiSelect';
 import { useCallback, useState } from 'react';
 import { X } from 'lucide-react';
 
@@ -12,7 +12,7 @@ const options = new Array(20)
   .map((_, index) => ({ value: `item-${index}`, title: `Item-${index}` }));
 
 const DefaultComponent = () => {
-  const [value, setValue] = useState([]);
+  const [value, setValue] = useState<Array<MultiSelectValue>>([]);
 
   const renderSelected: MultiSelectSelectedItemRenderer = useCallback((params, option) => {
     return (
@@ -38,4 +38,34 @@ const DefaultComponent = () => {
 
 export const Default = {
   render: DefaultComponent,
+};
+
+const DisabledComponent = () => {
+  const [value, setValue] = useState<Array<MultiSelectValue>>([]);
+
+  const renderSelected: MultiSelectSelectedItemRenderer = useCallback((params, option) => {
+    return (
+      <Chip key={option.value} className="h-6">
+        <Chip.Label text={option.title} variant="secondary" />
+        <Chip.UnselectButton
+          {...params.unselectButtonProps}
+          icon={<X className="hover:text-muted-foreground h-3 w-3 text-white" />}
+        />
+      </Chip>
+    );
+  }, []);
+
+  return (
+    <MultiSelect
+      value={value}
+      options={options}
+      disabled
+      onChange={setValue}
+      renderSelected={renderSelected}
+    />
+  );
+};
+
+export const Disabled = {
+  render: DisabledComponent,
 };

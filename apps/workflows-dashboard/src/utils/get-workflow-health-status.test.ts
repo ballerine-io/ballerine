@@ -1,6 +1,6 @@
-import * as dayjs from 'dayjs';
-import { IWorkflow } from '@app/domains/workflows/api/workflow';
-import { getWorkflowHealthStatus, HealthStatus } from '@app/utils/get-workflow-health-status';
+import dayjs from 'dayjs';
+import { IWorkflow } from '@/domains/workflows/api/workflow';
+import { getWorkflowHealthStatus, HealthStatus } from '@/utils/get-workflow-health-status';
 
 describe('getWorkflowHealthStatus', () => {
   describe('healthy status', () => {

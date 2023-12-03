@@ -1,18 +1,21 @@
+import '@ballerine/ui/dist/style.css';
+import * as Sentry from '@sentry/react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from './App';
 import './index.css';
 import '@ballerine/ui/dist/style.css';
 import settingsJson from '../settings.json';
-import { SettingsProvider } from '@app/common/providers/SettingsProvider/SettingsProvider';
-import { ThemeProvider } from '@app/common/providers/ThemeProvider/ThemeProvider';
+import { SettingsProvider } from '@/common/providers/SettingsProvider/SettingsProvider';
+import { ThemeProvider } from '@/common/providers/ThemeProvider/ThemeProvider';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClient } from '@app/common/utils/query-client';
+import { queryClient } from '@/common/utils/query-client';
 import { Head } from './Head';
-import * as Sentry from '@sentry/react';
 import { sentyRouterInstrumentation } from './router';
+import './i18n';
 
 Sentry.init({
+  // @ts-ignore
   dsn: import.meta.env.VITE_SENTRY_DSN,
   environment: import.meta.env.VITE_ENVIRONMENT_NAME || 'development',
   enabled: !!import.meta.env.VITE_SENTRY_DSN,
