@@ -43,22 +43,8 @@ services:
         dumb-init npm run prod
     ports:
       - ${WORKFLOW_SVC_PORT}:${WORKFLOW_SVC_PORT}
-    environment:
-      BCRYPT_SALT: ${BCRYPT_SALT}
-      DB_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:${DB_PORT}
-      API_KEY: ${API_KEY}
-      NODE_ENV: ${NODE_ENV}
-      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
-      DB_PORT: ${DB_PORT}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      SESSION_SECRET: ${SESSION_SECRET}
-      SESSION_EXPIRATION_IN_MINUTES: ${SESSION_EXPIRATION_IN_MINUTES}
-      BACKOFFICE_CORS_ORIGIN: http://localhost:${BACKOFFICE_PORT}
-      WORKFLOW_DASHBOARD_CORS_ORIGIN: http://localhost:${WORKFLOW_DASHBOARD_PORT}
-      PORT: ${WORKFLOW_SVC_PORT}
-      ENVIRONMENT_NAME: ${ENVIRONMENT_NAME}
-      KYB_EXAMPLE_CORS_ORIGIN: http://localhost:${KYB_APP_PORT}
+    env_file: 
+      - .env
     depends_on:
       ballerine-postgres:
         condition: service_healthy
@@ -86,18 +72,24 @@ services:
   ballerine-postgres:
     image: sibedge/postgres-plv8:15.3-3.1.7
     ports:
-      - ${DB_PORT}:${DB_PORT}
+      - ${DB_PORT:-5432}:${DB_PORT-5432}
+    env_file:
+      - .env
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: "${DB_USER:-admin}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:-admin}"
+      POSTGRES_DB: "${DB_NAME:-db}"
     volumes:
       - postgres15:/var/lib/postgresql/data
     healthcheck:
       test:
         - CMD
         - pg_isready
+        - -q
+        - -d
+        - ${DB_NAME:-db}
         - -U
-        - admin
+        - ${DB_USER:-admin}
       timeout: 45s
       interval: 10s
       retries: 10
