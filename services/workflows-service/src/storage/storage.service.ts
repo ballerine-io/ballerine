@@ -11,13 +11,14 @@ export class StorageService {
   async createFileLink({
     uri,
     fileNameOnDisk,
+    fileName,
     userId,
     fileNameInBucket,
     projectId,
     mimeType,
   }: Pick<
     Prisma.FileCreateInput,
-    'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket' | 'mimeType'
+    'uri' | 'fileNameOnDisk' | 'userId' | 'fileNameInBucket' | 'mimeType' | 'fileName'
   > & {
     projectId: TProjectId;
   }) {
@@ -25,6 +26,7 @@ export class StorageService {
       data: {
         uri,
         fileNameOnDisk,
+        fileName,
         userId,
         fileNameInBucket,
         mimeType,

@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/ui",
   "private": false,
-  "version": "0.3.15",
+  "version": "0.3.17",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -42,7 +42,7 @@
     "@rjsf/utils": "^5.9.0",
     "@rjsf/validator-ajv8": "^5.9.0",
     "@tanstack/react-table": "^8.9.2",
-    "class-variance-authority": "^0.6.0",
+    "class-variance-authority": "^0.6.1",
     "clsx": "^1.2.1",
     "cmdk": "^0.2.0",
     "dayjs": "^1.11.6",
@@ -56,7 +56,7 @@
   },
   "devDependencies": {
     "@ballerine/config": "^1.0.1",
-    "@ballerine/eslint-config-react": "^1.0.0",
+    "@ballerine/eslint-config-react": "^1.0.2",
     "@cspell/cspell-types": "^6.31.1",
     "@storybook/addon-essentials": "^7.0.26",
     "@storybook/addon-interactions": "^7.0.26",

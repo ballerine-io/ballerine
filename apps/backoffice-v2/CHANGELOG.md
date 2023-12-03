@@ -1,9 +1,61 @@
 # @ballerine/backoffice-v2
 
+## 0.5.31
+
+### Patch Changes
+
+- Updated dependencies [340d9d4e]
+- Updated dependencies [ea423a22]
+- Updated dependencies
+  - @ballerine/common@0.7.29
+  - @ballerine/ui@0.3.17
+  - @ballerine/workflow-browser-sdk@0.5.28
+  - @ballerine/workflow-node-sdk@0.5.28
+
+## 0.5.30
+
+### Patch Changes
+
+- Updated dependencies [ea423a22]
+  - @ballerine/common@0.7.28
+  - @ballerine/workflow-browser-sdk@0.5.27
+  - @ballerine/workflow-node-sdk@0.5.27
+
+## 0.5.29
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies [59afd0b4]
+  - @ballerine/common@0.7.27
+  - @ballerine/workflow-browser-sdk@0.5.26
+  - @ballerine/workflow-node-sdk@0.5.26
+
+## 0.5.28
+
+### Patch Changes
+
+- Updated dependencies [bfded451]
+- Updated dependencies
+  - @ballerine/common@0.7.26
+  - @ballerine/workflow-browser-sdk@0.5.25
+  - @ballerine/workflow-node-sdk@0.5.25
+
+## 0.5.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.25
+  - @ballerine/workflow-browser-sdk@0.5.24
+  - @ballerine/workflow-node-sdk@0.5.24
+
 ## 0.5.26
 
 ### Patch Changes
 
+- Updated dependencies
+  - @ballerine/ui@0.3.16
 - Updated dependencies [d5cca1e8]
 - Updated dependencies [f4b5c0df]
   - @ballerine/workflow-browser-sdk@0.5.23
@@ -15,6 +67,7 @@
 ### Patch Changes
 
 - Updated dependencies [8c888cec]
+- Updated dependencies
   - @ballerine/workflow-browser-sdk@0.5.22
   - @ballerine/workflow-node-sdk@0.5.22
   - @ballerine/common@0.7.23
@@ -25,6 +78,7 @@
 ### Patch Changes
 
 - Updated dependencies
+  - @ballerine/common@0.7.22
   - @ballerine/workflow-browser-sdk@0.5.21
   - @ballerine/workflow-node-sdk@0.5.21
 

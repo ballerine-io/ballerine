@@ -1,31 +1,31 @@
+import { isNullish, isObject } from '@ballerine/common';
+import { JsonDialog } from '@ballerine/ui';
+import { FileJson2 } from 'lucide-react';
+import { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Form } from '../../../../common/components/organisms/Form/Form';
-import { ctw } from '../../../../common/utils/ctw/ctw';
-import { Input } from '../../../../common/components/atoms/Input/Input';
+import { toTitleCase } from 'string-ts';
 import { Button, buttonVariants } from '../../../../common/components/atoms/Button/Button';
-import React, { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { AnyRecord } from '../../../../common/types';
-import { IEditableDetails } from './interfaces';
+import { Input } from '../../../../common/components/atoms/Input/Input';
+import { Select } from '../../../../common/components/atoms/Select/Select';
+import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
+import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
+import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
+import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
+import { Form } from '../../../../common/components/organisms/Form/Form';
+import { FormControl } from '../../../../common/components/organisms/Form/Form.Control';
 import { FormField } from '../../../../common/components/organisms/Form/Form.Field';
 import { FormItem } from '../../../../common/components/organisms/Form/Form.Item';
 import { FormLabel } from '../../../../common/components/organisms/Form/Form.Label';
-import { FormControl } from '../../../../common/components/organisms/Form/Form.Control';
 import { FormMessage } from '../../../../common/components/organisms/Form/Form.Message';
-import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
-import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
-import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
-import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
-import { Select } from '../../../../common/components/atoms/Select/Select';
-import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
-import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
-import { isNullish, isObject } from '@ballerine/common';
-import { isValidUrl } from '../../../../common/utils/is-valid-url';
-import { FileJson2 } from 'lucide-react';
-import { useUpdateDocumentByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateDocumentByIdMutation/useUpdateDocumentByIdMutation';
+import { AnyRecord } from '../../../../common/types';
+import { ctw } from '../../../../common/utils/ctw/ctw';
 import { isValidDate } from '../../../../common/utils/is-valid-date';
 import { isValidIsoDate } from '../../../../common/utils/is-valid-iso-date/is-valid-iso-date';
-import { JsonDialog } from '@ballerine/ui';
-import { toTitleCase } from 'string-ts';
+import { isValidUrl } from '../../../../common/utils/is-valid-url';
+import { keyFactory } from '../../../../common/utils/key-factory/key-factory';
+import { useUpdateDocumentByIdMutation } from '../../../../domains/workflows/hooks/mutations/useUpdateDocumentByIdMutation/useUpdateDocumentByIdMutation';
+import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
+import { IEditableDetails } from './interfaces';
 import { isValidDatetime } from '../../../../common/utils/is-valid-datetime';
 
 const useInitialCategorySetValue = ({ form, data }) => {
@@ -43,6 +43,8 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   documents,
   title,
   workflowId,
+  contextUpdateMethod = 'base',
+  onSubmit: onSubmitCallback,
 }) => {
   const [formData, setFormData] = useState(data);
   const POSITIVE_VALUE_INDICATOR = ['approved'];
@@ -76,13 +78,16 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
   const onMutateTaskDecisionById = ({
     document,
     action,
+    contextUpdateMethod,
   }: {
     document: AnyRecord;
     action: Parameters<typeof mutateUpdateWorkflowById>[0]['action'];
+    contextUpdateMethod: 'base' | 'director';
   }) =>
     mutateUpdateWorkflowById({
       document,
       action,
+      contextUpdateMethod,
     });
   const onSubmit: SubmitHandler<Record<PropertyKey, unknown>> = formData => {
     const document = documents?.find(document => document?.id === valueId);
@@ -114,9 +119,12 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       properties: properties,
     };
 
+    onSubmitCallback && onSubmitCallback(newDocument);
+
     return onMutateTaskDecisionById({
       document: newDocument,
       action: 'update_document_properties',
+      contextUpdateMethod,
     });
   };
   const isDecisionComponent = title === 'Decision';

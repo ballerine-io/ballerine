@@ -1,3 +1,5 @@
+import '@ballerine/ui/dist/style.css';
+import * as Sentry from '@sentry/react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from './App';
@@ -9,7 +11,6 @@ import { ThemeProvider } from '@/common/providers/ThemeProvider/ThemeProvider';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/common/utils/query-client';
 import { Head } from './Head';
-import * as Sentry from '@sentry/react';
 import { sentyRouterInstrumentation } from './router';
 import './i18n';
 

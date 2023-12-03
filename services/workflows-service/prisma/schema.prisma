@@ -149,6 +149,7 @@ model WorkflowDefinition {
   definitionType     String
   definition         Json
   contextSchema      Json?
+  documentsSchema    Json?
   config             Json?
   supportedPlatforms Json?
   extensions         Json?
@@ -222,6 +223,7 @@ model File {
   mimeType         String?
   userId           String
   fileNameOnDisk   String
+  fileName         String?
   uri              String
   fileNameInBucket String?
   createdAt        DateTime @default(now())

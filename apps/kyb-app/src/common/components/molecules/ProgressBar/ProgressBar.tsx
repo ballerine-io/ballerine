@@ -2,7 +2,7 @@ import styles from './ProgressBar.module.css';
 import { Chip } from '@/common/components/atoms/Chip';
 import { LoadingSpinner } from '@/common/components/atoms/LoadingSpinner';
 import { Check } from 'lucide-react';
-import clsx from 'clsx';
+import { ctw } from '@ballerine/ui';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 
 interface Props {
@@ -20,7 +20,7 @@ export const ProgressBar = ({ className }: Props) => {
           <LoadingSpinner size="14" />
         ) : (
           <div
-            className={clsx(
+            className={ctw(
               'flex h-3 w-3 items-center justify-center rounded-full bg-[#00BD59]',
               styles.bounceAnimation,
             )}
