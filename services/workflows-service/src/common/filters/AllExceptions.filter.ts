@@ -24,7 +24,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   private _handleHttpErrorResponse(exception: unknown, request: Request, response: Response) {
     const serverError = this.getHttpException(exception);
 
-    if (this._logErrorIfRelevant(serverError)) {
+    if (this._logErrorIfRelevant(serverError.getStatus())) {
       this.logError(request, serverError);
     }
 
@@ -61,9 +61,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     );
   }
 
-  private _logErrorIfRelevant(error: HttpException) {
-    const status = error.getStatus();
-
+  private _logErrorIfRelevant(status: number) {
     // Dont log 401/403 errors or log every error if debug
     return (status >= 400 && ![401, 403].includes(status)) || env.LOG_LEVEL === 'debug';
   }
@@ -83,9 +81,6 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     });
   }
 
-  private _isObject(obj: unknown): obj is object {
-    return obj !== null && typeof obj === 'object';
-  }
   private composeLogMesesageForStatus(status: number) {
     let message = `Outgoing response - Failure`;
 

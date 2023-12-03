@@ -50,7 +50,9 @@ export const useUpdateWorkflowByIdMutation = ({ workflowId }: { workflowId: stri
     },
     onError: (error: Error, { action }, context) => {
       const translatedError = t(`toast:${action}.error`, { errorMessage: error.message });
+
       toast.error(translatedError);
+
       queryClient.setQueryData(workflowById.queryKey, context.previousWorkflow);
     },
     onSettled: () => {

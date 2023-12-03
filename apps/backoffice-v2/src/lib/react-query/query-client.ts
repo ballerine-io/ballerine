@@ -65,7 +65,7 @@ export const queryClient = new QueryClient({
         // Dont toast for no important errors
         if (
           statusCode === undefined ||
-          (statusCode >= 500 && statusCode !== 401 && statusCode !== 404)
+          (statusCode >= 400 && ![401, 403, 404].includes(statusCode))
         ) {
           toast.error(error.message, {
             id: error.message,

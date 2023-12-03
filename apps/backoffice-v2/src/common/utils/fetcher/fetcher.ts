@@ -15,13 +15,21 @@ export const fetcher: IFetcher = async ({
   timeout = 10000,
   schema,
   isBlob = false,
+}: {
+  url: string;
+  method: string;
+  body: BodyInit | null;
+  headers: HeadersInit;
+  timeout: number;
+  options: Partial<RequestInit>;
+  isBlob: boolean;
 }) => {
   const controller = new AbortController();
   const { signal } = controller;
   const timeoutRef = setTimeout(() => {
     controller.abort(`Request timed out after ${timeout}ms`);
   }, timeout);
-  const [res, fetchError] = await handlePromise(
+  const [res, fetchError] = await handlePromise<Response>(
     fetch(url, {
       ...options,
       method,
@@ -39,15 +47,18 @@ export const fetcher: IFetcher = async ({
   }
 
   if (!res.ok) {
-    let message = `${res.statusText} (${res.status})`;
+    let message = `${res.statusText} (${res.status}) - ${url}`;
 
     if (res.status === 400) {
       const json = await res.json();
 
-      message = Array.isArray(json?.message)
-        ? json?.message?.map(({ message }) => `${message}\n`)?.join('')
-        : message;
+      if (Array.isArray(json?.message)) {
+        message = [message, json?.message?.map(({ message }) => `${message}\n`)?.join('')]
+          .filter(x => x)
+          .join(' - ');
+      }
     }
+    console.error(message);
 
     throw new HttpError(res.status, message);
   }
@@ -68,6 +79,7 @@ export const fetcher: IFetcher = async ({
 
     return [undefined, undefined];
   };
+
   const [data, jsonError] = await parseResponse();
 
   if (jsonError) {
