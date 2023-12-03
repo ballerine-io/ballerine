@@ -12,7 +12,6 @@ import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
-import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -20,7 +19,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { createCustomer } from '@/test/helpers/create-customer';
-import { PrismaClient, Project } from '@prisma/client';
+import { PrismaClient, Project, User } from '@prisma/client';
 import { createProject } from '@/test/helpers/create-project';
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
@@ -30,15 +29,19 @@ import { PasswordService } from '@/auth/password/password.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { WorkflowControllerInternal } from '@/workflow/workflow.controller.internal';
+import { Request } from 'express';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 
 describe('/api/v1/internal/workflows #api #integration', () => {
   let app: INestApplication;
   let workflowService: WorkflowService;
   let project: Project;
+  let assignee: User;
   const db = new PrismaClient();
 
   beforeAll(cleanupDatabase);
   afterEach(tearDownDatabase);
+  const TEST_USER_ID = 'test-user1321321';
 
   beforeAll(async () => {
     await cleanupDatabase();
@@ -72,6 +75,15 @@ describe('/api/v1/internal/workflows #api #integration', () => {
     workflowService = (await fetchServiceFromModule(WorkflowService, servicesProviders, [
       PrismaModule,
     ])) as unknown as WorkflowService;
+    const userAuthOverrideMiddleware = (req: Request, res: any, next: any) => {
+      req.user = {
+        // @ts-ignore
+        user: assignee,
+        type: 'user',
+        projectIds: [project.id],
+      };
+      next();
+    };
     app = await initiateNestApp(
       app,
       [
@@ -83,6 +95,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       ],
       [WorkflowControllerInternal],
       [PrismaModule],
+      [userAuthOverrideMiddleware],
     );
 
     const customer = await createCustomer(
@@ -93,7 +106,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       '',
       'webhook-shared-secret',
     );
-    project = await createProject(await app.get(PrismaService), customer, '1');
+    project = await createProject(await app.get(PrismaService), customer, '4');
   });
 
   describe('PATCH /:id/decision/:documentId', () => {
@@ -105,6 +118,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
             name: 'test',
             definitionType: 'statechart-json',
             definition: {},
+            isPublic: true,
           },
         } satisfies Parameters<(typeof db)['workflowDefinition']['create']>[0];
         const createWorkflowPayload = {
@@ -136,6 +150,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
         } satisfies Parameters<(typeof db)['workflowRuntimeData']['create']>[0];
         const createUserPayload = {
           data: {
+            id: TEST_USER_ID,
             email: 'test@test.com',
             password: 'test',
             firstName: 'test',
@@ -151,7 +166,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
         const workflowDefinition = await db.workflowDefinition.create(
           createWorkflowDefinitionPayload,
         );
-        const assignee = await db.user.create(createUserPayload);
+        assignee = await db.user.create(createUserPayload);
         const workflow = await db.workflowRuntimeData.create({
           ...createWorkflowPayload,
           data: {
@@ -164,25 +179,13 @@ describe('/api/v1/internal/workflows #api #integration', () => {
           // @ts-ignore
           workflow.context.documents[0].id as string
         }`;
-        const AUTH_HEADER = ['authorization', 'Bearer secret'] as const;
         const requestPayload = {
           decision: 'approve',
         };
 
-        // Act
-        app.use((req, res, next) => {
-          req.user = {
-            // @ts-ignore
-            id: assignee.id,
-            type: 'user',
-            projectIds: [project.id],
-          };
-          next();
-        });
         const res = await request(app.getHttpServer())
           .patch(ENDPOINT)
           .send(requestPayload)
-          .set(...AUTH_HEADER)
           .expect(200);
         const { context: updatedContext } = await db.workflowRuntimeData.findUniqueOrThrow({
           where: {
@@ -200,7 +203,6 @@ describe('/api/v1/internal/workflows #api #integration', () => {
               decision: {
                 status: 'approved',
                 rejectionReason: null,
-                revisionRequest: null,
               },
             },
           ],

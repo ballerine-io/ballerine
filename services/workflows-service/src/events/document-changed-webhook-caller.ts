@@ -108,15 +108,11 @@ export class DocumentChangedWebhookCaller {
       });
     });
 
-    const customer = await this.customerService.getByProjectId(
-      // @ts-expect-error - error from Prisma types fix
-      data.updatedRuntimeData.projectId,
-      {
-        select: {
-          authenticationConfiguration: true,
-        },
+    const customer = await this.customerService.getByProjectId(data.updatedRuntimeData.projectId, {
+      select: {
+        authenticationConfiguration: true,
       },
-    );
+    });
 
     const { webhookSharedSecret } =
       customer.authenticationConfiguration as TAuthenticationConfiguration;

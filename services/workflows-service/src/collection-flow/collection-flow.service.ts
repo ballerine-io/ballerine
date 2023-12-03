@@ -12,7 +12,7 @@ import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
 import type { TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { DefaultContextSchema } from '@ballerine/common';
@@ -84,7 +84,6 @@ export class CollectionFlowService {
       {},
       projectIds,
     );
-    if (!definition) throw new NotFoundException();
 
     const providedStepsMap = keyBy(steps, 'key');
 
@@ -102,33 +101,30 @@ export class CollectionFlowService {
       return step;
     });
 
-    const updatedDefinition = await this.workflowDefinitionRepository.updateById(
-      configurationId,
-      {
-        data: {
-          definition: {
+    const updatedDefinition = await this.workflowDefinitionRepository.updateById(configurationId, {
+      data: {
+        definition: {
+          // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
+          ...definition?.definition,
+          states: {
             // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-            ...definition?.definition,
-            states: {
+            ...definition.definition?.states,
+            data_collection: {
               // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-              ...definition.definition?.states,
-              data_collection: {
-                // @ts-expect-error - revisit after JSONB validation task - error from Prisma types fix
-                ...definition.definition?.states?.data_collection,
-                metadata: {
-                  uiSettings: {
-                    multiForm: {
-                      steps: mergedSteps,
-                    },
+              ...definition.definition?.states?.data_collection,
+              metadata: {
+                uiSettings: {
+                  multiForm: {
+                    steps: mergedSteps,
                   },
                 },
               },
             },
           },
         },
+        projectId,
       },
-      projectId,
-    );
+    });
 
     return plainToClass(FlowConfigurationModel, {
       id: updatedDefinition.id,
@@ -161,19 +157,15 @@ export class CollectionFlowService {
     );
 
     if (payload.data.endUser) {
-      await this.endUserService.updateById(
-        tokenScope.endUserId,
-        { data: payload.data.endUser },
-        tokenScope.projectId,
-      );
+      await this.endUserService.updateById(tokenScope.endUserId, {
+        data: { ...payload.data.endUser, projectId: tokenScope.projectId },
+      });
     }
 
     if (payload.data.ballerineEntityId && payload.data.business) {
-      await this.businessService.updateById(
-        payload.data.ballerineEntityId,
-        { data: payload.data.business },
-        tokenScope.projectId,
-      );
+      await this.businessService.updateById(payload.data.ballerineEntityId, {
+        data: { ...payload.data.business, projectId: tokenScope.projectId },
+      });
     }
 
     const { state, ...resetContext } = payload.data.context as Record<string, any>;
@@ -192,19 +184,13 @@ export class CollectionFlowService {
 
   async syncWorkflow(payload: UpdateFlowDto, tokenScope: ITokenScope) {
     if (payload.data.endUser) {
-      await this.endUserService.updateById(
-        tokenScope.endUserId,
-        { data: payload.data.endUser },
-        tokenScope.projectId,
-      );
+      await this.endUserService.updateById(tokenScope.endUserId, { data: payload.data.endUser });
     }
 
     if (payload.data.ballerineEntityId && payload.data.business) {
-      await this.businessService.updateById(
-        payload.data.ballerineEntityId,
-        { data: payload.data.business },
-        tokenScope.projectId,
-      );
+      await this.businessService.updateById(payload.data.ballerineEntityId, {
+        data: payload.data.business,
+      });
     }
 
     return await this.workflowService.syncContextById(
@@ -245,7 +231,7 @@ export class CollectionFlowService {
     const entityId = runtimeDataId.businessId || runtimeDataId.endUserId;
 
     if (!entityId) {
-      throw new NotFoundException("Workflow does't exists");
+      throw new NotFoundException("Workflow doesn't exists");
     }
 
     // Remove file extension (get everything before the last dot)
@@ -254,7 +240,12 @@ export class CollectionFlowService {
     const alphabeticOnlyName = nameWithoutExtension.replace(/\W/g, '');
 
     const persistedFile = await this.fileService.copyToDestinationAndCreate(
-      { id: alphabeticOnlyName, uri: file.path, provider: 'file-system' },
+      {
+        id: alphabeticOnlyName,
+        uri: file.path,
+        provider: 'file-system',
+        fileName: file.originalname,
+      },
       entityId,
       projectId,
       customer.name,

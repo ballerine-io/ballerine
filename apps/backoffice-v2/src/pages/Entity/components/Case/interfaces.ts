@@ -43,6 +43,7 @@ export interface IDocumentsProps {
     id: string;
     imageUrl: string;
     fileType: string;
+    fileName: string;
     title: string;
   }>;
   isLoading?: boolean;

@@ -31,6 +31,7 @@ import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { EndUserService } from '@/end-user/end-user.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { Public } from '@/common/decorators/public.decorator';
+import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -43,6 +44,7 @@ export class WorkflowControllerExternal {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     private readonly endUserService: EndUserService,
     private readonly workflowTokenService: WorkflowTokenService,
+    private readonly workflowDefinitionService: WorkflowDefinitionService,
   ) {}
 
   // GET /workflows
@@ -170,9 +172,13 @@ export class WorkflowControllerExternal {
 
     const hasSalesforceRecord =
       Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
+    const latestDefinitionVersion = await this.workflowDefinitionService.getLatestVersion(
+      workflowId,
+      currentProjectId,
+    );
 
     const actionResult = await this.service.createOrUpdateWorkflowRuntime({
-      workflowDefinitionId: workflowId,
+      workflowDefinitionId: latestDefinitionVersion.id,
       context,
       config,
       projectIds,
@@ -190,7 +196,7 @@ export class WorkflowControllerExternal {
     });
   }
 
-  // POST /event
+  /// POST /event
   @common.Post('/:id/event')
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
@@ -276,9 +282,7 @@ export class WorkflowControllerExternal {
         data: hookResponse,
         resultDestinationPath: query.resultDestination || 'hookResponse',
         processName: query.processName,
-        // @ts-expect-error - error from Prisma types fix
         projectIds: [workflowRuntime.projectId],
-        // @ts-expect-error - error from Prisma types fix
         currentProjectId: workflowRuntime.projectId,
       });
 
@@ -287,7 +291,6 @@ export class WorkflowControllerExternal {
           id: params.id,
           name: params.event,
         },
-        // @ts-expect-error - error from Prisma types fix
         [workflowRuntime.projectId],
         workflowRuntime.projectId,
       );

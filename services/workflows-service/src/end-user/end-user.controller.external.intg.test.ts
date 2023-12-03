@@ -14,7 +14,7 @@ import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
-import { WorkflowDefinitionRepository } from '@/workflow/workflow-definition.repository';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -22,7 +22,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { createCustomer } from '@/test/helpers/create-customer';
-import { Project } from '@prisma/client';
+import { Customer, Project } from '@prisma/client';
 import { createProject } from '@/test/helpers/create-project';
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
@@ -37,6 +37,7 @@ describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
   let endUserService: EndUserService;
   let project: Project;
+  let customer: Customer;
   beforeAll(cleanupDatabase);
   afterEach(tearDownDatabase);
 
@@ -84,10 +85,10 @@ describe('#EndUserControllerExternal', () => {
       [PrismaModule, ClsModule],
     );
 
-    const customer = await createCustomer(
+    customer = await createCustomer(
       await app.get(PrismaService),
-      String(Date.now()),
-      'secret2',
+      'someRandomId',
+      'secret3',
       '',
       '',
       'webhook-shared-secret',
@@ -99,6 +100,7 @@ describe('#EndUserControllerExternal', () => {
     it('creates an end-user', async () => {
       expect(await endUserService.list({}, [project.id])).toHaveLength(0);
 
+      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const response = await request(app.getHttpServer())
         .post('/external/end-users')
         .send({
@@ -108,7 +110,11 @@ describe('#EndUserControllerExternal', () => {
           firstName: 'test',
           lastName: 'lastName',
         })
-        .set('authorization', 'Bearer secret2');
+        .set('authorization', `Bearer ${apiKey}`);
+
+      if (response.status !== 201) {
+        console.log(response.body);
+      }
 
       expect(response.status).toBe(201);
 
