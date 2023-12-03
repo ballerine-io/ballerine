@@ -147,8 +147,8 @@ const dispatchOpenCorporateRule = {
               type: 'object',
               properties: {
                 state: {
+                  default: '',
                   type: 'string',
-                  minLength: 1,
                 },
               },
             },
@@ -165,6 +165,11 @@ const dispatchOpenCorporateRule = {
             properties: {
               additionalInfo: {
                 required: ['state'],
+                properties: {
+                  state: {
+                    minLength: 1,
+                  },
+                },
               },
             },
           },
@@ -478,6 +483,15 @@ export const BusinessInfoPage = {
             value: validationSchema,
           },
         ],
+      },
+    },
+    {
+      type: 'definitionPlugin',
+      params: {
+        pluginName: 'state_value_removal',
+      },
+      dispatchOn: {
+        uiEvents: [{ event: 'onChange', uiElementName: 'country-picker-input' }],
       },
     },
   ],

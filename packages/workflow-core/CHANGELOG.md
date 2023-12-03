@@ -44,6 +44,7 @@
 
 ### Patch Changes
 
+- Added TransformerPlugin
 - d5cca1e8: added defintion validation
 - f4b5c0df: added defintion validation
 - Updated dependencies [d5cca1e8]

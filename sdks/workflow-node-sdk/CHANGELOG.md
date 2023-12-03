@@ -36,6 +36,7 @@
 
 ### Patch Changes
 
+- Updated dependencies
 - d5cca1e8: added defintion validation
 - Updated dependencies [d5cca1e8]
 - Updated dependencies [f4b5c0df]

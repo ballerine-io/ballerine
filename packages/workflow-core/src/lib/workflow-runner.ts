@@ -38,6 +38,7 @@ import { THelperFormatingLogic } from './utils/context-transformers/types';
 import {
   ChildWorkflowPluginParams,
   ISerializableCommonPluginParams,
+  IterativePluginParams,
 } from './plugins/common-plugin/types';
 import { TContext } from './utils';
 import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
@@ -46,6 +47,10 @@ import { search } from 'jmespath';
 import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
 import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 import { EmailPlugin } from './plugins/external-plugin/email-plugin';
+import {
+  TransformerPlugin,
+  TransformerPluginParams,
+} from './plugins/common-plugin/transformer-plugin';
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
@@ -179,23 +184,61 @@ export class WorkflowRunner {
   }
 
   initiateCommonPlugins(
-    pluginSchemas: Array<ISerializableCommonPluginParams>,
+    pluginSchemas: Array<
+      ISerializableCommonPluginParams & { pluginKind: 'iterative' | 'transformer' }
+    >,
     actionPlugins: ActionablePlugins,
   ) {
     return pluginSchemas.map(pluginSchema => {
-      const actionPlugin = actionPlugins.find(
-        actionPlugin => actionPlugin.name === pluginSchema.actionPluginName,
+      const Plugin = this.pickCommonPluginClass(pluginSchema.pluginKind);
+      const pluginParams = this.pickCommonPluginParams(
+        pluginSchema.pluginKind,
+        pluginSchema,
+        actionPlugins,
       );
+      //@ts-ignore
+      const plugin = new Plugin(pluginParams);
 
-      return new IterativePlugin({
-        name: pluginSchema.name,
-        stateNames: pluginSchema.stateNames,
-        iterateOn: this.fetchTransformers(pluginSchema.iterateOn),
-        action: (context: TContext) => actionPlugin!.invoke(context),
-        successAction: pluginSchema.successAction,
-        errorAction: pluginSchema.errorAction,
-      });
+      return plugin;
     });
+  }
+
+  private pickCommonPluginClass(pluginKind: 'iterative' | 'transformer') {
+    if (pluginKind === 'iterative') return IterativePlugin;
+    if (pluginKind === 'transformer') return TransformerPlugin;
+
+    console.log('Plugin kind is not supplied or not supported, falling back to Iterative plugin.');
+    return IterativePlugin;
+  }
+
+  private pickCommonPluginParams(
+    _: 'iterative' | 'transformer',
+    params: unknown,
+    actionPlugins: ActionablePlugins,
+  ): IterativePluginParams | TransformerPluginParams {
+    if (TransformerPlugin.isTransformerPluginParams(params)) {
+      return {
+        name: params.name,
+        transformers: params.transformers,
+        stateNames: params.stateNames,
+      };
+    }
+
+    const iterarivePluginParams = params as IterativePluginParams;
+    const actionPlugin = actionPlugins.find(
+      //@ts-ignore
+      actionPlugin => actionPlugin.name === params?.actionPluginName,
+    );
+
+    return {
+      name: iterarivePluginParams.name,
+      stateNames: iterarivePluginParams.stateNames,
+      //@ts-ignore
+      iterateOn: this.fetchTransformers(iterarivePluginParams.iterateOn),
+      action: (context: TContext) => actionPlugin!.invoke(context),
+      successAction: iterarivePluginParams.successAction,
+      errorAction: iterarivePluginParams.errorAction,
+    };
   }
 
   private pickApiPluginClass(apiPluginSchema: ISerializableHttpPluginParams) {
@@ -606,9 +649,14 @@ export class WorkflowRunner {
     if (pluginToInvoke && this.isHttpPlugin(pluginToInvoke)) {
       return await this.__invokeApiPlugin(pluginToInvoke);
     }
-    if (pluginToInvoke && pluginToInvoke instanceof IterativePlugin) {
+    if (pluginToInvoke && this.isCommonPlugin(pluginToInvoke)) {
+      //@ts-ignore
       return await this.__invokeCommonPlugin(pluginToInvoke);
     }
+  }
+
+  isCommonPlugin(pluginToInvoke: unknown) {
+    return pluginToInvoke instanceof IterativePlugin || pluginToInvoke instanceof TransformerPlugin;
   }
 
   isHttpPlugin(plugin: unknown): plugin is HttpPlugin {
