@@ -1454,21 +1454,24 @@ export class WorkflowService {
         workflowRuntimeData,
       });
 
+      const mainRepresentative =
+        workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative;
       if (
-        // @ts-ignore
         mergedConfig.createCollectionFlowToken &&
-        workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative &&
+        mainRepresentative &&
         entityType === 'business'
       ) {
         const endUser = await this.endUserService.createWithBusiness(
           {
-            firstName:
-              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.firstName,
-            lastName:
-              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.lastName,
-            email: workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.email,
-            companyName: workflowRuntimeData.context.entity.data.companyName,
-            isContactPerson: true,
+            endUser: {
+              ...mainRepresentative,
+              isContactPerson: true,
+            },
+            business: {
+              companyName: '',
+              ...workflowRuntimeData.context.entity.data,
+              projectId: currentProjectId,
+            },
           },
           currentProjectId,
           entityId,
@@ -1976,6 +1979,7 @@ export class WorkflowService {
       contextToPersist[childWorkflow.id] = {
         entityId: childWorkflow.context.entity.id,
         status: childWorkflow.status,
+        tags: childWorkflow.tags,
         state: childWorkflow.state,
         result: childContextToPersist,
       };
