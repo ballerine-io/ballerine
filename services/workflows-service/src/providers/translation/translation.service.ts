@@ -17,6 +17,7 @@ export class TranslationService {
     this.__i18next.init({
       fallbackLng: 'en',
       initImmediate: false,
+      nsSeparator: false,
       resources: {},
     });
 

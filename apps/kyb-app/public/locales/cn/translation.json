@@ -1,4 +1,7 @@
 {
+  "step": "步",
   "back": "后退",
+  "saving": "保存",
+  "progressSaved": "已保存进度",
   "contact": "接触 {{companyName}} 获取支持"
 }

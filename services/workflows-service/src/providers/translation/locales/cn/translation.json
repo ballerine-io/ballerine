@@ -319,6 +319,14 @@
     "transactionData": {
       "label": "过去3-6个月的交易数据",
       "description": "所有电子文件必须完整和清晰可读。"
+    },
+    "passportDocument": {
+      "label": "身份证/护照照片",
+      "description": "有效身份证明文件"
+    },
+    "passportSelfie": {
+      "label": "持有身份证/护照的自拍照",
+      "description": "将相同的文件放在主管脸旁边"
     }
   },
   "errorMessage": {
