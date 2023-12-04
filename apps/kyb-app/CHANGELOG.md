@@ -6,6 +6,8 @@
 
 - Updated dependencies
   - @ballerine/ui@0.3.19
+  - @ballerine/common@0.7.31
+  - @ballerine/workflow-browser-sdk@0.5.30
 
 ## 0.1.26
 

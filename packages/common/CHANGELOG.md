@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.31
+
+### Patch Changes
+
+- updated definition validation
+
 ## 0.7.30
 
 ### Patch Changes

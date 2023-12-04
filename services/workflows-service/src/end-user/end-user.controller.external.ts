@@ -68,7 +68,14 @@ export class EndUserControllerExternal {
     @common.Body() data: EndUserCreateDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const endUser = await this.service.createWithBusiness(data, currentProjectId);
+    const { companyName, ...endUserInfo } = data;
+    const endUser = await this.service.createWithBusiness(
+      {
+        endUser: endUserInfo,
+        business: { companyName: companyName, projectId: currentProjectId },
+      },
+      currentProjectId,
+    );
 
     return {
       endUserId: endUser.id,
