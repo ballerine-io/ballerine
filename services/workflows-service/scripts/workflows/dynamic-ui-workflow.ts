@@ -74,8 +74,7 @@ export const dynamicUiWorkflowDefinition = {
             },
             kycAndVendorDone,
           ],
-          reject: 'rejected',
-          VENDOR_FAILED: 'rejected',
+          VENDOR_FAILED: 'failed',
         },
       },
       pending_kyc_response_to_finish: {
