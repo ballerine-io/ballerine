@@ -3,13 +3,13 @@ const validationSchema = [
     documentId: 'document-certificates-of-incorporation',
     destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required',
+    errorMessage: 'errorMessage.error.requiredField',
   },
   {
     documentId: 'document-business-registration-certificate',
     destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required',
+    errorMessage: 'errorMessage.error.requiredField',
   },
   {
     documentId: 'document-corporate-tax-certificate',
@@ -27,13 +27,13 @@ const validationSchema = [
     documentId: 'document-picture-of-company-seal',
     destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required',
+    errorMessage: 'errorMessage.error.requiredField',
   },
   {
     documentId: 'document-website-pictures-domain-certificate',
     destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required',
+    errorMessage: 'errorMessage.error.requiredField',
   },
   {
     documentId: 'document-website-pictures-website-business',
@@ -41,20 +41,18 @@ const validationSchema = [
     required: {
       type: 'json-logic',
       value: {
-        '==': [{ var: 'entity.data.additionalInfo.store.hasActiveWebsite' }, true, false],
+        '==': [{ var: 'entity.data.additionalInfo.store.hasActiveWebsite' }, false, true],
       },
     },
-    errorMessage: 'This field is required',
+    errorMessage: 'errorMessage.error.requiredField',
   },
   {
     documentId: 'document-transaction-data-last-months',
     destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required',
+    errorMessage: 'errorMessage.error.requiredField',
   },
 ];
-
-`entity.data.additionalInfo.hasConfirmed`;
 
 const jsonValidationSchema = {
   type: 'object',
@@ -79,7 +77,7 @@ const jsonValidationSchema = {
                   default: false,
                   const: true,
                   errorMessage: {
-                    const: 'This field is required.',
+                    const: 'errorMessage.error.requiredField',
                   },
                 },
               },
@@ -95,7 +93,7 @@ export const CompanyDocuments = {
   type: 'page',
   number: 10,
   stateName: 'company_documents',
-  name: 'Company Documents',
+  name: 'text.companyDocuments',
   pageValidation: [
     {
       type: 'destination-engine',
@@ -116,13 +114,13 @@ export const CompanyDocuments = {
             {
               type: 'h1',
               options: {
-                text: 'Company Documents',
+                text: 'text.companyDocuments',
               },
             },
             {
               type: 'h3',
               options: {
-                text: 'Merchant Company Documents',
+                text: 'text.merchantCompanyDocuments',
               },
             },
           ],
@@ -144,8 +142,8 @@ export const CompanyDocuments = {
               type: 'document',
               valueDestination: 'documents[0].pages[0].ballerineFileId',
               options: {
-                label: 'Certificate of Incorporation',
-                description: 'Not older than 6 months.',
+                label: 'text.certificateOfIncorporation.label',
+                description: 'text.certificateOfIncorporation.description',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -170,8 +168,8 @@ export const CompanyDocuments = {
               type: 'document',
               valueDestination: 'documents[1].pages[0].ballerineFileId',
               options: {
-                label: 'Business Registration Certificate',
-                description: 'Notarized document',
+                label: 'text.businessRegistrationCertificate.label',
+                description: 'text.businessRegistrationCertificate.description',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -196,7 +194,7 @@ export const CompanyDocuments = {
               type: 'document',
               valueDestination: 'documents[2].pages[0].ballerineFileId',
               options: {
-                label: 'Corporate Tax Certificate',
+                label: 'text.corporateTaxCertificate.label',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -221,8 +219,8 @@ export const CompanyDocuments = {
               type: 'document',
               valueDestination: 'documents[3].pages[0].ballerineFileId',
               options: {
-                label: 'Certificate of Good Standing',
-                description: 'If the company is older than 12 months',
+                label: 'text.certificateOfGoodStanding.label',
+                description: 'text.certificateOfGoodStanding.description',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -247,7 +245,7 @@ export const CompanyDocuments = {
               type: 'document',
               valueDestination: 'documents[4].pages[0].ballerineFileId',
               options: {
-                label: 'Certificate of Directors & Shareholders',
+                label: 'text.certificateOfDirectorsAndShareholders.label',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -272,7 +270,7 @@ export const CompanyDocuments = {
               type: 'document',
               valueDestination: 'documents[5].pages[0].ballerineFileId',
               options: {
-                label: 'Picture of the company seal',
+                label: 'text.pictureOfCompanySeal.label',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -298,7 +296,7 @@ export const CompanyDocuments = {
           type: 'h3',
           name: 'website-documents-title',
           options: {
-            text: 'Website documents',
+            text: 'text.websiteDocuments',
           },
         },
         {
@@ -315,7 +313,7 @@ export const CompanyDocuments = {
               type: 'document',
               valueDestination: 'documents[6].pages[0].ballerineFileId',
               options: {
-                label: 'Domain purchase record/certificate',
+                label: 'text.domainCertificate.label',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -351,7 +349,7 @@ export const CompanyDocuments = {
               type: 'document',
               valueDestination: 'documents[7].pages[0].ballerineFileId',
               options: {
-                label: 'Business activity license for website’s business',
+                label: 'text.permittedSalesLicense.label',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -385,7 +383,7 @@ export const CompanyDocuments = {
           type: 'h3',
           name: 'office-pictures-title',
           options: {
-            text: 'Office Pictures',
+            text: 'text.officePictures',
           },
         },
         {
@@ -398,7 +396,7 @@ export const CompanyDocuments = {
               type: 'document',
               valueDestination: 'documents[8].pages[0].ballerineFileId',
               options: {
-                label: 'Front door photo showing the company name',
+                label: 'text.frontDoorPhoto.label',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -423,7 +421,7 @@ export const CompanyDocuments = {
               type: 'document',
               valueDestination: 'documents[9].pages[0].ballerineFileId',
               options: {
-                label: 'Photo showing interior of the office - #1',
+                label: 'text.officeInteriorPhoto1.label',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -448,7 +446,7 @@ export const CompanyDocuments = {
               type: 'document',
               valueDestination: 'documents[10].pages[0].ballerineFileId',
               options: {
-                label: 'Photo showing interior of the office - #2',
+                label: 'text.officeInteriorPhoto2.label',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -474,7 +472,7 @@ export const CompanyDocuments = {
           type: 'h3',
           name: 'financial-docs-title',
           options: {
-            text: 'Financial Documents',
+            text: 'text.financialDocuments',
           },
         },
         {
@@ -491,8 +489,8 @@ export const CompanyDocuments = {
               type: 'document',
               valueDestination: 'documents[11].pages[0].ballerineFileId',
               options: {
-                label: 'Transaction data for the last 3-6 months',
-                description: 'All electric documents must be complete and legible.',
+                label: 'text.transactionData.label',
+                description: 'text.transactionData.description',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -518,15 +516,14 @@ export const CompanyDocuments = {
           type: 'h3',
           name: 'accuracy-title',
           options: {
-            text: 'Declaration of Accuracy and Authenticity',
+            text: 'text.declarationOfAccuracy',
           },
         },
         {
           type: 'description',
           name: 'accuracy-description',
           options: {
-            descriptionRaw:
-              'By checking the checkbox below I/we hereby declare that the information which was submitted in the attached Merchant application is truthful and genuine in regards to my/our business, legal status and registration, business practices and all other submitted information.',
+            descriptionRaw: 'text.declarationOfAccuracyDescription',
           },
         },
         {
@@ -543,7 +540,7 @@ export const CompanyDocuments = {
                   type: 'boolean',
                   default: false,
                 },
-                label: 'I confirm',
+                label: 'text.iConfirm',
                 uiSchema: {
                   'ui:label': false,
                 },
@@ -557,8 +554,7 @@ export const CompanyDocuments = {
         {
           type: 'description',
           options: {
-            descriptionRaw:
-              "By clicking 'Next', an email containing an identity verification link will be sent to the shareholders listed.",
+            descriptionRaw: 'text.emailDescription',
           },
         },
         {
@@ -575,7 +571,7 @@ export const CompanyDocuments = {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],
                 },
-                text: 'Finish',
+                text: 'text.finish',
               },
               availableOn: [
                 {

@@ -1,19 +1,19 @@
-import React, { FunctionComponent } from 'react';
-import { useParams } from 'react-router-dom';
-
+import { FunctionComponent } from 'react';
+import { Separator } from '../../../../common/components/atoms/Separator/Separator';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { EditableDetails } from '../EditableDetails/EditableDetails';
-import { Separator } from '../../../../common/components/atoms/Separator/Separator';
 import { IDetailsProps } from './interfaces';
-import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
-import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 
-export const Details: FunctionComponent<IDetailsProps> = ({ id, value, hideSeparator }) => {
-  const { entityId } = useParams();
-  const filterId = useFilterId();
-  const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
-
-  if (!value.data?.length) return;
+export const Details: FunctionComponent<IDetailsProps> = ({
+  id,
+  value,
+  hideSeparator,
+  contextUpdateMethod,
+  workflowId,
+  documents = [],
+  onSubmit,
+}) => {
+  if (!value.data?.length) return null;
 
   return (
     <div
@@ -22,12 +22,14 @@ export const Details: FunctionComponent<IDetailsProps> = ({ id, value, hideSepar
       })}
     >
       <EditableDetails
-        workflowId={workflow?.id}
+        workflowId={workflowId}
         id={id}
         valueId={value?.id}
-        documents={workflow?.context?.documents}
+        documents={documents}
         title={value?.title}
         data={value?.data}
+        contextUpdateMethod={contextUpdateMethod}
+        onSubmit={onSubmit}
       />
       {!hideSeparator && <Separator className={`my-2`} />}
     </div>

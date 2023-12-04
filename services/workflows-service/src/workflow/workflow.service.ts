@@ -65,7 +65,10 @@ import {
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
 import { WorkflowDefinitionRepository } from '../workflow-defintion/workflow-definition.repository';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
-import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import {
+  ArrayMergeOption,
+  WorkflowRuntimeDataRepository,
+} from './workflow-runtime-data.repository';
 import mime from 'mime';
 
 type TEntityId = string;
@@ -671,9 +674,11 @@ export class WorkflowService {
     {
       workflowId,
       documentId,
+      documentsUpdateContextMethod,
     }: {
       workflowId: string;
       documentId: string;
+      documentsUpdateContextMethod?: 'base' | 'director';
     },
     decision: {
       status: 'approve' | 'reject' | 'revision' | 'revised' | null;
@@ -722,32 +727,30 @@ export class WorkflowService {
       throw new BadRequestException(`Invalid decision status: ${status}`);
     })();
 
-    const context = {
-      ...workflow?.context,
-      documents: workflow?.context?.documents?.map(
-        (document: DefaultContextSchema['documents'][number]) => {
-          const updatedStatus = documentId === document.id ? status : document?.decision?.status;
+    const documents = this.getDocuments(workflow.context, documentsUpdateContextMethod);
+    let document = documents.find((document: any) => document.id === documentId);
+    const updatedStatus =
+      (documentId === document.id ? status : document?.decision?.status) ?? undefined;
 
-          return {
-            ...document,
-            decision: {
-              ...document?.decision,
-              status: updatedStatus === null ? undefined : updatedStatus,
-            },
-            type:
-              document?.type === 'unknown' && updatedStatus === 'approved'
-                ? undefined
-                : document?.type,
-          };
+    const updatedContext = this.updateDocumentInContext(
+      workflow.context,
+      {
+        ...document,
+        decision: {
+          ...document?.decision,
+          status: updatedStatus,
         },
-      ),
-    };
-
-    this.__validateWorkflowDefinitionContext(workflowDefinition, context);
-
-    const document = workflow?.context?.documents?.find(
-      (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
+        type:
+          document?.type === 'unknown' && updatedStatus === 'approved' ? undefined : document?.type,
+      },
+      documentsUpdateContextMethod,
     );
+
+    document = this.getDocuments(updatedContext, documentsUpdateContextMethod)?.find(
+      (document: any) => document.id === documentId,
+    );
+
+    this.__validateWorkflowDefinitionContext(workflowDefinition, updatedContext);
 
     const documentWithDecision = {
       ...document,
@@ -760,7 +763,12 @@ export class WorkflowService {
     const checkRequiredFields = status === 'approved';
 
     const updatedWorkflow = await this.updateDocumentById(
-      { workflowId, documentId, checkRequiredFields },
+      {
+        workflowId,
+        documentId,
+        checkRequiredFields,
+        documentsUpdateContextMethod: documentsUpdateContextMethod,
+      },
       documentWithDecision as unknown as DefaultContextSchema['documents'][number],
       projectIds![0]!,
     );
@@ -787,10 +795,12 @@ export class WorkflowService {
       workflowId,
       documentId,
       checkRequiredFields = true,
+      documentsUpdateContextMethod,
     }: {
       workflowId: string;
       documentId: string;
       checkRequiredFields?: boolean;
+      documentsUpdateContextMethod?: 'base' | 'director';
     },
     data: DefaultContextSchema['documents'][number] & { propertiesSchema?: object },
     projectId: TProjectId,
@@ -803,6 +813,7 @@ export class WorkflowService {
       {},
       [projectId],
     );
+
     const document = {
       ...data,
       id: documentId,
@@ -833,10 +844,18 @@ export class WorkflowService {
 
     const updatedWorkflow = await this.updateContextById(
       workflowId,
-      {
-        documents: [documentSchema],
-      },
+      this.updateDocumentInContext(
+        runtimeData.context,
+        documentSchema,
+        documentsUpdateContextMethod,
+      ),
       [projectId],
+      documentsUpdateContextMethod === 'director' ? 'by_index' : 'by_id',
+    );
+
+    const updatedDocuments = this.getDocuments(
+      updatedWorkflow.context,
+      documentsUpdateContextMethod,
     );
 
     logDocumentWithoutId({
@@ -853,14 +872,12 @@ export class WorkflowService {
       workflowDef.config?.completedWhenTasksResolved
     ) {
       const allDocumentsResolved =
-        updatedWorkflow.context?.documents?.length &&
-        updatedWorkflow.context?.documents?.every(
-          (document: DefaultContextSchema['documents'][number]) => {
-            return ['approved', 'rejected', 'revision'].includes(
-              document?.decision?.status as string,
-            );
-          },
-        );
+        updatedDocuments?.length &&
+        updatedDocuments?.every((document: DefaultContextSchema['documents'][number]) => {
+          return ['approved', 'rejected', 'revision'].includes(
+            document?.decision?.status as string,
+          );
+        });
 
       if (allDocumentsResolved) {
         updatedWorkflow.status = allDocumentsResolved ? 'completed' : updatedWorkflow.status;
@@ -875,7 +892,7 @@ export class WorkflowService {
         this.workflowEventEmitter.emit('workflow.completed', {
           runtimeData: updatedWorkflow,
           state: updatedWorkflow.state,
-          // @ts-expect-error - error from Prisma types fix
+          //@ts-expect-error
           entityId: updatedWorkflow.businessId || updatedWorkflow.endUserId,
           correlationId,
         });
@@ -885,17 +902,82 @@ export class WorkflowService {
     return updatedWorkflow;
   }
 
+  private updateDocumentInContext(
+    context: WorkflowRuntimeData['context'],
+    updatePayload: any,
+    method: 'base' | 'director' = 'base',
+  ): WorkflowRuntimeData['context'] {
+    switch (method) {
+      case 'base':
+        return {
+          ...context,
+          documents: [updatePayload],
+        };
+
+      case 'director':
+        return this.updateDirectorDocument(context, updatePayload);
+
+      default:
+        return context;
+    }
+  }
+
+  private getDocuments(
+    context: WorkflowRuntimeData['context'],
+    documentsUpdateContextMethod: 'base' | 'director' = 'base',
+  ) {
+    switch (documentsUpdateContextMethod) {
+      case 'base':
+        return context.documents;
+      case 'director':
+        return this.getDirectorsDocuments(context);
+      default:
+        'base';
+    }
+  }
+
+  private updateDirectorDocument(
+    context: WorkflowRuntimeData['context'],
+    documentUpdatePayload: any,
+  ): WorkflowRuntimeData['context'] {
+    const directorsDocuments = this.getDirectorsDocuments(context);
+
+    directorsDocuments.forEach(document => {
+      if (document?.id === documentUpdatePayload?.id) {
+        Object.entries(documentUpdatePayload).forEach(([key, value]) => {
+          document[key] = value;
+        });
+      }
+    });
+
+    return context;
+  }
+
+  private getDirectorsDocuments(context: WorkflowRuntimeData['context']): any[] {
+    return (
+      this.getDirectors(context)
+        .map(director => director.additionalInfo?.documents)
+        .filter(Boolean)
+        .flat() || ([] as any[])
+    );
+  }
+
+  private getDirectors(context: WorkflowRuntimeData['context']): any[] {
+    return (context?.entity?.data?.additionalInfo?.directors as any[]) || [];
+  }
+
   async updateContextById(
     id: string,
     context: WorkflowRuntimeData['context'],
     projectIds: TProjectIds,
+    mergeBy: ArrayMergeOption = 'by_id',
   ) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(id, {}, projectIds);
     const correlationId = await this.getCorrelationIdFromWorkflow(runtimeData, projectIds);
     const updatedRuntimeData = await this.workflowRuntimeDataRepository.updateContextById(
       id,
       context,
-      undefined,
+      mergeBy,
       projectIds,
     );
 
@@ -1024,7 +1106,7 @@ export class WorkflowService {
       await this.workflowRuntimeDataRepository.updateById(parentMachine?.id, {
         data: {
           status: 'active',
-          // @ts-expect-error - error from Prisma types fix
+          //@ts-expect-error
           state: parentMachine?.workflowDefinition?.definition?.initial as string,
           context: {
             ...parentMachine?.context,
@@ -1839,7 +1921,7 @@ export class WorkflowService {
     }
 
     this.workflowEventEmitter.emit('workflow.state.changed', {
-      // @ts-expect-error - error from Prisma types fix
+      //@ts-expect-error
       entityId,
       state: updatedRuntimeData.state,
       correlationId: updatedRuntimeData.context.ballerineEntityId,

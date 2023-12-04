@@ -2,9 +2,9 @@ import { collectionFlowQuerykeys } from '@/domains/collection-flow';
 import { useQuery } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 
-export const useUISchemasQuery = () => {
+export const useUISchemasQuery = (language?: string) => {
   const { data, isLoading, error } = useQuery({
-    ...collectionFlowQuerykeys.getUISchema(),
+    ...collectionFlowQuerykeys.getUISchema(language),
     // @ts-ignore
     staleTime: Infinity,
   });

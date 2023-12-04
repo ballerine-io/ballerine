@@ -1,0 +1,491 @@
+{
+  "text": {
+    "personalInformation": "个人信息",
+    "businessInformation": "业务信息",
+    "businessAddress": "营业地址",
+    "registeredAddress": "注册地址",
+    "directorsAndUBOs": "董董事与最终受益人",
+    "ubos": "最终受益人",
+    "directors": "董事",
+    "contacts": "联系人",
+    "mainContact": "主要联系人",
+    "bankingDetails": "银行详情",
+    "storeInfo": "店铺信息",
+    "directorsDescription": "添加公司的所有董事。",
+    "imShareholder": "我拥有公司25%或更多的股份",
+    "imDirector": "我是公司的董事",
+    "shareholder": "股东",
+    "shareholdersDescription": "添加所有直接或间接拥有公司25%或更多权益的自然人。",
+    "uboIndex": "最终受益人 {{INDEX}}",
+    "directorIndex": "董事 {{INDEX}}",
+    "websiteBasicRequirement": "网站基本要求",
+    "websiteBasicRequirementDescription": "此列表仅用于对网站的基本入场检查，不涉及具体的产品申请要求。",
+    "websiteBasicRequirementHint": "此列表仅用于对网站的基本入场检查，不涉及具体的产品申请要求。",
+    "processingDetails": "处理详情",
+    "customerCategory": "客户类别",
+    "mainCategory": "主要类别",
+    "websiteBusinessModel": "网站业务模型",
+    "companyDocuments": "公司文件",
+    "merchantCompanyDocuments": "商家公司文件",
+    "websiteDocuments": "网站文件",
+    "officePictures": "办公室照片",
+    "financialDocuments": "财务文件",
+    "declarationOfAccuracy": "准确性和真实性声明",
+    "declarationOfAccuracyDescription": "通过勾选下面的复选框，我/我们在此声明所提交的附有商家申请的信息在我/我们的业务、法律地位和注册、业务实践以及所有其他提交的信息方面是真实和真实的。",
+    "emailDescription": "单击“完成”后，将发送包含身份验证链接的电子邮件给列出的股东。",
+    "name": "姓名",
+    "firstName": "名字",
+    "lastName": "姓氏",
+    "legalName": "法定名称",
+    "phoneNumber": "电话号码",
+    "country": "国家",
+    "nationality": "国籍",
+    "number": "号码",
+    "industry": "行业",
+    "continue": "继续",
+    "finish": "完成",
+    "choose": "选择",
+    "iConfirm": "我确认",
+    "b2b": "B2B",
+    "b2c": "B2C",
+    "c2c": "C2C",
+    "other": "其他",
+    "membership": "会员资格",
+    "directPurchase": "直接购买",
+    "businessModel": "业务模型",
+    "dateHint": "DD/MM/YYYY",
+    "mobileAppName": "应用程序名称",
+    "differentFromPhysicalAddress": "与实际地址不同",
+    "hasActiveWebsite": "我声明网站的业务活动不需要许可证",
+    "storeInfoDescription": "不勾选最后一个复选框将需要提供额外的许可证文件",
+    "email": {
+      "label": "电子邮件",
+      "hint": "name@companyhk.com"
+    },
+    "nationalId": {
+      "label": "身份证号码",
+      "hint": "11010219820519759X"
+    },
+    "city": {
+      "label": "城市",
+      "hint": "伦敦"
+    },
+    "addressOfResidence": {
+      "label": "居住地址",
+      "hint": "中国北京市朝阳区朝阳门22号"
+    },
+    "ownershipPercentage": {
+      "label": "所有权百分比",
+      "hint": "25"
+    },
+    "street": {
+      "label": "街道",
+      "hint": "唐宁街"
+    },
+    "jobTitle": {
+      "label": "职务",
+      "hint": "首席执行官 / 经理 / 合伙人"
+    },
+    "dateOfBirth": {
+      "label": "出生日期"
+    },
+    "registrationNumber": {
+      "label": "注册号码",
+      "hint": "1000000032985"
+    },
+    "state": {
+      "label": "州",
+      "hint": "加利福尼亚州"
+    },
+    "companyName": {
+      "label": "公司英文名称",
+      "hint": "英文名称"
+    },
+    "taxIdentificationNumber": {
+      "label": "税务识别号",
+      "hint": "1234567898765"
+    },
+    "numberOfEmployees": {
+      "label": "员工数量",
+      "hint": "20"
+    },
+    "businessType": {
+      "label": "企业类型",
+      "options": {
+        "sole_proprietorship": "独资企业",
+        "partnership": "合伙企业",
+        "corporation": "公司",
+        "limited_liability_company": "有限责任公司 (LLC)",
+        "limited_partnership": "有限合伙企业 (LP)",
+        "limited_liability_partnership": "有限责任合伙企业 (LLP)",
+        "public_limited_company": "公众有限公司 (PLC)",
+        "private_limited_company": "私人有限公司 (Ltd)",
+        "non_profit_organization": "非营利组织",
+        "cooperative": "合作社",
+        "trust": "信托",
+        "government": "政府",
+        "other": "其他"
+      }
+    },
+    "registeredCapitalInUsd": {
+      "label": "注册资本（美元）",
+      "hint": "2,000,000"
+    },
+    "holderName": {
+      "label": "持卡人姓名",
+      "hint": "约翰 多伊"
+    },
+    "holderFullAddress": {
+      "label": "居民地址",
+      "hint": "香港皇后大道123号2座5楼A室"
+    },
+    "accountNumber": {
+      "label": "帐号",
+      "hint": "0123456789"
+    },
+    "iban": {
+      "label": "IBAN",
+      "hint": "HK00HKB01234567890123"
+    },
+    "swiftCode": {
+      "label": "SWIFT代码",
+      "hint": "BBBBCCDDXXX"
+    },
+    "routeNumber": {
+      "label": "路线号码",
+      "hint": "123456789"
+    },
+    "bankName": {
+      "label": "银行名称",
+      "hint": "香港银行"
+    },
+    "bankCode": {
+      "label": "银行代码",
+      "hint": "1234"
+    },
+    "bankAddress": {
+      "label": "银行地址",
+      "hint": "香港北角金寨道456号"
+    },
+    "subBranch": {
+      "label": "分行号码",
+      "hint": "0012"
+    },
+    "currency": {
+      "label": "帐户货币"
+    },
+    "websiteUrls": {
+      "label": "网站网址（如果有多个，请用逗号分隔）",
+      "hint": "www.example.cn"
+    },
+    "dba": {
+      "label": "DBA（描述符）",
+      "hint": "巴克莱"
+    },
+    "products": {
+      "label": "产品（如果有多个，请用逗号分隔）",
+      "hint": "智能手表，无线耳机，便携式充电器。"
+    },
+    "established": {
+      "label": "成立日期"
+    },
+    "hasMobileApp": {
+      "label": "我有移动应用程序"
+    },
+    "mainWebsite": {
+      "label": "公司主要网站地址",
+      "hint": "www.example.cn",
+      "description": "与应用程序实体相同"
+    },
+    "contactDetails": {
+      "label": "联系方式（或退回地址）",
+      "hint": "中国北京市朝阳区朝阳门22号"
+    },
+    "returnPolicyUrl": {
+      "label": "退货/换货政策网址",
+      "hint": "www.example.com/return-policy"
+    },
+    "shippingPolicyUrl": {
+      "label": "运输政策网址",
+      "hint": "www.example.com/shipping-policy"
+    },
+    "aboutUsUrl": {
+      "label": "关于我们/品牌介绍网址",
+      "hint": "www.example.com/about-us"
+    },
+    "termsOfUseUrl": {
+      "label": "使用条款网址",
+      "hint": "www.example.com/terms"
+    },
+    "privacyPolicyUrl": {
+      "label": "隐私政策网址",
+      "hint": "www.example.com/privacy"
+    },
+    "productQuantity": {
+      "label": "数量（不少于5）",
+      "hint": "100"
+    },
+    "productDescription": {
+      "label": "充分的产品/服务描述",
+      "hint": "提供各种有机护肤产品，包括保湿霜、精华液和洁面乳。每种产品都是使用可持续采购的天然成分制成的。"
+    },
+    "productPrice": {
+      "label": "合理的产品/服务价格（美元）",
+      "hint": "100"
+    },
+    "websiteLanguage": {
+      "label": "网站语言"
+    },
+    "monthlySalesVolume": {
+      "label": "每月销售额（美元）",
+      "hint": "5,000,000"
+    },
+    "monthlyTransactions": {
+      "label": "每月交易数量",
+      "hint": "500"
+    },
+    "estimatedMonthlySalesClipsPay": {
+      "label": "通过ClipsPay估计的每月销售额（美元）",
+      "hint": "400,000"
+    },
+    "estimatedMonthlyTransactionsClipsPay": {
+      "label": "通过ClipsPay估计的每月交易数量",
+      "hint": "150"
+    },
+    "averageTicketAmount": {
+      "label": "平均票价（美元）",
+      "hint": "25"
+    },
+    "minimumTicketAmount": {
+      "label": "最低票价（美元）",
+      "hint": "300"
+    },
+    "maximumTicketAmount": {
+      "label": "最高票价（美元）",
+      "hint": "2000"
+    },
+    "isSpikeInSales": {
+      "label": "存在交易高峰（例如，促销、活动等）",
+      "hint": "是"
+    },
+    "spikeSalesAverageVolume": {
+      "label": "高峰销售平均量（美元）",
+      "hint": "150,000"
+    },
+    "spikeTransactionNumber": {
+      "label": "高峰交易数量",
+      "hint": "200"
+    },
+    "volumeInRegion": {
+      "label": "按地区分割的销售额百分比（用逗号分隔）",
+      "hint": "亚洲 70%，欧洲 30%"
+    },
+    "certificateOfIncorporation": {
+      "label": "公司成立证书",
+      "description": "不超过6个月以前的文件。"
+    },
+    "businessRegistrationCertificate": {
+      "label": "工商注册证书",
+      "description": "公证文件"
+    },
+    "corporateTaxCertificate": {
+      "label": "企业税务证书"
+    },
+    "certificateOfGoodStanding": {
+      "label": "良好信用证明书",
+      "description": "如果公司成立超过12个月"
+    },
+    "certificateOfDirectorsAndShareholders": {
+      "label": "董事和股东证明书"
+    },
+    "pictureOfCompanySeal": {
+      "label": "公司印章照片"
+    },
+    "domainCertificate": {
+      "label": "域名购买记录/证书"
+    },
+    "permittedSalesLicense": {
+      "label": "网站业务的经营许可证"
+    },
+    "frontDoorPhoto": {
+      "label": "显示公司名称的前门照片"
+    },
+    "officeInteriorPhoto1": {
+      "label": "办公室内部照片 - #1"
+    },
+    "officeInteriorPhoto2": {
+      "label": "办公室内部照片 - #2"
+    },
+    "transactionData": {
+      "label": "过去3-6个月的交易数据",
+      "description": "所有电子文件必须完整和清晰可读。"
+    },
+    "passportDocument": {
+      "label": "身份证/护照照片",
+      "description": "有效身份证明文件"
+    },
+    "passportSelfie": {
+      "label": "持有身份证/护照的自拍照",
+      "description": "将相同的文件放在主管脸旁边"
+    }
+  },
+  "errorMessage": {
+    "error": {
+      "productQuantity": "产品数量应该是有效的数字。",
+      "productPrice": "产品价格应该是有效的数字。",
+      "productDescription": "产品描述不能为空。",
+      "websiteLanguage": "网站语言不能为空。",
+      "monthlySalesVolume": "月销售额必须为正数。",
+      "monthlyTransactions": "月交易数量必须为正数。",
+      "averageTicketAmount": "平均票价必须为正数。",
+      "mainCategory": "客户类别是必需的。",
+      "businessModel": "业务模型是必需的。",
+      "spikeSalesAverageVolume": "销售高峰期销售额必须为正数。",
+      "spikeTransactionNumber": "销售高峰期交易数量必须为正数。",
+      "requiredField": "此字段为必填项。"
+    },
+    "required": {
+      "phone": "需要有效的电话号码。",
+      "dateOfBirth": "出生日期是必需的。",
+      "firstName": "名字是必需的。",
+      "lastName": "姓氏是必需的。",
+      "email": "电子邮件是必需的。",
+      "additionalInfo": "需要额外的信息。",
+      "jobTitle": "职位是必需的。",
+      "registeredCapitalInUsd": "需要以美元表示的注册资本。",
+      "businessType": "需要业务类型。",
+      "numberOfEmployees": "需要员工数量。",
+      "taxIdentificationNumber": "需要税务识别号。",
+      "companyName": "需要公司名称。",
+      "country": "需要国家。",
+      "city": "需要城市。",
+      "street": "需要街道。",
+      "streetNumber": "需要街道号。",
+      "registrationNumber": "需要注册号码。",
+      "physical": "需要实际地址详细信息。",
+      "requiredField": "此字段为必填项。",
+      "nationality": "需要国籍。",
+      "nationalId": "需要身份证号码。",
+      "fullAddress": "需要完整地址。",
+      "percentageOfOwnership": "需要所有权百分比。",
+      "ubos": "需要最终受益人。",
+      "directors": "需要董事。",
+      "holderName": "需要持卡人姓名。",
+      "holderFullAddress": "需要持卡人完整地址。",
+      "accountNumber": "需要帐号。",
+      "swiftCode": "需要SWIFT代码。",
+      "bankName": "需要银行名称。",
+      "bankAddress": "需要银行地址。",
+      "currency": "需要帐户货币。",
+      "mobileAppName": "移动应用程序名称不能为空。",
+      "websiteUrls": "需要网站网址。",
+      "dba": "需要营业名称（DBA）。",
+      "products": "需要产品信息。",
+      "established": "需要成立日期。",
+      "hasMobileApp": "需要移动应用程序可用性信息。",
+      "industry": "需要行业。",
+      "mainWebsite": "需要主要网站网址。",
+      "productQuantity": "需要产品数量。",
+      "productDescription": "需要产品描述。",
+      "productPrice": "需要产品价格。",
+      "monthlySalesVolume": "需要月销售额。",
+      "monthlyTransactions": "需要月交易数量。",
+      "averageTicketAmount": "需要平均票价。",
+      "mainCategory": "需要客户类别。",
+      "businessModel": "需要网站业务模型。",
+      "spikeSalesAverageVolume": "需要销售高峰期销售额。",
+      "spikeTransactionNumber": "需要销售高峰期交易数量。",
+      "volumeInRegion": "需要按地区划分的销售额百分比。",
+      "contactDetails": "联系方式是必需的。"
+    },
+    "minLength": {
+      "firstName": "名字必须至少为2个字符。",
+      "lastName": "姓氏必须至少为2个字符。",
+      "jobTitle": "职位必须至少为2个字符。",
+      "businessType": "业务类型应至少为3个字符。",
+      "taxIdentificationNumber": "税务识别号应至少为8个字符。",
+      "companyName": "公司名称应至少为2个字符。",
+      "country": "国家代码应为2个字符。",
+      "city": "城市必须至少为2个字符。",
+      "street": "街道必须至少为3个字符。",
+      "streetNumber": "需要街道号。",
+      "registrationNumber": "注册号码应至少为4个字符。",
+      "nationalId": "身份证号码必须至少为5个字符。",
+      "nationality": "无效的国籍。请从可用选项中选择。",
+      "fullAddress": "完整地址必须至少为10个字符。",
+      "holderName": "持卡人姓名必须至少为5个字符。",
+      "holderFullAddress": "持卡人完整地址必须至少为10个字符。",
+      "accountNumber": "帐号必须至少为6个字符。",
+      "iban": "IBAN必须至少为15个字符。",
+      "swiftCode": "SWIFT代码必须至少为8个字符。",
+      "routeNumber": "路由号码必须至少为8个字符。",
+      "bankName": "银行名称必须至少为3个字符。",
+      "bankCode": "银行代码必须至少为2个字符。",
+      "bankAddress": "银行地址必须至少为10个字符。",
+      "currency": "帐户货币是必需的。",
+      "websiteUrls": "网站网址不应为空。",
+      "mainWebsite": "主要网站不应为空。",
+      "returnPolicyUrl": "退货政策网址不应为空。",
+      "shippingPolicyUrl": "运输政策网址不应为空。",
+      "aboutUsUrl": "关于我们网址不应为空。",
+      "termsOfUseUrl": "使用条款网址不应为空。",
+      "privacyPolicyUrl": "隐私政策网址不应为空。"
+    },
+    "maxLength": {
+      "firstName": "名字不得超过50个字符。",
+      "lastName": "姓氏不得超过50个字符。",
+      "email": "电子邮件不得超过100个字符。",
+      "businessType": "业务类型不得超过50个字符。",
+      "taxIdentificationNumber": "税务识别号不得超过15个字符。",
+      "companyName": "公司名称不得超过100个字符。",
+      "country": "国家代码应为2个字符。",
+      "city": "城市不得超过50个字符。",
+      "street": "街道不得超过100个字符。",
+      "streetNumber": "街道号不得超过10个字符。",
+      "registrationNumber": "注册号码不得超过20个字符。",
+      "nationalId": "身份证号码不得超过20个字符。",
+      "fullAddress": "完整地址不得超过200个字符。",
+      "holderName": "持卡人姓名不得超过50个字符。",
+      "holderFullAddress": "持卡人完整地址不得超过200个字符。",
+      "accountNumber": "帐号不得超过34个字符。",
+      "iban": "IBAN不得超过34个字符。",
+      "swiftCode": "SWIFT代码不得超过11个字符。",
+      "routeNumber": "路由号码不得超过10个字符。",
+      "bankName": "银行名称不得超过100个字符。",
+      "bankCode": "银行代码不得超过13个字符。",
+      "bankAddress": "银行地址不得超过200个字符。"
+    },
+    "minItems": {
+      "ubos": "需要最终受益人。"
+    },
+    "format": {
+      "email": "无效的电子邮件地址。"
+    },
+    "pattern": {
+      "phone": "电话号码必须为10到15位数字，并且可以以+号开头。",
+      "taxIdentificationNumber": "税务识别号必须具有有效格式。",
+      "country": "请输入有效的国家代码。",
+      "subBranch": "分行应只包含数字。",
+      "websiteUrls": "网站网址应为有效的网址，用逗号分隔。",
+      "mainWebsite": "主要网站应为有效的网址。",
+      "returnPolicyUrl": "退货政策网址应为有效的网址。",
+      "shippingPolicyUrl": "运输政策网址应为有效的网址。",
+      "aboutUsUrl": "关于我们网址应为有效的网址。",
+      "termsOfUseUrl": "使用条款网址应为有效的网址。",
+      "privacyPolicyUrl": "隐私政策网址应为有效的网址。"
+    },
+    "type": {
+      "dateOfBirth": "出生日期必须为字符串。",
+      "numberOfEmployees": "员工数量必须是数字。"
+    },
+    "minimum": {
+      "registeredCapitalInUsd": "注册资本必须为非负数。",
+      "numberOfEmployees": "员工数量必须至少为1。",
+      "percentageOfOwnership": "所有权百分比必须为25或更高。"
+    },
+    "maximum": {
+      "numberOfEmployees": "员工数量不能超过100,000。",
+      "percentageOfOwnership": "所有权百分比不能超过100。"
+    }
+  }
+}

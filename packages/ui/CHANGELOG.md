@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.18
+
+### Patch Changes
+
+- Version bump
+
 ## 0.3.17
 
 ### Patch Changes
@@ -17,6 +23,7 @@
 ### Patch Changes
 
 - 8c888cec: Updated tsconfig and types
+- Fixed missing disabled state on inputs
 
 ## 0.3.14
 

@@ -14,6 +14,8 @@ import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilte
 import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
 import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
 import { tagToBadgeData } from '../../consts';
+import { selectDirectorsDocuments } from '../../../../hooks/useTasks/selectors/selectDirectorsDocuments';
+import { AnyObject } from '@ballerine/ui';
 
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
@@ -71,9 +73,19 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   }, [workflow]) as keyof typeof tagToBadgeData;
 
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
-  const documentsToReviseCount = workflow?.context?.documents?.filter(
-    document => document?.decision?.status === 'revision',
-  )?.length;
+  const allDocuments = useMemo(() => {
+    const directorDocuments = selectDirectorsDocuments(workflow) || [];
+    const workflowDocuments = (workflow?.context?.documents || []) as AnyObject[];
+
+    const result = [...directorDocuments, ...workflowDocuments] as AnyObject[];
+
+    return result;
+  }, [workflow]);
+
+  const documentsToReviseCount = useMemo(
+    () => allDocuments.filter(document => document?.decision?.status === 'revision')?.length,
+    [allDocuments],
+  );
 
   const assignedUser = workflow?.assignee
     ? {

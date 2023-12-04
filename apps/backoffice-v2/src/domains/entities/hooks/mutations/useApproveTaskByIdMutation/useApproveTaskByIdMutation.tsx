@@ -12,7 +12,13 @@ export const useApproveTaskByIdMutation = (workflowId: string, postUpdateEventNa
   const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
 
   return useMutation({
-    mutationFn: ({ documentId }: { documentId: string }) =>
+    mutationFn: ({
+      documentId,
+      contextUpdateMethod = 'base',
+    }: {
+      documentId: string;
+      contextUpdateMethod?: 'base' | 'director';
+    }) =>
       updateWorkflowDecision({
         workflowId,
         documentId,
@@ -20,6 +26,7 @@ export const useApproveTaskByIdMutation = (workflowId: string, postUpdateEventNa
           decision: Action.APPROVE,
           postUpdateEventName,
         },
+        contextUpdateMethod,
       }),
     onMutate: async ({ documentId }) => {
       await queryClient.cancelQueries({
