@@ -26,7 +26,7 @@ export class HelpersTransformer extends BaseContextTransformer {
         context,
         sourceAttributeValue,
         mappingLogic.value,
-        options,
+        mappingLogic.options || options,
       );
       this.setNestedProperty(context, targetPath, transformedValue);
     }
@@ -52,7 +52,7 @@ export class HelpersTransformer extends BaseContextTransformer {
       return attribute;
     }
 
-    if (jmespathResult.length(0)) {
+    if (jmespathResult.length == 0) {
       console.log('jmespathResult: is 0', options.mapJmespath);
 
       return attribute;

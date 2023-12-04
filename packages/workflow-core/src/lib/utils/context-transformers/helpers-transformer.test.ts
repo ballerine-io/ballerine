@@ -21,7 +21,19 @@ describe('Helper transform', () => {
 
       const response = await transformer.transform(data);
 
-      expect(response).toEqual({ person: { dateOfBirth: '2003-07-02' } });
+      expect(response).toEqual({
+        data: [
+          {
+            test: 'value',
+            theValueToMerge: 'test',
+          },
+          {
+            test: 'value2',
+            theValueToMerge: 'test',
+          },
+        ],
+        mergeValue: 'test',
+      });
     });
   });
 });
