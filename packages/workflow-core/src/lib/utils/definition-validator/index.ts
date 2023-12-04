@@ -1,12 +1,12 @@
 import { StateMachine } from 'xstate';
 import { WorkflowExtensions } from '../../types';
 import { definitionValidator } from './definition-validator';
-import {AnyRecord} from "@ballerine/common";
+import { AnyRecord } from '@ballerine/common';
 
 export const validateDefinitionLogic = (
   workflowDefinitionArgs: Record<string, any>,
-  exampleContext?: AnyRecord
-  ) => {
+  exampleContext?: AnyRecord,
+) => {
   definitionValidator(
     {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -16,6 +16,6 @@ export const validateDefinitionLogic = (
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     },
     workflowDefinitionArgs.extentions as WorkflowExtensions,
-    exampleContext
+    exampleContext,
   );
 };

@@ -1,6 +1,6 @@
 import { search } from 'jmespath';
 import * as jsonLogic from 'json-logic-js';
-import {AnyRecord} from "@ballerine/common";
+import { AnyRecord } from '@ballerine/common';
 
 type TJmespathRule = {
   type: 'jmespath';

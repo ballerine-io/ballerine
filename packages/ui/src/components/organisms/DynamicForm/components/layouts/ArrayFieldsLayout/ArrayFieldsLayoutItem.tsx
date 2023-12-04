@@ -1,12 +1,14 @@
 import { AnyObject } from '@/common/types';
 import { ArrayFieldLayoutItem } from '@/components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayout';
 import { ctw } from '@/utils/ctw';
+import { useCallback } from 'react';
 
 interface ArrayFieldsLayoutItemProps {
   element: ArrayFieldLayoutItem;
   uiSchema: AnyObject;
   disableDeletion?: boolean;
   title?: string | React.ReactNode;
+  onDelete?: (index: number) => void;
 }
 
 export const ArrayFieldsLayoutItem = ({
@@ -14,8 +16,17 @@ export const ArrayFieldsLayoutItem = ({
   uiSchema,
   disableDeletion,
   title,
+  onDelete,
 }: ArrayFieldsLayoutItemProps) => {
   const { removeText = 'Delete', deleteButtonClassname = '' } = uiSchema;
+
+  const createDeleteHandler = useCallback(() => {
+    return (event: React.MouseEvent) => {
+      const deleterFn = element.onDropIndexClick(element.index);
+      deleterFn(event);
+      onDelete && onDelete(element.index);
+    };
+  }, [element, onDelete]);
 
   return (
     <div key={element.index} className="relative flex flex-row flex-nowrap">
@@ -28,7 +39,7 @@ export const ArrayFieldsLayoutItem = ({
               deleteButtonClassname as string,
               { ['pointer-events-none opacity-50']: disableDeletion },
             )}
-            onClick={element.onDropIndexClick(element.index)}
+            onClick={createDeleteHandler()}
           >
             {removeText}
           </span>
