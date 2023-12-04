@@ -7,9 +7,28 @@ import {
   ArrayFieldsLayoutItemTitle,
   ArrayFieldsLayoutProps,
 } from '@ballerine/ui';
+import { useCallback } from 'react';
+import pullAt from 'lodash/pullAt';
+import get from 'lodash/get';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 
 export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
   const { definition } = useJSONFormDefinition();
+  const { stateApi } = useStateManagerContext();
+
+  const removeElementOnDelete = useCallback(
+    (index: number) => {
+      const ctx = stateApi.getContext();
+      const dataArray = get(ctx, definition.valueDestination as string);
+
+      if (!dataArray) return;
+
+      pullAt(dataArray, index);
+
+      stateApi.setContext(ctx);
+    },
+    [definition, stateApi],
+  );
 
   return (
     <ArrayFieldsLayout {...props}>
@@ -19,6 +38,7 @@ export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
             key={`field-template-item-${index}`}
             element={item}
             uiSchema={uiSchema}
+            onDelete={removeElementOnDelete}
             title={
               typeof props.uiSchema?.titleTemplate === 'string' ? (
                 <ArrayFieldsLayoutItemTitle index={index} template={props.uiSchema.titleTemplate} />
