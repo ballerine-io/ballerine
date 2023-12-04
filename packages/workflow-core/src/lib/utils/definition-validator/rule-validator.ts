@@ -1,5 +1,6 @@
 import { search } from 'jmespath';
 import * as jsonLogic from 'json-logic-js';
+import {AnyRecord} from "@ballerine/common";
 
 type TJmespathRule = {
   type: 'jmespath';
@@ -15,22 +16,27 @@ export type TJsonLogicRule = {
   };
 };
 
-const DEFAULT_VALIDATION_CONTEXT = {
+export const DEFAULT_VALIDATION_CONTEXT = {
   projectId: 'test',
   workflowRuntimeId: 'test',
   childWorkflows: { kyc_email_session_example: { test: 'test' } },
+  pluginsOutput: {
+    businessInformation: {},
+    ubo: {},
+    companySanctions: {},
+  },
   documents: [],
 };
 
 export type TDefintionRules = TJmespathRule | TJsonLogicRule;
 
-export const ruleValidator = ({
-  type,
-  options: { rule },
-}: TJmespathRule | TJsonLogicRule): void => {
+export const ruleValidator = (
+  { type, options: { rule } }: TJmespathRule | TJsonLogicRule,
+  exampleContext?: AnyRecord,
+): void => {
   if (type === 'jmespath') {
     try {
-      search(DEFAULT_VALIDATION_CONTEXT, rule as string);
+      search({ ...DEFAULT_VALIDATION_CONTEXT, ...exampleContext }, rule as string);
     } catch (ex) {
       throw new Error(`Invalid jmespath rule: ${rule as string}`);
     }
