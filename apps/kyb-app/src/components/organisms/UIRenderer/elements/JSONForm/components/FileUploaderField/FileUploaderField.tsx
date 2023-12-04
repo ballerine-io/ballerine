@@ -18,20 +18,25 @@ export const FileUploaderField = forwardRef(
     placeholder,
   }: DocumentUploadFieldProps) => {
     const { fileId: uploadedFileId, isUploading, uploadFile } = useFileUploading(_uploadFile);
-    const { file } = useFileRepository(fileStorage, fileId || undefined);
+    const { file, registerFile } = useFileRepository(fileStorage, fileId || undefined);
     const inputRef = useRef<HTMLInputElement>(null);
     //@ts-ignore
     useFileAssigner(inputRef, file);
 
     useEffect(() => {
-      if (!uploadedFileId) return;
+      if (!uploadedFileId || !file) return;
 
+      registerFile(file, uploadedFileId);
       onChange(uploadedFileId);
-    }, [uploadedFileId]);
+    }, [uploadedFileId, file]);
 
     const handleChange = useCallback(
       async (event: React.ChangeEvent<HTMLInputElement>) => {
-        void uploadFile(event.target.files?.[0] as File);
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const uploadResult = await uploadFile(file);
+        registerFile(file, uploadResult.fileId);
       },
       [uploadFile],
     );
