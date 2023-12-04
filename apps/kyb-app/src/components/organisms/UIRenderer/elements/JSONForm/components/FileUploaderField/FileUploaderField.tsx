@@ -38,7 +38,7 @@ export const FileUploaderField = forwardRef(
 
         onChange(uploadResult.fileId);
       },
-      [uploadFile, registerFile, fileStorage, onChange],
+      [uploadFile, registerFile, onChange],
     );
 
     return (
