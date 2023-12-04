@@ -38,7 +38,7 @@ export const FileUploaderField = forwardRef(
 
         const registeredFile = fileStorage.getFileById(uploadResult.fileId);
 
-        if (registeredFile) {
+        if (!registeredFile) {
           throw new Error(
             `Failed to register file with the id of ${uploadResult.fileId} in the file repository`,
           );
