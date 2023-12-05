@@ -33,7 +33,7 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@ballerine/common": "0.7.31",
+    "@ballerine/common": "0.7.30",
     "@ballerine/workflow-core": "0.5.30",
     "xstate": "^4.37.0"
   },
