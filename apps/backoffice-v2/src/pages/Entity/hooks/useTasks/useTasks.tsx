@@ -1,10 +1,11 @@
 import {
   CommonWorkflowStates,
-  StateTag,
   getDocumentsByCountry,
-  isNullish,
-  TDocument,
   getDocumentSchemaByCountry,
+  isNullish,
+  StateTag,
+  TAvailableDocuments,
+  TDocument,
 } from '@ballerine/common';
 import { Badge } from '@ballerine/ui';
 import { X } from 'lucide-react';
@@ -38,6 +39,7 @@ import { getPhoneNumberFormatter } from '../../../../common/utils/get-phone-numb
 import { selectWorkflowDocuments } from './selectors/selectWorkflowDocuments';
 import { useDocumentPageImages } from '@/pages/Entity/hooks/useTasks/hooks/useDocumentPageImages';
 import { useDirectorsBlocks } from '@/pages/Entity/hooks/useTasks/hooks/useDirectorsBlocks';
+import { useAssociatedCompaniesBlock } from '@/pages/Entity/hooks/useTasks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -1643,6 +1645,9 @@ export const useTasks = ({
             ],
           },
         ];
+  const associatedCompaniesBlock = useAssociatedCompaniesBlock(
+    entity.data?.additionalInfo?.associatedCompanies,
+  );
 
   return useMemo(() => {
     return entity
@@ -1650,6 +1655,7 @@ export const useTasks = ({
           ...websiteMonitoringBlock,
           ...entityInfoBlock,
           ...registryInfoBlock,
+          ...associatedCompaniesBlock,
           ...kybRegistryInfoBlock,
           ...companySanctionsBlock,
           ...directorsUserProvidedBlock,

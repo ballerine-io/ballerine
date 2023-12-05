@@ -110,6 +110,32 @@ export const fetchWorkflowById = async ({
       ...data,
       context: {
         ...data.context,
+        entity: {
+          ...data.context?.entity,
+          data: {
+            ...data.context?.entity?.data,
+            additionalInfo: {
+              ...data.context?.entity?.data?.additionalInfo,
+              associatedCompanies: [
+                {
+                  registrationNumber: '123456789',
+                  registeredCountry: 'United Kingdom',
+                  relationship: 'Parent of ACME Corp',
+                  contactPerson: 'John Doe',
+                  contactEmail: 'test@test.com',
+                },
+                {
+                  companyName: 'Company 2',
+                  registrationNumber: '123456789',
+                  registeredCountry: 'United Kingdom',
+                  relationship: 'Parent of ACME Corp',
+                  contactPerson: 'John Doe',
+                  contactEmail: 'test@test.com',
+                },
+              ],
+            },
+          },
+        },
         pluginsOutput: {
           ...data.context?.pluginsOutput,
           // TODO: Upgrade workflows-service TypeScript version to >= 5 and use `string-ts`'s `deepCamelCase` instead on the server side in `formatWorkflow`.
