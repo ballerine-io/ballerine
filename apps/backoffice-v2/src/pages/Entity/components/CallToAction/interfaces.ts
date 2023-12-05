@@ -13,7 +13,7 @@ export interface ICallToActionProps {
     text: string;
     props: {
       id: string;
-      disabled: boolean;
+      isDisabled: boolean;
       decision: 'reject' | 'approve' | 'revision' | 'revised';
       documentSelection?: ICallToActionDocumentSelection;
       contextUpdateMethod?: 'base' | 'director';
