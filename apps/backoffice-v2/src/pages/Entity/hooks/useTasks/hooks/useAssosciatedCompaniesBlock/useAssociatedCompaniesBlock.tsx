@@ -3,6 +3,7 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import { Button } from '@/common/components/atoms/Button/Button';
 import { Send } from 'lucide-react';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { StateTag } from '@ballerine/common';
 
 const motionProps: ComponentProps<typeof MotionButton> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -11,25 +12,40 @@ const motionProps: ComponentProps<typeof MotionButton> = {
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
 };
 
-export const useAssociatedCompaniesBlock = (
+export const useAssociatedCompaniesBlock = ({
+  associatedCompanies,
+  tags,
+}: {
   associatedCompanies: Array<{
     companyName: string;
     registrationNumber: string;
-    registeredCountry: string;
-    relationship: string;
+    country: string;
+    additionalInfo: {
+      associationRelationship: string;
+      mainRepresentative: {
+        firstName: string;
+        lastName: string;
+        email: string;
+      };
+    };
     contactPerson: string;
     contactEmail: string;
-  }>,
-) => {
+  }>;
+  tags: Array<string>;
+}) => {
   const transformedAssociatedCompanies = useMemo(
     () =>
       associatedCompanies?.map(associatedCompany => ({
         companyName: associatedCompany.companyName,
         registrationNumber: associatedCompany.registrationNumber,
-        registeredCountry: associatedCompany.registeredCountry,
-        relationship: associatedCompany.relationship,
-        contactPerson: associatedCompany.contactPerson,
-        contactEmail: associatedCompany.contactEmail,
+        registeredCountry: associatedCompany.country,
+        relationship: associatedCompany.additionalInfo?.associationRelationship,
+        contactPerson: `${associatedCompany.additionalInfo?.mainRepresentative?.firstName ?? ''}${
+          associatedCompany.additionalInfo?.mainRepresentative?.lastName
+            ? ` ${associatedCompany.additionalInfo?.mainRepresentative?.lastName}`
+            : ''
+        }`,
+        contactEmail: associatedCompany.additionalInfo?.mainRepresentative?.email,
       })),
     [associatedCompanies],
   );
@@ -63,11 +79,32 @@ export const useAssociatedCompaniesBlock = (
                 type: 'container',
                 value: [
                   {
-                    type: 'subheading',
-                    value: associatedCompany.companyName,
+                    type: 'container',
                     props: {
-                      className: 'text-lg mb-4 block',
+                      className: 'flex items-center justify-between mb-4',
                     },
+                    value: [
+                      {
+                        type: 'subheading',
+                        value: associatedCompany.companyName,
+                        props: {
+                          className: 'text-lg',
+                        },
+                      },
+                      ...(tags.includes(StateTag.COLLECTION_FLOW)
+                        ? [
+                            {
+                              type: 'badge',
+                              value: 'Awaiting Information',
+                              props: {
+                                ...motionProps,
+                                variant: 'warning',
+                                className: 'text-sm font-bold',
+                              },
+                            },
+                          ]
+                        : []),
+                    ],
                   },
                   {
                     type: 'table',
@@ -106,14 +143,7 @@ export const useAssociatedCompaniesBlock = (
                     type: 'dialog',
                     value: {
                       trigger: (
-                        <MotionButton
-                          {...motionProps}
-                          variant="outline"
-                          className={ctw('ms-3.5', {
-                            loading: false,
-                          })}
-                          disabled={false}
-                        >
+                        <MotionButton {...motionProps} variant="outline" className={'ms-3.5'}>
                           Initiate KYB
                         </MotionButton>
                       ),

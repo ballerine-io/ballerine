@@ -1665,9 +1665,10 @@ export const useTasks = ({
             ],
           },
         ];
-  const associatedCompaniesBlock = useAssociatedCompaniesBlock(
-    entity.data?.additionalInfo?.associatedCompanies,
-  );
+  const associatedCompaniesBlock = useAssociatedCompaniesBlock({
+    associatedCompanies: entity.data?.additionalInfo?.associatedCompanies,
+    tags: workflow?.tags ?? [],
+  });
 
   return useMemo(() => {
     return entity
