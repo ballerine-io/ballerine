@@ -41,7 +41,6 @@ export const DateInputAdater: RJSFInputAdapter<string | null> = ({
   return (
     <DatePickerInput
       value={formData ? formData : undefined}
-      // onChange={event => void onChange(String(event.target.value))}
       onChange={handleChange}
       disabled={disabled}
       onBlur={handleBlur}
