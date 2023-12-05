@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.32
+
+### Patch Changes
+
+- add example context for defintion validation
+
 ## 0.7.31
 
 ### Patch Changes
