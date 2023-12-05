@@ -137,6 +137,8 @@ export const useDirectorsBlocks = (
                               (!isDoneWithRevision && Boolean(document?.decision?.status)) ||
                               noAction ||
                               isLoadingApproveTaskById,
+                            size: 'wide',
+                            variant: 'success',
                           },
                         },
                       },

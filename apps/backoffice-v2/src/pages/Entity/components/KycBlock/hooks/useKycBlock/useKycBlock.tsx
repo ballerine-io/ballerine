@@ -244,6 +244,8 @@ export const useKycBlock = ({
           onClick: onMutateApproveCase,
           props: {
             disabled: isDisabled,
+            size: 'wide',
+            variant: 'success',
           },
         },
       },
