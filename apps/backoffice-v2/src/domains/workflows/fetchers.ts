@@ -118,6 +118,7 @@ export const fetchWorkflowById = async ({
               ...data.context?.entity?.data?.additionalInfo,
               associatedCompanies: [
                 {
+                  companyName: 'Company 1',
                   registrationNumber: '123456789',
                   registeredCountry: 'United Kingdom',
                   relationship: 'Parent of ACME Corp',
