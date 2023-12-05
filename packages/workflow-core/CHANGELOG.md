@@ -1,11 +1,17 @@
 # @ballerine/workflow-core
 
-## 0.5.30
+## 0.5.31
 
 ### Patch Changes
 
 - Updated dependencies
-  - @ballerine/common@0.7.31
+  - @ballerine/common@0.7.32
+
+## 0.5.30
+
+### Patch Changes
+
+- added helper for transformers
 
 ## 0.5.29
 
