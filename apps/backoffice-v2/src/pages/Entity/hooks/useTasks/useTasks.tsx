@@ -1,15 +1,16 @@
 import {
   CommonWorkflowStates,
-  StateTag,
   getDocumentsByCountry,
-  isNullish,
-  TDocument,
   getDocumentSchemaByCountry,
+  isNullish,
+  StateTag,
+  TAvailableDocuments,
+  TDocument,
 } from '@ballerine/common';
 import { Badge } from '@ballerine/ui';
 import { X } from 'lucide-react';
 import * as React from 'react';
-import { ComponentProps, useMemo } from 'react';
+import { ComponentProps, useCallback, useMemo } from 'react';
 import { toTitleCase, toUpperCase } from 'string-ts';
 import { WarningFilledSvg } from '../../../../common/components/atoms/icons';
 import { ctw } from '../../../../common/utils/ctw/ctw';
@@ -38,6 +39,8 @@ import { getPhoneNumberFormatter } from '../../../../common/utils/get-phone-numb
 import { selectWorkflowDocuments } from './selectors/selectWorkflowDocuments';
 import { useDocumentPageImages } from '@/pages/Entity/hooks/useTasks/hooks/useDocumentPageImages';
 import { useDirectorsBlocks } from '@/pages/Entity/hooks/useTasks/hooks/useDirectorsBlocks';
+import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
+import { getPostUpdateEventNameEvent } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -232,6 +235,22 @@ export const useTasks = ({
           },
         ];
 
+  const postApproveEventName = getPostUpdateEventNameEvent(workflow);
+  const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
+    useApproveTaskByIdMutation(workflow?.id, postApproveEventName);
+  const onMutateApproveTaskById = useCallback(
+    ({
+        taskId,
+        contextUpdateMethod,
+      }: {
+        taskId: string;
+        contextUpdateMethod: 'base' | 'director';
+      }) =>
+      () =>
+        mutateApproveTaskById({ documentId: taskId, contextUpdateMethod }),
+    [mutateApproveTaskById],
+  );
+
   const taskBlocks =
     documents?.map(
       ({ id, type: docType, category, properties, propertiesSchema, decision }, docIndex) => {
@@ -317,21 +336,24 @@ export const useTasks = ({
             ];
           }
 
+          const revisionReasons =
+            workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+              ({ enum: enum_ }) => !!enum_,
+            )?.enum;
+          const rejectionReasons =
+            workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
+              ({ enum: enum_ }) => !!enum_,
+            )?.enum;
+
           return [
             {
-              type: 'callToAction',
+              type: 'callToActionLegacy',
               // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
               value: {
                 text: isLegacyReject ? 'Reject' : 'Re-upload needed',
                 props: {
-                  revisionReasons:
-                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
-                      ({ enum: enum_ }) => !!enum_,
-                    )?.enum,
-                  rejectionReasons:
-                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
-                      ({ enum: enum_ }) => !!enum_,
-                    )?.enum,
+                  revisionReasons,
+                  rejectionReasons,
                   id,
                   disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
                   decision: 'reject',
@@ -342,18 +364,17 @@ export const useTasks = ({
               type: 'callToAction',
               value: {
                 text: 'Approve',
+                onClick: onMutateApproveTaskById({
+                  taskId: id,
+                  contextUpdateMethod: 'base',
+                }),
                 props: {
-                  revisionReasons:
-                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
-                      ({ enum: enum_ }) => !!enum_,
-                    )?.enum,
-                  rejectionReasons:
-                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
-                      ({ enum: enum_ }) => !!enum_,
-                    )?.enum,
-                  id,
-                  disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
-                  decision: 'approve',
+                  disabled:
+                    (!isDoneWithRevision && Boolean(decision?.status)) ||
+                    noAction ||
+                    isLoadingApproveTaskById,
+                  size: 'wide',
+                  variant: 'success',
                 },
               },
             },
@@ -1681,7 +1702,3 @@ export const useTasks = ({
     removeDecisionById,
   ]);
 };
-
-function uniqueArrayByKey(arg0: any) {
-  throw new Error('Function not implemented.');
-}
