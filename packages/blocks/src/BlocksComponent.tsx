@@ -18,6 +18,8 @@ export const BlocksComponent = forwardRef(
             return null;
           }
 
+          const typesInBlock = block?.map(({ type }) => type)?.join(':');
+          const key = `block:${typesInBlock}:${index}`;
           const cellsList = block?.map(({ type, ...cell }) => {
             const Cell = cells[type];
 
@@ -36,12 +38,12 @@ export const BlocksComponent = forwardRef(
           });
 
           if (!Block) {
-            return <Fragment key={`block:${index}`}>{cellsList}</Fragment>;
+            return <Fragment key={key}>{cellsList}</Fragment>;
           }
 
           return (
             <Block
-              key={`block:${index}`}
+              key={key}
               block={block}
               // TODO: Find a way to type ref for a component not known at compile time.
               // @ts-ignore
