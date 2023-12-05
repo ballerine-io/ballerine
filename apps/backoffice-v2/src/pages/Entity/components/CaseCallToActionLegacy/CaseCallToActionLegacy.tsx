@@ -6,21 +6,24 @@ import { DialogContent } from '../../../../common/components/organisms/Dialog/Di
 import { Select } from '../../../../common/components/atoms/Select/Select';
 import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
 import { DialogClose } from '@radix-ui/react-dialog';
-import { ICaseCallToActionProps } from './interfaces';
+import { ICaseCallToActionLegacyProps } from './interfaces';
 import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
 import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
 import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
-import { useCaseCallToActionLogic } from './hooks/useCaseCallToActionLogic/useCaseCallToActionLogic';
+import { useCaseCallToActionLegacyLogic } from '@/pages/Entity/components/CaseCallToActionLegacy/hooks/useCaseCallToActionLegacyLogic/useCaseCallToActionLegacyLogic';
 import { capitalize } from '../../../../common/utils/capitalize/capitalize';
 import { Send } from 'lucide-react';
 import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
 import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
 import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
 
-export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ value, data }) => {
+export const CaseCallToActionLegacy: FunctionComponent<ICaseCallToActionLegacyProps> = ({
+  value,
+  data,
+}) => {
   const {
     // Callbacks
     onMutateApproveCase,
@@ -37,8 +40,9 @@ export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ va
     noReasons,
     isDisabled,
     isLoadingRevisionCase,
+    reasonWithComment,
     // /State
-  } = useCaseCallToActionLogic({
+  } = useCaseCallToActionLegacyLogic({
     parentWorkflowId: data?.parentWorkflowId,
     childWorkflowId: data?.childWorkflowId,
     childWorkflowContextSchema: data?.childWorkflowContextSchema,
@@ -115,7 +119,7 @@ export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ va
                   loading: isLoadingRevisionCase,
                 })}
                 disabled={isLoadingRevisionCase}
-                onClick={onMutateRevisionCase}
+                onClick={onMutateRevisionCase(reasonWithComment)}
               >
                 <Send size={18} />
                 Send email
