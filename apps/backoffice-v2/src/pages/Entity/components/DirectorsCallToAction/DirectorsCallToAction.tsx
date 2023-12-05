@@ -1,18 +1,18 @@
 import { AnyObject } from '@ballerine/ui';
 import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { toTitleCase } from 'string-ts';
-import { CallToAction } from '../CallToAction/CallToAction';
+import { CallToActionLegacy } from '@/pages/Entity/components/CallToActionLegacy/CallToActionLegacy';
+import { ICallToActionLegacyProps } from '@/pages/Entity/components/CallToActionLegacy/interfaces';
+import { getRevisionReasonsForDocument } from './helpers';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import {
   ICallToActionDocumentOption,
   ICallToActionDocumentSelection,
-  ICallToActionProps,
-} from '../CallToAction/interfaces';
-import { getRevisionReasonsForDocument } from './helpers';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+} from '@/pages/Entity/components/DirectorsCallToAction/interfaces';
 
-interface IDirectorsCallToActionProps extends ICallToActionProps {
-  value: ICallToActionProps['value'] & {
-    props: ICallToActionProps['value']['props'] & {
+interface IDirectorsCallToActionProps extends ICallToActionLegacyProps {
+  value: ICallToActionLegacyProps['value'] & {
+    props: ICallToActionLegacyProps['value']['props'] & {
       documents: AnyObject[];
       workflow: AnyObject;
       onReset?: () => void;
@@ -20,12 +20,13 @@ interface IDirectorsCallToActionProps extends ICallToActionProps {
   };
 }
 
-export const DirectorsCallToAction: FunctionComponent<IDirectorsCallToActionProps> = ({
-  value,
-  ...restProps
+export const useDirectorsCallToActionLogic = ({
+  documents,
+  workflow,
+}: {
+  documents: AnyObject[];
+  workflow: AnyObject;
 }) => {
-  const { documents, workflow, onReset, ...restValueProps } = value?.props || {};
-
   const [documentId, setDocumentId] = useState<string | null>(null);
 
   const documentsOptions: ICallToActionDocumentOption[] = useMemo(
@@ -61,13 +62,38 @@ export const DirectorsCallToAction: FunctionComponent<IDirectorsCallToActionProp
     return getRevisionReasonsForDocument(selectedDocument, workflow);
   }, [selectedDocument, workflow]);
 
-  const isCanBeReseted = useMemo(
+  const isCanBeReset = useMemo(
     () => documents.some(document => document.decision?.status === 'revision'),
     [documents],
   );
 
+  return {
+    documentId,
+    documentSelectionProps,
+    revisionReasonsByDocument,
+    isCanBeReset,
+    setDocumentId,
+  };
+};
+
+export const DirectorsCallToAction: FunctionComponent<IDirectorsCallToActionProps> = ({
+  value,
+  ...restProps
+}) => {
+  const { documents, workflow, onReset, ...restValueProps } = value?.props || {};
+  const {
+    documentId,
+    documentSelectionProps,
+    revisionReasonsByDocument,
+    isCanBeReset,
+    setDocumentId,
+  } = useDirectorsCallToActionLogic({
+    documents,
+    workflow,
+  });
+
   return (
-    <CallToAction
+    <CallToActionLegacy
       value={{
         text: value.text,
         props: {
@@ -76,7 +102,7 @@ export const DirectorsCallToAction: FunctionComponent<IDirectorsCallToActionProp
           documentSelection: documentSelectionProps,
           contextUpdateMethod: 'director',
           revisionReasons: revisionReasonsByDocument,
-          onReuploadReset: isCanBeReseted ? onReset : undefined,
+          onReuploadReset: isCanBeReset ? onReset : undefined,
           onDialogClose: () => setDocumentId(null),
         },
       }}

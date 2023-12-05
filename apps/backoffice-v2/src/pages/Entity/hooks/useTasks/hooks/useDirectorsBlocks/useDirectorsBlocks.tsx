@@ -1,4 +1,4 @@
-import { StateTag, getDocumentsByCountry } from '@ballerine/common';
+import { getDocumentsByCountry, StateTag } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import { UseQueryResult } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
@@ -17,6 +17,8 @@ import {
 import { getPostUpdateEventName } from '../../get-post-update-event-name';
 import { motionProps } from '../../motion-props';
 import { selectDirectorsDocuments } from '../../selectors/selectDirectorsDocuments';
+import { getPostUpdateEventNameEvent } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
+import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 
 export type Director = AnyObject;
 
@@ -54,6 +56,22 @@ export const useDirectorsBlocks = (
       mutate({ documentId: document.id, contextUpdateMethod: 'director' });
     });
   }, []);
+
+  const postApproveEventName = getPostUpdateEventNameEvent(workflow);
+  const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
+    useApproveTaskByIdMutation(workflow?.id, postApproveEventName);
+  const onMutateApproveTaskById = useCallback(
+    ({
+        taskId,
+        contextUpdateMethod,
+      }: {
+        taskId: string;
+        contextUpdateMethod: 'base' | 'director';
+      }) =>
+      () =>
+        mutateApproveTaskById({ documentId: taskId, contextUpdateMethod }),
+    [mutateApproveTaskById],
+  );
 
   const blocks = useMemo(() => {
     return directors
@@ -107,16 +125,18 @@ export const useDirectorsBlocks = (
                         },
                       }
                     : {
-                        type: 'directorsCallToAction',
+                        type: 'callToAction',
                         value: {
                           text: 'Approve',
+                          onClick: onMutateApproveTaskById({
+                            taskId: document.id,
+                            contextUpdateMethod: 'director',
+                          }),
                           props: {
-                            documents,
-                            decision: 'approve',
-                            id: document.id,
                             disabled:
                               (!isDoneWithRevision && Boolean(document?.decision?.status)) ||
-                              noAction,
+                              noAction ||
+                              isLoadingApproveTaskById,
                           },
                         },
                       },

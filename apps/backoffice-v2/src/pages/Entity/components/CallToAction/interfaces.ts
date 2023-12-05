@@ -1,26 +1,11 @@
-export interface ICallToActionDocumentOption {
-  name: string;
-  value: string;
-}
+import { GenericAsyncFunction, GenericFunction } from '@/common/types';
+import { ComponentProps } from 'react';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 
-export interface ICallToActionDocumentSelection {
-  options: ICallToActionDocumentOption[];
-  value?: ICallToActionDocumentOption['value'];
-  onSelect: (value: ICallToActionDocumentOption['value']) => void;
-}
 export interface ICallToActionProps {
   value: {
     text: string;
-    props: {
-      id: string;
-      isDisabled: boolean;
-      decision: 'reject' | 'approve' | 'revision' | 'revised';
-      documentSelection?: ICallToActionDocumentSelection;
-      contextUpdateMethod?: 'base' | 'director';
-      revisionReasons?: string[];
-      rejectionReasons?: string[];
-      onReuploadReset?: () => void;
-      onDialogClose?: () => void;
-    };
+    onClick: GenericFunction | GenericAsyncFunction;
+    props?: ComponentProps<typeof MotionButton>;
   };
 }
