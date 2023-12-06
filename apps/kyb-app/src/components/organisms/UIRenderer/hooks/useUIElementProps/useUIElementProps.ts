@@ -49,10 +49,6 @@ export const useUIElementProps = (definition: UIElement<AnyObject>) => {
     return [];
   }, []);
 
-  if (definition.name === 'there-no-companies-with-more-than-25') {
-    console.log('RULE RESULT', disabled);
-  }
-
   return {
     disabled,
     hidden,
