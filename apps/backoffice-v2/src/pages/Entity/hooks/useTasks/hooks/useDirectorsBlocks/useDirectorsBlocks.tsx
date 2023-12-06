@@ -28,7 +28,7 @@ export const useDirectorsBlocks = (
   documentImages: Array<Array<string>>,
 ) => {
   const { mutate } = useRemoveDecisionTaskByIdMutation(
-    workflow.id,
+    workflow?.id,
     getPostUpdateEventName(workflow),
   );
 

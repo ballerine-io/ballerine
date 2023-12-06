@@ -36,7 +36,12 @@ import {
   THelperFormatingLogic,
   Transformer,
 } from '@ballerine/workflow-core';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   ApprovalState,
   Business,
@@ -236,7 +241,27 @@ export class WorkflowService {
     workflow: TWorkflowWithRelations,
     addNextEvents = true,
   ): TWorkflowWithRelations {
-    const isIndividual = 'endUser' in workflow;
+    const getEntity = (workflow: TWorkflowWithRelations) => {
+      if ('endUser' in workflow && !!workflow?.endUser) {
+        return {
+          id: workflow?.endUser?.id,
+          name: `${String(workflow?.endUser?.firstName)} ${String(workflow?.endUser?.lastName)}`,
+          avatarUrl: workflow?.endUser?.avatarUrl,
+          approvalState: workflow?.endUser?.approvalState,
+        };
+      }
+
+      if ('business' in workflow && workflow?.business) {
+        return {
+          id: workflow?.business?.id,
+          name: workflow?.business?.companyName,
+          avatarUrl: null,
+          approvalState: workflow?.business?.approvalState,
+        };
+      }
+
+      throw new InternalServerErrorException('Workflow entity is not defined');
+    };
 
     let nextEvents;
     if (addNextEvents) {
@@ -269,16 +294,7 @@ export class WorkflowService {
           },
         ),
       },
-      entity: {
-        id: isIndividual ? workflow.endUser.id : workflow.business.id,
-        name: isIndividual
-          ? `${String(workflow.endUser.firstName)} ${String(workflow.endUser.lastName)}`
-          : workflow.business.companyName,
-        avatarUrl: isIndividual ? workflow.endUser.avatarUrl : null,
-        approvalState: isIndividual
-          ? workflow.endUser.approvalState
-          : workflow.business.approvalState,
-      },
+      entity: getEntity(workflow),
       endUser: undefined,
       // @ts-expect-error - error from Prisma types fix
       business: undefined,
