@@ -17,19 +17,21 @@ export const useAssociatedCompaniesBlock = ({
   tags,
 }: {
   associatedCompanies: Array<{
-    companyName: string;
-    registrationNumber: string;
     country: string;
+    companyName: string;
     additionalInfo: {
-      associationRelationship: string;
+      companyName: string;
+      customerName: string;
+      kybCompanyName: string;
+      customerCompany: string;
       mainRepresentative: {
-        firstName: string;
-        lastName: string;
         email: string;
+        lastName: string;
+        firstName: string;
       };
+      associationRelationship: string;
     };
-    contactPerson: string;
-    contactEmail: string;
+    registrationNumber: string;
   }>;
   tags: Array<string>;
 }) => {
@@ -139,51 +141,55 @@ export const useAssociatedCompaniesBlock = ({
                       data: [associatedCompany],
                     },
                   },
-                  {
-                    type: 'dialog',
-                    value: {
-                      trigger: (
-                        <MotionButton {...motionProps} variant="outline" className={'ms-3.5'}>
-                          Initiate KYB
-                        </MotionButton>
-                      ),
-                      title: `Initiate KYB for ${associatedCompany.companyName}`,
-                      description: (
-                        <p className={`text-sm`}>
-                          By clicking the button below, an email with a link will be sent to{' '}
-                          {associatedCompany.companyName} &apos;s contact person,{' '}
-                          {associatedCompany.contactPerson}, directing them to provide information
-                          about their company. The case status will then change to &ldquo;Collection
-                          in Progress&ldquo; until the contact person will provide the needed
-                          information.
-                        </p>
-                      ),
-                      close: (
-                        <Button
-                          className={ctw(`gap-x-2`, {
-                            loading: false,
-                          })}
-                          onClick={() => {
-                            console.log('send email');
-                          }}
-                        >
-                          <Send size={18} />
-                          Send email
-                        </Button>
-                      ),
-                      props: {
-                        content: {
-                          className: 'mb-96',
+                  ...(!tags.includes(StateTag.COLLECTION_FLOW)
+                    ? [
+                        {
+                          type: 'dialog',
+                          value: {
+                            trigger: (
+                              <MotionButton {...motionProps} variant="outline" className={'ms-3.5'}>
+                                Initiate KYB
+                              </MotionButton>
+                            ),
+                            title: `Initiate KYB for ${associatedCompany.companyName}`,
+                            description: (
+                              <p className={`text-sm`}>
+                                By clicking the button below, an email with a link will be sent to{' '}
+                                {associatedCompany.companyName} &apos;s contact person,{' '}
+                                {associatedCompany.contactPerson}, directing them to provide
+                                information about their company. The case status will then change to
+                                &ldquo;Collection in Progress&ldquo; until the contact person will
+                                provide the needed information.
+                              </p>
+                            ),
+                            close: (
+                              <Button
+                                className={ctw(`gap-x-2`, {
+                                  loading: false,
+                                })}
+                                onClick={() => {
+                                  console.log('send email');
+                                }}
+                              >
+                                <Send size={18} />
+                                Send email
+                              </Button>
+                            ),
+                            props: {
+                              content: {
+                                className: 'mb-96',
+                              },
+                              title: {
+                                className: `text-2xl`,
+                              },
+                              description: {
+                                asChild: true,
+                              },
+                            },
+                          },
                         },
-                        title: {
-                          className: `text-2xl`,
-                        },
-                        description: {
-                          asChild: true,
-                        },
-                      },
-                    },
-                  },
+                      ]
+                    : []),
                 ],
               })),
             },

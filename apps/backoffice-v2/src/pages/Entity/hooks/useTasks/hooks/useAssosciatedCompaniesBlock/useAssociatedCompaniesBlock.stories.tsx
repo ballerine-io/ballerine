@@ -8,16 +8,12 @@ import { useAssociatedCompaniesBlock } from '@/pages/Entity/hooks/useTasks/hooks
 import { FunctionComponent } from 'react';
 
 const AssociatedCompaniesBlock: FunctionComponent<{
-  associatedCompanies: Array<{
-    companyName: string;
-    registrationNumber: string;
-    registeredCountry: string;
-    relationship: string;
-    contactPerson: string;
-    contactEmail: string;
-  }>;
+  associatedCompanies: Parameters<typeof useAssociatedCompaniesBlock>[0]['associatedCompanies'];
 }> = ({ associatedCompanies }) => {
-  const associatedCompaniesBlock = useAssociatedCompaniesBlock(associatedCompanies);
+  const associatedCompaniesBlock = useAssociatedCompaniesBlock({
+    associatedCompanies,
+    tags: [],
+  });
   const tasks = [...associatedCompaniesBlock];
 
   return (
@@ -61,20 +57,21 @@ export const Default = {
   args: {
     associatedCompanies: [
       {
-        companyName: 'Company 1',
-        registrationNumber: '123456789',
-        registeredCountry: 'United Kingdom',
-        relationship: 'Parent of ACME Corp',
-        contactPerson: 'John Doe',
-        contactEmail: 'test@test.com',
-      },
-      {
-        companyName: 'Company 2',
-        registrationNumber: '123456789',
-        registeredCountry: 'United Kingdom',
-        relationship: 'Parent of ACME Corp',
-        contactPerson: 'John Doe',
-        contactEmail: 'test@test.com',
+        country: 'AS',
+        companyName: '1321312',
+        additionalInfo: {
+          companyName: 'ReDial Limited',
+          customerName: 'Associated customer',
+          kybCompanyName: 'ReDial Limited',
+          customerCompany: 'Associated customer',
+          mainRepresentative: {
+            email: 'danielb+23121@ballerine.com',
+            lastName: 'DOE',
+            firstName: 'JSON',
+          },
+          associationRelationship: 'Minority Shareholder in ReDial Limited',
+        },
+        registrationNumber: 'dwadwadw',
       },
     ],
   },
