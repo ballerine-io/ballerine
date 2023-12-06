@@ -16,6 +16,7 @@ export const fields: Record<
   | RJSFInputAdapter<boolean, unknown>
   | RJSFInputAdapter<File, unknown>
   | RJSFInputAdapter<MultiSelectValue[], MultiSelectProps>
+  | RJSFInputAdapter<string | null>
 > = {
   // Component with suffix Field is an overriding of internal RSJV components
   StringField: TextInputAdapter,
