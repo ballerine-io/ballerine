@@ -266,14 +266,14 @@ export const useTasks = ({
   const taskBlocks =
     documents?.map(
       ({ id, type: docType, category, properties, propertiesSchema, decision }, docIndex) => {
-        const additionProperties =
-          isExistingSchemaForDocument(documentsSchemas) &&
-          composePickableCategoryType(
-            category,
-            docType,
-            documentsSchemas,
-            workflow.workflowDefinition?.config,
-          );
+        const additionalProperties = isExistingSchemaForDocument(documentsSchemas ?? [])
+          ? composePickableCategoryType(
+              category,
+              docType,
+              documentsSchemas ?? [],
+              workflow.workflowDefinition?.config,
+            )
+          : {};
 
         const isDoneWithRevision =
           decision?.status === 'revised' && parentMachine?.status === 'completed';
@@ -438,7 +438,7 @@ export const useTasks = ({
                 title: `${category} - ${docType}`,
                 data: Object.entries(
                   {
-                    ...additionProperties,
+                    ...additionalProperties,
                     ...propertiesSchema?.properties,
                   } ?? {},
                 )?.map(

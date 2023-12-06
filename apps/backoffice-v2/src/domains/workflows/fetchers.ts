@@ -121,7 +121,6 @@ export const fetchWorkflowById = async ({
                   country: 'AS',
                   companyName: '1321312',
                   additionalInfo: {
-                    companyName: 'ReDial Limited',
                     customerName: 'Associated customer',
                     kybCompanyName: 'ReDial Limited',
                     customerCompany: 'Associated customer',
@@ -148,6 +147,36 @@ export const fetchWorkflowById = async ({
           },
         },
       },
+      childWorkflows: [
+        {
+          entity: {
+            data: {
+              country: 'AS',
+              companyName: '1321312',
+              additionalInfo: {
+                companyName: 'ReDial Limited',
+                customerName: 'Associated customer',
+                kybCompanyName: 'ReDial Limited',
+                customerCompany: 'Associated customer',
+                mainRepresentative: {
+                  email: 'danielb+23121@ballerine.com',
+                  lastName: 'DOE',
+                  firstName: 'JSON',
+                },
+                associationRelationship: 'Minority Shareholder in ReDial Limited',
+              },
+              registrationNumber: 'dwadwadw',
+            },
+            type: 'business',
+            ballerineEntityId: 'clpsfckh7000yy8l08jubaaey',
+          },
+          metadata: {
+            token: '302311e0-7d8c-46b1-8e47-dc56fe14c172',
+            customerName: 'Associated customer',
+          },
+          customerName: 'Associated customer',
+        },
+      ],
     })),
   });
 
