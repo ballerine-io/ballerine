@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.33
+
+### Patch Changes
+
+- added default context for defintion testing
+
 ## 0.7.32
 
 ### Patch Changes
