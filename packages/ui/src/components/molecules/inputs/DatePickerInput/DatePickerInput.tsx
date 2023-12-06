@@ -3,9 +3,10 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { FocusEvent, useCallback, useMemo, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
-import { Paper, TextField, TextFieldProps, ThemeProvider } from '@mui/material';
+import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
 import { muiTheme } from '@/common/mui-theme';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Paper } from '@/components/atoms';
 
 export interface DatePickerChangeEvent {
   target: {
