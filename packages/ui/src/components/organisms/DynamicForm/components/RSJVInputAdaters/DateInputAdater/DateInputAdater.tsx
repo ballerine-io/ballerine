@@ -26,14 +26,12 @@ export const DateInputAdater: RJSFInputAdapter<string | null> = ({
       const dateValue = event.target.value;
       if (dateValue === null) return onChange(null);
 
-      const dateString = dateValue;
-
       // every onChange call in context of DateInput forces re-render of component which eventually dicsonnects user focus from input
       // in cases when date considered as valid e.g 05/12/0100 but doesnt make sense onChange call should be skipped
       // validating date with helper below
-      if (!isValidDate(dateString)) return;
+      if (!isValidDate(dateValue)) return;
 
-      onChange(dateString);
+      onChange(dateValue);
     },
     [onChange],
   );
