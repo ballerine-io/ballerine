@@ -22,7 +22,7 @@ export interface UseCallToActionLogicParams {
   onDialogClose?: () => void;
 }
 
-export const getPostUpdateEventNameEvent = (workflow: TWorkflowById) => {
+export const getPostApproveEventNameEvent = (workflow: TWorkflowById) => {
   if (!workflow?.workflowDefinition?.config?.workflowLevelResolution) {
     return CommonWorkflowEvent.TASK_REVIEWED;
   }
@@ -41,7 +41,7 @@ export const useCallToActionLegacyLogic = (params: UseCallToActionLogicParams) =
   const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
-  const postUpdateEventName = getPostUpdateEventNameEvent(workflow);
+  const postUpdateEventName = getPostApproveEventNameEvent(workflow);
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id, postUpdateEventName);

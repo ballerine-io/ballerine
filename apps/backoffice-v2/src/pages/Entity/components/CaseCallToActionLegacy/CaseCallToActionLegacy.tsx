@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { ComponentProps, FunctionComponent } from 'react';
 import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
 import { Button } from '../../../../common/components/atoms/Button/Button';
 import { ctw } from '../../../../common/utils/ctw/ctw';
@@ -19,6 +19,14 @@ import { Send } from 'lucide-react';
 import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
 import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
 import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+
+const motionProps: ComponentProps<typeof MotionButton> = {
+  exit: { opacity: 0, transition: { duration: 0.2 } },
+  initial: { y: 10, opacity: 0 },
+  transition: { type: 'spring', bounce: 0.3 },
+  animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
+};
 
 export const CaseCallToActionLegacy: FunctionComponent<ICaseCallToActionLegacyProps> = ({
   value,
@@ -52,9 +60,14 @@ export const CaseCallToActionLegacy: FunctionComponent<ICaseCallToActionLegacyPr
     return (
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant={`warning`} disabled={data?.disabled || isDisabled}>
+          <MotionButton
+            {...motionProps}
+            size="wide"
+            variant="warning"
+            disabled={data?.disabled || isDisabled}
+          >
             {value}
-          </Button>
+          </MotionButton>
         </DialogTrigger>
         <DialogContent className={`mb-96`}>
           <DialogHeader>

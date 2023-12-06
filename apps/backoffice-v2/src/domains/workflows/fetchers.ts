@@ -149,32 +149,110 @@ export const fetchWorkflowById = async ({
       },
       childWorkflows: [
         {
-          entity: {
-            data: {
-              country: 'AS',
-              companyName: '1321312',
-              additionalInfo: {
-                companyName: 'ReDial Limited',
-                customerName: 'Associated customer',
-                kybCompanyName: 'ReDial Limited',
-                customerCompany: 'Associated customer',
-                mainRepresentative: {
-                  email: 'danielb+23121@ballerine.com',
-                  lastName: 'DOE',
-                  firstName: 'JSON',
+          context: {
+            entity: {
+              data: {
+                country: 'AD',
+                companyName: 'e1e2e1',
+                businessType: 'Private Limited Company (Ltd)',
+                additionalInfo: {
+                  companyName: 'ReDial Limited',
+                  customerName: 'Associated customer',
+                  headquarters: {
+                    city: 'dwadwa',
+                    phone: '15413214123',
+                    street: 'dwadwadwa',
+                    country: 'AD',
+                    postalCode: '132131',
+                    streetNumber: 123,
+                  },
+                  kybCompanyName: 'ReDial Limited',
+                  customerCompany: 'Associated customer',
+                  mainRepresentative: {
+                    email: 'danielb+2ddw@ballerine.com',
+                    lastName: 'e21e12',
+                    firstName: '1e21e21',
+                  },
+                  dateOfEstablishment: '1991-04-11T21:00:00.000Z',
+                  associationRelationship: 'Affiliate with ReDial Limited',
                 },
-                associationRelationship: 'Minority Shareholder in ReDial Limited',
+                registrationNumber: 'dwadwadwa',
+                taxIdentificationNumber: 'dwawdaad',
               },
-              registrationNumber: 'dwadwadw',
+              type: 'business',
+              ballerineEntityId: 'clptm7a62000iy8bsqapoy01a',
             },
-            type: 'business',
-            ballerineEntityId: 'clpsfckh7000yy8l08jubaaey',
-          },
-          metadata: {
-            token: '302311e0-7d8c-46b1-8e47-dc56fe14c172',
+            metadata: {
+              token: 'b4ab00da-742b-4009-ab6d-6836e0aabfb3',
+              customerName: 'Associated customer',
+            },
+            documents: [
+              {
+                id: 'certificate-of-incorporation',
+                type: 'certificate_of_incorporation',
+                pages: [
+                  {
+                    type: 'image/png',
+                    fileName: 'Screenshot from 2023-12-05 13-42-57.png',
+                    ballerineFileId: 'clptm8uwn0013y8bskpe1nv3r',
+                  },
+                ],
+                issuer: { country: 'ZZ' },
+                version: '1',
+                category: 'proof_of_registration',
+                decision: {},
+                properties: {},
+                issuingVersion: 1,
+                propertiesSchema: {
+                  type: 'object',
+                  properties: {
+                    issueDate: { type: 'string', format: 'date', formatMaximum: '2023-12-06' },
+                    businessName: { type: 'string' },
+                    registrationNumber: { type: 'string', pattern: '^[a-zA-Z0-9]*$' },
+                  },
+                },
+              },
+              {
+                id: 'business-utility-bill',
+                type: 'business_utility_bill',
+                pages: [
+                  {
+                    type: 'image/png',
+                    fileName: 'Screenshot from 2023-12-05 14-05-57.png',
+                    ballerineFileId: 'clptm8xnp0015y8bsek1amlbk',
+                  },
+                ],
+                issuer: { country: 'ZZ' },
+                version: '1',
+                category: 'proof_of_ownership',
+                decision: {},
+                properties: {},
+                issuingVersion: 1,
+                propertiesSchema: {
+                  type: 'object',
+                  required: ['businessName', 'payerName', 'issueDate'],
+                  properties: {
+                    issueDate: { type: 'string', format: 'date', formatMaximum: '2023-12-06' },
+                    payerName: { type: 'string' },
+                    businessName: { type: 'string' },
+                  },
+                },
+              },
+            ],
+            flowConfig: {
+              apiUrl: 'http://localhost:3000',
+              tokenId: 'b4ab00da-742b-4009-ab6d-6836e0aabfb3',
+              appState: 'finish',
+              stepsProgress: {
+                company_information: { isCompleted: true },
+                business_address_information: { isCompleted: true },
+              },
+              customerCompany: 'Associated customer',
+            },
             customerName: 'Associated customer',
+            pluginsOutput: { associated_company_email: {} },
+            workflowRuntimeId: 'clptm7a6a000ty8bsautnv44a',
           },
-          customerName: 'Associated customer',
         },
       ],
     })),

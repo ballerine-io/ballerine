@@ -32,16 +32,16 @@ import {
 import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
-import { getPostUpdateEventName } from './get-post-update-event-name';
+import { getPostRemoveDecisionEventName } from './get-post-remove-decision-event-name';
 import { motionProps } from './motion-props';
 import { selectDirectorsDocuments } from './selectors/selectDirectorsDocuments';
 import { getPhoneNumberFormatter } from '../../../../common/utils/get-phone-number-formatter/get-phone-number-formatter';
-import { selectWorkflowDocuments } from './selectors/selectWorkflowDocuments';
 import { useDocumentPageImages } from '@/pages/Entity/hooks/useTasks/hooks/useDocumentPageImages';
 import { useDirectorsBlocks } from '@/pages/Entity/hooks/useTasks/hooks/useDirectorsBlocks';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
-import { getPostUpdateEventNameEvent } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
+import { getPostApproveEventNameEvent } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useAssociatedCompaniesBlock } from '@/pages/Entity/hooks/useTasks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { selectWorkflowDocuments } from '@/pages/Entity/hooks/useTasks/selectors/selectWorkflowDocuments';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -70,9 +70,9 @@ const getDocumentsSchemas = (
       return unique;
     }, [] as TDocument[])
     .filter((documentSchema: TDocument) => {
-      if (!workflow.workflowDefinition.config?.availableDocuments) return true;
+      if (!workflow?.workflowDefinition?.config?.availableDocuments) return true;
 
-      const isIncludes = !!workflow.workflowDefinition.config?.availableDocuments.find(
+      const isIncludes = !!workflow?.workflowDefinition?.config?.availableDocuments.find(
         (availableDocument: TAvailableDocuments[number]) =>
           availableDocument.type === documentSchema.type &&
           availableDocument.category === documentSchema.category,
@@ -84,170 +84,31 @@ const getDocumentsSchemas = (
   if (!Array.isArray(documentSchemaByCountry) || !documentSchemaByCountry.length) {
     console.warn(
       `No document schema found for issuer country code of "${issuerCountryCode}" and documents schema of\n`,
-      workflow.workflowDefinition?.documentsSchema,
+      workflow?.workflowDefinition?.documentsSchema,
     );
   }
 
   return documentSchemaByCountry;
 };
 
-export const useTasks = ({
+export const useDocumentBlocks = ({
   workflow,
-  entity,
-  pluginsOutput,
-  documents,
   parentMachine,
-}: {
-  workflow: TWorkflowById;
-  entity: TWorkflowById['context']['entity'];
-  pluginsOutput: TWorkflowById['context']['pluginsOutput'];
-  documents: TWorkflowById['context']['documents'];
-  parentMachine: TWorkflowById['context']['parentMachine'];
+  noAction,
+  caseState,
+  withEntityNameInHeader,
 }) => {
-  const {
-    store,
-    bank: bankDetails,
-    directors: directorsUserProvided = [],
-    mainRepresentative,
-    mainContact,
-    openCorporate: _openCorporate,
-    ...entityDataAdditionalInfo
-  } = workflow?.context?.entity?.data?.additionalInfo ?? {};
-  const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
-  const { data: session } = useAuthenticatedUserQuery();
-  const caseState = useCaseState(session?.user, workflow);
-  const postUpdateEventName = getPostUpdateEventName(workflow);
-  // const deliverEvent = workflow?.workflowDefinition?.config?.deliverEvent;
-  const workflowDocuments = useMemo(() => selectWorkflowDocuments(workflow), [workflow]);
-  const directorsDocuments = useMemo(() => selectDirectorsDocuments(workflow), [workflow]);
-  const workflowDocumentPages = useMemo(
-    () =>
-      workflowDocuments.flatMap(({ pages }) =>
-        pages?.map(({ ballerineFileId }) => ballerineFileId),
-      ),
-    [workflowDocuments],
-  );
-
-  const directorDocumentPages = useMemo(
-    () =>
-      directorsDocuments.flatMap(({ pages }) =>
-        pages?.map(({ ballerineFileId }) => ballerineFileId),
-      ),
-    [directorsDocuments],
-  );
-
-  const workflowDocsData = useStorageFilesQuery(workflowDocumentPages);
-  const directorsDocsData = useStorageFilesQuery(directorDocumentPages);
-
-  const { noAction } = useCaseDecision();
-  const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(
-    workflow?.id,
-    postUpdateEventName,
-  );
-
-  const workflowDocumentPagesResults: Array<Array<string>> = useDocumentPageImages(
-    workflowDocuments,
-    workflowDocsData,
-  );
-
-  const directorsDocumentPagesResults: Array<Array<string>> = useDocumentPageImages(
-    directorsDocuments,
-    directorsDocsData,
-  );
-
-  const filteredPluginsOutput = useMemo(
-    () => omitPropsFromObject(pluginsOutput, ...pluginsOutputBlacklist),
-    [pluginsOutput],
-  );
-
-  const pluginsOutputKeys = Object.keys(filteredPluginsOutput ?? {});
-  const address = getAddressDeep(filteredPluginsOutput, {
-    propertyName: 'registeredAddressInFull',
-  });
-  const { data: locations } = useNominatimQuery(address);
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
-
   const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
+  const postApproveEventName = getPostApproveEventNameEvent(workflow);
+  const documents = useMemo(() => selectWorkflowDocuments(workflow), [workflow]);
+  const documentPages = useMemo(
+    () => documents.flatMap(({ pages }) => pages?.map(({ ballerineFileId }) => ballerineFileId)),
+    [documents],
+  );
+  const storageFilesQueryResult = useStorageFilesQuery(documentPages);
+  const documentPagesResults = useDocumentPageImages(documents, storageFilesQueryResult);
 
-  const registryInfoBlock =
-    Object.keys(filteredPluginsOutput ?? {}).length === 0
-      ? []
-      : pluginsOutputKeys
-          ?.filter(
-            key =>
-              !!Object.keys(filteredPluginsOutput[key] ?? {})?.length &&
-              !('error' in filteredPluginsOutput[key]),
-          )
-          ?.map((key, index, collection) => ({
-            cells: [
-              {
-                type: 'container',
-                value: [
-                  {
-                    id: 'nested-details-heading',
-                    type: 'heading',
-                    value: 'Registry Information',
-                  },
-                  {
-                    type: 'subheading',
-                    value: 'Registry-provided data',
-                  },
-                ],
-              },
-              {
-                type: 'details',
-                hideSeparator: index === collection.length - 1,
-                value: {
-                  data: Object.entries(filteredPluginsOutput[key] ?? {})?.map(([title, value]) => ({
-                    title,
-                    value,
-                  })),
-                },
-                workflowId: workflow?.id,
-                documents: workflow?.context?.documents,
-              },
-            ],
-          }));
-
-  const kybRegistryInfoBlock =
-    Object.keys(pluginsOutput?.businessInformation?.data?.[0] ?? {}).length === 0
-      ? []
-      : [
-          {
-            cells: [
-              {
-                type: 'container',
-                value: [
-                  {
-                    id: 'nested-details-heading',
-                    type: 'heading',
-                    value: 'Registry Information',
-                  },
-                  {
-                    type: 'subheading',
-                    value: 'Registry-provided data',
-                  },
-                ],
-              },
-              {
-                type: 'details',
-                hideSeparator: true,
-                value: {
-                  data: Object.entries(pluginsOutput?.businessInformation?.data?.[0])?.map(
-                    ([title, value]) => ({
-                      title,
-                      value,
-                    }),
-                  ),
-                },
-                workflowId: workflow?.id,
-                documents: workflow?.context?.documents,
-              },
-            ],
-          },
-        ];
-
-  const postApproveEventName = getPostUpdateEventNameEvent(workflow);
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id, postApproveEventName);
   const onMutateApproveTaskById = useCallback(
@@ -262,8 +123,13 @@ export const useTasks = ({
         mutateApproveTaskById({ documentId: taskId, contextUpdateMethod }),
     [mutateApproveTaskById],
   );
+  const postRemoveDecisionEventName = getPostRemoveDecisionEventName(workflow);
+  const { mutate: onMutateRemoveDecisionById } = useRemoveDecisionTaskByIdMutation(
+    workflow?.id,
+    postRemoveDecisionEventName,
+  );
 
-  const taskBlocks =
+  return (
     documents?.map(
       ({ id, type: docType, category, properties, propertiesSchema, decision }, docIndex) => {
         const additionalProperties = isExistingSchemaForDocument(documentsSchemas ?? [])
@@ -271,10 +137,9 @@ export const useTasks = ({
               category,
               docType,
               documentsSchemas ?? [],
-              workflow.workflowDefinition?.config,
+              workflow?.workflowDefinition?.config,
             )
           : {};
-
         const isDoneWithRevision =
           decision?.status === 'revised' && parentMachine?.status === 'completed';
         const isDocumentRevision =
@@ -306,7 +171,7 @@ export const useTasks = ({
                         {!isLegacyReject && (
                           <X
                             className="h-4 w-4 cursor-pointer"
-                            onClick={() => removeDecisionById({ documentId: id })}
+                            onClick={() => onMutateRemoveDecisionById({ documentId: id })}
                           />
                         )}
                       </React.Fragment>
@@ -393,15 +258,17 @@ export const useTasks = ({
           ];
         };
 
+        const entityNameOrNA = valueOrNA(toTitleCase(workflow?.context?.entity?.data?.name ?? ''));
+        const categoryOrNA = valueOrNA(toTitleCase(category ?? ''));
+        const documentTypeOrNA = valueOrNA(toTitleCase(docType ?? ''));
+        const documentNameOrNA = `${categoryOrNA} - ${documentTypeOrNA}`;
         const headerCell = {
           id: 'header',
           type: 'container',
           value: [
             {
               type: 'heading',
-              value: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
-                toTitleCase(docType ?? ''),
-              )}`,
+              value: `${withEntityNameInHeader ? `${entityNameOrNA} ` : ''}${documentNameOrNA}`,
             },
             {
               id: 'actions',
@@ -485,7 +352,7 @@ export const useTasks = ({
         const documentsCell = {
           type: 'multiDocuments',
           value: {
-            isLoading: workflowDocsData?.some(({ isLoading }) => isLoading),
+            isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
             data:
               documents?.[docIndex]?.pages?.map(
                 ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
@@ -493,7 +360,7 @@ export const useTasks = ({
                   title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
                     toTitleCase(docType ?? ''),
                   )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                  imageUrl: workflowDocumentPagesResults[docIndex][pageIndex],
+                  imageUrl: documentPagesResults[docIndex][pageIndex],
                   fileType: type,
                   fileName,
                 }),
@@ -510,7 +377,154 @@ export const useTasks = ({
           cells: [headerCell, detailsCell, documentsCell],
         };
       },
-    ) ?? [];
+    ) ?? []
+  );
+};
+
+export const useTasks = ({
+  workflow,
+  entity,
+  pluginsOutput,
+  documents,
+  parentMachine,
+}: {
+  workflow: TWorkflowById;
+  entity: TWorkflowById['context']['entity'];
+  pluginsOutput: TWorkflowById['context']['pluginsOutput'];
+  documents: TWorkflowById['context']['documents'];
+  parentMachine: TWorkflowById['context']['parentMachine'];
+}) => {
+  const {
+    store,
+    bank: bankDetails,
+    directors: directorsUserProvided = [],
+    mainRepresentative,
+    mainContact,
+    openCorporate: _openCorporate,
+    ...entityDataAdditionalInfo
+  } = workflow?.context?.entity?.data?.additionalInfo ?? {};
+  const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
+  const { data: session } = useAuthenticatedUserQuery();
+  const caseState = useCaseState(session?.user, workflow);
+  const { noAction } = useCaseDecision();
+
+  const directorsDocuments = useMemo(() => selectDirectorsDocuments(workflow), [workflow]);
+  const directorDocumentPages = useMemo(
+    () =>
+      directorsDocuments.flatMap(({ pages }) =>
+        pages?.map(({ ballerineFileId }) => ballerineFileId),
+      ),
+    [directorsDocuments],
+  );
+  const directorsStorageFilesQueryResult = useStorageFilesQuery(directorDocumentPages);
+  const directorsDocumentPagesResults: Array<Array<string>> = useDocumentPageImages(
+    directorsDocuments,
+    directorsStorageFilesQueryResult,
+  );
+
+  const filteredPluginsOutput = useMemo(
+    () => omitPropsFromObject(pluginsOutput, ...pluginsOutputBlacklist),
+    [pluginsOutput],
+  );
+
+  const pluginsOutputKeys = Object.keys(filteredPluginsOutput ?? {});
+  const address = getAddressDeep(filteredPluginsOutput, {
+    propertyName: 'registeredAddressInFull',
+  });
+  const { data: locations } = useNominatimQuery(address);
+
+  const registryInfoBlock =
+    Object.keys(filteredPluginsOutput ?? {}).length === 0
+      ? []
+      : pluginsOutputKeys
+          ?.filter(
+            key =>
+              !!Object.keys(filteredPluginsOutput[key] ?? {})?.length &&
+              !('error' in filteredPluginsOutput[key]),
+          )
+          ?.map((key, index, collection) => ({
+            cells: [
+              {
+                type: 'container',
+                value: [
+                  {
+                    id: 'nested-details-heading',
+                    type: 'heading',
+                    value: 'Registry Information',
+                  },
+                  {
+                    type: 'subheading',
+                    value: 'Registry-provided data',
+                  },
+                ],
+              },
+              {
+                type: 'details',
+                hideSeparator: index === collection.length - 1,
+                value: {
+                  data: Object.entries(filteredPluginsOutput[key] ?? {})?.map(([title, value]) => ({
+                    title,
+                    value,
+                  })),
+                },
+                workflowId: workflow?.id,
+                documents: workflow?.context?.documents,
+              },
+            ],
+          }));
+
+  const kybRegistryInfoBlock =
+    Object.keys(pluginsOutput?.businessInformation?.data?.[0] ?? {}).length === 0
+      ? []
+      : [
+          {
+            cells: [
+              {
+                type: 'container',
+                value: [
+                  {
+                    id: 'nested-details-heading',
+                    type: 'heading',
+                    value: 'Registry Information',
+                  },
+                  {
+                    type: 'subheading',
+                    value: 'Registry-provided data',
+                  },
+                ],
+              },
+              {
+                type: 'details',
+                hideSeparator: true,
+                value: {
+                  data: Object.entries(pluginsOutput?.businessInformation?.data?.[0])?.map(
+                    ([title, value]) => ({
+                      title,
+                      value,
+                    }),
+                  ),
+                },
+                workflowId: workflow?.id,
+                documents: workflow?.context?.documents,
+              },
+            ],
+          },
+        ];
+
+  const parentDocumentBlocks = useDocumentBlocks({
+    workflow,
+    parentMachine,
+    noAction,
+    caseState,
+    withEntityNameInHeader: false,
+  });
+  const childDocumentBlocks = useDocumentBlocks({
+    workflow: workflow?.childWorkflows?.[0],
+    parentMachine,
+    noAction,
+    caseState,
+    withEntityNameInHeader: true,
+  });
 
   const entityInfoBlock =
     Object.keys(entity?.data ?? {}).length === 0
@@ -1256,7 +1270,7 @@ export const useTasks = ({
 
   const directorsDocumentsBlocks = useDirectorsBlocks(
     workflow,
-    directorsDocsData,
+    directorsStorageFilesQueryResult,
     directorsDocumentPagesResults,
   );
 
@@ -1688,6 +1702,7 @@ export const useTasks = ({
           ...entityInfoBlock,
           ...registryInfoBlock,
           ...associatedCompaniesBlock,
+          ...childDocumentBlocks,
           ...kybRegistryInfoBlock,
           ...companySanctionsBlock,
           ...directorsUserProvidedBlock,
@@ -1701,21 +1716,17 @@ export const useTasks = ({
           ...mainContactBlock,
           ...mainRepresentativeBlock,
           ...mapBlock,
-          ...taskBlocks,
+          ...parentDocumentBlocks,
         ]
       : [];
   }, [
     address,
     caseState.writeEnabled,
-    workflowDocsData,
     documents,
-    documentsSchemas,
     entity,
     parentMachine?.status,
     pluginsOutput,
     pluginsOutputKeys,
-    workflowDocumentPagesResults,
     noAction,
-    removeDecisionById,
   ]);
 };
