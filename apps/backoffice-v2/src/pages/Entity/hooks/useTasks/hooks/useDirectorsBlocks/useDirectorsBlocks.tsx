@@ -46,6 +46,10 @@ export const useDirectorsBlocks = (
     const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
     const documentsSchemas = issuerCountryCode ? getDocumentsByCountry(issuerCountryCode) : [];
 
+    if (!Array.isArray(documentsSchemas) || !documentsSchemas.length) {
+      console.warn(`No document schema found for issuer country code of "${issuerCountryCode}".`);
+    }
+
     return documentsSchemas;
   }, [workflow]);
 

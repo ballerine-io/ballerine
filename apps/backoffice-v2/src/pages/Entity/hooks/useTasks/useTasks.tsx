@@ -83,7 +83,7 @@ const getDocumentsSchemas = (
 
   if (!Array.isArray(documentSchemaByCountry) || !documentSchemaByCountry.length) {
     console.warn(
-      `No document schema found for issuer country code of ${issuerCountryCode} and documents schema of\n`,
+      `No document schema found for issuer country code of "${issuerCountryCode}" and documents schema of\n`,
       workflow.workflowDefinition?.documentsSchema,
     );
   }
