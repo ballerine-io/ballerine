@@ -1,15 +1,16 @@
 import {
   CommonWorkflowStates,
-  StateTag,
   getDocumentsByCountry,
-  isNullish,
-  TDocument,
   getDocumentSchemaByCountry,
+  isNullish,
+  StateTag,
+  TAvailableDocuments,
+  TDocument,
 } from '@ballerine/common';
 import { Badge } from '@ballerine/ui';
 import { X } from 'lucide-react';
 import * as React from 'react';
-import { ComponentProps, useMemo } from 'react';
+import { ComponentProps, useCallback, useMemo } from 'react';
 import { toTitleCase, toUpperCase } from 'string-ts';
 import { WarningFilledSvg } from '../../../../common/components/atoms/icons';
 import { ctw } from '../../../../common/utils/ctw/ctw';
@@ -38,6 +39,10 @@ import { getPhoneNumberFormatter } from '../../../../common/utils/get-phone-numb
 import { selectWorkflowDocuments } from './selectors/selectWorkflowDocuments';
 import { useDocumentPageImages } from '@/pages/Entity/hooks/useTasks/hooks/useDocumentPageImages';
 import { useDirectorsBlocks } from '@/pages/Entity/hooks/useTasks/hooks/useDirectorsBlocks';
+import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
+import { getPostUpdateEventNameEvent } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
+import { useAssociatedCompaniesBlock } from '@/pages/Entity/hooks/useTasks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -47,34 +52,45 @@ const pluginsOutputBlacklist = [
   'website_monitoring',
 ];
 
-function getDocumentsSchemas(issuerCountryCode, workflow: TWorkflowById) {
-  return (
-    issuerCountryCode &&
-    getDocumentSchemaByCountry(
-      issuerCountryCode,
-      workflow.workflowDefinition?.documentsSchema as TDocument[],
-    )
-      .concat(getDocumentsByCountry(issuerCountryCode))
-      .reduce((unique: TDocument[], item: TDocument) => {
-        const isDuplicate = unique.some(u => u.type === item.type && u.category === item.category);
-        if (!isDuplicate) {
-          unique.push(item);
-        }
-        return unique;
-      }, [] as TDocument[])
-      .filter((documentSchema: TDocument) => {
-        if (!workflow.workflowDefinition.config?.availableDocuments) return true;
+const getDocumentsSchemas = (
+  issuerCountryCode: Parameters<typeof getDocumentSchemaByCountry>[0],
+  workflow: TWorkflowById,
+) => {
+  if (!issuerCountryCode) return;
 
-        const isIncludes = !!workflow.workflowDefinition.config?.availableDocuments.find(
-          (availableDocument: TAvailableDocuments[number]) =>
-            availableDocument.type === documentSchema.type &&
-            availableDocument.category === documentSchema.category,
-        );
+  const documentSchemaByCountry = getDocumentSchemaByCountry(
+    issuerCountryCode,
+    workflow.workflowDefinition?.documentsSchema as TDocument[],
+  )
+    .concat(getDocumentsByCountry(issuerCountryCode))
+    .reduce((unique: TDocument[], item: TDocument) => {
+      const isDuplicate = unique.some(u => u.type === item.type && u.category === item.category);
+      if (!isDuplicate) {
+        unique.push(item);
+      }
+      return unique;
+    }, [] as TDocument[])
+    .filter((documentSchema: TDocument) => {
+      if (!workflow.workflowDefinition.config?.availableDocuments) return true;
 
-        return isIncludes;
-      })
-  );
-}
+      const isIncludes = !!workflow.workflowDefinition.config?.availableDocuments.find(
+        (availableDocument: TAvailableDocuments[number]) =>
+          availableDocument.type === documentSchema.type &&
+          availableDocument.category === documentSchema.category,
+      );
+
+      return isIncludes;
+    });
+
+  if (!Array.isArray(documentSchemaByCountry) || !documentSchemaByCountry.length) {
+    console.warn(
+      `No document schema found for issuer country code of "${issuerCountryCode}" and documents schema of\n`,
+      workflow.workflowDefinition?.documentsSchema,
+    );
+  }
+
+  return documentSchemaByCountry;
+};
 
 export const useTasks = ({
   workflow,
@@ -232,17 +248,33 @@ export const useTasks = ({
           },
         ];
 
+  const postApproveEventName = getPostUpdateEventNameEvent(workflow);
+  const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
+    useApproveTaskByIdMutation(workflow?.id, postApproveEventName);
+  const onMutateApproveTaskById = useCallback(
+    ({
+        taskId,
+        contextUpdateMethod,
+      }: {
+        taskId: string;
+        contextUpdateMethod: 'base' | 'director';
+      }) =>
+      () =>
+        mutateApproveTaskById({ documentId: taskId, contextUpdateMethod }),
+    [mutateApproveTaskById],
+  );
+
   const taskBlocks =
     documents?.map(
       ({ id, type: docType, category, properties, propertiesSchema, decision }, docIndex) => {
-        const additionProperties =
-          isExistingSchemaForDocument(documentsSchemas) &&
-          composePickableCategoryType(
-            category,
-            docType,
-            documentsSchemas,
-            workflow.workflowDefinition?.config,
-          );
+        const additionalProperties = isExistingSchemaForDocument(documentsSchemas ?? [])
+          ? composePickableCategoryType(
+              category,
+              docType,
+              documentsSchemas ?? [],
+              workflow.workflowDefinition?.config,
+            )
+          : {};
 
         const isDoneWithRevision =
           decision?.status === 'revised' && parentMachine?.status === 'completed';
@@ -317,21 +349,24 @@ export const useTasks = ({
             ];
           }
 
+          const revisionReasons =
+            workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+              ({ enum: enum_ }) => !!enum_,
+            )?.enum;
+          const rejectionReasons =
+            workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
+              ({ enum: enum_ }) => !!enum_,
+            )?.enum;
+
           return [
             {
-              type: 'callToAction',
+              type: 'callToActionLegacy',
               // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
               value: {
                 text: isLegacyReject ? 'Reject' : 'Re-upload needed',
                 props: {
-                  revisionReasons:
-                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
-                      ({ enum: enum_ }) => !!enum_,
-                    )?.enum,
-                  rejectionReasons:
-                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
-                      ({ enum: enum_ }) => !!enum_,
-                    )?.enum,
+                  revisionReasons,
+                  rejectionReasons,
                   id,
                   disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
                   decision: 'reject',
@@ -342,18 +377,17 @@ export const useTasks = ({
               type: 'callToAction',
               value: {
                 text: 'Approve',
+                onClick: onMutateApproveTaskById({
+                  taskId: id,
+                  contextUpdateMethod: 'base',
+                }),
                 props: {
-                  revisionReasons:
-                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
-                      ({ enum: enum_ }) => !!enum_,
-                    )?.enum,
-                  rejectionReasons:
-                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
-                      ({ enum: enum_ }) => !!enum_,
-                    )?.enum,
-                  id,
-                  disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
-                  decision: 'approve',
+                  disabled:
+                    (!isDoneWithRevision && Boolean(decision?.status)) ||
+                    noAction ||
+                    isLoadingApproveTaskById,
+                  size: 'wide',
+                  variant: 'success',
                 },
               },
             },
@@ -405,7 +439,7 @@ export const useTasks = ({
                 title: `${category} - ${docType}`,
                 data: Object.entries(
                   {
-                    ...additionProperties,
+                    ...additionalProperties,
                     ...propertiesSchema?.properties,
                   } ?? {},
                 )?.map(
@@ -1643,6 +1677,25 @@ export const useTasks = ({
             ],
           },
         ];
+  const { mutate: mutateEvent, isLoading: isLoadingEvent } = useEventMutation();
+  const onMutateEvent = useCallback(
+    ({ workflowId, event }: Parameters<typeof mutateEvent>[0]) =>
+      () =>
+        mutateEvent({
+          workflowId,
+          event,
+        }),
+    [mutateEvent],
+  );
+  const kybChildWorkflows = workflow?.childWorkflows?.filter(
+    childWorkflow => childWorkflow?.context?.entity?.type === 'business',
+  );
+  const associatedCompaniesBlock = useAssociatedCompaniesBlock({
+    workflows: kybChildWorkflows,
+    tags: workflow?.tags ?? [],
+    onMutateEvent,
+    isLoadingEvent,
+  });
 
   return useMemo(() => {
     return entity
@@ -1650,6 +1703,7 @@ export const useTasks = ({
           ...websiteMonitoringBlock,
           ...entityInfoBlock,
           ...registryInfoBlock,
+          ...associatedCompaniesBlock,
           ...kybRegistryInfoBlock,
           ...companySanctionsBlock,
           ...directorsUserProvidedBlock,
@@ -1681,7 +1735,3 @@ export const useTasks = ({
     removeDecisionById,
   ]);
 };
-
-function uniqueArrayByKey(arg0: any) {
-  throw new Error('Function not implemented.');
-}

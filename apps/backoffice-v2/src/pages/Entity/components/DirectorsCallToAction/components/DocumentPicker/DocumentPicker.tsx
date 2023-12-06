@@ -4,7 +4,8 @@ import { SelectContent } from '../../../../../../common/components/atoms/Select/
 import { SelectItem } from '../../../../../../common/components/atoms/Select/Select.Item';
 import { SelectTrigger } from '../../../../../../common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../../../common/components/atoms/Select/Select.Value';
-import { ICallToActionDocumentOption } from '../../interfaces';
+
+import { ICallToActionDocumentOption } from '@/pages/Entity/components/DirectorsCallToAction/interfaces';
 
 interface DocumentPickerProps {
   options: ICallToActionDocumentOption[];
