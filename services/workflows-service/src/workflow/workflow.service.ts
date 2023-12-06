@@ -24,7 +24,7 @@ import {
   WorkflowAssignee,
   WorkflowRuntimeListItemModel,
 } from '@/workflow/workflow-runtime-list-item.model';
-import { DefaultContextSchema, getDocumentId } from '@ballerine/common';
+import { DefaultContextSchema, getDocumentId, isErrorWithMessage } from '@ballerine/common';
 import {
   ChildPluginCallbackOutput,
   ChildToParentCallback,
@@ -70,6 +70,7 @@ import {
   WorkflowRuntimeDataRepository,
 } from './workflow-runtime-data.repository';
 import mime from 'mime';
+import console from 'console';
 
 type TEntityId = string;
 
@@ -2021,14 +2022,21 @@ export class WorkflowService {
         );
 
         if (childWorkflowCallback.deliverEvent && parentWorkflowRuntime.status !== 'completed') {
-          await this.event(
-            {
-              id: parentWorkflowRuntime.id,
-              name: childWorkflowCallback.deliverEvent,
-            },
-            projectIds,
-            currentProjectId,
-          );
+          try {
+            await this.event(
+              {
+                id: parentWorkflowRuntime.id,
+                name: childWorkflowCallback.deliverEvent,
+              },
+              projectIds,
+              currentProjectId,
+            );
+          } catch (ex) {
+            console.warn(
+              'Error while delivering event to parent workflow',
+              isErrorWithMessage(ex) && ex.message,
+            );
+          }
         }
       });
 
