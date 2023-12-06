@@ -3,5 +3,18 @@
   "back": "Back",
   "saving": "Saving",
   "progressSaved": "Progress saved",
-  "contact": "Contact {{companyName}} for support"
+  "contact": "Contact {{companyName}} for support",
+  "backToPortal": "Back to {{companyName}} Portal",
+  "rejected": {
+    "header": "Account activation rejected",
+    "content": "It seems like there was a problem with activating your account."
+  },
+  "approved": {
+    "header": "Application completed <br />successfully",
+    "content": "Go back to {{companyName}} portal to use the system"
+  },
+  "success": {
+    "header": "Thank you!<br /> We’re reviewing your application",
+    "content": "We will inform you by email once your account is ready."
+  }
 }
