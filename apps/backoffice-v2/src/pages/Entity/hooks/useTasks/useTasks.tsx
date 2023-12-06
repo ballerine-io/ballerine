@@ -71,9 +71,9 @@ const getDocumentsSchemas = (
       return unique;
     }, [] as TDocument[])
     .filter((documentSchema: TDocument) => {
-      if (!workflow.workflowDefinition.config?.availableDocuments) return true;
+      if (!workflow?.workflowDefinition?.config?.availableDocuments) return true;
 
-      const isIncludes = !!workflow.workflowDefinition.config?.availableDocuments.find(
+      const isIncludes = !!workflow?.workflowDefinition?.config?.availableDocuments.find(
         (availableDocument: TAvailableDocuments[number]) =>
           availableDocument.type === documentSchema.type &&
           availableDocument.category === documentSchema.category,
@@ -1706,7 +1706,6 @@ export const useTasks = ({
   );
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
     workflows: kybChildWorkflows,
-    tags: workflow?.tags ?? [],
     onMutateEvent,
     isLoadingEvent,
   });

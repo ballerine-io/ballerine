@@ -16,12 +16,10 @@ const motionProps: ComponentProps<typeof MotionButton> = {
 
 export const useAssociatedCompaniesBlock = ({
   workflows,
-  tags,
   onMutateEvent,
   isLoadingEvent,
 }: {
   workflows: Array<TWorkflowById>;
-  tags: Array<string>;
   onMutateEvent: (
     params: Parameters<ReturnType<typeof useEventMutation>['mutate']>[0],
   ) => () => void;
@@ -41,6 +39,8 @@ export const useAssociatedCompaniesBlock = ({
         : ''
     }`,
     contactEmail: workflow?.context?.entity?.data?.additionalInfo?.mainRepresentative?.email,
+    nextEvents: workflow?.nextEvents,
+    tags: workflow?.tags,
   });
   const transformedAssociatedCompanies = useMemo(
     () => workflows?.map(workflow => associatedCompanyAdapter(workflow)),
@@ -88,7 +88,7 @@ export const useAssociatedCompaniesBlock = ({
                           className: 'text-lg',
                         },
                       },
-                      ...(tags.includes(StateTag.COLLECTION_FLOW)
+                      ...(associatedCompany?.tags?.includes(StateTag.COLLECTION_FLOW)
                         ? [
                             {
                               type: 'badge',
@@ -136,7 +136,7 @@ export const useAssociatedCompaniesBlock = ({
                       data: [associatedCompany],
                     },
                   },
-                  ...(!tags.includes(StateTag.COLLECTION_FLOW)
+                  ...(associatedCompany?.nextEvents?.includes('START_ASSOCIATED_COMPANY_KYB')
                     ? [
                         {
                           type: 'dialog',
