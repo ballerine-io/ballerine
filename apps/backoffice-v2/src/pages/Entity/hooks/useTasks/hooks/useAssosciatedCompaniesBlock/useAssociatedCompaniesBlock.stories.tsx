@@ -12,7 +12,7 @@ const AssociatedCompaniesBlock: FunctionComponent<{
 }> = ({ associatedCompanies }) => {
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
     workflows: associatedCompanies,
-    tags: [],
+    nextEvents: [],
   });
   const tasks = [...associatedCompaniesBlock];
 

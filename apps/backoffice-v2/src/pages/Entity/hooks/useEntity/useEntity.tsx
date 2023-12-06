@@ -22,6 +22,9 @@ export const useEntity = () => {
     pluginsOutput,
     parentMachine: workflow?.context?.parentMachine,
   });
+  const kycChildWorkflows = workflow?.childWorkflows?.filter(
+    childWorkflow => childWorkflow?.context?.entity?.type === 'individual',
+  );
 
   return {
     selectedEntity,
@@ -29,5 +32,6 @@ export const useEntity = () => {
     tasks,
     workflow,
     isLoading,
+    kycChildWorkflows,
   };
 };

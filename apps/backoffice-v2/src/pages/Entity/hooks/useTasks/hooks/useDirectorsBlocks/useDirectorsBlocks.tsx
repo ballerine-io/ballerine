@@ -14,10 +14,10 @@ import {
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
 } from '../../../useEntity/utils';
-import { getPostUpdateEventName } from '../../get-post-update-event-name';
+import { getPostRemoveDecisionEventName } from '../../get-post-remove-decision-event-name';
 import { motionProps } from '../../motion-props';
 import { selectDirectorsDocuments } from '../../selectors/selectDirectorsDocuments';
-import { getPostUpdateEventNameEvent } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
+import { getPostApproveEventNameEvent } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 
 export type Director = AnyObject;
@@ -29,7 +29,7 @@ export const useDirectorsBlocks = (
 ) => {
   const { mutate } = useRemoveDecisionTaskByIdMutation(
     workflow?.id,
-    getPostUpdateEventName(workflow),
+    getPostRemoveDecisionEventName(workflow),
   );
 
   const { data: session } = useAuthenticatedUserQuery();
@@ -61,7 +61,7 @@ export const useDirectorsBlocks = (
     });
   }, [documents, mutate]);
 
-  const postApproveEventName = getPostUpdateEventNameEvent(workflow);
+  const postApproveEventName = getPostApproveEventNameEvent(workflow);
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id, postApproveEventName);
   const onMutateApproveTaskById = useCallback(

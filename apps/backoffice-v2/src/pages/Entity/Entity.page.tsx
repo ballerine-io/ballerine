@@ -7,7 +7,7 @@ import { KycBlock } from './components/KycBlock/KycBlock';
 import { NoTasksSvg } from '../../common/components/atoms/icons';
 
 export const Entity = () => {
-  const { workflow, selectedEntity, tasks, cells, isLoading } = useEntity();
+  const { workflow, selectedEntity, tasks, cells, isLoading, kycChildWorkflows } = useEntity();
 
   // Selected entity
   return (
@@ -50,9 +50,9 @@ export const Entity = () => {
               </Card>
             );
           })}
-        {Array.isArray(workflow?.childWorkflows) &&
-          workflow?.childWorkflows?.length > 0 &&
-          workflow?.childWorkflows?.map(childWorkflow => (
+        {Array.isArray(kycChildWorkflows) &&
+          kycChildWorkflows?.length > 0 &&
+          kycChildWorkflows?.map(childWorkflow => (
             <KycBlock
               parentWorkflowId={workflow?.id}
               childWorkflow={childWorkflow}
