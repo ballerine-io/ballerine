@@ -1,4 +1,4 @@
-import { ComponentProps } from 'react';
+import { ComponentProps, useCallback } from 'react';
 import { isObject, StateTag, TStateTags } from '@ballerine/common';
 
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
@@ -9,6 +9,12 @@ import { useCaseDecision } from '../../../Case/hooks/useCaseDecision/useCaseDeci
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
 import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
 import { toTitleCase } from 'string-ts';
+import { useApproveCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useApproveCaseAndDocumentsMutation/useApproveCaseAndDocumentsMutation';
+import { useRevisionCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useRevisionCaseAndDocumentsMutation/useRevisionCaseAndDocumentsMutation';
+import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -139,7 +145,27 @@ export const useKycBlock = ({
       })) ?? [],
   );
 
-  const isDisabled = !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW) || noAction;
+  const { mutate: mutateApproveCase, isLoading: isLoadingApproveCase } =
+    useApproveCaseAndDocumentsMutation({
+      workflowId: childWorkflow?.id,
+    });
+  const { isLoading: isLoadingRevisionCase } = useRevisionCaseAndDocumentsMutation({
+    workflowId: childWorkflow?.id,
+  });
+  const onMutateApproveCase = useCallback(() => mutateApproveCase(), [mutateApproveCase]);
+  const filterId = useFilterId();
+  const { data: parentWorkflow } = useWorkflowQuery({
+    workflowId: parentWorkflowId,
+    filterId,
+  });
+  const { data: session } = useAuthenticatedUserQuery();
+  const caseState = useCaseState(session?.user, parentWorkflow);
+  const isDisabled =
+    !caseState.actionButtonsEnabled ||
+    !childWorkflow?.tags?.includes(StateTag.MANUAL_REVIEW) ||
+    noAction ||
+    isLoadingApproveCase ||
+    isLoadingRevisionCase;
 
   const getDecisionStatusOrAction = (tags?: TStateTags) => {
     const badgeClassNames = 'text-sm font-bold';
@@ -202,25 +228,25 @@ export const useKycBlock = ({
 
     return [
       {
-        type: 'caseCallToAction',
+        type: 'caseCallToActionLegacy',
         value: 'Re-upload needed',
         data: {
           parentWorkflowId: parentWorkflowId,
           childWorkflowId: childWorkflow?.id,
           childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
           disabled: isDisabled,
-          approvalStatus: 'rejected',
         },
       },
       {
-        type: 'caseCallToAction',
-        value: 'Approve',
-        data: {
-          parentWorkflowId: parentWorkflowId,
-          childWorkflowId: childWorkflow?.id,
-          childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
-          disabled: isDisabled,
-          approvalStatus: 'approved',
+        type: 'callToAction',
+        value: {
+          text: 'Approve',
+          onClick: onMutateApproveCase,
+          props: {
+            disabled: isDisabled,
+            size: 'wide',
+            variant: 'success',
+          },
         },
       },
     ];

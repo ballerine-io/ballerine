@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- Added onDelete callback to ArrayFieldsLayoutItem
+- Fixed DateInput focus loss on keystroke
 
 ## 0.3.18
 
