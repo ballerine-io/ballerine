@@ -4,7 +4,6 @@ import { CallToAction } from '../../components/CallToAction/CallToAction';
 import { CaseCallToAction } from '../../components/CaseCallToAction/CaseCallToAction';
 import { Container } from '../../components/Container/Container';
 import { Details } from '../../components/Details/Details';
-import { DirectorsCallToAction } from '../../components/DirectorsCallToAction';
 import { FaceComparison } from '../../components/FaceComparison/FaceComparison';
 import { Heading } from '../../components/Heading/Heading';
 import { MapCell } from '../../components/MapCell/MapCell';
@@ -21,7 +20,6 @@ export const cells = {
   badge: BadgeCell,
   container: Container,
   callToAction: CallToAction,
-  directorsCallToAction: DirectorsCallToAction,
   faceComparison: FaceComparison,
   details: Details,
   nestedDetails: NestedDetails,

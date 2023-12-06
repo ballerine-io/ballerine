@@ -1,7 +1,7 @@
 import { StateTag, getDocumentsByCountry } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import { UseQueryResult } from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
 import { ctw } from '../../../../../../common/utils/ctw/ctw';
 import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
@@ -16,7 +16,8 @@ import {
 } from '../../../useEntity/utils';
 import { getPostUpdateEventName } from '../../get-post-update-event-name';
 import { motionProps } from '../../motion-props';
-import { selectDirectorsDocuments } from '../../selectors/selectDirectorsDocuments';
+import { getRevisionReasonsForDocument } from '@/pages/Entity/hooks/useTasks/hooks/useDirectorsBlocks/helpers';
+import { X } from 'lucide-react';
 
 export type Director = AnyObject;
 
@@ -25,7 +26,7 @@ export const useDirectorsBlocks = (
   documentFiles: UseQueryResult[],
   documentImages: Array<Array<string>>,
 ) => {
-  const { mutate } = useRemoveDecisionTaskByIdMutation(
+  const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(
     workflow.id,
     getPostUpdateEventName(workflow),
   );
@@ -38,7 +39,6 @@ export const useDirectorsBlocks = (
     () => (workflow?.context?.entity?.data?.additionalInfo?.directors as Director[]) || [],
     [workflow],
   );
-  const documents = useMemo(() => selectDirectorsDocuments(workflow), [workflow]);
 
   const documentSchemas = useMemo(() => {
     const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
@@ -47,21 +47,13 @@ export const useDirectorsBlocks = (
     return documentsSchemas;
   }, [workflow]);
 
-  const handleRevisionDecisionsReset = useCallback(() => {
-    const documentsToReset = documents.filter(document => document.decision?.status);
-
-    documentsToReset.forEach(document => {
-      mutate({ documentId: document.id, contextUpdateMethod: 'director' });
-    });
-  }, [documents, mutate]);
-
   const blocks = useMemo(() => {
     return directors
       .filter(director => Array.isArray(director.additionalInfo?.documents))
       .map(director => {
         const { documents } = director.additionalInfo;
 
-        const multiDocumentsBlocks = documents.map((document, docIndex) => {
+        const multiDocumentsBlocks = documents.map((document: AnyObject, docIndex: number) => {
           const isDoneWithRevision = document?.decision?.status === 'revised';
           const additionalProperties = composePickableCategoryType(
             document.category,
@@ -86,6 +78,97 @@ export const useDirectorsBlocks = (
             documents,
           };
 
+          const isApproved = document?.decision?.status === 'approved';
+          const isRevision = document?.decision?.status === 'revision';
+
+          const documentHeading = [
+            ...(isRevision
+              ? workflow?.tags?.includes(StateTag.REVISION)
+                ? [
+                    {
+                      type: 'badge',
+                      value: <React.Fragment>Pending re-upload</React.Fragment>,
+                      props: {
+                        ...motionProps,
+                        variant: 'warning',
+                        className: 'min-h-8 text-sm font-bold',
+                      },
+                    },
+                  ]
+                : [
+                    {
+                      type: 'badge',
+                      value: (
+                        <React.Fragment>
+                          Re-upload needed
+                          <X
+                            className="h-4 w-4 cursor-pointer"
+                            onClick={() =>
+                              removeDecisionById({
+                                documentId: document.id,
+                                contextUpdateMethod: 'director',
+                              })
+                            }
+                          />
+                        </React.Fragment>
+                      ),
+                      props: {
+                        ...motionProps,
+                        variant: 'warning',
+                        className: `gap-x-1 min-h-8 text-white bg-warning text-sm font-bold`,
+                      },
+                    },
+                  ]
+              : []),
+            ...(!isApproved && !isRevision
+              ? [
+                  {
+                    type: 'callToAction',
+                    value: {
+                      text: 'Re-upload needed',
+                      props: {
+                        revisionReasons: getRevisionReasonsForDocument(document, workflow),
+                        disabled:
+                          (!isDoneWithRevision && Boolean(document.decision?.status)) || noAction,
+                        decision: 'reject',
+                        id: document.id,
+                        contextUpdateMethod: 'director',
+                      },
+                    },
+                  },
+                ]
+              : []),
+            ...(isApproved
+              ? [
+                  {
+                    type: 'badge',
+                    value: 'Approved',
+                    props: {
+                      ...motionProps,
+                      variant: 'success',
+                      className: `text-sm min-h-8 font-bold bg-success/20`,
+                    },
+                  },
+                ]
+              : !isRevision
+              ? [
+                  {
+                    type: 'callToAction',
+                    value: {
+                      text: 'Approve',
+                      props: {
+                        decision: 'approve',
+                        id: document.id,
+                        contextUpdateMethod: 'director',
+                        disabled:
+                          (!isDoneWithRevision && Boolean(document?.decision?.status)) || noAction,
+                      },
+                    },
+                  },
+                ]
+              : []),
+          ];
+
           return {
             type: 'container',
             value: [
@@ -95,32 +178,7 @@ export const useDirectorsBlocks = (
                 props: {
                   className: 'mt-0',
                 },
-                value: [
-                  document?.decision?.status === 'approved'
-                    ? {
-                        type: 'badge',
-                        value: 'Approved',
-                        props: {
-                          ...motionProps,
-                          variant: 'success',
-                          className: `text-sm font-bold bg-success/20`,
-                        },
-                      }
-                    : {
-                        type: 'directorsCallToAction',
-                        value: {
-                          text: 'Approve',
-                          props: {
-                            documents,
-                            decision: 'approve',
-                            id: document.id,
-                            disabled:
-                              (!isDoneWithRevision && Boolean(document?.decision?.status)) ||
-                              noAction,
-                          },
-                        },
-                      },
-                ],
+                value: documentHeading,
               },
               {
                 id: 'header',
@@ -230,38 +288,6 @@ export const useDirectorsBlocks = (
                       type: 'heading',
                       value: `Director - ${director.firstName} ${director.lastName}`,
                     },
-                    {
-                      id: 'actions',
-                      type: 'container',
-                      value: [
-                        {
-                          type: 'directorsCallToAction',
-                          value: {
-                            text: 'Re-upload needed',
-                            props: {
-                              documents,
-                              workflow,
-                              onReset: handleRevisionDecisionsReset,
-                            },
-                          },
-
-                          // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
-                        },
-                        ...(workflow?.tags?.includes(StateTag.REVISION)
-                          ? [
-                              {
-                                type: 'badge',
-                                value: 'Pending re-upload',
-                                props: {
-                                  ...motionProps,
-                                  variant: 'warning',
-                                  className: 'text-sm font-bold',
-                                },
-                              },
-                            ]
-                          : []),
-                      ],
-                    },
                   ],
                 },
                 ...multiDocumentsBlocks,
@@ -274,11 +300,11 @@ export const useDirectorsBlocks = (
     directors,
     documentFiles,
     documentImages,
-    handleRevisionDecisionsReset,
     workflow,
     caseState.writeEnabled,
     documentSchemas,
     noAction,
+    removeDecisionById,
   ]);
 
   return blocks;
