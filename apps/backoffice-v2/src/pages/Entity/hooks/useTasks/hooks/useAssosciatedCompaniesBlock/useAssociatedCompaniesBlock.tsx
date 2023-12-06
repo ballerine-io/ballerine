@@ -148,8 +148,8 @@ export const useAssociatedCompaniesBlock = ({
                         </MotionButton>
                       ),
                       title: `Initiate KYB for ${associatedCompany.companyName}`,
-                      content: (
-                        <p>
+                      description: (
+                        <p className={`text-sm`}>
                           By clicking the button below, an email with a link will be sent to{' '}
                           {associatedCompany.companyName} &apos;s contact person,{' '}
                           {associatedCompany.contactPerson}, directing them to provide information
@@ -171,6 +171,17 @@ export const useAssociatedCompaniesBlock = ({
                           Send email
                         </Button>
                       ),
+                      props: {
+                        content: {
+                          className: 'mb-96',
+                        },
+                        title: {
+                          className: `text-2xl`,
+                        },
+                        description: {
+                          asChild: true,
+                        },
+                      },
                     },
                   },
                 ],
