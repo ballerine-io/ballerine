@@ -42,6 +42,7 @@ import { useDirectorsBlocks } from '@/pages/Entity/hooks/useTasks/hooks/useDirec
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { getPostUpdateEventNameEvent } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useAssociatedCompaniesBlock } from '@/pages/Entity/hooks/useTasks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -1676,9 +1677,24 @@ export const useTasks = ({
             ],
           },
         ];
+  const { mutate: mutateEvent, isLoading: isLoadingEvent } = useEventMutation();
+  const onMutateEvent = useCallback(
+    ({ workflowId, event }: Parameters<typeof mutateEvent>[0]) =>
+      () =>
+        mutateEvent({
+          workflowId,
+          event,
+        }),
+    [mutateEvent],
+  );
+  const kybChildWorkflows = workflow?.childWorkflows?.filter(
+    childWorkflow => childWorkflow?.context?.entity?.type === 'business',
+  );
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
-    associatedCompanies: entity.data?.additionalInfo?.associatedCompanies,
+    workflows: kybChildWorkflows,
     tags: workflow?.tags ?? [],
+    onMutateEvent,
+    isLoadingEvent,
   });
 
   return useMemo(() => {

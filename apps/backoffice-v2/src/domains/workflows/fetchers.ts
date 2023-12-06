@@ -110,33 +110,6 @@ export const fetchWorkflowById = async ({
       ...data,
       context: {
         ...data.context,
-        entity: {
-          ...data.context?.entity,
-          data: {
-            ...data.context?.entity?.data,
-            additionalInfo: {
-              ...data.context?.entity?.data?.additionalInfo,
-              associatedCompanies: [
-                {
-                  country: 'AS',
-                  companyName: '1321312',
-                  additionalInfo: {
-                    customerName: 'Associated customer',
-                    kybCompanyName: 'ReDial Limited',
-                    customerCompany: 'Associated customer',
-                    mainRepresentative: {
-                      email: 'danielb+23121@ballerine.com',
-                      lastName: 'DOE',
-                      firstName: 'JSON',
-                    },
-                    associationRelationship: 'Minority Shareholder in ReDial Limited',
-                  },
-                  registrationNumber: 'dwadwadw',
-                },
-              ],
-            },
-          },
-        },
         pluginsOutput: {
           ...data.context?.pluginsOutput,
           // TODO: Upgrade workflows-service TypeScript version to >= 5 and use `string-ts`'s `deepCamelCase` instead on the server side in `formatWorkflow`.
@@ -149,32 +122,34 @@ export const fetchWorkflowById = async ({
       },
       childWorkflows: [
         {
-          entity: {
-            data: {
-              country: 'AS',
-              companyName: '1321312',
-              additionalInfo: {
-                companyName: 'ReDial Limited',
-                customerName: 'Associated customer',
-                kybCompanyName: 'ReDial Limited',
-                customerCompany: 'Associated customer',
-                mainRepresentative: {
-                  email: 'danielb+23121@ballerine.com',
-                  lastName: 'DOE',
-                  firstName: 'JSON',
+          context: {
+            entity: {
+              data: {
+                country: 'AS',
+                companyName: '1321312',
+                additionalInfo: {
+                  companyName: 'ReDial Limited',
+                  customerName: 'Associated customer',
+                  kybCompanyName: 'ReDial Limited',
+                  customerCompany: 'Associated customer',
+                  mainRepresentative: {
+                    email: 'danielb+23121@ballerine.com',
+                    lastName: 'DOE',
+                    firstName: 'JSON',
+                  },
+                  associationRelationship: 'Minority Shareholder in ReDial Limited',
                 },
-                associationRelationship: 'Minority Shareholder in ReDial Limited',
+                registrationNumber: 'dwadwadw',
               },
-              registrationNumber: 'dwadwadw',
+              type: 'business',
+              ballerineEntityId: 'clpsfckh7000yy8l08jubaaey',
             },
-            type: 'business',
-            ballerineEntityId: 'clpsfckh7000yy8l08jubaaey',
-          },
-          metadata: {
-            token: '302311e0-7d8c-46b1-8e47-dc56fe14c172',
+            metadata: {
+              token: '302311e0-7d8c-46b1-8e47-dc56fe14c172',
+              customerName: 'Associated customer',
+            },
             customerName: 'Associated customer',
           },
-          customerName: 'Associated customer',
         },
       ],
     })),
