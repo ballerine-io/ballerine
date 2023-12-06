@@ -93,6 +93,9 @@ export interface BlocksProps<TCell extends Cells> {
    * @see {@link BlockBuilder.build}
    */
   blocks: Array<Array<TCell>>;
+  /**
+   * The `block` prop is only passed when the `Block` property component is passed.
+   */
   Block?: FunctionComponent<{
     children: ReactNode | Array<ReactNode>;
     block: Array<TCell>;

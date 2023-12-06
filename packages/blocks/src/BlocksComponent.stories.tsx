@@ -66,9 +66,9 @@ const nestedContainerBlocks = createBlocks<TCell>()
   })
   .build();
 
-const Block: FunctionComponent<ComponentProps<BlocksProps<TCell>['Block']>> = ({ children }) => (
-  <div>{children}</div>
-);
+const Block: FunctionComponent<ComponentProps<NonNullable<BlocksProps<TCell>['Block']>>> = ({
+  children,
+}) => <div>{children}</div>;
 
 const Heading: FunctionComponent<ExtractCellProps<'heading'>> = ({ value }) => <h1>{value}</h1>;
 const Paragraph: FunctionComponent<ExtractCellProps<'paragraph'>> = ({ value }) => <p>{value}</p>;
