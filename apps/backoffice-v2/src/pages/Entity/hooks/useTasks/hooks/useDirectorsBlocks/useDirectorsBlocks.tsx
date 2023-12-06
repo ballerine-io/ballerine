@@ -59,7 +59,7 @@ export const useDirectorsBlocks = (
     documentsToReset.forEach(document => {
       mutate({ documentId: document.id, contextUpdateMethod: 'director' });
     });
-  }, []);
+  }, [documents, mutate]);
 
   const postApproveEventName = getPostUpdateEventNameEvent(workflow);
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
