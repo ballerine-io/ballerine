@@ -53,7 +53,7 @@ export const useDirectorsBlocks = (
     documentsToReset.forEach(document => {
       mutate({ documentId: document.id, contextUpdateMethod: 'director' });
     });
-  }, []);
+  }, [documents, mutate]);
 
   const blocks = useMemo(() => {
     return directors
