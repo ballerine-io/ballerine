@@ -2,10 +2,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { FocusEvent, useCallback, useMemo, useState } from 'react';
-import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import dayjs, { Dayjs } from 'dayjs';
 import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
 import { muiTheme } from '@/common/mui-theme';
+import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Paper } from '@/components/atoms';
 
 export interface DatePickerChangeEvent {
@@ -46,12 +46,19 @@ export const DatePickerInput = ({
     (value: Dayjs | null) => {
       if (!value) return onChange({ target: { value: null, name } });
 
-      onChange({
-        target: {
-          value: serializeValue(value),
-          name,
-        },
-      });
+      try {
+        const serializedDateValue = serializeValue(value);
+        onChange({
+          target: {
+            value: serializedDateValue,
+            name,
+          },
+        });
+      } catch (error) {
+        // Ignoring serialization due to partial date input
+        // Attept to serialize partially entered date e.g 12/MM/YYYY will cause exception
+        return null;
+      }
     },
     [name, onChange, serializeValue],
   );
@@ -101,7 +108,7 @@ export const DatePickerInput = ({
         />
       );
     },
-    [isFocused, onBlur],
+    [isFocused],
   );
 
   return (

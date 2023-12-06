@@ -42,6 +42,7 @@ import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/u
 import { getPostApproveEventNameEvent } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useAssociatedCompaniesBlock } from '@/pages/Entity/hooks/useTasks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 import { selectWorkflowDocuments } from '@/pages/Entity/hooks/useTasks/selectors/selectWorkflowDocuments';
+import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -70,9 +71,9 @@ const getDocumentsSchemas = (
       return unique;
     }, [] as TDocument[])
     .filter((documentSchema: TDocument) => {
-      if (!workflow?.workflowDefinition?.config?.availableDocuments) return true;
+      if (!workflow.workflowDefinition.config?.availableDocuments) return true;
 
-      const isIncludes = !!workflow?.workflowDefinition?.config?.availableDocuments.find(
+      const isIncludes = !!workflow.workflowDefinition.config?.availableDocuments.find(
         (availableDocument: TAvailableDocuments[number]) =>
           availableDocument.type === documentSchema.type &&
           availableDocument.category === documentSchema.category,
@@ -84,7 +85,7 @@ const getDocumentsSchemas = (
   if (!Array.isArray(documentSchemaByCountry) || !documentSchemaByCountry.length) {
     console.warn(
       `No document schema found for issuer country code of "${issuerCountryCode}" and documents schema of\n`,
-      workflow?.workflowDefinition?.documentsSchema,
+      workflow.workflowDefinition?.documentsSchema,
     );
   }
 
@@ -1690,9 +1691,24 @@ export const useTasks = ({
             ],
           },
         ];
+  const { mutate: mutateEvent, isLoading: isLoadingEvent } = useEventMutation();
+  const onMutateEvent = useCallback(
+    ({ workflowId, event }: Parameters<typeof mutateEvent>[0]) =>
+      () =>
+        mutateEvent({
+          workflowId,
+          event,
+        }),
+    [mutateEvent],
+  );
+  const kybChildWorkflows = workflow?.childWorkflows?.filter(
+    childWorkflow => childWorkflow?.context?.entity?.type === 'business',
+  );
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
-    associatedCompanies: entity.data?.additionalInfo?.associatedCompanies,
+    workflows: kybChildWorkflows,
     tags: workflow?.tags ?? [],
+    onMutateEvent,
+    isLoadingEvent,
   });
 
   return useMemo(() => {

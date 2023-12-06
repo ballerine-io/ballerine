@@ -28,7 +28,7 @@ export const useDirectorsBlocks = (
   documentImages: Array<Array<string>>,
 ) => {
   const { mutate } = useRemoveDecisionTaskByIdMutation(
-    workflow.id,
+    workflow?.id,
     getPostRemoveDecisionEventName(workflow),
   );
 
@@ -59,7 +59,7 @@ export const useDirectorsBlocks = (
     documentsToReset.forEach(document => {
       mutate({ documentId: document.id, contextUpdateMethod: 'director' });
     });
-  }, []);
+  }, [documents, mutate]);
 
   const postApproveEventName = getPostApproveEventNameEvent(workflow);
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =

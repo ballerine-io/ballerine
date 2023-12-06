@@ -4,6 +4,8 @@ import { Button } from '@/common/components/atoms/Button/Button';
 import { Send } from 'lucide-react';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { StateTag } from '@ballerine/common';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 
 const motionProps: ComponentProps<typeof MotionButton> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -13,43 +15,36 @@ const motionProps: ComponentProps<typeof MotionButton> = {
 };
 
 export const useAssociatedCompaniesBlock = ({
-  associatedCompanies,
+  workflows,
   tags,
+  onMutateEvent,
+  isLoadingEvent,
 }: {
-  associatedCompanies: Array<{
-    country: string;
-    companyName: string;
-    additionalInfo: {
-      companyName: string;
-      customerName: string;
-      kybCompanyName: string;
-      customerCompany: string;
-      mainRepresentative: {
-        email: string;
-        lastName: string;
-        firstName: string;
-      };
-      associationRelationship: string;
-    };
-    registrationNumber: string;
-  }>;
+  workflows: Array<TWorkflowById>;
   tags: Array<string>;
+  onMutateEvent: (
+    params: Parameters<ReturnType<typeof useEventMutation>['mutate']>[0],
+  ) => () => void;
+  isLoadingEvent: boolean;
 }) => {
+  const associatedCompanyAdapter = (workflow: TWorkflowById) => ({
+    workflowId: workflow?.id,
+    companyName: workflow?.context?.entity?.data?.companyName,
+    registrationNumber: workflow?.context?.entity?.data?.registrationNumber,
+    registeredCountry: workflow?.context?.entity?.data?.country,
+    relationship: workflow?.context?.entity?.data?.additionalInfo?.associationRelationship,
+    contactPerson: `${
+      workflow?.context?.entity?.data?.additionalInfo?.mainRepresentative?.firstName ?? ''
+    }${
+      workflow?.context?.entity?.data?.additionalInfo?.mainRepresentative?.lastName
+        ? ` ${workflow?.context?.entity?.data?.additionalInfo?.mainRepresentative?.lastName}`
+        : ''
+    }`,
+    contactEmail: workflow?.context?.entity?.data?.additionalInfo?.mainRepresentative?.email,
+  });
   const transformedAssociatedCompanies = useMemo(
-    () =>
-      associatedCompanies?.map(associatedCompany => ({
-        companyName: associatedCompany.companyName,
-        registrationNumber: associatedCompany.registrationNumber,
-        registeredCountry: associatedCompany.country,
-        relationship: associatedCompany.additionalInfo?.associationRelationship,
-        contactPerson: `${associatedCompany.additionalInfo?.mainRepresentative?.firstName ?? ''}${
-          associatedCompany.additionalInfo?.mainRepresentative?.lastName
-            ? ` ${associatedCompany.additionalInfo?.mainRepresentative?.lastName}`
-            : ''
-        }`,
-        contactEmail: associatedCompany.additionalInfo?.mainRepresentative?.email,
-      })),
-    [associatedCompanies],
+    () => workflows?.map(workflow => associatedCompanyAdapter(workflow)),
+    [workflows],
   );
 
   if (!Array.isArray(transformedAssociatedCompanies) || !transformedAssociatedCompanies?.length)
@@ -165,11 +160,12 @@ export const useAssociatedCompaniesBlock = ({
                             close: (
                               <Button
                                 className={ctw(`gap-x-2`, {
-                                  loading: false,
+                                  loading: isLoadingEvent,
                                 })}
-                                onClick={() => {
-                                  console.log('send email');
-                                }}
+                                onClick={onMutateEvent({
+                                  workflowId: associatedCompany.workflowId,
+                                  event: 'START_ASSOCIATED_COMPANY_KYB',
+                                })}
                               >
                                 <Send size={18} />
                                 Send email

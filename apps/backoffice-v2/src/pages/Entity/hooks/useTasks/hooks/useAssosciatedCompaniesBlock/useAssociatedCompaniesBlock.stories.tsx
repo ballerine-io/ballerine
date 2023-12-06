@@ -8,10 +8,10 @@ import { useAssociatedCompaniesBlock } from '@/pages/Entity/hooks/useTasks/hooks
 import { FunctionComponent } from 'react';
 
 const AssociatedCompaniesBlock: FunctionComponent<{
-  associatedCompanies: Parameters<typeof useAssociatedCompaniesBlock>[0]['associatedCompanies'];
+  associatedCompanies: Parameters<typeof useAssociatedCompaniesBlock>[0]['workflows'];
 }> = ({ associatedCompanies }) => {
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
-    associatedCompanies,
+    workflows: associatedCompanies,
     tags: [],
   });
   const tasks = [...associatedCompaniesBlock];

@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.19
+
+### Patch Changes
+
+- Fixed DateInput focus loss on keystroke
+
 ## 0.3.18
 
 ### Patch Changes
