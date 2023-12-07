@@ -15,14 +15,7 @@ const validationSchema = {
                 headquarters: {
                   type: 'object',
                   default: {},
-                  required: [
-                    'street',
-                    'streetNumber',
-                    'city',
-                    'country',
-                    'postalCode',
-                    'phone',
-                  ],
+                  required: ['street', 'streetNumber', 'city', 'country', 'postalCode', 'phone'],
                   errorMessage: {
                     required: {
                       street: 'Street is required.',
@@ -39,8 +32,7 @@ const validationSchema = {
                       minLength: 3,
                       maxLength: 100,
                       errorMessage: {
-                        minLength:
-                          'Street should be at least 3 characters long.',
+                        minLength: 'Street should be at least 3 characters long.',
                         maxLength: 'Street should not exceed 100 characters.',
                       },
                     },
@@ -50,8 +42,7 @@ const validationSchema = {
                       maxLength: 10,
                       errorMessage: {
                         minLength: 'Street number is required.',
-                        maxLength:
-                          'Street number should not exceed 10 characters.',
+                        maxLength: 'Street number should not exceed 10 characters.',
                       },
                     },
                     postalCode: {
@@ -72,10 +63,8 @@ const validationSchema = {
                       maxLength: 2,
                       pattern: '^[A-Z]{2}$',
                       errorMessage: {
-                        minLength:
-                          'Country code should be exactly 2 characters.',
-                        maxLength:
-                          'Country code should be exactly 2 characters.',
+                        minLength: 'Country code should be exactly 2 characters.',
+                        maxLength: 'Country code should be exactly 2 characters.',
                         pattern: 'Invalid country code.',
                       },
                     },
@@ -145,8 +134,7 @@ export const BusinessAddressInfoPage = {
             {
               name: 'street-input',
               type: 'json-form:text',
-              valueDestination:
-                'entity.data.additionalInfo.headquarters.street',
+              valueDestination: 'entity.data.additionalInfo.headquarters.street',
               options: {
                 jsonFormDefinition: {
                   type: 'string',
@@ -158,8 +146,7 @@ export const BusinessAddressInfoPage = {
             {
               name: 'street-number-input',
               type: 'json-form:text',
-              valueDestination:
-                'entity.data.additionalInfo.headquarters.streetNumber',
+              valueDestination: 'entity.data.additionalInfo.headquarters.streetNumber',
               options: {
                 jsonFormDefinition: {
                   type: 'number',
@@ -171,8 +158,7 @@ export const BusinessAddressInfoPage = {
             {
               name: 'postal-code-input',
               type: 'json-form:text',
-              valueDestination:
-                'entity.data.additionalInfo.headquarters.postalCode',
+              valueDestination: 'entity.data.additionalInfo.headquarters.postalCode',
               options: {
                 jsonFormDefinition: {
                   type: 'string',
@@ -196,8 +182,7 @@ export const BusinessAddressInfoPage = {
             {
               name: 'country-input',
               type: 'json-form:country-picker',
-              valueDestination:
-                'entity.data.additionalInfo.headquarters.country',
+              valueDestination: 'entity.data.additionalInfo.headquarters.country',
               options: {
                 label: 'Country',
                 hint: 'Choose',
