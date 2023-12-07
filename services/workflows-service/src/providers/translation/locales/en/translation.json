@@ -64,6 +64,9 @@
     "differentFromPhysicalAddress": "Different from physical address",
     "hasActiveWebsite": "I declare that the website's business activity does not require a license",
     "storeInfoDescription": "Leaving the last checkbox 'Unchecked' will require providing extra licenses documents",
+    "associatedCompanies": "Associated companies",
+    "associatedCompaniesDescription": "Add all companies that own more than 25% of the company.",
+    "noCompaniesWithMoreThan": "There are no companies with more than 25%",
     "email": {
       "label": "Email",
       "hint": "name@companyhk.com"
@@ -391,7 +394,39 @@
       "utilityBill": {
         "label": "Company Utility Bill as Proof of Address",
         "description": "Not older than 6 months."
+      },
+      "certificateOfIncorporation": {
+        "label": "Certificate of Incorporation",
+        "description": "Not older than 6 months."
+      },
+      "businessUtilityBill": {
+        "label": "Utility Bill",
+        "description": "Notarized document"
       }
+    },
+    "companyRegistrationNumber": {
+      "label": "Company Registration Number",
+      "hint": "CRN12345678"
+    },
+    "companyLegalName": {
+      "label": "Company Legal Name",
+      "hint": "OpenAI Technologies, Inc."
+    },
+    "relationship": {
+      "label": "Relationship",
+      "hint": "Parent of / Subsidiary of / Sister company of"
+    },
+    "representativeFirstName": {
+      "label": "Representative First Name",
+      "hint": "John"
+    },
+    "representativeLastName": {
+      "label": "Representative Last Name",
+      "hint": "Deo"
+    },
+    "representativeEmail": {
+      "label": "Representative Email",
+      "hint": "example@example.com"
     }
   },
   "errorMessage": {
@@ -463,7 +498,8 @@
       "volumeInRegion": "Split of volume by regions is required.",
       "contactDetails": "Contact details are required.",
       "companyWebsite": "Company Website is required.",
-      "bankCountry": "Bank Country is required."
+      "bankCountry": "Bank Country is required.",
+      "companyRegistrationNumber": "Company registration number is required."
     },
     "minLength": {
       "firstName": "First name must be at least 2 characters long.",
