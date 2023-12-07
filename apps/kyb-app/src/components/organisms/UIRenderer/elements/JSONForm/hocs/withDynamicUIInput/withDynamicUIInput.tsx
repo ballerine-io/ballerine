@@ -69,7 +69,7 @@ export const withDynamicUIInput = (
     const definition = useMemo(() => {
       const inputIndex = getInputIndex(inputId || '');
 
-      return {
+      const definition = {
         ...baseDefinition,
         name: inputIndex !== null ? `${baseDefinition.name}[${inputIndex}]` : baseDefinition.name,
         valueDestination: injectIndexToDestinationIfNeeded(
@@ -78,6 +78,7 @@ export const withDynamicUIInput = (
           inputIndex,
         ),
       };
+      return definition;
     }, [baseDefinition, inputId]);
 
     const { state: elementState, setState: setElementState } = useUIElementState(definition);

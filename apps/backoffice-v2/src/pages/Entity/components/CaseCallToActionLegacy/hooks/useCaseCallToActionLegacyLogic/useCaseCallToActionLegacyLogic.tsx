@@ -7,7 +7,7 @@ import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { useApproveCaseAndDocumentsMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveCaseAndDocumentsMutation/useApproveCaseAndDocumentsMutation';
 import { useRevisionCaseAndDocumentsMutation } from '../../../../../../domains/entities/hooks/mutations/useRevisionCaseAndDocumentsMutation/useRevisionCaseAndDocumentsMutation';
 
-export const useCaseCallToActionLogic = ({
+export const useCaseCallToActionLegacyLogic = ({
   parentWorkflowId,
   childWorkflowId,
   childWorkflowContextSchema,
@@ -47,7 +47,6 @@ export const useCaseCallToActionLogic = ({
   const { mutate: mutateRevisionCase, isLoading: isLoadingRevisionCase } =
     useRevisionCaseAndDocumentsMutation({
       workflowId: childWorkflowId,
-      revisionReason: reasonWithComment,
     });
   // /Mutations
 
@@ -55,7 +54,13 @@ export const useCaseCallToActionLogic = ({
   const onReasonChange = useCallback((value: string) => setReason(value), [setReason]);
   const onCommentChange = useCallback((value: string) => setComment(value), [setComment]);
   const onMutateApproveCase = useCallback(() => mutateApproveCase(), [mutateApproveCase]);
-  const onMutateRevisionCase = useCallback(() => mutateRevisionCase(), [mutateRevisionCase]);
+  const onMutateRevisionCase = useCallback(
+    (revisionReason: string) => () =>
+      mutateRevisionCase({
+        revisionReason,
+      }),
+    [mutateRevisionCase],
+  );
   // /Callbacks
 
   const caseState = useCaseState(session?.user, parentWorkflow);
@@ -76,6 +81,7 @@ export const useCaseCallToActionLogic = ({
     noReasons,
     isDisabled,
     reasons: revisionReasons,
+    reasonWithComment,
     // /State
 
     // Loading state

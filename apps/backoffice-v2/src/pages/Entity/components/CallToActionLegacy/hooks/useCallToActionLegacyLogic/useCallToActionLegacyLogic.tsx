@@ -10,8 +10,8 @@ import { useRevisionTaskByIdMutation } from '../../../../../../domains/entities/
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useCaseState } from '../../../Case/hooks/useCaseState/useCaseState';
-import { ICallToActionDocumentSelection } from '@/pages/Entity/components/CallToAction/interfaces';
-import { useDocumentSelection } from '@/pages/Entity/components/CallToAction/hooks/useDocumentSelection';
+import { useDocumentSelection } from 'src/pages/Entity/components/DirectorsCallToAction/hooks/useDocumentSelection';
+import { ICallToActionDocumentSelection } from '@/pages/Entity/components/DirectorsCallToAction/interfaces';
 
 export interface UseCallToActionLogicParams {
   contextUpdateMethod?: 'base' | 'director';
@@ -22,12 +22,12 @@ export interface UseCallToActionLogicParams {
   onDialogClose?: () => void;
 }
 
-const getPostUpdateEventNameEvent = (workflow: TWorkflowById) => {
+export const getPostApproveEventNameEvent = (workflow: TWorkflowById) => {
   if (!workflow?.workflowDefinition?.config?.workflowLevelResolution) {
     return CommonWorkflowEvent.TASK_REVIEWED;
   }
 };
-export const useCallToActionLogic = (params: UseCallToActionLogicParams) => {
+export const useCallToActionLegacyLogic = (params: UseCallToActionLogicParams) => {
   const {
     contextUpdateMethod = 'base',
     rejectionReasons,
@@ -41,7 +41,7 @@ export const useCallToActionLogic = (params: UseCallToActionLogicParams) => {
   const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
-  const postUpdateEventName = getPostUpdateEventNameEvent(workflow);
+  const postUpdateEventName = getPostApproveEventNameEvent(workflow);
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id, postUpdateEventName);
@@ -145,9 +145,11 @@ export const useCallToActionLogic = (params: UseCallToActionLogicParams) => {
   const documentPickerProps = useDocumentSelection(documentSelection, resetReasonAndComment);
 
   const handleDialogClose = useCallback(
-    (open: boolean) => {
+    (isOpen: boolean) => {
       // Calling callback only when dialog is closed.
-      if (open === false) onDialogClose && onDialogClose();
+      if (isOpen || !onDialogClose) return;
+
+      onDialogClose();
     },
     [onDialogClose],
   );
