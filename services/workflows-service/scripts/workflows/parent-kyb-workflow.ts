@@ -2,7 +2,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import { kycDynamicExample } from './kyc-dynamic-process-example';
 import { env } from '../../src/env';
 import { StateTag } from '@ballerine/common';
-import { generateDynamicUiTest } from './ui-definition/ui-kyb-parent-dynamic-example';
+import { uiKybParentDynamicExample } from './ui-definition/ui-kyb-parent-dynamic-example';
 
 export const kybParentDynamicExample = {
   id: 'dynamic_kyb_parent_example',
@@ -157,6 +157,6 @@ export const generateParentKybWithKycs = async (prismaClient: PrismaClient, proj
     data: kybDynamicExample,
   });
 
-  await generateDynamicUiTest(prismaClient, workflow.id, projectId || workflow.projectId);
+  await uiKybParentDynamicExample(prismaClient, workflow.id, projectId || workflow.projectId);
   return workflow;
 };

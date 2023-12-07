@@ -11,18 +11,30 @@ const validationSchema = {
           properties: {
             additionalInfo: {
               type: 'object',
-              required: ['mainRepresentative'],
+              required: ['mainRepresentative', 'iHaveSigningAuthority'],
+              default: {},
+              errorMessage: {
+                required: {
+                  iHaveSigningAuthority: 'This field is required.',
+                },
+              },
               properties: {
                 mainRepresentative: {
                   type: 'object',
-                  required: ['phone', 'dateOfBirth', 'firstName', 'lastName', 'additionalInfo'],
+                  required: [
+                    'phone',
+                    'dateOfBirth',
+                    'firstName',
+                    'lastName',
+                    'additionalInfo',
+                  ],
                   errorMessage: {
                     required: {
-                      phone: 'errorMessage.required.phone',
-                      dateOfBirth: 'errorMessage.required.dateOfBirth',
-                      firstName: 'errorMessage.required.firstName',
-                      lastName: 'errorMessage.required.lastName',
-                      additionalInfo: 'errorMessage.required.additionalInfo',
+                      phone: 'A valid phone number is required.',
+                      dateOfBirth: 'Date of birth is required.',
+                      firstName: 'First name is required.',
+                      lastName: 'Last name is required.',
+                      additionalInfo: 'Additional information is required.',
                     },
                   },
                   properties: {
@@ -30,27 +42,30 @@ const validationSchema = {
                       type: 'string',
                       pattern: '^[+]?[0-9]{10,15}$',
                       errorMessage: {
-                        pattern: 'errorMessage.pattern.phone',
+                        pattern:
+                          'Phone number must be 10 to 15 digits long and may start with a +.',
                       },
                     },
                     dateOfBirth: {
                       type: 'string',
                       errorMessage: {
-                        type: 'errorMessage.type.dateOfBirth',
+                        type: 'Date of birth must be a string.',
                       },
                     },
                     firstName: {
                       type: 'string',
                       minLength: 2,
                       errorMessage: {
-                        minLength: 'errorMessage.minLength.firstName',
+                        minLength:
+                          'First name must be at least 2 characters long.',
                       },
                     },
                     lastName: {
                       type: 'string',
                       minLength: 2,
                       errorMessage: {
-                        minLength: 'errorMessage.minLength.lastName',
+                        minLength:
+                          'Last name must be at least 2 characters long.',
                       },
                     },
                     additionalInfo: {
@@ -59,7 +74,7 @@ const validationSchema = {
                       default: {},
                       errorMessage: {
                         required: {
-                          jobTitle: 'errorMessage.required.jobTitle',
+                          jobTitle: 'Job title is a required',
                         },
                       },
                       properties: {
@@ -67,11 +82,19 @@ const validationSchema = {
                           type: 'string',
                           minLength: 2,
                           errorMessage: {
-                            minLength: 'errorMessage.minLength.jobTitle',
+                            minLength:
+                              'Job title must be at least 2 characters long.',
                           },
                         },
                       },
                     },
+                  },
+                },
+                iHaveSigningAuthority: {
+                  type: 'boolean',
+                  enum: [true],
+                  errorMessage: {
+                    enum: 'This field is required.',
                   },
                 },
               },
@@ -85,7 +108,7 @@ const validationSchema = {
 
 export const PersonalInfoPage = {
   type: 'page',
-  name: 'text.personalInformation',
+  name: 'Personal details',
   number: 1,
   stateName: 'personal_details',
   pageValidation: [
@@ -104,7 +127,7 @@ export const PersonalInfoPage = {
             {
               type: 'h1',
               options: {
-                text: 'text.personalInformation',
+                text: 'Personal information',
               },
             },
           ],
@@ -134,10 +157,11 @@ export const PersonalInfoPage = {
             {
               name: 'first-name-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.mainRepresentative.firstName',
+              valueDestination:
+                'entity.data.additionalInfo.mainRepresentative.firstName',
               options: {
-                label: 'text.name',
-                hint: 'text.firstName',
+                label: 'Name',
+                hint: 'First Name',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -146,9 +170,10 @@ export const PersonalInfoPage = {
             {
               name: 'last-name-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.mainRepresentative.lastName',
+              valueDestination:
+                'entity.data.additionalInfo.mainRepresentative.lastName',
               options: {
-                hint: 'text.lastName',
+                hint: 'Last Name',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -160,8 +185,8 @@ export const PersonalInfoPage = {
               valueDestination:
                 'entity.data.additionalInfo.mainRepresentative.additionalInfo.jobTitle',
               options: {
-                label: 'text.jobTitle.label',
-                hint: 'text.jobTitle.hint',
+                label: 'Title',
+                hint: 'CEO / Manager / Partner',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -170,10 +195,11 @@ export const PersonalInfoPage = {
             {
               name: 'date-of-birth-input',
               type: 'json-form:date',
-              valueDestination: 'entity.data.additionalInfo.mainRepresentative.dateOfBirth',
+              valueDestination:
+                'entity.data.additionalInfo.mainRepresentative.dateOfBirth',
               options: {
-                label: 'text.dateOfBirth.label',
-                hint: 'text.dateHint',
+                label: 'Date of Birth',
+                hint: 'DD/MM/YYYY',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -186,15 +212,31 @@ export const PersonalInfoPage = {
             {
               name: 'phone-number-input',
               type: 'international-phone-number',
-              valueDestination: 'entity.data.additionalInfo.mainRepresentative.phone',
+              valueDestination:
+                'entity.data.additionalInfo.mainRepresentative.phone',
               options: {
-                label: 'text.phoneNumber',
+                label: 'Phone number',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
                   'ui:field': 'PhoneInput',
                   'ui:label': true,
+                },
+              },
+            },
+            {
+              name: 'authority-checkbox',
+              type: 'authority-checkbox',
+              valueDestination:
+                'entity.data.additionalInfo.iHaveSigningAuthority',
+              options: {
+                label: 'I have the signing authority for this company',
+                jsonFormDefinition: {
+                  type: 'boolean',
+                },
+                uiSchema: {
+                  'ui:label': false,
                 },
               },
             },
@@ -214,7 +256,7 @@ export const PersonalInfoPage = {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],
                 },
-                text: 'text.continue',
+                text: 'Continue',
               },
               availableOn: [
                 {

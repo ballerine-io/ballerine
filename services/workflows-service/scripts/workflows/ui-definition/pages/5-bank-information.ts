@@ -1,48 +1,51 @@
+import { currencyCodes } from '../../utils/currency-codes';
+
 const validationSchema = {
   type: 'object',
   properties: {
     entity: {
       type: 'object',
+      default: {},
+      required: ['data'],
       properties: {
         data: {
           type: 'object',
+          default: {},
+          required: ['additionalInfo'],
           properties: {
             additionalInfo: {
               type: 'object',
-              required: ['mainContact'],
+              required: ['bankInformation'],
+              default: {},
               properties: {
-                mainContact: {
+                bankInformation: {
                   type: 'object',
-                  required: ['firstName', 'lastName', 'email', 'phone'],
                   default: {},
                   errorMessage: {
                     required: {
-                      firstName: 'errorMessage.required.firstName',
-                      lastName: 'errorMessage.required.lastName',
-                      phone: 'errorMessage.required.phone',
-                      email: 'errorMessage.required.email',
+                      country: 'Bank Country is required.',
+                      name: 'Bank Name is required',
+                      holderName: 'Account Holder Name is required.',
+                      accountNumber: 'Account Number is required.',
+                      currencyCode: 'Account Currency is required.',
                     },
                   },
+                  required: ['country', 'name', 'holderName', 'accountNumber', 'currencyCode'],
                   properties: {
-                    firstName: {
+                    country: {
                       type: 'string',
-                      minLength: 1,
                     },
-                    lastName: {
+                    name: {
                       type: 'string',
-                      minLength: 1,
                     },
-                    phone: {
+                    holderName: {
                       type: 'string',
-                      pattern: '^[+]?[0-9]{10,15}$',
-                      errorMessage: {
-                        pattern: 'errorMessage.pattern.phone',
-                      },
                     },
-                    email: {
+                    accountNumber: {
                       type: 'string',
-                      format: 'email',
-                      errorMessage: 'errorMessage.format.email',
+                    },
+                    currencyCode: {
+                      type: 'string',
                     },
                   },
                 },
@@ -56,11 +59,11 @@ const validationSchema = {
   required: ['entity'],
 };
 
-export const ContactsPage = {
+export const BankInformationPage = {
   type: 'page',
   number: 5,
-  stateName: 'contacts_page',
-  name: 'text.contacts',
+  stateName: 'bank_information',
+  name: 'Bank Information',
   pageValidation: [
     {
       type: 'json-schema',
@@ -77,14 +80,7 @@ export const ContactsPage = {
             {
               type: 'h1',
               options: {
-                text: 'text.contacts',
-              },
-            },
-            {
-              type: 'h4',
-              options: {
-                text: 'text.mainContact',
-                classNames: ['padding-top-10'],
+                text: 'Bank Information',
               },
             },
           ],
@@ -94,62 +90,79 @@ export const ContactsPage = {
           options: {
             jsonFormDefinition: {
               required: [
-                'contact-first-name-input',
-                'contact-last-name-input',
-                'contact-email-input',
-                'contact-phone-number-input',
+                'bank-country-input',
+                'bank-name-input',
+                'account-holder-name-input',
+                'account-number-input',
+                'account-currency-input',
               ],
             },
           },
           elements: [
             {
-              name: 'contact-first-name-input',
-              type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.mainContact.firstName',
+              name: 'bank-country-input',
+              type: 'dropdown',
+              valueDestination: 'entity.data.additionalInfo.bankInformation.country',
               options: {
-                label: 'text.legalName',
-                hint: 'text.firstName',
-                jsonFormDefinition: {
-                  type: 'string',
-                },
-              },
-            },
-            {
-              name: 'contact-last-name-input',
-              type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.mainContact.lastName',
-              options: {
-                hint: 'text.lastName',
-                jsonFormDefinition: {
-                  type: 'string',
-                },
-              },
-            },
-            {
-              name: 'contact-email-input',
-              type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.mainContact.email',
-              options: {
-                jsonFormDefinition: {
-                  type: 'string',
-                  format: 'email',
-                },
-                label: 'text.email.label',
-                hint: 'text.email.hint',
-              },
-            },
-            {
-              name: 'contact-phone-number-input',
-              type: 'international-phone-number',
-              valueDestination: 'entity.data.additionalInfo.mainContact.phone',
-              options: {
-                label: 'text.phoneNumber',
+                label: 'Bank Country',
+                hint: 'United Kingdom',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:field': 'PhoneInput',
-                  'ui:label': true,
+                  'ui:field': 'CountryPicker',
+                },
+              },
+            },
+            {
+              name: 'bank-name-input',
+              type: 'text-field',
+              valueDestination: 'entity.data.additionalInfo.bankInformation.name',
+              options: {
+                label: 'Bank Name',
+                hint: 'Barclays',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+              },
+            },
+            {
+              name: 'account-holder-name-input',
+              type: 'text-field',
+              valueDestination: 'entity.data.additionalInfo.bankInformation.holderName',
+              options: {
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+                label: 'Account Holder Name',
+                hint: 'OpenAI Technologies, Inc.',
+              },
+            },
+            {
+              name: 'account-number-input',
+              type: 'text-field',
+              valueDestination: 'entity.data.additionalInfo.bankInformation.accountNumber',
+              options: {
+                label: 'Account Number',
+                hint: '20456720',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+              },
+            },
+            {
+              name: 'account-currency-input',
+              type: 'text-field',
+              valueDestination: 'entity.data.additionalInfo.bankInformation.currencyCode',
+              options: {
+                label: 'Account Currency',
+                hint: 'GBP',
+                jsonFormDefinition: {
+                  type: 'string',
+                  oneOf: currencyCodes.map(code => ({
+                    const: code.code,
+                    title: code.code,
+                  })),
                 },
               },
             },
@@ -169,7 +182,7 @@ export const ContactsPage = {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],
                 },
-                text: 'text.continue',
+                text: 'Continue',
               },
               availableOn: [
                 {
