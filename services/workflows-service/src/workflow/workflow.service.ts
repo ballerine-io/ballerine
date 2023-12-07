@@ -75,7 +75,6 @@ import {
   WorkflowRuntimeDataRepository,
 } from './workflow-runtime-data.repository';
 import mime from 'mime';
-import console from 'console';
 
 type TEntityId = string;
 
@@ -2037,7 +2036,10 @@ export class WorkflowService {
           currentProjectId,
         );
 
-        if (childWorkflowCallback.deliverEvent && parentWorkflowRuntime.status !== 'completed') {
+        if (
+          childWorkflowCallback.deliverEvent &&
+          parentWorkflowRuntime.status !== WorkflowRuntimeDataStatus.completed
+        ) {
           try {
             await this.event(
               {
