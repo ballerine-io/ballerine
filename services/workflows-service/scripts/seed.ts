@@ -15,14 +15,14 @@ import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
 import { generateKybDefintion } from './workflows';
 import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
-import { generateParentKybWithSessionKycs } from './workflows/parent-kyb-kyc-session-workflow';
 import { env } from '../src/env';
 import { generateKybKycWorkflowDefinition } from './workflows/kyb-kyc-workflow-definition';
 import { generateBaseTaskLevelStates } from './workflows/generate-base-task-level-states';
 import { generateBaseCaseLevelStates } from './workflows/generate-base-case-level-states';
 import type { InputJsonValue } from '../src/types';
-import { generateDynamicUiWorkflow } from './workflows/dynamic-ui-workflow';
 import { generateWebsiteMonitoringExample } from './workflows/website-monitoring-workflow';
+import { generateCollectionKybWorkflow } from './workflows/generate-collection-kyb-workflow';
+import { generateInitialCollectionFlowExample } from './workflows/runtime/generate-initial-collection-flow-example';
 
 seed(10).catch(error => {
   console.error(error);
@@ -102,7 +102,8 @@ async function seed(bcryptSalt: string | number) {
     client,
     '1',
     env.API_KEY,
-    'https://assets-global.website-files.com/62827cf4fe5eb528708511d4/645511cb3d3dd84ee28fe04d_CyberAgent.svg',
+    // 'https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/ballerine-logo.png',
+    'https://ca.slack-edge.com/T038ABLSSQH-U03EV8BK858-b8fad84b7cc4-512',
     '',
     `webhook-shared-secret-${env.API_KEY}`,
   );
@@ -110,7 +111,7 @@ async function seed(bcryptSalt: string | number) {
     client,
     '2',
     `${env.API_KEY}2`,
-    'https://assets-global.website-files.com/62827cf4fe5eb528708511d4/645d26f285bd18467470e7cd_zenhub-logo.svg',
+    'https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/ballerine-logo.png',
     '',
     `webhook-shared-secret-${env.API_KEY}2`,
   );
@@ -1160,10 +1161,17 @@ async function seed(bcryptSalt: string | number) {
   customSeed();
   await generateKybDefintion(client);
   await generateKycSessionDefinition(client);
-  await generateParentKybWithSessionKycs(client);
   await generateKybKycWorkflowDefinition(client);
   await generateKycForE2eTest(client);
-  await generateDynamicUiWorkflow(client, project1.id);
+  const collectionFlowKyb = await generateCollectionKybWorkflow(client, project1.id);
   await generateWebsiteMonitoringExample(client, project1.id);
+
+  const token = await generateInitialCollectionFlowExample(client, {
+    workflowDefinitionId: collectionFlowKyb.id,
+    projectId: project1.id,
+    endUserId: endUserIds[0]!,
+    businessId: businessIds[0]!,
+    token: '12345678-1234-1234-1234-123456789012',
+  });
   console.info('Seeded database successfully');
 }

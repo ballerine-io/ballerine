@@ -2,10 +2,8 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import { PersonalInfoPage } from './pages/1-personal-info-page';
 import { CompanyInfoPage } from './pages/2-company-info-page';
 import { BusinessAddressInfoPage } from './pages/3-business-address-info-page';
-import { CompanyActivityPage } from './pages/4-company-activity';
-import { BankInformationPage } from './pages/5-bank-information';
-import { CompanyOwnershipPage } from './pages/6-company-ownership';
-import { CompanyDocumentsPage } from './pages/7-company-documents';
+import { CompanyOwnershipPage } from './pages/4-company-ownership';
+import { CompanyDocumentsPage } from './pages/5-company-documents';
 import { definition } from './pages/defintion-logic';
 
 export const uiKybParentUiSchema = (workflowDefinitionId: string, projectId: string) =>
@@ -16,8 +14,6 @@ export const uiKybParentUiSchema = (workflowDefinitionId: string, projectId: str
         PersonalInfoPage,
         CompanyInfoPage,
         BusinessAddressInfoPage,
-        CompanyActivityPage,
-        BankInformationPage,
         CompanyOwnershipPage,
         CompanyDocumentsPage,
       ],

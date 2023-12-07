@@ -19,26 +19,14 @@ export const definition = {
       },
       business_address_information: {
         on: {
-          NEXT: 'company_activity',
-          PREVIOUS: 'company_information',
-        },
-      },
-      company_activity: {
-        on: {
-          NEXT: 'bank_information',
-          PREVIOUS: 'business_address_information',
-        },
-      },
-      bank_information: {
-        on: {
           NEXT: 'company_ownership',
-          PREVIOUS: 'company_activity',
+          PREVIOUS: 'company_information',
         },
       },
       company_ownership: {
         on: {
           NEXT: 'company_documents',
-          PREVIOUS: 'bank_information',
+          PREVIOUS: 'business_address_information',
         },
       },
       company_documents: {
@@ -83,8 +71,6 @@ export const definition = {
           'personal_details',
           'company_information',
           'business_address_information',
-          'company_activity',
-          'bank_information',
           'company_ownership',
           'company_documents',
         ],
@@ -127,45 +113,6 @@ export const definition = {
             },
           ],
         },
-      },
-      {
-        name: 'fetch_company_information',
-        pluginKind: 'api',
-        url: `{flowConfig.apiUrl}/api/v1/collection-flow/business/business-information`,
-        method: 'GET',
-        stateNames: [],
-        headers: { Authorization: 'Bearer {flowConfig.tokenId}' },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-              token: flowConfig.tokenId,
-              registrationNumber: entity.data.registrationNumber,
-              countryCode: entity.data.country,
-              state: entity.data.additionalInfo.state || '',
-              vendor: 'open-corporates'
-              }`,
-            },
-          ],
-        },
-        response: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-              companyName: name,
-              taxIdentificationNumber: vat,
-              numberOfEmployees: numberOfEmployees,
-              businessType: companyType,
-              additionalInfo: {openCorporate: @}
-              }`,
-            },
-          ],
-        },
-        persistResponseDestination: 'entity.data',
-        successAction: 'company_information',
-        errorAction: 'company_information',
       },
       {
         name: 'send_collection_flow_finished',
