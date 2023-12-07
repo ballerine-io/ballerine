@@ -135,7 +135,7 @@ export const CollectionFlow = withSessionProtected(() => {
                                     appName={customer?.displayName}
                                   />
                                 </div>
-                                <div className="h-full max-h-[460px] pb-10">
+                                <div className="pb-10">
                                   <StepperUI />
                                 </div>
                               </div>
