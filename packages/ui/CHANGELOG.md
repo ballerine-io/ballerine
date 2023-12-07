@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.20
+
+### Patch Changes
+
+- Added Y padding to the badge component
+
 ## 0.3.19
 
 ### Patch Changes
