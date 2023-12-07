@@ -1,14 +1,5 @@
-import {
-  CommonWorkflowStates,
-  getDocumentsByCountry,
-  getDocumentSchemaByCountry,
-  isNullish,
-  StateTag,
-  TAvailableDocuments,
-  TDocument,
-} from '@ballerine/common';
+import { isNullish } from '@ballerine/common';
 import { Badge } from '@ballerine/ui';
-import { X } from 'lucide-react';
 import * as React from 'react';
 import { ComponentProps, useCallback, useMemo } from 'react';
 import { toTitleCase, toUpperCase } from 'string-ts';
@@ -18,31 +9,21 @@ import { includesValues } from '../../../../common/utils/includes-values/include
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useRemoveDecisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '../../../../domains/workflows/fetchers';
 import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
-import {
-  composePickableCategoryType,
-  extractCountryCodeFromWorkflow,
-  getIsEditable,
-  isExistingSchemaForDocument,
-  omitPropsFromObject,
-} from '../useEntity/utils';
+import { omitPropsFromObject } from '../useEntity/utils';
 import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
-import { getPostRemoveDecisionEventName } from './get-post-remove-decision-event-name';
-import { motionProps } from './motion-props';
 import { selectDirectorsDocuments } from './selectors/selectDirectorsDocuments';
 import { getPhoneNumberFormatter } from '../../../../common/utils/get-phone-number-formatter/get-phone-number-formatter';
 import { useDocumentPageImages } from '@/pages/Entity/hooks/useTasks/hooks/useDocumentPageImages';
 import { useDirectorsBlocks } from '@/pages/Entity/hooks/useTasks/hooks/useDirectorsBlocks';
-import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
-import { getPostApproveEventNameEvent } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useAssociatedCompaniesBlock } from '@/pages/Entity/hooks/useTasks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
-import { selectWorkflowDocuments } from '@/pages/Entity/hooks/useTasks/selectors/selectWorkflowDocuments';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
+import { useAssociatedCompaniesInformationBlock } from '@/pages/Entity/hooks/useTasks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
+import { useDocumentBlocks } from '@/pages/Entity/hooks/useTasks/hooks/useDocumentBlocks/useDocumentBlocks';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -51,336 +32,6 @@ const pluginsOutputBlacklist = [
   'businessInformation',
   'website_monitoring',
 ];
-
-const getDocumentsSchemas = (
-  issuerCountryCode: Parameters<typeof getDocumentSchemaByCountry>[0],
-  workflow: TWorkflowById,
-) => {
-  if (!issuerCountryCode) return;
-
-  const documentSchemaByCountry = getDocumentSchemaByCountry(
-    issuerCountryCode,
-    workflow.workflowDefinition?.documentsSchema as TDocument[],
-  )
-    .concat(getDocumentsByCountry(issuerCountryCode))
-    .reduce((unique: TDocument[], item: TDocument) => {
-      const isDuplicate = unique.some(u => u.type === item.type && u.category === item.category);
-      if (!isDuplicate) {
-        unique.push(item);
-      }
-      return unique;
-    }, [] as TDocument[])
-    .filter((documentSchema: TDocument) => {
-      if (!workflow?.workflowDefinition?.config?.availableDocuments) return true;
-
-      const isIncludes = !!workflow?.workflowDefinition?.config?.availableDocuments.find(
-        (availableDocument: TAvailableDocuments[number]) =>
-          availableDocument.type === documentSchema.type &&
-          availableDocument.category === documentSchema.category,
-      );
-
-      return isIncludes;
-    });
-
-  if (!Array.isArray(documentSchemaByCountry) || !documentSchemaByCountry.length) {
-    console.warn(
-      `No document schema found for issuer country code of "${issuerCountryCode}" and documents schema of\n`,
-      workflow.workflowDefinition?.documentsSchema,
-    );
-  }
-
-  return documentSchemaByCountry;
-};
-
-export const useDocumentBlocks = ({
-  workflow,
-  parentMachine,
-  noAction,
-  caseState,
-  withEntityNameInHeader,
-}) => {
-  const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
-  const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
-  const postApproveEventName = getPostApproveEventNameEvent(workflow);
-  const documents = useMemo(() => selectWorkflowDocuments(workflow), [workflow]);
-  const documentPages = useMemo(
-    () => documents.flatMap(({ pages }) => pages?.map(({ ballerineFileId }) => ballerineFileId)),
-    [documents],
-  );
-  const storageFilesQueryResult = useStorageFilesQuery(documentPages);
-  const documentPagesResults = useDocumentPageImages(documents, storageFilesQueryResult);
-
-  const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
-    useApproveTaskByIdMutation(workflow?.id, postApproveEventName);
-  const onMutateApproveTaskById = useCallback(
-    ({
-        taskId,
-        contextUpdateMethod,
-      }: {
-        taskId: string;
-        contextUpdateMethod: 'base' | 'director';
-      }) =>
-      () =>
-        mutateApproveTaskById({ documentId: taskId, contextUpdateMethod }),
-    [mutateApproveTaskById],
-  );
-  const postRemoveDecisionEventName = getPostRemoveDecisionEventName(workflow);
-  const { mutate: onMutateRemoveDecisionById } = useRemoveDecisionTaskByIdMutation(
-    workflow?.id,
-    postRemoveDecisionEventName,
-  );
-
-  return (
-    documents?.map(
-      ({ id, type: docType, category, properties, propertiesSchema, decision }, docIndex) => {
-        const additionalProperties = isExistingSchemaForDocument(documentsSchemas ?? [])
-          ? composePickableCategoryType(
-              category,
-              docType,
-              documentsSchemas ?? [],
-              workflow?.workflowDefinition?.config,
-            )
-          : {};
-        const isDoneWithRevision =
-          decision?.status === 'revised' && parentMachine?.status === 'completed';
-        const isDocumentRevision =
-          decision?.status === CommonWorkflowStates.REVISION && (!isDoneWithRevision || noAction);
-
-        const isLegacyReject = workflow?.workflowDefinition?.config?.isLegacyReject;
-        const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {
-          const badgeClassNames = 'text-sm font-bold';
-
-          if (isDocumentRevision) {
-            return workflow?.tags?.includes(StateTag.REVISION)
-              ? [
-                  {
-                    type: 'badge',
-                    value: 'Pending re-upload',
-                    props: {
-                      ...motionProps,
-                      variant: 'warning',
-                      className: badgeClassNames,
-                    },
-                  },
-                ]
-              : [
-                  {
-                    type: 'badge',
-                    value: (
-                      <React.Fragment>
-                        Re-upload needed
-                        {!isLegacyReject && (
-                          <X
-                            className="h-4 w-4 cursor-pointer"
-                            onClick={() => onMutateRemoveDecisionById({ documentId: id })}
-                          />
-                        )}
-                      </React.Fragment>
-                    ),
-                    props: {
-                      ...motionProps,
-                      variant: 'warning',
-                      className: `gap-x-1 text-white bg-warning ${badgeClassNames}`,
-                    },
-                  },
-                ];
-          }
-
-          if (decision?.status === StateTag.APPROVED) {
-            return [
-              {
-                type: 'badge',
-                value: 'Approved',
-                props: {
-                  ...motionProps,
-                  variant: 'success',
-                  className: `${badgeClassNames} bg-success/20`,
-                },
-              },
-            ];
-          }
-
-          if (decision?.status === StateTag.REJECTED) {
-            return [
-              {
-                type: 'badge',
-                value: 'Rejected',
-                props: {
-                  ...motionProps,
-                  variant: 'destructive',
-                  className: badgeClassNames,
-                },
-              },
-            ];
-          }
-
-          const revisionReasons =
-            workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
-              ({ enum: enum_ }) => !!enum_,
-            )?.enum;
-          const rejectionReasons =
-            workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
-              ({ enum: enum_ }) => !!enum_,
-            )?.enum;
-
-          return [
-            {
-              type: 'callToActionLegacy',
-              // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
-              value: {
-                text: isLegacyReject ? 'Reject' : 'Re-upload needed',
-                props: {
-                  revisionReasons,
-                  rejectionReasons,
-                  id,
-                  disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
-                  decision: 'reject',
-                },
-              },
-            },
-            {
-              type: 'callToAction',
-              value: {
-                text: 'Approve',
-                onClick: onMutateApproveTaskById({
-                  taskId: id,
-                  contextUpdateMethod: 'base',
-                }),
-                props: {
-                  disabled:
-                    (!isDoneWithRevision && Boolean(decision?.status)) ||
-                    noAction ||
-                    isLoadingApproveTaskById,
-                  size: 'wide',
-                  variant: 'success',
-                },
-              },
-            },
-          ];
-        };
-
-        const entityNameOrNA = valueOrNA(toTitleCase(workflow?.context?.entity?.data?.name ?? ''));
-        const categoryOrNA = valueOrNA(toTitleCase(category ?? ''));
-        const documentTypeOrNA = valueOrNA(toTitleCase(docType ?? ''));
-        const documentNameOrNA = `${categoryOrNA} - ${documentTypeOrNA}`;
-        const headerCell = {
-          id: 'header',
-          type: 'container',
-          value: [
-            {
-              type: 'heading',
-              value: `${withEntityNameInHeader ? `${entityNameOrNA} ` : ''}${documentNameOrNA}`,
-            },
-            {
-              id: 'actions',
-              type: 'container',
-              value: getDecisionStatusOrAction(isDocumentRevision),
-            },
-          ],
-        };
-
-        const decisionCell = {
-          type: 'details',
-          value: {
-            id,
-            title: 'Decision',
-            hideSeparator: true,
-            data: decision?.status
-              ? Object.entries(decision ?? {}).map(([title, value]) => ({
-                  title,
-                  value,
-                }))
-              : [],
-          },
-          workflowId: workflow?.id,
-          documents: workflow?.context?.documents,
-        };
-        const detailsCell = {
-          type: 'container',
-          value: [
-            {
-              id: 'decision',
-              type: 'details',
-              value: {
-                id,
-                title: `${category} - ${docType}`,
-                data: Object.entries(
-                  {
-                    ...additionalProperties,
-                    ...propertiesSchema?.properties,
-                  } ?? {},
-                )?.map(
-                  ([
-                    title,
-                    {
-                      type,
-                      format,
-                      pattern,
-                      isEditable = true,
-                      dropdownOptions,
-                      value,
-                      formatMinimum,
-                      formatMaximum,
-                    },
-                  ]) => {
-                    const fieldValue = value || (properties?.[title] ?? '');
-                    const isEditableDecision = isDoneWithRevision || !decision?.status;
-
-                    return {
-                      title,
-                      value: fieldValue,
-                      type,
-                      format,
-                      pattern,
-                      isEditable:
-                        isEditableDecision &&
-                        caseState.writeEnabled &&
-                        getIsEditable(isEditable, title),
-                      dropdownOptions,
-                      minimum: formatMinimum,
-                      maximum: formatMaximum,
-                    };
-                  },
-                ),
-              },
-              workflowId: workflow?.id,
-              documents: workflow?.context?.documents,
-            },
-            decisionCell,
-          ],
-        };
-
-        const documentsCell = {
-          type: 'multiDocuments',
-          value: {
-            isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
-            data:
-              documents?.[docIndex]?.pages?.map(
-                ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
-                  id: ballerineFileId,
-                  title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
-                    toTitleCase(docType ?? ''),
-                  )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                  imageUrl: documentPagesResults[docIndex][pageIndex],
-                  fileType: type,
-                  fileName,
-                }),
-              ) ?? [],
-          },
-        };
-
-        return {
-          className: isDocumentRevision
-            ? `shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning ${
-                workflow?.tags?.includes(StateTag.REVISION) ? '' : 'bg-warning/10'
-              }`
-            : '',
-          cells: [headerCell, detailsCell, documentsCell],
-        };
-      },
-    ) ?? []
-  );
-};
 
 export const useTasks = ({
   workflow,
@@ -518,13 +169,6 @@ export const useTasks = ({
     noAction,
     caseState,
     withEntityNameInHeader: false,
-  });
-  const childDocumentBlocks = useDocumentBlocks({
-    workflow: workflow?.childWorkflows?.[0],
-    parentMachine,
-    noAction,
-    caseState,
-    withEntityNameInHeader: true,
   });
 
   const entityInfoBlock =
@@ -1710,14 +1354,16 @@ export const useTasks = ({
     isLoadingEvent,
   });
 
+  const associatedCompaniesInformationBlock = useAssociatedCompaniesInformationBlock(
+    kybChildWorkflows ?? [],
+  );
+
   return useMemo(() => {
     return entity
       ? [
           ...websiteMonitoringBlock,
           ...entityInfoBlock,
           ...registryInfoBlock,
-          ...associatedCompaniesBlock,
-          ...childDocumentBlocks,
           ...kybRegistryInfoBlock,
           ...companySanctionsBlock,
           ...directorsUserProvidedBlock,
@@ -1732,6 +1378,8 @@ export const useTasks = ({
           ...mainRepresentativeBlock,
           ...mapBlock,
           ...parentDocumentBlocks,
+          ...associatedCompaniesBlock,
+          ...associatedCompaniesInformationBlock,
         ]
       : [];
   }, [
