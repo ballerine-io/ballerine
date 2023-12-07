@@ -6,6 +6,7 @@ import { JSONFormArrayFieldLayout } from '@/components/organisms/UIRenderer/elem
 import { LocalePicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/LocalePicker';
 import { Multiselect } from '@/components/organisms/UIRenderer/elements/JSONForm/components/Multiselect/Multiselect';
 import { NationalityPicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/NationalityPicker';
+import { RelationshipDropdown } from '@/components/organisms/UIRenderer/elements/JSONForm/components/RelationshipDropdown';
 import { StatePicker } from '@/components/organisms/UIRenderer/elements/JSONForm/components/StatePicker';
 import { withDynamicUIInput } from '@/components/organisms/UIRenderer/elements/JSONForm/hocs/withDynamicUIInput';
 import {
@@ -36,6 +37,7 @@ export const jsonFormFields = {
   IndustriesPicker: withDynamicUIInput(IndustriesPicker),
   Multiselect: withDynamicUIInput(Multiselect),
   StatePicker: withDynamicUIInput(StatePicker),
+  RelationshipDropdown: withDynamicUIInput(RelationshipDropdown),
 };
 
 export const jsonFormLayouts = {

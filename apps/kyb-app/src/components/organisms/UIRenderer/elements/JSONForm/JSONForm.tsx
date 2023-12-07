@@ -20,22 +20,19 @@ import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { Rule } from '@/domains/collection-flow';
 
-export interface JSONFormElementBaseParams {
+export interface JSONFormElementBaseParams extends DefinitionInsertionParams {
   jsonFormDefinition: RJSFSchema;
   uiSchema?: UiSchema;
   label?: string;
   hint?: string;
   description?: string;
   documentData?: AnyObject;
+  canAdd?: Rule[];
 }
 
-export interface JSONFormElementParams extends DefinitionInsertionParams {
-  jsonFormDefinition?: { type?: string; required?: string[]; title?: string };
-  uiSchema?: AnyObject;
-}
-
-export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition }) => {
+export const JSONForm: UIElementComponent<JSONFormElementBaseParams> = ({ definition }) => {
   useDataInsertionLogic(
     definition,
     definition?.options?.jsonFormDefinition?.type !== 'array' ||
@@ -82,30 +79,6 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
     }
   }, [payload]);
 
-  const handleArrayInputChange = useCallback(
-    (values: AnyObject[]) => {
-      if (definition.options?.jsonFormDefinition?.type === 'array') {
-        const prevContext = stateApi.getContext();
-        const currentValue = get(
-          prevContext,
-          // @ts-ignore
-          definition.valueDestination,
-        );
-
-        if (Array.isArray(currentValue) && currentValue.length !== values.length) {
-          set(
-            prevContext,
-            // @ts-ignore
-            definition.valueDestination,
-            values,
-          );
-          stateApi.setContext(prevContext);
-        }
-      }
-    },
-    [definition, stateApi],
-  );
-
   const handleSubmit = useCallback(() => {}, []);
 
   const { validationErrors } = useUIElementErrors(definition);
@@ -122,8 +95,6 @@ export const JSONForm: UIElementComponent<JSONFormElementParams> = ({ definition
             formData={formData}
             ref={formRef}
             transformErrors={transformRJSFErrors}
-            // @ts-ignore - potential bug, does this function even handle arrays?
-            onChange={handleArrayInputChange}
             onSubmit={handleSubmit}
           />
           {validationErrors && elementState.isTouched ? (

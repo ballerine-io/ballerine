@@ -5,17 +5,11 @@ import { fetchWorkflowEventDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { Action } from '../../../../../common/enums';
 
-export const useRevisionCaseAndDocumentsMutation = ({
-  workflowId,
-  revisionReason,
-}: {
-  workflowId: string;
-  revisionReason: string;
-}) => {
+export const useRevisionCaseAndDocumentsMutation = ({ workflowId }: { workflowId: string }) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () =>
+    mutationFn: ({ revisionReason }: { revisionReason: string }) =>
       fetchWorkflowEventDecision({
         workflowId,
         body: {

@@ -16,5 +16,1992 @@
   "success": {
     "header": "谢谢！<br />我们正在审核您的申请",
     "content": "一旦您的帐户准备就绪，我们将通过电子邮件通知您。"
-  }
+  },
+  "countries": {
+    "AF": {
+      "name": "阿富汗",
+      "nationality": "阿富汗人"
+    },
+    "AL": {
+      "name": "阿尔巴尼亚",
+      "nationality": "阿尔巴尼亚人"
+    },
+    "DZ": {
+      "name": "阿尔及利亚",
+      "nationality": "阿尔及利亚人"
+    },
+    "AD": {
+      "name": "安道尔",
+      "nationality": "安道尔人"
+    },
+    "AO": {
+      "name": "安哥拉",
+      "nationality": "安哥拉人"
+    },
+    "AG": {
+      "name": "安提瓜和巴布达",
+      "nationality": "安提瓜人"
+    },
+    "AR": {
+      "name": "阿根廷",
+      "nationality": "阿根廷人"
+    },
+    "AM": {
+      "name": "亚美尼亚",
+      "nationality": "亚美尼亚人"
+    },
+    "AU": {
+      "name": "澳大利亚",
+      "nationality": "澳大利亚人"
+    },
+    "AT": {
+      "name": "奥地利",
+      "nationality": "奥地利人"
+    },
+    "AZ": {
+      "name": "阿塞拜疆",
+      "nationality": "阿塞拜疆人"
+    },
+    "BS": {
+      "name": "巴哈马",
+      "nationality": "巴哈马人"
+    },
+    "BH": {
+      "name": "巴林",
+      "nationality": "巴林人"
+    },
+    "BD": {
+      "name": "孟加拉国",
+      "nationality": "孟加拉人"
+    },
+    "BB": {
+      "name": "巴巴多斯",
+      "nationality": "巴巴多斯人"
+    },
+    "BY": {
+      "name": "白俄罗斯",
+      "nationality": "白俄罗斯人"
+    },
+    "BE": {
+      "name": "比利时",
+      "nationality": "比利时人"
+    },
+    "BZ": {
+      "name": "伯利兹",
+      "nationality": "伯利兹人"
+    },
+    "BJ": {
+      "name": "贝宁",
+      "nationality": "贝宁人"
+    },
+    "BM": {
+      "name": "百慕大",
+      "nationality": "百慕大人"
+    },
+    "BT": {
+      "name": "不丹",
+      "nationality": "不丹人"
+    },
+    "BO": {
+      "name": "玻利维亚",
+      "nationality": "玻利维亚人"
+    },
+    "BA": {
+      "name": "波斯尼亚和黑塞哥维那",
+      "nationality": "波斯尼亚和黑塞哥维那人"
+    },
+    "BW": {
+      "name": "博茨瓦纳",
+      "nationality": "博茨瓦纳人"
+    },
+    "BV": {
+      "name": "布韦岛",
+      "nationality": "布韦岛人"
+    },
+    "BR": {
+      "name": "巴西",
+      "nationality": "巴西人"
+    },
+    "IO": {
+      "name": "英属印度洋领地",
+      "nationality": "英属印度洋领地人"
+    },
+    "BN": {
+      "name": "文莱",
+      "nationality": "文莱人"
+    },
+    "BG": {
+      "name": "保加利亚",
+      "nationality": "保加利亚人"
+    },
+    "BF": {
+      "name": "布基纳法索",
+      "nationality": "布基纳法索人"
+    },
+    "BI": {
+      "name": "布隆迪",
+      "nationality": "布隆迪人"
+    },
+    "KH": {
+      "name": "柬埔寨",
+      "nationality": "柬埔寨人"
+    },
+    "CM": {
+      "name": "喀麦隆",
+      "nationality": "喀麦隆人"
+    },
+    "CA": {
+      "name": "加拿大",
+      "nationality": "加拿大人"
+    },
+    "CV": {
+      "name": "佛得角",
+      "nationality": "佛得角人"
+    },
+    "KY": {
+      "name": "开曼群岛",
+      "nationality": "开曼群岛人"
+    },
+    "CF": {
+      "name": "中非共和国",
+      "nationality": "中非共和国人"
+    },
+    "TD": {
+      "name": "乍得",
+      "nationality": "乍得人"
+    },
+    "CL": {
+      "name": "智利",
+      "nationality": "智利人"
+    },
+    "CN": {
+      "name": "中国",
+      "nationality": "中国人"
+    },
+    "CX": {
+      "name": "圣诞岛",
+      "nationality": "圣诞岛人"
+    },
+    "CC": {
+      "name": "科科斯（基林）群岛",
+      "nationality": "科科斯（基林）群岛人"
+    },
+    "CO": {
+      "name": "哥伦比亚",
+      "nationality": "哥伦比亚人"
+    },
+    "KM": {
+      "name": "科摩罗",
+      "nationality": "科摩罗人"
+    },
+    "CG": {
+      "name": "刚果共和国",
+      "nationality": "刚果共和国人"
+    },
+    "CD": {
+      "name": "刚果民主共和国",
+      "nationality": "刚果民主共和国人"
+    },
+    "CK": {
+      "name": "库克群岛",
+      "nationality": "库克群岛人"
+    },
+    "CR": {
+      "name": "哥斯达黎加",
+      "nationality": "哥斯达黎加人"
+    },
+    "CI": {
+      "name": "科特迪瓦",
+      "nationality": "科特迪瓦人"
+    },
+    "HR": {
+      "name": "克罗地亚",
+      "nationality": "克罗地亚人"
+    },
+    "CU": {
+      "name": "古巴",
+      "nationality": "古巴人"
+    },
+    "CY": {
+      "name": "塞浦路斯",
+      "nationality": "塞浦路斯人"
+    },
+    "CZ": {
+      "name": "捷克共和国",
+      "nationality": "捷克共和国人"
+    },
+    "DK": {
+      "name": "丹麦",
+      "nationality": "丹麦人"
+    },
+    "DJ": {
+      "name": "吉布提",
+      "nationality": "吉布提人"
+    },
+    "DM": {
+      "name": "多米尼克",
+      "nationality": "多米尼克人"
+    },
+    "DO": {
+      "name": "多米尼加共和国",
+      "nationality": "多米尼加共和国人"
+    },
+    "EC": {
+      "name": "厄瓜多尔",
+      "nationality": "厄瓜多尔人"
+    },
+    "EG": {
+      "name": "埃及",
+      "nationality": "埃及人"
+    },
+    "SV": {
+      "name": "萨尔瓦多",
+      "nationality": "萨尔瓦多人"
+    },
+    "GQ": {
+      "name": "赤道几内亚",
+      "nationality": "赤道几内亚人"
+    },
+    "ER": {
+      "name": "厄立特里亚",
+      "nationality": "厄立特里亚人"
+    },
+    "EE": {
+      "name": "爱沙尼亚",
+      "nationality": "爱沙尼亚人"
+    },
+    "ET": {
+      "name": "埃塞俄比亚",
+      "nationality": "埃塞俄比亚人"
+    },
+    "FK": {
+      "name": "福克兰群岛",
+      "nationality": "福克兰群岛人"
+    },
+    "FO": {
+      "name": "法罗群岛",
+      "nationality": "法罗群岛人"
+    },
+    "FJ": {
+      "name": "斐济",
+      "nationality": "斐济人"
+    },
+    "FI": {
+      "name": "芬兰",
+      "nationality": "芬兰人"
+    },
+    "FR": {
+      "name": "法国",
+      "nationality": "法国人"
+    },
+    "GF": {
+      "name": "法属圭亚那",
+      "nationality": "法属圭亚那人"
+    },
+    "PF": {
+      "name": "法属波利尼西亚",
+      "nationality": "法属波利尼西亚人"
+    },
+    "GA": {
+      "name": "加蓬",
+      "nationality": "加蓬人"
+    },
+    "GM": {
+      "name": ["冈比亚共和国", "冈比亚"],
+      "nationality": "冈比亚人"
+    },
+    "GE": {
+      "name": "格鲁吉亚",
+      "nationality": "格鲁吉亚人"
+    },
+    "DE": {
+      "name": "德国",
+      "nationality": "德国人"
+    },
+    "GH": {
+      "name": "加纳",
+      "nationality": "加纳人"
+    },
+    "GI": {
+      "name": "直布罗陀",
+      "nationality": "直布罗陀"
+    },
+    "GR": {
+      "name": "希腊",
+      "nationality": "希腊人"
+    },
+    "GL": {
+      "name": "格陵兰",
+      "nationality": "格陵兰人"
+    },
+    "GD": {
+      "name": "格林纳达",
+      "nationality": "格林纳达人"
+    },
+    "GP": {
+      "name": "瓜德罗普",
+      "nationality": "瓜德罗普"
+    },
+    "GU": {
+      "name": "关岛",
+      "nationality": "关岛"
+    },
+    "GT": {
+      "name": "危地马拉",
+      "nationality": "危地马拉人"
+    },
+    "GN": {
+      "name": "几内亚",
+      "nationality": "几内亚人"
+    },
+    "GW": {
+      "name": "几内亚比绍",
+      "nationality": "几内亚比绍人"
+    },
+    "GY": {
+      "name": "圭亚那",
+      "nationality": "圭亚那人"
+    },
+    "HT": {
+      "name": "海地",
+      "nationality": "海地人"
+    },
+    "HM": {
+      "name": "赫德岛和麦克唐纳群岛",
+      "nationality": "赫德岛和麦克唐纳群岛"
+    },
+    "VA": {
+      "name": "梵蒂冈城国",
+      "nationality": "梵蒂冈城国"
+    },
+    "HN": {
+      "name": "洪都拉斯",
+      "nationality": "洪都拉斯人"
+    },
+    "HK": {
+      "name": "香港",
+      "nationality": "香港"
+    },
+    "HU": {
+      "name": "匈牙利",
+      "nationality": "匈牙利人"
+    },
+    "IS": {
+      "name": "冰岛",
+      "nationality": "冰岛人"
+    },
+    "IN": {
+      "name": "印度",
+      "nationality": "印度人"
+    },
+    "ID": {
+      "name": "印度尼西亚",
+      "nationality": "印度尼西亚人"
+    },
+    "IR": {
+      "name": ["伊朗伊斯兰共和国", "伊朗"],
+      "nationality": "伊朗人"
+    },
+    "IQ": {
+      "name": "伊拉克",
+      "nationality": "伊拉克人"
+    },
+    "IE": {
+      "name": "爱尔兰",
+      "nationality": "爱尔兰人"
+    },
+    "IL": {
+      "name": "以色列",
+      "nationality": "以色列人"
+    },
+    "IT": {
+      "name": "意大利",
+      "nationality": "意大利人"
+    },
+    "JM": {
+      "name": "牙买加",
+      "nationality": "牙买加人"
+    },
+    "JP": {
+      "name": "日本",
+      "nationality": "日本人"
+    },
+    "JO": {
+      "name": "约旦",
+      "nationality": "约旦人"
+    },
+    "KZ": {
+      "name": "哈萨克斯坦",
+      "nationality": "哈萨克斯坦人"
+    },
+    "KE": {
+      "name": "肯尼亚",
+      "nationality": "肯尼亚人"
+    },
+    "KI": {
+      "name": "基里巴斯",
+      "nationality": "基里巴斯人"
+    },
+    "KP": {
+      "name": "朝鲜",
+      "nationality": "朝鲜人"
+    },
+    "KR": {
+      "name": ["韩国", "大韩民国", "韩国共和国"],
+      "nationality": "韩国人"
+    },
+    "KW": {
+      "name": "科威特",
+      "nationality": "科威特人"
+    },
+    "KG": {
+      "name": "吉尔吉斯斯坦",
+      "nationality": "吉尔吉斯人"
+    },
+    "LA": {
+      "name": "老挝人民民主共和国",
+      "nationality": "老挝人"
+    },
+    "LV": {
+      "name": "拉脱维亚",
+      "nationality": "拉脱维亚人"
+    },
+    "LB": {
+      "name": "黎巴嫩",
+      "nationality": "黎巴嫩人"
+    },
+    "LS": {
+      "name": "莱索托",
+      "nationality": "莱索托人"
+    },
+    "LR": {
+      "name": "利比里亚",
+      "nationality": "利比里亚人"
+    },
+    "LY": {
+      "name": "利比亚",
+      "nationality": "利比亚人"
+    },
+    "LI": {
+      "name": "列支敦士登",
+      "nationality": "列支敦士登人"
+    },
+    "LT": {
+      "name": "立陶宛",
+      "nationality": "立陶宛人"
+    },
+    "LU": {
+      "name": "卢森堡",
+      "nationality": "卢森堡人"
+    },
+    "MO": {
+      "name": "澳门",
+      "nationality": "澳门"
+    },
+    "MK": {
+      "name": "北马其顿",
+      "nationality": "北马其顿人"
+    },
+    "MG": {
+      "name": "马达加斯加",
+      "nationality": "马达加斯加人"
+    },
+    "MW": {
+      "name": "马拉维",
+      "nationality": "马拉维人"
+    },
+    "MY": {
+      "name": "马来西亚",
+      "nationality": "马来西亚人"
+    },
+    "MV": {
+      "name": "马尔代夫",
+      "nationality": "马尔代夫人"
+    },
+    "ML": {
+      "name": "马里",
+      "nationality": "马里人"
+    },
+    "MT": {
+      "name": "马耳他",
+      "nationality": "马耳他人"
+    },
+    "MH": {
+      "name": "马绍尔群岛",
+      "nationality": "马绍尔群岛"
+    },
+    "MQ": {
+      "name": "马提尼克",
+      "nationality": "马提尼克"
+    },
+    "MR": {
+      "name": "毛里塔尼亚",
+      "nationality": "毛里塔尼亚人"
+    },
+    "MU": {
+      "name": "毛里求斯",
+      "nationality": "毛里求斯人"
+    },
+    "YT": {
+      "name": "马约特",
+      "nationality": "马约特"
+    },
+    "MX": {
+      "name": "墨西哥",
+      "nationality": "墨西哥人"
+    },
+    "FM": {
+      "name": "密克罗尼西亚联邦",
+      "nationality": "密克罗尼西亚联邦"
+    },
+    "MD": {
+      "name": "摩尔多瓦",
+      "nationality": "摩尔多瓦人"
+    },
+    "MC": {
+      "name": "摩纳哥",
+      "nationality": "摩纳哥人"
+    },
+    "MN": {
+      "name": "蒙古国",
+      "nationality": "蒙古人"
+    },
+    "MS": {
+      "name": "蒙特塞拉特",
+      "nationality": "蒙特塞拉特"
+    },
+    "MA": {
+      "name": "摩洛哥",
+      "nationality": "摩洛哥人"
+    },
+    "MZ": {
+      "name": "莫桑比克",
+      "nationality": "莫桑比克人"
+    },
+    "MM": {
+      "name": "缅甸",
+      "nationality": "缅甸人"
+    },
+    "NA": {
+      "name": "纳米比亚",
+      "nationality": "纳米比亚人"
+    },
+    "NR": {
+      "name": "瑙鲁",
+      "nationality": "瑙鲁人"
+    },
+    "NP": {
+      "name": "尼泊尔",
+      "nationality": "尼泊尔人"
+    },
+    "NL": {
+      "name": "荷兰",
+      "nationality": "荷兰人"
+    },
+    "NC": {
+      "name": "新喀里多尼亚",
+      "nationality": "新喀里多尼亚"
+    },
+    "NZ": {
+      "name": "新西兰",
+      "nationality": "新西兰人"
+    },
+    "NI": {
+      "name": "尼加拉瓜",
+      "nationality": "尼加拉瓜人"
+    },
+    "NE": {
+      "name": "尼日尔",
+      "nationality": "尼日尔人"
+    },
+    "NG": {
+      "name": "尼日利亚",
+      "nationality": "尼日利亚人"
+    },
+    "NU": {
+      "name": "纽埃",
+      "nationality": "纽埃"
+    },
+    "NF": {
+      "name": "诺福克岛",
+      "nationality": "诺福克岛"
+    },
+    "MP": {
+      "name": "北马里亚纳群岛",
+      "nationality": "北马里亚纳群岛"
+    },
+    "NO": {
+      "name": "挪威",
+      "nationality": "挪威人"
+    },
+    "OM": {
+      "name": "阿曼",
+      "nationality": "阿曼人"
+    },
+    "PK": {
+      "name": "巴基斯坦",
+      "nationality": "巴基斯坦人"
+    },
+    "PW": {
+      "name": "帕劳",
+      "nationality": "帕劳人"
+    },
+    "PS": {
+      "name": "巴勒斯坦",
+      "nationality": "巴勒斯坦"
+    },
+    "PA": {
+      "name": "巴拿马",
+      "nationality": "巴拿马人"
+    },
+    "PG": {
+      "name": "巴布亚新几内亚",
+      "nationality": "巴布亚新几内亚人"
+    },
+    "PY": {
+      "name": "巴拉圭",
+      "nationality": "巴拉圭人"
+    },
+    "PE": {
+      "name": "秘鲁",
+      "nationality": "秘鲁人"
+    },
+    "PH": {
+      "name": "菲律宾",
+      "nationality": "菲律宾人"
+    },
+    "PN": {
+      "name": "皮特凯恩群岛",
+      "nationality": "皮特凯恩群岛"
+    },
+    "PL": {
+      "name": "波兰",
+      "nationality": "波兰人"
+    },
+    "PT": {
+      "name": "葡萄牙",
+      "nationality": "葡萄牙人"
+    },
+    "PR": {
+      "name": "波多黎各",
+      "nationality": "波多黎各人"
+    },
+    "QA": {
+      "name": "卡塔尔",
+      "nationality": "卡塔尔人"
+    },
+    "RE": {
+      "name": "留尼汪",
+      "nationality": "留尼汪人"
+    },
+    "RO": {
+      "name": "罗马尼亚",
+      "nationality": "罗马尼亚人"
+    },
+    "RU": {
+      "name": "俄罗斯",
+      "nationality": "俄罗斯人"
+    },
+    "RW": {
+      "name": "卢旺达",
+      "nationality": "卢旺达人"
+    },
+    "SH": {
+      "name": "圣赫勒拿",
+      "nationality": "圣赫勒拿人"
+    },
+    "KN": {
+      "name": "圣基茨和尼维斯",
+      "nationality": "圣基茨和尼维斯人"
+    },
+    "LC": {
+      "name": "圣卢西亚",
+      "nationality": "圣卢西亚人"
+    },
+    "PM": {
+      "name": "圣皮埃尔和密克隆群岛",
+      "nationality": "圣皮埃尔和密克隆群岛人"
+    },
+    "VC": {
+      "name": "圣文森特和格林纳丁斯",
+      "nationality": "圣文森特和格林纳丁斯人"
+    },
+    "WS": {
+      "name": "萨摩亚",
+      "nationality": "萨摩亚人"
+    },
+    "SM": {
+      "name": "圣马力诺",
+      "nationality": "圣马力诺人"
+    },
+    "ST": {
+      "name": "圣多美和普林西比",
+      "nationality": "圣多美和普林西比人"
+    },
+    "SA": {
+      "name": "沙特阿拉伯",
+      "nationality": "沙特阿拉伯人"
+    },
+    "SN": {
+      "name": "塞内加尔",
+      "nationality": "塞内加尔人"
+    },
+    "SC": {
+      "name": "塞舌尔",
+      "nationality": "塞舌尔人"
+    },
+    "SL": {
+      "name": "塞拉利昂",
+      "nationality": "塞拉利昂人"
+    },
+    "SG": {
+      "name": "新加坡",
+      "nationality": "新加坡人"
+    },
+    "SK": {
+      "name": "斯洛伐克",
+      "nationality": "斯洛伐克人"
+    },
+    "SI": {
+      "name": "斯洛文尼亚",
+      "nationality": "斯洛文尼亚人"
+    },
+    "SB": {
+      "name": "所罗门群岛",
+      "nationality": "所罗门群岛人"
+    },
+    "SO": {
+      "name": "索马里",
+      "nationality": "索马里人"
+    },
+    "ZA": {
+      "name": "南非",
+      "nationality": "南非人"
+    },
+    "GS": {
+      "name": "南乔治亚岛和南桑威奇群岛",
+      "nationality": "南乔治亚岛和南桑威奇群岛人"
+    },
+    "ES": {
+      "name": "西班牙",
+      "nationality": "西班牙人"
+    },
+    "LK": {
+      "name": "斯里兰卡",
+      "nationality": "斯里兰卡人"
+    },
+    "SD": {
+      "name": "苏丹",
+      "nationality": "苏丹人"
+    },
+    "SR": {
+      "name": "苏里南",
+      "nationality": "苏里南人"
+    },
+    "SJ": {
+      "name": "斯瓦尔巴和扬·迈恩",
+      "nationality": "斯瓦尔巴和扬·迈恩人"
+    },
+    "SZ": {
+      "name": "斯威士兰",
+      "nationality": "斯威士兰人"
+    },
+    "SE": {
+      "name": "瑞典",
+      "nationality": "瑞典人"
+    },
+    "CH": {
+      "name": "瑞士",
+      "nationality": "瑞士人"
+    },
+    "SY": {
+      "name": "叙利亚",
+      "nationality": "叙利亚人"
+    },
+    "TW": {
+      "name": "台湾",
+      "nationality": "台湾人"
+    },
+    "TJ": {
+      "name": "塔吉克斯坦",
+      "nationality": "塔吉克斯坦人"
+    },
+    "TZ": {
+      "name": "坦桑尼亚",
+      "nationality": "坦桑尼亚人"
+    },
+    "TH": {
+      "name": "泰国",
+      "nationality": "泰国人"
+    },
+    "TL": {
+      "name": "东帝汶",
+      "nationality": "东帝汶人"
+    },
+    "TG": {
+      "name": "多哥",
+      "nationality": "多哥人"
+    },
+    "TK": {
+      "name": "托克劳",
+      "nationality": "托克劳人"
+    },
+    "TO": {
+      "name": "汤加",
+      "nationality": "汤加人"
+    },
+    "TT": {
+      "name": "特立尼达和多巴哥",
+      "nationality": "特立尼达和多巴哥人"
+    },
+    "TN": {
+      "name": "突尼斯",
+      "nationality": "突尼斯人"
+    },
+    "TR": {
+      "name": "土耳其",
+      "nationality": "土耳其人"
+    },
+    "TM": {
+      "name": "土库曼斯坦",
+      "nationality": "土库曼斯坦人"
+    },
+    "TC": {
+      "name": "特克斯和凯科斯群岛",
+      "nationality": "特克斯和凯科斯群岛人"
+    },
+    "TV": {
+      "name": "图瓦卢",
+      "nationality": "图瓦卢人"
+    },
+    "UG": {
+      "name": "乌干达",
+      "nationality": "乌干达人"
+    },
+    "UA": {
+      "name": "乌克兰",
+      "nationality": "乌克兰人"
+    },
+    "AE": {
+      "name": "阿联酋",
+      "nationality": "阿联酋人"
+    },
+    "GB": {
+      "name": "英国",
+      "nationality": "英国人"
+    },
+    "US": {
+      "name": "美国",
+      "nationality": "美国人"
+    },
+    "UM": {
+      "name": "美国本土外小岛屿",
+      "nationality": "美国本土外小岛屿人"
+    },
+    "UY": {
+      "name": "乌拉圭",
+      "nationality": "乌拉圭人"
+    },
+    "UZ": {
+      "name": "乌兹别克斯坦",
+      "nationality": "乌兹别克斯坦人"
+    },
+    "VU": {
+      "name": "瓦努阿图",
+      "nationality": "瓦努阿图人"
+    },
+    "VE": {
+      "name": "委内瑞拉",
+      "nationality": "委内瑞拉人"
+    },
+    "VN": {
+      "name": "越南",
+      "nationality": "越南人"
+    },
+    "VG": {
+      "name": "英属维尔京群岛",
+      "nationality": "英属维尔京群岛人"
+    },
+    "VI": {
+      "name": "美属维尔京群岛",
+      "nationality": "美属维尔京群岛人"
+    },
+    "WF": {
+      "name": "瓦利斯和富图纳",
+      "nationality": "瓦利斯和富图纳人"
+    },
+    "EH": {
+      "name": "西撒哈拉",
+      "nationality": "西撒哈拉人"
+    },
+    "YE": {
+      "name": "也门",
+      "nationality": "也门人"
+    },
+    "ZM": {
+      "name": "赞比亚",
+      "nationality": "赞比亚人"
+    },
+    "ZW": {
+      "name": "津巴布韦",
+      "nationality": "津巴布韦人"
+    },
+    "AX": {
+      "name": "奥兰群岛",
+      "nationality": "奥兰群岛人"
+    },
+    "BQ": {
+      "name": "博内尔，圣尤斯特歇斯和萨巴",
+      "nationality": "博内尔人，圣尤斯特歇斯人，和萨巴人"
+    },
+    "CW": {
+      "name": "库拉索",
+      "nationality": "库拉索人"
+    },
+    "GG": {
+      "name": "根西岛",
+      "nationality": "根西岛人"
+    },
+    "IM": {
+      "name": "曼岛",
+      "nationality": "曼岛人"
+    },
+    "JE": {
+      "name": "泽西岛",
+      "nationality": "泽西岛人"
+    },
+    "ME": {
+      "name": "黑山",
+      "nationality": "黑山人"
+    },
+    "BL": {
+      "name": "圣巴泰勒米",
+      "nationality": "圣巴泰勒米人"
+    },
+    "MF": {
+      "name": "圣马丁岛（法属部分）",
+      "nationality": "圣马丁岛人（法属部分）"
+    },
+    "RS": {
+      "name": "塞尔维亚",
+      "nationality": "塞尔维亚人"
+    },
+    "SX": {
+      "name": "圣马丁岛（荷兰部分）",
+      "nationality": "圣马丁岛人（荷兰部分）"
+    },
+    "SS": {
+      "name": "南苏丹",
+      "nationality": "南苏丹人"
+    },
+    "XK": {
+      "name": "科索沃",
+      "nationality": "科索沃人"
+    }
+  },
+  "industries": [
+    "成人娱乐和产品",
+    "航空航天工程",
+    "农业和农业",
+    "航空公司和航空",
+    "航空公司和包机服务",
+    "酒类销售",
+    "替代医学",
+    "动画",
+    "古董",
+    "服装和时尚",
+    "建筑修复",
+    "建筑和规划",
+    "艺术和手工艺品用品",
+    "艺术和手工艺",
+    "占星学和灵性",
+    "拍卖和拍卖",
+    "拍卖和竞价拍卖",
+    "汽车维修",
+    "汽车",
+    "航空和航天",
+    "保释金",
+    "面包和糖果",
+    "银行和金融",
+    "饮料生产",
+    "自行车销售和维修",
+    "二元期权交易",
+    "生物医学",
+    "生物技术",
+    "比特币和加密货币",
+    "船舶建造和维修",
+    "酿酒厂和酿酒厂",
+    "婚礼服务",
+    "广播媒体",
+    "建筑材料",
+    "蜡烛和芳香疗法",
+    "大麻和CBD产品",
+    "大麻",
+    "陶瓷和陶器",
+    "慈善机构和非营利组织",
+    "化学品",
+    "托儿服务",
+    "香烟、电子烟和电子烟店",
+    "市民和社会组织",
+    "土木工程",
+    "临床研究",
+    "收藏品",
+    "催收机构",
+    "商业渔业",
+    "商业地产",
+    "商品交易",
+    "计算机和网络安全",
+    "计算机游戏",
+    "计算机硬件",
+    "计算机软件",
+    "建筑",
+    "消费电子产品",
+    "消费品",
+    "消费者服务",
+    "化妆品和美容",
+    "精酿啤酒和烈酒",
+    "信用修复服务",
+    "奶制品",
+    "舞蹈和舞蹈指导",
+    "数据分析和统计",
+    "约会服务",
+    "债务合并和重组",
+    "国防和太空",
+    "设计",
+    "数字下载",
+    "数字媒体",
+    "直销",
+    "电子商务",
+    "教育和电子学习",
+    "老年护理",
+    "电气和电子制造",
+    "电气设备",
+    "紧急服务",
+    "娱乐",
+    "环境服务",
+    "马匹和马术",
+    "电子竞技和投注",
+    "活动门票经纪",
+    "活动服务",
+    "高管办公室和管理",
+    "设施服务",
+    "农业和农业设备",
+    "时尚配饰",
+    "金融服务",
+    "美术",
+    "枪支、弹药和配件",
+    "烟花销售",
+    "渔业",
+    "花店",
+    "食品和饮料",
+    "食品生产",
+    "食品卡车",
+    "鞋类制造",
+    "林业和采伐",
+    "外汇交易",
+    "化石燃料",
+    "丧葬服务",
+    "家具制造",
+    "家具",
+    "赌博和赌场",
+    "基因组学和遗传学",
+    "地质学和地球科学",
+    "玻璃、陶瓷和混凝土",
+    "政府和公共服务",
+    "平面设计",
+    "绿色和可持续生活",
+    "健康、健身和健康",
+    "高等教育",
+    "爱好和手工艺",
+    "家居和园艺",
+    "家庭卫生保健",
+    "家居用品",
+    "星座和心理服务",
+    "园艺",
+    "医院和医疗保健",
+    "酒店业",
+    "人力资源",
+    "非法和黑市产品",
+    "进出口",
+    "土著服务",
+    "工业自动化",
+    "传染病",
+    "信息服务",
+    "信息技术",
+    "保险",
+    "室内设计",
+    "国际事务",
+    "国际贸易和发展",
+    "互联网",
+    "投资银行",
+    "珠宝销售",
+    "儿童产品",
+    "语言学校和教育",
+    "洗衣和干洗",
+    "法律和法律服务",
+    "休闲和旅游",
+    "图书馆和档案馆",
+    "照明",
+    "语言学",
+    "物流和供应链",
+    "豪华和特殊商品",
+    "奢侈品和珠宝",
+    "机械",
+    "杂志订阅",
+    "杂志",
+    "邮件和邮寄服务",
+    "海洋科学",
+    "海事",
+    "营销和广告",
+    "材料研究",
+    "机械或工业工程",
+    "媒体制作",
+    "医疗和休闲大麻零售",
+    "医疗器械",
+    "医疗实践",
+    "心理健康护理",
+    "气象学和气象服务",
+    "微电子学",
+    "军事和国防",
+    "采矿和金属",
+    "模特和经纪机构",
+    "电影和电影",
+    "多级营销 (MLM)",
+    "博物馆和机构",
+    "音乐",
+    "纳米技术",
+    "天然和有机产品",
+    "神经科学",
+    "报纸",
+    "核能",
+    "保健品和补品",
+    "营养学和饮食学",
+    "办公用品",
+    "石油和能源",
+    "在线游戏和游戏物品",
+    "在线媒体",
+    "验光学",
+    "外包和离岸",
+    "包装",
+    "纸和森林产品",
+    "典当店",
+    "发薪日贷款和贷款",
+    "表演艺术",
+    "宠物产品和服务",
+    "制药和药店",
+    "制药",
+    "慈善事业",
+    "摄影",
+    "塑料",
+    "播客",
+    "警察和安全服务",
+    "政治组织和游说",
+    "邮政服务",
+    "家禽",
+    "贵金属和宝石",
+    "初中和高中教育",
+    "印刷",
+    "私立和特殊教育",
+    "专业培训和教练",
+    "公共广播",
+    "公共政策",
+    "公共关系和传媒",
+    "出版",
+    "制浆和造纸",
+    "铁路",
+    "牧场经营",
+    "房地产",
+    "宗教组织",
+    "可再生能源",
+    "研究",
+    "餐馆",
+    "零售",
+    "机器人技术",
+    "卫星",
+    "桑拿浴和温泉",
+    "安全和调查",
+    "半导体",
+    "造船",
+    "短租 (例如 Airbnb)",
+    "社交媒体",
+    "太空探索",
+    "特色食品",
+    "体育教练和指导",
+    "体育赛事预测或赔率制定",
+    "体育",
+    "人员招聘和招聘",
+    "超市",
+    "可持续农业",
+    "剥制动物",
+    "茶叶生产",
+    "电信",
+    "电话销售",
+    "远程医疗",
+    "电视广播",
+    "纺织品",
+    "治疗",
+    "分时共享",
+    "烟草和雪茄店",
+    "烟草",
+    "玩具和游戏",
+    "贸易和发展",
+    "贸易展览和活动",
+    "传统能源",
+    "翻译和本地化",
+    "旅行社和旅行社",
+    "城市规划",
+    "公用事业",
+    "兽医药",
+    "兽医",
+    "视频制作",
+    "虚拟现实和增强现实",
+    "仓储",
+    "水处理",
+    "武器和刀具销售",
+    "可穿戴技术",
+    "减肥计划和产品",
+    "批发",
+    "葡萄酒和烈酒",
+    "写作和编辑",
+    "瑜伽和普拉提",
+    "动物学和野生动物"
+  ],
+  "languages": [
+    {
+      "const": "afar",
+      "title": "阿法尔"
+    },
+    {
+      "const": "abkhazian",
+      "title": "阿布哈兹"
+    },
+    {
+      "const": "avestan",
+      "title": "阿维斯陀语"
+    },
+    {
+      "const": "afrikaans",
+      "title": "南非荷兰语"
+    },
+    {
+      "const": "akan",
+      "title": "阿肯"
+    },
+    {
+      "const": "amharic",
+      "title": "阿姆哈拉语"
+    },
+    {
+      "const": "aragonese",
+      "title": "阿拉贡语"
+    },
+    {
+      "const": "arabic",
+      "title": "阿拉伯语"
+    },
+    {
+      "const": "assamese",
+      "title": "阿萨姆语"
+    },
+    {
+      "const": "avaric",
+      "title": "阿瓦尔语"
+    },
+    {
+      "const": "aymara",
+      "title": "艾马拉语"
+    },
+    {
+      "const": "azerbaijani",
+      "title": "阿塞拜疆语"
+    },
+    {
+      "const": "bashkir",
+      "title": "巴什基尔"
+    },
+    {
+      "const": "belarusian",
+      "title": "白俄罗斯语"
+    },
+    {
+      "const": "bulgarian",
+      "title": "保加利亚语"
+    },
+    {
+      "const": "bihari languages",
+      "title": "比哈尔语"
+    },
+    {
+      "const": "bislama",
+      "title": "比斯拉马语"
+    },
+    {
+      "const": "bambara",
+      "title": "班巴拉语"
+    },
+    {
+      "const": "bengali",
+      "title": "孟加拉语"
+    },
+    {
+      "const": "tibetan",
+      "title": "藏语"
+    },
+    {
+      "const": "breton",
+      "title": "布列塔尼语"
+    },
+    {
+      "const": "bosnian",
+      "title": "波斯尼亚语"
+    },
+    {
+      "const": "catalan; valencian",
+      "title": "加泰罗尼亚语"
+    },
+    {
+      "const": "chechen",
+      "title": "车臣语"
+    },
+    {
+      "const": "chamorro",
+      "title": "查莫罗语"
+    },
+    {
+      "const": "corsican",
+      "title": "科西嘉语"
+    },
+    {
+      "const": "cree",
+      "title": "克里语"
+    },
+    {
+      "const": "czech",
+      "title": "捷克语"
+    },
+    {
+      "const": "church slavic; old slavonic; church slavonic; old bulgarian; old church slavonic",
+      "title": "教会斯拉夫语"
+    },
+    {
+      "const": "chuvash",
+      "title": "楚瓦什语"
+    },
+    {
+      "const": "welsh",
+      "title": "威尔士语"
+    },
+    {
+      "const": "danish",
+      "title": "丹麦语"
+    },
+    {
+      "const": "german",
+      "title": "德语"
+    },
+    {
+      "const": "divehi; dhivehi; maldivian",
+      "title": "迪维希语"
+    },
+    {
+      "const": "dzongkha",
+      "title": "宗喀巴语"
+    },
+    {
+      "const": "ewe",
+      "title": "埃维语"
+    },
+    {
+      "const": "greek, modern (1453-)",
+      "title": "现代希腊语"
+    },
+    {
+      "const": "english",
+      "title": "英语"
+    },
+    {
+      "const": "esperanto",
+      "title": "世界语"
+    },
+    {
+      "const": "spanish; castilian",
+      "title": "西班牙语"
+    },
+    {
+      "const": "estonian",
+      "title": "爱沙尼亚语"
+    },
+    {
+      "const": "basque",
+      "title": "巴斯克语"
+    },
+    {
+      "const": "persian",
+      "title": "波斯语"
+    },
+    {
+      "const": "fulah",
+      "title": "富拉语"
+    },
+    {
+      "const": "finnish",
+      "title": "芬兰语"
+    },
+    {
+      "const": "fijian",
+      "title": "斐济语"
+    },
+    {
+      "const": "faroese",
+      "title": "法罗语"
+    },
+    {
+      "const": "french",
+      "title": "法语"
+    },
+    {
+      "const": "western frisian",
+      "title": "西弗里西亚语"
+    },
+    {
+      "const": "irish",
+      "title": "爱尔兰语"
+    },
+    {
+      "const": "gaelic; scottish gaelic",
+      "title": "盖尔语"
+    },
+    {
+      "const": "galician",
+      "title": "加利西亚语"
+    },
+    {
+      "const": "guarani",
+      "title": "瓜拉尼语"
+    },
+    {
+      "const": "gujarati",
+      "title": "古吉拉特语"
+    },
+    {
+      "const": "manx",
+      "title": "马恩语"
+    },
+    {
+      "const": "hausa",
+      "title": "豪萨语"
+    },
+    {
+      "const": "hebrew",
+      "title": "希伯来语"
+    },
+    {
+      "const": "hindi",
+      "title": "印地语"
+    },
+    {
+      "const": "hiri motu",
+      "title": "希里莫图语"
+    },
+    {
+      "const": "croatian",
+      "title": "克罗地亚语"
+    },
+    {
+      "const": "haitian; haitian creole",
+      "title": "海地克里奥尔语"
+    },
+    {
+      "const": "hungarian",
+      "title": "匈牙利语"
+    },
+    {
+      "const": "armenian",
+      "title": "亚美尼亚语"
+    },
+    {
+      "const": "herero",
+      "title": "赫雷罗语"
+    },
+    {
+      "const": "interlingua (international auxiliary language association)",
+      "title": "国际辅助语联盟"
+    },
+    {
+      "const": "indonesian",
+      "title": "印尼语"
+    },
+    {
+      "const": "interlingue; occidental",
+      "title": "国际语"
+    },
+    {
+      "const": "igbo",
+      "title": "伊博语"
+    },
+    {
+      "const": "sichuan Yi; Nuosu",
+      "title": "四川彝语"
+    },
+    {
+      "const": "inupiaq",
+      "title": "伊努皮克语"
+    },
+    {
+      "const": "ido",
+      "title": "伊多语"
+    },
+    {
+      "const": "icelandic",
+      "title": "冰岛语"
+    },
+    {
+      "const": "italian",
+      "title": "意大利语"
+    },
+    {
+      "const": "inuktitut",
+      "title": "伊努克提图特语"
+    },
+    {
+      "const": "japanese",
+      "title": "日语"
+    },
+    {
+      "const": "javanese",
+      "title": "爪哇语"
+    },
+    {
+      "const": "georgian",
+      "title": "格鲁吉亚语"
+    },
+    {
+      "const": "kongo",
+      "title": "刚果语"
+    },
+    {
+      "const": "kikuyu; gikuyu",
+      "title": "吉库尤语"
+    },
+    {
+      "const": "kuanyama; kwanyama",
+      "title": "宽亚马语"
+    },
+    {
+      "const": "kazakh",
+      "title": "哈萨克语"
+    },
+    {
+      "const": "kalaallisut; greenlandic",
+      "title": "格陵兰语"
+    },
+    {
+      "const": "central khmer",
+      "title": "高棉语"
+    },
+    {
+      "const": "kannada",
+      "title": "卡纳达语"
+    },
+    {
+      "const": "korean",
+      "title": "韩语"
+    },
+    {
+      "const": "kanuri",
+      "title": "卡努里语"
+    },
+    {
+      "const": "kashmiri",
+      "title": "克什米尔语"
+    },
+    {
+      "const": "kurdish",
+      "title": "库尔德语"
+    },
+    {
+      "const": "komi",
+      "title": "科米语"
+    },
+    {
+      "const": "cornish",
+      "title": "康沃尔语"
+    },
+    {
+      "const": "kirghiz; kyrgyz",
+      "title": "吉尔吉斯语"
+    },
+    {
+      "const": "latin",
+      "title": "拉丁语"
+    },
+    {
+      "const": "luxembourgish; letzeburgesch",
+      "title": "卢森堡语"
+    },
+    {
+      "const": "ganda",
+      "title": "甘达语"
+    },
+    {
+      "const": "limburgan; limburgish",
+      "title": "林堡语"
+    },
+    {
+      "const": "lingala",
+      "title": "林加拉语"
+    },
+    {
+      "const": "lao",
+      "title": "老挝语"
+    },
+    {
+      "const": "lithuanian",
+      "title": "立陶宛语"
+    },
+    {
+      "const": "luba-katanga",
+      "title": "卢巴加丹加语"
+    },
+    {
+      "const": "latvian",
+      "title": "拉脱维亚语"
+    },
+    {
+      "const": "malagasy",
+      "title": "马尔加什语"
+    },
+    {
+      "const": "marshallese",
+      "title": "马绍尔语"
+    },
+    {
+      "const": "maori",
+      "title": "毛利语"
+    },
+    {
+      "const": "macedonian",
+      "title": "马其顿语"
+    },
+    {
+      "const": "malayalam",
+      "title": "马拉雅拉姆语"
+    },
+    {
+      "const": "mongolian",
+      "title": "蒙古语"
+    },
+    {
+      "const": "marathi",
+      "title": "马拉地语"
+    },
+    {
+      "const": "malay",
+      "title": "马来语"
+    },
+    {
+      "const": "maltese",
+      "title": "马耳他语"
+    },
+    {
+      "const": "burmese",
+      "title": "缅甸语"
+    },
+    {
+      "const": "nauru",
+      "title": "瑙鲁语"
+    },
+    {
+      "const": "bokmål, norwegian; norwegian bokmål",
+      "title": "挪威博克马尔语"
+    },
+    {
+      "const": "ndebele, north; north ndebele",
+      "title": "北恩德贝勒语"
+    },
+    {
+      "const": "nepali",
+      "title": "尼泊尔语"
+    },
+    {
+      "const": "ndonga",
+      "title": "东格瓦纳语"
+    },
+    {
+      "const": "dutch; flemish",
+      "title": "荷兰语"
+    },
+    {
+      "const": "norwegian nynorsk; nynorsk, norwegian",
+      "title": "挪威尼诺斯克; 尼诺斯克，挪威"
+    },
+    {
+      "const": "norwegian",
+      "title": "挪威"
+    },
+    {
+      "const": "ndebele, south; south ndebele",
+      "title": "南恩德贝勒; 南恩德贝勒"
+    },
+    {
+      "const": "navajo; navaho",
+      "title": "纳瓦霍; 纳瓦霍"
+    },
+    {
+      "const": "chichewa; chewa; nyanja",
+      "title": "奇切瓦; 切瓦; 尼恩加"
+    },
+    {
+      "const": "occitan (post 1500)",
+      "title": "奥克西唐（1500年后）"
+    },
+    {
+      "const": "ojibwa",
+      "title": "奥吉布瓦"
+    },
+    {
+      "const": "oromo",
+      "title": "奥罗莫"
+    },
+    {
+      "const": "oriya",
+      "title": "奥里亚"
+    },
+    {
+      "const": "ossetian; ossetic",
+      "title": "奥塞梯; 奥塞提克"
+    },
+    {
+      "const": "panjabi; punjabi",
+      "title": "旁遮普; 旁遮普"
+    },
+    {
+      "const": "pali",
+      "title": "巴利"
+    },
+    {
+      "const": "polish",
+      "title": "波兰"
+    },
+    {
+      "const": "pushto; pashto",
+      "title": "普什图; 普什图"
+    },
+    {
+      "const": "portuguese",
+      "title": "葡萄牙"
+    },
+    {
+      "const": "quechua",
+      "title": "克丘亚"
+    },
+    {
+      "const": "romansh",
+      "title": "罗曼什"
+    },
+    {
+      "const": "rundi",
+      "title": "基隆迪"
+    },
+    {
+      "const": "romanian; moldavian; moldovan",
+      "title": "罗马尼亚; 摩尔多瓦; 摩尔多瓦"
+    },
+    {
+      "const": "russian",
+      "title": "俄语"
+    },
+    {
+      "const": "kinyarwanda",
+      "title": "基尼亚鲁安达"
+    },
+    {
+      "const": "sanskrit",
+      "title": "梵文"
+    },
+    {
+      "const": "sardinian",
+      "title": "撒丁"
+    },
+    {
+      "const": "sindhi",
+      "title": "信德"
+    },
+    {
+      "const": "northern sami",
+      "title": "北萨米"
+    },
+    {
+      "const": "sango",
+      "title": "桑戈"
+    },
+    {
+      "const": "sinhala; sinhalese",
+      "title": "僧伽罗; 僧伽罗"
+    },
+    {
+      "const": "slovak",
+      "title": "斯洛伐克"
+    },
+    {
+      "const": "slovenian",
+      "title": "斯洛文尼亚"
+    },
+    {
+      "const": "samoan",
+      "title": "萨摩亚"
+    },
+    {
+      "const": "shona",
+      "title": "绍纳"
+    },
+    {
+      "const": "somali",
+      "title": "索马里"
+    },
+    {
+      "const": "albanian",
+      "title": "阿尔巴尼亚"
+    },
+    {
+      "const": "serbian",
+      "title": "塞尔维亚"
+    },
+    {
+      "const": "swati",
+      "title": "斯瓦特"
+    },
+    {
+      "const": "sotho, southern",
+      "title": "南索托"
+    },
+    {
+      "const": "sundanese",
+      "title": "巽他"
+    },
+    {
+      "const": "swedish",
+      "title": "瑞典"
+    },
+    {
+      "const": "swahili",
+      "title": "斯瓦希里"
+    },
+    {
+      "const": "tamil",
+      "title": "泰米尔"
+    },
+    {
+      "const": "telugu",
+      "title": "泰卢固"
+    },
+    {
+      "const": "tajik",
+      "title": "塔吉克"
+    },
+    {
+      "const": "thai",
+      "title": "泰国"
+    },
+    {
+      "const": "tigrinya",
+      "title": "提格利尼亚"
+    },
+    {
+      "const": "turkmen",
+      "title": "土库曼"
+    },
+    {
+      "const": "tagalog",
+      "title": "塔加洛"
+    },
+    {
+      "const": "tswana",
+      "title": "茨瓦纳"
+    },
+    {
+      "const": "tonga (tonga islands)",
+      "title": "汤加（汤加群岛）"
+    },
+    {
+      "const": "turkish",
+      "title": "土耳其"
+    },
+    {
+      "const": "tsonga",
+      "title": "通加"
+    },
+    {
+      "const": "tatar",
+      "title": "鞑靼"
+    },
+    {
+      "const": "twi",
+      "title": "契维"
+    },
+    {
+      "const": "tahitian",
+      "title": "塔希提"
+    },
+    {
+      "const": "uighur; uyghur",
+      "title": "维吾尔; 维吾尔"
+    },
+    {
+      "const": "ukrainian",
+      "title": "乌克兰"
+    },
+    {
+      "const": "urdu",
+      "title": "乌尔都"
+    },
+    {
+      "const": "uzbek",
+      "title": "乌兹别克"
+    },
+    {
+      "const": "venda",
+      "title": "文达"
+    },
+    {
+      "const": "vietnamese",
+      "title": "越南"
+    },
+    {
+      "const": "volapük",
+      "title": "沃拉普克"
+    },
+    {
+      "const": "walloon",
+      "title": "瓦隆"
+    },
+    {
+      "const": "wolof",
+      "title": "沃洛夫"
+    },
+    {
+      "const": "xhosa",
+      "title": "科萨"
+    },
+    {
+      "const": "yiddish",
+      "title": "意第绪"
+    },
+    {
+      "const": "yoruba",
+      "title": "约鲁巴"
+    },
+    {
+      "const": "zhuang; chuang",
+      "title": "壮; 壮"
+    },
+    {
+      "const": "chinese",
+      "title": "中文"
+    },
+    {
+      "const": "zulu",
+      "title": "祖鲁"
+    }
+  ]
 }

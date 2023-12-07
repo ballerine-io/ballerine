@@ -40,12 +40,16 @@ export const ArrayFieldsLayout = ({
               }
             />
           ))}
-      {canAdd ? (
-        <Button type="button" variant="outline" className="flex gap-2" onClick={onAddClick}>
-          <Plus size="16" />
-          {addText}
-        </Button>
-      ) : null}
+      <Button
+        type="button"
+        variant="outline"
+        className="flex gap-2"
+        onClick={onAddClick}
+        disabled={!canAdd}
+      >
+        <Plus size="16" />
+        {addText}
+      </Button>
     </div>
   );
 };

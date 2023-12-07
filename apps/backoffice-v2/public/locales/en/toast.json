@@ -41,5 +41,9 @@
   },
   "copy_to_clipboard": "Copied to clipboard: {{text}}",
   "ocr_document_error": "Error occurred while performing OCR on the document.",
-  "validation_error": "❌ Validation error"
+  "validation_error": "❌ Validation error",
+  "event": {
+    "success": "Event sent successfully.",
+    "error": "Error occurred while sending event."
+  }
 }

@@ -25,6 +25,7 @@ import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
+import set from 'lodash/set';
 
 const elems = {
   h1: Title,
@@ -107,8 +108,15 @@ export const CollectionFlow = withSessionProtected(() => {
                 return currentPage ? (
                   <DynamicUI.Page page={currentPage}>
                     <DynamicUI.TransitionListener
-                      onNext={(tools, prevState) => {
+                      onNext={async (tools, prevState) => {
                         tools.setElementCompleted(prevState, true);
+
+                        set(
+                          stateApi.getContext(),
+                          `flowConfig.stepsProgress.${prevState}.isCompleted`,
+                          true,
+                        );
+                        await stateApi.invokePlugin('sync_workflow_runtime');
                       }}
                     >
                       <DynamicUI.ActionsHandler actions={currentPage.actions} stateApi={stateApi}>

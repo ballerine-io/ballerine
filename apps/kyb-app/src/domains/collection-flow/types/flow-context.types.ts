@@ -3,7 +3,7 @@ export interface FlowConfig {
   tokenId: string;
   appState: string;
   customerCompany: string;
-  completedSteps: string[];
+  stepsProgress?: Record<string, { isCompleted: boolean }>;
 }
 
 export type CollectionFlowContext = Record<string, unknown> & {
