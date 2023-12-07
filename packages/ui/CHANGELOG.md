@@ -1,5 +1,12 @@
 # @ballerine/ui
 
+## 0.3.21
+
+### Patch Changes
+
+- Translating optional label
+- ui package release
+
 ## 0.3.20
 
 ### Patch Changes
