@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.21
+
+### Patch Changes
+
+- ui package release
+
 ## 0.3.20
 
 ### Patch Changes
