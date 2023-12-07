@@ -15,7 +15,6 @@ export interface UIRendererProps {
 const Block: FunctionComponent<ComponentProps<'div'>> = props => <div {...props} />;
 
 export const UIRenderer = ({ schema, elements = baseElements }: UIRendererProps) => {
-  //@ts-ignore
   const blocks = useMemo(() => generateBlocks(schema, elements) as any[], [schema, elements]);
   const context = useMemo(() => ({ elements }), [elements]);
 

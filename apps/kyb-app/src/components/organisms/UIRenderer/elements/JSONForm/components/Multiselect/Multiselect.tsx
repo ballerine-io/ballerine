@@ -21,21 +21,24 @@ export const Multiselect = ({
   definition,
   ...adapterProps
 }: RJSFInputProps & { definition?: UIElement<MultiselectParams> }) => {
-  const renderSelected: MultiSelectSelectedItemRenderer = useCallback((params, option) => {
-    return (
-      <Chip
-        key={option.value}
-        className="h-6"
-        variant={definition?.options.variants?.chip?.wrapper}
-      >
-        <Chip.Label text={option.title} variant={definition?.options.variants?.chip?.label} />
-        <Chip.UnselectButton
-          {...params.unselectButtonProps}
-          icon={<X className="hover:text-muted-foreground h-3 w-3 text-white" />}
-        />
-      </Chip>
-    );
-  }, []);
+  const renderSelected: MultiSelectSelectedItemRenderer = useCallback(
+    (params, option) => {
+      return (
+        <Chip
+          key={option.value}
+          className="h-6"
+          variant={definition?.options.variants?.chip?.wrapper}
+        >
+          <Chip.Label text={option.title} variant={definition?.options.variants?.chip?.label} />
+          <Chip.UnselectButton
+            {...params.unselectButtonProps}
+            icon={<X className="hover:text-muted-foreground h-3 w-3 text-white" />}
+          />
+        </Chip>
+      );
+    },
+    [definition?.options.variants?.chip?.label, definition?.options.variants?.chip?.wrapper],
+  );
 
   return <MultiselectInputAdapter {...(adapterProps as any)} renderSelected={renderSelected} />;
 };
