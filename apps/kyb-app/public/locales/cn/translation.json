@@ -3,5 +3,18 @@
   "back": "后退",
   "saving": "保存",
   "progressSaved": "已保存进度",
-  "contact": "接触 {{companyName}} 获取支持"
+  "contact": "接触 {{companyName}} 获取支持",
+  "backToPortal": "返回 {{companyName}} 门户",
+  "rejected": {
+    "header": "帐户激活被拒绝",
+    "content": "激活您的帐户时似乎出现问题。"
+  },
+  "approved": {
+    "header": "申请完成<br />",
+    "content": "返回 {{companyName}} 门户使用系统"
+  },
+  "success": {
+    "header": "谢谢！<br />我们正在审核您的申请",
+    "content": "一旦您的帐户准备就绪，我们将通过电子邮件通知您。"
+  }
 }

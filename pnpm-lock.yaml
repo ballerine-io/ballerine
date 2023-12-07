@@ -356,7 +356,7 @@ importers:
   apps/kyb-app:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.1.22
+        specifier: 0.1.23
         version: link:../../packages/blocks
       '@ballerine/common':
         specifier: ^0.7.30
