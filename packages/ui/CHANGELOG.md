@@ -4,6 +4,7 @@
 
 ### Patch Changes
 
+- Translating optional label
 - ui package release
 
 ## 0.3.20
