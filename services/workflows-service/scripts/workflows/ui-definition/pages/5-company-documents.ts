@@ -211,11 +211,7 @@ export const CompanyDocumentsPage = {
                 {
                   type: 'json-logic',
                   value: {
-                    '==': [
-                      { var: 'entity.data.additionalInfo.hasConfirmed' },
-                      true,
-                      false,
-                    ],
+                    '==': [{ var: 'entity.data.additionalInfo.hasConfirmed' }, true, false],
                   },
                 },
                 {

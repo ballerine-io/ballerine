@@ -21,13 +21,7 @@ const validationSchema = {
               properties: {
                 mainRepresentative: {
                   type: 'object',
-                  required: [
-                    'phone',
-                    'dateOfBirth',
-                    'firstName',
-                    'lastName',
-                    'additionalInfo',
-                  ],
+                  required: ['phone', 'dateOfBirth', 'firstName', 'lastName', 'additionalInfo'],
                   errorMessage: {
                     required: {
                       phone: 'A valid phone number is required.',
@@ -56,16 +50,14 @@ const validationSchema = {
                       type: 'string',
                       minLength: 2,
                       errorMessage: {
-                        minLength:
-                          'First name must be at least 2 characters long.',
+                        minLength: 'First name must be at least 2 characters long.',
                       },
                     },
                     lastName: {
                       type: 'string',
                       minLength: 2,
                       errorMessage: {
-                        minLength:
-                          'Last name must be at least 2 characters long.',
+                        minLength: 'Last name must be at least 2 characters long.',
                       },
                     },
                     additionalInfo: {
@@ -82,8 +74,7 @@ const validationSchema = {
                           type: 'string',
                           minLength: 2,
                           errorMessage: {
-                            minLength:
-                              'Job title must be at least 2 characters long.',
+                            minLength: 'Job title must be at least 2 characters long.',
                           },
                         },
                       },
@@ -157,8 +148,7 @@ export const PersonalInfoPage = {
             {
               name: 'first-name-input',
               type: 'json-form:text',
-              valueDestination:
-                'entity.data.additionalInfo.mainRepresentative.firstName',
+              valueDestination: 'entity.data.additionalInfo.mainRepresentative.firstName',
               options: {
                 label: 'Name',
                 hint: 'First Name',
@@ -170,8 +160,7 @@ export const PersonalInfoPage = {
             {
               name: 'last-name-input',
               type: 'json-form:text',
-              valueDestination:
-                'entity.data.additionalInfo.mainRepresentative.lastName',
+              valueDestination: 'entity.data.additionalInfo.mainRepresentative.lastName',
               options: {
                 hint: 'Last Name',
                 jsonFormDefinition: {
@@ -195,8 +184,7 @@ export const PersonalInfoPage = {
             {
               name: 'date-of-birth-input',
               type: 'json-form:date',
-              valueDestination:
-                'entity.data.additionalInfo.mainRepresentative.dateOfBirth',
+              valueDestination: 'entity.data.additionalInfo.mainRepresentative.dateOfBirth',
               options: {
                 label: 'Date of Birth',
                 hint: 'DD/MM/YYYY',
@@ -212,8 +200,7 @@ export const PersonalInfoPage = {
             {
               name: 'phone-number-input',
               type: 'international-phone-number',
-              valueDestination:
-                'entity.data.additionalInfo.mainRepresentative.phone',
+              valueDestination: 'entity.data.additionalInfo.mainRepresentative.phone',
               options: {
                 label: 'Phone number',
                 jsonFormDefinition: {
@@ -228,8 +215,7 @@ export const PersonalInfoPage = {
             {
               name: 'authority-checkbox',
               type: 'authority-checkbox',
-              valueDestination:
-                'entity.data.additionalInfo.iHaveSigningAuthority',
+              valueDestination: 'entity.data.additionalInfo.iHaveSigningAuthority',
               options: {
                 label: 'I have the signing authority for this company',
                 jsonFormDefinition: {
