@@ -4,6 +4,7 @@
 
 ### Patch Changes
 
+- Translating optional label
 - Updated dependencies
   - @ballerine/ui@0.3.21
 
