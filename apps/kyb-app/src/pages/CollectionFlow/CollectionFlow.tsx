@@ -146,7 +146,6 @@ export const CollectionFlow = withSessionProtected(() => {
                                       {
                                         t('contact', {
                                           companyName: customer.displayName,
-                                          interpolation: { escapeValue: false },
                                         }) as string
                                       }
                                     </div>

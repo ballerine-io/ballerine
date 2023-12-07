@@ -64,7 +64,7 @@ importers:
         specifier: 0.7.30
         version: 0.7.30
       '@ballerine/ui':
-        specifier: 0.3.19
+        specifier: 0.3.20
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.5.30
@@ -356,13 +356,13 @@ importers:
   apps/kyb-app:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.1.22
+        specifier: 0.1.23
         version: link:../../packages/blocks
       '@ballerine/common':
         specifier: ^0.7.30
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.3.19
+        specifier: 0.3.20
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.5.30
