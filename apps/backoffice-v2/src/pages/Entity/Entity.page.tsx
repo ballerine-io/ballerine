@@ -5,9 +5,19 @@ import { Card } from '../../common/components/atoms/Card/Card';
 import { CardContent } from '../../common/components/atoms/Card/Card.Content';
 import { KycBlock } from './components/KycBlock/KycBlock';
 import { NoTasksSvg } from '../../common/components/atoms/icons';
+import { ChildDocumentBlocks } from '@/pages/Entity/components/ChildDocumentBlocks/ChildDocumentBlocks';
 
 export const Entity = () => {
-  const { workflow, selectedEntity, tasks, cells, isLoading, kycChildWorkflows } = useEntity();
+  const {
+    workflow,
+    selectedEntity,
+    tasks,
+    cells,
+    isLoading,
+    kycChildWorkflows,
+    kybChildWorkflows,
+    parentMachine,
+  } = useEntity();
 
   // Selected entity
   return (
@@ -50,6 +60,14 @@ export const Entity = () => {
               </Card>
             );
           })}
+        {kybChildWorkflows?.map(childWorkflow => (
+          <ChildDocumentBlocks
+            parentWorkflowId={workflow?.id}
+            childWorkflow={childWorkflow}
+            parentMachine={parentMachine}
+            key={childWorkflow?.id}
+          />
+        ))}
         {Array.isArray(kycChildWorkflows) &&
           kycChildWorkflows?.length > 0 &&
           kycChildWorkflows?.map(childWorkflow => (

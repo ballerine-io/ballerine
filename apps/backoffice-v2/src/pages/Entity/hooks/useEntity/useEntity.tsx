@@ -25,6 +25,9 @@ export const useEntity = () => {
   const kycChildWorkflows = workflow?.childWorkflows?.filter(
     childWorkflow => childWorkflow?.context?.entity?.type === 'individual',
   );
+  const kybChildWorkflows = workflow?.childWorkflows?.filter(
+    childWorkflow => childWorkflow?.context?.entity?.type === 'business',
+  );
 
   return {
     selectedEntity,
@@ -32,6 +35,7 @@ export const useEntity = () => {
     tasks,
     workflow,
     isLoading,
+    kybChildWorkflows,
     kycChildWorkflows,
   };
 };

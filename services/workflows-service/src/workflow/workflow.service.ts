@@ -300,7 +300,7 @@ export class WorkflowService {
       business: undefined,
       nextEvents,
       childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
-        this.formatWorkflow(childWorkflow, true),
+        this.formatWorkflow(childWorkflow),
       ),
     };
   }
