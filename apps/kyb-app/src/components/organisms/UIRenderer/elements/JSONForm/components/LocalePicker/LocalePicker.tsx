@@ -1,8 +1,15 @@
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { RJSFInputProps, TextInputAdapter } from '@ballerine/ui';
-import { languages } from './languages';
 
 export const LocalePicker = (props: RJSFInputProps) => {
-  props.schema.oneOf = languages;
+  const { t } = useTranslation();
+
+  props.schema.oneOf = useMemo(() => t('languages', { returnObjects: true }), [t]) as {
+    const: string;
+    title: string;
+  }[];
 
   return <TextInputAdapter {...(props as any)} />;
 };
