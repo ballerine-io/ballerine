@@ -95,20 +95,23 @@ export const withDynamicUIInput = (
 
     const { onChangeHandler } = useUIElementHandlers(definition);
 
-    const handleChange = useCallback((value: unknown) => {
-      const evt = {
-        target: {
-          name: definition.name,
-          value: !value && value !== 0 && value !== false ? undefined : value,
-        },
-      };
-      onChangeHandler(evt as React.ChangeEvent<any>);
-      onChange(value);
-    }, []);
+    const handleChange = useCallback(
+      (value: unknown) => {
+        const evt = {
+          target: {
+            name: definition.name,
+            value: !value && value !== 0 && value !== false ? undefined : value,
+          },
+        };
+        onChangeHandler(evt as React.ChangeEvent<any>);
+        onChange(value);
+      },
+      [definition.name, onChange, onChangeHandler],
+    );
 
     const handleBlur = useCallback(() => {
       setTouched(true);
-    }, []);
+    }, [setTouched]);
 
     const value = useMemo(
       () => get(payload, definition.valueDestination) as unknown,

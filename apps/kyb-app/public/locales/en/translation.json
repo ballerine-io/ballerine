@@ -5,6 +5,7 @@
   "progressSaved": "Progress saved",
   "contact": "Contact {{companyName}} for support",
   "backToPortal": "Back to {{companyName}} Portal",
+  "optionalLabel": " (optional) ",
   "rejected": {
     "header": "Account activation rejected",
     "content": "It seems like there was a problem with activating your account."
@@ -981,15 +982,45 @@
       "const": "venda",
       "title": "Venda"
     },
-    { "const": "vietnamese", "title": "Vietnamese" },
-    { "const": "volapük", "title": "Volapük" },
-    { "const": "walloon", "title": "Walloon" },
-    { "const": "wolof", "title": "Wolof" },
-    { "const": "xhosa", "title": "Xhosa" },
-    { "const": "yiddish", "title": "Yiddish" },
-    { "const": "yoruba", "title": "Yoruba" },
-    { "const": "zhuang; chuang", "title": "Zhuang; Chuang" },
-    { "const": "chinese", "title": "Chinese" },
-    { "const": "zulu", "title": "Zulu" }
+    {
+      "const": "vietnamese",
+      "title": "Vietnamese"
+    },
+    {
+      "const": "volapük",
+      "title": "Volapük"
+    },
+    {
+      "const": "walloon",
+      "title": "Walloon"
+    },
+    {
+      "const": "wolof",
+      "title": "Wolof"
+    },
+    {
+      "const": "xhosa",
+      "title": "Xhosa"
+    },
+    {
+      "const": "yiddish",
+      "title": "Yiddish"
+    },
+    {
+      "const": "yoruba",
+      "title": "Yoruba"
+    },
+    {
+      "const": "zhuang; chuang",
+      "title": "Zhuang; Chuang"
+    },
+    {
+      "const": "chinese",
+      "title": "Chinese"
+    },
+    {
+      "const": "zulu",
+      "title": "Zulu"
+    }
   ]
 }
