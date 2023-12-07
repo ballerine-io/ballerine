@@ -1,6 +1,11 @@
 {
   "text": {
     "personalInformation": "个人信息",
+    "companyInformation": "公司信息",
+    "headquartersAddress": "总部地址",
+    "companyActivity": "公司活动",
+    "bankInformation": "银行信息",
+    "companyOwnership": "公司所有权",
     "businessInformation": "业务信息",
     "businessAddress": "营业地址",
     "registeredAddress": "注册地址",
@@ -15,6 +20,7 @@
     "imShareholder": "我拥有公司25%或更多的股份",
     "imDirector": "我是公司的董事",
     "shareholder": "股东",
+    "shareholders": "股东",
     "shareholdersDescription": "添加所有直接或间接拥有公司25%或更多权益的自然人。",
     "uboIndex": "最终受益人 {{INDEX}}",
     "directorIndex": "董事 {{INDEX}}",
@@ -111,6 +117,7 @@
     },
     "businessType": {
       "label": "企业类型",
+      "hint": "选择",
       "options": {
         "sole_proprietorship": "独资企业",
         "partnership": "合伙企业",
@@ -134,6 +141,10 @@
     "holderName": {
       "label": "持卡人姓名",
       "hint": "约翰 多伊"
+    },
+    "accountHolderName": {
+      "label": "账户持有人姓名",
+      "hint": "OpenAI Technologies, Inc."
     },
     "holderFullAddress": {
       "label": "居民地址",
@@ -327,6 +338,60 @@
     "passportSelfie": {
       "label": "持有身份证/护照的自拍照",
       "description": "将相同的文件放在主管脸旁边"
+    },
+    "iHaveSigningAuthority": {
+      "label": "我有这家公司的签署权"
+    },
+    "registeredCountry": {
+      "label": "注册国家",
+      "hint": "英国",
+      "placeholder": "选择"
+    },
+    "bankCountry": {
+      "label": "银行所在国家",
+      "hint": "英国",
+      "placeholder": "选择"
+    },
+    "postalCode": "邮政编码",
+    "headquartersPhoneNumber": {
+      "label": "总部电话号码"
+    },
+    "industryInput": {
+      "label": "行业",
+      "hint": "食品与饮料"
+    },
+    "businessModelInput": {
+      "label": "商业模式",
+      "hint": "请尽可能提供关于您的产品或服务的信息。"
+    },
+    "companyWebsiteInput": {
+      "label": "公司网站",
+      "hint": "www.example.co.uk"
+    },
+    "annualVolumeAmountInput": {
+      "label": "预估年销售额（美元）",
+      "hint": "$500,000"
+    },
+    "averageTransactionValueInput": {
+      "label": "平均交易价值（美元）",
+      "hint": "$10,00"
+    },
+    "documents": {
+      "bankStatement": {
+        "label": "银行对账单",
+        "description": "不超过6个月。"
+      },
+      "companyStructure": {
+        "label": "公司结构（董事和法定代表人）",
+        "description": "公证文件"
+      },
+      "certificateOfRegistration": {
+        "label": "注册证书"
+      },
+      "utilityBill": {
+        "label": "公司水电费账单作为地址证明",
+        "description": "不超过6个月。"
+      }
     }
   },
   "errorMessage": {
@@ -396,7 +461,8 @@
       "spikeSalesAverageVolume": "需要销售高峰期销售额。",
       "spikeTransactionNumber": "需要销售高峰期交易数量。",
       "volumeInRegion": "需要按地区划分的销售额百分比。",
-      "contactDetails": "联系方式是必需的。"
+      "contactDetails": "联系方式是必需的。",
+      "companyWebsite": "公司网站为必填项。"
     },
     "minLength": {
       "firstName": "名字必须至少为2个字符。",
@@ -472,7 +538,8 @@
       "shippingPolicyUrl": "运输政策网址应为有效的网址。",
       "aboutUsUrl": "关于我们网址应为有效的网址。",
       "termsOfUseUrl": "使用条款网址应为有效的网址。",
-      "privacyPolicyUrl": "隐私政策网址应为有效的网址。"
+      "privacyPolicyUrl": "隐私政策网址应为有效的网址。",
+      "companyWebsite": "公司网站应为有效的网址"
     },
     "type": {
       "dateOfBirth": "出生日期必须为字符串。",
