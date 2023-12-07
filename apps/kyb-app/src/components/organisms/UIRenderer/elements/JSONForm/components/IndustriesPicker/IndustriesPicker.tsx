@@ -1,15 +1,20 @@
-import { RJSFInputProps, TextInputAdapter } from '@ballerine/ui';
 import { useMemo } from 'react';
-import { industries } from '@/common/static/industries';
+import { useTranslation } from 'react-i18next';
+
+import { RJSFInputProps, TextInputAdapter } from '@ballerine/ui';
 
 export const IndustriesPicker = (props: RJSFInputProps) => {
+  const { t } = useTranslation();
+
+  const translatedIndustries = t('industries', { returnObjects: true }) as string[];
+
   const options = useMemo(
     () =>
-      industries.map(industry => ({
+      translatedIndustries.map(industry => ({
         const: industry,
         title: industry,
       })),
-    [],
+    [translatedIndustries],
   );
 
   const propsWithOptions = useMemo(
