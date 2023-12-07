@@ -4,7 +4,8 @@ import * as path from 'path';
 import { sentryVitePlugin, SentryVitePluginOptions } from '@sentry/vite-plugin';
 import * as fs from 'fs';
 import tailwindcss from 'tailwindcss';
-import { defineConfig, PluginOption } from 'vite';
+import { PluginOption } from 'vite';
+import { defineConfig } from 'vitest/config';
 import checker from 'vite-plugin-checker';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
@@ -56,6 +57,7 @@ if (process.env.VITE_SENTRY_AUTH_TOKEN) {
 export default defineConfig({
   server: {
     port: 5201,
+    open: true,
   },
   preview: {
     port: 5201,

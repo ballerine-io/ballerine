@@ -147,7 +147,7 @@ const validationSchema = {
               errorMessage: {
                 required: {
                   ubos: 'UBOs are required.',
-                  directors: 'directors are required.',
+                  directors: 'Directors are required.',
                 },
               },
             },
@@ -161,7 +161,7 @@ const validationSchema = {
 
 export const CompanyOwnershipPage = {
   type: 'page',
-  number: 6,
+  number: 4,
   stateName: 'company_ownership',
   name: 'Company Ownership',
   pageValidation: [
@@ -367,14 +367,15 @@ export const CompanyOwnershipPage = {
         {
           type: 'h3',
           options: {
-            text: 'Associated companies',
+            text: 'UBOs',
             classNames: ['padding-top-10'],
           },
         },
         {
           type: 'description',
           options: {
-            descriptionRaw: 'Add all companies that own more than 25% of the company.',
+            descriptionRaw:
+              'Add all of the natural persons that own or control, <br /><b>directly or indirectly</b> more than 25% of the company.',
           },
         },
         {
@@ -382,13 +383,13 @@ export const CompanyOwnershipPage = {
           elements: [
             {
               type: 'checkbox',
-              name: 'there-no-companies-with-more-than-25',
-              valueDestination: 'entity.data.additionalInfo.thereNoCompaniesWithMoreThan25',
+              name: 'im-director-checkbox',
+              valueDestination: 'entity.data.additionalInfo.imDirector',
               options: {
                 jsonFormDefinition: {
                   type: 'boolean',
                 },
-                label: 'There are no companies with more than 25%',
+                label: 'I am a director in the company',
                 uiSchema: {
                   'ui:label': false,
                 },
@@ -398,8 +399,8 @@ export const CompanyOwnershipPage = {
         },
         {
           type: 'json-form',
-          name: 'companies-form',
-          valueDestination: 'entity.data.additionalInfo.companies',
+          name: 'directors-form',
+          valueDestination: 'entity.data.additionalInfo.directors',
           options: {
             description:
               '<p>add all the natural persons that own or control, <bold>Directly Or Indirectly</bold> more than 25% of the company.</p>',
@@ -407,22 +408,22 @@ export const CompanyOwnershipPage = {
               title: 'Shareholder',
               type: 'array',
               required: [
-                'companies:first-name-input',
-                'companies:last-name-input',
-                'companies:title-input',
-                'companies:email-input',
-                'companies:date-of-birth-input',
+                'directors:first-name-input',
+                'directors:last-name-input',
+                'directors:title-input',
+                'directors:email-input',
+                'directors:date-of-birth-input',
               ],
             },
             uiSchema: {
-              titleTemplate: 'Associated company {{INDEX}}',
+              titleTemplate: 'Director {{INDEX}}',
             },
           },
           elements: [
             {
-              name: 'companies:first-name-input',
+              name: 'directors:first-name-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.companies[{INDEX}].firstName', //entity.data.additionalInfo.ubos[0].firstName
+              valueDestination: 'entity.data.additionalInfo.directors[{INDEX}].firstName', //entity.data.additionalInfo.ubos[0].firstName
               options: {
                 label: 'First Name',
                 hint: 'First Name',
@@ -432,9 +433,9 @@ export const CompanyOwnershipPage = {
               },
             },
             {
-              name: 'companies:last-name-input',
+              name: 'directors:last-name-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.companies[{INDEX}].lastName',
+              valueDestination: 'entity.data.additionalInfo.directors[{INDEX}].lastName',
               options: {
                 label: 'Last Name',
                 hint: 'Last Name',
@@ -444,9 +445,9 @@ export const CompanyOwnershipPage = {
               },
             },
             {
-              name: 'companies:title-input',
+              name: 'directors:title-input',
               type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.companies[{INDEX}].additionalInfo.role',
+              valueDestination: 'entity.data.additionalInfo.directors[{INDEX}].additionalInfo.role',
               options: {
                 label: 'Title',
                 hint: 'CEO / Manager / Partner',
@@ -456,10 +457,10 @@ export const CompanyOwnershipPage = {
               },
             },
             {
-              name: 'companies:date-of-birth-input',
+              name: 'directors:date-of-birth-input',
               type: 'json-form:date',
               valueDestination:
-                'entity.data.additionalInfo.companies[{INDEX}].additionalInfo.dateOfBirth',
+                'entity.data.additionalInfo.directors[{INDEX}].additionalInfo.dateOfBirth',
               options: {
                 label: 'Date of Birth',
                 hint: 'DD/MM/YYYY',
@@ -473,9 +474,9 @@ export const CompanyOwnershipPage = {
               },
             },
             {
-              name: 'companies:email-input',
+              name: 'directors:email-input',
               type: 'json-form:email',
-              valueDestination: 'entity.data.additionalInfo.companies[{INDEX}].email',
+              valueDestination: 'entity.data.additionalInfo.directors[{INDEX}].email',
               options: {
                 jsonFormDefinition: {
                   type: 'string',
