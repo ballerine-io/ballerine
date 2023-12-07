@@ -102,8 +102,7 @@ async function seed(bcryptSalt: string | number) {
     client,
     '1',
     env.API_KEY,
-    // 'https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/ballerine-logo.png',
-    'https://ca.slack-edge.com/T038ABLSSQH-U03EV8BK858-b8fad84b7cc4-512',
+    'https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/ballerine-logo.png',
     '',
     `webhook-shared-secret-${env.API_KEY}`,
   );
