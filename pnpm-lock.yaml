@@ -61,16 +61,16 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.30
+        specifier: 0.7.31
         version: link:../../packages/common
       '@ballerine/ui':
         specifier: 0.3.20
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.30
+        specifier: 0.5.31
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.30
+        specifier: 0.5.31
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -359,13 +359,13 @@ importers:
         specifier: 0.1.23
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: ^0.7.30
+        specifier: ^0.7.31
         version: link:../../packages/common
       '@ballerine/ui':
         specifier: 0.3.20
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.30
+        specifier: 0.5.31
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -787,10 +787,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.30
+        specifier: 0.7.31
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.30
+        specifier: 0.5.31
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1526,7 +1526,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.30
+        specifier: 0.7.31
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -1689,7 +1689,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.30
+        specifier: 0.7.31
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -1816,10 +1816,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.30
+        specifier: 0.7.31
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.30
+        specifier: 0.5.31
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -1958,7 +1958,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.5.30
+        specifier: 0.5.31
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2200,13 +2200,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.7.30
+        specifier: 0.7.31
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.30
+        specifier: 0.5.31
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.30
+        specifier: 0.5.31
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2513,7 +2513,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@3.3.3)(tailwindcss@3.3.5)(ts-node@10.9.1)
       '@ballerine/common':
-        specifier: ^0.7.30
+        specifier: ^0.7.31
         version: link:../../packages/common
       astro:
         specifier: 3.3.3
@@ -14220,7 +14220,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.23.3(@babel/core@7.23.3)
       '@types/babel__core': 7.20.4
       react-refresh: 0.14.0
-      vite: 4.5.0(@types/node@18.17.19)(less@4.2.0)
+      vite: 4.5.0(@types/node@20.9.2)(less@4.2.0)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -30633,7 +30633,7 @@ packages:
       strip-ansi: 6.0.1
       tiny-invariant: 1.3.1
       typescript: 5.1.6
-      vite: 4.5.0(@types/node@18.17.19)(less@4.2.0)
+      vite: 4.5.0(@types/node@20.9.2)(less@4.2.0)
       vscode-languageclient: 7.0.0
       vscode-languageserver: 7.0.0
       vscode-languageserver-textdocument: 1.0.11
@@ -30762,7 +30762,7 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
       globrex: 0.1.2
       tsconfck: 2.1.2(typescript@5.1.6)
-      vite: 4.5.0(@types/node@18.17.19)(less@4.2.0)
+      vite: 4.5.0(@types/node@20.9.2)(less@4.2.0)
     transitivePeerDependencies:
       - supports-color
       - typescript

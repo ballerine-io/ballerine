@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.31
+
+### Patch Changes
+
+- Now using typebox for the default context schema type
+
 ## 0.7.30
 
 ### Patch Changes

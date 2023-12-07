@@ -1400,6 +1400,7 @@ export class WorkflowService {
       entity: {
         ballerineEntityId: entityId,
         type: entityType,
+        // @ts-ignore
         data: {
           ...(isBusinessEntity(entity)
             ? {
@@ -1459,6 +1460,7 @@ export class WorkflowService {
       throw new BadRequestException(error);
     }
     const customer = await this.customerService.getByProjectId(projectIds![0]!);
+    // @ts-ignore
     context.customerName = customer.displayName;
     this.__validateWorkflowDefinitionContext(workflowDefinition, context);
     const entityId = await this.__findOrPersistEntityInformation(
@@ -1478,6 +1480,8 @@ export class WorkflowService {
       );
 
     let contextToInsert = structuredClone(context);
+
+    // @ts-ignore
     contextToInsert.entity.ballerineEntityId ||= entityId;
 
     const entityConnect = {
@@ -1678,7 +1682,9 @@ export class WorkflowService {
         const persistedFile = await this.fileService.copyToDestinationAndCreate(
           {
             id: documentId,
+            // @ts-ignore
             uri: documentPage.uri,
+            // @ts-ignore
             provider: documentPage.provider,
             // TODO: Solve once DefaultContextSchema is typed by Typebox
             fileName: (
