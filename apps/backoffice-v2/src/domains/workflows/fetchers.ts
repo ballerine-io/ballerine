@@ -62,7 +62,7 @@ export const BaseWorkflowByIdSchema = z.object({
   workflowDefinition: ObjectWithIdSchema.extend({
     name: z.string(),
     contextSchema: z.record(z.any(), z.any()).nullable(),
-    documentsSchema: z.array(z.any()).optional(),
+    documentsSchema: z.array(z.any()).optional().nullable(),
     config: z.record(z.any(), z.any()).nullable(),
   }),
   createdAt: z.string().datetime(),
@@ -87,13 +87,7 @@ export const BaseWorkflowByIdSchema = z.object({
 });
 
 export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
-  childWorkflows: z
-    .array(
-      BaseWorkflowByIdSchema.omit({
-        nextEvents: true,
-      }),
-    )
-    .optional(),
+  childWorkflows: z.array(BaseWorkflowByIdSchema).optional(),
 });
 
 export const fetchWorkflowById = async ({

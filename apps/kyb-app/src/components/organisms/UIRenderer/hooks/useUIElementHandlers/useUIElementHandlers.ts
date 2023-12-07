@@ -16,7 +16,6 @@ export const useUIElementHandlers = (definition: UIElement<AnyObject>) => {
 
       //@ts-ignore
       set(context, definition.valueDestination || '', event.target.value);
-
       setContext(context);
       emitEvent('onChange');
     },

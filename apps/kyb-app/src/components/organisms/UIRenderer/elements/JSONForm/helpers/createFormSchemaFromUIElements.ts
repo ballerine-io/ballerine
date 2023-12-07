@@ -1,12 +1,11 @@
-import {
-  JSONFormElementBaseParams,
-  JSONFormElementParams,
-} from '@/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
+import { JSONFormElementBaseParams } from '@/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
 import { UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 
-export const createFormSchemaFromUIElements = (formElement: UIElement<JSONFormElementParams>) => {
+export const createFormSchemaFromUIElements = (
+  formElement: UIElement<JSONFormElementBaseParams>,
+) => {
   const formSchema: RJSFSchema = {
     type: formElement.options?.jsonFormDefinition?.type === 'array' ? 'array' : 'object',
     required: formElement.options?.jsonFormDefinition?.required ?? [],

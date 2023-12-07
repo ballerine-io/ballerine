@@ -29,21 +29,25 @@ export class EndUserService {
   }
 
   async createWithBusiness(
-    endUser: EndUserCreateDto,
+    {
+      endUser,
+      business,
+    }: {
+      endUser: Omit<EndUserCreateDto, 'companyName'>;
+      business: Prisma.BusinessUncheckedCreateWithoutEndUsersInput;
+    },
     projectId: TProjectId,
     businessId?: string,
   ): Promise<EndUser & { businesses: Business[] }> {
-    const { companyName = '', ...userData } = endUser;
-
     const user = await this.repository.create({
       data: {
-        ...userData,
+        ...endUser,
         businesses: {
           connectOrCreate: {
             where: {
               id: businessId,
             },
-            create: { companyName, projectId },
+            create: business,
           },
         },
         projectId,

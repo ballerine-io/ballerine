@@ -12,6 +12,7 @@ export const definitionValidator = (
     initialContext?: AnyRecord;
   },
   extensions?: WorkflowExtensions,
+  exampleContext?: AnyRecord,
 ) => {
   if (!definition.states) return;
 
@@ -23,7 +24,7 @@ export const definitionValidator = (
     });
   }
 
-  statesValidator(definition.states);
+  statesValidator(definition.states, exampleContext);
 
   if (extensions) {
     extensionsValidator(extensions, definition.states);

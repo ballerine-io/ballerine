@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React, { ComponentProps, FunctionComponent } from 'react';
 import { Dialog } from '../../../../common/components/organisms/Dialog/Dialog';
 import { Button } from '../../../../common/components/atoms/Button/Button';
 import { ctw } from '../../../../common/utils/ctw/ctw';
@@ -6,21 +6,32 @@ import { DialogContent } from '../../../../common/components/organisms/Dialog/Di
 import { Select } from '../../../../common/components/atoms/Select/Select';
 import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
 import { DialogClose } from '@radix-ui/react-dialog';
-import { ICaseCallToActionProps } from './interfaces';
+import { ICaseCallToActionLegacyProps } from './interfaces';
 import { SelectItem } from '../../../../common/components/atoms/Select/Select.Item';
 import { SelectContent } from '../../../../common/components/atoms/Select/Select.Content';
 import { SelectTrigger } from '../../../../common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '../../../../common/components/atoms/Select/Select.Value';
 import { Input } from '../../../../common/components/atoms/Input/Input';
 import { DialogTrigger } from '../../../../common/components/organisms/Dialog/Dialog.Trigger';
-import { useCaseCallToActionLogic } from './hooks/useCaseCallToActionLogic/useCaseCallToActionLogic';
+import { useCaseCallToActionLegacyLogic } from '@/pages/Entity/components/CaseCallToActionLegacy/hooks/useCaseCallToActionLegacyLogic/useCaseCallToActionLegacyLogic';
 import { capitalize } from '../../../../common/utils/capitalize/capitalize';
 import { Send } from 'lucide-react';
 import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dialog.Title';
 import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
 import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dialog.Header';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 
-export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ value, data }) => {
+const motionProps: ComponentProps<typeof MotionButton> = {
+  exit: { opacity: 0, transition: { duration: 0.2 } },
+  initial: { y: 10, opacity: 0 },
+  transition: { type: 'spring', bounce: 0.3 },
+  animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
+};
+
+export const CaseCallToActionLegacy: FunctionComponent<ICaseCallToActionLegacyProps> = ({
+  value,
+  data,
+}) => {
   const {
     // Callbacks
     onMutateApproveCase,
@@ -37,8 +48,9 @@ export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ va
     noReasons,
     isDisabled,
     isLoadingRevisionCase,
+    reasonWithComment,
     // /State
-  } = useCaseCallToActionLogic({
+  } = useCaseCallToActionLegacyLogic({
     parentWorkflowId: data?.parentWorkflowId,
     childWorkflowId: data?.childWorkflowId,
     childWorkflowContextSchema: data?.childWorkflowContextSchema,
@@ -48,9 +60,14 @@ export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ va
     return (
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant={`warning`} disabled={data?.disabled || isDisabled}>
+          <MotionButton
+            {...motionProps}
+            size="wide"
+            variant="warning"
+            disabled={data?.disabled || isDisabled}
+          >
             {value}
-          </Button>
+          </MotionButton>
         </DialogTrigger>
         <DialogContent className={`mb-96`}>
           <DialogHeader>
@@ -115,7 +132,7 @@ export const CaseCallToAction: FunctionComponent<ICaseCallToActionProps> = ({ va
                   loading: isLoadingRevisionCase,
                 })}
                 disabled={isLoadingRevisionCase}
-                onClick={onMutateRevisionCase}
+                onClick={onMutateRevisionCase(reasonWithComment)}
               >
                 <Send size={18} />
                 Send email

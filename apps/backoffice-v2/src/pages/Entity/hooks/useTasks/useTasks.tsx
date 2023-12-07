@@ -1,15 +1,7 @@
-import {
-  CommonWorkflowStates,
-  StateTag,
-  getDocumentsByCountry,
-  isNullish,
-  TDocument,
-  getDocumentSchemaByCountry,
-} from '@ballerine/common';
+import { isNullish } from '@ballerine/common';
 import { Badge } from '@ballerine/ui';
-import { X } from 'lucide-react';
 import * as React from 'react';
-import { ComponentProps, useMemo } from 'react';
+import { ComponentProps, useCallback, useMemo } from 'react';
 import { toTitleCase, toUpperCase } from 'string-ts';
 import { WarningFilledSvg } from '../../../../common/components/atoms/icons';
 import { ctw } from '../../../../common/utils/ctw/ctw';
@@ -17,27 +9,21 @@ import { includesValues } from '../../../../common/utils/includes-values/include
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
 import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useRemoveDecisionTaskByIdMutation } from '../../../../domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '../../../../domains/workflows/fetchers';
 import { useCaseState } from '../../components/Case/hooks/useCaseState/useCaseState';
-import {
-  composePickableCategoryType,
-  extractCountryCodeFromWorkflow,
-  getIsEditable,
-  isExistingSchemaForDocument,
-  omitPropsFromObject,
-} from '../useEntity/utils';
+import { omitPropsFromObject } from '../useEntity/utils';
 import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useNominatimQuery } from '../../components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 import { getAddressDeep } from '../useEntity/utils/get-address-deep/get-address-deep';
-import { getPostUpdateEventName } from './get-post-update-event-name';
-import { motionProps } from './motion-props';
 import { selectDirectorsDocuments } from './selectors/selectDirectorsDocuments';
 import { getPhoneNumberFormatter } from '../../../../common/utils/get-phone-number-formatter/get-phone-number-formatter';
-import { selectWorkflowDocuments } from './selectors/selectWorkflowDocuments';
 import { useDocumentPageImages } from '@/pages/Entity/hooks/useTasks/hooks/useDocumentPageImages';
 import { useDirectorsBlocks } from '@/pages/Entity/hooks/useTasks/hooks/useDirectorsBlocks';
+import { useAssociatedCompaniesBlock } from '@/pages/Entity/hooks/useTasks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
+import { useAssociatedCompaniesInformationBlock } from '@/pages/Entity/hooks/useTasks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
+import { useDocumentBlocks } from '@/pages/Entity/hooks/useTasks/hooks/useDocumentBlocks/useDocumentBlocks';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -46,35 +32,6 @@ const pluginsOutputBlacklist = [
   'businessInformation',
   'website_monitoring',
 ];
-
-function getDocumentsSchemas(issuerCountryCode, workflow: TWorkflowById) {
-  return (
-    issuerCountryCode &&
-    getDocumentSchemaByCountry(
-      issuerCountryCode,
-      workflow.workflowDefinition?.documentsSchema as TDocument[],
-    )
-      .concat(getDocumentsByCountry(issuerCountryCode))
-      .reduce((unique: TDocument[], item: TDocument) => {
-        const isDuplicate = unique.some(u => u.type === item.type && u.category === item.category);
-        if (!isDuplicate) {
-          unique.push(item);
-        }
-        return unique;
-      }, [] as TDocument[])
-      .filter((documentSchema: TDocument) => {
-        if (!workflow.workflowDefinition.config?.availableDocuments) return true;
-
-        const isIncludes = !!workflow.workflowDefinition.config?.availableDocuments.find(
-          (availableDocument: TAvailableDocuments[number]) =>
-            availableDocument.type === documentSchema.type &&
-            availableDocument.category === documentSchema.category,
-        );
-
-        return isIncludes;
-      })
-  );
-}
 
 export const useTasks = ({
   workflow,
@@ -101,18 +58,9 @@ export const useTasks = ({
   const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
-  const postUpdateEventName = getPostUpdateEventName(workflow);
-  // const deliverEvent = workflow?.workflowDefinition?.config?.deliverEvent;
-  const workflowDocuments = useMemo(() => selectWorkflowDocuments(workflow), [workflow]);
-  const directorsDocuments = useMemo(() => selectDirectorsDocuments(workflow), [workflow]);
-  const workflowDocumentPages = useMemo(
-    () =>
-      workflowDocuments.flatMap(({ pages }) =>
-        pages?.map(({ ballerineFileId }) => ballerineFileId),
-      ),
-    [workflowDocuments],
-  );
+  const { noAction } = useCaseDecision();
 
+  const directorsDocuments = useMemo(() => selectDirectorsDocuments(workflow), [workflow]);
   const directorDocumentPages = useMemo(
     () =>
       directorsDocuments.flatMap(({ pages }) =>
@@ -120,24 +68,10 @@ export const useTasks = ({
       ),
     [directorsDocuments],
   );
-
-  const workflowDocsData = useStorageFilesQuery(workflowDocumentPages);
-  const directorsDocsData = useStorageFilesQuery(directorDocumentPages);
-
-  const { noAction } = useCaseDecision();
-  const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(
-    workflow?.id,
-    postUpdateEventName,
-  );
-
-  const workflowDocumentPagesResults: Array<Array<string>> = useDocumentPageImages(
-    workflowDocuments,
-    workflowDocsData,
-  );
-
+  const directorsStorageFilesQueryResult = useStorageFilesQuery(directorDocumentPages);
   const directorsDocumentPagesResults: Array<Array<string>> = useDocumentPageImages(
     directorsDocuments,
-    directorsDocsData,
+    directorsStorageFilesQueryResult,
   );
 
   const filteredPluginsOutput = useMemo(
@@ -150,9 +84,6 @@ export const useTasks = ({
     propertyName: 'registeredAddressInFull',
   });
   const { data: locations } = useNominatimQuery(address);
-  const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
-
-  const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
 
   const registryInfoBlock =
     Object.keys(filteredPluginsOutput ?? {}).length === 0
@@ -232,252 +163,13 @@ export const useTasks = ({
           },
         ];
 
-  const taskBlocks =
-    documents?.map(
-      ({ id, type: docType, category, properties, propertiesSchema, decision }, docIndex) => {
-        const additionProperties =
-          isExistingSchemaForDocument(documentsSchemas) &&
-          composePickableCategoryType(
-            category,
-            docType,
-            documentsSchemas,
-            workflow.workflowDefinition?.config,
-          );
-
-        const isDoneWithRevision =
-          decision?.status === 'revised' && parentMachine?.status === 'completed';
-        const isDocumentRevision =
-          decision?.status === CommonWorkflowStates.REVISION && (!isDoneWithRevision || noAction);
-
-        const isLegacyReject = workflow?.workflowDefinition?.config?.isLegacyReject;
-        const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {
-          const badgeClassNames = 'text-sm font-bold';
-
-          if (isDocumentRevision) {
-            return workflow?.tags?.includes(StateTag.REVISION)
-              ? [
-                  {
-                    type: 'badge',
-                    value: 'Pending re-upload',
-                    props: {
-                      ...motionProps,
-                      variant: 'warning',
-                      className: badgeClassNames,
-                    },
-                  },
-                ]
-              : [
-                  {
-                    type: 'badge',
-                    value: (
-                      <React.Fragment>
-                        Re-upload needed
-                        {!isLegacyReject && (
-                          <X
-                            className="h-4 w-4 cursor-pointer"
-                            onClick={() => removeDecisionById({ documentId: id })}
-                          />
-                        )}
-                      </React.Fragment>
-                    ),
-                    props: {
-                      ...motionProps,
-                      variant: 'warning',
-                      className: `gap-x-1 text-white bg-warning ${badgeClassNames}`,
-                    },
-                  },
-                ];
-          }
-
-          if (decision?.status === StateTag.APPROVED) {
-            return [
-              {
-                type: 'badge',
-                value: 'Approved',
-                props: {
-                  ...motionProps,
-                  variant: 'success',
-                  className: `${badgeClassNames} bg-success/20`,
-                },
-              },
-            ];
-          }
-
-          if (decision?.status === StateTag.REJECTED) {
-            return [
-              {
-                type: 'badge',
-                value: 'Rejected',
-                props: {
-                  ...motionProps,
-                  variant: 'destructive',
-                  className: badgeClassNames,
-                },
-              },
-            ];
-          }
-
-          return [
-            {
-              type: 'callToAction',
-              // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
-              value: {
-                text: isLegacyReject ? 'Reject' : 'Re-upload needed',
-                props: {
-                  revisionReasons:
-                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
-                      ({ enum: enum_ }) => !!enum_,
-                    )?.enum,
-                  rejectionReasons:
-                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
-                      ({ enum: enum_ }) => !!enum_,
-                    )?.enum,
-                  id,
-                  disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
-                  decision: 'reject',
-                },
-              },
-            },
-            {
-              type: 'callToAction',
-              value: {
-                text: 'Approve',
-                props: {
-                  revisionReasons:
-                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
-                      ({ enum: enum_ }) => !!enum_,
-                    )?.enum,
-                  rejectionReasons:
-                    workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
-                      ({ enum: enum_ }) => !!enum_,
-                    )?.enum,
-                  id,
-                  disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
-                  decision: 'approve',
-                },
-              },
-            },
-          ];
-        };
-
-        const headerCell = {
-          id: 'header',
-          type: 'container',
-          value: [
-            {
-              type: 'heading',
-              value: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
-                toTitleCase(docType ?? ''),
-              )}`,
-            },
-            {
-              id: 'actions',
-              type: 'container',
-              value: getDecisionStatusOrAction(isDocumentRevision),
-            },
-          ],
-        };
-
-        const decisionCell = {
-          type: 'details',
-          value: {
-            id,
-            title: 'Decision',
-            hideSeparator: true,
-            data: decision?.status
-              ? Object.entries(decision ?? {}).map(([title, value]) => ({
-                  title,
-                  value,
-                }))
-              : [],
-          },
-          workflowId: workflow?.id,
-          documents: workflow?.context?.documents,
-        };
-        const detailsCell = {
-          type: 'container',
-          value: [
-            {
-              id: 'decision',
-              type: 'details',
-              value: {
-                id,
-                title: `${category} - ${docType}`,
-                data: Object.entries(
-                  {
-                    ...additionProperties,
-                    ...propertiesSchema?.properties,
-                  } ?? {},
-                )?.map(
-                  ([
-                    title,
-                    {
-                      type,
-                      format,
-                      pattern,
-                      isEditable = true,
-                      dropdownOptions,
-                      value,
-                      formatMinimum,
-                      formatMaximum,
-                    },
-                  ]) => {
-                    const fieldValue = value || (properties?.[title] ?? '');
-                    const isEditableDecision = isDoneWithRevision || !decision?.status;
-
-                    return {
-                      title,
-                      value: fieldValue,
-                      type,
-                      format,
-                      pattern,
-                      isEditable:
-                        isEditableDecision &&
-                        caseState.writeEnabled &&
-                        getIsEditable(isEditable, title),
-                      dropdownOptions,
-                      minimum: formatMinimum,
-                      maximum: formatMaximum,
-                    };
-                  },
-                ),
-              },
-              workflowId: workflow?.id,
-              documents: workflow?.context?.documents,
-            },
-            decisionCell,
-          ],
-        };
-
-        const documentsCell = {
-          type: 'multiDocuments',
-          value: {
-            isLoading: workflowDocsData?.some(({ isLoading }) => isLoading),
-            data:
-              documents?.[docIndex]?.pages?.map(
-                ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
-                  id: ballerineFileId,
-                  title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
-                    toTitleCase(docType ?? ''),
-                  )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                  imageUrl: workflowDocumentPagesResults[docIndex][pageIndex],
-                  fileType: type,
-                  fileName,
-                }),
-              ) ?? [],
-          },
-        };
-
-        return {
-          className: isDocumentRevision
-            ? `shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning ${
-                workflow?.tags?.includes(StateTag.REVISION) ? '' : 'bg-warning/10'
-              }`
-            : '',
-          cells: [headerCell, detailsCell, documentsCell],
-        };
-      },
-    ) ?? [];
+  const parentDocumentBlocks = useDocumentBlocks({
+    workflow,
+    parentMachine,
+    noAction,
+    caseState,
+    withEntityNameInHeader: false,
+  });
 
   const entityInfoBlock =
     Object.keys(entity?.data ?? {}).length === 0
@@ -1223,7 +915,7 @@ export const useTasks = ({
 
   const directorsDocumentsBlocks = useDirectorsBlocks(
     workflow,
-    directorsDocsData,
+    directorsStorageFilesQueryResult,
     directorsDocumentPagesResults,
   );
 
@@ -1643,6 +1335,28 @@ export const useTasks = ({
             ],
           },
         ];
+  const { mutate: mutateEvent, isLoading: isLoadingEvent } = useEventMutation();
+  const onMutateEvent = useCallback(
+    ({ workflowId, event }: Parameters<typeof mutateEvent>[0]) =>
+      () =>
+        mutateEvent({
+          workflowId,
+          event,
+        }),
+    [mutateEvent],
+  );
+  const kybChildWorkflows = workflow?.childWorkflows?.filter(
+    childWorkflow => childWorkflow?.context?.entity?.type === 'business',
+  );
+  const associatedCompaniesBlock = useAssociatedCompaniesBlock({
+    workflows: kybChildWorkflows,
+    onMutateEvent,
+    isLoadingEvent,
+  });
+
+  const associatedCompaniesInformationBlock = useAssociatedCompaniesInformationBlock(
+    kybChildWorkflows ?? [],
+  );
 
   return useMemo(() => {
     return entity
@@ -1663,25 +1377,19 @@ export const useTasks = ({
           ...mainContactBlock,
           ...mainRepresentativeBlock,
           ...mapBlock,
-          ...taskBlocks,
+          ...parentDocumentBlocks,
+          ...associatedCompaniesBlock,
+          ...associatedCompaniesInformationBlock,
         ]
       : [];
   }, [
     address,
     caseState.writeEnabled,
-    workflowDocsData,
     documents,
-    documentsSchemas,
     entity,
     parentMachine?.status,
     pluginsOutput,
     pluginsOutputKeys,
-    workflowDocumentPagesResults,
     noAction,
-    removeDecisionById,
   ]);
 };
-
-function uniqueArrayByKey(arg0: any) {
-  throw new Error('Function not implemented.');
-}

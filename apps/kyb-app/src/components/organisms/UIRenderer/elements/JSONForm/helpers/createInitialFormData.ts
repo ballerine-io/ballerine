@@ -1,10 +1,10 @@
-import { JSONFormElementParams } from '@/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
+import { JSONFormElementBaseParams } from '@/components/organisms/UIRenderer/elements/JSONForm/JSONForm';
 import { UIElement } from '@/domains/collection-flow';
 import { AnyObject } from '@ballerine/ui';
 import get from 'lodash/get';
 
 export const createInitialFormData = (
-  definition: UIElement<JSONFormElementParams>,
+  definition: UIElement<JSONFormElementBaseParams>,
   context: AnyObject,
 ) => {
   let formData: AnyObject | AnyObject[] = {};

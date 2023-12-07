@@ -1,7 +1,7 @@
 import { Alert } from '../../components/Alert/Alert';
 import { BadgeCell } from '../../components/BadgeCell/BadgeCell';
-import { CallToAction } from '../../components/CallToAction/CallToAction';
-import { CaseCallToAction } from '../../components/CaseCallToAction/CaseCallToAction';
+import { CallToActionLegacy } from '@/pages/Entity/components/CallToActionLegacy/CallToActionLegacy';
+import { CaseCallToActionLegacy } from '@/pages/Entity/components/CaseCallToActionLegacy/CaseCallToActionLegacy';
 import { Container } from '../../components/Container/Container';
 import { Details } from '../../components/Details/Details';
 import { DirectorsCallToAction } from '../../components/DirectorsCallToAction';
@@ -13,6 +13,8 @@ import { NestedDetails } from '../../components/NestedDetails/NestedDetails';
 import { Paragraph } from '../../components/Paragraph/Paragraph';
 import { Subheading } from '../../components/Subheading/Subheading';
 import { TableCell } from '../../components/TableCell/TableCell';
+import { DialogCell } from '@/pages/Entity/components/DialogCell/DialogCell';
+import { CallToAction } from '@/pages/Entity/components/CallToAction/CallToAction';
 
 export const cells = {
   heading: Heading,
@@ -20,6 +22,7 @@ export const cells = {
   alert: Alert,
   badge: BadgeCell,
   container: Container,
+  callToActionLegacy: CallToActionLegacy,
   callToAction: CallToAction,
   directorsCallToAction: DirectorsCallToAction,
   faceComparison: FaceComparison,
@@ -27,7 +30,8 @@ export const cells = {
   nestedDetails: NestedDetails,
   multiDocuments: MultiDocuments,
   map: MapCell,
-  caseCallToAction: CaseCallToAction,
+  caseCallToActionLegacy: CaseCallToActionLegacy,
   table: TableCell,
   paragraph: Paragraph,
+  dialog: DialogCell,
 };

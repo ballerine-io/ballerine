@@ -24,7 +24,7 @@ import {
   WorkflowAssignee,
   WorkflowRuntimeListItemModel,
 } from '@/workflow/workflow-runtime-list-item.model';
-import { DefaultContextSchema, getDocumentId } from '@ballerine/common';
+import { DefaultContextSchema, getDocumentId, isErrorWithMessage } from '@ballerine/common';
 import {
   ChildPluginCallbackOutput,
   ChildToParentCallback,
@@ -36,7 +36,12 @@ import {
   THelperFormatingLogic,
   Transformer,
 } from '@ballerine/workflow-core';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   ApprovalState,
   Business,
@@ -235,7 +240,27 @@ export class WorkflowService {
     workflow: TWorkflowWithRelations,
     addNextEvents = true,
   ): TWorkflowWithRelations {
-    const isIndividual = 'endUser' in workflow;
+    const getEntity = (workflow: TWorkflowWithRelations) => {
+      if ('endUser' in workflow && !!workflow?.endUser) {
+        return {
+          id: workflow?.endUser?.id,
+          name: `${String(workflow?.endUser?.firstName)} ${String(workflow?.endUser?.lastName)}`,
+          avatarUrl: workflow?.endUser?.avatarUrl,
+          approvalState: workflow?.endUser?.approvalState,
+        };
+      }
+
+      if ('business' in workflow && workflow?.business) {
+        return {
+          id: workflow?.business?.id,
+          name: workflow?.business?.companyName,
+          avatarUrl: null,
+          approvalState: workflow?.business?.approvalState,
+        };
+      }
+
+      throw new InternalServerErrorException('Workflow entity is not defined');
+    };
 
     let nextEvents;
     if (addNextEvents) {
@@ -268,22 +293,13 @@ export class WorkflowService {
           },
         ),
       },
-      entity: {
-        id: isIndividual ? workflow.endUser.id : workflow.business.id,
-        name: isIndividual
-          ? `${String(workflow.endUser.firstName)} ${String(workflow.endUser.lastName)}`
-          : workflow.business.companyName,
-        avatarUrl: isIndividual ? workflow.endUser.avatarUrl : null,
-        approvalState: isIndividual
-          ? workflow.endUser.approvalState
-          : workflow.business.approvalState,
-      },
+      entity: getEntity(workflow),
       endUser: undefined,
       // @ts-expect-error - error from Prisma types fix
       business: undefined,
       nextEvents,
       childWorkflows: workflow.childWorkflowsRuntimeData?.map(childWorkflow =>
-        this.formatWorkflow(childWorkflow, false),
+        this.formatWorkflow(childWorkflow),
       ),
     };
   }
@@ -1536,21 +1552,24 @@ export class WorkflowService {
         workflowRuntimeData,
       });
 
+      const mainRepresentative =
+        workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative;
       if (
-        // @ts-ignore
         mergedConfig.createCollectionFlowToken &&
-        workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative &&
+        mainRepresentative &&
         entityType === 'business'
       ) {
         const endUser = await this.endUserService.createWithBusiness(
           {
-            firstName:
-              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.firstName,
-            lastName:
-              workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.lastName,
-            email: workflowRuntimeData.context.entity.data.additionalInfo.mainRepresentative.email,
-            companyName: workflowRuntimeData.context.entity.data.companyName,
-            isContactPerson: true,
+            endUser: {
+              ...mainRepresentative,
+              isContactPerson: true,
+            },
+            business: {
+              companyName: '',
+              ...workflowRuntimeData.context.entity.data,
+              projectId: currentProjectId,
+            },
           },
           currentProjectId,
           entityId,
@@ -2017,15 +2036,25 @@ export class WorkflowService {
           currentProjectId,
         );
 
-        if (childWorkflowCallback.deliverEvent && parentWorkflowRuntime.status !== 'completed') {
-          await this.event(
-            {
-              id: parentWorkflowRuntime.id,
-              name: childWorkflowCallback.deliverEvent,
-            },
-            projectIds,
-            currentProjectId,
-          );
+        if (
+          childWorkflowCallback.deliverEvent &&
+          parentWorkflowRuntime.status !== WorkflowRuntimeDataStatus.completed
+        ) {
+          try {
+            await this.event(
+              {
+                id: parentWorkflowRuntime.id,
+                name: childWorkflowCallback.deliverEvent,
+              },
+              projectIds,
+              currentProjectId,
+            );
+          } catch (ex) {
+            console.warn(
+              'Error while delivering event to parent workflow',
+              isErrorWithMessage(ex) && ex.message,
+            );
+          }
         }
       });
 
@@ -2058,6 +2087,7 @@ export class WorkflowService {
       contextToPersist[childWorkflow.id] = {
         entityId: childWorkflow.context.entity.id,
         status: childWorkflow.status,
+        tags: childWorkflow.tags,
         state: childWorkflow.state,
         result: childContextToPersist,
       };
