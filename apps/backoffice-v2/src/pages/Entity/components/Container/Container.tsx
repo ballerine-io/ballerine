@@ -1,8 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { IContainerProps } from './interfaces';
-
-import { cells } from '@/pages/Entity/hooks/typed-create-blocks/typed-create-blocks';
+import { cells } from '../../hooks/useEntity/cells';
 
 export const Container: FunctionComponent<IContainerProps> = ({ value, id, props }) => {
   return (

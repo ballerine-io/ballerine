@@ -1,7 +1,14 @@
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { toTitleCase } from 'string-ts';
+import { getAddressDeep } from '@/pages/Entity/hooks/useEntity/utils/get-address-deep/get-address-deep';
+import { useNominatimQuery } from '@/pages/Entity/components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
 
-export const useMapBlock = ({ address, locations, entityType, workflow }) => {
+export const useMapBlock = ({ filteredPluginsOutput, entityType, workflow }) => {
+  const address = getAddressDeep(filteredPluginsOutput, {
+    propertyName: 'registeredAddressInFull',
+  });
+  const { data: locations } = useNominatimQuery(address);
+
   if (Object.keys(address ?? {})?.length === 0) {
     return [];
   }
