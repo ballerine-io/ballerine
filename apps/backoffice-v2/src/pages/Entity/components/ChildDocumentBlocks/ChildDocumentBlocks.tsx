@@ -1,11 +1,11 @@
 import { ctw } from '@/common/utils/ctw/ctw';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { Card } from '@/common/components/atoms/Card/Card';
-import { cells } from '@/pages/Entity/hooks/useEntity/cells';
 import { useChildDocumentBlocksLogic } from '@/pages/Entity/components/ChildDocumentBlocks/hooks/useChildDocumentBlocksLogic/useChildDocumentBlocksLogic';
 import { FunctionComponent } from 'react';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { UnknownRecord } from '@/common/types';
+import { cells } from '@/pages/Entity/hooks/typed-create-blocks/typed-create-blocks';
 
 interface IChildDocumentBlocksProps {
   parentWorkflowId: string;

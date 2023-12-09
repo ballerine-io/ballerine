@@ -21,6 +21,8 @@ import { motionProps } from '@/pages/Entity/hooks/useTasks/motion-props';
 import { X } from 'lucide-react';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { getDocumentsSchemas } from '@/pages/Entity/hooks/useTasks/utils/get-documents-schemas/get-documents-schemas';
+import { typedCreateBlocks } from '@/pages/Entity/hooks/typed-create-blocks/typed-create-blocks';
+import { ctw } from '@/common/utils/ctw/ctw';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -69,6 +71,7 @@ export const useDocumentBlocks = ({
   return (
     documents?.map(
       ({ id, type: docType, category, properties, propertiesSchema, decision }, docIndex) => {
+        const blocksBuilder = typedCreateBlocks();
         const additionalProperties = isExistingSchemaForDocument(documentsSchemas ?? [])
           ? composePickableCategoryType(
               category,
@@ -83,84 +86,94 @@ export const useDocumentBlocks = ({
           decision?.status === CommonWorkflowStates.REVISION && (!isDoneWithRevision || noAction);
 
         const isLegacyReject = workflow?.workflowDefinition?.config?.isLegacyReject;
-        const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {
-          const badgeClassNames = 'text-sm font-bold';
+        const revisionReasons =
+          workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
+            ({ enum: enum_ }) => !!enum_,
+          )?.enum;
+        const rejectionReasons =
+          workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
+            ({ enum: enum_ }) => !!enum_,
+          )?.enum;
+        const getCellByTagOrDecision = (isDocumentRevision: boolean) => {
+          const blocksBuilder = typedCreateBlocks();
 
-          if (isDocumentRevision) {
-            return workflow?.tags?.includes(StateTag.REVISION)
-              ? [
-                  {
-                    type: 'badge',
-                    value: 'Pending re-upload',
-                    props: {
-                      ...motionProps,
-                      variant: 'warning',
-                      className: badgeClassNames,
-                    },
-                  },
-                ]
-              : [
-                  {
-                    type: 'badge',
-                    value: (
-                      <React.Fragment>
-                        Re-upload needed
-                        {!isLegacyReject && (
-                          <X
-                            className="h-4 w-4 cursor-pointer"
-                            onClick={() => onMutateRemoveDecisionById({ documentId: id })}
-                          />
-                        )}
-                      </React.Fragment>
-                    ),
-                    props: {
-                      ...motionProps,
-                      variant: 'warning',
-                      className: `gap-x-1 text-white bg-warning ${badgeClassNames}`,
-                    },
-                  },
-                ];
+          if (isDocumentRevision && workflow?.tags?.includes(StateTag.REVISION)) {
+            return blocksBuilder
+              .addBlock()
+              .addCell({
+                type: 'badge',
+                value: 'Pending re-upload',
+                props: {
+                  ...motionProps,
+                  variant: 'warning',
+                  className: 'text-sm font-bold',
+                },
+              })
+              .build()
+              .flat(1);
+          }
+
+          if (isDocumentRevision && !workflow?.tags?.includes(StateTag.REVISION)) {
+            return blocksBuilder
+              .addBlock()
+              .addCell({
+                type: 'badge',
+                value: (
+                  <React.Fragment>
+                    Re-upload needed
+                    {!isLegacyReject && (
+                      <X
+                        className="h-4 w-4 cursor-pointer"
+                        onClick={() => onMutateRemoveDecisionById({ documentId: id })}
+                      />
+                    )}
+                  </React.Fragment>
+                ),
+                props: {
+                  ...motionProps,
+                  variant: 'warning',
+                  className: `gap-x-1 text-white bg-warning text-sm font-bold`,
+                },
+              })
+              .build()
+              .flat(1);
           }
 
           if (decision?.status === StateTag.APPROVED) {
-            return [
-              {
+            return blocksBuilder
+              .addBlock()
+              .addCell({
                 type: 'badge',
                 value: 'Approved',
                 props: {
                   ...motionProps,
                   variant: 'success',
-                  className: `${badgeClassNames} bg-success/20`,
+                  className: `text-sm font-bold bg-success/20`,
                 },
-              },
-            ];
+              })
+              .build()
+              .flat(1);
           }
 
           if (decision?.status === StateTag.REJECTED) {
-            return [
-              {
+            return blocksBuilder
+              .addBlock()
+              .addCell({
                 type: 'badge',
                 value: 'Rejected',
                 props: {
                   ...motionProps,
                   variant: 'destructive',
-                  className: badgeClassNames,
+                  className: 'text-sm font-bold',
                 },
-              },
-            ];
+              })
+              .build()
+              .flat(1);
           }
 
-          const revisionReasons =
-            workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.revisionReason?.anyOf?.find(
-              ({ enum: enum_ }) => !!enum_,
-            )?.enum;
-          const rejectionReasons =
-            workflow?.workflowDefinition?.contextSchema?.schema?.properties?.documents?.items?.properties?.decision?.properties?.rejectionReason?.anyOf?.find(
-              ({ enum: enum_ }) => !!enum_,
-            )?.enum;
-
-          return [
-            {
+          return blocksBuilder
+            .addBlock()
+            .addCell({
               type: 'callToActionLegacy',
               // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
               value: {
@@ -173,8 +186,8 @@ export const useDocumentBlocks = ({
                   decision: 'reject',
                 },
               },
-            },
-            {
+            })
+            .addCell({
               type: 'callToAction',
               value: {
                 text: 'Approve',
@@ -186,13 +199,15 @@ export const useDocumentBlocks = ({
                   disabled:
                     (!isDoneWithRevision && Boolean(decision?.status)) ||
                     noAction ||
-                    isLoadingApproveTaskById,
+                    isLoadingApproveTaskById ||
+                    !caseState.actionButtonsEnabled,
                   size: 'wide',
                   variant: 'success',
                 },
               },
-            },
-          ];
+            })
+            .build()
+            .flat(1);
         };
 
         const entityNameOrNA = valueOrNA(toTitleCase(workflow?.entity?.name ?? ''));
@@ -201,119 +216,130 @@ export const useDocumentBlocks = ({
         const documentNameOrNA = `${categoryOrNA} ${
           withEntityNameInHeader ? '' : ` ${documentTypeOrNA}`
         }`;
-        const headerCell = {
-          id: 'header',
-          type: 'container',
-          value: [
-            {
-              type: 'heading',
-              value: `${withEntityNameInHeader ? `${entityNameOrNA} - ` : ''}${documentNameOrNA}`,
-            },
-            {
-              id: 'actions',
-              type: 'container',
-              value: getDecisionStatusOrAction(isDocumentRevision),
-            },
-          ],
-        };
-
-        const decisionCell = {
-          type: 'details',
-          value: {
-            id,
-            title: 'Decision',
-            hideSeparator: true,
-            data: decision?.status
-              ? Object.entries(decision ?? {}).map(([title, value]) => ({
-                  title,
-                  value,
-                }))
-              : [],
-          },
-          workflowId: workflow?.id,
-          documents: workflow?.context?.documents,
-        };
-        const detailsCell = {
-          type: 'container',
-          value: [
-            {
-              id: 'decision',
-              type: 'details',
-              value: {
-                id,
-                title: `${category} - ${docType}`,
-                data: Object.entries(
-                  {
-                    ...additionalProperties,
-                    ...propertiesSchema?.properties,
-                  } ?? {},
-                )?.map(
-                  ([
-                    title,
+        const blocks = blocksBuilder
+          .addBlock()
+          .addCell({
+            id: 'header',
+            type: 'container',
+            value: typedCreateBlocks()
+              .addBlock()
+              .addCell({
+                type: 'heading',
+                value: `${withEntityNameInHeader ? `${entityNameOrNA} - ` : ''}${documentNameOrNA}`,
+              })
+              .addCell({
+                id: 'actions',
+                type: 'container',
+                value: getCellByTagOrDecision(isDocumentRevision),
+              })
+              .build()
+              .flat(1),
+          })
+          .addBlock()
+          .addCell({
+            type: 'container',
+            value: typedCreateBlocks()
+              .addBlock()
+              .addCell({
+                id: 'decision',
+                type: 'details',
+                value: {
+                  id,
+                  title: `${category} - ${docType}`,
+                  data: Object.entries(
                     {
-                      type,
-                      format,
-                      pattern,
-                      isEditable = true,
-                      dropdownOptions,
-                      value,
-                      formatMinimum,
-                      formatMaximum,
-                    },
-                  ]) => {
-                    const fieldValue = value || (properties?.[title] ?? '');
-                    const isEditableDecision = isDoneWithRevision || !decision?.status;
-
-                    return {
+                      ...additionalProperties,
+                      ...propertiesSchema?.properties,
+                    } ?? {},
+                  )?.map(
+                    ([
                       title,
-                      value: fieldValue,
-                      type,
-                      format,
-                      pattern,
-                      isEditable:
-                        isEditableDecision &&
-                        caseState.writeEnabled &&
-                        getIsEditable(isEditable, title),
-                      dropdownOptions,
-                      minimum: formatMinimum,
-                      maximum: formatMaximum,
-                    };
-                  },
-                ),
-              },
-              workflowId: workflow?.id,
-              documents: workflow?.context?.documents,
-            },
-            decisionCell,
-          ],
-        };
+                      {
+                        type,
+                        format,
+                        pattern,
+                        isEditable = true,
+                        dropdownOptions,
+                        value,
+                        formatMinimum,
+                        formatMaximum,
+                      },
+                    ]) => {
+                      const fieldValue = value || (properties?.[title] ?? '');
+                      const isEditableDecision = isDoneWithRevision || !decision?.status;
 
-        const documentsCell = {
-          type: 'multiDocuments',
-          value: {
-            isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
-            data:
-              documents?.[docIndex]?.pages?.map(
-                ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
-                  id: ballerineFileId,
-                  title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
-                    toTitleCase(docType ?? ''),
-                  )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                  imageUrl: documentPagesResults[docIndex][pageIndex],
-                  fileType: type,
-                  fileName,
-                }),
-              ) ?? [],
-          },
-        };
+                      return {
+                        title,
+                        value: fieldValue,
+                        type,
+                        format,
+                        pattern,
+                        isEditable:
+                          isEditableDecision &&
+                          caseState.writeEnabled &&
+                          getIsEditable(isEditable, title),
+                        dropdownOptions,
+                        minimum: formatMinimum,
+                        maximum: formatMaximum,
+                      };
+                    },
+                  ),
+                },
+                workflowId: workflow?.id,
+                documents: workflow?.context?.documents,
+              })
+              .addCell({
+                type: 'details',
+                hideSeparator: true,
+                value: {
+                  id,
+                  title: 'Decision',
+                  data: decision?.status
+                    ? Object.entries(decision ?? {}).map(([title, value]) => ({
+                        title,
+                        value,
+                      }))
+                    : [],
+                },
+                workflowId: workflow?.id,
+                documents: workflow?.context?.documents,
+              })
+              .build()
+              .flat(1),
+          })
+          .addBlock()
+          .addCell({
+            type: 'multiDocuments',
+            value: {
+              isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
+              data:
+                documents?.[docIndex]?.pages?.map(
+                  ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
+                    id: ballerineFileId,
+                    title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
+                      toTitleCase(docType ?? ''),
+                    )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
+                    imageUrl: documentPagesResults[docIndex][pageIndex],
+                    fileType: type,
+                    fileName,
+                  }),
+                ) ?? [],
+            },
+          })
+          .build();
 
         return {
-          className: isDocumentRevision
-            ? `shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning ${
-                workflow?.tags?.includes(StateTag.REVISION) ? '' : 'bg-warning/10'
-              }`
-            : '',
-          cells: [headerCell, detailsCell, documentsCell],
+          type: 'block',
+          value: {
+            props: {
+              className: ctw({
+                'shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning':
+                  isDocumentRevision,
+                'bg-warning/10': isDocumentRevision && !workflow?.tags?.includes(StateTag.REVISION),
+              }),
+            },
+            cells: blocks.flat(1),
+          },
         };
       },
     ) ?? []

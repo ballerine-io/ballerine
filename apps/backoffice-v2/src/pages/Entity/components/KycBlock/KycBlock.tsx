@@ -4,7 +4,8 @@ import { useKycBlock } from './hooks/useKycBlock/useKycBlock';
 import { Card } from '../../../../common/components/atoms/Card/Card';
 import { CardContent } from '../../../../common/components/atoms/Card/Card.Content';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { cells } from '../../hooks/useEntity/cells';
+
+import { cells } from '@/pages/Entity/hooks/typed-create-blocks/typed-create-blocks';
 
 export const KycBlock: FunctionComponent<{
   parentWorkflowId: string;
