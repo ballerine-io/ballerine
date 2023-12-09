@@ -7,7 +7,6 @@ import { WarningFilledSvg } from '../../../../common/components/atoms/icons';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { includesValues } from '../../../../common/utils/includes-values/includes-values';
 import { isValidUrl } from '../../../../common/utils/is-valid-url';
-import { valueOrNA } from '../../../../common/utils/value-or-na/value-or-na';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useStorageFilesQuery } from '../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '../../../../domains/workflows/fetchers';
@@ -24,6 +23,8 @@ import { useAssociatedCompaniesBlock } from '@/pages/Entity/hooks/useTasks/hooks
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 import { useAssociatedCompaniesInformationBlock } from '@/pages/Entity/hooks/useTasks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
 import { useDocumentBlocks } from '@/pages/Entity/hooks/useTasks/hooks/useDocumentBlocks/useDocumentBlocks';
+import { useEntityInfoBlock } from '@/pages/Entity/hooks/useTasks/hooks/useEntityInfoBlock/useEntityInfoBlock';
+import { useMapBlock } from '@/pages/Entity/hooks/useTasks/hooks/useMapBlock/useMapBlock';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -171,106 +172,13 @@ export const useTasks = ({
     withEntityNameInHeader: false,
   });
 
-  const entityInfoBlock =
-    Object.keys(entity?.data ?? {}).length === 0
-      ? []
-      : [
-          {
-            cells: [
-              {
-                type: 'container',
-                value: [
-                  {
-                    type: 'heading',
-                    value: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,
-                  },
-                  {
-                    type: 'subheading',
-                    value: 'User-provided data',
-                  },
-                ],
-              },
-              {
-                id: 'entity-details',
-                type: 'details',
-                hideSeparator: true,
-                value: {
-                  title: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,
-                  data: [
-                    ...Object.entries(
-                      omitPropsFromObject(entity?.data, 'additionalInfo', 'address') ?? {},
-                    ),
-                    ...Object.entries(omitPropsFromObject(entityDataAdditionalInfo ?? {}, 'ubos')),
-                  ]
-                    ?.map(([title, value]) => ({
-                      title,
-                      value,
-                      type: 'string',
-                      isEditable: false,
-                    }))
-                    // removing private properties from list (__kyb_snapshot in this case)
-                    // __kyb_snapshot is state of KYB,temp solution
-                    // payload is not for users so removing it
-                    // TO DO: Remove this as soon as BE updated
-                    .filter(elem => !elem.title.startsWith('__')),
-                },
-                workflowId: workflow?.id,
-                documents: workflow?.context?.documents,
-              },
-            ],
-          },
-        ];
+  const entityInfoBlock = useEntityInfoBlock({
+    entity,
+    entityDataAdditionalInfo,
+    workflow,
+  });
 
-  const mapBlock =
-    Object.keys(address ?? {})?.length === 0
-      ? []
-      : [
-          {
-            cells: locations &&
-              locations.length && [
-                {
-                  id: 'map-container',
-                  type: 'container',
-                  value: [
-                    {
-                      id: 'header',
-                      type: 'heading',
-                      value: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Address`,
-                    },
-                    {
-                      type: 'details',
-                      hideSeparator: true,
-                      value: {
-                        title: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Address`,
-                        data:
-                          typeof address === 'string'
-                            ? [
-                                {
-                                  title: 'Address',
-                                  value: address,
-                                  isEditable: false,
-                                },
-                              ]
-                            : Object.entries(address ?? {})?.map(([title, value]) => ({
-                                title,
-                                value,
-                                isEditable: false,
-                              })),
-                      },
-                      workflowId: workflow?.id,
-                      documents: workflow?.context?.documents,
-                    },
-                    {
-                      type: 'map',
-                      address,
-                      latitude: locations[0].lat,
-                      longitude: locations[0].lon,
-                    },
-                  ],
-                },
-              ],
-          },
-        ];
+  const mapBlock = useMapBlock();
 
   const companySanctions = pluginsOutput?.companySanctions?.data?.map(sanction => ({
     sources: sanction?.entity?.sources,
