@@ -5,7 +5,7 @@ import { useChildDocumentBlocksLogic } from '@/pages/Entity/components/ChildDocu
 import { FunctionComponent } from 'react';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { UnknownRecord } from '@/common/types';
-import { cells } from '@/pages/Entity/hooks/typed-create-blocks/typed-create-blocks';
+import { cells } from '@/pages/Entity/hooks/useEntity/cells';
 
 interface IChildDocumentBlocksProps {
   parentWorkflowId: string;
