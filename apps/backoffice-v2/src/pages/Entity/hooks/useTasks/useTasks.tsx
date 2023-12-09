@@ -1358,6 +1358,8 @@ export const useTasks = ({
     kybChildWorkflows ?? [],
   );
 
+  return [parentDocumentBlocks];
+
   return useMemo(() => {
     return entity
       ? [

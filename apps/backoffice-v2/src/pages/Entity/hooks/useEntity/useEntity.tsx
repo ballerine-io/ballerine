@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom';
-import { cells } from './cells';
 import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useTasks } from '../useTasks/useTasks';
+import { cells } from '@/pages/Entity/hooks/typed-create-blocks/typed-create-blocks';
 
 export const useEntity = () => {
   const { entityId } = useParams();
