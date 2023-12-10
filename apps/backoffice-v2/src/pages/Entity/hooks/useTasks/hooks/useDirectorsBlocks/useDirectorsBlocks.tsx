@@ -1,4 +1,4 @@
-import { StateTag, getDocumentsByCountry } from '@ballerine/common';
+import { getDocumentsByCountry, StateTag } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import { UseQueryResult } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
@@ -14,7 +14,7 @@ import {
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
 } from '../../../useEntity/utils';
-import { getPostUpdateEventName } from '../../get-post-update-event-name';
+import { getPostRemoveDecisionEventName } from '../../get-post-remove-decision-event-name';
 import { motionProps } from '../../motion-props';
 import { getRevisionReasonsForDocument } from '@/pages/Entity/hooks/useTasks/hooks/useDirectorsBlocks/helpers';
 import { X } from 'lucide-react';
@@ -28,7 +28,7 @@ export const useDirectorsBlocks = (
 ) => {
   const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(
     workflow.id,
-    getPostUpdateEventName(workflow),
+    getPostRemoveDecisionEventName(workflow),
   );
 
   const { data: session } = useAuthenticatedUserQuery();
@@ -43,6 +43,10 @@ export const useDirectorsBlocks = (
   const documentSchemas = useMemo(() => {
     const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
     const documentsSchemas = issuerCountryCode ? getDocumentsByCountry(issuerCountryCode) : [];
+
+    if (!Array.isArray(documentsSchemas) || !documentsSchemas.length) {
+      console.warn(`No document schema found for issuer country code of "${issuerCountryCode}".`);
+    }
 
     return documentsSchemas;
   }, [workflow]);
@@ -123,7 +127,7 @@ export const useDirectorsBlocks = (
             ...(!isApproved && !isRevision
               ? [
                   {
-                    type: 'callToAction',
+                    type: 'callToActionLegacy',
                     value: {
                       text: 'Re-upload needed',
                       props: {
@@ -153,7 +157,7 @@ export const useDirectorsBlocks = (
               : !isRevision
               ? [
                   {
-                    type: 'callToAction',
+                    type: 'callToActionLegacy',
                     value: {
                       text: 'Approve',
                       props: {

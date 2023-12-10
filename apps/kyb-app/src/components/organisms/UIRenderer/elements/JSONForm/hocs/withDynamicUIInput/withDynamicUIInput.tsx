@@ -69,7 +69,7 @@ export const withDynamicUIInput = (
     const definition = useMemo(() => {
       const inputIndex = getInputIndex(inputId || '');
 
-      return {
+      const definition = {
         ...baseDefinition,
         name: inputIndex !== null ? `${baseDefinition.name}[${inputIndex}]` : baseDefinition.name,
         valueDestination: injectIndexToDestinationIfNeeded(
@@ -78,6 +78,7 @@ export const withDynamicUIInput = (
           inputIndex,
         ),
       };
+      return definition;
     }, [baseDefinition, inputId]);
 
     const { state: elementState, setState: setElementState } = useUIElementState(definition);
@@ -95,20 +96,23 @@ export const withDynamicUIInput = (
 
     const { onChangeHandler } = useUIElementHandlers(definition);
 
-    const handleChange = useCallback((value: unknown) => {
-      const evt = {
-        target: {
-          name: definition.name,
-          value: !value && value !== 0 && value !== false ? undefined : value,
-        },
-      };
-      onChangeHandler(evt as React.ChangeEvent<any>);
-      onChange(value);
-    }, []);
+    const handleChange = useCallback(
+      (value: unknown) => {
+        const evt = {
+          target: {
+            name: definition.name,
+            value: !value && value !== 0 && value !== false ? undefined : value,
+          },
+        };
+        onChangeHandler(evt as React.ChangeEvent<any>);
+        onChange(value);
+      },
+      [definition.name, onChange, onChangeHandler],
+    );
 
     const handleBlur = useCallback(() => {
       setTouched(true);
-    }, []);
+    }, [setTouched]);
 
     const value = useMemo(
       () => get(payload, definition.valueDestination) as unknown,

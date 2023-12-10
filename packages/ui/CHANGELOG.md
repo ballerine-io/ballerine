@@ -1,5 +1,18 @@
 # @ballerine/ui
 
+## 0.3.21
+
+### Patch Changes
+
+- Translating optional label
+- ui package release
+
+## 0.3.20
+
+### Patch Changes
+
+- Added Y padding to the badge component
+
 ## 0.3.19
 
 ### Patch Changes
