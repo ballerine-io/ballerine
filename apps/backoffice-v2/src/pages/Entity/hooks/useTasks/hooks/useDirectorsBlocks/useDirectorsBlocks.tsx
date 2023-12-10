@@ -85,93 +85,101 @@ export const useDirectorsBlocks = (
           const isApproved = document?.decision?.status === 'approved';
           const isRevision = document?.decision?.status === 'revision';
 
-          const documentHeading = [
-            ...(isRevision
-              ? workflow?.tags?.includes(StateTag.REVISION)
-                ? [
-                    {
-                      type: 'badge',
-                      value: <React.Fragment>Pending re-upload</React.Fragment>,
-                      props: {
-                        ...motionProps,
-                        variant: 'warning',
-                        className: 'min-h-8 text-sm font-bold',
-                      },
-                    },
-                  ]
-                : [
-                    {
-                      type: 'badge',
-                      value: (
-                        <React.Fragment>
-                          Re-upload needed
-                          <X
-                            className="h-4 w-4 cursor-pointer"
-                            onClick={() =>
-                              removeDecisionById({
-                                documentId: document.id,
-                                contextUpdateMethod: 'director',
-                              })
-                            }
-                          />
-                        </React.Fragment>
-                      ),
-                      props: {
-                        ...motionProps,
-                        variant: 'warning',
-                        className: `gap-x-1 min-h-8 text-white bg-warning text-sm font-bold`,
-                      },
-                    },
-                  ]
-              : []),
-            ...(!isApproved && !isRevision
-              ? [
-                  {
-                    type: 'callToActionLegacy',
-                    value: {
-                      text: 'Re-upload needed',
-                      props: {
-                        revisionReasons: getRevisionReasonsForDocument(document, workflow),
-                        disabled:
-                          (!isDoneWithRevision && Boolean(document.decision?.status)) || noAction,
-                        decision: 'reject',
-                        id: document.id,
-                        contextUpdateMethod: 'director',
-                      },
-                    },
-                  },
-                ]
-              : []),
-            ...(isApproved
-              ? [
-                  {
-                    type: 'badge',
-                    value: 'Approved',
-                    props: {
-                      ...motionProps,
-                      variant: 'success',
-                      className: `text-sm min-h-8 font-bold bg-success/20`,
-                    },
-                  },
-                ]
-              : !isRevision
-              ? [
-                  {
-                    type: 'callToActionLegacy',
-                    value: {
-                      text: 'Approve',
-                      props: {
-                        decision: 'approve',
-                        id: document.id,
-                        contextUpdateMethod: 'director',
-                        disabled:
-                          (!isDoneWithRevision && Boolean(document?.decision?.status)) || noAction,
-                      },
-                    },
-                  },
-                ]
-              : []),
-          ];
+          const pendingReUploadBadge = {
+            type: 'badge',
+            value: <React.Fragment>Pending re-upload</React.Fragment>,
+            props: {
+              ...motionProps,
+              variant: 'warning',
+              className: 'min-h-8 text-sm font-bold',
+            },
+          };
+
+          const reUploadedNeededBadge = {
+            type: 'badge',
+            value: (
+              <React.Fragment>
+                Re-upload needed
+                <X
+                  className="h-4 w-4 cursor-pointer"
+                  onClick={() =>
+                    removeDecisionById({
+                      documentId: document.id,
+                      contextUpdateMethod: 'director',
+                    })
+                  }
+                />
+              </React.Fragment>
+            ),
+            props: {
+              ...motionProps,
+              variant: 'warning',
+              className: `gap-x-1 min-h-8 text-white bg-warning text-sm font-bold`,
+            },
+          };
+
+          const reUploadNeededButton = {
+            type: 'callToActionLegacy',
+            value: {
+              text: 'Re-upload needed',
+              props: {
+                revisionReasons: getRevisionReasonsForDocument(document, workflow),
+                disabled: (!isDoneWithRevision && Boolean(document.decision?.status)) || noAction,
+                decision: 'reject',
+                id: document.id,
+                contextUpdateMethod: 'director',
+              },
+            },
+          };
+
+          const approvedBadge = {
+            type: 'badge',
+            value: 'Approved',
+            props: {
+              ...motionProps,
+              variant: 'success',
+              className: `text-sm min-h-8 font-bold bg-success/20`,
+            },
+          };
+
+          const approveButton = {
+            type: 'callToActionLegacy',
+            value: {
+              text: 'Approve',
+              props: {
+                decision: 'approve',
+                id: document.id,
+                contextUpdateMethod: 'director',
+                disabled: (!isDoneWithRevision && Boolean(document?.decision?.status)) || noAction,
+              },
+            },
+          };
+
+          const documentHeading = [];
+
+          // Re-upload blocks start
+          if (isRevision) {
+            if (workflow?.tags?.includes(StateTag.REVISION)) {
+              documentHeading.push(pendingReUploadBadge);
+            } else {
+              documentHeading.push(reUploadedNeededBadge);
+            }
+          }
+
+          if (!isApproved && !isRevision) {
+            documentHeading.push(reUploadNeededButton);
+          }
+          // Re-upload blocks end
+
+          // Approve blocks start
+          if (isApproved) {
+            documentHeading.push(approvedBadge);
+          } else {
+            if (!isRevision) {
+              documentHeading.push(approveButton);
+            }
+          }
+          // Approve blocks end
 
           return {
             type: 'container',
