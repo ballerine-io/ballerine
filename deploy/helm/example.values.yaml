@@ -16,9 +16,14 @@ postgresql:
     enabled: true
 
 backoffice:
-  enabled: true
+  enabled: false
   replicas: 1
   strategyType: RollingUpdate
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 5
   updateStrategy:
     maxSurge: 1
     maxUnavailable: '0'
@@ -55,13 +60,18 @@ backoffice:
       #     - backoffice.ballerine.io
 
 headlessexample:
-  enabled: true
+  enabled: false
   replicas: 1
   strategyType: RollingUpdate
   updateStrategy:
     maxSurge: 1
     maxUnavailable: '0'
   nameOverride: headlessexample
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 5
   service:
     port: 80
     type: ClusterIP
@@ -94,12 +104,17 @@ headlessexample:
       #     - headlessexample.ballerine.io
 
 kybapp:
-  enabled: true
+  enabled: false
   replicas: 1
   strategyType: RollingUpdate
   updateStrategy:
     maxSurge: 1
     maxUnavailable: "0"
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 5
   nameOverride: kybapp
   service:
     port: 80
@@ -130,12 +145,17 @@ kybapp:
     tls: {}
       # - secretName: letsencrypt-staging
       #   hosts:
-      #     - headlessexample.ballerine.io
+      #     - kyb.dev.eu.ballerine.app
 
 workflowsdashboard:
-  enabled: true
+  enabled: false
   replicas: 1
   strategyType: RollingUpdate
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 5
   updateStrategy:
     maxSurge: 1
     maxUnavailable: '0'
@@ -172,9 +192,14 @@ workflowsdashboard:
       #     - workflowdashboard.ballerine.io
 
 websocketService:
-  enabled: true
+  enabled: false
   replicas: 1
   strategyType: RollingUpdate
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 5
   updateStrategy:
     maxSurge: 1
     maxUnavailable: '0'
@@ -214,6 +239,11 @@ workflowService:
   enabled: true
   replicas: 1
   strategyType: RollingUpdate
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 2
+    targetCPUUtilizationPercentage: 5
   updateStrategy:
     maxSurge: 1
     maxUnavailable: '0'

@@ -1,0 +1,41 @@
+{{- if .Values.workflowService.autoscaling.enabled }}
+apiVersion: {{ ternary "autoscaling/v2" "autoscaling/v2beta2" (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.workflowService.nameOverride }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ .Values.workflowService.nameOverride }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Values.workflowService.nameOverride }}
+  minReplicas: {{ .Values.workflowService.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.workflowService.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.workflowService.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+    {{- if .Capabilities.APIVersions.Has "autoscaling/v2"}}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.workflowService.autoscaling.targetCPUUtilizationPercentage }}
+    {{- else }}
+        targetAverageUtilization: {{ .Values.workflowService.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- end }}
+    {{- if .Values.workflowService.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+    {{- if .Capabilities.APIVersions.Has "autoscaling/v2"}}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.workflowService.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- else }}
+        targetAverageUtilization: {{ .Values.workflowService.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+    {{- end }}
+{{- end }}

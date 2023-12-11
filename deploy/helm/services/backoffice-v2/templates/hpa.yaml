@@ -1,0 +1,41 @@
+{{- if .Values.backoffice.autoscaling.enabled }}
+apiVersion: {{ ternary "autoscaling/v2" "autoscaling/v2beta2" (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.backoffice.nameOverride }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ .Values.backoffice.nameOverride }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Values.backoffice.nameOverride }}
+  minReplicas: {{ .Values.backoffice.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.backoffice.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.backoffice.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+    {{- if .Capabilities.APIVersions.Has "autoscaling/v2"}}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.backoffice.autoscaling.targetCPUUtilizationPercentage }}
+    {{- else }}
+        targetAverageUtilization: {{ .Values.backoffice.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- end }}
+    {{- if .Values.backoffice.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+    {{- if .Capabilities.APIVersions.Has "autoscaling/v2"}}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.backoffice.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- else }}
+        targetAverageUtilization: {{ .Values.backoffice.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+    {{- end }}
+{{- end }}
