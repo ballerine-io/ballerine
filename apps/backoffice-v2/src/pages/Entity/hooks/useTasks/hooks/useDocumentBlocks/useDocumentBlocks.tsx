@@ -186,7 +186,8 @@ export const useDocumentBlocks = ({
                   disabled:
                     (!isDoneWithRevision && Boolean(decision?.status)) ||
                     noAction ||
-                    isLoadingApproveTaskById,
+                    isLoadingApproveTaskById ||
+                    !caseState.actionButtonsEnabled,
                   size: 'wide',
                   variant: 'success',
                 },
