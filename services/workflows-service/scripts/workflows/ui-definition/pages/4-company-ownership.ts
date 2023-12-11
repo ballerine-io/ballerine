@@ -190,7 +190,7 @@ export const CompanyOwnershipPage = {
   type: 'page',
   number: 4,
   stateName: 'company_ownership',
-  name: 'Company Ownership',
+  name: 'text.companyOwnership',
   pageValidation: [
     {
       type: 'json-schema',
