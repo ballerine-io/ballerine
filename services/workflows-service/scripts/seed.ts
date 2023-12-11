@@ -94,6 +94,8 @@ async function createProject(client: PrismaClient, customer: Customer, id: strin
 
 const DEFAULT_INITIAL_STATE = CommonWorkflowStates.MANUAL_REVIEW;
 
+const DEFAULT_SEED_DEFINITION_TOKEN = '12345678-1234-1234-1234-123456789012';
+
 async function seed(bcryptSalt: string | number) {
   console.info('Seeding database...');
   const client = new PrismaClient();
@@ -1060,7 +1062,7 @@ async function seed(bcryptSalt: string | number) {
         childWorkflowsRuntimeData: true,
       },
       where: {
-        workflowDefinitionId: 'kyb_dynamic_ui_session_example',
+        workflowDefinitionId: 'dynamic_kyb_parent_example',
         businessId: { not: null },
         state: {
           in: [
@@ -1165,12 +1167,12 @@ async function seed(bcryptSalt: string | number) {
   const collectionFlowKyb = await generateCollectionKybWorkflow(client, project1.id);
   await generateWebsiteMonitoringExample(client, project1.id);
 
-  const token = await generateInitialCollectionFlowExample(client, {
+  await generateInitialCollectionFlowExample(client, {
     workflowDefinitionId: collectionFlowKyb.id,
     projectId: project1.id,
     endUserId: endUserIds[0]!,
     businessId: businessIds[0]!,
-    token: '12345678-1234-1234-1234-123456789012',
+    token: DEFAULT_SEED_DEFINITION_TOKEN,
   });
   console.info('Seeded database successfully');
 }
