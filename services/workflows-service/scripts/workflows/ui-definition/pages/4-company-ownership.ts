@@ -85,7 +85,7 @@ const validationSchema = {
                   },
                   items: {
                     type: 'object',
-                    required: ['firstName', 'lastName', 'email'],
+                    required: ['firstName', 'lastName', 'nationalId', 'email'],
                     properties: {
                       firstName: {
                         type: 'string',
@@ -114,14 +114,34 @@ const validationSchema = {
                           maxLength: 'errorMessage.maxLength.email',
                         },
                       },
+                      nationalId: {
+                        type: 'string',
+                        minLength: 5,
+                        maxLength: 20,
+                        errorMessage: {
+                          minLength: 'errorMessage.minLength.nationalId',
+                          maxLength: 'errorMessage.maxLength.nationalId',
+                        },
+                      },
                       additionalInfo: {
                         type: 'object',
                         default: {},
                         required: ['role', 'dateOfBirth'],
                         errorMessage: {
                           required: {
+                            nationality: 'errorMessage.required.nationality',
+                            fullAddress: 'errorMessage.required.fullAddress',
                             role: 'errorMessage.required.role',
                             dateOfBirth: 'errorMessage.required.dateOfBirth',
+                          },
+                          fullAddress: {
+                            type: 'string',
+                            minLength: 10,
+                            maxLength: 200,
+                            errorMessage: {
+                              minLength: 'error.minLength.fullAddress',
+                              maxLength: 'error.maxLength.fullAddress',
+                            },
                           },
                         },
                         properties: {
@@ -405,9 +425,10 @@ export const CompanyOwnershipPage = {
               required: [
                 'directors:first-name-input',
                 'directors:last-name-input',
-                'directors:title-input',
+                'directors:nationality-input',
+                'directors:identity-number-input',
                 'directors:email-input',
-                'directors:date-of-birth-input',
+                'directors:address-of-residence-input',
               ],
             },
             uiSchema: {
@@ -466,6 +487,59 @@ export const CompanyOwnershipPage = {
                   'ui:field': 'DateInput',
                   'ui:label': true,
                 },
+              },
+            },
+            {
+              name: 'directors:nationality-input',
+              type: 'nationality-picker',
+              valueDestination:
+                'entity.data.additionalInfo.directors[{INDEX}].additionalInfo.nationality',
+              options: {
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+                uiSchema: {
+                  'ui:field': 'NationalityPicker',
+                },
+                label: 'text.nationality',
+                hint: 'text.choose',
+              },
+            },
+            {
+              name: 'directors:identity-number-input',
+              type: 'json-form:text',
+              valueDestination: 'entity.data.additionalInfo.directors[{INDEX}].nationalId',
+              options: {
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+                label: 'text.nationalId.label',
+                hint: 'text.nationalId.hint',
+              },
+            },
+            {
+              name: 'directors:identity-number-input',
+              type: 'json-form:text',
+              valueDestination: 'entity.data.additionalInfo.directors[{INDEX}].nationalId',
+              options: {
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+                label: 'text.nationalId.label',
+                hint: 'text.nationalId.hint',
+              },
+            },
+            {
+              name: 'directors:address-of-residence-input',
+              type: 'json-form:text',
+              valueDestination:
+                'entity.data.additionalInfo.directors[{INDEX}].additionalInfo.fullAddress',
+              options: {
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+                label: 'text.addressOfResidence.label',
+                hint: 'text.addressOfResidence.hint',
               },
             },
             {
