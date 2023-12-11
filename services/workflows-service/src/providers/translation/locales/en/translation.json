@@ -39,6 +39,7 @@
     "websiteDocuments": "Website documents",
     "officePictures": "Office Pictures",
     "financialDocuments": "Financial Documents",
+    "personalDetails": "Personal details",
     "declarationOfAccuracy": "Declaration of Accuracy and Authenticity",
     "declarationOfAccuracyDescription": "By checking the checkbox below I/we hereby declare that the information which was submitted in the attached Merchant application is truthful and genuine in regards to my/our business, legal status and registration, business practices and all other submitted information.",
     "emailDescription": "By clicking 'Finish', an email containing an identity verification link will be sent to the shareholders listed.",
@@ -389,14 +390,17 @@
     "documents": {
       "bankStatement": {
         "label": "Bank Statement",
-        "description": "Not older than 6 months."
+        "description": "Not older than 6 months.",
+        "error": "Bank Statement is Required"
       },
       "companyStructure": {
         "label": "Company structure (directors & legal representatives)",
-        "description": "Notarized document"
+        "description": "Notarized document",
+        "error": "Company structure is Required"
       },
       "certificateOfRegistration": {
-        "label": "Certificate of Registration"
+        "label": "Certificate of Registration",
+        "error": "Certificate of Registration is Required"
       },
       "utilityBill": {
         "label": "Company Utility Bill as Proof of Address",
@@ -412,7 +416,8 @@
       },
       "proofOfAddress": {
         "label": "Company Utility Bill as Proof of Address",
-        "description": "Not older than 6 months."
+        "description": "Not older than 6 months.",
+        "error": "Proof of Address is Required"
       }
     },
     "companyRegistrationNumber": {

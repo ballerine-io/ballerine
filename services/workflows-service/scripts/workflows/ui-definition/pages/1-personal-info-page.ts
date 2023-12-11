@@ -98,7 +98,7 @@ const validationSchema = {
 
 export const PersonalInfoPage = {
   type: 'page',
-  name: 'Personal details',
+  name: 'text.personalDetails',
   number: 1,
   stateName: 'personal_details',
   pageValidation: [

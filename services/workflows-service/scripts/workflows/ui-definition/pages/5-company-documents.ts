@@ -3,33 +3,33 @@ const validationSchema = [
     documentId: 'document-bank-statement',
     destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required',
+    errorMessage: 'text.documents.bankStatement.error',
   },
   {
     documentId: 'document-company-structure',
     destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required',
+    errorMessage: 'text.documents.companyStructure.error',
   },
   {
     documentId: 'document-certificate-of-registration',
     destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required',
+    errorMessage: 'text.documents.certificateOfRegistration.error',
   },
   {
     documentId: 'document-proof-of-address',
     destination: 'pages[0].ballerineFileId',
     required: true,
-    errorMessage: 'This field is required',
+    errorMessage: 'text.documents.proofOfAddress.error',
   },
 ];
 
 export const CompanyDocumentsPage = {
   type: 'page',
-  number: 7,
+  number: 5,
   stateName: 'company_documents',
-  name: 'Company Documents',
+  name: 'text.companyDocuments',
   pageValidation: [
     {
       type: 'destination-engine',
