@@ -23,7 +23,10 @@ export interface UseCallToActionLogicParams {
 }
 
 export const getPostApproveEventNameEvent = (workflow: TWorkflowById) => {
-  if (!workflow?.workflowDefinition?.config?.workflowLevelResolution) {
+  if (
+    !workflow?.workflowDefinition?.config?.workflowLevelResolution &&
+    workflow.nextEvents?.includes(CommonWorkflowEvent.TASK_REVIEWED)
+  ) {
     return CommonWorkflowEvent.TASK_REVIEWED;
   }
 };
