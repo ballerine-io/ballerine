@@ -28,7 +28,9 @@ export const kybParentDynamicExample = {
       },
       revision: {
         tags: [StateTag.REVISION],
-        type: 'final' as const,
+        on: {
+          COLLECTION_FLOW_FINISHED: 'manual_review',
+        },
       },
       reject: {
         tags: [StateTag.REVISION],
@@ -42,6 +44,7 @@ export const kybParentDynamicExample = {
     commonPlugins: [],
   },
   config: {
+    workflowLevelResolution: true,
     childCallbackResults: [],
   },
 } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
