@@ -46,13 +46,13 @@ export const CompanyDocumentsPage = {
             {
               type: 'h1',
               options: {
-                text: 'Company Documents',
+                text: 'text.companyDocuments',
               },
             },
             {
               type: 'h3',
               options: {
-                text: 'Merchant Company Documents',
+                text: 'text.merchantCompanyDocuments',
               },
             },
           ],
@@ -75,8 +75,8 @@ export const CompanyDocumentsPage = {
               type: 'document',
               valueDestination: 'documents[0].pages[0].ballerineFileId',
               options: {
-                label: 'Bank Statement',
-                description: 'Not older than 6 months.',
+                label: 'text.documents.bankStatement.label',
+                description: 'text.documents.bankStatement.description',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -101,8 +101,8 @@ export const CompanyDocumentsPage = {
               type: 'document',
               valueDestination: 'documents[1].pages[0].ballerineFileId',
               options: {
-                label: 'Company structure (directors & legal representatives)',
-                description: 'Notarized document',
+                label: 'text.documents.companyStructure.label',
+                description: 'text.documents.companyStructure.description',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -127,7 +127,7 @@ export const CompanyDocumentsPage = {
               type: 'document',
               valueDestination: 'documents[2].pages[0].ballerineFileId',
               options: {
-                label: 'Certificate of Registration',
+                label: 'text.documents.certificateOfRegistration.label',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -152,8 +152,8 @@ export const CompanyDocumentsPage = {
               type: 'document',
               valueDestination: 'documents[3].pages[0].ballerineFileId',
               options: {
-                label: 'Company Utility Bill as Proof of Address',
-                description: 'Not older than 6 months.',
+                label: 'text.documents.proofOfAddress.label',
+                description: 'text.documents.proofOfAddress.description',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -179,8 +179,7 @@ export const CompanyDocumentsPage = {
           type: 'description',
           name: 'accuracy-description',
           options: {
-            descriptionRaw:
-              "By clicking 'Next', an email containing an identity verification link will be sent to the shareholders listed.",
+            descriptionRaw: 'text.emailDescription',
           },
         },
         {
@@ -197,7 +196,7 @@ export const CompanyDocumentsPage = {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],
                 },
-                text: 'Finish',
+                text: 'text.finish',
               },
               availableOn: [
                 {

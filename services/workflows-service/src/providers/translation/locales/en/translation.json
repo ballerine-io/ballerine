@@ -21,7 +21,9 @@
     "imDirector": "I am a director in the company",
     "shareholder": "Shareholder",
     "shareholders": "Shareholders",
+    "shareholderTitleTemplate": "Shareholder {{INDEX}}",
     "shareholdersDescription": "Add all of the natural persons that own or control, <br /><b>directly or indirectly</b> more than 25% of the company.",
+    "shareholdersDescriptionUbo": "<p>add all the natural persons that own or control, <bold>Directly Or Indirectly</bold> more than 25% of the company.</p>",
     "uboIndex": "UBO {{INDEX}}",
     "directorIndex": "Director {{INDEX}}",
     "websiteBasicRequirement": "Website Basic Requirement",
@@ -96,11 +98,15 @@
       "hint": "CEO / Manager / Partner"
     },
     "dateOfBirth": {
-      "label": "Date of Birth"
+      "label": "Date of Birth",
+      "hint": "DD/MM/YYYY"
     },
     "registrationNumber": {
       "label": "Registration Number",
       "hint": "1000000032985"
+    },
+    "iHaveAuthority": {
+      "label": "I have the signing authority for this company"
     },
     "state": {
       "label": "State",
@@ -427,6 +433,15 @@
     "representativeEmail": {
       "label": "Representative Email",
       "hint": "example@example.com"
+    },
+    "dateOfEstablishment": {
+      "label": "Date Of Establishment",
+      "hint": "DD/MM/YYYY"
+    },
+    "hint": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "email@gmail.com"
     }
   },
   "errorMessage": {
@@ -448,6 +463,7 @@
       "phone": "A valid phone number is required.",
       "dateOfBirth": "Date of birth is required.",
       "firstName": "First name is required.",
+      "postalCode": "Postal code is required.",
       "lastName": "Last name is required.",
       "email": "Email is required.",
       "additionalInfo": "Additional information is required.",
@@ -462,6 +478,7 @@
       "street": "Street is required.",
       "streetNumber": "Street number is required.",
       "registrationNumber": "Registration number is required.",
+      "dateOfEstablishment": "Date Of Establishment is required.",
       "physical": "Physical address details are required.",
       "requiredField": "This field is required.",
       "nationality": "Nationality is required.",
@@ -499,7 +516,9 @@
       "contactDetails": "Contact details are required.",
       "companyWebsite": "Company Website is required.",
       "bankCountry": "Bank Country is required.",
-      "companyRegistrationNumber": "Company registration number is required."
+      "companyRegistrationNumber": "Company registration number is required.",
+      "role": "Title is required.",
+      "dateOfBirth": "Date of Birth is required."
     },
     "minLength": {
       "firstName": "First name must be at least 2 characters long.",
