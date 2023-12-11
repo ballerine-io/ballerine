@@ -167,6 +167,7 @@ export class WorkflowControllerExternal {
     const { workflowId, context, config } = body;
     const { entity } = context;
 
+    // @ts-ignore
     if (!entity.id && !entity.ballerineEntityId)
       throw new common.BadRequestException('Entity id is required');
 

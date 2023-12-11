@@ -1,10 +1,10 @@
 import { AnimatePresence } from 'framer-motion';
-import { ComponentProps } from 'react';
+import { ComponentProps, ElementRef, forwardRef } from 'react';
 import { MotionBadge } from '../../../../common/components/molecules/MotionBadge/MotionBadge';
 import * as React from 'react';
 
-export const BadgeCell = React.forwardRef<
-  HTMLDivElement,
+export const BadgeCell = forwardRef<
+  ElementRef<typeof MotionBadge>,
   {
     value: ComponentProps<typeof MotionBadge>['children'];
     props: ComponentProps<typeof MotionBadge>;
@@ -18,3 +18,4 @@ export const BadgeCell = React.forwardRef<
     </AnimatePresence>
   );
 });
+BadgeCell.displayName = 'BadgeCell';
