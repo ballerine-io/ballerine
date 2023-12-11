@@ -21,9 +21,9 @@ const validationSchema = {
               minLength: 3,
               maxLength: 50,
               errorMessage: {
-                minLength: 'Business type should have at least 3 characters.',
-                maxLength: 'Business type should not exceed 50 characters.',
-                required: 'Business type is required.',
+                minLength: 'errorMessage.minLength.businessType',
+                maxLength: 'errorMessage.maxLength.businessType',
+                required: 'errorMessage.required.businessType',
               },
             },
             taxIdentificationNumber: {
@@ -32,10 +32,10 @@ const validationSchema = {
               maxLength: 15,
               pattern: '^[^\\s]*$',
               errorMessage: {
-                minLength: 'Tax ID should have at least 8 characters.',
-                maxLength: 'Tax ID should not exceed 15 characters.',
-                pattern: 'Tax ID must be in valid format',
-                required: 'Vat number is required.',
+                minLength: 'errorMessage.minLength.taxIdentificationNumber',
+                maxLength: 'errorMessage.maxLength.taxIdentificationNumber',
+                pattern: 'errorMessage.pattern.taxIdentificationNumber',
+                required: 'errorMessage.required.taxIdentificationNumber',
               },
             },
             companyName: {
@@ -43,9 +43,9 @@ const validationSchema = {
               minLength: 2,
               maxLength: 100,
               errorMessage: {
-                minLength: 'Company name should have at least 2 characters.',
-                maxLength: 'Company name should not exceed 100 characters.',
-                required: 'Company name is required.',
+                minLength: 'errorMessage.minLength.companyName',
+                maxLength: 'errorMessage.maxLength.companyName',
+                required: 'errorMessage.required.companyName',
               },
             },
             country: {
@@ -54,10 +54,10 @@ const validationSchema = {
               maxLength: 2,
               pattern: '^[A-Z]{2}$',
               errorMessage: {
-                minLength: 'Country code should have exactly 2 characters.',
-                maxLength: 'Country code should have exactly 2 characters.',
-                pattern: 'Please enter a valid country code.',
-                required: 'Country is required.',
+                minLength: 'errorMessage.minLength.country',
+                maxLength: 'errorMessage.maxLength.country',
+                pattern: 'errorMessage.pattern.country',
+                required: 'errorMessage.required.country',
               },
             },
             registrationNumber: {
@@ -65,9 +65,9 @@ const validationSchema = {
               minLength: 4,
               maxLength: 20,
               errorMessage: {
-                minLength: 'Registration number should have at least 4 characters.',
-                maxLength: 'Registration number should not exceed 20 characters.',
-                required: 'Registration number is required.',
+                minLength: 'errorMessage.minLength.registrationNumber',
+                maxLength: 'errorMessage.maxLength.registrationNumber',
+                required: 'errorMessage.required.registrationNumber',
               },
             },
             additionalInfo: {
@@ -80,20 +80,20 @@ const validationSchema = {
               },
               errorMessage: {
                 required: {
-                  dateOfEstablishment: 'Date of Establishment is required.',
+                  dateOfEstablishment: 'errorMessage.required.dateOfEstablishment',
                 },
               },
             },
           },
           errorMessage: {
             required: {
-              additionalInfo: 'Additional information is required.',
-              businessType: 'Business type is required.',
-              numberOfEmployees: 'Number of employees is required.',
-              taxIdentificationNumber: 'Vat number is required.',
-              companyName: 'Company name is required.',
-              country: 'Country is required.',
-              registrationNumber: 'Registration number is required.',
+              additionalInfo: 'errorMessage.required.additionalInfo',
+              businessType: 'errorMessage.required.businessType',
+              numberOfEmployees: 'errorMessage.required.numberOfEmployees',
+              taxIdentificationNumber: 'errorMessage.required.taxIdentificationNumber',
+              companyName: 'errorMessage.required.companyName',
+              country: 'errorMessage.required.country',
+              registrationNumber: 'errorMessage.required.registrationNumber',
             },
           },
         },
@@ -131,7 +131,7 @@ export const CompanyInfoPage = {
   type: 'page',
   number: 2, // routing number of page
   stateName: 'company_information', // this is the route from xstate
-  name: 'Company Information', // page name ( in stepper )
+  name: 'text.companyInformation', // page name ( in stepper )
   pageValidation: [
     {
       type: 'json-schema',
@@ -148,7 +148,7 @@ export const CompanyInfoPage = {
             {
               type: 'h1',
               options: {
-                text: 'Business information',
+                text: 'text.businessInformation',
               },
             },
           ],
@@ -167,8 +167,8 @@ export const CompanyInfoPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.registrationNumber',
               options: {
-                label: 'Company Registration Number',
-                hint: '1000000032985',
+                label: 'text.registrationNumber.label',
+                hint: 'text.registrationNumber.hint',
                 jsonFormDefinition: {
                   type: 'string',
                   minLength: 1,
@@ -180,8 +180,8 @@ export const CompanyInfoPage = {
               type: 'json-form:country-picker',
               valueDestination: 'entity.data.country',
               options: {
-                label: 'Registered Country',
-                hint: 'United Kingdom',
+                label: 'text.country',
+                hint: 'text.choose',
                 jsonFormDefinition: {
                   type: 'string',
                   minLength: 1,
@@ -189,7 +189,7 @@ export const CompanyInfoPage = {
                 uiSchema: {
                   'ui:field': 'CountryPicker',
                   'ui:label': true,
-                  'ui:placeholder': 'Choose',
+                  'ui:placeholder': 'text.choose',
                 },
               },
             },
@@ -215,8 +215,8 @@ export const CompanyInfoPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.state',
               options: {
-                label: 'State',
-                hint: 'California',
+                label: 'text.state.label',
+                hint: 'text.state.hint',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -249,8 +249,8 @@ export const CompanyInfoPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.companyName',
               options: {
-                label: 'Company Legal Name',
-                hint: 'OpenAI Technologies, Inc.',
+                label: 'text.companyName.label',
+                hint: 'text.companyName.hint',
                 jsonFormDefinition: {
                   type: 'string',
                   minLength: 1,
@@ -262,8 +262,8 @@ export const CompanyInfoPage = {
               type: 'json-form:text',
               valueDestination: 'entity.data.taxIdentificationNumber',
               options: {
-                label: 'VAT Number',
-                hint: 'US-VAT-98765432',
+                label: 'text.taxIdentificationNumber.label',
+                hint: 'text.taxIdentificationNumber.hint',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -274,8 +274,8 @@ export const CompanyInfoPage = {
               type: 'json-form:dropdown',
               valueDestination: 'entity.data.businessType',
               options: {
-                hint: 'Choose',
-                label: 'Corporate type',
+                hint: 'text.businessType.hint',
+                label: 'text.businessType.label',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -284,39 +284,57 @@ export const CompanyInfoPage = {
                   'ui:label': true,
                   options: [
                     {
-                      title: 'Sole Proprietorship',
+                      title: 'text.businessType.options.sole_proprietorship',
                       const: 'sole_proprietorship',
                     },
-                    { title: 'Partnership', const: 'partnership' },
-                    { title: 'Corporation', const: 'corporation' },
                     {
-                      title: 'Limited Liability Company (LLC)',
+                      title: 'text.businessType.options.partnership',
+                      const: 'partnership',
+                    },
+                    {
+                      title: 'text.businessType.options.corporation',
+                      const: 'corporation',
+                    },
+                    {
+                      title: 'text.businessType.options.limited_liability_company',
                       const: 'limited_liability_company_(llc)',
                     },
                     {
-                      title: 'Limited Partnership (LP)',
+                      title: 'text.businessType.options.limited_partnership',
                       const: 'limited_partnership_(lp)',
                     },
                     {
-                      title: 'Limited Liability Partnership (LLP)',
+                      title: 'text.businessType.options.limited_liability_partnership',
                       const: 'limited_liability_partnership_(llp)',
                     },
                     {
-                      title: 'Public Limited Company (PLC)',
+                      title: 'text.businessType.options.public_limited_company',
                       const: 'public_limited_company_(plc)',
                     },
                     {
-                      title: 'Private Limited Company (Ltd)',
+                      title: 'text.businessType.options.private_limited_company',
                       const: 'private_limited_company_(ltd)',
                     },
                     {
-                      title: 'Non-Profit Organization',
+                      title: 'text.businessType.options.non_profit_organization',
                       const: 'non-profit_organization',
                     },
-                    { title: 'Cooperative', const: 'cooperative' },
-                    { title: 'Trust', const: 'trust' },
-                    { title: 'Government', const: 'government' },
-                    { title: 'Other', const: 'other' },
+                    {
+                      title: 'text.businessType.options.cooperative',
+                      const: 'cooperative',
+                    },
+                    {
+                      title: 'text.businessType.options.trust',
+                      const: 'trust',
+                    },
+                    {
+                      title: 'text.businessType.options.government',
+                      const: 'government',
+                    },
+                    {
+                      title: 'text.businessType.options.other',
+                      const: 'other',
+                    },
                   ],
                 },
               },
@@ -326,8 +344,8 @@ export const CompanyInfoPage = {
               type: 'json-form:date',
               valueDestination: 'entity.data.additionalInfo.dateOfEstablishment',
               options: {
-                label: 'Date of Establishment',
-                hint: 'DD/MM/YYYY',
+                label: 'text.dateOfEstablishment.label',
+                hint: 'text.dateOfEstablishment.hint',
                 jsonFormDefinition: {
                   type: 'string',
                 },
