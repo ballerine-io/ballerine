@@ -29,10 +29,18 @@ const validationSchema = {
                     properties: {
                       isDifferentFromPhysical: { const: true },
                     },
-                    required: ['isDifferentFromPhysical'],
                   },
                   then: {
-                    required: ['street', 'streetNumber', 'city', 'country', 'physical'],
+                    required: ['physical'],
+                    errorMessage: {
+                      required: {
+                        street: 'errorMessage.required.street',
+                        streetNumber: 'errorMessage.required.streetNumber',
+                        city: 'errorMessage.required.city',
+                        country: 'errorMessage.required.country',
+                        isDifferentFromPhysical: 'errorMessage.required.requiredField',
+                      },
+                    },
                   },
                   properties: {
                     isDifferentFromPhysical: {
@@ -78,6 +86,7 @@ const validationSchema = {
                     },
                     physical: {
                       type: 'object',
+                      default: {},
                       required: ['street', 'streetNumber', 'city', 'country'],
                       errorMessage: {
                         required: {
