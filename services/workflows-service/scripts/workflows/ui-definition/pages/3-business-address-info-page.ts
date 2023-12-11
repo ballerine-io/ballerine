@@ -164,7 +164,7 @@ export const BusinessAddressInfoPage = {
                   type: 'string',
                 },
                 label: 'text.postalCode',
-                hint: '10',
+                hint: '76131',
               },
             },
             {
