@@ -439,6 +439,47 @@ export const CompanyOwnershipPage = {
             uiSchema: {
               titleTemplate: 'Director {{INDEX}}',
             },
+            insertionParams: {
+              insertionStrategy: 'array',
+              destination: 'entity.data.additionalInfo.directors',
+              schema: {
+                firstName: 'entity.data.additionalInfo.mainRepresentative.firstName',
+                lastName: 'entity.data.additionalInfo.mainRepresentative.lastName',
+              },
+              bindingAnchorDestination: 'additionalInfo.__isGeneratedAutomatically',
+              disableElements: [
+                {
+                  elementName: 'directors:first-name-input',
+                  atIndex: 0,
+                },
+                {
+                  elementName: 'directors:last-name-input',
+                  atIndex: 0,
+                },
+              ],
+              insertWhen: [
+                {
+                  type: 'json-logic',
+                  value: {
+                    '==': [{ var: 'entity.data.additionalInfo.imDirector' }, true],
+                  },
+                },
+              ],
+              removeWhen: [
+                {
+                  type: 'json-logic',
+                  value: {
+                    if: [
+                      {
+                        var: 'entity.data.additionalInfo.imDirector',
+                      },
+                      false,
+                      true,
+                    ],
+                  },
+                },
+              ],
+            },
           },
           elements: [
             {
