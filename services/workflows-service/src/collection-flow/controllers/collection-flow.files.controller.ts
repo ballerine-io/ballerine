@@ -73,7 +73,7 @@ export class CollectionFlowFilesController {
           (await getMimeType({
             file: file.originalname || '',
           })) ||
-          '',
+          undefined,
       },
     );
   }
