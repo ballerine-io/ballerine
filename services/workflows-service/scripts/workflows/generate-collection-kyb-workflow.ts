@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { StateTag } from '@ballerine/common';
 import { uiKybParentDynamicExample } from './ui-definition/ui-kyb-parent-dynamic-example';
+import { generateBaseCaseLevelStates } from './generate-base-case-level-states';
 
 export const kybParentDynamicExample = {
   id: 'dynamic_kyb_parent_example',
@@ -17,25 +18,10 @@ export const kybParentDynamicExample = {
     states: {
       idle: {
         on: {
-          COLLECTION_FLOW_FINISHED: 'manual_review',
+          COLLECTION_FLOW_FINISHED: [{ target: StateTag.MANUAL_REVIEW }],
         },
       },
-      manual_review: {
-        tags: [StateTag.MANUAL_REVIEW],
-        on: {
-          revision: 'revision',
-        },
-      },
-      revision: {
-        tags: [StateTag.REVISION],
-        on: {
-          COLLECTION_FLOW_FINISHED: 'manual_review',
-        },
-      },
-      reject: {
-        tags: [StateTag.REVISION],
-        type: 'final' as const,
-      },
+      ...generateBaseCaseLevelStates(StateTag.MANUAL_REVIEW, 'COLLECTION_FLOW_FINISHED'),
     },
   },
   extensions: {

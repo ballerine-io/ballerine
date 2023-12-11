@@ -25,7 +25,7 @@ export const generateInitialCollectionFlowExample = async (
       context: {
         workflowId: workflowDefinitionId,
         entity: {
-          id: businessId,
+          ballerineEntityId: businessId,
           type: 'business',
           data: {
             additionalInfo: {
