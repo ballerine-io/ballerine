@@ -5,9 +5,7 @@
 ### Patch Changes
 
 - Updated dependencies
-  - @ballerine/common@0.7.31
-  - @ballerine/workflow-browser-sdk@0.5.31
-  - @ballerine/workflow-node-sdk@0.5.31
+  - @ballerine/ui@0.3.21
 
 ## 0.5.35
 

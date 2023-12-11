@@ -50,10 +50,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ballerine/ui": "0.3.20",
-    "@ballerine/common": "0.7.31",
-    "@ballerine/workflow-browser-sdk": "0.5.31",
-    "@ballerine/workflow-node-sdk": "0.5.31",
+    "@ballerine/ui": "0.3.21",
+    "@ballerine/common": "0.7.30",
+    "@ballerine/workflow-browser-sdk": "0.5.30",
+    "@ballerine/workflow-node-sdk": "0.5.30",
     "@fontsource/inter": "^4.5.15",
     "@formkit/auto-animate": "1.0.0-beta.5",
     "@hookform/resolvers": "^3.1.0",

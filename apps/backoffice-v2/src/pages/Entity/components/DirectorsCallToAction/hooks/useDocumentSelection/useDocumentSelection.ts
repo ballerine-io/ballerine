@@ -1,8 +1,8 @@
+import { useCallback } from 'react';
 import {
   ICallToActionDocumentOption,
   ICallToActionDocumentSelection,
-} from '@/pages/Entity/components/CallToAction/interfaces';
-import { useCallback } from 'react';
+} from '@/pages/Entity/components/DirectorsCallToAction/interfaces';
 
 export const useDocumentSelection = (
   params?: ICallToActionDocumentSelection,
