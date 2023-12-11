@@ -15,7 +15,7 @@ const validationSchema = {
               default: {},
               errorMessage: {
                 required: {
-                  iHaveSigningAuthority: 'This field is required.',
+                  iHaveSigningAuthority: 'errorMessage.required.iHaveSigningAuthority',
                 },
               },
               properties: {
@@ -84,7 +84,7 @@ const validationSchema = {
                   type: 'boolean',
                   enum: [true],
                   errorMessage: {
-                    enum: 'This field is required.',
+                    enum: 'errorMessage.required.iHaveSigningAuthority',
                   },
                 },
               },

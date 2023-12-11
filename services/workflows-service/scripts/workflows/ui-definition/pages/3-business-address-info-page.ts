@@ -87,7 +87,7 @@ export const BusinessAddressInfoPage = {
   type: 'page',
   number: 3,
   stateName: 'business_address_information',
-  name: 'Headquarters Address',
+  name: 'text.headquartersAddress',
   pageValidation: [
     {
       type: 'json-schema',

@@ -474,6 +474,7 @@
       "additionalInfo": "Additional information is required.",
       "jobTitle": "Job title is required.",
       "registeredCapitalInUsd": "Registered capital in USD is required.",
+      "iHaveSigningAuthority": "You must be authorized to sign on behalf of the company.",
       "businessType": "Business type is required.",
       "numberOfEmployees": "Number of employees is required.",
       "taxIdentificationNumber": "Tax identification number is required.",
