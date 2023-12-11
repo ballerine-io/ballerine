@@ -50,7 +50,7 @@ export const DocumentLayout = () => {
     [document, page],
   );
 
-  if (isLoadingWorkflow || files[0].isLoading) {
+  if (isLoadingWorkflow || files.some(file => file.isLoading)) {
     return;
   }
 

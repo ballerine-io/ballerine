@@ -26,20 +26,20 @@ export const DocumentsToolbar: FunctionComponent<{
 }) => {
   return (
     <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
+      {!hideOpenExternalButton && !isLoading && image?.id && (
+        <button
+          type={`button`}
+          className={ctw(
+            `btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary`,
+          )}
+          onClick={() => onOpenDocumentInNewTab(image.id)}
+          disabled={shouldDownload}
+        >
+          <ExternalLinkIcon className={`p-0.5`} />
+        </button>
+      )}
       {!isPdf(image) && !isLoading && (
         <>
-          {!hideOpenExternalButton && (
-            <button
-              type={`button`}
-              className={ctw(
-                `btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary`,
-              )}
-              onClick={() => onOpenDocumentInNewTab(image.id)}
-              disabled={shouldDownload}
-            >
-              <ExternalLinkIcon className={`p-0.5`} />
-            </button>
-          )}
           <button
             type={`button`}
             className={ctw(
