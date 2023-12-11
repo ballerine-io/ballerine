@@ -1,15 +1,10 @@
 import { CommonWorkflowEvent } from '@ballerine/common';
 import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { useParams } from 'react-router-dom';
-import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
-import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useApproveTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { useRevisionTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
-import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
-import { useCaseState } from '../../../Case/hooks/useCaseState/useCaseState';
 import { useDocumentSelection } from 'src/pages/Entity/components/DirectorsCallToAction/hooks/useDocumentSelection';
 import { ICallToActionDocumentSelection } from '@/pages/Entity/components/DirectorsCallToAction/interfaces';
 
@@ -20,12 +15,13 @@ export interface UseCallToActionLogicParams {
   documentSelection?: ICallToActionDocumentSelection;
   onReuploadReset?: () => void;
   onDialogClose?: () => void;
+  workflow: TWorkflowById;
 }
 
 export const getPostApproveEventNameEvent = (workflow: TWorkflowById) => {
   if (
     !workflow?.workflowDefinition?.config?.workflowLevelResolution &&
-    workflow.nextEvents?.includes(CommonWorkflowEvent.TASK_REVIEWED)
+    workflow?.nextEvents?.includes(CommonWorkflowEvent.TASK_REVIEWED)
   ) {
     return CommonWorkflowEvent.TASK_REVIEWED;
   }
@@ -38,12 +34,8 @@ export const useCallToActionLegacyLogic = (params: UseCallToActionLogicParams) =
     documentSelection,
     onReuploadReset,
     onDialogClose,
+    workflow,
   } = params;
-  const { entityId } = useParams();
-  const filterId = useFilterId();
-  const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
-  const { data: session } = useAuthenticatedUserQuery();
-  const caseState = useCaseState(session?.user, workflow);
   const postUpdateEventName = getPostApproveEventNameEvent(workflow);
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
@@ -159,7 +151,6 @@ export const useCallToActionLegacyLogic = (params: UseCallToActionLogicParams) =
 
   return {
     isLoadingTaskDecisionById,
-    caseState,
     action,
     actions,
     reasons,
