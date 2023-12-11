@@ -26,6 +26,7 @@
     "shareholdersDescriptionUbo": "<p>add all the natural persons that own or control, <bold>Directly Or Indirectly</bold> more than 25% of the company.</p>",
     "uboIndex": "UBO {{INDEX}}",
     "directorIndex": "Director {{INDEX}}",
+    "associatedCompanyIndex": "Associated company {{INDEX}}",
     "websiteBasicRequirement": "Website Basic Requirement",
     "websiteBasicRequirementDescription": "This list is intended only as a basic pre-entry check of the<br /> websites and does not refer to specific product<br /> application requirements.",
     "websiteBasicRequirementHint": "This list is intended only as a basic pre-entry check of the websites and does not refer to specific product application requirements.",
