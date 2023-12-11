@@ -134,15 +134,6 @@ const validationSchema = {
                             role: 'errorMessage.required.role',
                             dateOfBirth: 'errorMessage.required.dateOfBirth',
                           },
-                          fullAddress: {
-                            type: 'string',
-                            minLength: 10,
-                            maxLength: 200,
-                            errorMessage: {
-                              minLength: 'error.minLength.fullAddress',
-                              maxLength: 'error.maxLength.fullAddress',
-                            },
-                          },
                         },
                         properties: {
                           role: {
@@ -150,6 +141,22 @@ const validationSchema = {
                           },
                           dateOfBirth: {
                             type: 'string',
+                          },
+                          fullAddress: {
+                            type: 'string',
+                            minLength: 10,
+                            maxLength: 200,
+                            errorMessage: {
+                              minLength: 'errorMessage.minLength.fullAddress',
+                              maxLength: 'errorMessage.maxLength.fullAddress',
+                            },
+                          },
+                          nationality: {
+                            type: 'string',
+                            minLength: 1,
+                            errorMessage: {
+                              minLength: 'errorMessage.minLength.nationality',
+                            },
                           },
                         },
                       },
@@ -278,10 +285,6 @@ export const CompanyOwnershipPage = {
                 },
                 {
                   elementName: 'ubos:last-name-input',
-                  atIndex: 0,
-                },
-                {
-                  elementName: 'ubos:email-input',
                   atIndex: 0,
                 },
               ],
