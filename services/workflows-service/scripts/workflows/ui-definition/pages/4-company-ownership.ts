@@ -249,7 +249,6 @@ export const CompanyOwnershipPage = {
               schema: {
                 firstName: 'entity.data.additionalInfo.mainRepresentative.firstName',
                 lastName: 'entity.data.additionalInfo.mainRepresentative.lastName',
-                email: 'entity.data.additionalInfo.mainRepresentative.email',
               },
               bindingAnchorDestination: 'additionalInfo.__isGeneratedAutomatically',
               disableElements: [
