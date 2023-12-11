@@ -104,7 +104,7 @@ async function seed(bcryptSalt: string | number) {
     client,
     '1',
     env.API_KEY,
-    'https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/ballerine-logo.png',
+    'https://blrn-imgs.s3.eu-central-1.amazonaws.com/logo.svg',
     '',
     `webhook-shared-secret-${env.API_KEY}`,
   );
@@ -112,7 +112,7 @@ async function seed(bcryptSalt: string | number) {
     client,
     '2',
     `${env.API_KEY}2`,
-    'https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/ballerine-logo.png',
+    'https://blrn-imgs.s3.eu-central-1.amazonaws.com/logo.svg',
     '',
     `webhook-shared-secret-${env.API_KEY}2`,
   );
