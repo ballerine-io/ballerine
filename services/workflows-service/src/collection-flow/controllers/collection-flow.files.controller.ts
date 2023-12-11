@@ -21,7 +21,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import type { Response } from 'express';
 import * as errors from '../../errors';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
-import { getMimeType } from '@/common/get-mime-type/get-mime-type';
+import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 
 export const COLLECTION_FLOW_FILES_API_PATH = 'collection-flow/files';
 
@@ -70,10 +70,13 @@ export class CollectionFlowFilesController {
         ...file,
         mimetype:
           file.mimetype ||
-          (await getMimeType({
-            file: file.originalname || '',
-          })) ||
-          undefined,
+          (
+            await getFileMetadata({
+              file: file.originalname || '',
+              fileName: file.originalname || '',
+            })
+          )?.mimeType ||
+          '',
       },
     );
   }

@@ -3,5 +3,5 @@ export const getFileExtension = (fileName: string) => {
 
   if (!parts?.length) return;
 
-  return parts?.[parts?.length - 1];
+  return parts?.[parts?.length - 1]?.split('?')?.[0];
 };
