@@ -408,6 +408,10 @@
       "businessUtilityBill": {
         "label": "Utility Bill",
         "description": "Notarized document"
+      },
+      "proofOfAddress": {
+        "label": "Company Utility Bill as Proof of Address",
+        "description": "Not older than 6 months."
       }
     },
     "companyRegistrationNumber": {
