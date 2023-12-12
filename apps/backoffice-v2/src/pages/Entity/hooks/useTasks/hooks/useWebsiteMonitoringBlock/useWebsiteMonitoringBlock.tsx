@@ -351,7 +351,8 @@ export const useWebsiteMonitoringBlock = ({ pluginsOutput, workflow }) => {
               .build()
               .flat(1),
           }),
-      });
+      })
+      .build();
   }, [
     pluginsOutput?.website_monitoring?.data,
     websiteMonitoring?.addresses,

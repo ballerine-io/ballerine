@@ -214,8 +214,8 @@ export const useTasks = ({
     return entity
       ? [
           ...websiteMonitoringBlock,
-          entityInfoBlock,
-          // ...registryInfoBlock,
+          ...entityInfoBlock,
+          ...registryInfoBlock,
           // ...kybRegistryInfoBlock,
           // ...companySanctionsBlock,
           // ...directorsUserProvidedBlock,
