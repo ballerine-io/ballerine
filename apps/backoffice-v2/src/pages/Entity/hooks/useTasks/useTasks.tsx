@@ -218,7 +218,7 @@ export const useTasks = ({
           ...registryInfoBlock,
           ...kybRegistryInfoBlock,
           // ...companySanctionsBlock,
-          // ...directorsUserProvidedBlock,
+          ...directorsUserProvidedBlock,
           // ...directorsRegistryProvidedBlock,
           // ...directorsDocumentsBlocks,
           ...ubosBlock,
