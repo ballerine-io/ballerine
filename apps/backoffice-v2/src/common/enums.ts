@@ -1,10 +1,10 @@
 import { TObjectValues } from './types';
 
-export const BroadcastChannel = {
+export const CommunicationChannel = {
   OPEN_DOCUMENT_IN_NEW_TAB: 'OPEN_DOCUMENT_IN_NEW_TAB',
 } as const;
 
-export const BroadcastChannelEvent = {
+export const CommunicationChannelEvent = {
   OPEN_DOCUMENT_IN_NEW_TAB: 'OPEN_DOCUMENT_IN_NEW_TAB',
   OPEN_DOCUMENT_IN_NEW_TAB_ACK: 'OPEN_DOCUMENT_IN_NEW_TAB_ACK',
 } as const;
