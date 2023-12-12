@@ -169,7 +169,11 @@ export const useDocumentBlocks = ({
                   revisionReasons,
                   rejectionReasons,
                   id,
-                  disabled: (!isDoneWithRevision && Boolean(decision?.status)) || noAction,
+                  workflow,
+                  disabled:
+                    (!isDoneWithRevision && Boolean(decision?.status)) ||
+                    noAction ||
+                    !caseState.actionButtonsEnabled,
                   decision: 'reject',
                 },
               },

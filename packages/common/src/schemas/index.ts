@@ -1,6 +1,8 @@
-export { type DefaultContextSchema } from './documents/context';
 export { type TDefaultSchemaDocumentPage } from './documents/default-context-page-schema';
-export { defaultContextSchema } from './documents/default-context-schema';
+export {
+  defaultContextSchema,
+  type DefaultContextSchema,
+} from './documents/default-context-schema';
 export { getGhanaDocuments } from './documents/workflow/documents/schemas/GH';
 export {
   findDocumentSchemaByTypeAndCategory,
