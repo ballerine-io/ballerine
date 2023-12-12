@@ -217,7 +217,7 @@ export const useTasks = ({
           ...entityInfoBlock,
           ...registryInfoBlock,
           ...kybRegistryInfoBlock,
-          // ...companySanctionsBlock,
+          ...companySanctionsBlock,
           ...directorsUserProvidedBlock,
           ...directorsRegistryProvidedBlock,
           // ...directorsDocumentsBlocks,
