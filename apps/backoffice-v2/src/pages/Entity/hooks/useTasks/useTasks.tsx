@@ -223,7 +223,7 @@ export const useTasks = ({
           // ...directorsDocumentsBlocks,
           ...ubosBlock,
           ...storeInfoBlock,
-          // ...websiteBasicRequirementBlock,
+          ...websiteBasicRequirementBlock,
           // ...bankingDetailsBlock,
           // ...processingDetailsBlock,
           // ...mainContactBlock,
