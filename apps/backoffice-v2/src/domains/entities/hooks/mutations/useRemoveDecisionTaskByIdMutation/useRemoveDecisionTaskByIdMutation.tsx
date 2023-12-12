@@ -70,7 +70,7 @@ export const useRemoveDecisionTaskByIdMutation = (
       toast.success(t(`toast:revert_revision.success`));
     },
     onError: (_error, _variables, context) => {
-      toast.error(t(`toast:revert_revision.error`));
+      toast.error(t(`toast:revert_revision.error`, { errorMessage: _error.message }));
 
       queryClient.setQueryData(workflowById.queryKey, context.previousWorkflow);
     },
