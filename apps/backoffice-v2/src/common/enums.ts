@@ -1,5 +1,14 @@
 import { TObjectValues } from './types';
 
+export const BroadcastChannels = {
+  OPEN_DOCUMENT_IN_NEW_TAB: 'OPEN_DOCUMENT_IN_NEW_TAB',
+};
+
+export enum BroadcastChannelEvents {
+  'OPEN_DOCUMENT_IN_NEW_TAB',
+  'OPEN_DOCUMENT_IN_NEW_TAB_ACK',
+}
+
 export const Method = {
   GET: 'GET',
   POST: 'POST',
