@@ -19,9 +19,8 @@ export const Container: FunctionComponent<IContainerProps> = ({ value, id, props
     >
       {value?.map((cell, index) => {
         const Cell = cells[cell?.type];
-        const key = `${(cell[cell?.keyProp as keyof typeof cell] as string) ?? ''}:${
-          (cell?.id as string) ?? ''
-        }`;
+        const cellKeyProp = (cell[cell?.keyProp as keyof typeof cell] as string) ?? '';
+        const key = `${cellKeyProp ? `${cellKeyProp}:` : ''}${(cell?.id as string) ?? ''}`;
 
         return <Cell key={key || index} {...cell} />;
       })}
