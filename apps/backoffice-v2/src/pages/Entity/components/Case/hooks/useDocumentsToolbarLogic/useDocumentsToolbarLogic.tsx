@@ -2,7 +2,7 @@ import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 
 import { useEntity } from '@/pages/Entity/hooks/useEntity/useEntity';
 import { BroadcastChannel } from 'broadcast-channel';
-import { BroadcastChannelEvents, BroadcastChannels } from '@/common/enums';
+import { BroadcastChannelEvent, BroadcastChannel } from '@/common/enums';
 
 interface IUseDocumentsToolbarProps {
   imageId: string;
@@ -19,7 +19,7 @@ export const useDocumentsToolbarLogic = ({
 
   const broadcastChannel = useMemo(
     () =>
-      new BroadcastChannel(BroadcastChannels.OPEN_DOCUMENT_IN_NEW_TAB, {
+      new BroadcastChannel(BroadcastChannel.OPEN_DOCUMENT_IN_NEW_TAB, {
         webWorkerSupport: false,
       }),
     [],
@@ -27,8 +27,8 @@ export const useDocumentsToolbarLogic = ({
 
   const isDocumentTabOpen = useRef(false);
 
-  const handler = useCallback(({ type }: { type: BroadcastChannelEvents }) => {
-    if (type === BroadcastChannelEvents.OPEN_DOCUMENT_IN_NEW_TAB_ACK) {
+  const handler = useCallback(({ type }: { type: keyof typeof BroadcastChannelEvent }) => {
+    if (type === BroadcastChannelEvent.OPEN_DOCUMENT_IN_NEW_TAB_ACK) {
       isDocumentTabOpen.current = true;
     }
   }, []);
@@ -47,7 +47,7 @@ export const useDocumentsToolbarLogic = ({
 
   const onOpenInNewTabClick = useCallback(() => {
     broadcastChannel.postMessage({
-      type: BroadcastChannelEvents.OPEN_DOCUMENT_IN_NEW_TAB,
+      type: BroadcastChannelEvent.OPEN_DOCUMENT_IN_NEW_TAB,
       data: { entityId: workflow?.id, documentId: imageId },
     });
 

@@ -7,7 +7,7 @@ import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { BroadcastChannelEvents, BroadcastChannels } from '@/common/enums';
+import { BroadcastChannelEvent, BroadcastChannel } from '@/common/enums';
 
 export const useDocumentLogic = () => {
   const { state } = useLocation();
@@ -17,7 +17,7 @@ export const useDocumentLogic = () => {
 
   const broadcastChannel = useMemo(
     () =>
-      new BroadcastChannel(BroadcastChannels.OPEN_DOCUMENT_IN_NEW_TAB, {
+      new BroadcastChannel(BroadcastChannel.OPEN_DOCUMENT_IN_NEW_TAB, {
         webWorkerSupport: false,
       }),
     [],
@@ -28,10 +28,10 @@ export const useDocumentLogic = () => {
       type,
       data: { entityId, documentId },
     }: {
-      type: BroadcastChannelEvents;
+      type: keyof typeof BroadcastChannelEvent;
       data: { entityId: string; documentId: string };
     }) => {
-      if (type === BroadcastChannelEvents.OPEN_DOCUMENT_IN_NEW_TAB) {
+      if (type === BroadcastChannelEvent.OPEN_DOCUMENT_IN_NEW_TAB) {
         navigate(
           `/${locale}/case-management/entities/${entityId}/document/${documentId}?filterId=${filterId}`,
           {
@@ -43,7 +43,7 @@ export const useDocumentLogic = () => {
         );
       }
 
-      broadcastChannel.postMessage({ type: BroadcastChannelEvents.OPEN_DOCUMENT_IN_NEW_TAB_ACK });
+      broadcastChannel.postMessage({ type: BroadcastChannelEvent.OPEN_DOCUMENT_IN_NEW_TAB_ACK });
     },
     [broadcastChannel, filterId, locale, navigate, state?.from],
   );
