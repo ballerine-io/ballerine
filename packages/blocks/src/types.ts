@@ -23,7 +23,7 @@ export type Blocks = Array<Block>;
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface BlocksClient {
-  // cells: ReturnType<typeof createBlocks>;
+  // cells: ReturnType<typeof createBlocks<TCell>>;
 }
 
 /**
@@ -114,7 +114,7 @@ export interface BlocksProps<TCell extends Cells> {
 }
 
 export type InvalidCellMessage =
-  "Please provide a union of available cell types discriminated by '{ type: string }'";
+  "Please provide a union of available cell types discriminated by '{ type: string; }'";
 
 export interface BlocksOptions {
   debug?: boolean;

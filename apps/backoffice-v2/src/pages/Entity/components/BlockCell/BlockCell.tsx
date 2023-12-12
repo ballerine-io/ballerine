@@ -1,12 +1,16 @@
 import { ctw } from '@/common/utils/ctw/ctw';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { Card } from '@/common/components/atoms/Card/Card';
-import { cells } from '../../hooks/useEntity/cells';
 import { FunctionComponent } from 'react';
-import { ExtractCellProps } from '@ballerine/blocks';
+import { Block } from '@ballerine/blocks';
+import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
-export const BlockCell: FunctionComponent<ExtractCellProps<'block'>> = ({ value, props }) => {
-  console.log(value);
+export const BlockCell: FunctionComponent<{
+  value: Block;
+  props?: {
+    className?: string;
+  };
+}> = ({ value, props }) => {
   return (
     <Card className={ctw('me-4 shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)]', props?.className)}>
       <CardContent
