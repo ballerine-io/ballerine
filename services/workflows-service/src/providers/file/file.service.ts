@@ -286,7 +286,7 @@ export class FileService {
     }
 
     const fileType = await getFileMetadata({
-      file: fileDetails.uri,
+      file: tmpLocalFilePath || fileDetails.uri,
       fileName: fileDetails.fileName || fileDetails.uri || '',
     });
     const remoteFileName = `${remoteFileNamePrefix}_${randomUUID()}${
