@@ -1,10 +1,11 @@
-import { AnyZodObject } from 'zod';
-import { useZodSearchParams } from '../useZodSearchParams/useZodSearchParams';
-import { IUseZodSearchParams } from '../useZodSearchParams/interfaces';
-import { BusinessesSearchSchema, IndividualsSearchSchema } from './validation-schemas';
-import { useAuthenticatedUserQuery } from '../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useMemo } from 'react';
+import { AnyZodObject } from 'zod';
+
 import { useEntityType } from '../useEntityType/useEntityType';
+import { IUseZodSearchParams } from '../useZodSearchParams/interfaces';
+import { useZodSearchParams } from '../useZodSearchParams/useZodSearchParams';
+import { BusinessesSearchSchema, IndividualsSearchSchema } from './validation-schemas';
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 
 export const useSearchParamsByEntity = <TSchema extends AnyZodObject>(
   schema?: TSchema,
