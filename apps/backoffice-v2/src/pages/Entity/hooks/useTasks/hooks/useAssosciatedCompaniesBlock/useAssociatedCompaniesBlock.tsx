@@ -6,6 +6,7 @@ import { MotionButton } from '@/common/components/molecules/MotionButton/MotionB
 import { StateTag } from '@ballerine/common';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
 const motionProps: ComponentProps<typeof MotionButton> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -47,151 +48,176 @@ export const useAssociatedCompaniesBlock = ({
     [workflows],
   );
 
-  if (!Array.isArray(transformedAssociatedCompanies) || !transformedAssociatedCompanies?.length)
-    return [];
+  return useMemo(() => {
+    if (!Array.isArray(transformedAssociatedCompanies) || !transformedAssociatedCompanies?.length) {
+      return [];
+    }
 
-  return [
-    {
-      cells: [
-        {
-          type: 'container',
-          value: [
-            {
-              type: 'heading',
-              value: 'Associated Companies',
-            },
-            {
-              type: 'subheading',
-              value: 'User-Provided Data',
-              props: {
-                className: 'mb-4',
-              },
-            },
-            {
-              type: 'container',
-              props: {
-                className: 'space-y-8',
-              },
-              value: transformedAssociatedCompanies?.map(associatedCompany => ({
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
+        type: 'block',
+        value: createBlocksTyped()
+          .addBlock()
+          .addCell({
+            type: 'container',
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell({
+                type: 'heading',
+                value: 'Associated Companies',
+              })
+              .addCell({
+                type: 'subheading',
+                value: 'User-Provided Data',
+                props: {
+                  className: 'mb-4',
+                },
+              })
+              .addCell({
                 type: 'container',
-                value: [
-                  {
-                    type: 'container',
-                    props: {
-                      className: 'flex items-center justify-between mb-4',
-                    },
-                    value: [
-                      {
-                        type: 'subheading',
-                        value: associatedCompany.companyName,
-                        props: {
-                          className: 'text-lg',
-                        },
-                      },
-                      ...(associatedCompany?.tags?.includes(StateTag.COLLECTION_FLOW)
-                        ? [
-                            {
-                              type: 'badge',
-                              value: 'Awaiting Information',
-                              props: {
-                                ...motionProps,
-                                variant: 'warning',
-                                className: 'text-sm font-bold',
-                              },
-                            },
-                          ]
-                        : []),
-                    ],
-                  },
-                  {
-                    type: 'table',
-                    value: {
-                      props: {
-                        table: {
-                          className: 'mb-6',
-                        },
-                      },
-                      columns: [
-                        {
-                          accessorKey: 'registrationNumber',
-                          header: 'Registration number',
-                        },
-                        {
-                          accessorKey: 'registeredCountry',
-                          header: 'Registered Country',
-                        },
-                        {
-                          accessorKey: 'relationship',
-                          header: 'Relationship',
-                        },
-                        {
-                          accessorKey: 'contactPerson',
-                          header: 'Contact Person',
-                        },
-                        {
-                          accessorKey: 'contactEmail',
-                          header: 'Contact Email',
-                        },
-                      ],
-                      data: [associatedCompany],
-                    },
-                  },
-                  ...(associatedCompany?.nextEvents?.includes('START_ASSOCIATED_COMPANY_KYB')
-                    ? [
-                        {
-                          type: 'dialog',
-                          value: {
-                            trigger: (
-                              <MotionButton {...motionProps} variant="outline" className={'ms-3.5'}>
-                                Initiate KYB
-                              </MotionButton>
-                            ),
-                            title: `Initiate KYB for ${associatedCompany.companyName}`,
-                            description: (
-                              <p className={`text-sm`}>
-                                By clicking the button below, an email with a link will be sent to{' '}
-                                {associatedCompany.companyName} &apos;s contact person,{' '}
-                                {associatedCompany.contactPerson}, directing them to provide
-                                information about their company. The case status will then change to
-                                &ldquo;Collection in Progress&ldquo; until the contact person will
-                                provide the needed information.
-                              </p>
-                            ),
-                            close: (
-                              <Button
-                                className={ctw(`gap-x-2`, {
-                                  loading: isLoadingEvent,
-                                })}
-                                onClick={onMutateEvent({
-                                  workflowId: associatedCompany.workflowId,
-                                  event: 'START_ASSOCIATED_COMPANY_KYB',
-                                })}
-                              >
-                                <Send size={18} />
-                                Send email
-                              </Button>
-                            ),
+                props: {
+                  className: 'space-y-8',
+                },
+                value: transformedAssociatedCompanies?.flatMap(associatedCompany =>
+                  createBlocksTyped()
+                    .addBlock()
+                    .addCell({
+                      type: 'container',
+                      value: [
+                        ...createBlocksTyped()
+                          .addBlock()
+                          .addCell({
+                            type: 'container',
                             props: {
-                              content: {
-                                className: 'mb-96',
-                              },
-                              title: {
-                                className: `text-2xl`,
-                              },
-                              description: {
-                                asChild: true,
-                              },
+                              className: 'flex items-center justify-between mb-4',
                             },
-                          },
-                        },
-                      ]
-                    : []),
-                ],
-              })),
-            },
-          ],
-        },
-      ],
-    },
-  ];
+                            value: [
+                              {
+                                type: 'subheading',
+                                value: associatedCompany.companyName,
+                                props: {
+                                  className: 'text-lg',
+                                },
+                              },
+                              ...(associatedCompany?.tags?.includes(StateTag.COLLECTION_FLOW)
+                                ? [
+                                    {
+                                      type: 'badge',
+                                      value: 'Awaiting Information',
+                                      props: {
+                                        ...motionProps,
+                                        variant: 'warning',
+                                        className: 'text-sm font-bold',
+                                      },
+                                    },
+                                  ]
+                                : []),
+                            ],
+                          })
+                          .addCell({
+                            type: 'table',
+                            value: {
+                              props: {
+                                table: {
+                                  className: 'mb-6',
+                                },
+                              },
+                              columns: [
+                                {
+                                  accessorKey: 'registrationNumber',
+                                  header: 'Registration number',
+                                },
+                                {
+                                  accessorKey: 'registeredCountry',
+                                  header: 'Registered Country',
+                                },
+                                {
+                                  accessorKey: 'relationship',
+                                  header: 'Relationship',
+                                },
+                                {
+                                  accessorKey: 'contactPerson',
+                                  header: 'Contact Person',
+                                },
+                                {
+                                  accessorKey: 'contactEmail',
+                                  header: 'Contact Email',
+                                },
+                              ],
+                              data: [associatedCompany],
+                            },
+                          })
+                          .build()
+                          .flat(1),
+                        ...(associatedCompany?.nextEvents?.includes('START_ASSOCIATED_COMPANY_KYB')
+                          ? createBlocksTyped()
+                              .addBlock()
+                              .addCell({
+                                type: 'dialog',
+                                value: {
+                                  trigger: (
+                                    <MotionButton
+                                      {...motionProps}
+                                      variant="outline"
+                                      className={'ms-3.5'}
+                                    >
+                                      Initiate KYB
+                                    </MotionButton>
+                                  ),
+                                  title: `Initiate KYB for ${associatedCompany.companyName}`,
+                                  description: (
+                                    <p className={`text-sm`}>
+                                      By clicking the button below, an email with a link will be
+                                      sent to {associatedCompany.companyName} &apos;s contact
+                                      person, {associatedCompany.contactPerson}, directing them to
+                                      provide information about their company. The case status will
+                                      then change to &ldquo;Collection in Progress&ldquo; until the
+                                      contact person will provide the needed information.
+                                    </p>
+                                  ),
+                                  close: (
+                                    <Button
+                                      className={ctw(`gap-x-2`, {
+                                        loading: isLoadingEvent,
+                                      })}
+                                      onClick={onMutateEvent({
+                                        workflowId: associatedCompany.workflowId,
+                                        event: 'START_ASSOCIATED_COMPANY_KYB',
+                                      })}
+                                    >
+                                      <Send size={18} />
+                                      Send email
+                                    </Button>
+                                  ),
+                                  props: {
+                                    content: {
+                                      className: 'mb-96',
+                                    },
+                                    title: {
+                                      className: `text-2xl`,
+                                    },
+                                    description: {
+                                      asChild: true,
+                                    },
+                                  },
+                                },
+                              })
+                              .build()
+                              .flat(1)
+                          : []),
+                      ],
+                    })
+                    .build()
+                    .flat(1),
+                ),
+              })
+              .build()
+              .flat(1),
+          })
+          .build()
+          .flat(1),
+      })
+      .build();
+  }, [transformedAssociatedCompanies, isLoadingEvent, onMutateEvent]);
 };

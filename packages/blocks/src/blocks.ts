@@ -134,7 +134,9 @@ export class BlocksBuilder<
         ...(this.#__options.verbose ? { blocks: dump(this.#__blocks)?.replace(/\n/g, '') } : {}),
       });
     } catch (error) {
-      raise('`BlocksBuilder`: Failed to serialize logger payload', error);
+      if (!this.#__options?.debug) return;
+
+      console.error('`BlocksBuilder`: Failed to serialize logger payload', error);
     }
   }
 }

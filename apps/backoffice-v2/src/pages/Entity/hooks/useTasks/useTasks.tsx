@@ -230,7 +230,7 @@ export const useTasks = ({
           ...mainRepresentativeBlock,
           ...mapBlock,
           // ...parentDocumentBlocks,
-          // ...associatedCompaniesBlock,
+          ...associatedCompaniesBlock,
           ...associatedCompaniesInformationBlock,
         ]
       : [];
