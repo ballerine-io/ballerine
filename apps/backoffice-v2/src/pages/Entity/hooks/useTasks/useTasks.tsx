@@ -227,7 +227,7 @@ export const useTasks = ({
           ...bankingDetailsBlock,
           ...processingDetailsBlock,
           ...mainContactBlock,
-          // ...mainRepresentativeBlock,
+          ...mainRepresentativeBlock,
           // ...mapBlock,
           // ...parentDocumentBlocks,
           // ...associatedCompaniesBlock,
