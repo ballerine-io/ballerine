@@ -15,6 +15,7 @@ import { Subheading } from '../../components/Subheading/Subheading';
 import { TableCell } from '../../components/TableCell/TableCell';
 import { DialogCell } from '@/pages/Entity/components/DialogCell/DialogCell';
 import { CallToAction } from '@/pages/Entity/components/CallToAction/CallToAction';
+import { BlockCell } from '@/pages/Entity/components/BlockCell/BlockCell';
 
 export const cells = {
   heading: Heading,
@@ -34,4 +35,5 @@ export const cells = {
   table: TableCell,
   paragraph: Paragraph,
   dialog: DialogCell,
+  block: BlockCell,
 };

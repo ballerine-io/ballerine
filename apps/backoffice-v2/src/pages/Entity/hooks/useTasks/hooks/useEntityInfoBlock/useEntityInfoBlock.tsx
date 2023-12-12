@@ -9,7 +9,8 @@ export const useEntityInfoBlock = ({ entity, workflow, entityDataAdditionalInfo 
 
   return [
     {
-      cells: [
+      type: 'block',
+      value: [
         {
           type: 'container',
           value: [
