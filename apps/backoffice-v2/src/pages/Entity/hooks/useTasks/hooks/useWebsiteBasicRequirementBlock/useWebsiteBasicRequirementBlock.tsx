@@ -1,33 +1,42 @@
-export const useWebsiteBasicRequirementBlock = ({ websiteBasicRequirement, workflow }) => {
-  if (Object.keys(websiteBasicRequirement ?? {}).length === 0) {
-    return [];
-  }
+import { useMemo } from 'react';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
-  return [
-    {
-      cells: [
-        {
-          type: 'heading',
-          value: 'Website Basic Requirement',
-        },
-        {
-          type: 'subheading',
-          value: 'User-provided Data',
-        },
-        {
-          type: 'details',
-          value: {
-            data: Object.entries(websiteBasicRequirement)?.map(([title, value]) => ({
-              title,
-              value,
-              isEditable: false,
-            })),
-          },
-          workflowId: workflow?.id,
-          documents: workflow?.context?.documents,
-          hideSeparator: true,
-        },
-      ],
-    },
-  ];
+export const useWebsiteBasicRequirementBlock = ({ websiteBasicRequirement, workflow }) => {
+  return useMemo(() => {
+    if (Object.keys(websiteBasicRequirement ?? {}).length === 0) {
+      return [];
+    }
+
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
+        type: 'block',
+        value: createBlocksTyped()
+          .addBlock()
+          .addCell({
+            type: 'heading',
+            value: 'Website Basic Requirement',
+          })
+          .addCell({
+            type: 'subheading',
+            value: 'User-provided Data',
+          })
+          .addCell({
+            type: 'details',
+            value: {
+              data: Object.entries(websiteBasicRequirement)?.map(([title, value]) => ({
+                title,
+                value,
+                isEditable: false,
+              })),
+            },
+            workflowId: workflow?.id,
+            documents: workflow?.context?.documents,
+            hideSeparator: true,
+          })
+          .build()
+          .flat(1),
+      })
+      .build();
+  }, [websiteBasicRequirement, workflow]);
 };
