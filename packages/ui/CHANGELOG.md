@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.22
+
+### Patch Changes
+
+- optionalLabel re-release
+
 ## 0.3.21
 
 ### Patch Changes
