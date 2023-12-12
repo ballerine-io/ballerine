@@ -88,7 +88,7 @@ export class BlocksBuilder<
 
     this.#__lastBlock.push(cell);
 
-    this.#__logger('`BlocksBuilder`: Added a cell a block');
+    this.#__logger('`BlocksBuilder`: Added a cell');
 
     return this as unknown as BlocksBuilder<
       TCell,

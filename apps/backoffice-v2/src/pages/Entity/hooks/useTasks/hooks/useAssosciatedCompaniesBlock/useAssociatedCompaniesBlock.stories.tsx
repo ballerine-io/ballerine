@@ -5,7 +5,8 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { useAssociatedCompaniesBlock } from '@/pages/Entity/hooks/useTasks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 import { FunctionComponent } from 'react';
-import { cells } from '../../../useEntity/cells';
+
+import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
 const AssociatedCompaniesBlock: FunctionComponent<{
   associatedCompanies: Parameters<typeof useAssociatedCompaniesBlock>[0]['workflows'];
