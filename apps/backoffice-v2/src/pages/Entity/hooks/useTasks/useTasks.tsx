@@ -228,7 +228,7 @@ export const useTasks = ({
           ...processingDetailsBlock,
           ...mainContactBlock,
           ...mainRepresentativeBlock,
-          // ...mapBlock,
+          ...mapBlock,
           // ...parentDocumentBlocks,
           // ...associatedCompaniesBlock,
           // ...associatedCompaniesInformationBlock,
