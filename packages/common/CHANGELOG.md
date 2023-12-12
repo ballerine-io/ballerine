@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.34
+
+### Patch Changes
+
+- updated DefaultContextSchema type to use Typebox over deprecated generation script
+
 ## 0.7.33
 
 ### Patch Changes

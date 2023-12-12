@@ -64,7 +64,7 @@ importers:
         specifier: 0.7.30
         version: 0.7.30
       '@ballerine/ui':
-        specifier: 0.3.21
+        specifier: 0.3.22
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.5.30
@@ -362,7 +362,7 @@ importers:
         specifier: ^0.7.30
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.3.21
+        specifier: 0.3.22
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.5.30
@@ -460,9 +460,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
-      react-helmet:
-        specifier: ^6.1.0
-        version: 6.1.0(react@18.2.0)
+      react-helmet-async:
+        specifier: ^2.0.3
+        version: 2.0.3(react-dom@18.2.0)(react@18.2.0)
       react-i18next:
         specifier: ^12.1.4
         version: 12.3.1(i18next@22.5.1)(react-dom@18.2.0)(react@18.2.0)
@@ -787,10 +787,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.33
+        specifier: 0.7.34
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.32
+        specifier: 0.5.33
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1526,7 +1526,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.33
+        specifier: 0.7.34
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -1689,7 +1689,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.33
+        specifier: 0.7.34
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -1816,10 +1816,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.33
+        specifier: 0.7.34
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.32
+        specifier: 0.5.33
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -1958,7 +1958,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.5.32
+        specifier: 0.5.33
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2200,13 +2200,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.7.33
+        specifier: 0.7.34
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.32
+        specifier: 0.5.33
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.32
+        specifier: 0.5.33
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2513,7 +2513,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@3.3.3)(tailwindcss@3.3.5)(ts-node@10.9.1)
       '@ballerine/common':
-        specifier: ^0.7.33
+        specifier: ^0.7.34
         version: link:../../packages/common
       astro:
         specifier: 3.3.3
@@ -14259,7 +14259,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.23.3(@babel/core@7.23.3)
       '@types/babel__core': 7.20.4
       react-refresh: 0.14.0
-      vite: 4.5.0(@types/node@20.9.2)(less@4.2.0)
+      vite: 4.5.0(@types/node@18.17.19)(less@4.2.0)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -26657,16 +26657,17 @@ packages:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
     dev: false
 
-  /react-helmet@6.1.0(react@18.2.0):
-    resolution: {integrity: sha512-4uMzEY9nlDlgxr61NL3XbKRy1hEkXmKNXhjbAIOVw5vcFrsdYbH2FEwcNyWvWinl103nXgzYNlns9ca+8kFiWw==}
+  /react-helmet-async@2.0.3(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-7/X3ehSCbjCaIljWa39Bb7F1Y2JWM23FN80kLozx2TdgzUmxKDSLN6qu06NG0Srzm8ljGOjgk7r7CXeEOx4MPw==}
     peerDependencies:
-      react: '>=16.3.0'
+      react: ^16.6.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.6.0 || ^17.0.0 || ^18.0.0
     dependencies:
-      object-assign: 4.1.1
-      prop-types: 15.8.1
+      invariant: 2.2.4
       react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
       react-fast-compare: 3.2.2
-      react-side-effect: 2.1.2(react@18.2.0)
+      shallowequal: 1.1.0
     dev: false
 
   /react-hook-form@7.48.2(react@18.2.0):
@@ -26891,14 +26892,6 @@ packages:
     dependencies:
       '@remix-run/router': 1.12.0
       react: 18.2.0
-
-  /react-side-effect@2.1.2(react@18.2.0):
-    resolution: {integrity: sha512-PVjOcvVOyIILrYoyGEpDN3vmYNLdy1CajSFNt4TDsVQC5KpTijDvWVoR+/7Rz2xT978D8/ZtFceXxzsPwZEDvw==}
-    peerDependencies:
-      react: ^16.3.0 || ^17.0.0 || ^18.0.0
-    dependencies:
-      react: 18.2.0
-    dev: false
 
   /react-sizeme@3.0.2:
     resolution: {integrity: sha512-xOIAOqqSSmKlKFJLO3inBQBdymzDuXx4iuwkNcJmC96jeiOg5ojByvL+g3MW9LPEsojLbC6pf68zOfobK8IPlw==}
@@ -27987,7 +27980,6 @@ packages:
 
   /shallowequal@1.1.0:
     resolution: {integrity: sha512-y0m1JoUZSlPAjXVtPPW70aZWfIL/dSP7AFkRnniLCrK/8MDKog3TySTBmckD+RObVxH0v4Tox67+F14PdED2oQ==}
-    dev: true
 
   /sharp@0.32.6:
     resolution: {integrity: sha512-KyLTWwgcR9Oe4d9HwCwNM2l7+J0dUQwn/yf7S0EnTtb0eVS4RxO0eUSvxPtzT4F3SY+C4K6fqdv/DO27sJ/v/w==}
@@ -30672,7 +30664,7 @@ packages:
       strip-ansi: 6.0.1
       tiny-invariant: 1.3.1
       typescript: 5.1.6
-      vite: 4.5.0(@types/node@20.9.2)(less@4.2.0)
+      vite: 4.5.0(@types/node@18.17.19)(less@4.2.0)
       vscode-languageclient: 7.0.0
       vscode-languageserver: 7.0.0
       vscode-languageserver-textdocument: 1.0.11
@@ -30801,7 +30793,7 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
       globrex: 0.1.2
       tsconfck: 2.1.2(typescript@5.1.6)
-      vite: 4.5.0(@types/node@20.9.2)(less@4.2.0)
+      vite: 4.5.0(@types/node@18.17.19)(less@4.2.0)
     transitivePeerDependencies:
       - supports-color
       - typescript
