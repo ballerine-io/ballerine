@@ -13,6 +13,7 @@ import { queryClient } from '@/common/utils/query-client';
 import { Head } from './Head';
 import { sentyRouterInstrumentation } from './router';
 import './i18n';
+import { HelmetProvider } from 'react-helmet-async';
 
 Sentry.init({
   // @ts-ignore
@@ -48,13 +49,15 @@ Sentry.init({
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Head />
-      <SettingsProvider settings={settingsJson}>
-        <ThemeProvider theme={settingsJson.theme}>
-          <App />
-        </ThemeProvider>
-      </SettingsProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <Head />
+        <SettingsProvider settings={settingsJson}>
+          <ThemeProvider theme={settingsJson.theme}>
+            <App />
+          </ThemeProvider>
+        </SettingsProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   </React.StrictMode>,
 );
