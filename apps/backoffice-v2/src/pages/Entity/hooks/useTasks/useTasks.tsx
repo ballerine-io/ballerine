@@ -222,7 +222,7 @@ export const useTasks = ({
           ...directorsRegistryProvidedBlock,
           // ...directorsDocumentsBlocks,
           ...ubosBlock,
-          // ...storeInfoBlock,
+          ...storeInfoBlock,
           // ...websiteBasicRequirementBlock,
           // ...bankingDetailsBlock,
           // ...processingDetailsBlock,
