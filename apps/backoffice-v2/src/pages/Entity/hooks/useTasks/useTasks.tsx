@@ -231,7 +231,7 @@ export const useTasks = ({
           ...mapBlock,
           // ...parentDocumentBlocks,
           // ...associatedCompaniesBlock,
-          // ...associatedCompaniesInformationBlock,
+          ...associatedCompaniesInformationBlock,
         ]
       : [];
   }, [
