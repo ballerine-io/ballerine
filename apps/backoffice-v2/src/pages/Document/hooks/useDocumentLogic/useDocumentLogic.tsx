@@ -97,10 +97,14 @@ export const useDocumentLogic = () => {
   const isLoading = isLoadingWorkflow || files.some(file => file.isLoading);
 
   return {
-    title,
     isLoading,
-    fileType: page?.type,
-    id: fileIds?.[0] as string,
-    imageUrl: files?.[0]?.data as string,
+    documents: [
+      {
+        title,
+        fileType: page?.type,
+        id: fileIds?.[0] as string,
+        imageUrl: files?.[0]?.data as string,
+      },
+    ],
   };
 };
