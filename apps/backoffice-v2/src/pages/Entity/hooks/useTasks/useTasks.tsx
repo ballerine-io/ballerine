@@ -224,7 +224,7 @@ export const useTasks = ({
           ...ubosBlock,
           ...storeInfoBlock,
           ...websiteBasicRequirementBlock,
-          // ...bankingDetailsBlock,
+          ...bankingDetailsBlock,
           // ...processingDetailsBlock,
           // ...mainContactBlock,
           // ...mainRepresentativeBlock,
