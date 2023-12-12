@@ -213,7 +213,7 @@ export const useTasks = ({
   return useMemo(() => {
     return entity
       ? [
-          // ...websiteMonitoringBlock,
+          ...websiteMonitoringBlock,
           entityInfoBlock,
           // ...registryInfoBlock,
           // ...kybRegistryInfoBlock,
