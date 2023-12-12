@@ -4,7 +4,7 @@ import { FunctionComponent } from 'react';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { isPdf } from '@/common/utils/is-pdf/is-pdf';
 import { ImageViewer } from '@/common/components/organisms/ImageViewer/ImageViewer';
-import { useDocumentsToolbar } from '@/pages/Entity/components/Case/hooks/useDocumentsToolbar/useDocumentsToolbar';
+import { useDocumentsToolbarLogic } from '@/pages/Entity/components/Case/hooks/useDocumentsToolbarLogic/useDocumentsToolbarLogic';
 
 export const DocumentsToolbar: FunctionComponent<{
   image: { id: string; imageUrl: string; fileType: string; fileName: string };
@@ -23,7 +23,7 @@ export const DocumentsToolbar: FunctionComponent<{
   shouldDownload,
   fileToDownloadBase64,
 }) => {
-  const { onOpenInNewTabClick } = useDocumentsToolbar({
+  const { onOpenInNewTabClick } = useDocumentsToolbarLogic({
     imageId: image?.id,
     hideOpenExternalButton,
     onOpenDocumentInNewTab,

@@ -44,7 +44,7 @@ export const useDocumentLogic = () => {
 
       broadcastChannel.postMessage({ type: 'openImageInNewTabAck' });
     },
-    [broadcastChannel, filterId, navigate],
+    [broadcastChannel, filterId, locale, navigate, state?.from],
   );
 
   useLayoutEffect(() => {
@@ -84,7 +84,7 @@ export const useDocumentLogic = () => {
     [documentId, workflow?.context?.documents],
   );
 
-  const files = useStorageFilesQuery(fileIds);
+  const storageFilesQueryResult = useStorageFilesQuery(fileIds);
 
   const title = useMemo(
     () =>
@@ -94,7 +94,7 @@ export const useDocumentLogic = () => {
     [document, page],
   );
 
-  const isLoading = isLoadingWorkflow || files.some(file => file.isLoading);
+  const isLoading = isLoadingWorkflow || storageFilesQueryResult.some(file => file.isLoading);
 
   return {
     isLoading,
@@ -103,7 +103,7 @@ export const useDocumentLogic = () => {
         title,
         fileType: page?.type,
         id: fileIds?.[0] as string,
-        imageUrl: files?.[0]?.data as string,
+        imageUrl: storageFilesQueryResult?.[0]?.data as string,
       },
     ],
   };

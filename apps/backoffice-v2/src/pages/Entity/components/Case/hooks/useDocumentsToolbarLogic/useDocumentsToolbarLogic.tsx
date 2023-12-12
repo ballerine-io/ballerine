@@ -9,7 +9,7 @@ interface IUseDocumentsToolbarProps {
   onOpenDocumentInNewTab: (id: string) => void;
 }
 
-export const useDocumentsToolbar = ({
+export const useDocumentsToolbarLogic = ({
   imageId,
   hideOpenExternalButton,
   onOpenDocumentInNewTab,
