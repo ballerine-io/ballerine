@@ -140,7 +140,8 @@ export const useDirectorsBlocks = (
                             disabled:
                               (!isDoneWithRevision && Boolean(document?.decision?.status)) ||
                               noAction ||
-                              isLoadingApproveTaskById,
+                              isLoadingApproveTaskById ||
+                              !caseState.actionButtonsEnabled,
                             size: 'wide',
                             variant: 'success',
                           },
