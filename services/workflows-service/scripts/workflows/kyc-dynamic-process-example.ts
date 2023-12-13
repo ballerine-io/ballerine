@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { env } from '../../src/env';
-import { StateTag } from '@ballerine/common';
+import { StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
 
 export const kycDynamicExample = {
   id: 'dynamic_kyc_example',
@@ -142,6 +142,7 @@ export const kycDynamicExample = {
     },
   },
   isPublic: true,
+  variant: WorkflowDefinitionVariant.KYB_COLLECTION_FLOW_WITH_VENDORS,
 };
 export const generateKycForE2eTest = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({

@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { kycEmailSessionDefinition } from './kyc-email-process-example';
 import { env } from '../../src/env';
 
-import { defaultContextSchema, StateTag } from '@ballerine/common';
+import { defaultContextSchema, StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
 import { Type } from '@sinclair/typebox';
 
 export const kybKycWorkflowDefinition = {
@@ -272,6 +272,7 @@ export const kybKycWorkflowDefinition = {
     ]),
   },
   isPublic: true,
+  variant: WorkflowDefinitionVariant.KYB_COLLECTION_FLOW_WITH_VENDORS,
 };
 export const generateKybKycWorkflowDefinition = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({

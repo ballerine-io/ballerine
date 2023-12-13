@@ -160,6 +160,7 @@ model WorkflowDefinition {
   config             Json?
   supportedPlatforms Json?
   extensions         Json?
+  variant            String?
 
   backend       Json?
   persistStates Json?
