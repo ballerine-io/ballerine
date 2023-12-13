@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.23
+
+### Patch Changes
+
+- Exposed disableFuture & disablePast params from DatePicker & Added support of params to DatePickerAdapter
+
 ## 0.3.22
 
 ### Patch Changes

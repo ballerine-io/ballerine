@@ -1,22 +1,22 @@
 import React, { FunctionComponent } from 'react';
-import { env } from '../common/env/env';
+import { env } from '@/common/env/env';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { RootError } from '../pages/Root/Root.error';
-import { Root } from '../pages/Root/Root.page';
-import { SignIn } from '../pages/SignIn/SignIn.page';
-import { Entity } from '../pages/Entity/Entity.page';
-import { Entities } from '../pages/Entities/Entities.page';
-import { RouteError } from '../common/components/atoms/RouteError/RouteError';
-import { CaseManagement } from '../pages/CaseManagement/CaseManagement.page';
-import { rootLoader } from '../pages/Root/Root.loader';
-import { entitiesLoader } from '../pages/Entities/Entities.loader';
-import { authenticatedLayoutLoader } from '../domains/auth/components/AuthenticatedLayout/AuthenticatedLayout.loader';
-import { entityLoader } from '../pages/Entity/Entity.loader';
-import { AuthenticatedLayout } from '../domains/auth/components/AuthenticatedLayout';
-import { UnauthenticatedLayout } from '../domains/auth/components/UnauthenticatedLayout';
-import { Locale } from '../pages/Locale/Locale.page';
-import { unauthenticatedLayoutLoader } from '../domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
-import { DocumentLayout } from '../pages/Document/Document.page';
+import { RootError } from '@/pages/Root/Root.error';
+import { Root } from '@/pages/Root/Root.page';
+import { SignIn } from '@/pages/SignIn/SignIn.page';
+import { Entity } from '@/pages/Entity/Entity.page';
+import { Entities } from '@/pages/Entities/Entities.page';
+import { RouteError } from '@/common/components/atoms/RouteError/RouteError';
+import { CaseManagement } from '@/pages/CaseManagement/CaseManagement.page';
+import { rootLoader } from '@/pages/Root/Root.loader';
+import { entitiesLoader } from '@/pages/Entities/Entities.loader';
+import { authenticatedLayoutLoader } from '@/domains/auth/components/AuthenticatedLayout/AuthenticatedLayout.loader';
+import { entityLoader } from '@/pages/Entity/Entity.loader';
+import { AuthenticatedLayout } from '@/domains/auth/components/AuthenticatedLayout';
+import { UnauthenticatedLayout } from '@/domains/auth/components/UnauthenticatedLayout';
+import { Locale } from '@/pages/Locale/Locale.page';
+import { unauthenticatedLayoutLoader } from '@/domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
+import { Document } from '@/pages/Document/Document.page';
 
 const router = createBrowserRouter([
   {
@@ -84,7 +84,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        element: <DocumentLayout />,
+        element: <Document />,
         loader: authenticatedLayoutLoader,
         errorElement: <RouteError />,
         path: '/:locale/case-management/entities/:entityId/document/:documentId',
