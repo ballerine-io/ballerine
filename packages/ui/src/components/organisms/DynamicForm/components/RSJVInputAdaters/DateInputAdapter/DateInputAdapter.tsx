@@ -9,7 +9,7 @@ export const isValidDate = (dateString: string): boolean => {
   return true;
 };
 
-export const DateInputAdater: RJSFInputAdapter<string | null> = ({
+export const DateInputAdapter: RJSFInputAdapter<string | null> = ({
   id,
   formData,
   disabled,
@@ -37,14 +37,13 @@ export const DateInputAdater: RJSFInputAdapter<string | null> = ({
     [onChange],
   );
 
-  const datePickerParams = useMemo(() => {
-    const params: DatePickerParams = {
+  const datePickerParams: DatePickerParams = useMemo(
+    () => ({
       disableFuture: uiSchema?.disableFutureDate,
       disablePast: uiSchema?.disablePastDate,
-    };
-
-    return params;
-  }, [uiSchema?.disableFutureDate, uiSchema?.disablePastDate]);
+    }),
+    [uiSchema?.disableFutureDate, uiSchema?.disablePastDate],
+  );
 
   return (
     <DatePickerInput
