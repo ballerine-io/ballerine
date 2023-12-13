@@ -26,6 +26,23 @@ const validationSchema = {
                       phone: 'errorMessage.required.phone',
                     },
                   },
+                  if: {
+                    properties: {
+                      isDifferentFromPhysical: { const: true },
+                    },
+                  },
+                  then: {
+                    required: ['physical'],
+                    errorMessage: {
+                      required: {
+                        street: 'errorMessage.required.street',
+                        streetNumber: 'errorMessage.required.streetNumber',
+                        city: 'errorMessage.required.city',
+                        country: 'errorMessage.required.country',
+                        isDifferentFromPhysical: 'errorMessage.required.requiredField',
+                      },
+                    },
+                  },
                   properties: {
                     street: {
                       type: 'string',
@@ -68,8 +85,60 @@ const validationSchema = {
                         pattern: 'errorMessage.pattern.country',
                       },
                     },
-                    phone: {
-                      type: 'string',
+                    physical: {
+                      type: 'object',
+                      default: {},
+                      required: ['street', 'streetNumber', 'city', 'country'],
+                      errorMessage: {
+                        required: {
+                          street: 'errorMessage.required.street',
+                          streetNumber: 'errorMessage.required.streetNumber',
+                          city: 'errorMessage.required.city',
+                          country: 'errorMessage.required.country',
+                          isDifferentFromPhysical: 'errorMessage.required.requiredField',
+                          physical: 'errorMessage.required.physical',
+                        },
+                      },
+                      properties: {
+                        street: {
+                          type: 'string',
+                          minLength: 3,
+                          maxLength: 100,
+                          errorMessage: {
+                            minLength: 'errorMessage.minLength.street',
+                            maxLength: 'errorMessage.maxLength.street',
+                          },
+                        },
+                        streetNumber: {
+                          type: 'number',
+                          minLength: 1,
+                          maxLength: 10,
+                          errorMessage: {
+                            minLength: 'errorMessage.minLength.streetNumber',
+                            maxLength: 'errorMessage.maxLength.streetNumber',
+                          },
+                        },
+                        city: {
+                          type: 'string',
+                          minLength: 2,
+                          maxLength: 50,
+                          errorMessage: {
+                            minLength: 'errorMessage.minLength.city',
+                            maxLength: 'errorMessage.maxLength.city',
+                          },
+                        },
+                        country: {
+                          type: 'string',
+                          minLength: 2,
+                          maxLength: 2,
+                          pattern: '^[A-Z]{2}$',
+                          errorMessage: {
+                            minLength: 'errorMessage.minLength.country',
+                            maxLength: 'errorMessage.maxLength,country',
+                            pattern: 'errorMessage.pattern.country',
+                          },
+                        },
+                      },
                     },
                   },
                 },

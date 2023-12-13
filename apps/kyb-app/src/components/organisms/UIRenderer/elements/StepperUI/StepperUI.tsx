@@ -3,7 +3,7 @@ import { VerticalLayout } from '@/components/atoms/Stepper/layouts/Vertical';
 import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { usePageContext } from '@/components/organisms/DynamicUI/Page';
 import { UIPage } from '@/domains/collection-flow';
 import { ErrorField } from '@/components/organisms/DynamicUI/rule-engines';
@@ -14,7 +14,7 @@ import {
   BreadcrumbItemInput,
   Breadcrumbs,
 } from '@/components/atoms/Stepper/components/atoms/Breadcrumbs';
-import { ctw } from '@ballerine/ui';
+import { ScrollArea, ScrollBar, ctw } from '@ballerine/ui';
 
 export const StepperUI = () => {
   const { state: uiState } = useDynamicUIContext();
@@ -72,35 +72,48 @@ export const StepperUI = () => {
     return activeStep;
   }, [steps, currentPage]);
 
+  useEffect(() => {
+    if (!activeStep) return;
+
+    const activeBreadcrumb = document.querySelector(`[data-breadcrumb-id=${activeStep.id}]`);
+
+    // Making sure that breadcrumb in viewport on transitions
+    activeBreadcrumb?.scrollIntoView(true);
+  }, [activeStep]);
+
   return (
-    <Stepper>
-      <Breadcrumbs items={steps} active={activeStep}>
-        {(items, theme) => {
-          return (
-            <VerticalLayout>
-              {items.map(itemProps => {
-                return (
-                  <div
-                    className={ctw('last:bg- flex flex-row items-center gap-4 first:bg-white')}
-                    key={itemProps.id}
-                  >
-                    <Breadcrumbs.Item
-                      active={itemProps.active}
-                      state={itemProps.state}
-                      theme={theme}
-                    />
-                    <Breadcrumbs.Label
-                      active={itemProps.active}
-                      text={itemProps.label}
-                      state={itemProps.state}
-                    />
-                  </div>
-                );
-              })}
-            </VerticalLayout>
-          );
-        }}
-      </Breadcrumbs>
-    </Stepper>
+    <ScrollArea orientation="vertical" className="h-full">
+      <Stepper>
+        <Breadcrumbs items={steps} active={activeStep}>
+          {(items, theme) => {
+            return (
+              <VerticalLayout>
+                {items.map(itemProps => {
+                  return (
+                    <div
+                      data-breadcrumb-id={itemProps.active ? itemProps.id : undefined}
+                      className={ctw('last:bg- flex flex-row items-center gap-4 first:bg-white')}
+                      key={itemProps.id}
+                    >
+                      <Breadcrumbs.Item
+                        active={itemProps.active}
+                        state={itemProps.state}
+                        theme={theme}
+                      />
+                      <Breadcrumbs.Label
+                        active={itemProps.active}
+                        text={itemProps.label}
+                        state={itemProps.state}
+                      />
+                    </div>
+                  );
+                })}
+              </VerticalLayout>
+            );
+          }}
+        </Breadcrumbs>
+      </Stepper>
+      <ScrollBar />
+    </ScrollArea>
   );
 };

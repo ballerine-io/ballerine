@@ -1,5 +1,14 @@
 import { TObjectValues } from './types';
 
+export const CommunicationChannel = {
+  OPEN_DOCUMENT_IN_NEW_TAB: 'OPEN_DOCUMENT_IN_NEW_TAB',
+} as const;
+
+export const CommunicationChannelEvent = {
+  OPEN_DOCUMENT_IN_NEW_TAB: 'OPEN_DOCUMENT_IN_NEW_TAB',
+  OPEN_DOCUMENT_IN_NEW_TAB_ACK: 'OPEN_DOCUMENT_IN_NEW_TAB_ACK',
+} as const;
+
 export const Method = {
   GET: 'GET',
   POST: 'POST',
