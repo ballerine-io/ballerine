@@ -75,9 +75,13 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
   const allDocuments = useMemo(() => {
     const directorDocuments = selectDirectorsDocuments(workflow) || [];
-    const workflowDocuments = (workflow?.context?.documents || []) as AnyObject[];
+    const parentDocuments = (workflow?.context?.documents || []) as AnyObject[];
+    const childDocuments =
+      workflow?.childWorkflows
+        ?.filter(childWorkflow => childWorkflow?.context?.entity?.type === 'business')
+        ?.flatMap(childWorkflow => childWorkflow?.context?.documents) || [];
 
-    const result = [...directorDocuments, ...workflowDocuments] as AnyObject[];
+    const result = [...directorDocuments, ...parentDocuments, ...childDocuments] as AnyObject[];
 
     return result;
   }, [workflow]);

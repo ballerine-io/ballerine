@@ -6,11 +6,21 @@ import { useParams } from 'react-router-dom';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../useCaseState/useCaseState';
 import { selectDirectorsDocuments } from '../../../../hooks/useTasks/selectors/selectDirectorsDocuments';
+import { useMemo } from 'react';
 
 export const useCaseDecision = () => {
   const filterId = useFilterId();
   const { entityId: workflowId } = useParams();
   const { data: workflow } = useWorkflowQuery({ workflowId, filterId });
+  const childDocuments = useMemo(() => {
+    return (
+      workflow?.childWorkflows
+        ?.filter(childWorkflow => childWorkflow?.context?.entity?.type === 'business')
+        ?.flatMap(childWorkflow => childWorkflow?.context?.documents) || []
+    );
+  }, [workflow?.childWorkflows]);
+  const parentDocuments = workflow?.context?.documents || [];
+  const directorsDocuments = selectDirectorsDocuments(workflow) || [];
   const { data: session } = useAuthenticatedUserQuery();
   const authenticatedUser = session?.user;
   const caseState = useCaseState(authenticatedUser, workflow);
@@ -26,7 +36,7 @@ export const useCaseDecision = () => {
     caseState.actionButtonsEnabled &&
     workflow?.nextEvents?.includes(Action.REVISION) &&
     someDocumentDecisionStatus(
-      [...((selectDirectorsDocuments(workflow) as any) || []), ...workflow?.context?.documents],
+      [...parentDocuments, ...directorsDocuments, ...childDocuments],
       'revision',
     );
 
