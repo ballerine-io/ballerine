@@ -6,7 +6,7 @@ interface Props {
 
 export const Sidebar = ({ children }: Props) => {
   return (
-    <div className="bg-primary col-span-2 h-full w-[24%] max-w-[418px] px-14 pb-4 pt-14">
+    <div className="bg-primary col-span-2 flex h-screen w-[24%] max-w-[418px] flex-col px-14 pb-4 pt-14">
       {children}
     </div>
   );
