@@ -1,8 +1,10 @@
-import { FunctionComponent } from 'react';
-import { isPdf } from '@/common/utils/is-pdf/is-pdf';
-import { ctw } from '@/common/utils/ctw/ctw';
 import { Download, ExternalLinkIcon, FileText } from 'lucide-react';
+import { FunctionComponent } from 'react';
+
+import { ctw } from '@/common/utils/ctw/ctw';
+import { isPdf } from '@/common/utils/is-pdf/is-pdf';
 import { ImageViewer } from '@/common/components/organisms/ImageViewer/ImageViewer';
+import { useDocumentsToolbarLogic } from '@/pages/Entity/components/Case/hooks/useDocumentsToolbarLogic/useDocumentsToolbarLogic';
 
 export const DocumentsToolbar: FunctionComponent<{
   image: { id: string; imageUrl: string; fileType: string; fileName: string };
@@ -18,12 +20,15 @@ export const DocumentsToolbar: FunctionComponent<{
   hideOpenExternalButton,
   onRotateDocument,
   onOpenDocumentInNewTab,
-  // isRotatedOrTransformed,
   shouldDownload,
-  // isCropping,
-  // isLoadingOCR,
   fileToDownloadBase64,
 }) => {
+  const { onOpenInNewTabClick } = useDocumentsToolbarLogic({
+    imageId: image?.id,
+    hideOpenExternalButton,
+    onOpenDocumentInNewTab,
+  });
+
   return (
     <div className={`absolute z-50 flex space-x-2 bottom-right-6`}>
       {!hideOpenExternalButton && !isLoading && image?.id && (
@@ -32,7 +37,7 @@ export const DocumentsToolbar: FunctionComponent<{
           className={ctw(
             `btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary`,
           )}
-          onClick={() => onOpenDocumentInNewTab(image.id)}
+          onClick={onOpenInNewTabClick}
           disabled={shouldDownload}
         >
           <ExternalLinkIcon className={`p-0.5`} />
