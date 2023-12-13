@@ -224,7 +224,9 @@ export const DocumentField = (
         onChange={handleChange}
       />
       {warnings.length ? <ErrorsList errors={warnings.map(err => err.message)} /> : null}
-      {isTouched ? <ErrorsList errors={validationErrors.map(error => error.message)} /> : null}
+      {isTouched && validationErrors.length ? (
+        <ErrorsList errors={validationErrors.map(error => error.message)} />
+      ) : null}
       {fieldError ? <ErrorsList errors={[fieldError.message]} /> : null}
     </div>
   );
