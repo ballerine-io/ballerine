@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.24
+
+### Patch Changes
+
+- Added openOnFocus to DropdownInput
+
 ## 0.3.23
 
 ### Patch Changes

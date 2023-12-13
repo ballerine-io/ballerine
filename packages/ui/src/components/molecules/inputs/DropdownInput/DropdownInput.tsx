@@ -24,6 +24,7 @@ export const DropdownInput = ({
   notFoundText,
   searchable = false,
   disabled,
+  openOnFocus = true,
   onChange,
   onBlur,
 }: DropdownInputProps) => {
@@ -53,6 +54,12 @@ export const DropdownInput = ({
     [name, value, onBlur],
   );
 
+  const handleFocus = useCallback(() => {
+    if (!openOnFocus) return;
+
+    setOpen(true);
+  }, [openOnFocus]);
+
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
@@ -64,6 +71,7 @@ export const DropdownInput = ({
             !selectedOption && 'text-muted-foreground',
           )}
           disabled={disabled}
+          onFocus={handleFocus}
         >
           <span className="flex-1 text-left">
             {selectedOption ? selectedOption.label : placeholder}

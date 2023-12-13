@@ -18,6 +18,7 @@ export interface DropdownInputProps {
   notFoundText?: string;
   searchable?: boolean;
   disabled?: boolean;
+  openOnFocus?: boolean;
   onChange: (value: string, inputName: string) => void;
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
 }
