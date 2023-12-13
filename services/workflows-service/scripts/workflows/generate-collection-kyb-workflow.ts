@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { StateTag } from '@ballerine/common';
-import { uiKybParentDynamicExample } from './ui-definition/ui-kyb-parent-dynamic-example';
+import { uiKybParentDynamicExample } from './ui-definition/kyb-parent-dynamic-example/ui-kyb-parent-dynamic-example';
 import { generateBaseCaseLevelStates } from './generate-base-case-level-states';
 
 export const kybParentDynamicExample = {

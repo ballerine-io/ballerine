@@ -262,6 +262,10 @@
       "label": "Monthly Sales Volume (USD)",
       "hint": "5,000,000"
     },
+    "annualSalesVolume": {
+      "label": "Annual Sales Volume (USD)",
+      "hint": "5,000,000"
+    },
     "monthlyTransactions": {
       "label": "Monthly Number of Transactions",
       "hint": "500"
@@ -461,6 +465,7 @@
       "productDescription": "Product description should not be empty.",
       "websiteLanguage": "Website language should not be empty.",
       "monthlySalesVolume": "Monthly Sales Volume must be positive.",
+      "annualSalesVolume": "Annual Sales Volume must be positive.",
       "monthlyTransactions": "Monthly Number Of Transactions must be positive.",
       "averageTicketAmount": "Average Ticket Amount must be positive.",
       "mainCategory": "Customer Category is required.",
@@ -517,6 +522,7 @@
       "productDescription": "Product description is required.",
       "productPrice": "Product price is required.",
       "monthlySalesVolume": "Monthly Sales Volume is required.",
+      "annualSalesVolume": "Monthly Sales Volume is required.",
       "monthlyTransactions": "Monthly Number Of Transactions is required.",
       "averageTicketAmount": "Average Ticket Amount is required.",
       "mainCategory": "Customer Category is required.",
