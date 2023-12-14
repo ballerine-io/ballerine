@@ -98,10 +98,12 @@ export const ResubmissionReason = {
   FACE_IS_UNCLEAR: 'FACE_IS_UNCLEAR',
   FACE_IS_NOT_MATCHING: 'FACE_IS_NOT_MATCHING',
 } as const;
+
 export interface WorkflowData {
   workflowDefinition: object;
   workflowRuntimeData: object;
 }
+
 export type TEntityType = 'endUser' | 'business';
 
 // Discuss model classes location
@@ -348,6 +350,7 @@ export class WorkflowService {
 
     return childWorkflow;
   }
+
   async getWorkflowRuntimeDataByCorrelationId(
     id: string,
     args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
@@ -1203,6 +1206,29 @@ export class WorkflowService {
     return updatedResult;
   }
 
+  async updateWorkflowRuntimeLanguage(
+    workflowRuntimeId: string,
+    language: string,
+    projectId: TProjectId,
+  ): Promise<WorkflowRuntimeData> {
+    const projectIds: TProjectIds = projectId ? [projectId] : null;
+
+    const { config } = await this.workflowRuntimeDataRepository.findById(
+      workflowRuntimeId,
+      {},
+      projectIds,
+    );
+
+    return await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
+      data: {
+        config: {
+          ...config,
+          language,
+        },
+      },
+    });
+  }
+
   async assignWorkflowToUser(
     workflowRuntimeId: string,
     { assigneeId }: WorkflowAssigneeId,
@@ -1871,6 +1897,7 @@ export class WorkflowService {
       definition: workflowDefinition.definition,
       // @ts-expect-error - error from Prisma types fix
       definitionType: workflowDefinition.definitionType,
+      config: workflowRuntimeData.config,
       workflowContext: {
         machineContext: workflowRuntimeData.context,
         state: workflowRuntimeData.state,

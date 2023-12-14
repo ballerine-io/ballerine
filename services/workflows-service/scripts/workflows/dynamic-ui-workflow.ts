@@ -161,13 +161,13 @@ export const dynamicUiWorkflowDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              customerName: metadata.customerName,
-              collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=cn']),
-              from: 'no-reply@ballerine.com',
-              receivers: [entity.data.additionalInfo.mainRepresentative.email],
-              countryCode: 'true',
-              templateId: 'd-8949519316074e03909042cfc5eb4f02',
-              adapter: '{secret.MAIL_ADAPTER}'
+                customerName: metadata.customerName,
+                collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowConfig.language]),
+                from: 'no-reply@ballerine.com',
+                receivers: [entity.data.additionalInfo.mainRepresentative.email],
+                language: workflowConfig.language,
+                templateId: 'd-8949519316074e03909042cfc5eb4f02',
+                adapter: '{secret.MAIL_ADAPTER}'
               }`, // jmespath
             },
           ],
@@ -285,18 +285,18 @@ export const dynamicUiWorkflowDefinition = {
               transformer: 'jmespath',
               // #TODO: create new token (new using old one)
               mapping: `{
-              kybCompanyName: entity.data.companyName,
-              customerCompanyName: metadata.customerName,
-              firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=cn']),
-              supportEmail: join('',['support@',metadata.customerName,'.com']),
-              from: 'no-reply@ballerine.com',
-              name: join(' ',[metadata.customerName,'Team']),
-              receivers: [entity.data.additionalInfo.mainRepresentative.email],
-              templateId: 'd-7305991b3e5840f9a14feec767ea7301',
-              revisionReason: documents[].decision[].revisionReason | [0],
-              countryCode: entity.data.country,
-              adapter: '${env.MAIL_ADAPTER}'
+                kybCompanyName: entity.data.companyName,
+                customerCompanyName: metadata.customerName,
+                firstName: entity.data.additionalInfo.mainRepresentative.firstName,
+                resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowConfig.language]),
+                supportEmail: join('',['support@',metadata.customerName,'.com']),
+                from: 'no-reply@ballerine.com',
+                name: join(' ',[metadata.customerName,'Team']),
+                receivers: [entity.data.additionalInfo.mainRepresentative.email],
+                templateId: 'd-7305991b3e5840f9a14feec767ea7301',
+                revisionReason: documents[].decision[].revisionReason | [0],
+                language: workflowConfig.language,
+                adapter: '${env.MAIL_ADAPTER}'
               }`, // jmespath
             },
           ],
@@ -352,6 +352,8 @@ export const dynamicUiWorkflowDefinition = {
     ],
   },
   config: {
+    language: 'en',
+    supportedLanguages: ['en', 'cn'],
     initialEvent: 'START',
     createCollectionFlowToken: true,
     childCallbackResults: [

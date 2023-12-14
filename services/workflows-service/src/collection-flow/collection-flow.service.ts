@@ -79,6 +79,7 @@ export class CollectionFlowService {
 
     return {
       id: workflowDefinition.id,
+      config: workflowDefinition.config,
       uiSchema: {
         // @ts-expect-error - error from Prisma types fix
         elements: this.traverseUiSchema(uiDefintion.uiSchema.elements, language) as UiSchemaStep[],
@@ -194,6 +195,20 @@ export class CollectionFlowService {
       projectIds: [tokenScope.projectId],
       currentProjectId: tokenScope.projectId,
     });
+  }
+
+  async updateWorkflowRuntimeLanguage(language: string, tokenScope: ITokenScope) {
+    const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
+      tokenScope.workflowRuntimeDataId,
+      {},
+      [tokenScope.projectId] as TProjectIds,
+    );
+
+    return await this.workflowService.updateWorkflowRuntimeLanguage(
+      workflowRuntime.id,
+      language,
+      tokenScope.projectId,
+    );
   }
 
   async syncWorkflow(payload: UpdateFlowDto, tokenScope: ITokenScope) {

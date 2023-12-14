@@ -32,9 +32,14 @@ export class ApiPlugin {
     this.errorAction = pluginParams.errorAction;
     this.persistResponseDestination = pluginParams.persistResponseDestination;
   }
-  async invoke(context: TContext) {
+
+  async invoke(context: TContext, config: unknown) {
     try {
-      const requestPayload = await this.transformData(this.request.transformers, context);
+      const requestPayload = await this.transformData(this.request.transformers, {
+        ...context,
+        workflowConfig: config,
+      });
+
       const { isValidRequest, errorMessage } = await this.validateContent(
         this.request.schemaValidator,
         requestPayload,

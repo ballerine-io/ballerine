@@ -55,11 +55,13 @@ import {
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
 }
+
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
   #__workflow: StateMachine<any, any, any>;
   #__currentState: string | undefined | symbol | number | any;
   #__context: any;
+  #__config: any;
   #__callback: ((event: WorkflowEvent) => void) | null = null;
   #__extensions: WorkflowExtensions;
   #__debugMode: boolean;
@@ -83,6 +85,7 @@ export class WorkflowRunner {
     {
       runtimeId,
       definition,
+      config,
       workflowActions,
       workflowContext,
       extensions,
@@ -126,6 +129,8 @@ export class WorkflowRunner {
 
     // use initial state or provided state
     this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
+
+    this.#__config = config;
   }
 
   initiateApiPlugins(apiPluginSchemas: Array<ISerializableHttpPluginParams>) {
@@ -235,7 +240,7 @@ export class WorkflowRunner {
       stateNames: iterarivePluginParams.stateNames,
       //@ts-ignore
       iterateOn: this.fetchTransformers(iterarivePluginParams.iterateOn),
-      action: (context: TContext) => actionPlugin!.invoke(context),
+      action: (context: TContext) => actionPlugin!.invoke(context, this.#__config),
       successAction: iterarivePluginParams.successAction,
       errorAction: iterarivePluginParams.errorAction,
     };
@@ -593,7 +598,10 @@ export class WorkflowRunner {
 
   private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(this.#__context);
+    const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(
+      this.#__context,
+      this.#__config,
+    );
 
     if (error) {
       console.error('Error invoking plugin: ', apiPlugin.name, this.#__context, error);
