@@ -1,8 +1,17 @@
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { toTitleCase } from 'string-ts';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntity/utils';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 
-export const useEntityInfoBlock = ({ entity, workflow, entityDataAdditionalInfo }) => {
+export const useEntityInfoBlock = ({
+  entity,
+  workflow,
+  entityDataAdditionalInfo,
+}: {
+  entity: TWorkflowById['context']['entity'];
+  workflow: TWorkflowById;
+  entityDataAdditionalInfo: TWorkflowById['context']['entity']['data']['additionalInfo'];
+}) => {
   if (Object.keys(entity?.data ?? {}).length === 0) {
     return [];
   }
@@ -11,10 +20,10 @@ export const useEntityInfoBlock = ({ entity, workflow, entityDataAdditionalInfo 
     {
       cells: [
         {
-          type: 'container',
+          type: 'container' as const,
           value: [
             {
-              type: 'heading',
+              type: 'heading' as const,
               value: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,
             },
             {
@@ -25,7 +34,7 @@ export const useEntityInfoBlock = ({ entity, workflow, entityDataAdditionalInfo 
         },
         {
           id: 'entity-details',
-          type: 'details',
+          type: 'details' as const,
           hideSeparator: true,
           value: {
             title: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,

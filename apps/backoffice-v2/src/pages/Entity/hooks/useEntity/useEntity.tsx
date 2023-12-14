@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useTasks } from '../useTasks/useTasks';
-import { cells } from '@/pages/Entity/hooks/useEntity/cells';
+import { UiSchemaVariant, uiSchemaVariantToBlocksMap } from '@/lib/blocks/variants/constants';
 
 export const useEntity = () => {
   const { entityId } = useParams();
@@ -28,14 +28,14 @@ export const useEntity = () => {
   const kybChildWorkflows = workflow?.childWorkflows?.filter(
     childWorkflow => childWorkflow?.context?.entity?.type === 'business',
   );
+  const BlocksByUiSchemaVariant =
+    uiSchemaVariantToBlocksMap[UiSchemaVariant.KYB_MANUAL_REVIEW_LEGACY];
 
   return {
-    selectedEntity,
-    cells,
-    tasks,
     workflow,
+    selectedEntity,
+    tasks,
     isLoading,
-    kybChildWorkflows,
-    kycChildWorkflows,
+    BlocksByUiSchemaVariant,
   };
 };

@@ -90,7 +90,7 @@ export const useDocumentBlocks = ({
             return workflow?.tags?.includes(StateTag.REVISION)
               ? [
                   {
-                    type: 'badge',
+                    type: 'badge' as const,
                     value: 'Pending re-upload',
                     props: {
                       ...motionProps,
@@ -101,7 +101,7 @@ export const useDocumentBlocks = ({
                 ]
               : [
                   {
-                    type: 'badge',
+                    type: 'badge' as const,
                     value: (
                       <React.Fragment>
                         Re-upload needed
@@ -125,7 +125,7 @@ export const useDocumentBlocks = ({
           if (decision?.status === StateTag.APPROVED) {
             return [
               {
-                type: 'badge',
+                type: 'badge' as const,
                 value: 'Approved',
                 props: {
                   ...motionProps,
@@ -139,7 +139,7 @@ export const useDocumentBlocks = ({
           if (decision?.status === StateTag.REJECTED) {
             return [
               {
-                type: 'badge',
+                type: 'badge' as const,
                 value: 'Rejected',
                 props: {
                   ...motionProps,
@@ -161,7 +161,7 @@ export const useDocumentBlocks = ({
 
           return [
             {
-              type: 'callToActionLegacy',
+              type: 'callToActionLegacy' as const,
               // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
               value: {
                 text: isLegacyReject ? 'Reject' : 'Re-upload needed',
@@ -179,7 +179,7 @@ export const useDocumentBlocks = ({
               },
             },
             {
-              type: 'callToAction',
+              type: 'callToAction' as const,
               value: {
                 text: 'Approve',
                 onClick: onMutateApproveTaskById({
@@ -208,10 +208,10 @@ export const useDocumentBlocks = ({
         }`;
         const headerCell = {
           id: 'header',
-          type: 'container',
+          type: 'container' as const,
           value: [
             {
-              type: 'heading',
+              type: 'heading' as const,
               value: `${withEntityNameInHeader ? `${entityNameOrNA} - ` : ''}${documentNameOrNA}`,
             },
             {
@@ -223,7 +223,7 @@ export const useDocumentBlocks = ({
         };
 
         const decisionCell = {
-          type: 'details',
+          type: 'details' as const,
           value: {
             id,
             title: 'Decision',
@@ -239,11 +239,11 @@ export const useDocumentBlocks = ({
           documents: workflow?.context?.documents,
         };
         const detailsCell = {
-          type: 'container',
+          type: 'container' as const,
           value: [
             {
               id: 'decision',
-              type: 'details',
+              type: 'details' as const,
               value: {
                 id,
                 title: `${category} - ${docType}`,
@@ -294,7 +294,7 @@ export const useDocumentBlocks = ({
         };
 
         const documentsCell = {
-          type: 'multiDocuments',
+          type: 'multiDocuments' as const,
           value: {
             isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
             data:
