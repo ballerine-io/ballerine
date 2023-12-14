@@ -7,6 +7,12 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum UserStatus {
+  Active
+  Blocked
+  Deleted
+}
+
 model User {
   id        String  @id @default(cuid())
   firstName String
@@ -16,6 +22,7 @@ model User {
   password  String
   avatarUrl String?
   roles     Json
+  status    UserStatus @default(Active)
 
   userToProjects UserToProject[]
 

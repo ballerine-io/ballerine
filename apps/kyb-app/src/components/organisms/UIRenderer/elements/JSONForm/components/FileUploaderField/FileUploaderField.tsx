@@ -3,50 +3,53 @@ import { useFileRepository } from '@/components/organisms/UIRenderer/elements/JS
 import { useFileUploading } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/hooks/useFileUploading';
 import { DocumentUploadFieldProps } from '@/components/organisms/UIRenderer/elements/JSONForm/components/FileUploaderField/types';
 import { Input } from '@ballerine/ui';
-import { forwardRef, useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
-export const FileUploaderField = forwardRef(
-  ({
-    onChange,
-    onBlur,
-    uploadFile: _uploadFile,
-    fileRepository: fileStorage,
-    fileId,
-    isLoading,
-    disabled,
-    acceptFileFormats,
-    placeholder,
-  }: DocumentUploadFieldProps) => {
-    const { fileId: uploadedFileId, isUploading, uploadFile } = useFileUploading(_uploadFile);
-    const { file } = useFileRepository(fileStorage, fileId || undefined);
-    const inputRef = useRef<HTMLInputElement>(null);
-    //@ts-ignore
-    useFileAssigner(inputRef, file);
+export const FileUploaderField = ({
+  onChange,
+  onBlur,
+  uploadFile: _uploadFile,
+  fileRepository: fileStorage,
+  fileId,
+  isLoading,
+  disabled,
+  acceptFileFormats,
+  placeholder,
+}: DocumentUploadFieldProps) => {
+  const { isUploading, uploadFile } = useFileUploading(_uploadFile);
+  const { file: registeredFile, registerFile } = useFileRepository(
+    fileStorage,
+    fileId || undefined,
+  );
+  const inputRef = useRef<HTMLInputElement>(null);
+  //@ts-ignore
+  useFileAssigner(inputRef, registeredFile);
 
-    useEffect(() => {
-      if (!uploadedFileId) return;
+  const handleChange = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
 
-      onChange(uploadedFileId);
-    }, [uploadedFileId]);
+      if (!file) return;
 
-    const handleChange = useCallback(
-      async (event: React.ChangeEvent<HTMLInputElement>) => {
-        void uploadFile(event.target.files?.[0] as File);
-      },
-      [uploadFile],
-    );
+      const uploadResult = await uploadFile(file);
 
-    return (
-      <Input
-        data-testid="file-uploader-field"
-        type="file"
-        placeholder={placeholder}
-        accept={acceptFileFormats}
-        disabled={disabled || isLoading || isUploading}
-        onChange={handleChange}
-        onBlur={onBlur}
-        ref={inputRef}
-      />
-    );
-  },
-);
+      registerFile(file, uploadResult.fileId);
+
+      onChange(uploadResult.fileId);
+    },
+    [uploadFile, registerFile, onChange],
+  );
+
+  return (
+    <Input
+      data-testid="file-uploader-field"
+      type="file"
+      placeholder={placeholder}
+      accept={acceptFileFormats}
+      disabled={disabled || isLoading || isUploading}
+      onChange={handleChange}
+      onBlur={onBlur}
+      ref={inputRef}
+    />
+  );
+};

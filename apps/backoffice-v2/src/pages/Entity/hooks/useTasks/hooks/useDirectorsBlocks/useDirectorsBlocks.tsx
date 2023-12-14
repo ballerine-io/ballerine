@@ -1,4 +1,4 @@
-import { StateTag, getDocumentsByCountry } from '@ballerine/common';
+import { getDocumentsByCountry, StateTag } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import { UseQueryResult } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
@@ -14,9 +14,11 @@ import {
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
 } from '../../../useEntity/utils';
-import { getPostUpdateEventName } from '../../get-post-update-event-name';
+import { getPostRemoveDecisionEventName } from '../../get-post-remove-decision-event-name';
 import { motionProps } from '../../motion-props';
 import { selectDirectorsDocuments } from '../../selectors/selectDirectorsDocuments';
+import { getPostApproveEventNameEvent } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
+import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 
 export type Director = AnyObject;
 
@@ -26,8 +28,8 @@ export const useDirectorsBlocks = (
   documentImages: Array<Array<string>>,
 ) => {
   const { mutate } = useRemoveDecisionTaskByIdMutation(
-    workflow.id,
-    getPostUpdateEventName(workflow),
+    workflow?.id,
+    getPostRemoveDecisionEventName(workflow),
   );
 
   const { data: session } = useAuthenticatedUserQuery();
@@ -44,6 +46,10 @@ export const useDirectorsBlocks = (
     const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
     const documentsSchemas = issuerCountryCode ? getDocumentsByCountry(issuerCountryCode) : [];
 
+    if (!Array.isArray(documentsSchemas) || !documentsSchemas.length) {
+      console.warn(`No document schema found for issuer country code of "${issuerCountryCode}".`);
+    }
+
     return documentsSchemas;
   }, [workflow]);
 
@@ -53,7 +59,23 @@ export const useDirectorsBlocks = (
     documentsToReset.forEach(document => {
       mutate({ documentId: document.id, contextUpdateMethod: 'director' });
     });
-  }, []);
+  }, [documents, mutate]);
+
+  const postApproveEventName = getPostApproveEventNameEvent(workflow);
+  const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
+    useApproveTaskByIdMutation(workflow?.id, postApproveEventName);
+  const onMutateApproveTaskById = useCallback(
+    ({
+        taskId,
+        contextUpdateMethod,
+      }: {
+        taskId: string;
+        contextUpdateMethod: 'base' | 'director';
+      }) =>
+      () =>
+        mutateApproveTaskById({ documentId: taskId, contextUpdateMethod }),
+    [mutateApproveTaskById],
+  );
 
   const blocks = useMemo(() => {
     return directors
@@ -107,16 +129,21 @@ export const useDirectorsBlocks = (
                         },
                       }
                     : {
-                        type: 'directorsCallToAction',
+                        type: 'callToAction',
                         value: {
                           text: 'Approve',
+                          onClick: onMutateApproveTaskById({
+                            taskId: document.id,
+                            contextUpdateMethod: 'director',
+                          }),
                           props: {
-                            documents,
-                            decision: 'approve',
-                            id: document.id,
                             disabled:
                               (!isDoneWithRevision && Boolean(document?.decision?.status)) ||
-                              noAction,
+                              noAction ||
+                              isLoadingApproveTaskById ||
+                              !caseState.actionButtonsEnabled,
+                            size: 'wide',
+                            variant: 'success',
                           },
                         },
                       },

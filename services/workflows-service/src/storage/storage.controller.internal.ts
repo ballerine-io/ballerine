@@ -34,7 +34,7 @@ import { isBase64 } from '@/common/utils/is-base64/is-base64';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { HttpService } from '@nestjs/axios';
 import mime from 'mime';
-import { getMimeType } from '@/common/get-mime-type/get-mime-type';
+import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 
 // Temporarily identical to StorageControllerExternal
 @swagger.ApiTags('Storage')
@@ -84,7 +84,14 @@ export class StorageControllerInternal {
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
       projectId: currentProjectId,
-      mimeType: file.mimetype || (await getMimeType({ file: file.originalname || '' })),
+      mimeType:
+        file.mimetype ||
+        (
+          await getFileMetadata({
+            file: file.originalname || '',
+            fileName: file.originalname || '',
+          })
+        )?.mimeType,
     });
 
     return fileInfo;

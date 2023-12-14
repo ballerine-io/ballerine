@@ -3,5 +3,1024 @@
   "back": "Back",
   "saving": "Saving",
   "progressSaved": "Progress saved",
-  "contact": "Contact {{companyName}} for support"
+  "contact": "Contact {{companyName}} for support",
+  "backToPortal": "Back to {{companyName}} Portal",
+  "optionalLabel": " (optional) ",
+  "rejected": {
+    "header": "Account activation rejected",
+    "content": "It seems like there was a problem with activating your account."
+  },
+  "approved": {
+    "header": "Application completed <br />successfully",
+    "content": "Go back to {{companyName}} portal to use the system"
+  },
+  "success": {
+    "header": "Thank you!<br /> We’re reviewing your application",
+    "content": "We will inform you by email once your account is ready."
+  },
+  "industries": [
+    "Adult Entertainment and Products",
+    "Aerospace Engineering",
+    "Agriculture and Farming",
+    "Airlines and Aviation",
+    "Airlines and Charter Services",
+    "Alcohol Sales",
+    "Alternative Medicine",
+    "Animation",
+    "Antiques",
+    "Apparel and Fashion",
+    "Architectural Restoration",
+    "Architecture and Planning",
+    "Arts and Crafts Supplies",
+    "Arts and Crafts",
+    "Astrology and Spiritual",
+    "Auctions and Auctioneering",
+    "Auctions and Penny Auctions",
+    "Automotive Repair",
+    "Automotive",
+    "Aviation & Aerospace",
+    "Bail Bonds",
+    "Bakery and Confections",
+    "Banking and Finance",
+    "Beverage Production",
+    "Bicycle Sales and Service",
+    "Binary Options Trading",
+    "Biomedical",
+    "Biotechnology",
+    "Bitcoins and Cryptocurrencies",
+    "Boat Building and Repair",
+    "Breweries and Distilleries",
+    "Bridal Services",
+    "Broadcast Media",
+    "Building Materials",
+    "Candle and Aromatherapy",
+    "Cannabis and CBD Products",
+    "Cannabis",
+    "Ceramics and Pottery",
+    "Charities and Non-Profits",
+    "Chemicals",
+    "Childcare",
+    "Cigarettes, E-Cigarettes, and Vape Shops",
+    "Civic and Social Organizations",
+    "Civil Engineering",
+    "Clinical Research",
+    "Collectibles",
+    "Collection Agencies",
+    "Commercial Fishing",
+    "Commercial Real Estate",
+    "Commodities Trading",
+    "Computer & Network Security",
+    "Computer Gaming",
+    "Computer Hardware",
+    "Computer Software",
+    "Construction",
+    "Consumer Electronics",
+    "Consumer Goods",
+    "Consumer Services",
+    "Cosmetics and Beauty",
+    "Craft Brewing and Distilling",
+    "Credit Repair Services",
+    "Dairy",
+    "Dance and Dance Instruction",
+    "Data Analysis and Statistics",
+    "Dating Services",
+    "Debt Consolidation and Restructuring",
+    "Defense and Space",
+    "Design",
+    "Digital Downloads",
+    "Digital Media",
+    "Direct Marketing",
+    "E-commerce",
+    "Education and E-Learning",
+    "Elderly Care",
+    "Electrical and Electronic Manufacturing",
+    "Electrical Equipment",
+    "Emergency Services",
+    "Entertainment",
+    "Environmental Services",
+    "Equine and Equestrian",
+    "eSports and Betting",
+    "Event Ticket Brokers",
+    "Events Services",
+    "Executive Office and Management",
+    "Facilities Services",
+    "Farming and Agriculture Equipment",
+    "Fashion Accessories",
+    "Financial Services",
+    "Fine Art",
+    "Firearms, Ammunition, and Accessories",
+    "Fireworks Sales",
+    "Fishery",
+    "Florists",
+    "Food and Beverages",
+    "Food Production",
+    "Food Trucks",
+    "Footwear Manufacturing",
+    "Forestry and Logging",
+    "Forex Trading",
+    "Fossil Fuels",
+    "Funeral Services",
+    "Furniture Manufacturing",
+    "Furniture",
+    "Gambling and Casinos",
+    "Genomics and Genetics",
+    "Geology and Earth Sciences",
+    "Glass, Ceramics and Concrete",
+    "Government and Public Services",
+    "Graphic Design",
+    "Green and Sustainable Living",
+    "Health, Wellness and Fitness",
+    "Higher Education",
+    "Hobbies and Crafts",
+    "Home and Garden",
+    "Home Health Care",
+    "Homewares",
+    "Horoscopes and Psychic Services",
+    "Horticulture",
+    "Hospital and Healthcare",
+    "Hospitality",
+    "Human Resources",
+    "Illegal and Black Market Products",
+    "Import and Export",
+    "Indigenous Services",
+    "Industrial Automation",
+    "Infectious Diseases",
+    "Information Services",
+    "Information Technology",
+    "Insurance",
+    "Interior Design",
+    "International Affairs",
+    "International Trade and Development",
+    "Internet",
+    "Investment Banking",
+    "Jewelry Sales",
+    "Kid's Products",
+    "Language Schools and Instruction",
+    "Laundry and Dry Cleaning",
+    "Law and Legal Services",
+    "Leisure and Travel",
+    "Library and Archives",
+    "Lighting",
+    "Linguistics",
+    "Logistics and Supply Chain",
+    "Luxury and Specialty Goods",
+    "Luxury Goods and Jewelry",
+    "Machinery",
+    "Magazine Subscriptions",
+    "Magazines",
+    "Mail and Shipping Services",
+    "Marine Sciences",
+    "Maritime",
+    "Marketing and Advertising",
+    "Materials Research",
+    "Mechanical or Industrial Engineering",
+    "Media Production",
+    "Medical and Recreational Marijuana Dispensaries",
+    "Medical Devices",
+    "Medical Practice",
+    "Mental Health Care",
+    "Meteorology and Weather Services",
+    "Microelectronics",
+    "Military and Defense",
+    "Mining and Metals",
+    "Modeling and Talent Agencies",
+    "Motion Pictures and Film",
+    "Multi-Level Marketing (MLM)",
+    "Museums and Institutions",
+    "Music",
+    "Nanotechnology",
+    "Natural and Organic Products",
+    "Neurosciences",
+    "Newspapers",
+    "Nuclear Energy",
+    "Nutraceuticals and Supplements",
+    "Nutrition and Dietetics",
+    "Office Supplies",
+    "Oil and Energy",
+    "Online Gaming and In-game Items",
+    "Online Media",
+    "Optometry",
+    "Outsourcing and Offshoring",
+    "Packaging",
+    "Paper and Forest Products",
+    "Pawn Shops",
+    "Payday Loans and Lenders",
+    "Performing Arts",
+    "Pet Products and Services",
+    "Pharmaceuticals and Drug Stores",
+    "Pharmaceuticals",
+    "Philanthropy",
+    "Photography",
+    "Plastics",
+    "Podcasting",
+    "Police and Security Services",
+    "Political Organization and Lobbying",
+    "Postal Services",
+    "Poultry",
+    "Precious Metals and Stones",
+    "Primary and Secondary Education",
+    "Printing",
+    "Private and Specialty Education",
+    "Professional Training and Coaching",
+    "Public Broadcasting",
+    "Public Policy",
+    "Public Relations and Communications",
+    "Publishing",
+    "Pulp and Paper",
+    "Railroad",
+    "Ranching",
+    "Real Estate",
+    "Religious Organizations",
+    "Renewable Energy",
+    "Research",
+    "Restaurants",
+    "Retail",
+    "Robotics",
+    "Satellites",
+    "Saunas and Spas",
+    "Security and Investigations",
+    "Semiconductors",
+    "Shipbuilding",
+    "Short-Term Rentals (e.g., Airbnb)",
+    "Social Media",
+    "Space Exploration",
+    "Specialty Foods",
+    "Sports Coaching and Instruction",
+    "Sports Forecasting or Odds Making",
+    "Sports",
+    "Staffing and Recruiting",
+    "Supermarkets",
+    "Sustainable Agriculture",
+    "Taxidermy",
+    "Tea Production",
+    "Telecommunications",
+    "Telemarketing",
+    "Telemedicine",
+    "Television Broadcasting",
+    "Textiles",
+    "Therapeutics",
+    "Timeshares",
+    "Tobacco and Cigar Shops",
+    "Tobacco",
+    "Toys and Games",
+    "Trade and Development",
+    "Trade Shows and Events",
+    "Traditional Energy",
+    "Translation and Localization",
+    "Travel Agencies and Tour Operators",
+    "Urban Planning",
+    "Utilities",
+    "Veterinary Medicine",
+    "Veterinary",
+    "Video Production",
+    "Virtual Reality and Augmented Reality",
+    "Warehousing",
+    "Water Treatment",
+    "Weapons and Knives Sales",
+    "Wearable Technology",
+    "Weight Loss Programs and Products",
+    "Wholesale",
+    "Wine and Spirits",
+    "Writing and Editing",
+    "Yoga and Pilates",
+    "Zoology and Wildlife"
+  ],
+  "languages": [
+    {
+      "const": "afar",
+      "title": "Afar"
+    },
+    {
+      "const": "abkhazian",
+      "title": "Abkhazian"
+    },
+    {
+      "const": "avestan",
+      "title": "Avestan"
+    },
+    {
+      "const": "afrikaans",
+      "title": "Afrikaans"
+    },
+    {
+      "const": "akan",
+      "title": "Akan"
+    },
+    {
+      "const": "amharic",
+      "title": "Amharic"
+    },
+    {
+      "const": "aragonese",
+      "title": "Aragonese"
+    },
+    {
+      "const": "arabic",
+      "title": "Arabic"
+    },
+    {
+      "const": "assamese",
+      "title": "Assamese"
+    },
+    {
+      "const": "avaric",
+      "title": "Avaric"
+    },
+    {
+      "const": "aymara",
+      "title": "Aymara"
+    },
+    {
+      "const": "azerbaijani",
+      "title": "Azerbaijani"
+    },
+    {
+      "const": "bashkir",
+      "title": "Bashkir"
+    },
+    {
+      "const": "belarusian",
+      "title": "Belarusian"
+    },
+    {
+      "const": "bulgarian",
+      "title": "Bulgarian"
+    },
+    {
+      "const": "bihari languages",
+      "title": "Bihari languages"
+    },
+    {
+      "const": "bislama",
+      "title": "Bislama"
+    },
+    {
+      "const": "bambara",
+      "title": "Bambara"
+    },
+    {
+      "const": "bengali",
+      "title": "Bengali"
+    },
+    {
+      "const": "tibetan",
+      "title": "Tibetan"
+    },
+    {
+      "const": "breton",
+      "title": "Breton"
+    },
+    {
+      "const": "bosnian",
+      "title": "Bosnian"
+    },
+    {
+      "const": "catalan; valencian",
+      "title": "Catalan; Valencian"
+    },
+    {
+      "const": "chechen",
+      "title": "Chechen"
+    },
+    {
+      "const": "chamorro",
+      "title": "Chamorro"
+    },
+    {
+      "const": "corsican",
+      "title": "Corsican"
+    },
+    {
+      "const": "cree",
+      "title": "Cree"
+    },
+    {
+      "const": "czech",
+      "title": "Czech"
+    },
+    {
+      "const": "church slavic; old slavonic; church slavonic; old bulgarian; old church slavonic",
+      "title": "Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic"
+    },
+    {
+      "const": "chuvash",
+      "title": "Chuvash"
+    },
+    {
+      "const": "welsh",
+      "title": "Welsh"
+    },
+    {
+      "const": "danish",
+      "title": "Danish"
+    },
+    {
+      "const": "german",
+      "title": "German"
+    },
+    {
+      "const": "divehi; dhivehi; maldivian",
+      "title": "Divehi; Dhivehi; Maldivian"
+    },
+    {
+      "const": "dzongkha",
+      "title": "Dzongkha"
+    },
+    {
+      "const": "ewe",
+      "title": "Ewe"
+    },
+    {
+      "const": "greek, modern (1453-)",
+      "title": "Greek, Modern (1453-)"
+    },
+    {
+      "const": "english",
+      "title": "English"
+    },
+    {
+      "const": "esperanto",
+      "title": "Esperanto"
+    },
+    {
+      "const": "spanish; castilian",
+      "title": "Spanish; Castilian"
+    },
+    {
+      "const": "estonian",
+      "title": "Estonian"
+    },
+    {
+      "const": "basque",
+      "title": "Basque"
+    },
+    {
+      "const": "persian",
+      "title": "Persian"
+    },
+    {
+      "const": "fulah",
+      "title": "Fulah"
+    },
+    {
+      "const": "finnish",
+      "title": "Finnish"
+    },
+    {
+      "const": "fijian",
+      "title": "Fijian"
+    },
+    {
+      "const": "faroese",
+      "title": "Faroese"
+    },
+    {
+      "const": "french",
+      "title": "French"
+    },
+    {
+      "const": "western frisian",
+      "title": "Western Frisian"
+    },
+    {
+      "const": "irish",
+      "title": "Irish"
+    },
+    {
+      "const": "gaelic; scottish gaelic",
+      "title": "Gaelic; Scottish Gaelic"
+    },
+    {
+      "const": "galician",
+      "title": "Galician"
+    },
+    {
+      "const": "guarani",
+      "title": "Guarani"
+    },
+    {
+      "const": "gujarati",
+      "title": "Gujarati"
+    },
+    {
+      "const": "manx",
+      "title": "Manx"
+    },
+    {
+      "const": "hausa",
+      "title": "Hausa"
+    },
+    {
+      "const": "hebrew",
+      "title": "Hebrew"
+    },
+    {
+      "const": "hindi",
+      "title": "Hindi"
+    },
+    {
+      "const": "hiri motu",
+      "title": "Hiri Motu"
+    },
+    {
+      "const": "croatian",
+      "title": "Croatian"
+    },
+    {
+      "const": "haitian; haitian creole",
+      "title": "Haitian; Haitian Creole"
+    },
+    {
+      "const": "hungarian",
+      "title": "Hungarian"
+    },
+    {
+      "const": "armenian",
+      "title": "Armenian"
+    },
+    {
+      "const": "herero",
+      "title": "Herero"
+    },
+    {
+      "const": "interlingua (international auxiliary language association)",
+      "title": "Interlingua (International Auxiliary Language Association)"
+    },
+    {
+      "const": "indonesian",
+      "title": "Indonesian"
+    },
+    {
+      "const": "interlingue; occidental",
+      "title": "Interlingue; Occidental"
+    },
+    {
+      "const": "igbo",
+      "title": "Igbo"
+    },
+    {
+      "const": "sichuan Yi; Nuosu",
+      "title": "Sichuan Yi; Nuosu"
+    },
+    {
+      "const": "inupiaq",
+      "title": "Inupiaq"
+    },
+    {
+      "const": "ido",
+      "title": "Ido"
+    },
+    {
+      "const": "icelandic",
+      "title": "Icelandic"
+    },
+    {
+      "const": "italian",
+      "title": "Italian"
+    },
+    {
+      "const": "inuktitut",
+      "title": "Inuktitut"
+    },
+    {
+      "const": "japanese",
+      "title": "Japanese"
+    },
+    {
+      "const": "javanese",
+      "title": "Javanese"
+    },
+    {
+      "const": "georgian",
+      "title": "Georgian"
+    },
+    {
+      "const": "kongo",
+      "title": "Kongo"
+    },
+    {
+      "const": "kikuyu; gikuyu",
+      "title": "Kikuyu; Gikuyu"
+    },
+    {
+      "const": "kuanyama; kwanyama",
+      "title": "Kuanyama; Kwanyama"
+    },
+    {
+      "const": "kazakh",
+      "title": "Kazakh"
+    },
+    {
+      "const": "kalaallisut; greenlandic",
+      "title": "Kalaallisut; Greenlandic"
+    },
+    {
+      "const": "central khmer",
+      "title": "Central Khmer"
+    },
+    {
+      "const": "kannada",
+      "title": "Kannada"
+    },
+    {
+      "const": "korean",
+      "title": "Korean"
+    },
+    {
+      "const": "kanuri",
+      "title": "Kanuri"
+    },
+    {
+      "const": "kashmiri",
+      "title": "Kashmiri"
+    },
+    {
+      "const": "kurdish",
+      "title": "Kurdish"
+    },
+    {
+      "const": "komi",
+      "title": "Komi"
+    },
+    {
+      "const": "cornish",
+      "title": "Cornish"
+    },
+    {
+      "const": "kirghiz; kyrgyz",
+      "title": "Kirghiz; Kyrgyz"
+    },
+    {
+      "const": "latin",
+      "title": "Latin"
+    },
+    {
+      "const": "luxembourgish; letzeburgesch",
+      "title": "Luxembourgish; Letzeburgesch"
+    },
+    {
+      "const": "ganda",
+      "title": "Ganda"
+    },
+    {
+      "const": "limburgan; limburger; limburgish",
+      "title": "Limburgan; Limburger; Limburgish"
+    },
+    {
+      "const": "lingala",
+      "title": "Lingala"
+    },
+    {
+      "const": "lao",
+      "title": "Lao"
+    },
+    {
+      "const": "lithuanian",
+      "title": "Lithuanian"
+    },
+    {
+      "const": "luba-katanga",
+      "title": "Luba-Katanga"
+    },
+    {
+      "const": "latvian",
+      "title": "Latvian"
+    },
+    {
+      "const": "malagasy",
+      "title": "Malagasy"
+    },
+    {
+      "const": "marshallese",
+      "title": "Marshallese"
+    },
+    {
+      "const": "maori",
+      "title": "Maori"
+    },
+    {
+      "const": "macedonian",
+      "title": "Macedonian"
+    },
+    {
+      "const": "malayalam",
+      "title": "Malayalam"
+    },
+    {
+      "const": "mongolian",
+      "title": "Mongolian"
+    },
+    {
+      "const": "marathi",
+      "title": "Marathi"
+    },
+    {
+      "const": "malay",
+      "title": "Malay"
+    },
+    {
+      "const": "maltese",
+      "title": "Maltese"
+    },
+    {
+      "const": "burmese",
+      "title": "Burmese"
+    },
+    {
+      "const": "nauru",
+      "title": "Nauru"
+    },
+    {
+      "const": "bokmål, norwegian; norwegian bokmål",
+      "title": "Bokmål, Norwegian; Norwegian Bokmål"
+    },
+    {
+      "const": "ndebele, north; north ndebele",
+      "title": "Ndebele, North; North Ndebele"
+    },
+    {
+      "const": "nepali",
+      "title": "Nepali"
+    },
+    {
+      "const": "ndonga",
+      "title": "Ndonga"
+    },
+    {
+      "const": "dutch; flemish",
+      "title": "Dutch; Flemish"
+    },
+    {
+      "const": "norwegian nynorsk; nynorsk, norwegian",
+      "title": "Norwegian Nynorsk; Nynorsk, Norwegian"
+    },
+    {
+      "const": "norwegian",
+      "title": "Norwegian"
+    },
+    {
+      "const": "ndebele, south; south ndebele",
+      "title": "Ndebele, South; South Ndebele"
+    },
+    {
+      "const": "navajo; navaho",
+      "title": "Navajo; Navaho"
+    },
+    {
+      "const": "chichewa; chewa; nyanja",
+      "title": "Chichewa; Chewa; Nyanja"
+    },
+    {
+      "const": "occitan (post 1500)",
+      "title": "Occitan (post 1500)"
+    },
+    {
+      "const": "ojibwa",
+      "title": "Ojibwa"
+    },
+    {
+      "const": "oromo",
+      "title": "Oromo"
+    },
+    {
+      "const": "oriya",
+      "title": "Oriya"
+    },
+    {
+      "const": "ossetian; ossetic",
+      "title": "Ossetian; Ossetic"
+    },
+    {
+      "const": "panjabi; punjabi",
+      "title": "Panjabi; Punjabi"
+    },
+    {
+      "const": "pali",
+      "title": "Pali"
+    },
+    {
+      "const": "polish",
+      "title": "Polish"
+    },
+    {
+      "const": "pushto; pashto",
+      "title": "Pushto; Pashto"
+    },
+    {
+      "const": "portuguese",
+      "title": "Portuguese"
+    },
+    {
+      "const": "quechua",
+      "title": "Quechua"
+    },
+    {
+      "const": "romansh",
+      "title": "Romansh"
+    },
+    {
+      "const": "rundi",
+      "title": "Rundi"
+    },
+    {
+      "const": "romanian; moldavian; moldovan",
+      "title": "Romanian; Moldavian; Moldovan"
+    },
+    {
+      "const": "russian",
+      "title": "Russian"
+    },
+    {
+      "const": "kinyarwanda",
+      "title": "Kinyarwanda"
+    },
+    {
+      "const": "sanskrit",
+      "title": "Sanskrit"
+    },
+    {
+      "const": "sardinian",
+      "title": "Sardinian"
+    },
+    {
+      "const": "sindhi",
+      "title": "Sindhi"
+    },
+    {
+      "const": "northern sami",
+      "title": "Northern Sami"
+    },
+    {
+      "const": "sango",
+      "title": "Sango"
+    },
+    {
+      "const": "sinhala; sinhalese",
+      "title": "Sinhala; Sinhalese"
+    },
+    {
+      "const": "slovak",
+      "title": "Slovak"
+    },
+    {
+      "const": "slovenian",
+      "title": "Slovenian"
+    },
+    {
+      "const": "samoan",
+      "title": "Samoan"
+    },
+    {
+      "const": "shona",
+      "title": "Shona"
+    },
+    {
+      "const": "somali",
+      "title": "Somali"
+    },
+    {
+      "const": "albanian",
+      "title": "Albanian"
+    },
+    {
+      "const": "serbian",
+      "title": "Serbian"
+    },
+    {
+      "const": "swati",
+      "title": "Swati"
+    },
+    {
+      "const": "sotho, southern",
+      "title": "Sotho, Southern"
+    },
+    {
+      "const": "sundanese",
+      "title": "Sundanese"
+    },
+    {
+      "const": "swedish",
+      "title": "Swedish"
+    },
+    {
+      "const": "swahili",
+      "title": "Swahili"
+    },
+    {
+      "const": "tamil",
+      "title": "Tamil"
+    },
+    {
+      "const": "telugu",
+      "title": "Telugu"
+    },
+    {
+      "const": "tajik",
+      "title": "Tajik"
+    },
+    {
+      "const": "thai",
+      "title": "Thai"
+    },
+    {
+      "const": "tigrinya",
+      "title": "Tigrinya"
+    },
+    {
+      "const": "turkmen",
+      "title": "Turkmen"
+    },
+    {
+      "const": "tagalog",
+      "title": "Tagalog"
+    },
+    {
+      "const": "tswana",
+      "title": "Tswana"
+    },
+    {
+      "const": "tonga (tonga islands)",
+      "title": "Tonga (Tonga Islands)"
+    },
+    {
+      "const": "turkish",
+      "title": "Turkish"
+    },
+    {
+      "const": "tsonga",
+      "title": "Tsonga"
+    },
+    {
+      "const": "tatar",
+      "title": "Tatar"
+    },
+    {
+      "const": "twi",
+      "title": "Twi"
+    },
+    {
+      "const": "tahitian",
+      "title": "Tahitian"
+    },
+    {
+      "const": "uighur; uyghur",
+      "title": "Uighur; Uyghur"
+    },
+    {
+      "const": "ukrainian",
+      "title": "Ukrainian"
+    },
+    {
+      "const": "urdu",
+      "title": "Urdu"
+    },
+    {
+      "const": "uzbek",
+      "title": "Uzbek"
+    },
+    {
+      "const": "venda",
+      "title": "Venda"
+    },
+    {
+      "const": "vietnamese",
+      "title": "Vietnamese"
+    },
+    {
+      "const": "volapük",
+      "title": "Volapük"
+    },
+    {
+      "const": "walloon",
+      "title": "Walloon"
+    },
+    {
+      "const": "wolof",
+      "title": "Wolof"
+    },
+    {
+      "const": "xhosa",
+      "title": "Xhosa"
+    },
+    {
+      "const": "yiddish",
+      "title": "Yiddish"
+    },
+    {
+      "const": "yoruba",
+      "title": "Yoruba"
+    },
+    {
+      "const": "zhuang; chuang",
+      "title": "Zhuang; Chuang"
+    },
+    {
+      "const": "chinese",
+      "title": "Chinese"
+    },
+    {
+      "const": "zulu",
+      "title": "Zulu"
+    }
+  ]
 }

@@ -88,8 +88,9 @@ export const DocumentField = (
 
     return fileId;
   }, [payload, definition, inputIndex]);
+
   //@ts-ignore
-  const { file } = useFileRepository(collectionFlowFileStorage, fileId);
+  useFileRepository(collectionFlowFileStorage, fileId);
 
   useLayoutEffect(() => {
     if (!fileId) return;
@@ -156,6 +157,7 @@ export const DocumentField = (
       const pathToDocumentsList = destinationParser.extractRootPath();
       const pathToPage = destinationParser.extractPagePath();
       const pathToFileId = destinationParser.extractFileIdPath();
+      const file = collectionFlowFileStorage.getFileById(fileId);
 
       const context = stateApi.getContext();
       //@ts-ignore
@@ -205,7 +207,7 @@ export const DocumentField = (
 
       sendEvent('onChange');
     },
-    [stateApi, options, definition, inputIndex, file, sendEvent],
+    [stateApi, options, definition, inputIndex, sendEvent],
   );
 
   return (

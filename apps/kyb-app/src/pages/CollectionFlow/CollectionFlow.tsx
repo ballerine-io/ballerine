@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
@@ -25,6 +25,7 @@ import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
+import set from 'lodash/set';
 
 const elems = {
   h1: Title,
@@ -86,6 +87,18 @@ export const CollectionFlow = withSessionProtected(() => {
     return prepareInitialUIState(elements || [], context || {}, isRevision);
   }, [elements, context, isRevision]);
 
+  // Breadcrumbs now using scrollIntoView method to make sure that breadcrumb is always in viewport.
+  // Due to dynamic dimensions of logo it doesnt work well if scroll happens before logo is loaded.
+  // This workaround is needed to wait for logo to be loaded so scrollIntoView will work with correct dimensions of page.
+  const [isLogoLoaded, setLogoLoaded] = useState(customer?.logoImageUri ? false : true);
+
+  useEffect(() => {
+    if (!customer?.logoImageUri) return;
+
+    // Resseting loaded state in case of logo change
+    setLogoLoaded(false);
+  }, [customer?.logoImageUri]);
+
   if (initialContext?.flowConfig?.appState === 'approved') return <Approved />;
   if (initialContext?.flowConfig?.appState == 'rejected') return <Rejected />;
 
@@ -107,15 +120,22 @@ export const CollectionFlow = withSessionProtected(() => {
                 return currentPage ? (
                   <DynamicUI.Page page={currentPage}>
                     <DynamicUI.TransitionListener
-                      onNext={(tools, prevState) => {
+                      onNext={async (tools, prevState) => {
                         tools.setElementCompleted(prevState, true);
+
+                        set(
+                          stateApi.getContext(),
+                          `flowConfig.stepsProgress.${prevState}.isCompleted`,
+                          true,
+                        );
+                        await stateApi.invokePlugin('sync_workflow_runtime');
                       }}
                     >
                       <DynamicUI.ActionsHandler actions={currentPage.actions} stateApi={stateApi}>
                         <AppShell>
                           <AppShell.Sidebar>
                             <div className="flex h-full flex-col">
-                              <div className="flex-1">
+                              <div className="flex h-full flex-1 flex-col">
                                 <div className="pb-10">
                                   <AppShell.Navigation />
                                 </div>
@@ -125,20 +145,18 @@ export const CollectionFlow = withSessionProtected(() => {
                                     logoSrc={customer?.logoImageUri}
                                     // @ts-ignore
                                     appName={customer?.displayName}
+                                    onLoad={() => setLogoLoaded(true)}
                                   />
                                 </div>
-                                <div className="h-full max-h-[460px] pb-10">
-                                  <StepperUI />
+                                <div className="min-h-0 flex-1 pb-10">
+                                  {isLogoLoaded ? <StepperUI /> : null}
                                 </div>
-                              </div>
-                              <div>
                                 <div>
                                   {customer?.displayName && (
                                     <div className="border-b pb-12">
                                       {
                                         t('contact', {
                                           companyName: customer.displayName,
-                                          interpolation: { escapeValue: false },
                                         }) as string
                                       }
                                     </div>

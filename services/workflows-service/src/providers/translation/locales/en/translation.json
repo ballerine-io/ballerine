@@ -1,6 +1,11 @@
 {
   "text": {
     "personalInformation": "Personal Information",
+    "companyInformation": "Company Information",
+    "headquartersAddress": "Headquarters Address",
+    "companyActivity": "Company Activity",
+    "bankInformation": "Bank Information",
+    "companyOwnership": "Company Ownership",
     "businessInformation": "Business Information",
     "businessAddress": "Business Address",
     "registeredAddress": "Registered Address",
@@ -15,9 +20,11 @@
     "imShareholder": "I own 25% or more of the company",
     "imDirector": "I am a director in the company",
     "shareholder": "Shareholder",
+    "shareholders": "Shareholders",
     "shareholdersDescription": "Add all of the natural persons that own or control, <br /><b>directly or indirectly</b> more than 25% of the company.",
     "uboIndex": "UBO {{INDEX}}",
     "directorIndex": "Director {{INDEX}}",
+    "associatedCompanyIndex": "Associated company {{INDEX}}",
     "websiteBasicRequirement": "Website Basic Requirement",
     "websiteBasicRequirementDescription": "This list is intended only as a basic pre-entry check of the<br /> websites and does not refer to specific product<br /> application requirements.",
     "websiteBasicRequirementHint": "This list is intended only as a basic pre-entry check of the websites and does not refer to specific product application requirements.",
@@ -58,6 +65,9 @@
     "differentFromPhysicalAddress": "Different from physical address",
     "hasActiveWebsite": "I declare that the website's business activity does not require a license",
     "storeInfoDescription": "Leaving the last checkbox 'Unchecked' will require providing extra licenses documents",
+    "associatedCompanies": "Associated companies",
+    "associatedCompaniesDescription": "Add all companies that own more than 25% of the company.",
+    "noCompaniesWithMoreThan": "There are no companies with more than 25%",
     "email": {
       "label": "Email",
       "hint": "name@companyhk.com"
@@ -125,7 +135,8 @@
         "trust": "Trust",
         "government": "Government",
         "other": "Other"
-      }
+      },
+      "hint": "Choose"
     },
     "registeredCapitalInUsd": {
       "label": "Registered capital (in USD)",
@@ -134,6 +145,10 @@
     "holderName": {
       "label": "Cardholder Name",
       "hint": "John W. Doe"
+    },
+    "accountHolderName": {
+      "label": "Account Holder Name",
+      "hint": "OpenAI Technologies, Inc."
     },
     "holderFullAddress": {
       "label": "Resident Address",
@@ -327,6 +342,92 @@
     "passportSelfie": {
       "label": "Selfie with ID / Passport Photo",
       "description": "The same document held next to the director's face"
+    },
+    "iHaveSigningAuthority": {
+      "label": "I have the signing authority for this company."
+    },
+    "registeredCountry": {
+      "label": "Registered Country",
+      "hint": "United Kingdom",
+      "placeholder": "Choose"
+    },
+    "bankCountry": {
+      "label": "Bank Country",
+      "hint": "United Kingdom",
+      "placeholder": "Choose"
+    },
+    "postalCode": "Postal code",
+    "headquartersPhoneNumber": {
+      "label": "Headquarters phone number"
+    },
+    "industryInput": {
+      "label": "Industry",
+      "hint": "Food & Beverages"
+    },
+    "businessModelInput": {
+      "label": "Business Model",
+      "hint": "Please provide as much Information as possible about your products or services."
+    },
+    "companyWebsiteInput": {
+      "label": "Company Website",
+      "hint": "www.example.co.uk"
+    },
+    "annualVolumeAmountInput": {
+      "label": "Estimate Annual Volume (USD)",
+      "hint": "$500,000"
+    },
+    "averageTransactionValueInput": {
+      "label": "Average Transaction Value (USD)",
+      "hint": "$10,00"
+    },
+    "documents": {
+      "bankStatement": {
+        "label": "Bank Statement",
+        "description": "Not older than 6 months."
+      },
+      "companyStructure": {
+        "label": "Company structure (directors & legal representatives)",
+        "description": "Notarized document"
+      },
+      "certificateOfRegistration": {
+        "label": "Certificate of Registration"
+      },
+      "utilityBill": {
+        "label": "Company Utility Bill as Proof of Address",
+        "description": "Not older than 6 months."
+      },
+      "certificateOfIncorporation": {
+        "label": "Certificate of Incorporation",
+        "description": "Not older than 6 months."
+      },
+      "businessUtilityBill": {
+        "label": "Utility Bill",
+        "description": "Notarized document"
+      }
+    },
+    "companyRegistrationNumber": {
+      "label": "Company Registration Number",
+      "hint": "CRN12345678"
+    },
+    "companyLegalName": {
+      "label": "Company Legal Name",
+      "hint": "OpenAI Technologies, Inc."
+    },
+    "relationship": {
+      "label": "Relationship",
+      "hint": "Parent of / Subsidiary of / Sister company of"
+    },
+    "representativeFirstName": {
+      "label": "Representative First Name",
+      "hint": "John"
+    },
+    "representativeLastName": {
+      "label": "Representative Last Name",
+      "hint": "Deo"
+    },
+    "representativeEmail": {
+      "label": "Representative Email",
+      "hint": "example@example.com"
     }
   },
   "errorMessage": {
@@ -396,7 +497,10 @@
       "spikeSalesAverageVolume": "Spike Sales Average Volume is required.",
       "spikeTransactionNumber": "Spike Transaction Number is required.",
       "volumeInRegion": "Split of volume by regions is required.",
-      "contactDetails": "Contact details are required."
+      "contactDetails": "Contact details are required.",
+      "companyWebsite": "Company Website is required.",
+      "bankCountry": "Bank Country is required.",
+      "companyRegistrationNumber": "Company registration number is required."
     },
     "minLength": {
       "firstName": "First name must be at least 2 characters long.",
@@ -472,7 +576,8 @@
       "shippingPolicyUrl": "Shipping Policy URL should be a valid URL.",
       "aboutUsUrl": "About Us URL should be a valid URL.",
       "termsOfUseUrl": "Terms of Use URL should be a valid URL.",
-      "privacyPolicyUrl": "Privacy Policy URL should be a valid URL."
+      "privacyPolicyUrl": "Privacy Policy URL should be a valid URL.",
+      "companyWebsite": "Company Website should be as valid URL."
     },
     "type": {
       "dateOfBirth": "Date of birth must be a string.",

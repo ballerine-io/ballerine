@@ -1,5 +1,54 @@
 # kyb-app
 
+## 0.1.33
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.3.23
+
+## 0.1.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.3.22
+
+## 0.1.31
+
+### Patch Changes
+
+- Translating optional label
+- Updated dependencies
+  - @ballerine/ui@0.3.21
+
+## 0.1.30
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.3.20
+
+## 0.1.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/blocks@0.1.23
+
+## 0.1.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/ui@0.3.19
+
+## 0.1.27
+
+### Patch Changes
+
+- @ballerine/workflow-browser-sdk@0.5.30
+
 ## 0.1.26
 
 ### Patch Changes

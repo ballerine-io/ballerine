@@ -17,6 +17,7 @@ const USER = {
   ...VALID_CREDENTIALS,
   createdAt: new Date(),
   id: VALID_ID,
+  status: 'Active',
   roles: ['admin'],
   updatedAt: new Date(),
 };
@@ -41,6 +42,10 @@ const passwordService = {
 
 describe('AuthService', () => {
   //ARRANGE
+  beforeEach(() => {
+    USER.status = 'Active';
+  });
+
   let service: AuthService;
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -79,6 +84,19 @@ describe('AuthService', () => {
       await expect(
         service.validateUser(INVALID_CREDENTIALS.email, INVALID_CREDENTIALS.password),
       ).resolves.toBe(null);
+    });
+
+    describe('when user is inactive', () => {
+      beforeEach(() => {
+        USER.status = 'Blocked';
+      });
+
+      it('it throws an UnauthorizedException', async () => {
+        await expect(
+          async () =>
+            await service.validateUser(VALID_CREDENTIALS.email, VALID_CREDENTIALS.password),
+        ).rejects.toThrowError('Unauthorized');
+      });
     });
   });
 });
