@@ -1213,20 +1213,12 @@ export class WorkflowService {
   ): Promise<WorkflowRuntimeData> {
     const projectIds: TProjectIds = projectId ? [projectId] : null;
 
-    const { config } = await this.workflowRuntimeDataRepository.findById(
+    return await this.workflowRuntimeDataRepository.updateRuntimeConfigById(
       workflowRuntimeId,
-      {},
+      { language },
+      'by_index',
       projectIds,
     );
-
-    return await this.workflowRuntimeDataRepository.updateById(workflowRuntimeId, {
-      data: {
-        config: {
-          ...config,
-          language,
-        },
-      },
-    });
   }
 
   async assignWorkflowToUser(
