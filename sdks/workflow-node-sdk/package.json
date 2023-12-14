@@ -25,7 +25,7 @@
     "node": ">=12"
   },
   "dependencies": {
-    "@ballerine/workflow-core": "0.4.29",
+    "@ballerine/workflow-core": "0.5.22",
     "json-logic-js": "^2.0.2",
     "xstate": "^4.36.0"
   },
