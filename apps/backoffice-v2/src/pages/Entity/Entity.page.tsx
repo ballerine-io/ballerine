@@ -16,6 +16,7 @@ export const Entity = () => {
     kybChildWorkflows,
     parentMachine,
   } = useEntity();
+  console.log({ tasks });
 
   // Selected entity
   return (

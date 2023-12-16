@@ -225,17 +225,19 @@ export const useDocumentBlocks = ({
           .addCell({
             id: 'header',
             type: 'container',
-            value: [
-              {
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell({
                 type: 'heading',
                 value: `${withEntityNameInHeader ? `${entityNameOrNA} - ` : ''}${documentNameOrNA}`,
-              },
-              {
+              })
+              .addCell({
                 id: 'actions',
                 type: 'container',
                 value: getDecisionStatusOrAction(isDocumentRevision),
-              },
-            ],
+              })
+              .build()
+              .flat(1),
           })
           .cellAt(0, 0);
 

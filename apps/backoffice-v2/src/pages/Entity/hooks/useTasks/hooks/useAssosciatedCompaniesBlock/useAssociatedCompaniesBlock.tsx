@@ -93,16 +93,20 @@ export const useAssociatedCompaniesBlock = ({
                               className: 'flex items-center justify-between mb-4',
                             },
                             value: [
-                              {
-                                type: 'subheading',
-                                value: associatedCompany.companyName,
-                                props: {
-                                  className: 'text-lg',
-                                },
-                              },
+                              createBlocksTyped()
+                                .addBlock()
+                                .addCell({
+                                  type: 'subheading',
+                                  value: associatedCompany.companyName,
+                                  props: {
+                                    className: 'text-lg',
+                                  },
+                                })
+                                .cellAt(0, 0),
                               ...(associatedCompany?.tags?.includes(StateTag.COLLECTION_FLOW)
-                                ? [
-                                    {
+                                ? createBlocksTyped()
+                                    .addBlock()
+                                    .addCell({
                                       type: 'badge',
                                       value: 'Awaiting Information',
                                       props: {
@@ -110,8 +114,9 @@ export const useAssociatedCompaniesBlock = ({
                                         variant: 'warning',
                                         className: 'text-sm font-bold',
                                       },
-                                    },
-                                  ]
+                                    })
+                                    .build()
+                                    .flat(1)
                                 : []),
                             ],
                           })

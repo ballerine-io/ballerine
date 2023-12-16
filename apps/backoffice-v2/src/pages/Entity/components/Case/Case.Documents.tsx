@@ -8,6 +8,7 @@ import { ImageEditor } from '@/common/components/molecules/ImageEditor/ImageEdit
 import { ImageViewer } from '@/common/components/organisms/ImageViewer/ImageViewer';
 import { DownloadFile } from '@/common/components/molecules/DownloadFile/DownloadFile';
 import { DocumentsToolbar } from '@/pages/Entity/components/Case/Case.Documents.Toolbar';
+import { keyFactory } from '@/common/utils/key-factory/key-factory';
 
 /**
  * @description To be used by {@link Case}, and be wrapped by {@link Case.Content}. Displays a single entity's documents using {@link ImageViewer}. Displays documents[0].imageUrl if no document was selected yet.
@@ -103,7 +104,7 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
           documents?.map(({ imageUrl, title, fileType, fileName, id }) => (
             <ImageViewer.Item
               id={id}
-              key={`${imageUrl}-${title}`}
+              key={keyFactory(id, title, fileName, fileType, imageUrl)}
               src={imageUrl}
               fileType={fileType}
               fileName={fileName}

@@ -220,7 +220,7 @@ export const useTasks = ({
           ...companySanctionsBlock,
           ...directorsUserProvidedBlock,
           ...directorsRegistryProvidedBlock,
-          // ...directorsDocumentsBlocks,
+          ...directorsDocumentsBlocks,
           ...ubosBlock,
           ...storeInfoBlock,
           ...websiteBasicRequirementBlock,
