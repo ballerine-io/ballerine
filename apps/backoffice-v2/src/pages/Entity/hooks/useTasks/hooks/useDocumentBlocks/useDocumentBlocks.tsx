@@ -334,7 +334,7 @@ export const useDocumentBlocks = ({
                     title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
                       toTitleCase(docType ?? ''),
                     )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                    imageUrl: documentPagesResults[docIndex][pageIndex],
+                    imageUrl: documentPagesResults?.[docIndex]?.[pageIndex],
                     fileType: type,
                     fileName,
                   }),
