@@ -60,8 +60,8 @@ export const useMapBlock = ({ filteredPluginsOutput, entityType, workflow }) => 
                     .addCell({
                       type: 'map',
                       address,
-                      latitude: locations[0].lat,
-                      longitude: locations[0].lon,
+                      latitude: locations?.[0]?.lat,
+                      longitude: locations?.[0]?.lon,
                     })
                     .build()
                     .flat(1),
