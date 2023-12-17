@@ -76,6 +76,26 @@ export class WorkflowRuntimeDataRepository {
     });
   }
 
+  async updateRuntimeConfigById(
+    id: string,
+    newConfig: any,
+    arrayMergeOption: ArrayMergeOption = 'by_id',
+    projectIds: TProjectIds,
+  ): Promise<WorkflowRuntimeData> {
+    const stringifiedConfig = JSON.stringify(newConfig);
+    const affectedRows = await this.prisma
+      .$executeRaw`UPDATE "WorkflowRuntimeData" SET "config" = jsonb_deep_merge_with_options("config", ${stringifiedConfig}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id} AND "projectId" in (${projectIds?.join(
+      ',',
+    )})`;
+
+    // Retrieve and return the updated record
+    if (affectedRows === 0) {
+      throw new Error(`No workflowRuntimeData found with the id "${id}"`);
+    }
+
+    return this.findById(id, {}, projectIds);
+  }
+
   async updateContextById(
     id: string,
     newContext: any,
