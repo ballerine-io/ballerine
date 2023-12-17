@@ -39,8 +39,10 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
           },
         },
         create_kyb_workflows: {
-          ASSOCIATED_COMPANIES_CREATED: [{ target: 'manual_review' }],
-          ASSOCIATED_COMPANIES_FAILED: [{ target: 'failed' }],
+          on: {
+            ASSOCIATED_COMPANIES_CREATED: [{ target: 'manual_review' }],
+            ASSOCIATED_COMPANIES_FAILED: [{ target: 'failed' }],
+          },
         },
         manual_review: {
           tags: [StateTag.MANUAL_REVIEW],
