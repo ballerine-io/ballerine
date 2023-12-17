@@ -35,11 +35,11 @@ export const initHttpMoudle = () =>
         return abortController.signal;
       }
 
-      const timeout = configService.get('HTTP_TIMEOUT_IN_MS', 5000);
+      const timeout = configService.get('HTTP_TIMEOUT_IN_MS', 10_000);
       return {
         timeout,
         maxRedirects: configService.get('HTTP_MAX_REDIRECTS', 10),
-        retryAttempts: configService.get('HTTP_RETRY_ATTEMPTS', 3),
+        retryAttempts: configService.get('HTTP_RETRY_ATTEMPTS', 0),
         // 👇️ aborts request after 3 seconds (connectivity issues)
         signal: newAbortSignal(timeout),
         validateStatus: (status: number) => {
