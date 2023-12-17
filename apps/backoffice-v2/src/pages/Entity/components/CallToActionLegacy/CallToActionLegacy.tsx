@@ -33,6 +33,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
     onReuploadReset,
     onDialogClose,
     id,
+    workflow,
     decision,
     disabled,
   } = value?.props || {};
@@ -40,7 +41,6 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
   const {
     onMutateTaskDecisionById,
     isLoadingTaskDecisionById,
-    caseState,
     action,
     actions,
     onActionChange,
@@ -61,6 +61,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
     documentSelection,
     onDialogClose,
     onReuploadReset,
+    workflow,
   });
 
   if (value?.text === 'Reject') {
@@ -73,7 +74,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
             size="wide"
             variant="destructive"
             className={ctw({ loading: isLoadingTaskDecisionById })}
-            disabled={isLoadingTaskDecisionById || disabled || !caseState.actionButtonsEnabled}
+            disabled={isLoadingTaskDecisionById || disabled}
           >
             {value.text}
           </MotionButton>
@@ -176,7 +177,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
             {...motionProps}
             size="wide"
             variant="warning"
-            disabled={!caseState.actionButtonsEnabled || disabled}
+            disabled={disabled}
             className={ctw({ 'flex gap-2': isReuploadResetable })}
           >
             {value.text}
@@ -301,7 +302,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
         size="wide"
         variant="success"
         className={ctw({ loading: isLoadingTaskDecisionById })}
-        disabled={isLoadingTaskDecisionById || disabled || !caseState.actionButtonsEnabled}
+        disabled={isLoadingTaskDecisionById || disabled}
         onClick={onMutateTaskDecisionById({
           id,
           decision,

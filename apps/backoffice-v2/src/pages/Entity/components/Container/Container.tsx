@@ -1,7 +1,8 @@
 import React, { FunctionComponent } from 'react';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { IContainerProps } from './interfaces';
-import { cells } from '../../hooks/useEntity/cells';
+
+import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
 export const Container: FunctionComponent<IContainerProps> = ({ value, id, props }) => {
   return (
@@ -19,9 +20,8 @@ export const Container: FunctionComponent<IContainerProps> = ({ value, id, props
     >
       {value?.map((cell, index) => {
         const Cell = cells[cell?.type];
-        const key = `${(cell[cell?.keyProp as keyof typeof cell] as string) ?? ''}:${
-          (cell?.id as string) ?? ''
-        }`;
+        const cellKeyProp = cell[cell?.keyProp as keyof typeof cell] ?? '';
+        const key = `${cellKeyProp ? `${cellKeyProp}:` : ''}${cell?.id ?? ''}`;
 
         return <Cell key={key || index} {...cell} />;
       })}
