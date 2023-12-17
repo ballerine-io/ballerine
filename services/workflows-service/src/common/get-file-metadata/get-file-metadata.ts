@@ -40,6 +40,10 @@ export const getFileMetadata = async ({
     extension = mime.getExtension(mimeType) ?? undefined;
   }
 
+  if (extension && !mimeType) {
+    mimeType = mime.getType(extension) ?? undefined;
+  }
+
   log(!mimeType, `Could not extract mime type from file: ${file} with a file name of: ${fileName}`);
   log(
     !extension,

@@ -1720,7 +1720,8 @@ export class WorkflowService {
         const ballerineFileId = documentPage.ballerineFileId || persistedFile?.id;
         const mimeType =
           persistedFile?.mimeType ||
-          mime.getType(persistedFile.fileName || persistedFile.uri || '');
+          mime.getType(persistedFile.fileName || persistedFile.uri || '') ||
+          undefined;
 
         return {
           ...documentPage,
