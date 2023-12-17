@@ -3,7 +3,10 @@ import { NodePlugin } from './plugins/node-plugin';
 import { WorkflowNodeSDK } from './workflow-node-sdk';
 
 export interface WorkflowOptionsNode
-  extends Pick<WorkflowOptions, 'definition' | 'definitionType' | 'workflowContext' | 'runtimeId'> {
+  extends Pick<
+    WorkflowOptions,
+    'definition' | 'config' | 'definitionType' | 'workflowContext' | 'runtimeId'
+  > {
   extensions?: {
     statePlugins: Array<NodePlugin>;
   };

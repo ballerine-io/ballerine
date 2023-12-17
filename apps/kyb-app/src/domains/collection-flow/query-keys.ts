@@ -16,9 +16,9 @@ export const collectionFlowQuerykeys = createQueryKeys('collectionFlow', {
     queryFn: () => getFlowSession(),
     queryKey: [{}],
   }),
-  getUISchema: (lng?: string) => ({
-    queryKey: [{}],
-    queryFn: () => fetchUISchema(lng),
+  getUISchema: (language: string) => ({
+    queryKey: [{ language }],
+    queryFn: () => fetchUISchema(language),
   }),
   getCustomer: () => ({
     queryKey: [{}],

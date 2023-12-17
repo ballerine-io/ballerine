@@ -12,6 +12,8 @@ export const SubscriptionSchema = z.discriminatedUnion('type', [
 
 export const ConfigSchema = z
   .object({
+    language: z.string().optional(),
+    supportedLanguages: z.array(z.string()).optional(),
     isLegacyReject: z.boolean().optional(),
     subscriptions: z.array(SubscriptionSchema).optional(),
     completedWhenTasksResolved: z.boolean().optional(),

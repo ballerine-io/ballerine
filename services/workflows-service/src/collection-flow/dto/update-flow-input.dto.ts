@@ -100,3 +100,8 @@ export class UpdateFlowDto {
   @IsNotEmpty()
   data!: UpdateFlowPayload;
 }
+
+export class UpdateFlowLanguageDto {
+  @IsString()
+  language!: string;
+}
