@@ -8,7 +8,10 @@ import { useCaseDecision } from '../../components/Case/hooks/useCaseDecision/use
 import { selectDirectorsDocuments } from './selectors/selectDirectorsDocuments';
 import { useDocumentPageImages } from '@/pages/Entity/hooks/useTasks/hooks/useDocumentPageImages';
 import { useDirectorsBlocks } from '@/pages/Entity/hooks/useTasks/hooks/useDirectorsBlocks';
-import { useAssociatedCompaniesBlock } from '@/pages/Entity/hooks/useTasks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import {
+  motionProps,
+  useAssociatedCompaniesBlock,
+} from '@/pages/Entity/hooks/useTasks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 import { useAssociatedCompaniesInformationBlock } from '@/pages/Entity/hooks/useTasks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
 import { useDocumentBlocks } from '@/pages/Entity/hooks/useTasks/hooks/useDocumentBlocks/useDocumentBlocks';
@@ -27,6 +30,11 @@ import { useUbosBlock } from '@/pages/Entity/hooks/useTasks/hooks/useUbosBlock/u
 import { useDirectorsRegistryProvidedBlock } from '@/pages/Entity/hooks/useTasks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
 import { useDirectorsUserProvidedBlock } from '@/pages/Entity/hooks/useTasks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
 import { useWebsiteMonitoringBlock } from '@/pages/Entity/hooks/useTasks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
+import { associatedCompanyAdapter } from '@/pages/Entity/hooks/useTasks/hooks/useAssosciatedCompaniesBlock/associated-company-adapter';
+import { Send } from 'lucide-react';
+import { ctw } from '@/common/utils/ctw/ctw';
+import { Button } from '@/common/components/atoms/Button/Button';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -188,13 +196,13 @@ export const useTasks = ({
     workflow,
   });
   const { mutate: mutateEvent, isLoading: isLoadingEvent } = useEventMutation();
-  const onMutateEvent = useCallback(
-    ({ workflowId, event }: Parameters<typeof mutateEvent>[0]) =>
-      () =>
-        mutateEvent({
-          workflowId,
-          event,
-        }),
+  const onClose = useCallback(
+    (associatedCompany: ReturnType<typeof associatedCompanyAdapter>) => () => {
+      mutateEvent({
+        workflowId: associatedCompany?.workflowId,
+        event: 'START_ASSOCIATED_COMPANY_KYB',
+      });
+    },
     [mutateEvent],
   );
   const kybChildWorkflows = workflow?.childWorkflows?.filter(
@@ -202,8 +210,36 @@ export const useTasks = ({
   );
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
     workflows: kybChildWorkflows,
-    onMutateEvent,
-    isLoadingEvent,
+    onClose,
+    isLoadingOnClose: isLoadingEvent,
+    dialog: {
+      Trigger: props => (
+        <MotionButton {...motionProps} variant="outline" className={'ms-3.5'} {...props}>
+          Initiate KYB
+        </MotionButton>
+      ),
+      Title: ({ associatedCompany }) => <>Initiate KYB for {associatedCompany.companyName}</>,
+      Description: ({ associatedCompany }) => (
+        <p className={`text-sm`}>
+          By clicking the button below, an email with a link will be sent to{' '}
+          {associatedCompany.companyName} &apos;s contact person, {associatedCompany.contactPerson},
+          directing them to provide information about their company. The case status will then
+          change to &ldquo;Collection in Progress&ldquo; until the contact person will provide the
+          needed information.
+        </p>
+      ),
+      Close: ({ associatedCompany }) => (
+        <Button
+          className={ctw(`gap-x-2`, {
+            loading: isLoadingEvent,
+          })}
+          onClick={onClose(associatedCompany)}
+        >
+          <Send size={18} />
+          Send email
+        </Button>
+      ),
+    },
   });
 
   const associatedCompaniesInformationBlock = useAssociatedCompaniesInformationBlock(

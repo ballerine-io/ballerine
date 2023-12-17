@@ -28,8 +28,7 @@ export const useEntity = () => {
   const kybChildWorkflows = workflow?.childWorkflows?.filter(
     childWorkflow => childWorkflow?.context?.entity?.type === 'business',
   );
-  const BlocksByUiSchemaVariant =
-    uiSchemaVariantToBlocksMap[UiSchemaVariant.KYB_MANUAL_REVIEW_LEGACY];
+  const BlocksByUiSchemaVariant = uiSchemaVariantToBlocksMap[UiSchemaVariant.KYB_DEMO];
 
   return {
     workflow,

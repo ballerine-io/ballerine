@@ -1,13 +1,10 @@
-import { ComponentProps, useMemo } from 'react';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { Button } from '@/common/components/atoms/Button/Button';
-import { Send } from 'lucide-react';
+import { ComponentProps, FunctionComponent, useMemo } from 'react';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { StateTag } from '@ballerine/common';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
+import { associatedCompanyAdapter } from '@/pages/Entity/hooks/useTasks/hooks/useAssosciatedCompaniesBlock/associated-company-adapter';
 
-const motionProps: ComponentProps<typeof MotionButton> = {
+export const motionProps: ComponentProps<typeof MotionButton> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
   initial: { y: 10, opacity: 0 },
   transition: { type: 'spring', bounce: 0.3 },
@@ -16,39 +13,30 @@ const motionProps: ComponentProps<typeof MotionButton> = {
 
 export const useAssociatedCompaniesBlock = ({
   workflows,
-  onMutateEvent,
-  isLoadingEvent,
+  dialog,
 }: {
   workflows: Array<TWorkflowById>;
-  onMutateEvent: (
-    params: Parameters<ReturnType<typeof useEventMutation>['mutate']>[0],
-  ) => () => void;
-  isLoadingEvent: boolean;
+  dialog: {
+    Title: FunctionComponent<{
+      associatedCompany: ReturnType<typeof associatedCompanyAdapter>;
+    }>;
+    Trigger: FunctionComponent<{
+      associatedCompany: ReturnType<typeof associatedCompanyAdapter>;
+    }>;
+    Description: FunctionComponent<{
+      associatedCompany: ReturnType<typeof associatedCompanyAdapter>;
+    }>;
+    Close: FunctionComponent<{ associatedCompany: ReturnType<typeof associatedCompanyAdapter> }>;
+  };
 }) => {
-  const associatedCompanyAdapter = (workflow: TWorkflowById) => ({
-    workflowId: workflow?.id,
-    companyName: workflow?.context?.entity?.data?.companyName,
-    registrationNumber: workflow?.context?.entity?.data?.registrationNumber,
-    registeredCountry: workflow?.context?.entity?.data?.country,
-    relationship: workflow?.context?.entity?.data?.additionalInfo?.associationRelationship,
-    contactPerson: `${
-      workflow?.context?.entity?.data?.additionalInfo?.mainRepresentative?.firstName ?? ''
-    }${
-      workflow?.context?.entity?.data?.additionalInfo?.mainRepresentative?.lastName
-        ? ` ${workflow?.context?.entity?.data?.additionalInfo?.mainRepresentative?.lastName}`
-        : ''
-    }`,
-    contactEmail: workflow?.context?.entity?.data?.additionalInfo?.mainRepresentative?.email,
-    nextEvents: workflow?.nextEvents,
-    tags: workflow?.tags,
-  });
   const transformedAssociatedCompanies = useMemo(
     () => workflows?.map(workflow => associatedCompanyAdapter(workflow)),
     [workflows],
   );
 
-  if (!Array.isArray(transformedAssociatedCompanies) || !transformedAssociatedCompanies?.length)
+  if (!Array.isArray(transformedAssociatedCompanies) || !transformedAssociatedCompanies?.length) {
     return [];
+  }
 
   return [
     {
@@ -141,36 +129,12 @@ export const useAssociatedCompaniesBlock = ({
                         {
                           type: 'dialog',
                           value: {
-                            trigger: (
-                              <MotionButton {...motionProps} variant="outline" className={'ms-3.5'}>
-                                Initiate KYB
-                              </MotionButton>
-                            ),
+                            trigger: <dialog.Trigger associatedCompany={associatedCompany} />,
                             title: `Initiate KYB for ${associatedCompany.companyName}`,
                             description: (
-                              <p className={`text-sm`}>
-                                By clicking the button below, an email with a link will be sent to{' '}
-                                {associatedCompany.companyName} &apos;s contact person,{' '}
-                                {associatedCompany.contactPerson}, directing them to provide
-                                information about their company. The case status will then change to
-                                &ldquo;Collection in Progress&ldquo; until the contact person will
-                                provide the needed information.
-                              </p>
+                              <dialog.Description associatedCompany={associatedCompany} />
                             ),
-                            close: (
-                              <Button
-                                className={ctw(`gap-x-2`, {
-                                  loading: isLoadingEvent,
-                                })}
-                                onClick={onMutateEvent({
-                                  workflowId: associatedCompany.workflowId,
-                                  event: 'START_ASSOCIATED_COMPANY_KYB',
-                                })}
-                              >
-                                <Send size={18} />
-                                Send email
-                              </Button>
-                            ),
+                            close: <dialog.Close associatedCompany={associatedCompany} />,
                             props: {
                               content: {
                                 className: 'mb-96',
