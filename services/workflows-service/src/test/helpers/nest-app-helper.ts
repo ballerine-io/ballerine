@@ -13,12 +13,12 @@ import {
   Provider,
   Type,
 } from '@nestjs/common';
-import console from 'console';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { ClsMiddleware, ClsModule, ClsService } from 'nestjs-cls';
 import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
 import { CustomerModule } from '@/customer/customer.module';
 import { CustomerService } from '@/customer/customer.service';
+import { HttpModule } from '@nestjs/axios';
 
 export const commonTestingModules = [
   ClsModule.forRoot({
@@ -26,6 +26,7 @@ export const commonTestingModules = [
   }),
   AppLoggerModule,
   CustomerModule,
+  HttpModule,
 ];
 
 const acGuard = {
