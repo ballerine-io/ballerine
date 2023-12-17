@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - dev
+      - blokh/feat/automatic-pr-generation
 
 jobs:
   createPR:
