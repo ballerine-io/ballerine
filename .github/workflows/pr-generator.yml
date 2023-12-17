@@ -1,6 +1,7 @@
 name: Create Rebase PR from Dev to SB
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - dev
