@@ -21,6 +21,5 @@ jobs:
         with:
           source_branch: "dev"
           destination_branch: "sb"
-          base: "dev"
           github_token: ${{ secrets.GITHUB_TOKEN }}
           pr_title: "Rebase dev to sb"
