@@ -1,4 +1,6 @@
 name: Create Rebase PR from Dev to SB
+permissions:
+  pull-requests: write
 
 on:
   workflow_dispatch:
