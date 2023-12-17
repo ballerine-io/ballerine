@@ -2287,7 +2287,7 @@ importers:
         specifier: 3.0.2
         version: 3.0.2
       axios:
-        specifier: ^1.4.0
+        specifier: ^1.6.2
         version: 1.6.2(debug@4.3.4)
       bcrypt:
         specifier: 5.1.0
