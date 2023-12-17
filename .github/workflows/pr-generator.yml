@@ -1,0 +1,24 @@
+name: Create Rebase PR from Dev to SB
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  createPR:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout dev branch
+        uses: actions/checkout@v2
+        with:
+          ref: 'dev'
+
+      - name: Create Pull Request
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: "dev"
+          destination_branch: "sb"
+          base: "dev"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: "Rebase dev to sb"
