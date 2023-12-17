@@ -27,6 +27,7 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
       },
       states: {
         idle: {
+          tags: [StateTag.COLLECTION_FLOW],
           on: {
             COLLECTION_FLOW_FINISHED: [{ target: 'create_kyc_workflows' }],
           },
@@ -38,8 +39,8 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
           },
         },
         create_kyb_workflows: {
-          KYB_CREATED: [{ target: 'manual_review' }],
-          KYB_FAILED: [{ target: 'failed' }],
+          ASSOCIATED_COMPANIES_CREATED: [{ target: 'manual_review' }],
+          ASSOCIATED_COMPANIES_FAILED: [{ target: 'failed' }],
         },
         manual_review: {
           tags: [StateTag.MANUAL_REVIEW],
@@ -47,8 +48,22 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
             approve: 'approved',
             reject: 'rejected',
             revision: 'revision',
-            KYC_REVISION: 'revision',
+            KYC_IN_PROGRESS: 'pending_kyc_response',
+            ASSOCIATED_COMPANY_IN_PROGRESS: 'pending_kyb_response',
+            KYC_IN_REVISION: 'revision',
             ASSOCIATED_COMPANY_IN_REVISION: 'revision',
+          },
+        },
+        pending_kyc_response: {
+          tags: [StateTag.PENDING_PROCESS],
+          on: {
+            KYC_RESPONDED: 'manual_review',
+          },
+        },
+        pending_kyb_response: {
+          tags: [StateTag.COLLECTION_FLOW],
+          on: {
+            ASSOCIATED_COMPANY_KYB_FINISHED: 'manual_review',
           },
         },
         failed: {
@@ -86,7 +101,6 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
               mapping: `{entity: {data: @, type: 'individual'}}`,
             },
           ],
-          initEvent: 'start',
         },
         {
           pluginKind: 'child',
@@ -119,7 +133,7 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
           pluginKind: 'iterative',
           name: 'associated_company_iterative',
           actionPluginName: 'associated_company_child_plugin',
-          stateNames: ['create_kyb_workflow'],
+          stateNames: ['create_kyb_workflows'],
           iterateOn: [
             {
               transformer: 'helper',
@@ -141,13 +155,12 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
               mapping: 'entity.data.additionalInfo.associatedCompanies',
             },
           ],
-          successAction: 'ASSOCIATED_COMPANIES_GENERATED',
+          successAction: 'ASSOCIATED_COMPANIES_CREATED',
           errorAction: 'ASSOCIATED_COMPANIES_FAILED',
         },
       ],
     },
     config: {
-      initialEvent: 'START',
       createCollectionFlowToken: true,
       childCallbackResults: [
         {
@@ -170,7 +183,7 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
             },
           ],
           persistenceStates: ['pending_associated_kyb_collection_flow'],
-          deliverEvent: 'ASSOCIATED_COMPANY_IN_KYB',
+          deliverEvent: 'ASSOCIATED_COMPANY_IN_PROGRESS',
         },
         {
           definitionId: kybChildWorkflowDefinitionId,
@@ -185,7 +198,7 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
         },
         {
           definitionId: kycChildWorkflowDefinitionId,
-          persistenceStates: ['kyc_manual_review'],
+          persistenceStates: ['manual_review'],
           transformers: [
             {
               transformer: 'jmespath',
@@ -194,6 +207,18 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
             },
           ],
           deliverEvent: 'KYC_RESPONDED',
+        },
+        {
+          definitionId: kycChildWorkflowDefinitionId,
+          persistenceStates: ['pending_kyc_flow'],
+          transformers: [
+            {
+              transformer: 'jmespath',
+              mapping:
+                '{childEntity: entity.data, vendorResult: pluginsOutput.kyc_session.kyc_session_1.result}', // jmespath
+            },
+          ],
+          deliverEvent: 'KYC_IN_PROGRESS',
         },
         {
           definitionId: kycChildWorkflowDefinitionId,

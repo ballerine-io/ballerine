@@ -50,18 +50,18 @@ const validationSchema = {
                           annualSalesVolume: 'errorMessage.required.annualSalesVolume',
                           businessModel: 'errorMessage.required.businessModel',
                         },
-                        properties: {
-                          annualSalesVolume: {
-                            type: 'number',
-                            minimum: 1,
-                            errorMessage: 'errorMessage.error.annualSalesVolume',
-                          },
-                          businessModel: {
-                            type: 'array',
-                            items: { type: 'string' },
-                            minItems: 1,
-                            errorMessage: 'errorMessage.error.businessModel',
-                          },
+                      },
+                      properties: {
+                        annualSalesVolume: {
+                          type: 'number',
+                          minimum: 1,
+                          errorMessage: 'errorMessage.error.annualSalesVolume',
+                        },
+                        businessModel: {
+                          type: 'array',
+                          items: { type: 'string' },
+                          minItems: 1,
+                          errorMessage: 'errorMessage.error.businessModel',
                         },
                       },
                     },
@@ -75,6 +75,10 @@ const validationSchema = {
     },
   },
   required: ['entity'],
+};
+
+const isCustomBusinessModel = {
+  in: ['Other', { var: 'entity.data.additionalInfo.store.processingDetails.businessModel' }],
 };
 
 export const CompanyActivityPage = {
@@ -107,12 +111,7 @@ export const CompanyActivityPage = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: [
-                'store-industry-input',
-                'business-model-input',
-                'annual-sales-volume-input',
-                'store-website-urls-input',
-              ],
+              required: ['store-industry-input'],
             },
           },
           elements: [
@@ -131,6 +130,18 @@ export const CompanyActivityPage = {
                 },
               },
             },
+          ],
+        },
+        {
+          type: 'h3',
+          options: {
+            text: 'text.businessModel',
+          },
+        },
+        {
+          type: 'json-form',
+          options: {},
+          elements: [
             {
               name: 'business-model-input',
               type: 'json-form:select',
@@ -158,6 +169,44 @@ export const CompanyActivityPage = {
                 },
               },
             },
+          ],
+        },
+        {
+          type: 'json-form',
+          options: {
+            jsonFormDefinition: {
+              required: ['other-business-model-input'],
+            },
+          },
+          visibleOn: [
+            {
+              type: 'json-logic',
+              value: isCustomBusinessModel,
+            },
+          ],
+          elements: [
+            {
+              name: 'other-business-model-input',
+              type: 'json-form:text',
+              valueDestination:
+                'entity.data.additionalInfo.store.processingDetails.otherBusinessModel',
+              options: {
+                label: 'text.businessModel',
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+              },
+            },
+          ],
+        },
+        {
+          type: 'json-form',
+          options: {
+            jsonFormDefinition: {
+              required: ['annual-sales-volume-input', 'store-website-urls-input'],
+            },
+          },
+          elements: [
             {
               name: 'annual-sales-volume-input',
               type: 'json-form:text',

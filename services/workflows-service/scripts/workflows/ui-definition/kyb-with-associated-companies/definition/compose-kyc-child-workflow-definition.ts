@@ -21,10 +21,10 @@ export const composeKycChildWorkflowDefinition = ({
       states: {
         idle: {
           on: {
-            START_ASSOCIATED_COMPANY_KYC: 'pending_associated_kyc_flow',
+            START_KYC: 'pending_kyc_flow',
           },
         },
-        pending_associated_kyc_flow: {
+        pending_kyc_flow: {
           tags: [StateTag.COLLECTION_FLOW],
           on: {
             KYC_DONE: [{ target: 'manual_review' }],

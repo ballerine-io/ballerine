@@ -33,14 +33,14 @@ export const uiKybWithAssociatedParentUiSchema = (
 
 export const uiKybParentWithAssociatedCompanies = async (
   prismaClient: PrismaClient,
-  workflowDefinitionId: string,
   projectId: string,
 ) => {
-  const parentWorkflowDefinition = await generateKybWithChildWorkflowDefinition(
-    prismaClient,
-    projectId,
-  );
-  return await prismaClient.uiDefinition.create({
-    data: uiKybWithAssociatedParentUiSchema(workflowDefinitionId, projectId),
+  const { parentKybDefinition, kybAssociatedDefinition, kycDefinition } =
+    await generateKybWithChildWorkflowDefinition(prismaClient, projectId);
+
+  const uiDef = await prismaClient.uiDefinition.create({
+    data: uiKybWithAssociatedParentUiSchema(parentKybDefinition.id, projectId),
   });
+
+  return { parentWorkflow: parentKybDefinition, uiDefinition: uiDef };
 };
