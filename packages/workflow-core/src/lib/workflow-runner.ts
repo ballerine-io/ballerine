@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { isObject, uniqueArray } from '@ballerine/common';
+import { AnyRecord, isObject, uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
@@ -102,6 +102,7 @@ export class WorkflowRunner {
     this.#__extensions.childWorkflowPlugins = this.initiateChildPlugin(
       this.#__extensions.childWorkflowPlugins ?? [],
       runtimeId,
+      config,
       invokeChildWorkflowAction,
     );
     // @ts-expect-error TODO: fix this
@@ -169,22 +170,22 @@ export class WorkflowRunner {
   initiateChildPlugin(
     childPluginSchemas: Array<ISerializableChildPluginParams>,
     parentWorkflowRuntimeId: string,
+    parentWorkflowRuntimeConfig: unknown,
     callbackAction?: ChildWorkflowPluginParams['action'],
   ) {
     return childPluginSchemas?.map(childPluginSchema => {
       const transformers = this.fetchTransformers(childPluginSchema.transformers) || [];
 
-      const childWorkflowPlugin = new ChildWorkflowPlugin({
+      return new ChildWorkflowPlugin({
         name: childPluginSchema.name,
-        parentWorkflowRuntimeId: parentWorkflowRuntimeId,
+        parentWorkflowRuntimeId,
+        parentWorkflowRuntimeConfig: parentWorkflowRuntimeConfig as AnyRecord,
         definitionId: childPluginSchema.definitionId,
         stateNames: childPluginSchema.stateNames,
         transformers: transformers,
         initEvent: childPluginSchema.initEvent,
         action: callbackAction!,
       });
-
-      return childWorkflowPlugin;
     });
   }
 
@@ -202,9 +203,7 @@ export class WorkflowRunner {
         actionPlugins,
       );
       //@ts-ignore
-      const plugin = new Plugin(pluginParams);
-
-      return plugin;
+      return new Plugin(pluginParams);
     });
   }
 
@@ -582,7 +581,7 @@ export class WorkflowRunner {
 
   private async __invokeCommonPlugin(commonPlugin: CommonPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const { callbackAction, error } = await commonPlugin.invoke?.(this.#__context);
+    const { callbackAction, error } = await commonPlugin.invoke?.(this.#__context, this.#__config);
 
     if (!!error) {
       this.#__context.pluginsOutput = {

@@ -24,7 +24,12 @@ import {
   WorkflowAssignee,
   WorkflowRuntimeListItemModel,
 } from '@/workflow/workflow-runtime-list-item.model';
-import { DefaultContextSchema, getDocumentId, isErrorWithMessage } from '@ballerine/common';
+import {
+  AnyRecord,
+  DefaultContextSchema,
+  getDocumentId,
+  isErrorWithMessage,
+} from '@ballerine/common';
 import {
   ChildPluginCallbackOutput,
   ChildToParentCallback,
@@ -315,6 +320,7 @@ export class WorkflowService {
       await this.createOrUpdateWorkflowRuntime({
         workflowDefinitionId: childPluginConfig.definitionId,
         context: childPluginConfig.initOptions.context as unknown as DefaultContextSchema,
+        config: childPluginConfig.initOptions.config as unknown as AnyRecord,
         parentWorkflowId: childPluginConfig.parentWorkflowRuntimeId,
         projectIds,
         currentProjectId,

@@ -12,6 +12,7 @@ import {
 import { TContext } from './utils';
 import { ChildCallabackable } from './workflow-runner';
 import { THelperFormatingLogic } from './utils/context-transformers/types';
+import { AnyRecord } from '@ballerine/common';
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
@@ -106,6 +107,7 @@ export type ChildPluginCallbackOutput = {
   initOptions: {
     context: TContext;
     event?: string;
+    config: AnyRecord;
   };
 };
 

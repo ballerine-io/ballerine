@@ -37,7 +37,7 @@ export class ApiPlugin {
     try {
       const requestPayload = await this.transformData(this.request.transformers, {
         ...context,
-        workflowConfig: config,
+        workflowRuntimeConfig: config,
       });
 
       const { isValidRequest, errorMessage } = await this.validateContent(
