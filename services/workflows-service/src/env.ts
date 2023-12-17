@@ -61,6 +61,7 @@ export const env = createEnv({
     SALESFORCE_CONSUMER_KEY: z.string().optional().describe('Salesforce consumer key'),
     SALESFORCE_CONSUMER_SECRET: z.string().optional().describe('Salesforce consumer secret'),
     APP_API_URL: z.string().url().describe('The URL of the workflows-service API'),
+    COLLECTION_FLOW_URL: z.string().url().optional().describe('The URL of the Collection Flow App'),
     DATA_MIGRATION_BUCKET_NAME: z
       .string()
       .optional()

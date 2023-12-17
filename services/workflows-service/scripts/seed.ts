@@ -23,6 +23,7 @@ import type { InputJsonValue } from '../src/types';
 import { generateWebsiteMonitoringExample } from './workflows/website-monitoring-workflow';
 import { generateCollectionKybWorkflow } from './workflows/generate-collection-kyb-workflow';
 import { generateInitialCollectionFlowExample } from './workflows/runtime/generate-initial-collection-flow-example';
+import { uiKybParentWithAssociatedCompanies } from './workflows/ui-definition/kyb-with-associated-companies/ui-kyb-parent-dynamic-example';
 
 seed(10).catch(error => {
   console.error(error);
@@ -1062,7 +1063,8 @@ async function seed(bcryptSalt: string | number) {
         childWorkflowsRuntimeData: true,
       },
       where: {
-        workflowDefinitionId: 'dynamic_kyb_parent_example',
+        // workflowDefinitionId: 'dynamic_kyb_parent_example',
+        workflowDefinitionId: 'kyb_with_associated_companies',
         businessId: { not: null },
         state: {
           in: [
@@ -1164,11 +1166,16 @@ async function seed(bcryptSalt: string | number) {
   await generateKycSessionDefinition(client);
   await generateKybKycWorkflowDefinition(client);
   await generateKycForE2eTest(client);
-  const collectionFlowKyb = await generateCollectionKybWorkflow(client, project1.id);
+  const collectionKybWorkflowDefinition = await generateCollectionKybWorkflow(client, project1.id);
+
+  const { parentWorkflow, uiDefinition } = await uiKybParentWithAssociatedCompanies(
+    client,
+    project1.id,
+  );
   await generateWebsiteMonitoringExample(client, project1.id);
 
   await generateInitialCollectionFlowExample(client, {
-    workflowDefinitionId: collectionFlowKyb.id,
+    workflowDefinitionId: parentWorkflow.id,
     projectId: project1.id,
     endUserId: endUserIds[0]!,
     businessId: businessIds[0]!,
