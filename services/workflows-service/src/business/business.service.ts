@@ -77,12 +77,16 @@ export class BusinessService {
 
       return companyInformation;
     } catch (e) {
+      // TODO: have global axios error handler - BAL-916, BAL-917
       if (e instanceof AxiosError) {
         const axiosError = e as AxiosError;
         this.logger.error(`Failed to fetch company information.Error ${axiosError.message}`);
 
         if (axiosError.status === 500) {
-          throw new common.InternalServerErrorException();
+          throw new common.InternalServerErrorException({
+            statusCode: 500,
+            ...axiosError,
+          });
         }
 
         throw axiosError;
