@@ -83,7 +83,7 @@ export interface CallbackInfo {
 export interface WorkflowRunnerArgs {
   runtimeId: string;
   definition: MachineConfig<any, any, any>;
-  config: MachineConfig<any, any, any>;
+  config?: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
