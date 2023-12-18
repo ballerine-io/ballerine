@@ -33,9 +33,9 @@ export const queryClient = new QueryClient({
     },
   },
   queryCache: new QueryCache({
-    onError: (error) => {
+    onError: error => {
       if (isZodError(error)) {
-        toast.error(t('toast:validation_error'));
+        return;
       }
 
       if (!isErrorWithCode(error)) throw error;
