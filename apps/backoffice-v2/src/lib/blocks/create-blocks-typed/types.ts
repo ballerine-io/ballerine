@@ -1,5 +1,4 @@
 import { Block } from '@ballerine/blocks';
-import { TableCell } from '@/pages/Entity/components/TableCell/TableCell';
 import { ComponentProps } from 'react';
 import { MotionBadge } from '@/common/components/molecules/MotionBadge/MotionBadge';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
@@ -17,6 +16,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableCell,
 } from '@/common/components/atoms/Table';
 import { ColumnDef, TableOptions } from '@tanstack/react-table';
 import { Dialog } from '@/common/components/molecules/Dialog/Dialog';
@@ -54,7 +54,7 @@ export type TAlertCell = {
 export type TBadgeCell = {
   type: 'badge';
   value: ComponentProps<typeof MotionBadge>['children'];
-  props: ComponentProps<typeof MotionBadge>;
+  props?: ComponentProps<typeof MotionBadge>;
 };
 
 export type TCallToActionLegacyCell = {

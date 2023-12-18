@@ -70,5 +70,5 @@ export const useMapBlock = ({ filteredPluginsOutput, entityType, workflow }) => 
           .flat(1),
       })
       .build();
-  }, [address, locations, entityType, workflow]);
+  }, [address, isLoading, locations, entityType, workflow?.id, workflow?.context?.documents]);
 };

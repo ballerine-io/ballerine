@@ -7,8 +7,9 @@ import { StateTag } from '@ballerine/common';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { motionBadgeProps } from '@/pages/Entity/hooks/useTasks/motion-badge-props';
 
-const motionProps: ComponentProps<typeof MotionButton> = {
+const motionButtonProps: ComponentProps<typeof MotionButton> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
   initial: { y: 10, opacity: 0 },
   transition: { type: 'spring', bounce: 0.3 },
@@ -110,7 +111,7 @@ export const useAssociatedCompaniesBlock = ({
                                       type: 'badge',
                                       value: 'Awaiting Information',
                                       props: {
-                                        ...motionProps,
+                                        ...motionBadgeProps,
                                         variant: 'warning',
                                         className: 'text-sm font-bold',
                                       },
@@ -163,7 +164,7 @@ export const useAssociatedCompaniesBlock = ({
                                 value: {
                                   trigger: (
                                     <MotionButton
-                                      {...motionProps}
+                                      {...motionButtonProps}
                                       variant="outline"
                                       className={'ms-3.5'}
                                     >

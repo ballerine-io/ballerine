@@ -17,7 +17,7 @@ import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/u
 import { getPostRemoveDecisionEventName } from '@/pages/Entity/hooks/useTasks/get-post-remove-decision-event-name';
 import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { CommonWorkflowStates, StateTag } from '@ballerine/common';
-import { motionProps } from '@/pages/Entity/hooks/useTasks/motion-props';
+import { motionBadgeProps } from '@/pages/Entity/hooks/useTasks/motion-badge-props';
 import { X } from 'lucide-react';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { getDocumentsSchemas } from '@/pages/Entity/hooks/useTasks/utils/get-documents-schemas/get-documents-schemas';
@@ -95,7 +95,7 @@ export const useDocumentBlocks = ({
                 type: 'badge',
                 value: 'Pending re-upload',
                 props: {
-                  ...motionProps,
+                  ...motionBadgeProps,
                   variant: 'warning',
                   className: badgeClassNames,
                 },
@@ -121,7 +121,7 @@ export const useDocumentBlocks = ({
                   </React.Fragment>
                 ),
                 props: {
-                  ...motionProps,
+                  ...motionBadgeProps,
                   variant: 'warning',
                   className: `gap-x-1 text-white bg-warning ${badgeClassNames}`,
                 },
@@ -137,7 +137,7 @@ export const useDocumentBlocks = ({
                 type: 'badge',
                 value: 'Approved',
                 props: {
-                  ...motionProps,
+                  ...motionBadgeProps,
                   variant: 'success',
                   className: `${badgeClassNames} bg-success/20`,
                 },
@@ -153,7 +153,7 @@ export const useDocumentBlocks = ({
                 type: 'badge',
                 value: 'Rejected',
                 props: {
-                  ...motionProps,
+                  ...motionBadgeProps,
                   variant: 'destructive',
                   className: badgeClassNames,
                 },
@@ -245,10 +245,10 @@ export const useDocumentBlocks = ({
           .addBlock()
           .addCell({
             type: 'details',
+            hideSeparator: true,
             value: {
               id,
               title: 'Decision',
-              hideSeparator: true,
               data: decision?.status
                 ? Object.entries(decision ?? {}).map(([title, value]) => ({
                     title,

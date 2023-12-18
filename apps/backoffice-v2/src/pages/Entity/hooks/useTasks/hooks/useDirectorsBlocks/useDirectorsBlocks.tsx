@@ -15,7 +15,7 @@ import {
   extractCountryCodeFromWorkflow,
 } from '../../../useEntity/utils';
 import { getPostRemoveDecisionEventName } from '../../get-post-remove-decision-event-name';
-import { motionProps } from '../../motion-props';
+import { motionBadgeProps } from '../../motion-badge-props';
 import { selectDirectorsDocuments } from '../../selectors/selectDirectorsDocuments';
 import { getPostApproveEventNameEvent } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
@@ -126,7 +126,7 @@ export const useDirectorsBlocks = (
                   type: 'badge',
                   value: 'Approved',
                   props: {
-                    ...motionProps,
+                    ...motionBadgeProps,
                     variant: 'success',
                     className: `text-sm font-bold bg-success/20`,
                   },
@@ -277,7 +277,7 @@ export const useDirectorsBlocks = (
                 type: 'badge',
                 value: 'Pending re-upload',
                 props: {
-                  ...motionProps,
+                  ...motionBadgeProps,
                   variant: 'warning',
                   className: 'text-sm font-bold',
                 },
