@@ -43,12 +43,10 @@ export const queryClient = new QueryClient({
       const status = error.code;
 
       // Dont toast for no important errors
-      if ([401, 403, 404].includes(status)) {
-        if (status === 401) {
-          void clearAuthenticatedUser(queryClient);
-        }
+      if ([401, 403, 404].includes(status)) return;
 
-        return;
+      if (status === 401) {
+        void clearAuthenticatedUser(queryClient);
       }
 
       if (!isErrorWithMessage(error) || error.message === 'undefined' || error.message === 'null') {
