@@ -69,7 +69,7 @@ export interface WorkflowOptions {
   runtimeId: string;
   definitionType: 'statechart-json' | 'bpmn-json';
   definition: MachineConfig<any, any, any>;
-  config: MachineConfig<any, any, any>;
+  config?: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
