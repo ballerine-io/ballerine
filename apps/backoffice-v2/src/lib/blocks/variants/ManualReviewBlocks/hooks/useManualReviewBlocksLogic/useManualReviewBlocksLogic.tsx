@@ -11,7 +11,7 @@ import { getPostDecisionEventName } from '@/lib/blocks/components/CallToActionLe
 import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 
-export const useKybManualReviewLegacyBlocksLogic = () => {
+export const useManualReviewBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
   const filterId = useFilterId();
   const { data: workflow, isLoading } = useWorkflowQuery({

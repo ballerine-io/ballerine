@@ -736,6 +736,7 @@ async function seed(bcryptSalt: string | number) {
           select: {
             id: true,
             name: true,
+            version: true,
             contextSchema: true,
             config: true,
             definition: true,
@@ -798,6 +799,7 @@ async function seed(bcryptSalt: string | number) {
           select: {
             id: true,
             name: true,
+            version: true,
             contextSchema: true,
             config: true,
             definition: true,
@@ -902,6 +904,7 @@ async function seed(bcryptSalt: string | number) {
           select: {
             id: true,
             name: true,
+            version: true,
             contextSchema: true,
             config: true,
             definition: true,
@@ -958,6 +961,7 @@ async function seed(bcryptSalt: string | number) {
           select: {
             id: true,
             name: true,
+            version: true,
             contextSchema: true,
             config: true,
             definition: true,
@@ -1020,6 +1024,7 @@ async function seed(bcryptSalt: string | number) {
           select: {
             id: true,
             name: true,
+            version: true,
             contextSchema: true,
             config: true,
             definition: true,

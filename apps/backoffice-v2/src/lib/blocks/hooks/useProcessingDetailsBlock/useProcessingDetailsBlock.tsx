@@ -5,6 +5,7 @@ export const useProcessingDetailsBlock = ({ processingDetails, workflow }) => {
 
   return [
     {
+      name: 'processing-details',
       cells: [
         {
           type: 'heading',

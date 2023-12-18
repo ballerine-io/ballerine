@@ -1,8 +1,9 @@
 import { Case } from './components/Case/Case';
 import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
+import { BlocksVariant } from '@/lib/blocks/variants/constants';
 
 export const Entity = () => {
-  const { BlocksByUiSchemaVariant, workflow, selectedEntity } = useEntityLogic();
+  const { workflow, selectedEntity } = useEntityLogic();
 
   // Selected entity
   return (
@@ -18,7 +19,15 @@ export const Entity = () => {
         }
       />
       <Case.Content key={selectedEntity?.id}>
-        <BlocksByUiSchemaVariant />
+        {workflow?.workflowDefinition && (
+          <BlocksVariant
+            workflowDefinition={{
+              version: workflow?.workflowDefinition?.version,
+              variant: workflow?.workflowDefinition?.variant,
+              config: workflow?.workflowDefinition?.config,
+            }}
+          />
+        )}
       </Case.Content>
     </Case>
   );
