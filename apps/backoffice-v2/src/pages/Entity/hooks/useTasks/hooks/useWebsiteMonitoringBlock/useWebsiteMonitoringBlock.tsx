@@ -104,7 +104,7 @@ export const useWebsiteMonitoringBlock = ({ pluginsOutput, workflow }) => {
     return createBlocksTyped()
       .addBlock()
       .addCell({
-        type: 'container',
+        type: 'block',
         value: createBlocksTyped()
           .addBlock()
           .addCell({
@@ -350,7 +350,9 @@ export const useWebsiteMonitoringBlock = ({ pluginsOutput, workflow }) => {
               })
               .build()
               .flat(1),
-          }),
+          })
+          .build()
+          .flat(1),
       })
       .build();
   }, [
