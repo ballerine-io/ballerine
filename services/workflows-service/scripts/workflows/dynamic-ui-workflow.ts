@@ -317,7 +317,7 @@ export const dynamicUiWorkflowDefinition = {
             mapping: `{entity: {data: @, type: 'individual'}}`,
           },
         ],
-        initEvent: 'START',
+        initEvent: 'start',
       },
     ],
     commonPlugins: [
