@@ -1,6 +1,6 @@
 import { Case } from './components/Case/Case';
 import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
-import { BlocksVariant } from '@/lib/blocks/variants/constants';
+import { BlocksVariant } from '@/lib/blocks/variants/BlocksVariant/BlocksVariant';
 
 export const Entity = () => {
   const { workflow, selectedEntity } = useEntityLogic();

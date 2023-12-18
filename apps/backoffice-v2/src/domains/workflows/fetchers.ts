@@ -7,7 +7,7 @@ import { handleZodError } from '../../common/utils/handle-zod-error/handle-zod-e
 import { ObjectWithIdSchema } from '../../lib/zod/utils/object-with-id/object-with-id';
 import { zPropertyKey } from '../../lib/zod/utils/z-property-key/z-property-key';
 import { IWorkflowId } from './interfaces';
-import { WorkflowVariant } from '@ballerine/common';
+import { WorkflowDefinitionVariant } from '@ballerine/common';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -63,7 +63,7 @@ export const BaseWorkflowByIdSchema = z.object({
   workflowDefinition: ObjectWithIdSchema.extend({
     name: z.string(),
     version: z.number(),
-    variant: z.string().default(WorkflowVariant.DEFAULT),
+    variant: z.string().default(WorkflowDefinitionVariant.DEFAULT),
     contextSchema: z.record(z.any(), z.any()).nullable(),
     documentsSchema: z.array(z.any()).optional().nullable(),
     config: z.record(z.any(), z.any()).nullable(),
