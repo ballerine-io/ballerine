@@ -15,6 +15,8 @@ import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
+import { ctw } from '@/common/utils/ctw/ctw';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -27,7 +29,7 @@ export const useKycBlock = ({
   parentWorkflowId,
   childWorkflow,
 }: {
-  childWorkflow: TWorkflowById['childWorkflows'][number];
+  childWorkflow: NonNullable<TWorkflowById['childWorkflows']>[number];
   parentWorkflowId: string;
 }) => {
   const { noAction } = useCaseDecision();
@@ -94,34 +96,38 @@ export const useKycBlock = ({
     childWorkflow?.context?.pluginsOutput?.kyc_session ?? {},
   )?.length
     ? Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.map(
-        (key, index, collection) => ({
-          id: 'decision',
-          type: 'details',
-          value: {
-            id: childWorkflow?.id,
-            title: `Details`,
-            hideSeparator: index === collection.length - 1,
-            data: Object.entries({
-              ...childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.entity?.data,
-              ...omitPropsFromObject(
-                childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
-                  ?.properties,
-                'issuer',
-              ),
-              issuer:
-                childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
-                  ?.issuer?.country,
-            })?.map(([title, value]) => ({
-              title,
-              value,
-              pattern: '',
-              isEditable: false,
-              dropdownOptions: undefined,
-            })),
-          },
-          workflowId: childWorkflow?.id,
-          documents: childWorkflow?.context?.documents,
-        }),
+        (key, index, collection) =>
+          createBlocksTyped()
+            .addBlock()
+            .addCell({
+              id: 'decision',
+              type: 'details',
+              value: {
+                id: childWorkflow?.id,
+                title: `Details`,
+                hideSeparator: index === collection.length - 1,
+                data: Object.entries({
+                  ...childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.entity?.data,
+                  ...omitPropsFromObject(
+                    childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
+                      ?.properties,
+                    'issuer',
+                  ),
+                  issuer:
+                    childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
+                      ?.issuer?.country,
+                })?.map(([title, value]) => ({
+                  title,
+                  value,
+                  pattern: '',
+                  isEditable: false,
+                  dropdownOptions: undefined,
+                })),
+              },
+              workflowId: childWorkflow?.id,
+              documents: childWorkflow?.context?.documents,
+            })
+            .cellAt(0, 0),
       ) ?? []
     : [];
 
@@ -171,8 +177,9 @@ export const useKycBlock = ({
     const badgeClassNames = 'text-sm font-bold';
 
     if (tags?.includes(StateTag.REVISION)) {
-      return [
-        {
+      return createBlocksTyped()
+        .addBlock()
+        .addCell({
           type: 'badge',
           value: 'Pending re-upload',
           props: {
@@ -180,13 +187,15 @@ export const useKycBlock = ({
             variant: 'warning',
             className: badgeClassNames,
           },
-        },
-      ];
+        })
+        .build()
+        .flat(1);
     }
 
     if (tags?.includes(StateTag.APPROVED)) {
-      return [
-        {
+      return createBlocksTyped()
+        .addBlock()
+        .addCell({
           type: 'badge',
           value: 'Approved',
           props: {
@@ -194,40 +203,46 @@ export const useKycBlock = ({
             variant: 'success',
             className: `${badgeClassNames} bg-success/20`,
           },
-        },
-      ];
+        })
+        .build()
+        .flat(1);
     }
 
     if (tags?.includes(StateTag.REJECTED)) {
-      return [
-        {
+      return createBlocksTyped()
+        .addBlock()
+        .addCell({
           type: 'badge',
           value: 'Rejected',
           props: {
             ...motionProps,
             variant: 'destructive',
-            className: `${badgeClassNames}`,
+            className: badgeClassNames,
           },
-        },
-      ];
+        })
+        .build()
+        .flat(1);
     }
 
     if (tags?.includes(StateTag.PENDING_PROCESS)) {
-      return [
-        {
+      return createBlocksTyped()
+        .addBlock()
+        .addCell({
           type: 'badge',
           value: 'Pending ID verification',
           props: {
             ...motionProps,
             variant: 'warning',
-            className: `${badgeClassNames}`,
+            className: badgeClassNames,
           },
-        },
-      ];
+        })
+        .build()
+        .flat(1);
     }
 
-    return [
-      {
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
         type: 'caseCallToActionLegacy',
         value: 'Re-upload needed',
         data: {
@@ -236,8 +251,8 @@ export const useKycBlock = ({
           childWorkflowContextSchema: childWorkflow?.workflowDefinition?.contextSchema,
           disabled: isDisabled,
         },
-      },
-      {
+      })
+      .addCell({
         type: 'callToAction',
         value: {
           text: 'Approve',
@@ -248,109 +263,129 @@ export const useKycBlock = ({
             variant: 'success',
           },
         },
-      },
-    ];
+      })
+      .build()
+      .flat(1);
   };
 
-  const headerCell = {
-    id: 'header',
-    type: 'container',
-    value: [
-      {
-        type: 'heading',
-        value: `${valueOrNA(childWorkflow?.context?.entity?.data?.firstName)} ${valueOrNA(
-          childWorkflow?.context?.entity?.data?.lastName,
-        )}`,
-      },
-      {
-        id: 'actions',
-        type: 'container',
-        value: getDecisionStatusOrAction(childWorkflow?.tags),
-      },
-    ],
-  };
+  const headerCell = createBlocksTyped()
+    .addBlock()
+    .addCell({
+      id: 'header',
+      type: 'container',
+      value: createBlocksTyped()
+        .addBlock()
+        .addCell({
+          type: 'heading',
+          value: `${valueOrNA(childWorkflow?.context?.entity?.data?.firstName)} ${valueOrNA(
+            childWorkflow?.context?.entity?.data?.lastName,
+          )}`,
+        })
+        .addCell({
+          id: 'actions',
+          type: 'container',
+          value: getDecisionStatusOrAction(childWorkflow?.tags),
+        })
+        .build()
+        .flat(1),
+    })
+    .cellAt(0, 0);
 
-  return {
-    className:
-      childWorkflow.state === 'revision'
-        ? `shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning`
-        : '',
-    cells: [
-      [
-        headerCell,
-        {
+  return createBlocksTyped()
+    .addBlock()
+    .addCell({
+      type: 'block',
+      className: ctw({
+        'shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning':
+          childWorkflow.state === 'revision',
+      }),
+      value: createBlocksTyped()
+        .addBlock()
+        .addCell(headerCell)
+        .addCell({
           id: 'kyc-block',
           type: 'container',
-          value: [
-            {
+          value: createBlocksTyped()
+            .addBlock()
+            .addCell({
               type: 'container',
-              value: [
-                {
+              value: createBlocksTyped()
+                .addBlock()
+                .addCell({
                   type: 'container',
-                  value: [
-                    {
+                  value: createBlocksTyped()
+                    .addBlock()
+                    .addCell({
                       id: 'header',
                       type: 'heading',
                       value: 'Details',
-                    },
-                    {
+                    })
+                    .addCell({
                       id: 'decision',
                       type: 'details',
                       value: {
                         id: 1,
-                        title: `Details`,
+                        title: 'Details',
                         data: details,
                       },
                       workflowId: childWorkflow?.id,
                       documents: childWorkflow?.context?.documents,
-                    },
-                  ],
-                },
-                {
+                    })
+                    .build()
+                    .flat(1),
+                })
+                .addCell({
                   type: 'container',
-                  value: [
-                    {
+                  value: createBlocksTyped()
+                    .addBlock()
+                    .addCell({
                       id: 'header',
                       type: 'heading',
                       value: 'Document Extracted Data',
-                    },
-                    ...documentExtractedData,
-                  ],
-                },
-                {
+                    })
+                    .build()
+                    .concat(documentExtractedData)
+                    .flat(1),
+                })
+                .addCell({
                   type: 'container',
-                  value: [
-                    {
+                  value: createBlocksTyped()
+                    .addBlock()
+                    .addCell({
                       id: 'header',
                       type: 'heading',
                       value: 'Document Verification Results',
-                    },
-                    {
+                    })
+                    .addCell({
                       id: 'decision',
                       type: 'details',
                       hideSeparator: true,
                       value: {
                         id: 1,
-                        title: `Decision`,
+                        title: 'Decision',
                         data: decision,
                       },
                       workflowId: childWorkflow?.id,
                       documents: childWorkflow?.context?.documents,
-                    },
-                  ],
-                },
-              ],
-            },
-            {
+                    })
+                    .build()
+                    .flat(1),
+                })
+                .build()
+                .flat(1),
+            })
+            .addCell({
               type: 'multiDocuments',
               value: {
                 isLoading: docsData?.some(({ isLoading }) => isLoading),
                 data: documents,
               },
-            },
-          ],
-        },
-      ],
-    ],
-  };
+            })
+            .build()
+            .flat(1),
+        })
+        .build()
+        .flat(1),
+    })
+    .build();
 };
