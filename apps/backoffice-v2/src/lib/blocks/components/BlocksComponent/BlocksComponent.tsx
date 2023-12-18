@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react';
 import { Card } from '@/common/components/atoms/Card/Card';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
-import { cells } from '@/pages/Entity/hooks/useEntity/cells';
+import { cells } from '@/lib/blocks/cells';
 import { IBlocksComponentProps } from '@/lib/blocks/components/BlocksComponent/interfaces';
 
 export const BlocksComponent: FunctionComponent<IBlocksComponentProps> = ({ blocks }) => {

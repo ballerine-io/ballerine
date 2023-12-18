@@ -1,4 +1,4 @@
-import { cells } from '@/pages/Entity/hooks/useEntity/cells';
+import { cells } from '@/lib/blocks/cells';
 
 export interface IBlocksComponentProps {
   blocks: Array<{
