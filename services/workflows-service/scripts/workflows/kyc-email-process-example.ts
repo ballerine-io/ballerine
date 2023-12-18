@@ -15,7 +15,7 @@ export const kycEmailSessionDefinition = {
       idle: {
         tags: [StateTag.PENDING_PROCESS],
         on: {
-          START: 'get_kyc_session',
+          start: 'get_kyc_session',
         },
       },
       get_kyc_session: {
