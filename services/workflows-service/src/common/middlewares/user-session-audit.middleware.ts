@@ -40,8 +40,10 @@ export class UserSessionAuditMiddleware implements NestMiddleware {
   }
 
   private async trackAuthorizedAction(user: Partial<User>, activeDate: Date) {
-    this.logger.log(`Updating user presence`, { userId: user.id });
-    await this.userService.updateById(user.id!, { data: { lastActiveAt: activeDate } });
-    this.logger.log(`Updated user presence`, { userId: user.id });
+    this.logger.debug(`Updating user presence`, { userId: user.id });
+    await this.userService.updateById(user.id!, {
+      data: { lastActiveAt: activeDate },
+    });
+    this.logger.debug(`Updated user presence`, { userId: user.id });
   }
 }
