@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
@@ -48,8 +48,8 @@ const elems = {
 };
 
 export const CollectionFlow = withSessionProtected(() => {
-  const lng = useLanguageParam();
-  const { data: schema } = useUISchemasQuery(lng || 'en');
+  const { language } = useLanguageParam();
+  const { data: schema } = useUISchemasQuery(language);
   const { data: context } = useFlowContextQuery();
   const { customer } = useCustomer();
   const { t } = useTranslation();
@@ -87,6 +87,18 @@ export const CollectionFlow = withSessionProtected(() => {
     return prepareInitialUIState(elements || [], context || {}, isRevision);
   }, [elements, context, isRevision]);
 
+  // Breadcrumbs now using scrollIntoView method to make sure that breadcrumb is always in viewport.
+  // Due to dynamic dimensions of logo it doesnt work well if scroll happens before logo is loaded.
+  // This workaround is needed to wait for logo to be loaded so scrollIntoView will work with correct dimensions of page.
+  const [isLogoLoaded, setLogoLoaded] = useState(customer?.logoImageUri ? false : true);
+
+  useEffect(() => {
+    if (!customer?.logoImageUri) return;
+
+    // Resseting loaded state in case of logo change
+    setLogoLoaded(false);
+  }, [customer?.logoImageUri]);
+
   if (initialContext?.flowConfig?.appState === 'approved') return <Approved />;
   if (initialContext?.flowConfig?.appState == 'rejected') return <Rejected />;
 
@@ -123,9 +135,12 @@ export const CollectionFlow = withSessionProtected(() => {
                         <AppShell>
                           <AppShell.Sidebar>
                             <div className="flex h-full flex-col">
-                              <div className="flex-1">
-                                <div className="pb-10">
+                              <div className="flex h-full flex-1 flex-col">
+                                <div className="flex flex-row justify-between pb-10">
                                   <AppShell.Navigation />
+                                  <div className="w-[105px]">
+                                    <AppShell.LanguagePicker />
+                                  </div>
                                 </div>
                                 <div className="pb-10">
                                   <AppShell.Logo
@@ -133,13 +148,12 @@ export const CollectionFlow = withSessionProtected(() => {
                                     logoSrc={customer?.logoImageUri}
                                     // @ts-ignore
                                     appName={customer?.displayName}
+                                    onLoad={() => setLogoLoaded(true)}
                                   />
                                 </div>
-                                <div className="pb-10">
-                                  <StepperUI />
+                                <div className="min-h-0 flex-1 pb-10">
+                                  {isLogoLoaded ? <StepperUI /> : null}
                                 </div>
-                              </div>
-                              <div>
                                 <div>
                                   {customer?.displayName && (
                                     <div className="border-b pb-12">
