@@ -1,13 +1,5 @@
 import * as common from '@nestjs/common';
-import {
-  Param,
-  Post,
-  Query,
-  Res,
-  UploadedFile,
-  UseInterceptors,
-  HttpException,
-} from '@nestjs/common';
+import { Param, Post, Query, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';

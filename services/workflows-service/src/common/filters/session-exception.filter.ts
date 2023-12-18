@@ -2,7 +2,7 @@ import util from 'util';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { Catch, ArgumentsHost, UnauthorizedException } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { SessionExpiredException } from '@/errors';
 
 @Catch(SessionExpiredException, UnauthorizedException)

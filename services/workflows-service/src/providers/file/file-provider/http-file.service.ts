@@ -1,11 +1,10 @@
 import { HttpService } from '@nestjs/axios';
 import { TLocalFilePath, TRemoteFileConfig, TRemoteUri } from '@/providers/file/types/files-types';
 import { promises as fsPromises } from 'fs';
-import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Readable } from 'stream';
 import { IStreamableFileProvider } from '../types/interfaces';
 import { removeSensitiveHeaders } from '@/common/utils/request-response/request';
-import { handleAxiosError } from '@/common/http-service/utils';
 import { LoggerService } from '@nestjs/common';
 
 export class HttpFileService implements IStreamableFileProvider {
