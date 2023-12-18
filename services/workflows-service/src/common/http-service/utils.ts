@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { AxiosError, isAxiosError } from 'axios';
 
-const _httpStatusFromAxiosMap = {
+const __httpStatusFromAxiosMap = {
   ENOTFOUND: HttpStatus.NOT_FOUND,
   ECONNABORTED: HttpStatus.INTERNAL_SERVER_ERROR,
   ERR_CANCELED: HttpStatus.INTERNAL_SERVER_ERROR, // connection canceled
@@ -25,14 +25,14 @@ export function getLightweightAxiosError(error: AxiosError) {
 }
 
 export const getHttpStatusFromAxiosError = (
-  code?: keyof typeof _httpStatusFromAxiosMap | string,
+  code?: keyof typeof __httpStatusFromAxiosMap | string,
 ) => {
-  if (!code || !(code in _httpStatusFromAxiosMap)) {
+  if (!code || !(code in __httpStatusFromAxiosMap)) {
     return HttpStatus.INTERNAL_SERVER_ERROR;
   }
 
   // @ts-ignore
-  return _httpStatusFromAxiosMap[code];
+  return __httpStatusFromAxiosMap[code];
 };
 
 export function handleAxiosError(error: AxiosError) {
