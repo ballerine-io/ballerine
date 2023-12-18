@@ -38,29 +38,26 @@ export const queryClient = new QueryClient({
         toast.error(t('toast:validation_error'));
       }
 
-      if (!isErrorWithCode(error)) {
-        throw error;
-      }
+      if (!isErrorWithCode(error)) throw error;
 
-      if (isErrorWithCode(error)) {
-        const status = error.code;
+      const status = error.code;
+
+      // Dont toast for no important errors
+      if ([401, 403, 404].includes(status)) {
         if (status === 401) {
           void clearAuthenticatedUser(queryClient);
         }
 
-        if (
-          isErrorWithMessage(error) &&
-          error.message !== 'undefined' &&
-          error.message !== 'null'
-        ) {
-          // Dont toast for no important errors
-          if (![401, 403, 404].includes(status)) {
-            toast.error(error.message, {
-              id: error.message,
-            });
-          }
-        }
+        return;
       }
+
+      if (!isErrorWithMessage(error) || error.message === 'undefined' || error.message === 'null') {
+        return;
+      }
+
+      toast.error(error.message, {
+        id: error.message,
+      });
     },
   }),
 });
