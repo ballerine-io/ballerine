@@ -14,14 +14,10 @@ export class SessionExpiredExceptionFilter extends BaseExceptionFilter {
   async catch(exception: unknown, host: ArgumentsHost) {
     const context = host.switchToHttp();
     const req = context.getRequest<Request>();
-    const response = context.getRequest<Response>();
 
     if (req.session?.passport?.user) {
       const asyncLogout = util.promisify(req.logout.bind(req));
       await asyncLogout();
-
-      response.clearCookie('session');
-      response.clearCookie('session.sig');
     }
 
     super.catch(exception, host);
