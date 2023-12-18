@@ -102,9 +102,16 @@ export const useKybDemoBlocksLogic = () => {
           reason,
           contextUpdateMethod: 'base',
         });
-        window.open(workflow?.context?.metadata?.collectionFlowUrl, '_blank');
+        window.open(
+          `${workflow?.context?.metadata?.collectionFlowUrl}/?token=${workflow?.context?.metadata?.token}`,
+          '_blank',
+        );
       },
-    [mutateRevisionTaskById, workflow?.context?.metadata?.collectionFlowUrl],
+    [
+      mutateRevisionTaskById,
+      workflow?.context?.metadata?.collectionFlowUrl,
+      workflow?.context?.metadata?.token,
+    ],
   );
   const onReuploadNeededDirectors = useCallback(
     ({
@@ -128,9 +135,16 @@ export const useKybDemoBlocksLogic = () => {
           reason,
           contextUpdateMethod: 'director',
         });
-        window.open(workflow?.context?.metadata?.collectionFlowUrl, '_blank');
+        window.open(
+          `${workflow?.context?.metadata?.collectionFlowUrl}/?token=${workflow?.context?.metadata?.token}`,
+          '_blank',
+        );
       },
-    [mutateRevisionTaskById, workflow?.context?.metadata?.collectionFlowUrl],
+    [
+      mutateRevisionTaskById,
+      workflow?.context?.metadata?.collectionFlowUrl,
+      workflow?.context?.metadata?.token,
+    ],
   );
 
   // Blocks

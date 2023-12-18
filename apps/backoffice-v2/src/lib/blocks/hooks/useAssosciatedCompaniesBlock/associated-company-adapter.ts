@@ -16,5 +16,5 @@ export const associatedCompanyAdapter = (workflow: TWorkflowById) => ({
   contactEmail: workflow?.context?.entity?.data?.additionalInfo?.mainRepresentative?.email,
   nextEvents: workflow?.nextEvents,
   tags: workflow?.tags,
-  collectionFlowUrl: `${workflow?.context?.metadata?.collectionFlowUrl}/$${workflow?.context?.metadata?.token}`,
+  collectionFlowUrl: `${workflow?.context?.metadata?.collectionFlowUrl}/?token=$${workflow?.context?.metadata?.token}`,
 });
