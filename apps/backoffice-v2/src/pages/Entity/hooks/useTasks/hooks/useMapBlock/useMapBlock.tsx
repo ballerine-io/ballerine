@@ -12,7 +12,12 @@ export const useMapBlock = ({ filteredPluginsOutput, entityType, workflow }) => 
   const { data: locations } = useNominatimQuery(address);
 
   return useMemo(() => {
-    if (Object.keys(address ?? {})?.length === 0) {
+    if (
+      !address ||
+      Object.keys(address ?? {})?.length === 0 ||
+      !Array.isArray(locations) ||
+      !locations?.length
+    ) {
       return [];
     }
 
@@ -20,55 +25,50 @@ export const useMapBlock = ({ filteredPluginsOutput, entityType, workflow }) => 
       .addBlock()
       .addCell({
         type: 'block',
-        value:
-          locations && locations.length
-            ? createBlocksTyped()
-                .addBlock()
-                .addCell({
-                  id: 'map-container',
-                  type: 'container',
-                  value: createBlocksTyped()
-                    .addBlock()
-                    .addCell({
-                      id: 'header',
-                      type: 'heading',
-                      value: `${valueOrNA(toTitleCase(entityType ?? ''))} Address`,
-                    })
-                    .addCell({
-                      type: 'details',
-                      hideSeparator: true,
-                      value: {
-                        title: `${valueOrNA(toTitleCase(entityType ?? ''))} Address`,
-                        data:
-                          typeof address === 'string'
-                            ? [
-                                {
-                                  title: 'Address',
-                                  value: address,
-                                  isEditable: false,
-                                },
-                              ]
-                            : Object.entries(address ?? {})?.map(([title, value]) => ({
-                                title,
-                                value,
-                                isEditable: false,
-                              })),
-                      },
-                      workflowId: workflow?.id,
-                      documents: workflow?.context?.documents,
-                    })
-                    .addCell({
-                      type: 'map',
-                      address,
-                      latitude: locations?.[0]?.lat,
-                      longitude: locations?.[0]?.lon,
-                    })
-                    .build()
-                    .flat(1),
-                })
-                .build()
-                .flat(1)
-            : [],
+        value: createBlocksTyped()
+          .addBlock()
+          .addCell({
+            id: 'map-container',
+            type: 'container',
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell({
+                id: 'header',
+                type: 'heading',
+                value: `${valueOrNA(toTitleCase(entityType ?? ''))} Address`,
+              })
+              .addCell({
+                type: 'details',
+                hideSeparator: true,
+                value: {
+                  title: `${valueOrNA(toTitleCase(entityType ?? ''))} Address`,
+                  data:
+                    typeof address === 'string'
+                      ? [
+                          {
+                            title: 'Address',
+                            value: address,
+                            isEditable: false,
+                          },
+                        ]
+                      : Object.entries(address ?? {})?.map(([title, value]) => ({
+                          title,
+                          value,
+                          isEditable: false,
+                        })),
+                },
+                workflowId: workflow?.id,
+                documents: workflow?.context?.documents,
+              })
+              .addCell({
+                type: 'map',
+                value: address,
+              })
+              .build()
+              .flat(1),
+          })
+          .build()
+          .flat(1),
       })
       .build();
   }, [address, locations, entityType, workflow]);

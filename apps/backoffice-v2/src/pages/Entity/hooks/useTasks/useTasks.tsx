@@ -132,8 +132,29 @@ export const useTasks = ({
     workflow,
   });
 
+  const mockFilteredPluginsOutput = {
+    somePluginKey: {
+      registeredAddressInFull: {
+        street: '123 Main St',
+        city: 'San Francisco',
+        state: 'CA',
+        postalCode: '94105',
+        country: 'US',
+      },
+    },
+  };
+
+  const mockEntityType = 'business';
+
+  const mockWorkflow = {
+    id: 'workflow123',
+    context: {
+      documents: [{ document1: 'Details of document 1' }, { document2: 'Details of document 2' }],
+    },
+  };
+
   const mapBlock = useMapBlock({
-    filteredPluginsOutput,
+    filteredPluginsOutput: mockFilteredPluginsOutput,
     entityType: entity?.type,
     workflow,
   });
