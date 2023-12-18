@@ -3,12 +3,11 @@ import { useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useApproveTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
-import { useRevisionTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { useDocumentSelection } from 'src/pages/Entity/components/DirectorsCallToAction/hooks/useDocumentSelection';
 import { ICallToActionDocumentSelection } from '@/pages/Entity/components/DirectorsCallToAction/interfaces';
 
-export interface UseCallToActionLogicParams {
+export interface IUseCallToActionLogicParams {
   contextUpdateMethod?: 'base' | 'director';
   revisionReasons?: string[];
   rejectionReasons?: string[];
@@ -16,9 +15,19 @@ export interface UseCallToActionLogicParams {
   onReuploadReset?: () => void;
   onDialogClose?: () => void;
   workflow: TWorkflowById;
+  onReuploadNeeded: ({
+    workflowId,
+    documentId,
+    reason,
+  }: {
+    workflowId: string;
+    documentId: string;
+    reason?: string;
+  }) => () => void;
+  isLoadingReuploadNeeded: boolean;
 }
 
-export const getPostApproveEventNameEvent = (workflow: TWorkflowById) => {
+export const getPostDecisionEventName = (workflow: TWorkflowById) => {
   if (
     !workflow?.workflowDefinition?.config?.workflowLevelResolution &&
     workflow?.nextEvents?.includes(CommonWorkflowEvent.TASK_REVIEWED)
@@ -26,27 +35,26 @@ export const getPostApproveEventNameEvent = (workflow: TWorkflowById) => {
     return CommonWorkflowEvent.TASK_REVIEWED;
   }
 };
-export const useCallToActionLegacyLogic = (params: UseCallToActionLogicParams) => {
-  const {
-    contextUpdateMethod = 'base',
-    rejectionReasons,
-    revisionReasons,
-    documentSelection,
-    onReuploadReset,
-    onDialogClose,
-    workflow,
-  } = params;
-  const postUpdateEventName = getPostApproveEventNameEvent(workflow);
+export const useCallToActionLegacyLogic = ({
+  contextUpdateMethod = 'base',
+  rejectionReasons,
+  revisionReasons,
+  documentSelection,
+  onReuploadReset,
+  onDialogClose,
+  workflow,
+  onReuploadNeeded,
+  isLoadingReuploadNeeded,
+}: IUseCallToActionLogicParams) => {
+  const postUpdateEventName = getPostDecisionEventName(workflow);
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id, postUpdateEventName);
   const { mutate: mutateRejectTaskById, isLoading: isLoadingRejectTaskById } =
     useRejectTaskByIdMutation(workflow?.id, postUpdateEventName);
-  const { mutate: mutateRevisionTaskById, isLoading: isLoadingRevisionTaskById } =
-    useRevisionTaskByIdMutation(workflow?.id, postUpdateEventName);
 
   const isLoadingTaskDecisionById =
-    isLoadingApproveTaskById || isLoadingRejectTaskById || isLoadingRevisionTaskById;
+    isLoadingApproveTaskById || isLoadingRejectTaskById || isLoadingReuploadNeeded;
 
   const actions = [
     {
@@ -115,17 +123,16 @@ export const useCallToActionLegacyLogic = (params: UseCallToActionLogicParams) =
         }
 
         if (payload?.decision === 'revision') {
-          return mutateRevisionTaskById({
+          return onReuploadNeeded({
+            workflowId: workflow?.id,
             documentId: payload?.id,
             reason: payload?.reason,
-            decision: payload?.decision,
-            contextUpdateMethod,
-          });
+          })();
         }
 
         toast.error('Invalid decision');
       },
-    [contextUpdateMethod, mutateApproveTaskById, mutateRejectTaskById, mutateRevisionTaskById],
+    [contextUpdateMethod, mutateApproveTaskById, mutateRejectTaskById, onReuploadNeeded],
   );
   const workflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??

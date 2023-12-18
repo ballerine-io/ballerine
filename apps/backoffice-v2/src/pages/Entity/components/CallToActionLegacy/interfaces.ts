@@ -1,5 +1,6 @@
 import { ICallToActionDocumentSelection } from '@/pages/Entity/components/DirectorsCallToAction/interfaces';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { FunctionComponent } from 'react';
 
 export interface ICallToActionLegacyProps {
   value: {
@@ -14,7 +15,22 @@ export interface ICallToActionLegacyProps {
       revisionReasons?: string[];
       rejectionReasons?: string[];
       onReuploadReset?: () => void;
+      onReuploadNeeded: ({
+        workflowId,
+        documentId,
+        reason,
+      }: {
+        workflowId: string;
+        documentId: string;
+        reason?: string;
+      }) => () => void;
+      isLoadingReuploadNeeded: boolean;
       onDialogClose?: () => void;
+      dialog: {
+        reupload: {
+          Description: FunctionComponent;
+        };
+      };
     };
   };
 }

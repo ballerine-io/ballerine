@@ -9,19 +9,33 @@ import { cells } from '@/pages/Entity/hooks/useEntity/cells';
 
 interface IChildDocumentBlocksProps {
   parentWorkflowId: string;
-  childWorkflow: TWorkflowById['childWorkflows'][number];
+  childWorkflow: NonNullable<TWorkflowById['childWorkflows']>[number];
   parentMachine: UnknownRecord;
+  onReuploadNeeded: ({
+    workflowId,
+    documentId,
+    reason,
+  }: {
+    workflowId: string;
+    documentId: string;
+    reason?: string;
+  }) => () => void;
+  isLoadingReuploadNeeded: boolean;
 }
 
 export const ChildDocumentBlocks: FunctionComponent<IChildDocumentBlocksProps> = ({
   parentWorkflowId,
   childWorkflow,
   parentMachine,
+  onReuploadNeeded,
+  isLoadingReuploadNeeded,
 }) => {
   const childDocumentBlocks = useChildDocumentBlocksLogic({
     parentWorkflowId,
     childWorkflow,
     parentMachine,
+    onReuploadNeeded,
+    isLoadingReuploadNeeded,
   });
 
   if (!Array.isArray(childDocumentBlocks) || !childDocumentBlocks?.length) return null;

@@ -16,6 +16,16 @@ interface IDirectorsCallToActionProps extends ICallToActionLegacyProps {
       documents: AnyObject[];
       workflow: AnyObject;
       onReset?: () => void;
+      onReuploadNeeded: ({
+        workflowId,
+        documentId,
+        reason,
+      }: {
+        workflowId: string;
+        documentId: string;
+        reason?: string;
+      }) => () => void;
+      isLoadingReuploadNeeded?: boolean;
     };
   };
 }

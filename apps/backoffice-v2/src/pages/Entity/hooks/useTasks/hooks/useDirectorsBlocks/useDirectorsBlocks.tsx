@@ -17,16 +17,32 @@ import {
 import { getPostRemoveDecisionEventName } from '../../get-post-remove-decision-event-name';
 import { motionProps } from '../../motion-props';
 import { selectDirectorsDocuments } from '../../selectors/selectDirectorsDocuments';
-import { getPostApproveEventNameEvent } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
+import { getPostDecisionEventName } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 
 export type Director = AnyObject;
 
-export const useDirectorsBlocks = (
-  workflow: TWorkflowById,
-  documentFiles: UseQueryResult[],
-  documentImages: Array<Array<string>>,
-) => {
+export const useDirectorsBlocks = ({
+  workflow,
+  documentFiles,
+  documentImages,
+  onReuploadNeeded,
+  isLoadingReuploadNeeded,
+}: {
+  workflow: TWorkflowById;
+  documentFiles: UseQueryResult[];
+  documentImages: Array<Array<string>>;
+  onReuploadNeeded: ({
+    workflowId,
+    documentId,
+    reason,
+  }: {
+    workflowId: string;
+    documentId: string;
+    reason?: string;
+  }) => () => void;
+  isLoadingReuploadNeeded: boolean;
+}) => {
   const { mutate } = useRemoveDecisionTaskByIdMutation(
     workflow?.id,
     getPostRemoveDecisionEventName(workflow),
@@ -61,7 +77,7 @@ export const useDirectorsBlocks = (
     });
   }, [documents, mutate]);
 
-  const postApproveEventName = getPostApproveEventNameEvent(workflow);
+  const postApproveEventName = getPostDecisionEventName(workflow);
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id, postApproveEventName);
   const onMutateApproveTaskById = useCallback(
@@ -269,6 +285,8 @@ export const useDirectorsBlocks = (
                               documents,
                               workflow,
                               onReset: handleRevisionDecisionsReset,
+                              onReuploadNeeded,
+                              isLoadingReuploadNeeded,
                             },
                           },
 

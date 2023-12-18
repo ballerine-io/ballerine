@@ -35,6 +35,9 @@ import { Send } from 'lucide-react';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { Button } from '@/common/components/atoms/Button/Button';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { getPostDecisionEventName } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
+import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
+import toast from 'react-hot-toast';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -126,12 +129,98 @@ export const useTasks = ({
     workflow,
   });
 
+  const postDecisionEventName = getPostDecisionEventName(workflow);
+  const { mutate: mutateRevisionTaskById, isLoading: isLoadingReuploadNeeded } =
+    useRevisionTaskByIdMutation(postDecisionEventName);
+  const onReuploadNeeded = useCallback(
+    ({
+        workflowId,
+        documentId,
+        reason,
+      }: Pick<
+        Parameters<typeof mutateRevisionTaskById>[0],
+        'workflowId' | 'documentId' | 'reason'
+      >) =>
+      () => {
+        if (!documentId) {
+          toast.error('Invalid task id');
+
+          return;
+        }
+
+        mutateRevisionTaskById({
+          workflowId,
+          documentId,
+          reason,
+          contextUpdateMethod: 'base',
+        });
+      },
+    [mutateRevisionTaskById],
+  );
+  const onReuploadNeededDirectors = useCallback(
+    ({
+        workflowId,
+        documentId,
+        reason,
+      }: Pick<
+        Parameters<typeof mutateRevisionTaskById>[0],
+        'workflowId' | 'documentId' | 'reason'
+      >) =>
+      () => {
+        if (!documentId) {
+          toast.error('Invalid task id');
+
+          return;
+        }
+
+        mutateRevisionTaskById({
+          workflowId,
+          documentId,
+          reason,
+          contextUpdateMethod: 'director',
+        });
+      },
+    [mutateRevisionTaskById],
+  );
+
+  const isWorkflowLevelResolution =
+    workflow?.workflowDefinition?.config?.workflowLevelResolution ??
+    workflow?.context?.entity?.type === 'business';
   const parentDocumentBlocks = useDocumentBlocks({
     workflow,
     parentMachine,
     noAction,
     caseState,
     withEntityNameInHeader: false,
+    onReuploadNeeded,
+    isLoadingReuploadNeeded,
+    dialog: {
+      reupload: {
+        Description: () => (
+          <p className="text-sm">
+            {isWorkflowLevelResolution && (
+              <>
+                Once marked, you can use the “Ask for all re-uploads” button at the top of the
+                screen to initiate a request for the customer to re-upload all of the documents you
+                have marked for re-upload.
+              </>
+            )}
+            {!isWorkflowLevelResolution && (
+              <>
+                <span className="mb-[10px] block">
+                  By clicking the button below, an email with a link will be sent to the customer,
+                  directing them to re-upload the documents you have marked as “re-upload needed”.
+                </span>
+                <span>
+                  The case’s status will then change to “Revisions” until the customer will provide
+                  the needed documents and fixes.
+                </span>
+              </>
+            )}
+          </p>
+        ),
+      },
+    },
   });
 
   const entityInfoBlock = useEntityInfoBlock({
@@ -182,11 +271,13 @@ export const useTasks = ({
 
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 
-  const directorsDocumentsBlocks = useDirectorsBlocks(
+  const directorsDocumentsBlocks = useDirectorsBlocks({
     workflow,
-    directorsStorageFilesQueryResult,
-    directorsDocumentPagesResults,
-  );
+    documentFiles: directorsStorageFilesQueryResult,
+    documentImages: directorsDocumentPagesResults,
+    onReuploadNeeded: onReuploadNeededDirectors,
+    isLoadingReuploadNeeded,
+  });
 
   const directorsRegistryProvidedBlock =
     useDirectorsRegistryProvidedBlock(directorsRegistryProvided);

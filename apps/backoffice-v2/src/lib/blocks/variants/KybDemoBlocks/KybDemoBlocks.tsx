@@ -27,6 +27,9 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import { ExternalLink, Send } from 'lucide-react';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { ChildDocumentBlocks } from '@/pages/Entity/components/ChildDocumentBlocks/ChildDocumentBlocks';
+import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
+import { getPostDecisionEventName } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
+import toast from 'react-hot-toast';
 
 export const KybDemoBlocks = () => {
   const { entityId: workflowId } = useParams();
@@ -78,6 +81,61 @@ export const KybDemoBlocks = () => {
     },
     [mutateEvent],
   );
+  const postDecisionEventName = getPostDecisionEventName(workflow);
+  const { mutate: mutateRevisionTaskById, isLoading: isLoadingReuploadNeeded } =
+    useRevisionTaskByIdMutation(postDecisionEventName);
+  const onReuploadNeeded = useCallback(
+    ({
+        workflowId,
+        documentId,
+        reason,
+      }: Pick<
+        Parameters<typeof mutateRevisionTaskById>[0],
+        'workflowId' | 'documentId' | 'reason'
+      >) =>
+      () => {
+        if (!documentId) {
+          toast.error('Invalid task id');
+
+          return;
+        }
+
+        mutateRevisionTaskById({
+          workflowId,
+          documentId,
+          reason,
+          contextUpdateMethod: 'base',
+        });
+        window.open(workflow?.context?.metadata?.collectionFlowUrl, '_blank');
+      },
+    [mutateRevisionTaskById, workflow?.context?.metadata?.collectionFlowUrl],
+  );
+  const onReuploadNeededDirectors = useCallback(
+    ({
+        workflowId,
+        documentId,
+        reason,
+      }: Pick<
+        Parameters<typeof mutateRevisionTaskById>[0],
+        'workflowId' | 'documentId' | 'reason'
+      >) =>
+      () => {
+        if (!documentId) {
+          toast.error('Invalid task id');
+
+          return;
+        }
+
+        mutateRevisionTaskById({
+          workflowId,
+          documentId,
+          reason,
+          contextUpdateMethod: 'director',
+        });
+        window.open(workflow?.context?.metadata?.collectionFlowUrl, '_blank');
+      },
+    [mutateRevisionTaskById, workflow?.context?.metadata?.collectionFlowUrl],
+  );
 
   // Blocks
   const businessInformation = useEntityInfoBlock({
@@ -85,12 +143,45 @@ export const KybDemoBlocks = () => {
     workflow,
     entityDataAdditionalInfo,
   });
+  const isWorkflowLevelResolution =
+    workflow?.workflowDefinition?.config?.workflowLevelResolution ??
+    workflow?.context?.entity?.type === 'business';
   const documentsBlocks = useDocumentBlocks({
     workflow,
     parentMachine: workflow?.context?.parentMachine,
     noAction,
     withEntityNameInHeader: false,
     caseState,
+    onReuploadNeeded,
+    isLoadingReuploadNeeded,
+    // TODO - Remove `CallToActionLegacy` and revisit this object.
+    dialog: {
+      reupload: {
+        Description: () => (
+          <p className="text-sm">
+            {isWorkflowLevelResolution && (
+              <>
+                Once marked, you can use the “Ask for all re-uploads” button at the top of the
+                screen to initiate a request for the customer to re-upload all of the documents you
+                have marked for re-upload.
+              </>
+            )}
+            {!isWorkflowLevelResolution && (
+              <>
+                <span className="mb-[10px] block">
+                  By clicking the button below, an email with a link will be sent to the customer,
+                  directing them to re-upload the documents you have marked as “re-upload needed”.
+                </span>
+                <span>
+                  The case’s status will then change to “Revisions” until the customer will provide
+                  the needed documents and fixes.
+                </span>
+              </>
+            )}
+          </p>
+        ),
+      },
+    },
   });
   const mainRepresentativeBlock = useMainRepresentativeBlock({
     workflow,
@@ -100,11 +191,13 @@ export const KybDemoBlocks = () => {
   const directorsRegistryProvidedBlock =
     useDirectorsRegistryProvidedBlock(directorsRegistryProvided);
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
-  const directorsBlock = useDirectorsBlocks(
+  const directorsBlock = useDirectorsBlocks({
     workflow,
-    directorsStorageFilesQueryResult,
-    directorsDocumentPagesResults,
-  );
+    documentFiles: directorsStorageFilesQueryResult,
+    documentImages: directorsDocumentPagesResults,
+    onReuploadNeeded: onReuploadNeededDirectors,
+    isLoadingReuploadNeeded,
+  });
 
   const kybChildWorkflows = workflow?.childWorkflows?.filter(
     childWorkflow => childWorkflow?.context?.entity?.type === 'business',
@@ -122,10 +215,10 @@ export const KybDemoBlocks = () => {
       Title: ({ associatedCompany }) => <>Initiate KYB for {associatedCompany.companyName}</>,
       Description: ({ associatedCompany }) => (
         <p className={`text-sm`}>
-          Clicking the button in this local setup opens a demo KYB flow for{' '}
-          {associatedCompany?.companyName} in a new tab, rather than sending an email to{' '}
-          {associatedCompany?.contactPerson}. Remember, this is only a simulation. In the live
-          version, an email initiates the actual KYB process.
+          Explore our parent KYB Demo. Click the &quot;Open KYB&quot; to launch a simulated KYB
+          process for {associatedCompany?.companyName} in a new tab. Note: In the live environment,
+          the KYB process begins with an email to {associatedCompany?.companyName}&apos;s
+          representative.
         </p>
       ),
       Close: ({ associatedCompany }) => (
@@ -167,7 +260,7 @@ export const KybDemoBlocks = () => {
     ...associatedCompaniesBlock,
     ...associatedCompaniesInformationBlock,
   ];
-  console.log(kybChildWorkflows);
+
   return (
     <>
       <BlocksComponent blocks={blocks} />
@@ -177,6 +270,8 @@ export const KybDemoBlocks = () => {
           childWorkflow={childWorkflow}
           parentMachine={workflow?.context?.parentMachine}
           key={childWorkflow?.id}
+          onReuploadNeeded={onReuploadNeeded}
+          isLoadingReuploadNeeded={isLoadingReuploadNeeded}
         />
       ))}
     </>

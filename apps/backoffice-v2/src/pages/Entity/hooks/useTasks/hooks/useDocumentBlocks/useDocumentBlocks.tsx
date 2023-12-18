@@ -7,9 +7,9 @@ import {
   getIsEditable,
   isExistingSchemaForDocument,
 } from '@/pages/Entity/hooks/useEntity/utils';
-import { getPostApproveEventNameEvent } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
+import { getPostDecisionEventName } from '@/pages/Entity/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import * as React from 'react';
-import { useCallback, useMemo } from 'react';
+import { FunctionComponent, useCallback, useMemo } from 'react';
 import { selectWorkflowDocuments } from '@/pages/Entity/hooks/useTasks/selectors/selectWorkflowDocuments';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { useDocumentPageImages } from '@/pages/Entity/hooks/useTasks/hooks/useDocumentPageImages';
@@ -28,16 +28,34 @@ export const useDocumentBlocks = ({
   noAction,
   caseState,
   withEntityNameInHeader,
+  onReuploadNeeded,
+  isLoadingReuploadNeeded,
+  dialog,
 }: {
   workflow: TWorkflowById;
   parentMachine: TWorkflowById['context']['parentMachine'];
   noAction: boolean;
   caseState: ReturnType<typeof useCaseState>;
   withEntityNameInHeader: boolean;
+  onReuploadNeeded: ({
+    workflowId,
+    documentId,
+    reason,
+  }: {
+    workflowId: string;
+    documentId: string;
+    reason?: string;
+  }) => () => void;
+  isLoadingReuploadNeeded: boolean;
+  dialog: {
+    reupload: {
+      Description: FunctionComponent;
+    };
+  };
 }) => {
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
   const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
-  const postApproveEventName = getPostApproveEventNameEvent(workflow);
+  const postDecisionEventName = getPostDecisionEventName(workflow);
   const documents = useMemo(() => selectWorkflowDocuments(workflow), [workflow]);
   const documentPages = useMemo(
     () => documents.flatMap(({ pages }) => pages?.map(({ ballerineFileId }) => ballerineFileId)),
@@ -47,7 +65,7 @@ export const useDocumentBlocks = ({
   const documentPagesResults = useDocumentPageImages(documents, storageFilesQueryResult);
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
-    useApproveTaskByIdMutation(workflow?.id, postApproveEventName);
+    useApproveTaskByIdMutation(workflow?.id, postDecisionEventName);
   const onMutateApproveTaskById = useCallback(
     ({
         taskId,
@@ -174,7 +192,10 @@ export const useDocumentBlocks = ({
                     (!isDoneWithRevision && Boolean(decision?.status)) ||
                     noAction ||
                     !caseState.actionButtonsEnabled,
+                  onReuploadNeeded,
+                  isLoadingReuploadNeeded,
                   decision: 'reject',
+                  dialog,
                 },
               },
             },

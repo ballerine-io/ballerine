@@ -31,11 +31,14 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
     revisionReasons,
     rejectionReasons,
     onReuploadReset,
+    onReuploadNeeded,
+    isLoadingReuploadNeeded,
     onDialogClose,
     id,
     workflow,
     decision,
     disabled,
+    dialog,
   } = value?.props || {};
 
   const {
@@ -62,6 +65,8 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
     onDialogClose,
     onReuploadReset,
     workflow,
+    onReuploadNeeded,
+    isLoadingReuploadNeeded,
   });
 
   if (value?.text === 'Reject') {
@@ -186,33 +191,14 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
                 className="h-4 w-4 cursor-pointer"
                 onClick={event => {
                   event.stopPropagation();
-                  onReuploadReset && onReuploadReset();
+                  onReuploadReset?.();
                 }}
               />
             )}
           </MotionButton>
         }
         title={'Mark document for re-upload'}
-        description={
-          <p className="text-sm">
-            {workflowLevelResolution ? (
-              `Once marked, you can use the “Ask for all re-uploads” button at the top of the
-                  screen to initiate a request for the customer to re-upload all of the documents
-                  you have marked for re-upload.`
-            ) : (
-              <>
-                <span className="mb-[10px] block">
-                  By clicking the button below, an email with a link will be sent to the customer,
-                  directing them to re-upload the documents you have marked as “re-upload needed”.
-                </span>
-                <span>
-                  The case’s status will then change to “Revisions” until the customer will provide
-                  the needed documents and fixes.
-                </span>
-              </>
-            )}
-          </p>
-        }
+        description={<dialog.reupload.Description />}
         content={
           <>
             {documentSelection && <DocumentPicker {...documentPickerProps} value={id} />}
@@ -263,11 +249,11 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
         close={
           <Button
             className={ctw(`gap-x-2`, {
-              loading: isLoadingTaskDecisionById,
+              loading: isLoadingReuploadNeeded,
             })}
-            onClick={onMutateTaskDecisionById({
-              id,
-              decision: action,
+            onClick={onReuploadNeeded({
+              workflowId: workflow?.id,
+              documentId: id,
               reason: comment ? `${reason} - ${comment}` : reason,
             })}
           >
