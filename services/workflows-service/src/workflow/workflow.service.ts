@@ -75,7 +75,7 @@ import {
   WorkflowRuntimeDataRepository,
 } from './workflow-runtime-data.repository';
 import mime from 'mime';
-import { env } from '@/env';
+import { ConfigService } from "@nestjs/config";
 
 type TEntityId = string;
 
@@ -135,6 +135,7 @@ export class WorkflowService {
     private readonly userService: UserService,
     private readonly salesforceService: SalesforceService,
     private readonly workflowTokenService: WorkflowTokenService,
+    private readonly configService: ConfigService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
@@ -1595,7 +1596,7 @@ export class WorkflowService {
                 metadata: {
                   customerName: customer.displayName,
                   token: workflowToken.token,
-                  collectionFlowUrl: env.COLLECTION_FLOW_URL,
+                  collectionFlowUrl: this.configService.get('COLLECTION_FLOW_URL'),
                 },
               } as InputJsonValue,
               projectId: currentProjectId,
