@@ -9,14 +9,13 @@ export const useMapBlock = ({ filteredPluginsOutput, entityType, workflow }) => 
   const address = getAddressDeep(filteredPluginsOutput, {
     propertyName: 'registeredAddressInFull',
   });
-  const { data: locations } = useNominatimQuery(address);
+  const { data: locations, isLoading } = useNominatimQuery(address);
 
   return useMemo(() => {
     if (
       !address ||
       Object.keys(address ?? {})?.length === 0 ||
-      !Array.isArray(locations) ||
-      !locations?.length
+      (!isLoading && (!Array.isArray(locations) || !locations?.length))
     ) {
       return [];
     }
