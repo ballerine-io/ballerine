@@ -6,7 +6,7 @@ const _httpStatusFromAxiosMap = {
   ECONNABORTED: HttpStatus.INTERNAL_SERVER_ERROR,
   ERR_CANCELED: HttpStatus.INTERNAL_SERVER_ERROR, // connection canceled
   ERR_NETWORK: HttpStatus.INTERNAL_SERVER_ERROR, // connection problems
-};
+} as const;
 
 export function getLightweightAxiosError(error: AxiosError) {
   const { config } = error; // request + response can be extraced from error
