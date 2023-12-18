@@ -47,7 +47,7 @@ const fetchEnvMigrationFiles = async () => {
     );
   }
 
-  if (['sandbox', 'sb'].includes(environmentName)) {
+  if (['sandbox', 'sb', 'staging'].includes(environmentName)) {
     migrationFiles = migrationFiles.concat(
       await fetchMigrationFiles(path.join(__dirname, DATA_MIGRATION_FOLDER_RELATIVE_PATH, 'sb')),
     );
