@@ -272,7 +272,7 @@ export const kybKycWorkflowDefinition = {
     ]),
   },
   isPublic: true,
-  variant: WorkflowDefinitionVariant.KYB_COLLECTION_FLOW_WITH_VENDORS,
+  variant: WorkflowDefinitionVariant.DEFAULT,
 };
 export const generateKybKycWorkflowDefinition = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({

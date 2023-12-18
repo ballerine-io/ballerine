@@ -92,7 +92,7 @@ export const websiteMonitoringDefinition = {
   config: {
     initialEvent: 'START',
   },
-  variant: WorkflowDefinitionVariant.WEBSITE_MONITORING,
+  variant: WorkflowDefinitionVariant.DEFAULT,
 } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
 export const generateWebsiteMonitoringExample = async (
   prismaClient: PrismaClient,

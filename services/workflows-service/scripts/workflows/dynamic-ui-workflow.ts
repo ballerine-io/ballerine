@@ -387,7 +387,7 @@ export const dynamicUiWorkflowDefinition = {
     schema: defaultContextSchema,
   },
   isPublic: true,
-  variant: WorkflowDefinitionVariant.KYB_COLLECTION_FLOW_WITH_VENDORS,
+  variant: WorkflowDefinitionVariant.DEFAULT,
 };
 
 export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, projectId: string) => {

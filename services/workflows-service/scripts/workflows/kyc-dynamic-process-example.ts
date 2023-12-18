@@ -142,7 +142,7 @@ export const kycDynamicExample = {
     },
   },
   isPublic: true,
-  variant: WorkflowDefinitionVariant.KYB_COLLECTION_FLOW_WITH_VENDORS,
+  variant: WorkflowDefinitionVariant.DEFAULT,
 };
 export const generateKycForE2eTest = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({

@@ -164,7 +164,7 @@ export const kycEmailSessionDefinition = {
     },
   },
   isPublic: true,
-  variant: WorkflowDefinitionVariant.KYC_VENDOR_MANUAL_REVIEW,
+  variant: WorkflowDefinitionVariant.DEFAULT,
 };
 
 export const generateKycSessionDefinition = async (prismaClient: PrismaClient) => {

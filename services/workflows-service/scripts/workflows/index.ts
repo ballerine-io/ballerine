@@ -177,7 +177,7 @@ export const kybWithExternalRequestWorkflowExample = {
     ],
   },
   isPublic: true,
-  variant: WorkflowDefinitionVariant.KYB_MANUAL_REVIEW,
+  variant: WorkflowDefinitionVariant.DEFAULT,
 };
 
 export const generateKybDefintion = async (prismaClient: PrismaClient) => {
