@@ -94,14 +94,19 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
     const properties = Object.keys(document?.propertiesSchema?.properties ?? {}).reduce(
       (acc, curr) => {
         let propertyValue = formData?.[curr];
+        const isDateProperty =
+          document?.propertiesSchema?.properties?.[curr]?.format === 'date-time';
 
-        if (isNullish(propertyValue) || propertyValue === '') return acc;
+        if (isNullish(propertyValue)) return acc;
 
-        if (
-          document?.propertiesSchema?.properties?.[curr]?.format === 'date-time' &&
-          typeof propertyValue === 'string' &&
-          propertyValue?.length === 16
-        ) {
+        // In case when date value is cleared its value should be set to null to perform succesfull merge.
+        // Currently date value could not be cleared because schemas doesnt not allow date values to be nullable.
+        // if (isDateProperty && !propertyValue) {
+        //   acc[curr] = null;
+        //   return acc;
+        // }
+
+        if (isDateProperty && typeof propertyValue === 'string' && propertyValue?.length === 16) {
           propertyValue = `${propertyValue}:00`;
         }
 
