@@ -22,6 +22,8 @@ export const ConfigSchema = z
     allowMultipleActiveWorkflows: z.boolean().optional(),
     initialEvent: z.string().optional(),
     availableDocuments: z.array(z.object({ category: z.string(), type: z.string() })).optional(),
+    isDemo: z.boolean().optional(),
+    isExample: z.boolean().optional(), // OSS only
     callbackResult: z
       .object({
         transformers: z.array(z.any()),

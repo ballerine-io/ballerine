@@ -3,28 +3,20 @@ import { kycEmailSessionDefinition } from './kyc-email-process-example';
 import { env } from '../../src/env';
 
 import { defaultContextSchema, StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
-import { Type } from '@sinclair/typebox';
 
-export const kybKycWorkflowDefinition = {
-  id: 'kyb_kyc',
-  name: 'kyb_kyc',
+export const parentKybWithSessionWorkflowDefinition = {
+  id: 'kyb_parent_kyc_session_example',
+  name: 'kyb_parent_kyc_session_example',
   version: 1,
   definitionType: 'statechart-json',
   definition: {
-    id: 'kyb_kyc',
+    id: 'kyb_parent_kyc_session_example_v1',
     predictableActionArguments: true,
-    initial: 'pending_invitation_email',
+    initial: 'data_collection',
     context: {
       documents: [],
     },
     states: {
-      pending_invitation_email: {
-        tags: [StateTag.COLLECTION_FLOW],
-        on: {
-          INVITATION_EMAIL_SENT: 'data_collection',
-          INVITATION_EMAIL_FAILED: 'auto_reject',
-        },
-      },
       data_collection: {
         tags: [StateTag.COLLECTION_FLOW],
         on: {
@@ -111,38 +103,6 @@ export const kybKycWorkflowDefinition = {
   },
   extensions: {
     apiPlugins: [
-      {
-        name: 'invitation_email',
-        pluginKind: 'email',
-        url: `{secret.EMAIL_API_URL}`,
-        method: 'POST',
-        stateNames: ['pending_invitation_email'],
-        successAction: 'INVITATION_EMAIL_SENT',
-        errorAction: 'INVITATION_EMAIL_FAILED',
-        headers: {
-          Authorization: 'Bearer {secret.EMAIL_API_TOKEN}',
-          'Content-Type': 'application/json',
-        },
-        request: {
-          transform: [
-            {
-              transformer: 'jmespath',
-              mapping: `{
-              templateId: 'd-00a0d5d14cb14fbb9034b53c6ef7e5fa',
-              adapter: '${env.MAIL_ADAPTER}'
-              from: 'no-reply@ballerine.com',
-              receivers: [mainRepresentative.email],
-              name: mainRepresentative.fullName,
-              provider: customerName,
-              url: join('',['${env.KYB_EXAMPLE_CORS_ORIGIN}?token=',token])
-              }`, // jmespath
-            },
-          ],
-        },
-        response: {
-          transform: [],
-        },
-      },
       {
         name: 'open_corporates',
         pluginKind: 'kyb',
@@ -255,27 +215,16 @@ export const kybKycWorkflowDefinition = {
         deliverEvent: 'KYC_RESPONDED',
       },
     ],
-    createCollectionFlowToken: true,
   },
   contextSchema: {
     type: 'json-schema',
-    schema: Type.Composite([
-      defaultContextSchema,
-      Type.Object({
-        token: Type.Optional(Type.String()),
-        mainRepresentative: Type.Object({
-          fullName: Type.String(),
-          email: Type.String(),
-        }),
-        customerName: Type.String(),
-      }),
-    ]),
+    schema: defaultContextSchema,
   },
   isPublic: true,
   variant: WorkflowDefinitionVariant.DEFAULT,
 };
-export const generateKybKycWorkflowDefinition = async (prismaClient: PrismaClient) => {
+export const generateParentKybWithSessionKycs = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({
-    data: { ...kybKycWorkflowDefinition },
+    data: { ...parentKybWithSessionWorkflowDefinition },
   });
 };

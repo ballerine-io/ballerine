@@ -1,10 +1,16 @@
 # @ballerine/common
 
+## 0.7.37
+
+### Patch Changes
+
+- added variants to common
+
 ## 0.7.36
 
 ### Patch Changes
 
-- added events to workflows
+- upgraded common package variants
 
 ## 0.7.35
 
