@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- added variants to common
+- version bump
 
 ## 0.7.34
 

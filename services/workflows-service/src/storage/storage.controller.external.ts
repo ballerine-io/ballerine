@@ -18,7 +18,7 @@ import { ProjectScopeService } from '@/project/project-scope.service';
 import { CustomerService } from '@/customer/customer.service';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import { getMimeType } from '@/common/get-mime-type/get-mime-type';
+import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 
 // Temporarily identical to StorageControllerInternal
 @swagger.ApiTags('Storage')
@@ -67,7 +67,14 @@ export class StorageControllerExternal {
       // Probably wrong. Would require adding a relationship (Prisma) and using connect.
       userId: '',
       projectId: currentProjectId,
-      mimeType: file.mimetype || (await getMimeType({ file: file.originalname || '' })),
+      mimeType:
+        file.mimetype ||
+        (
+          await getFileMetadata({
+            file: file.originalname || '',
+            fileName: file.originalname || '',
+          })
+        )?.mimeType,
     });
 
     return fileInfo;
