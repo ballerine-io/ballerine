@@ -2,7 +2,7 @@ import * as common from '@nestjs/common';
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
 import { UnsupportedFlowTypeException } from '@/collection-flow/exceptions/unsupported-flow-type.exception';
-import { UpdateFlowDto } from '@/collection-flow/dto/update-flow-input.dto';
+import { UpdateFlowDto, UpdateFlowLanguageDto } from '@/collection-flow/dto/update-flow-input.dto';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
@@ -13,6 +13,7 @@ import { Public } from '@/common/decorators/public.decorator';
 import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.decorator';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
+import { GetFlowConfigurationInputDto } from '@/collection-flow/dto/get-flow-configuration-input.dto';
 
 @Public()
 @UseTokenAuthGuard()
@@ -66,17 +67,22 @@ export class ColectionFlowController {
     );
   }
 
-  @common.Get('/configuration')
+  @common.Get('/configuration/:language')
   async getFlowConfiguration(
     @TokenScope() tokenScope: ITokenScope,
+    @common.Param() params: GetFlowConfigurationInputDto,
   ): Promise<FlowConfigurationModel> {
     const workflow = await this.service.getActiveFlow(tokenScope.workflowRuntimeDataId, [
       tokenScope.projectId,
     ]);
 
-    if (!workflow) throw new common.InternalServerErrorException('Workflow not found.');
+    if (!workflow) {
+      throw new common.InternalServerErrorException('Workflow not found.');
+    }
 
-    return this.service.getFlowConfiguration(workflow.workflowDefinitionId, [tokenScope.projectId]);
+    return this.service.getFlowConfiguration(workflow.workflowDefinitionId, params.language, [
+      tokenScope.projectId,
+    ]);
   }
 
   @common.Put('/configuration/:configurationId')
@@ -97,6 +103,14 @@ export class ColectionFlowController {
   @common.Put('')
   async updateFlow(@common.Body() payload: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
     return await this.service.updateWorkflowRuntimeData(payload, tokenScope);
+  }
+
+  @common.Put('/language')
+  async updateFlowLanguage(
+    @common.Body() { language }: UpdateFlowLanguageDto,
+    @TokenScope() tokenScope: ITokenScope,
+  ) {
+    return await this.service.updateWorkflowRuntimeLanguage(language, tokenScope);
   }
 
   @common.Put('/sync')

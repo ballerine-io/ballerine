@@ -1,5 +1,48 @@
 # @ballerine/ui
 
+## 0.3.24
+
+### Patch Changes
+
+- version bump
+
+## 0.3.23
+
+### Patch Changes
+
+- Exposed disableFuture & disablePast params from DatePicker & Added support of params to DatePickerAdapter
+
+## 0.3.22
+
+### Patch Changes
+
+- optionalLabel re-release
+
+## 0.3.21
+
+### Patch Changes
+
+- Translating optional label
+- ui package release
+
+## 0.3.20
+
+### Patch Changes
+
+- Added Y padding to the badge component
+
+## 0.3.19
+
+### Patch Changes
+
+- Fixed DateInput focus loss on keystroke
+
+## 0.3.18
+
+### Patch Changes
+
+- Version bump
+
 ## 0.3.17
 
 ### Patch Changes

@@ -74,8 +74,7 @@ export const dynamicUiWorkflowDefinition = {
             },
             kycAndVendorDone,
           ],
-          reject: 'rejected',
-          VENDOR_FAILED: 'rejected',
+          VENDOR_FAILED: 'failed',
         },
       },
       pending_kyc_response_to_finish: {
@@ -162,14 +161,13 @@ export const dynamicUiWorkflowDefinition = {
             {
               transformer: 'jmespath',
               mapping: `{
-              companyName: entity.data.companyName,
-              customerName: metadata.customerName,
-              firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token]),
-              from: 'no-reply@ballerine.com',
-              receivers: [entity.data.additionalInfo.mainRepresentative.email],
-              templateId: 'd-8949519316074e03909042cfc5eb4f02',
-              adapter: '{secret.MAIL_ADAPTER}'
+                customerName: metadata.customerName,
+                collectionFlowUrl: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
+                from: 'no-reply@ballerine.com',
+                receivers: [entity.data.additionalInfo.mainRepresentative.email],
+                language: workflowRuntimeConfig.language,
+                templateId: 'd-8949519316074e03909042cfc5eb4f02',
+                adapter: '{secret.MAIL_ADAPTER}'
               }`, // jmespath
             },
           ],
@@ -287,17 +285,18 @@ export const dynamicUiWorkflowDefinition = {
               transformer: 'jmespath',
               // #TODO: create new token (new using old one)
               mapping: `{
-              kybCompanyName: entity.data.companyName,
-              customerCompanyName: metadata.customerName,
-              firstName: entity.data.additionalInfo.mainRepresentative.firstName,
-              resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token]),
-              supportEmail: join('',['support@',metadata.customerName,'.com']),
-              from: 'no-reply@ballerine.com',
-              name: join(' ',[metadata.customerName,'Team']),
-              receivers: [entity.data.additionalInfo.mainRepresentative.email],
-              templateId: 'd-7305991b3e5840f9a14feec767ea7301',
-              revisionReason: documents[].decision[].revisionReason | [0],
-              adapter: '${env.MAIL_ADAPTER}'
+                kybCompanyName: entity.data.companyName,
+                customerCompanyName: metadata.customerName,
+                firstName: entity.data.additionalInfo.mainRepresentative.firstName,
+                resubmissionLink: join('',['{secret.COLLECTION_FLOW_URL}','/?token=',metadata.token,'&lng=',workflowRuntimeConfig.language]),
+                supportEmail: join('',['support@',metadata.customerName,'.com']),
+                from: 'no-reply@ballerine.com',
+                name: join(' ',[metadata.customerName,'Team']),
+                receivers: [entity.data.additionalInfo.mainRepresentative.email],
+                templateId: 'd-7305991b3e5840f9a14feec767ea7301',
+                revisionReason: documents[].decision[].revisionReason | [0],
+                language: workflowRuntimeConfig.language,
+                adapter: '${env.MAIL_ADAPTER}'
               }`, // jmespath
             },
           ],
@@ -327,18 +326,15 @@ export const dynamicUiWorkflowDefinition = {
         name: 'ubos_iterative',
         actionPluginName: 'veriff_kyc_child_plugin',
         stateNames: ['run_ubos'],
-        iterateOn: [
-          {
-            transformer: 'jmespath',
-            mapping: 'entity.data.additionalInfo.ubos',
-          },
-        ],
+        iterateOn: [{ transformer: 'jmespath', mapping: 'entity.data.additionalInfo.ubos' }],
         successAction: 'EMAIL_SENT_TO_UBOS',
         errorAction: 'FAILED_EMAIL_SENT_TO_UBOS',
       },
     ],
   },
   config: {
+    language: 'en',
+    supportedLanguages: ['en', 'cn'],
     initialEvent: 'START',
     createCollectionFlowToken: true,
     childCallbackResults: [

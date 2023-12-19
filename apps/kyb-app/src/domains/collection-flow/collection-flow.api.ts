@@ -11,9 +11,7 @@ import {
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 
 export const fetchUser = async (): Promise<TUser> => {
-  const result = await request.get('collection-flow/user').json<TUser>();
-
-  return result;
+  return await request.get('collection-flow/user').json<TUser>();
 };
 
 export const getFlowSession = fetchUser;
@@ -36,16 +34,18 @@ export const fetchCollectionFlowSchema = async (): Promise<{
   };
 };
 
-export const fetchUISchema = async (): Promise<UISchema> => {
-  const result = await request
-    .get('collection-flow/configuration', {
+export const fetchUISchema = async (language: string): Promise<UISchema> => {
+  return await request
+    .get(`collection-flow/configuration/${language}`, {
       searchParams: {
         uiContext: 'collection_flow',
       },
     })
     .json<UISchema>();
+};
 
-  return result;
+export const updateLanguage = async (language: string) => {
+  await request.put(`collection-flow/language`, { json: { language } });
 };
 
 export const updateFlow = async (dto: UpdateFlowDto) => {
@@ -61,9 +61,7 @@ export const resubmitFlow = async () => {
 };
 
 export const fetchCustomer = async (): Promise<TCustomer> => {
-  const result = await request.get('collection-flow/customer').json<TCustomer>();
-
-  return result;
+  return await request.get('collection-flow/customer').json<TCustomer>();
 };
 
 export const fetchFlowContext = async (): Promise<CollectionFlowContext> => {

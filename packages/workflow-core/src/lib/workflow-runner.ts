@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { isObject, uniqueArray } from '@ballerine/common';
+import { AnyRecord, isObject, uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
@@ -38,6 +38,7 @@ import { THelperFormatingLogic } from './utils/context-transformers/types';
 import {
   ChildWorkflowPluginParams,
   ISerializableCommonPluginParams,
+  IterativePluginParams,
 } from './plugins/common-plugin/types';
 import { TContext } from './utils';
 import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
@@ -46,15 +47,21 @@ import { search } from 'jmespath';
 import { KybPlugin } from './plugins/external-plugin/kyb-plugin';
 import { KycSessionPlugin } from './plugins/external-plugin/kyc-session-plugin';
 import { EmailPlugin } from './plugins/external-plugin/email-plugin';
+import {
+  TransformerPlugin,
+  TransformerPluginParams,
+} from './plugins/common-plugin/transformer-plugin';
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
 }
+
 export class WorkflowRunner {
   #__subscription: Array<(event: WorkflowEvent) => void> = [];
   #__workflow: StateMachine<any, any, any>;
   #__currentState: string | undefined | symbol | number | any;
   #__context: any;
+  #__config: any;
   #__callback: ((event: WorkflowEvent) => void) | null = null;
   #__extensions: WorkflowExtensions;
   #__debugMode: boolean;
@@ -78,6 +85,7 @@ export class WorkflowRunner {
     {
       runtimeId,
       definition,
+      config,
       workflowActions,
       workflowContext,
       extensions,
@@ -94,6 +102,7 @@ export class WorkflowRunner {
     this.#__extensions.childWorkflowPlugins = this.initiateChildPlugin(
       this.#__extensions.childWorkflowPlugins ?? [],
       runtimeId,
+      config,
       invokeChildWorkflowAction,
     );
     // @ts-expect-error TODO: fix this
@@ -121,6 +130,8 @@ export class WorkflowRunner {
 
     // use initial state or provided state
     this.#__currentState = workflowContext?.state ? workflowContext.state : definition.initial;
+
+    this.#__config = config;
   }
 
   initiateApiPlugins(apiPluginSchemas: Array<ISerializableHttpPluginParams>) {
@@ -159,43 +170,79 @@ export class WorkflowRunner {
   initiateChildPlugin(
     childPluginSchemas: Array<ISerializableChildPluginParams>,
     parentWorkflowRuntimeId: string,
+    parentWorkflowRuntimeConfig: unknown,
     callbackAction?: ChildWorkflowPluginParams['action'],
   ) {
     return childPluginSchemas?.map(childPluginSchema => {
       const transformers = this.fetchTransformers(childPluginSchema.transformers) || [];
 
-      const childWorkflowPlugin = new ChildWorkflowPlugin({
+      return new ChildWorkflowPlugin({
         name: childPluginSchema.name,
-        parentWorkflowRuntimeId: parentWorkflowRuntimeId,
+        parentWorkflowRuntimeId,
+        parentWorkflowRuntimeConfig: parentWorkflowRuntimeConfig as AnyRecord,
         definitionId: childPluginSchema.definitionId,
         stateNames: childPluginSchema.stateNames,
         transformers: transformers,
         initEvent: childPluginSchema.initEvent,
         action: callbackAction!,
       });
-
-      return childWorkflowPlugin;
     });
   }
 
   initiateCommonPlugins(
-    pluginSchemas: Array<ISerializableCommonPluginParams>,
+    pluginSchemas: Array<
+      ISerializableCommonPluginParams & { pluginKind: 'iterative' | 'transformer' }
+    >,
     actionPlugins: ActionablePlugins,
   ) {
     return pluginSchemas.map(pluginSchema => {
-      const actionPlugin = actionPlugins.find(
-        actionPlugin => actionPlugin.name === pluginSchema.actionPluginName,
+      const Plugin = this.pickCommonPluginClass(pluginSchema.pluginKind);
+      const pluginParams = this.pickCommonPluginParams(
+        pluginSchema.pluginKind,
+        pluginSchema,
+        actionPlugins,
       );
-
-      return new IterativePlugin({
-        name: pluginSchema.name,
-        stateNames: pluginSchema.stateNames,
-        iterateOn: this.fetchTransformers(pluginSchema.iterateOn),
-        action: (context: TContext) => actionPlugin!.invoke(context),
-        successAction: pluginSchema.successAction,
-        errorAction: pluginSchema.errorAction,
-      });
+      //@ts-ignore
+      return new Plugin(pluginParams);
     });
+  }
+
+  private pickCommonPluginClass(pluginKind: 'iterative' | 'transformer') {
+    if (pluginKind === 'iterative') return IterativePlugin;
+    if (pluginKind === 'transformer') return TransformerPlugin;
+
+    console.log('Plugin kind is not supplied or not supported, falling back to Iterative plugin.');
+    return IterativePlugin;
+  }
+
+  private pickCommonPluginParams(
+    _: 'iterative' | 'transformer',
+    params: unknown,
+    actionPlugins: ActionablePlugins,
+  ): IterativePluginParams | TransformerPluginParams {
+    if (TransformerPlugin.isTransformerPluginParams(params)) {
+      return {
+        name: params.name,
+        transformers: params.transformers,
+        stateNames: params.stateNames,
+      };
+    }
+
+    const iterarivePluginParams = params as IterativePluginParams;
+    const actionPlugin = actionPlugins.find(
+      //@ts-ignore
+      actionPlugin => actionPlugin.name === params?.actionPluginName,
+    );
+
+    return {
+      name: iterarivePluginParams.name,
+      stateNames: iterarivePluginParams.stateNames,
+      //@ts-ignore
+      iterateOn: this.fetchTransformers(iterarivePluginParams.iterateOn),
+      action: (context: TContext) => actionPlugin!.invoke(context, this.#__config),
+      successAction: iterarivePluginParams.successAction,
+      errorAction: iterarivePluginParams.errorAction,
+    };
   }
 
   private pickApiPluginClass(apiPluginSchema: ISerializableHttpPluginParams) {
@@ -534,7 +581,7 @@ export class WorkflowRunner {
 
   private async __invokeCommonPlugin(commonPlugin: CommonPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const { callbackAction, error } = await commonPlugin.invoke?.(this.#__context);
+    const { callbackAction, error } = await commonPlugin.invoke?.(this.#__context, this.#__config);
 
     if (!!error) {
       this.#__context.pluginsOutput = {
@@ -550,7 +597,10 @@ export class WorkflowRunner {
 
   private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(this.#__context);
+    const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(
+      this.#__context,
+      this.#__config,
+    );
 
     if (error) {
       console.error('Error invoking plugin: ', apiPlugin.name, this.#__context, error);
@@ -606,9 +656,14 @@ export class WorkflowRunner {
     if (pluginToInvoke && this.isHttpPlugin(pluginToInvoke)) {
       return await this.__invokeApiPlugin(pluginToInvoke);
     }
-    if (pluginToInvoke && pluginToInvoke instanceof IterativePlugin) {
+    if (pluginToInvoke && this.isCommonPlugin(pluginToInvoke)) {
+      //@ts-ignore
       return await this.__invokeCommonPlugin(pluginToInvoke);
     }
+  }
+
+  isCommonPlugin(pluginToInvoke: unknown) {
+    return pluginToInvoke instanceof IterativePlugin || pluginToInvoke instanceof TransformerPlugin;
   }
 
   isHttpPlugin(plugin: unknown): plugin is HttpPlugin {

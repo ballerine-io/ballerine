@@ -1,11 +1,13 @@
-import { RJSFInputProps, TextInputAdapter } from '@ballerine/ui';
 import { useMemo } from 'react';
-import { getCountriesList } from './get-countries-list';
+
+import { RJSFInputProps, TextInputAdapter } from '@ballerine/ui';
+import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
+import { getCountries } from '@/helpers/countries-data';
 
 export const CountryPicker = (props: RJSFInputProps) => {
-  const options = useMemo(() => getCountriesList(), []);
+  const { language } = useLanguageParam();
 
-  props.schema.oneOf = options;
+  props.schema.oneOf = useMemo(() => getCountries(language), [language]);
 
   return <TextInputAdapter {...(props as any)} />;
 };

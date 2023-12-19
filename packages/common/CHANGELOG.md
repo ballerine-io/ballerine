@@ -1,5 +1,41 @@
 # @ballerine/common
 
+## 0.7.35
+
+### Patch Changes
+
+- version bump
+
+## 0.7.34
+
+### Patch Changes
+
+- updated DefaultContextSchema type to use Typebox over deprecated generation script
+
+## 0.7.33
+
+### Patch Changes
+
+- added default context for defintion testing
+
+## 0.7.32
+
+### Patch Changes
+
+- add example context for defintion validation
+
+## 0.7.31
+
+### Patch Changes
+
+- updated definition validation
+
+## 0.7.30
+
+### Patch Changes
+
+- Version bump
+
 ## 0.7.29
 
 ### Patch Changes

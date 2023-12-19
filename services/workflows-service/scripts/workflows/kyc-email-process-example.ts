@@ -139,6 +139,7 @@ export const kycEmailSessionDefinition = {
               subject: '{customerCompanyName} activation, Action needed.',
               templateId: (documents[].decision[].revisionReason | [0])!=null && 'd-2c6ae291d9df4f4a8770d6a4e272d803' || 'd-61c568cfa5b145b5916ff89790fe2065',
               revisionReason: documents[].decision[].revisionReason | [0],
+              language: workflowRuntimeConfig.language,
               supportEmail: join('',['support@',entity.data.additionalInfo.customerCompany,'.com']),
               adapter: '${env.MAIL_ADAPTER}'
               }`, // jmespath

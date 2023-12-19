@@ -1,5 +1,17 @@
 # @ballerine/websocket-service
 
+## 0.0.16
+
+### Patch Changes
+
+- version bump
+
+## 0.0.15
+
+### Patch Changes
+
+- Version bump
+
 ## 0.0.14
 
 ### Patch Changes

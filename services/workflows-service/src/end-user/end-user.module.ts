@@ -23,9 +23,10 @@ import { PasswordService } from '@/auth/password/password.service';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [ProjectModule, CustomerModule],
+  imports: [ProjectModule, CustomerModule, HttpModule],
   controllers: [EndUserControllerInternal, EndUserControllerExternal],
   providers: [
     EndUserRepository,

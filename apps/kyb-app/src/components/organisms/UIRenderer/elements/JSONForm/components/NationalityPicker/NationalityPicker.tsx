@@ -1,26 +1,25 @@
-import { RJSFInputProps, TextInputAdapter } from '@ballerine/ui';
-import locale from './langs/en.json';
 import { useMemo } from 'react';
 
+import { RJSFInputProps, TextInputAdapter } from '@ballerine/ui';
+import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
+import { getNationalities } from '@/helpers/countries-data';
+import { useTranslation } from 'react-i18next';
+
 export const NationalityPicker = (props: RJSFInputProps) => {
-  const options = useMemo(
-    () =>
-      Object.entries(locale.nationalities).map(([alpha2Code, nationality]) => ({
-        const: alpha2Code,
-        title: nationality,
-      })),
-    [],
-  );
+  const { language } = useLanguageParam();
+  const { t } = useTranslation();
+
+  const nationalities = useMemo(() => getNationalities(language, t), [language, t]);
 
   const propsWithOptions = useMemo(
     () => ({
       ...props,
       schema: {
         ...props.schema,
-        oneOf: options,
+        oneOf: nationalities,
       },
     }),
-    [props, options],
+    [props, nationalities],
   );
 
   return <TextInputAdapter {...(propsWithOptions as any)} />;

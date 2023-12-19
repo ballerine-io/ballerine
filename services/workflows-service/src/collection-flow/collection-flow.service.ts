@@ -9,7 +9,7 @@ import { CustomerService } from '@/customer/customer.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { NotFoundException } from '@/errors';
 import { FileService } from '@/providers/file/file.service';
-import { StorageService } from '@/storage/storage.service';
+import { TranslationService } from '@/providers/translation/translation.service';
 import type { TProjectId, TProjectIds } from '@/types';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
@@ -25,6 +25,7 @@ import keyBy from 'lodash/keyBy';
 @Injectable()
 export class CollectionFlowService {
   constructor(
+    protected readonly translationService: TranslationService,
     protected readonly logger: AppLoggerService,
     protected readonly endUserService: EndUserService,
     protected readonly workflowRuntimeDataRepository: WorkflowRuntimeDataRepository,
@@ -33,7 +34,6 @@ export class CollectionFlowService {
     protected readonly businessService: BusinessService,
     protected readonly uiDefinitionService: UiDefinitionService,
     protected readonly customerService: CustomerService,
-    protected readonly storageService: StorageService,
     protected readonly fileService: FileService,
   ) {}
 
@@ -42,13 +42,26 @@ export class CollectionFlowService {
   }
 
   async getUser(endUserId: string, projectId: TProjectId): Promise<EndUser> {
-    const endUser = await this.endUserService.getById(endUserId, {}, [projectId]);
+    return await this.endUserService.getById(endUserId, {}, [projectId]);
+  }
 
-    return endUser;
+  private traverseUiSchema(uiSchema: Record<string, unknown>, language: string) {
+    for (const key in uiSchema) {
+      if (typeof uiSchema[key] === 'object' && uiSchema[key] !== null) {
+        // If the property is an object (including arrays), recursively traverse it
+        // @ts-expect-error - error from Prisma types fix
+        this.traverseUiSchema(uiSchema[key], language);
+      } else if (typeof uiSchema[key] === 'string') {
+        uiSchema[key] = this.translationService.translate(uiSchema[key] as string, language);
+      }
+    }
+
+    return uiSchema;
   }
 
   async getFlowConfiguration(
     configurationId: string,
+    language: string,
     projectIds: TProjectIds,
   ): Promise<FlowConfigurationModel> {
     const workflowDefinition = await this.workflowService.getWorkflowDefinitionById(
@@ -66,7 +79,11 @@ export class CollectionFlowService {
 
     return {
       id: workflowDefinition.id,
-      uiSchema: uiDefintion.uiSchema as unknown as UiSchemaStep[],
+      config: workflowDefinition.config,
+      uiSchema: {
+        // @ts-expect-error - error from Prisma types fix
+        elements: this.traverseUiSchema(uiDefintion.uiSchema.elements, language) as UiSchemaStep[],
+      },
       definition: uiDefintion.definition
         ? (uiDefintion.definition as unknown as UiDefDefinition)
         : undefined,
@@ -170,7 +187,7 @@ export class CollectionFlowService {
 
     const { state, ...resetContext } = payload.data.context as Record<string, any>;
 
-    const updateResult = await this.workflowService.createOrUpdateWorkflowRuntime({
+    return await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: workflowRuntime.workflowDefinitionId,
       context: resetContext as DefaultContextSchema,
       config: workflowRuntime.config,
@@ -178,8 +195,20 @@ export class CollectionFlowService {
       projectIds: [tokenScope.projectId],
       currentProjectId: tokenScope.projectId,
     });
+  }
 
-    return updateResult;
+  async updateWorkflowRuntimeLanguage(language: string, tokenScope: ITokenScope) {
+    const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
+      tokenScope.workflowRuntimeDataId,
+      {},
+      [tokenScope.projectId] as TProjectIds,
+    );
+
+    return await this.workflowService.updateWorkflowRuntimeLanguage(
+      workflowRuntime.id,
+      language,
+      tokenScope.projectId,
+    );
   }
 
   async syncWorkflow(payload: UpdateFlowDto, tokenScope: ITokenScope) {

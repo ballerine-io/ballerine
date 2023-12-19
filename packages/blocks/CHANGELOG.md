@@ -1,5 +1,27 @@
 # @ballerine/blocks
 
+## 0.1.24
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.7.35
+
+## 0.1.23
+
+### Patch Changes
+
+- Updated logic to avoid React errors in console around passing props to `Fragment`.
+
+## 0.1.22
+
+### Patch Changes
+
+- Version bump
+- Updated dependencies
+  - @ballerine/common@0.7.30
+
 ## 0.1.21
 
 ### Patch Changes

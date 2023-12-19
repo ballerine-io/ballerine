@@ -1,8 +1,9 @@
 import { useParams } from 'react-router-dom';
-import { cells } from './cells';
 import { useFilterId } from '../../../../common/hooks/useFilterId/useFilterId';
 import { useWorkflowQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useTasks } from '../useTasks/useTasks';
+
+import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
 export const useEntity = () => {
   const { entityId } = useParams();
@@ -22,6 +23,12 @@ export const useEntity = () => {
     pluginsOutput,
     parentMachine: workflow?.context?.parentMachine,
   });
+  const kycChildWorkflows = workflow?.childWorkflows?.filter(
+    childWorkflow => childWorkflow?.context?.entity?.type === 'individual',
+  );
+  const kybChildWorkflows = workflow?.childWorkflows?.filter(
+    childWorkflow => childWorkflow?.context?.entity?.type === 'business',
+  );
 
   return {
     selectedEntity,
@@ -29,5 +36,7 @@ export const useEntity = () => {
     tasks,
     workflow,
     isLoading,
+    kybChildWorkflows,
+    kycChildWorkflows,
   };
 };

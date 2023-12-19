@@ -1,3 +1,7 @@
+import { useEffect, useMemo, useState } from 'react';
+import DOMPurify from 'dompurify';
+import { useTranslation } from 'react-i18next';
+
 import { StepperProgress } from '@/common/components/atoms/StepperProgress';
 import { ProgressBar } from '@/common/components/molecules/ProgressBar';
 import { AppShell } from '@/components/layouts/AppShell';
@@ -20,16 +24,19 @@ import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
-import { useMemo } from 'react';
+import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
+import set from 'lodash/set';
 
 const elems = {
   h1: Title,
-  h3: (props: AnyObject) => <h3 className="pb-3 text-xl font-bold">{props?.options?.text}</h3>,
+  h3: (props: AnyObject) => <h3 className="pt-4 text-xl font-bold">{props?.options?.text}</h3>,
   h4: (props: AnyObject) => <h4 className="pb-3 text-base font-bold">{props?.options?.text}</h4>,
   description: (props: AnyObject) => (
     <p
       className="font-inter pb-2 text-sm text-slate-500"
-      dangerouslySetInnerHTML={{ __html: props.options.descriptionRaw as string }}
+      dangerouslySetInnerHTML={{
+        __html: DOMPurify.sanitize(props.options.descriptionRaw) as string,
+      }}
     ></p>
   ),
   'json-form': JSONForm,
@@ -40,10 +47,13 @@ const elems = {
   divider: Divider,
 };
 
-export const CollectionFlowDumb = () => {
-  const { data: schema } = useUISchemasQuery();
+export const CollectionFlow = withSessionProtected(() => {
+  const { language } = useLanguageParam();
+  const { data: schema } = useUISchemasQuery(language);
   const { data: context } = useFlowContextQuery();
   const { customer } = useCustomer();
+  const { t } = useTranslation();
+
   const elements = schema?.uiSchema?.elements;
   const definition = schema?.definition.definition;
 
@@ -54,6 +64,7 @@ export const CollectionFlowDumb = () => {
   );
 
   const filteredNonEmptyErrors = pageErrors?.filter(pageError => !!pageError.errors.length);
+
   // @ts-ignore
   const initialContext: CollectionFlowContext | null = useMemo(() => {
     const appState =
@@ -70,11 +81,23 @@ export const CollectionFlowDumb = () => {
       },
       state: appState,
     };
-  }, []);
+  }, [context, elements, filteredNonEmptyErrors]);
 
   const initialUIState = useMemo(() => {
     return prepareInitialUIState(elements || [], context || {}, isRevision);
   }, [elements, context, isRevision]);
+
+  // Breadcrumbs now using scrollIntoView method to make sure that breadcrumb is always in viewport.
+  // Due to dynamic dimensions of logo it doesnt work well if scroll happens before logo is loaded.
+  // This workaround is needed to wait for logo to be loaded so scrollIntoView will work with correct dimensions of page.
+  const [isLogoLoaded, setLogoLoaded] = useState(customer?.logoImageUri ? false : true);
+
+  useEffect(() => {
+    if (!customer?.logoImageUri) return;
+
+    // Resseting loaded state in case of logo change
+    setLogoLoaded(false);
+  }, [customer?.logoImageUri]);
 
   if (initialContext?.flowConfig?.appState === 'approved') return <Approved />;
   if (initialContext?.flowConfig?.appState == 'rejected') return <Rejected />;
@@ -97,17 +120,27 @@ export const CollectionFlowDumb = () => {
                 return currentPage ? (
                   <DynamicUI.Page page={currentPage}>
                     <DynamicUI.TransitionListener
-                      onNext={(tools, prevState) => {
+                      onNext={async (tools, prevState) => {
                         tools.setElementCompleted(prevState, true);
+
+                        set(
+                          stateApi.getContext(),
+                          `flowConfig.stepsProgress.${prevState}.isCompleted`,
+                          true,
+                        );
+                        await stateApi.invokePlugin('sync_workflow_runtime');
                       }}
                     >
                       <DynamicUI.ActionsHandler actions={currentPage.actions} stateApi={stateApi}>
                         <AppShell>
                           <AppShell.Sidebar>
                             <div className="flex h-full flex-col">
-                              <div className="flex-1">
-                                <div className="pb-10">
+                              <div className="flex h-full flex-1 flex-col">
+                                <div className="flex flex-row justify-between pb-10">
                                   <AppShell.Navigation />
+                                  <div className="w-[105px]">
+                                    <AppShell.LanguagePicker />
+                                  </div>
                                 </div>
                                 <div className="pb-10">
                                   <AppShell.Logo
@@ -115,18 +148,22 @@ export const CollectionFlowDumb = () => {
                                     logoSrc={customer?.logoImageUri}
                                     // @ts-ignore
                                     appName={customer?.displayName}
+                                    onLoad={() => setLogoLoaded(true)}
                                   />
                                 </div>
-                                <div className="h-full max-h-[460px] pb-10">
-                                  <StepperUI />
+                                <div className="min-h-0 flex-1 pb-10">
+                                  {isLogoLoaded ? <StepperUI /> : null}
                                 </div>
-                              </div>
-                              <div>
                                 <div>
-                                  <div className="border-b pb-12">
-                                    Contact {customer?.displayName || 'PayLynk'} for support <br />{' '}
-                                    example@example.com (000) 123-4567
-                                  </div>
+                                  {customer?.displayName && (
+                                    <div className="border-b pb-12">
+                                      {
+                                        t('contact', {
+                                          companyName: customer.displayName,
+                                        }) as string
+                                      }
+                                    </div>
+                                  )}
                                   <img src={'/poweredby.svg'} className="mt-6" />
                                 </div>
                               </div>
@@ -179,6 +216,4 @@ export const CollectionFlowDumb = () => {
       </DynamicUI.StateManager>
     </DynamicUI>
   ) : null;
-};
-
-export const CollectionFlow = withSessionProtected(CollectionFlowDumb);
+});

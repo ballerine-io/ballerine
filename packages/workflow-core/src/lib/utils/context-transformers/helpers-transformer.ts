@@ -1,7 +1,10 @@
 import { BaseContextTransformer, THelperFormatingLogic } from './types';
 import { TContext } from '../types';
+import { search } from 'jmespath';
+import { AnyRecord } from '@ballerine/common';
+import merge from 'lodash.merge';
 
-export type THelperMethod = 'regex' | 'imageUrlToBase64';
+export type THelperMethod = 'regex' | 'imageUrlToBase64' | 'remove' | 'mergeArrayEachItemWithValue';
 export class HelpersTransformer extends BaseContextTransformer {
   name = 'helpers-transformer';
   mapping: THelperFormatingLogic;
@@ -12,32 +15,73 @@ export class HelpersTransformer extends BaseContextTransformer {
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  async transform(context: TContext, _options = {}) {
+  async transform(context: TContext, options = {}) {
     for (const mappingLogic of this.mapping) {
       const sourcePath = mappingLogic.source.split('.');
       const targetPath = mappingLogic.target.split('.');
 
       const sourceAttributeValue = this.getNestedProperty(context, sourcePath);
-      const transformedValue = await this[mappingLogic.method](
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore - sourceAttributeValue is dynamic and configurable
+      const instanceMethodToInvoke = this[mappingLogic.method];
+      const transformedValue = await instanceMethodToInvoke(
+        context,
         sourceAttributeValue,
         mappingLogic.value,
+        mappingLogic.options || options,
       );
-
       this.setNestedProperty(context, targetPath, transformedValue);
     }
 
     return context;
   }
 
-  regex(attribute: string, value: string) {
+  mergeArrayEachItemWithValue(
+    context: Parameters<typeof this.transform>[0],
+    attribute: Array<AnyRecord>,
+    _value: string,
+    options: { mapJmespath: string; mergeWithJmespath: string },
+  ) {
+    const jmespathResult = search(context, options.mapJmespath);
+    const mergeWithResult = search(context, options.mergeWithJmespath);
+    if (!jmespathResult || !mergeWithResult) {
+      console.warn(
+        'mergeArrayEachItemWithValue: jmespathResult or mergeWithResult is null',
+        options.mergeWithJmespath,
+        options.mapJmespath,
+      );
+
+      return attribute;
+    }
+
+    if (jmespathResult.length == 0) {
+      console.log('jmespathResult: is 0', options.mapJmespath);
+
+      return attribute;
+    }
+
+    return jmespathResult.map((item: AnyRecord) => merge(item, mergeWithResult));
+  }
+
+  remove(..._args: Array<any>) {
+    return undefined;
+  }
+
+  regex(
+    _context: Parameters<typeof this.transform>[0],
+    attribute: string,
+    value: string,
+    _options: unknown,
+  ) {
     const result = attribute.match(new RegExp(value));
 
     return result ? result[0] : null;
   }
 
-  async imageUrlToBase64(url: string, _value: string) {
+  async imageUrlToBase64(
+    _context: Parameters<typeof this.transform>[0],
+    url: string,
+    _value: string,
+    _options: unknown,
+  ) {
     const response = await fetch(url);
     const imageType = response?.headers?.get('Content-Type')?.split(';')?.[0] || 'image/png';
     const arrayBuffer = await response.arrayBuffer();

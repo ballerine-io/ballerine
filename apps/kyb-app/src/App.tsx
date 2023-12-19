@@ -11,9 +11,11 @@ import { router } from '@/router';
 import * as Sentry from '@sentry/react';
 
 export const App = () => {
+  const language = new URLSearchParams(window.location.search).get('lng') || 'en';
+
   const dependancyQueries = [
     useCustomerQuery(),
-    useUISchemasQuery(),
+    useUISchemasQuery(language),
     useFlowContextQuery(),
   ] as const;
 
