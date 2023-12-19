@@ -80,7 +80,7 @@ import {
   WorkflowRuntimeDataRepository,
 } from './workflow-runtime-data.repository';
 import mime from 'mime';
-import { ConfigService } from "@nestjs/config";
+import { ConfigService } from '@nestjs/config';
 
 type TEntityId = string;
 
