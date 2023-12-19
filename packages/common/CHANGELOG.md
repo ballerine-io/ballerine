@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- added common events
+- version bump
 
 ## 0.7.34
 

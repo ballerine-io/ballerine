@@ -3,7 +3,7 @@ import * as tmp from 'tmp';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { IStreamableFileProvider } from './types/interfaces';
 import { TFileServiceProvider } from './types';
-import { IErrorWithMessage, getDocumentId, isErrorWithMessage, isObject } from '@ballerine/common';
+import { getDocumentId, isErrorWithMessage } from '@ballerine/common';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import type { TProjectId } from '@/types';
 import { randomUUID } from 'crypto';
