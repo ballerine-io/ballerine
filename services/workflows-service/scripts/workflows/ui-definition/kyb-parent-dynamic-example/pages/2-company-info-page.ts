@@ -10,32 +10,12 @@ const validationSchema = {
           required: [
             'additionalInfo',
             'businessType',
-            'numberOfEmployees',
             'taxIdentificationNumber',
             'companyName',
             'country',
             'registrationNumber',
           ],
           properties: {
-            additionalInfo: {
-              type: 'object',
-              required: ['registeredCapitalInUsd'],
-              properties: {
-                registeredCapitalInUsd: {
-                  type: 'number',
-                  minimum: 0,
-                  errorMessage: {
-                    required: 'errorMessage.required.registeredCapitalInUsd',
-                    minimum: 'errorMessage.minimum.registeredCapitalInUsd',
-                  },
-                },
-              },
-              errorMessage: {
-                required: {
-                  registeredCapitalInUsd: 'errorMessage.required.registeredCapitalInUsd',
-                },
-              },
-            },
             businessType: {
               type: 'string',
               minLength: 3,
@@ -44,17 +24,6 @@ const validationSchema = {
                 minLength: 'errorMessage.minLength.businessType',
                 maxLength: 'errorMessage.maxLength.businessType',
                 required: 'errorMessage.required.businessType',
-              },
-            },
-            numberOfEmployees: {
-              type: 'number',
-              minimum: 1,
-              maximum: 100000,
-              errorMessage: {
-                type: 'errorMessage.type.numberOfEmployees',
-                required: 'errorMessage.required.numberOfEmployees',
-                minimum: 'errorMessage.minimum.numberOfEmployees',
-                maximum: 'errorMessage.maximum.numberOfEmployees',
               },
             },
             taxIdentificationNumber: {
@@ -101,6 +70,20 @@ const validationSchema = {
                 required: 'errorMessage.required.registrationNumber',
               },
             },
+            additionalInfo: {
+              type: 'object',
+              required: ['dateOfEstablishment'],
+              properties: {
+                dateOfEstablishment: {
+                  type: 'string',
+                },
+              },
+              errorMessage: {
+                required: {
+                  dateOfEstablishment: 'errorMessage.required.dateOfEstablishment',
+                },
+              },
+            },
           },
           errorMessage: {
             required: {
@@ -111,66 +94,6 @@ const validationSchema = {
               companyName: 'errorMessage.required.companyName',
               country: 'errorMessage.required.country',
               registrationNumber: 'errorMessage.required.registrationNumber',
-            },
-          },
-        },
-      },
-    },
-  },
-  required: ['entity'],
-};
-
-const dispatchOpenCorporateRule = {
-  type: 'object',
-  properties: {
-    entity: {
-      type: 'object',
-      required: ['data'],
-      default: {},
-      properties: {
-        data: {
-          type: 'object',
-          required: ['registrationNumber', 'country'],
-          default: {},
-          properties: {
-            registrationNumber: {
-              type: 'string',
-              minLength: 6,
-              maxLength: 20,
-            },
-            country: {
-              type: 'string',
-              minLength: 2,
-              maxLength: 2,
-            },
-            additionalInfo: {
-              type: 'object',
-              properties: {
-                state: {
-                  default: '',
-                  type: 'string',
-                },
-              },
-            },
-          },
-          if: {
-            properties: {
-              country: {
-                enum: ['AE', 'US', 'CA'],
-              },
-            },
-          },
-          then: {
-            required: ['additionalInfo'],
-            properties: {
-              additionalInfo: {
-                required: ['state'],
-                properties: {
-                  state: {
-                    minLength: 1,
-                  },
-                },
-              },
             },
           },
         },
@@ -204,11 +127,11 @@ const stateVisiblityRule = {
   required: ['entity'],
 };
 
-export const BusinessInfoPage = {
+export const CompanyInfoPage = {
   type: 'page',
   number: 2, // routing number of page
-  stateName: 'business_information', // this is the route from xstate
-  name: 'text.businessInformation', // page name ( in stepper )
+  stateName: 'company_information', // this is the route from xstate
+  name: 'text.companyInformation', // page name ( in stepper )
   pageValidation: [
     {
       type: 'json-schema',
@@ -315,7 +238,8 @@ export const BusinessInfoPage = {
                 'tax-identification-number-input',
                 'number-of-employees-input',
                 'business-type-input',
-                'registered-capital-in-usd-type-input',
+                'registered-capital-in-yuan-type-input',
+                'date-of-establishment-input',
               ],
             },
           },
@@ -346,24 +270,12 @@ export const BusinessInfoPage = {
               },
             },
             {
-              name: 'number-of-employees-input',
-              type: 'json-form:text',
-              valueDestination: 'entity.data.numberOfEmployees',
-              options: {
-                jsonFormDefinition: {
-                  type: 'number',
-                },
-                label: 'text.numberOfEmployees.label',
-                hint: 'text.numberOfEmployees.hint',
-              },
-            },
-            {
               name: 'business-type-input',
               type: 'json-form:dropdown',
               valueDestination: 'entity.data.businessType',
               options: {
+                hint: 'text.businessType.hint',
                 label: 'text.businessType.label',
-                hint: 'text.choose',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -375,8 +287,14 @@ export const BusinessInfoPage = {
                       title: 'text.businessType.options.sole_proprietorship',
                       const: 'sole_proprietorship',
                     },
-                    { title: 'text.businessType.options.partnership', const: 'partnership' },
-                    { title: 'text.businessType.options.corporation', const: 'corporation' },
+                    {
+                      title: 'text.businessType.options.partnership',
+                      const: 'partnership',
+                    },
+                    {
+                      title: 'text.businessType.options.corporation',
+                      const: 'corporation',
+                    },
                     {
                       title: 'text.businessType.options.limited_liability_company',
                       const: 'limited_liability_company_(llc)',
@@ -401,25 +319,40 @@ export const BusinessInfoPage = {
                       title: 'text.businessType.options.non_profit_organization',
                       const: 'non-profit_organization',
                     },
-                    { title: 'text.businessType.options.cooperative', const: 'cooperative' },
-                    { title: 'text.businessType.options.trust', const: 'trust' },
-                    { title: 'text.businessType.options.government', const: 'government' },
-                    { title: 'text.businessType.options.other', const: 'other' },
+                    {
+                      title: 'text.businessType.options.cooperative',
+                      const: 'cooperative',
+                    },
+                    {
+                      title: 'text.businessType.options.trust',
+                      const: 'trust',
+                    },
+                    {
+                      title: 'text.businessType.options.government',
+                      const: 'government',
+                    },
+                    {
+                      title: 'text.businessType.options.other',
+                      const: 'other',
+                    },
                   ],
                 },
               },
             },
             {
-              name: 'registered-capital-in-usd-type-input',
-              type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.registeredCapitalInUsd',
+              name: 'date-of-establishment-input',
+              type: 'json-form:date',
+              valueDestination: 'entity.data.additionalInfo.dateOfEstablishment',
               options: {
+                label: 'text.dateOfEstablishment.label',
+                hint: 'text.dateOfEstablishment.hint',
                 jsonFormDefinition: {
-                  type: 'integer',
+                  type: 'string',
                 },
-                format: 'currency',
-                hint: 'text.registeredCapitalInUsd.hint',
-                label: 'text.registeredCapitalInUsd.label',
+                uiSchema: {
+                  'ui:field': 'DateInput',
+                  'ui:label': true,
+                },
               },
             },
           ],
@@ -438,7 +371,7 @@ export const BusinessInfoPage = {
                 uiDefinition: {
                   classNames: ['align-right', 'padding-top-10'],
                 },
-                text: 'text.continue',
+                text: 'Continue',
               },
               availableOn: [
                 {
@@ -454,23 +387,6 @@ export const BusinessInfoPage = {
   ],
   actions: [
     {
-      type: 'definitionPlugin',
-      params: { pluginName: 'fetch_company_information', debounce: 700 },
-      dispatchOn: {
-        uiEvents: [
-          { event: 'onChange', uiElementName: 'registration-number-input' },
-          { event: 'onChange', uiElementName: 'country-picker-input' },
-          { event: 'onChange', uiElementName: 'business_info_state_input' },
-        ],
-        rules: [
-          {
-            type: 'json-schema',
-            value: dispatchOpenCorporateRule,
-          },
-        ],
-      },
-    },
-    {
       type: 'definitionEvent',
       params: {
         eventName: 'NEXT',
@@ -483,15 +399,6 @@ export const BusinessInfoPage = {
             value: validationSchema,
           },
         ],
-      },
-    },
-    {
-      type: 'definitionPlugin',
-      params: {
-        pluginName: 'state_value_removal',
-      },
-      dispatchOn: {
-        uiEvents: [{ event: 'onChange', uiElementName: 'country-picker-input' }],
       },
     },
   ],

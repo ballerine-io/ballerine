@@ -11,7 +11,13 @@ const validationSchema = {
           properties: {
             additionalInfo: {
               type: 'object',
-              required: ['mainRepresentative'],
+              required: ['mainRepresentative', 'iHaveSigningAuthority'],
+              default: {},
+              errorMessage: {
+                required: {
+                  iHaveSigningAuthority: 'errorMessage.required.iHaveSigningAuthority',
+                },
+              },
               properties: {
                 mainRepresentative: {
                   type: 'object',
@@ -74,6 +80,13 @@ const validationSchema = {
                     },
                   },
                 },
+                iHaveSigningAuthority: {
+                  type: 'boolean',
+                  enum: [true],
+                  errorMessage: {
+                    enum: 'errorMessage.required.iHaveSigningAuthority',
+                  },
+                },
               },
             },
           },
@@ -85,7 +98,7 @@ const validationSchema = {
 
 export const PersonalInfoPage = {
   type: 'page',
-  name: 'text.personalInformation',
+  name: 'text.personalDetails',
   number: 1,
   stateName: 'personal_details',
   pageValidation: [
@@ -195,6 +208,20 @@ export const PersonalInfoPage = {
                 uiSchema: {
                   'ui:field': 'PhoneInput',
                   'ui:label': true,
+                },
+              },
+            },
+            {
+              name: 'authority-checkbox',
+              type: 'authority-checkbox',
+              valueDestination: 'entity.data.additionalInfo.iHaveSigningAuthority',
+              options: {
+                label: 'text.iHaveAuthority.label',
+                jsonFormDefinition: {
+                  type: 'boolean',
+                },
+                uiSchema: {
+                  'ui:label': false,
                 },
               },
             },
