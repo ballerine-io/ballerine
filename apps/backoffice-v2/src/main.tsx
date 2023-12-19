@@ -11,7 +11,7 @@ import { Router } from './Router/Router';
 
 const rootElement = document.getElementById('root');
 
-// Avoid race conditions when using the mock server.
+/// Avoid race conditions when using the mock server.
 const prepare = async () => {
   if (env.VITE_MOCK_SERVER) {
     const { worker } = await import('./lib/mock-service-worker/browser');
