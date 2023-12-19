@@ -1,13 +1,14 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import { definition } from './pages/defintion-logic';
+import { definition } from './ui-definition/kyb-with-associated-company-ui-def/defintion-logic';
 import { PersonalInfoPage } from '../kyb-parent-dynamic-example/pages/1-personal-info-page';
 import { CompanyInfoPage } from '../kyb-parent-dynamic-example/pages/2-company-info-page';
 import { BusinessAddressInfoPage } from '../kyb-parent-dynamic-example/pages/3-business-address-info-page';
-import { CompanyActivityPage } from './pages/4-company-activity-page';
-import { BankInformationPage } from './pages/5-bank-information';
-import { CompanyOwnershipWithAssociatedCPage } from './pages/6-company-ownership-with-associated';
-import { CompanyDocumentsPage } from './pages/7-company-documents';
+import { CompanyActivityPage } from './ui-definition/kyb-with-associated-company-ui-def/4-company-activity-page';
+import { BankInformationPage } from './ui-definition/kyb-with-associated-company-ui-def/5-bank-information';
+import { CompanyOwnershipWithAssociatedCPage } from './ui-definition/kyb-with-associated-company-ui-def/6-company-ownership-with-associated';
+import { CompanyDocumentsPage } from './ui-definition/kyb-with-associated-company-ui-def/7-company-documents';
 import { generateKybWithChildWorkflowDefinition } from './definition';
+import { composeAssociatedUiDefinition } from './ui-definition/associated-company-ui-def/compose-associated-ui-definition';
 
 export const uiKybWithAssociatedParentUiSchema = (
   workflowDefinitionId: string,
@@ -35,14 +36,15 @@ export const uiKybParentWithAssociatedCompanies = async (
   prismaClient: PrismaClient,
   projectId: string,
 ) => {
-  const { parentKybDefinition } = await generateKybWithChildWorkflowDefinition(
-    prismaClient,
-    projectId,
-  );
+  const { parentKybDefinition, kybAssociatedChildDefinition } =
+    await generateKybWithChildWorkflowDefinition(prismaClient, projectId);
 
   const uiDef = await prismaClient.uiDefinition.create({
     data: uiKybWithAssociatedParentUiSchema(parentKybDefinition.id, projectId),
   });
 
+  const associatedCompanyUiDef = await prismaClient.uiDefinition.create({
+    data: composeAssociatedUiDefinition(kybAssociatedChildDefinition.id, projectId),
+  });
   return { parentWorkflow: parentKybDefinition, uiDefinition: uiDef };
 };
