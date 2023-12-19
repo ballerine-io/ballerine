@@ -7,6 +7,7 @@ export const baseFilterDefinitionSelect = {
       config: true,
       definition: true,
       variant: true,
+      version: true,
     },
   },
 } as const;
