@@ -29,7 +29,7 @@ import {
 } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 import { useAssociatedCompaniesInformationBlock } from '@/lib/blocks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
 
-export const useKybDemoBlocksLogic = () => {
+export const useKybExampleBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
   const filterId = useFilterId();
   const { data: workflow, isLoading } = useWorkflowQuery({
@@ -215,11 +215,18 @@ export const useKybDemoBlocksLogic = () => {
   const kybChildWorkflows = workflow?.childWorkflows?.filter(
     childWorkflow => childWorkflow?.context?.entity?.type === 'business',
   );
+
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
     workflows: kybChildWorkflows ?? [],
     dialog: {
       Trigger: props => (
-        <MotionButton {...motionButtonProps} variant="outline" className={'ms-3.5'} {...props}>
+        <MotionButton
+          {...motionButtonProps}
+          variant="outline"
+          className={'ms-3.5'}
+          disabled={!caseState.actionButtonsEnabled}
+          {...props}
+        >
           Initiate KYB
         </MotionButton>
       ),

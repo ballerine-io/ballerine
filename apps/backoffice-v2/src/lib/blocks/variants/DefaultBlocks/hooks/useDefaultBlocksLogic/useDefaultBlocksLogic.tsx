@@ -305,7 +305,13 @@ export const useDefaultBlocksLogic = () => {
     isLoadingOnClose: isLoadingEvent,
     dialog: {
       Trigger: props => (
-        <MotionButton {...motionButtonProps} variant="outline" className={'ms-3.5'} {...props}>
+        <MotionButton
+          {...motionButtonProps}
+          variant="outline"
+          className={'ms-3.5'}
+          disabled={!caseState.actionButtonsEnabled}
+          {...props}
+        >
           Initiate KYB
         </MotionButton>
       ),

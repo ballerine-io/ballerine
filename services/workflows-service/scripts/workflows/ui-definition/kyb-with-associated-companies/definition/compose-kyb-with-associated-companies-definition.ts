@@ -1,4 +1,4 @@
-import { defaultContextSchema, StateTag } from '@ballerine/common';
+import { defaultContextSchema, StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
 
 export const composeKybWithAssociatedCompaniesDefinition = ({
   projectId,
@@ -17,6 +17,7 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
     id: definitionId,
     name: definitionName,
     version: 1,
+    variant: WorkflowDefinitionVariant.KYB,
     definitionType: 'statechart-json',
     definition: {
       id: `${definitionId}_v1`,
@@ -163,6 +164,7 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
       ],
     },
     config: {
+      isExample: true,
       createCollectionFlowToken: true,
       childCallbackResults: [
         {
