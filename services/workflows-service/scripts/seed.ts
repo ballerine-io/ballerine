@@ -9,7 +9,11 @@ import {
   generateBusiness,
   generateEndUser,
 } from './generate-end-user';
-import { CommonWorkflowStates, defaultContextSchema } from '@ballerine/common';
+import {
+  CommonWorkflowStates,
+  defaultContextSchema,
+  WorkflowDefinitionVariant,
+} from '@ballerine/common';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
@@ -483,6 +487,7 @@ async function seed(bcryptSalt: string | number) {
     data: {
       id: 'risk-score-improvement-dev', // should be auto generated normally
       name: 'risk-score-improvement',
+      variant: WorkflowDefinitionVariant.DEFAULT,
       version: 1,
       definitionType: 'statechart-json',
       config: {
@@ -507,6 +512,7 @@ async function seed(bcryptSalt: string | number) {
     ({
       name: DEFAULT_INITIAL_STATE,
       version: manualMachineVersion,
+      variant: WorkflowDefinitionVariant.DEFAULT,
       definitionType: 'statechart-json',
       config: {
         isLegacyReject: true,
@@ -553,6 +559,7 @@ async function seed(bcryptSalt: string | number) {
       reviewMachineId: kycManualMachineId,
       name: 'kyc',
       version: 1,
+      variant: WorkflowDefinitionVariant.DEFAULT,
       definitionType: 'statechart-json',
       definition: {
         id: 'kyc',
@@ -634,6 +641,7 @@ async function seed(bcryptSalt: string | number) {
       reviewMachineId: kybManualMachineId,
       name: 'kyb',
       version: 1,
+      variant: WorkflowDefinitionVariant.DEFAULT,
       definitionType: 'statechart-json',
       definition: {
         id: 'kyb',
@@ -846,6 +854,7 @@ async function seed(bcryptSalt: string | number) {
       id: onboardingMachineId,
       name: 'kyb_onboarding',
       version: 1,
+      variant: WorkflowDefinitionVariant.DEFAULT,
       definitionType: 'statechart-json',
       config: {
         workflowLevelResolution: true,
@@ -870,6 +879,7 @@ async function seed(bcryptSalt: string | number) {
       id: riskScoreMachineId,
       name: 'kyb_risk_score',
       version: 1,
+      variant: WorkflowDefinitionVariant.DEFAULT,
       definitionType: 'statechart-json',
       config: {
         workflowLevelResolution: false,
