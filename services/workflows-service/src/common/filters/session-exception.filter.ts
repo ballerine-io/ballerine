@@ -23,4 +23,3 @@ export class SessionExpiredExceptionFilter extends BaseExceptionFilter {
     super.catch(exception, host);
   }
 }
-
