@@ -48,8 +48,8 @@ const elems = {
 };
 
 export const CollectionFlow = withSessionProtected(() => {
-  const lng = useLanguageParam();
-  const { data: schema } = useUISchemasQuery(lng || 'en');
+  const { language } = useLanguageParam();
+  const { data: schema } = useUISchemasQuery(language);
   const { data: context } = useFlowContextQuery();
   const { customer } = useCustomer();
   const { t } = useTranslation();
@@ -136,8 +136,11 @@ export const CollectionFlow = withSessionProtected(() => {
                           <AppShell.Sidebar>
                             <div className="flex h-full flex-col">
                               <div className="flex h-full flex-1 flex-col">
-                                <div className="pb-10">
+                                <div className="flex flex-row justify-between pb-10">
                                   <AppShell.Navigation />
+                                  <div className="w-[105px]">
+                                    <AppShell.LanguagePicker />
+                                  </div>
                                 </div>
                                 <div className="pb-10">
                                   <AppShell.Logo

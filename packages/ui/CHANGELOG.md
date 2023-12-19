@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- Added openOnFocus to DropdownInput
+- version bump
 
 ## 0.3.23
 

@@ -1,6 +1,7 @@
 import { TContext, Transformers } from '../../utils';
 import { SerializableValidatableTransformer } from '../external-plugin';
 import { ChildPluginCallbackOutput } from '../../types';
+import { AnyRecord } from '@ballerine/common';
 
 export interface ISerializableCommonPluginParams
   extends Omit<IterativePluginParams, 'action' | 'iterateOn'> {
@@ -17,6 +18,7 @@ export interface ISerializableMappingPluginParams
     'action' | 'iterateOn' | 'iterateOn' | 'action' | 'successAction' | 'errorAction'
   > {
   transformers: Omit<SerializableValidatableTransformer, 'schema'>['transform'];
+
   invoke?(...args: Array<any>): any;
 }
 
@@ -32,6 +34,7 @@ export interface IterativePluginParams {
 export interface ChildWorkflowPluginParams {
   name: string;
   parentWorkflowRuntimeId: string;
+  parentWorkflowRuntimeConfig: AnyRecord;
   definitionId: string;
   stateNames?: Array<string>;
   transformers?: Transformers;

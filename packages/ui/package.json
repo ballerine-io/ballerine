@@ -55,8 +55,8 @@
     "tailwind-merge": "^1.10.0"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.0.2",
-    "@ballerine/eslint-config-react": "^1.0.3",
+    "@ballerine/config": "^1.0.3",
+    "@ballerine/eslint-config-react": "^1.0.4",
     "@cspell/cspell-types": "^6.31.1",
     "@storybook/addon-essentials": "^7.0.26",
     "@storybook/addon-interactions": "^7.0.26",

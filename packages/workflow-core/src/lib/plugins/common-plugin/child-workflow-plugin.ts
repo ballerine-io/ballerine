@@ -7,6 +7,7 @@ export class ChildWorkflowPlugin {
   name: ChildWorkflowPluginParams['name'];
   definitionId: ChildWorkflowPluginParams['definitionId'];
   parentWorkflowRuntimeId: ChildWorkflowPluginParams['parentWorkflowRuntimeId'];
+  parentWorkflowRuntimeConfig: ChildWorkflowPluginParams['parentWorkflowRuntimeConfig'];
   stateNames: ChildWorkflowPluginParams['stateNames'];
   transformers: ChildWorkflowPluginParams['transformers'];
   action: ChildWorkflowPluginParams['action'];
@@ -16,6 +17,7 @@ export class ChildWorkflowPlugin {
     this.name = pluginParams.name;
     this.definitionId = pluginParams.definitionId;
     this.parentWorkflowRuntimeId = pluginParams.parentWorkflowRuntimeId;
+    this.parentWorkflowRuntimeConfig = pluginParams.parentWorkflowRuntimeConfig;
     this.stateNames = pluginParams.stateNames;
     this.transformers = pluginParams.transformers;
     this.initEvent = pluginParams.initEvent;
@@ -31,6 +33,9 @@ export class ChildWorkflowPlugin {
       initOptions: {
         context: childWorkflowContext,
         event: this.initEvent,
+        config: {
+          language: this.parentWorkflowRuntimeConfig.language,
+        },
       },
     });
 

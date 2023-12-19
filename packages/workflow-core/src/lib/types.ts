@@ -12,6 +12,7 @@ import {
 import { TContext } from './utils';
 import { ChildCallabackable } from './workflow-runner';
 import { THelperFormatingLogic } from './utils/context-transformers/types';
+import { AnyRecord } from '@ballerine/common';
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
@@ -39,15 +40,18 @@ export interface WorkflowExtensions {
     | Array<ISerializableMappingPluginParams>;
   childWorkflowPlugins?: Array<ISerializableChildPluginParams>;
 }
+
 export interface ChildWorkflowCallback {
   transformers?: Array<SerializableTransformer>;
   action: 'append';
   persistenceStates?: Array<string>;
   deliverEvent?: string;
 }
+
 export interface ChildToParentCallback {
   childCallbackResults?: Array<ChildWorkflowCallback & { definitionId: string }>;
 }
+
 export interface WorkflowContext {
   id?: string;
   state?: any;
@@ -60,10 +64,12 @@ export interface IUpdateContextEvent {
   type: string;
   payload: Record<PropertyKey, unknown>;
 }
+
 export interface WorkflowOptions {
   runtimeId: string;
   definitionType: 'statechart-json' | 'bpmn-json';
   definition: MachineConfig<any, any, any>;
+  config?: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
@@ -73,9 +79,11 @@ export interface WorkflowOptions {
 export interface CallbackInfo {
   event: string;
 }
+
 export interface WorkflowRunnerArgs {
   runtimeId: string;
   definition: MachineConfig<any, any, any>;
+  config?: MachineConfig<any, any, any>;
   workflowActions?: MachineOptions<any, any>['actions'];
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
@@ -99,6 +107,7 @@ export type ChildPluginCallbackOutput = {
   initOptions: {
     context: TContext;
     event?: string;
+    config: AnyRecord;
   };
 };
 
