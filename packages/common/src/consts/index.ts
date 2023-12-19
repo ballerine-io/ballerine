@@ -38,8 +38,10 @@ export const CommonWorkflowStates = {
 export type TStateTag = (typeof StateTags)[number];
 
 export const WorkflowDefinitionVariant = {
+  WEBSITE_MONITORING: 'WEBSITE_MONITORING',
   MANUAL_REVIEW: 'MANUAL_REVIEW',
   KYB: 'KYB',
+  KYC: 'KYC',
   DEFAULT: 'DEFAULT',
 } as const;
 

@@ -9,11 +9,7 @@ import {
   generateBusiness,
   generateEndUser,
 } from './generate-end-user';
-import {
-  CommonWorkflowStates,
-  defaultContextSchema,
-  WorkflowDefinitionVariant,
-} from '@ballerine/common';
+import { CommonWorkflowStates, defaultContextSchema } from '@ballerine/common';
 import { generateUserNationalId } from './generate-user-national-id';
 import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url-example';
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
@@ -27,6 +23,12 @@ import { generateBaseCaseLevelStates } from './workflows/generate-base-case-leve
 import type { InputJsonValue } from '../src/types';
 import { generateDynamicUiWorkflow } from './workflows/dynamic-ui-workflow';
 import { generateWebsiteMonitoringExample } from './workflows/website-monitoring-workflow';
+import {
+  baseFilterAssigneeSelect,
+  baseFilterBusinessSelect,
+  baseFilterDefinitionSelect,
+  baseFilterEndUserSelect,
+} from './filters';
 
 seed(10).catch(error => {
   console.error(error);
@@ -487,7 +489,6 @@ async function seed(bcryptSalt: string | number) {
     data: {
       id: 'risk-score-improvement-dev', // should be auto generated normally
       name: 'risk-score-improvement',
-      variant: WorkflowDefinitionVariant.DEFAULT,
       version: 1,
       definitionType: 'statechart-json',
       config: {
@@ -512,7 +513,6 @@ async function seed(bcryptSalt: string | number) {
     ({
       name: DEFAULT_INITIAL_STATE,
       version: manualMachineVersion,
-      variant: WorkflowDefinitionVariant.DEFAULT,
       definitionType: 'statechart-json',
       config: {
         isLegacyReject: true,
@@ -559,7 +559,6 @@ async function seed(bcryptSalt: string | number) {
       reviewMachineId: kycManualMachineId,
       name: 'kyc',
       version: 1,
-      variant: WorkflowDefinitionVariant.DEFAULT,
       definitionType: 'statechart-json',
       definition: {
         id: 'kyc',
@@ -641,7 +640,6 @@ async function seed(bcryptSalt: string | number) {
       reviewMachineId: kybManualMachineId,
       name: 'kyb',
       version: 1,
-      variant: WorkflowDefinitionVariant.DEFAULT,
       definitionType: 'statechart-json',
       definition: {
         id: 'kyb',
@@ -740,48 +738,9 @@ async function seed(bcryptSalt: string | number) {
         context: true,
         state: true,
         tags: true,
-        workflowDefinition: {
-          select: {
-            id: true,
-            name: true,
-            contextSchema: true,
-            config: true,
-            definition: true,
-            variant: true,
-          },
-        },
-        business: {
-          select: {
-            id: true,
-            companyName: true,
-            registrationNumber: true,
-            legalForm: true,
-            countryOfIncorporation: true,
-            dateOfIncorporation: true,
-            address: true,
-            phoneNumber: true,
-            email: true,
-            website: true,
-            industry: true,
-            taxIdentificationNumber: true,
-            vatNumber: true,
-            shareholderStructure: true,
-            numberOfEmployees: true,
-            businessPurpose: true,
-            documents: true,
-            approvalState: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        assignee: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-          },
-        },
+        ...baseFilterDefinitionSelect,
+        ...baseFilterBusinessSelect,
+        ...baseFilterAssigneeSelect,
       },
       where: {
         workflowDefinitionId: { in: ['dynamic_external_request_example'] },
@@ -803,42 +762,9 @@ async function seed(bcryptSalt: string | number) {
         createdAt: true,
         state: true,
         tags: true,
-        workflowDefinition: {
-          select: {
-            id: true,
-            name: true,
-            contextSchema: true,
-            config: true,
-            definition: true,
-            variant: true,
-          },
-        },
-        endUser: {
-          select: {
-            id: true,
-            correlationId: true,
-            endUserType: true,
-            approvalState: true,
-            stateReason: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            phone: true,
-            dateOfBirth: true,
-            avatarUrl: true,
-            additionalInfo: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        assignee: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-          },
-        },
+        ...baseFilterDefinitionSelect,
+        ...baseFilterEndUserSelect,
+        ...baseFilterAssigneeSelect,
       },
       where: {
         workflowDefinitionId: { in: [kycManualMachineId] },
@@ -854,7 +780,6 @@ async function seed(bcryptSalt: string | number) {
       id: onboardingMachineId,
       name: 'kyb_onboarding',
       version: 1,
-      variant: WorkflowDefinitionVariant.DEFAULT,
       definitionType: 'statechart-json',
       config: {
         workflowLevelResolution: true,
@@ -879,7 +804,6 @@ async function seed(bcryptSalt: string | number) {
       id: riskScoreMachineId,
       name: 'kyb_risk_score',
       version: 1,
-      variant: WorkflowDefinitionVariant.DEFAULT,
       definitionType: 'statechart-json',
       config: {
         workflowLevelResolution: false,
@@ -910,42 +834,9 @@ async function seed(bcryptSalt: string | number) {
         context: true,
         state: true,
         tags: true,
-        workflowDefinition: {
-          select: {
-            id: true,
-            name: true,
-            contextSchema: true,
-            config: true,
-            definition: true,
-            variant: true,
-          },
-        },
-        endUser: {
-          select: {
-            id: true,
-            correlationId: true,
-            endUserType: true,
-            approvalState: true,
-            stateReason: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            phone: true,
-            dateOfBirth: true,
-            avatarUrl: true,
-            additionalInfo: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        assignee: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-          },
-        },
+        ...baseFilterDefinitionSelect,
+        ...baseFilterEndUserSelect,
+        ...baseFilterAssigneeSelect,
       },
       where: {
         workflowDefinitionId: { in: [riskScoreMachineKybId] },
@@ -967,48 +858,9 @@ async function seed(bcryptSalt: string | number) {
         context: true,
         state: true,
         tags: true,
-        workflowDefinition: {
-          select: {
-            id: true,
-            name: true,
-            contextSchema: true,
-            config: true,
-            definition: true,
-            variant: true,
-          },
-        },
-        business: {
-          select: {
-            id: true,
-            companyName: true,
-            registrationNumber: true,
-            legalForm: true,
-            countryOfIncorporation: true,
-            dateOfIncorporation: true,
-            address: true,
-            phoneNumber: true,
-            email: true,
-            website: true,
-            industry: true,
-            taxIdentificationNumber: true,
-            vatNumber: true,
-            shareholderStructure: true,
-            numberOfEmployees: true,
-            businessPurpose: true,
-            documents: true,
-            approvalState: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        assignee: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-          },
-        },
+        ...baseFilterDefinitionSelect,
+        ...baseFilterBusinessSelect,
+        ...baseFilterAssigneeSelect,
       },
       where: {
         workflowDefinitionId: { in: [riskScoreMachineKybId] },
@@ -1030,48 +882,9 @@ async function seed(bcryptSalt: string | number) {
         context: true,
         state: true,
         tags: true,
-        workflowDefinition: {
-          select: {
-            id: true,
-            name: true,
-            contextSchema: true,
-            config: true,
-            definition: true,
-            variant: true,
-          },
-        },
-        business: {
-          select: {
-            id: true,
-            companyName: true,
-            registrationNumber: true,
-            legalForm: true,
-            countryOfIncorporation: true,
-            dateOfIncorporation: true,
-            address: true,
-            phoneNumber: true,
-            email: true,
-            website: true,
-            industry: true,
-            taxIdentificationNumber: true,
-            vatNumber: true,
-            shareholderStructure: true,
-            numberOfEmployees: true,
-            businessPurpose: true,
-            documents: true,
-            approvalState: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        assignee: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-          },
-        },
+        ...baseFilterDefinitionSelect,
+        ...baseFilterBusinessSelect,
+        ...baseFilterAssigneeSelect,
         childWorkflowsRuntimeData: true,
       },
       where: {
