@@ -49,10 +49,7 @@ export const AssociatedCompanyDocumentsPage = {
           type: 'json-form',
           options: {
             jsonFormDefinition: {
-              required: [
-                'document-certificate-of-incorporation',
-                'document-business-utility-bill',
-              ],
+              required: ['document-certificate-of-incorporation', 'document-business-utility-bill'],
             },
           },
           elements: [
@@ -62,8 +59,7 @@ export const AssociatedCompanyDocumentsPage = {
               valueDestination: 'documents[0].pages[0].ballerineFileId',
               options: {
                 label: 'text.documents.certificateOfIncorporation.label',
-                description:
-                  'text.documents.certificateOfIncorporation.description',
+                description: 'text.documents.certificateOfIncorporation.description',
                 jsonFormDefinition: {
                   type: 'string',
                 },
@@ -146,11 +142,7 @@ export const AssociatedCompanyDocumentsPage = {
                 {
                   type: 'json-logic',
                   value: {
-                    '==': [
-                      { var: 'entity.data.additionalInfo.hasConfirmed' },
-                      true,
-                      false,
-                    ],
+                    '==': [{ var: 'entity.data.additionalInfo.hasConfirmed' }, true, false],
                   },
                 },
                 {
