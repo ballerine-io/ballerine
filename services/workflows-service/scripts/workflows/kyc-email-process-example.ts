@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { env } from '../../src/env';
-import { StateTag } from '@ballerine/common';
+import { StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
 
 export const kycEmailSessionDefinition = {
   id: 'kyc_email_session_example',
@@ -164,6 +164,7 @@ export const kycEmailSessionDefinition = {
     },
   },
   isPublic: true,
+  variant: WorkflowDefinitionVariant.DEFAULT,
 };
 
 export const generateKycSessionDefinition = async (prismaClient: PrismaClient) => {

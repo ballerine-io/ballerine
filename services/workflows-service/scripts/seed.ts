@@ -15,15 +15,23 @@ import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
 import { generateKybDefintion } from './workflows';
 import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
+import { generateParentKybWithSessionKycs } from './workflows/parent-kyb-kyc-session-workflow';
 import { env } from '../src/env';
 import { generateKybKycWorkflowDefinition } from './workflows/kyb-kyc-workflow-definition';
 import { generateBaseTaskLevelStates } from './workflows/generate-base-task-level-states';
 import { generateBaseCaseLevelStates } from './workflows/generate-base-case-level-states';
 import type { InputJsonValue } from '../src/types';
+import { generateDynamicUiWorkflow } from './workflows/dynamic-ui-workflow';
 import { generateWebsiteMonitoringExample } from './workflows/website-monitoring-workflow';
 import { generateCollectionKybWorkflow } from './workflows/generate-collection-kyb-workflow';
 import { generateInitialCollectionFlowExample } from './workflows/runtime/generate-initial-collection-flow-example';
 import { uiKybParentWithAssociatedCompanies } from './workflows/ui-definition/kyb-with-associated-companies/ui-kyb-parent-dynamic-example';
+import {
+  baseFilterAssigneeSelect,
+  baseFilterBusinessSelect,
+  baseFilterDefinitionSelect,
+  baseFilterEndUserSelect,
+} from './filters';
 
 seed(10).catch(error => {
   console.error(error);
@@ -735,48 +743,9 @@ async function seed(bcryptSalt: string | number) {
         context: true,
         state: true,
         tags: true,
-        workflowDefinition: {
-          select: {
-            id: true,
-            name: true,
-            version: true,
-            contextSchema: true,
-            config: true,
-            definition: true,
-          },
-        },
-        business: {
-          select: {
-            id: true,
-            companyName: true,
-            registrationNumber: true,
-            legalForm: true,
-            countryOfIncorporation: true,
-            dateOfIncorporation: true,
-            address: true,
-            phoneNumber: true,
-            email: true,
-            website: true,
-            industry: true,
-            taxIdentificationNumber: true,
-            vatNumber: true,
-            shareholderStructure: true,
-            numberOfEmployees: true,
-            businessPurpose: true,
-            documents: true,
-            approvalState: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        assignee: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-          },
-        },
+        ...baseFilterDefinitionSelect,
+        ...baseFilterBusinessSelect,
+        ...baseFilterAssigneeSelect,
       },
       where: {
         workflowDefinitionId: { in: ['dynamic_external_request_example'] },
@@ -798,42 +767,9 @@ async function seed(bcryptSalt: string | number) {
         createdAt: true,
         state: true,
         tags: true,
-        workflowDefinition: {
-          select: {
-            id: true,
-            name: true,
-            version: true,
-            contextSchema: true,
-            config: true,
-            definition: true,
-          },
-        },
-        endUser: {
-          select: {
-            id: true,
-            correlationId: true,
-            endUserType: true,
-            approvalState: true,
-            stateReason: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            phone: true,
-            dateOfBirth: true,
-            avatarUrl: true,
-            additionalInfo: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        assignee: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-          },
-        },
+        ...baseFilterDefinitionSelect,
+        ...baseFilterEndUserSelect,
+        ...baseFilterAssigneeSelect,
       },
       where: {
         workflowDefinitionId: { in: [kycManualMachineId] },
@@ -903,42 +839,9 @@ async function seed(bcryptSalt: string | number) {
         context: true,
         state: true,
         tags: true,
-        workflowDefinition: {
-          select: {
-            id: true,
-            name: true,
-            version: true,
-            contextSchema: true,
-            config: true,
-            definition: true,
-          },
-        },
-        endUser: {
-          select: {
-            id: true,
-            correlationId: true,
-            endUserType: true,
-            approvalState: true,
-            stateReason: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            phone: true,
-            dateOfBirth: true,
-            avatarUrl: true,
-            additionalInfo: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        assignee: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-          },
-        },
+        ...baseFilterDefinitionSelect,
+        ...baseFilterEndUserSelect,
+        ...baseFilterAssigneeSelect,
       },
       where: {
         workflowDefinitionId: { in: [riskScoreMachineKybId] },
@@ -960,48 +863,9 @@ async function seed(bcryptSalt: string | number) {
         context: true,
         state: true,
         tags: true,
-        workflowDefinition: {
-          select: {
-            id: true,
-            name: true,
-            version: true,
-            contextSchema: true,
-            config: true,
-            definition: true,
-          },
-        },
-        business: {
-          select: {
-            id: true,
-            companyName: true,
-            registrationNumber: true,
-            legalForm: true,
-            countryOfIncorporation: true,
-            dateOfIncorporation: true,
-            address: true,
-            phoneNumber: true,
-            email: true,
-            website: true,
-            industry: true,
-            taxIdentificationNumber: true,
-            vatNumber: true,
-            shareholderStructure: true,
-            numberOfEmployees: true,
-            businessPurpose: true,
-            documents: true,
-            approvalState: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        assignee: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-          },
-        },
+        ...baseFilterDefinitionSelect,
+        ...baseFilterBusinessSelect,
+        ...baseFilterAssigneeSelect,
       },
       where: {
         workflowDefinitionId: { in: [riskScoreMachineKybId] },
@@ -1023,53 +887,14 @@ async function seed(bcryptSalt: string | number) {
         context: true,
         state: true,
         tags: true,
-        workflowDefinition: {
-          select: {
-            id: true,
-            name: true,
-            version: true,
-            contextSchema: true,
-            config: true,
-            definition: true,
-          },
-        },
-        business: {
-          select: {
-            id: true,
-            companyName: true,
-            registrationNumber: true,
-            legalForm: true,
-            countryOfIncorporation: true,
-            dateOfIncorporation: true,
-            address: true,
-            phoneNumber: true,
-            email: true,
-            website: true,
-            industry: true,
-            taxIdentificationNumber: true,
-            vatNumber: true,
-            shareholderStructure: true,
-            numberOfEmployees: true,
-            businessPurpose: true,
-            documents: true,
-            approvalState: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        assignee: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-          },
-        },
+        ...baseFilterDefinitionSelect,
+        ...baseFilterBusinessSelect,
+        ...baseFilterAssigneeSelect,
         childWorkflowsRuntimeData: true,
       },
       where: {
         // workflowDefinitionId: 'dynamic_kyb_parent_example',
-        workflowDefinitionId: 'kyb_with_associated_companies',
+        workflowDefinitionId: 'kyb_with_associated_companies_example',
         businessId: { not: null },
         state: {
           in: [

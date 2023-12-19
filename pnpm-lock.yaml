@@ -2532,7 +2532,7 @@ importers:
         version: 0.14.5
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.0.3
+        specifier: ^1.0.4
         version: link:../../packages/config
       '@ballerine/eslint-config':
         specifier: ^1.0.3
