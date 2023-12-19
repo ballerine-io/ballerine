@@ -16,6 +16,7 @@ import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
 import { tagToBadgeData } from '../../consts';
 import { AnyObject } from '@ballerine/ui';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
+import { someDocumentDecisionStatus } from '@ballerine/common';
 
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
@@ -28,7 +29,6 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     },
   );
   const { mutate: mutateRevisionCase, isLoading: isLoadingRevisionCase } = useRevisionCaseMutation({
-    workflowId: workflowId,
     onSelectNextEntity,
   });
   const { mutate: mutateRejectEntity, isLoading: isLoadingRejectEntity } = useRejectEntityMutation({
@@ -57,7 +57,22 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
 
   // Avoid passing the onClick event to mutate
   const onMutateApproveEntity = useCallback(() => mutateApproveEntity(), [mutateApproveEntity]);
-  const onMutateRevisionCase = useCallback(() => mutateRevisionCase(), [mutateRevisionCase]);
+  const onMutateRevisionCase = useCallback(() => {
+    // Mutate parent workflow
+    mutateRevisionCase({ workflowId });
+
+    // Mutate child workflows
+    workflow?.childWorkflows?.forEach(childWorkflow => {
+      if (
+        childWorkflow?.context?.entity?.type !== 'business' ||
+        !someDocumentDecisionStatus(childWorkflow?.context?.documents, 'revision')
+      ) {
+        return;
+      }
+
+      mutateRevisionCase({ workflowId: childWorkflow?.id });
+    });
+  }, [mutateRevisionCase, workflow?.childWorkflows, workflowId]);
   const onMutateRejectEntity = useCallback(() => mutateRejectEntity(), [mutateRejectEntity]);
   const onMutateAssignWorkflow = useCallback(
     (assigneeId: string, isAssignedToMe: boolean) =>
