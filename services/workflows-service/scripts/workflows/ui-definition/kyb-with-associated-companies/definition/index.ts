@@ -7,7 +7,7 @@ export const generateKybWithChildWorkflowDefinition = async (
   client: PrismaClient,
   projectId: string,
 ) => {
-  const kycDefinition = await client.workflowDefinition.create({
+  const kybAssociatedChildDefinition = await client.workflowDefinition.create({
     data: composeChildAssociatedCompanyDefinition({
       definitionId: 'associated_company_child_workflow',
       definitionName: 'associated_company_child_workflow',
@@ -15,7 +15,7 @@ export const generateKybWithChildWorkflowDefinition = async (
     }),
   });
 
-  const kybAsocciatedChildDefinition = await client.workflowDefinition.create({
+  const kycChildDefinition = await client.workflowDefinition.create({
     data: composeKycChildWorkflowDefinition({
       definitionId: 'kyc_child_workflow',
       definitionName: 'kyc_child_workflow',
@@ -28,8 +28,8 @@ export const generateKybWithChildWorkflowDefinition = async (
       definitionId: 'kyb_with_associated_companies',
       definitionName: 'kyb_with_associated_companies',
       projectId: projectId,
-      kycChildWorkflowDefinitionId: kycDefinition.id,
-      kybChildWorkflowDefinitionId: kybAsocciatedChildDefinition.id,
+      kycChildWorkflowDefinitionId: kycChildDefinition.id,
+      kybChildWorkflowDefinitionId: kybAssociatedChildDefinition.id,
     }),
   });
 
