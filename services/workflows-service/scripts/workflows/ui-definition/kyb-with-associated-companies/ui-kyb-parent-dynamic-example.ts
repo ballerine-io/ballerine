@@ -35,7 +35,7 @@ export const uiKybParentWithAssociatedCompanies = async (
   prismaClient: PrismaClient,
   projectId: string,
 ) => {
-  const { parentKybDefinition, kybAssociatedDefinition, kycDefinition } =
+  const { parentKybDefinition, kybAssociatedDefinition, kycChildDefinition } =
     await generateKybWithChildWorkflowDefinition(prismaClient, projectId);
 
   const uiDef = await prismaClient.uiDefinition.create({
