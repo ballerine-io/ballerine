@@ -173,20 +173,21 @@ export const useKybDemoBlocksLogic = () => {
           <p className="text-sm">
             {isWorkflowLevelResolution && (
               <>
-                Once marked, you can use the “Ask for all re-uploads” button at the top of the
-                screen to initiate a request for the customer to re-upload all of the documents you
-                have marked for re-upload.
+                After selecting one or more documents for re-upload, click ‘Ask for all re-uploads’
+                at the top of the case. This action will open a new tab to simulate the document
+                re-upload request process. Note: In the live environment, requests for document
+                re-uploads are initiated via email to the company’s representative.
               </>
             )}
             {!isWorkflowLevelResolution && (
               <>
                 <span className="mb-[10px] block">
-                  By clicking the button below, an email with a link will be sent to the customer,
-                  directing them to re-upload the documents you have marked as “re-upload needed”.
+                  Click the button below to simulate a document re-upload request process in a new
+                  tab.
                 </span>
                 <span>
-                  The case’s status will then change to “Revisions” until the customer will provide
-                  the needed documents and fixes.
+                  Note: In the live environment, requests for document re-uploads are initiated via
+                  email to the company’s representative.
                 </span>
               </>
             )}
