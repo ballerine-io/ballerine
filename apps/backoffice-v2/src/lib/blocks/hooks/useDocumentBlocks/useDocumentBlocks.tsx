@@ -15,12 +15,14 @@ import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/u
 import { getPostRemoveDecisionEventName } from '@/pages/Entity/get-post-remove-decision-event-name';
 import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
 import { CommonWorkflowStates, StateTag } from '@ballerine/common';
-import { motionProps } from '@/pages/Entity/motion-props';
 import { X } from 'lucide-react';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
 import { getPostDecisionEventName } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
+import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -85,7 +87,7 @@ export const useDocumentBlocks = ({
   );
 
   return (
-    documents?.map(
+    documents?.flatMap(
       ({ id, type: docType, category, properties, propertiesSchema, decision }, docIndex) => {
         const additionalProperties = isExistingSchemaForDocument(documentsSchemas ?? [])
           ? composePickableCategoryType(
@@ -104,68 +106,78 @@ export const useDocumentBlocks = ({
         const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {
           const badgeClassNames = 'text-sm font-bold';
 
-          if (isDocumentRevision) {
-            return workflow?.tags?.includes(StateTag.REVISION)
-              ? [
-                  {
-                    type: 'badge' as const,
-                    value: 'Pending re-upload',
-                    props: {
-                      ...motionProps,
-                      variant: 'warning',
-                      className: badgeClassNames,
-                    },
-                  },
-                ]
-              : [
-                  {
-                    type: 'badge' as const,
-                    value: (
-                      <React.Fragment>
-                        Re-upload needed
-                        {!isLegacyReject && (
-                          <X
-                            className="h-4 w-4 cursor-pointer"
-                            onClick={() => onMutateRemoveDecisionById({ documentId: id })}
-                          />
-                        )}
-                      </React.Fragment>
-                    ),
-                    props: {
-                      ...motionProps,
-                      variant: 'warning',
-                      className: `gap-x-1 text-white bg-warning ${badgeClassNames}`,
-                    },
-                  },
-                ];
+          if (isDocumentRevision && workflow?.tags?.includes(StateTag.REVISION)) {
+            return createBlocksTyped()
+              .addBlock()
+              .addCell({
+                type: 'badge',
+                value: 'Pending re-upload',
+                props: {
+                  ...motionBadgeProps,
+                  variant: 'warning',
+                  className: badgeClassNames,
+                },
+              })
+              .build()
+              .flat(1);
+          }
+
+          if (isDocumentRevision && !workflow?.tags?.includes(StateTag.REVISION)) {
+            return createBlocksTyped()
+              .addBlock()
+              .addCell({
+                type: 'badge',
+                value: (
+                  <React.Fragment>
+                    Re-upload needed
+                    {!isLegacyReject && (
+                      <X
+                        className="h-4 w-4 cursor-pointer"
+                        onClick={() => onMutateRemoveDecisionById({ documentId: id })}
+                      />
+                    )}
+                  </React.Fragment>
+                ),
+                props: {
+                  ...motionBadgeProps,
+                  variant: 'warning',
+                  className: `gap-x-1 text-white bg-warning ${badgeClassNames}`,
+                },
+              })
+              .build()
+              .flat(1);
           }
 
           if (decision?.status === StateTag.APPROVED) {
-            return [
-              {
-                type: 'badge' as const,
+            return createBlocksTyped()
+              .addBlock()
+              .addCell({
+                type: 'badge',
                 value: 'Approved',
                 props: {
-                  ...motionProps,
+                  ...motionBadgeProps,
                   variant: 'success',
                   className: `${badgeClassNames} bg-success/20`,
                 },
-              },
-            ];
+              })
+              .build()
+              .flat(1);
           }
 
           if (decision?.status === StateTag.REJECTED) {
-            return [
-              {
-                type: 'badge' as const,
+            return createBlocksTyped()
+              .addBlock()
+              .addCell({
+                type: 'badge',
                 value: 'Rejected',
                 props: {
-                  ...motionProps,
+                  ...motionBadgeProps,
                   variant: 'destructive',
                   className: badgeClassNames,
                 },
-              },
-            ];
+              })
+              .build()
+              .flat(1);
           }
 
           const revisionReasons =
@@ -177,9 +189,10 @@ export const useDocumentBlocks = ({
               ({ enum: enum_ }) => !!enum_,
             )?.enum;
 
-          return [
-            {
-              type: 'callToActionLegacy' as const,
+          return createBlocksTyped()
+            .addBlock()
+            .addCell({
+              type: 'callToActionLegacy',
               // 'Reject' displays the dialog with both "block" and "ask for re-upload" options
               value: {
                 text: isLegacyReject ? 'Reject' : 'Re-upload needed',
@@ -198,9 +211,9 @@ export const useDocumentBlocks = ({
                   dialog,
                 },
               },
-            },
-            {
-              type: 'callToAction' as const,
+            })
+            .addCell({
+              type: 'callToAction',
               value: {
                 text: 'Approve',
                 onClick: onMutateApproveTaskById({
@@ -217,8 +230,9 @@ export const useDocumentBlocks = ({
                   variant: 'success',
                 },
               },
-            },
-          ];
+            })
+            .build()
+            .flat(1);
         };
 
         const entityNameOrNA = valueOrNA(toTitleCase(workflow?.entity?.name ?? ''));
@@ -227,120 +241,147 @@ export const useDocumentBlocks = ({
         const documentNameOrNA = `${categoryOrNA} ${
           withEntityNameInHeader ? '' : ` ${documentTypeOrNA}`
         }`;
-        const headerCell = {
-          id: 'header',
-          type: 'container' as const,
-          value: [
-            {
-              type: 'heading' as const,
-              value: `${withEntityNameInHeader ? `${entityNameOrNA} - ` : ''}${documentNameOrNA}`,
-            },
-            {
-              id: 'actions',
-              type: 'container',
-              value: getDecisionStatusOrAction(isDocumentRevision),
-            },
-          ],
-        };
+        const headerCell = createBlocksTyped()
+          .addBlock()
+          .addCell({
+            id: 'header',
+            type: 'container',
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell({
+                type: 'heading',
+                value: `${withEntityNameInHeader ? `${entityNameOrNA} - ` : ''}${documentNameOrNA}`,
+              })
+              .addCell({
+                id: 'actions',
+                type: 'container',
+                value: getDecisionStatusOrAction(isDocumentRevision),
+              })
+              .build()
+              .flat(1),
+          })
+          .cellAt(0, 0);
 
-        const decisionCell = {
-          type: 'details' as const,
-          value: {
-            id,
-            title: 'Decision',
+        const decisionCell = createBlocksTyped()
+          .addBlock()
+          .addCell({
+            type: 'details',
             hideSeparator: true,
-            data: decision?.status
-              ? Object.entries(decision ?? {}).map(([title, value]) => ({
-                  title,
-                  value,
-                }))
-              : [],
-          },
-          workflowId: workflow?.id,
-          documents: workflow?.context?.documents,
-        };
-        const detailsCell = {
-          type: 'container' as const,
-          value: [
-            {
-              id: 'decision',
-              type: 'details' as const,
-              value: {
-                id,
-                title: `${category} - ${docType}`,
-                data: Object.entries(
-                  {
-                    ...additionalProperties,
-                    ...propertiesSchema?.properties,
-                  } ?? {},
-                )?.map(
-                  ([
+            value: {
+              id,
+              title: 'Decision',
+              data: decision?.status
+                ? Object.entries(decision ?? {}).map(([title, value]) => ({
                     title,
-                    {
-                      type,
-                      format,
-                      pattern,
-                      isEditable = true,
-                      dropdownOptions,
-                      value,
-                      formatMinimum,
-                      formatMaximum,
-                    },
-                  ]) => {
-                    const fieldValue = value || (properties?.[title] ?? '');
-                    const isEditableDecision = isDoneWithRevision || !decision?.status;
-
-                    return {
-                      title,
-                      value: fieldValue,
-                      type,
-                      format,
-                      pattern,
-                      isEditable:
-                        isEditableDecision &&
-                        caseState.writeEnabled &&
-                        getIsEditable(isEditable, title),
-                      dropdownOptions,
-                      minimum: formatMinimum,
-                      maximum: formatMaximum,
-                    };
-                  },
-                ),
-              },
-              workflowId: workflow?.id,
-              documents: workflow?.context?.documents,
+                    value,
+                  }))
+                : [],
             },
-            decisionCell,
-          ],
-        };
+            workflowId: workflow?.id,
+            documents: workflow?.context?.documents,
+          })
+          .cellAt(0, 0);
 
-        const documentsCell = {
-          type: 'multiDocuments' as const,
-          value: {
-            isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
-            data:
-              documents?.[docIndex]?.pages?.map(
-                ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
-                  id: ballerineFileId,
-                  title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
-                    toTitleCase(docType ?? ''),
-                  )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
-                  imageUrl: documentPagesResults[docIndex][pageIndex],
-                  fileType: type,
-                  fileName,
-                }),
-              ) ?? [],
-          },
-        };
+        const detailsCell = createBlocksTyped()
+          .addBlock()
+          .addCell({
+            type: 'container',
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell({
+                id: 'decision',
+                type: 'details',
+                value: {
+                  id,
+                  title: `${category} - ${docType}`,
+                  data: Object.entries(
+                    {
+                      ...additionalProperties,
+                      ...propertiesSchema?.properties,
+                    } ?? {},
+                  )?.map(
+                    ([
+                      title,
+                      {
+                        type,
+                        format,
+                        pattern,
+                        isEditable = true,
+                        dropdownOptions,
+                        value,
+                        formatMinimum,
+                        formatMaximum,
+                      },
+                    ]) => {
+                      const fieldValue = value || (properties?.[title] ?? '');
+                      const isEditableDecision = isDoneWithRevision || !decision?.status;
 
-        return {
-          className: isDocumentRevision
-            ? `shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning ${
-                workflow?.tags?.includes(StateTag.REVISION) ? '' : 'bg-warning/10'
-              }`
-            : '',
-          cells: [headerCell, detailsCell, documentsCell],
-        };
+                      return {
+                        title,
+                        value: fieldValue,
+                        type,
+                        format,
+                        pattern,
+                        isEditable:
+                          isEditableDecision &&
+                          caseState.writeEnabled &&
+                          getIsEditable(isEditable, title),
+                        dropdownOptions,
+                        minimum: formatMinimum,
+                        maximum: formatMaximum,
+                      };
+                    },
+                  ),
+                },
+                workflowId: workflow?.id,
+                documents: workflow?.context?.documents,
+              })
+              .addCell(decisionCell)
+              .build()
+              .flat(1),
+          })
+          .cellAt(0, 0);
+
+        const documentsCell = createBlocksTyped()
+          .addBlock()
+          .addCell({
+            type: 'multiDocuments',
+            value: {
+              isLoading: storageFilesQueryResult?.some(({ isLoading }) => isLoading),
+              data:
+                documents?.[docIndex]?.pages?.map(
+                  ({ type, fileName, metadata, ballerineFileId }, pageIndex) => ({
+                    id: ballerineFileId,
+                    title: `${valueOrNA(toTitleCase(category ?? ''))} - ${valueOrNA(
+                      toTitleCase(docType ?? ''),
+                    )}${metadata?.side ? ` - ${metadata?.side}` : ''}`,
+                    imageUrl: documentPagesResults?.[docIndex]?.[pageIndex],
+                    fileType: type,
+                    fileName,
+                  }),
+                ) ?? [],
+            },
+          })
+          .cellAt(0, 0);
+
+        return createBlocksTyped()
+          .addBlock()
+          .addCell({
+            type: 'block',
+            className: ctw({
+              'shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)] border-[1px] border-warning':
+                isDocumentRevision,
+              'bg-warning/10': isDocumentRevision && !workflow?.tags?.includes(StateTag.REVISION),
+            }),
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell(headerCell)
+              .addCell(detailsCell)
+              .addCell(documentsCell)
+              .build()
+              .flat(1),
+          })
+          .build();
       },
     ) ?? []
   );

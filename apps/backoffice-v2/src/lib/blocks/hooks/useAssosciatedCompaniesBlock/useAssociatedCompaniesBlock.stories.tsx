@@ -1,10 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Case } from '@/pages/Entity/components/Case/Case';
-import { Card } from '@/common/components/atoms/Card/Card';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { FunctionComponent } from 'react';
-import { cells } from '@/lib/blocks/cells';
+import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { BlocksComponent } from '@ballerine/blocks';
 import { useAssociatedCompaniesBlock } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 
 const AssociatedCompaniesBlock: FunctionComponent<{
@@ -17,32 +14,9 @@ const AssociatedCompaniesBlock: FunctionComponent<{
   const tasks = [...associatedCompaniesBlock];
 
   return (
-    <Case.Content>
-      {Array.isArray(tasks) &&
-        tasks?.length > 0 &&
-        tasks?.map((task, index) => {
-          if (!Array.isArray(task?.cells) || !task?.cells?.length) return;
-
-          return (
-            <Card
-              key={index}
-              className={ctw('me-4 shadow-[0_4px_4px_0_rgba(174,174,174,0.0625)]', task.className)}
-            >
-              <CardContent
-                className={ctw('grid gap-2', {
-                  'grid-cols-2': task?.cells.some(field => field?.type === 'multiDocuments'),
-                })}
-              >
-                {task?.cells.map((field, index) => {
-                  const Cell = cells[field?.type];
-
-                  return <Cell key={index} {...field} />;
-                })}
-              </CardContent>
-            </Card>
-          );
-        })}
-    </Case.Content>
+    <BlocksComponent blocks={tasks} cells={cells}>
+      {(Cell, cell) => <Cell {...cell} />}
+    </BlocksComponent>
   );
 };
 

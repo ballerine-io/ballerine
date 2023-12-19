@@ -23,9 +23,11 @@ import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresenta
 import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
 import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
 import { useDirectorsBlocks } from '@/lib/blocks/hooks/useDirectorsBlocks';
-import { useAssociatedCompaniesBlock } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import {
+  motionButtonProps,
+  useAssociatedCompaniesBlock,
+} from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 import { useAssociatedCompaniesInformationBlock } from '@/lib/blocks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
-import { motionProps } from '@/pages/Entity/motion-props';
 
 export const useKybDemoBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -214,11 +216,9 @@ export const useKybDemoBlocksLogic = () => {
   );
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
     workflows: kybChildWorkflows ?? [],
-    onClose,
-    isLoadingOnClose: isLoadingEvent,
     dialog: {
       Trigger: props => (
-        <MotionButton {...motionProps} variant="outline" className={'ms-3.5'} {...props}>
+        <MotionButton {...motionButtonProps} variant="outline" className={'ms-3.5'} {...props}>
           Initiate KYB
         </MotionButton>
       ),

@@ -1,8 +1,8 @@
-import { TDropdownOption } from '../../components/EditableDetails/types';
 import { AnyArray, TypesafeOmit } from '../../../../common/types';
 import { TDocument } from '@ballerine/common';
 import { TWorkflowById } from '../../../../domains/workflows/fetchers';
 import { toTitleCase } from 'string-ts';
+import { TDropdownOption } from '@/lib/blocks/components/EditableDetails/types';
 
 const composeDataFormCell = (
   cellName: string,

@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- added an enum for workflow variant
+- version bump
 
 ## 0.7.34
 

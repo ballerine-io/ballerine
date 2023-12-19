@@ -37,7 +37,7 @@ import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirecto
 import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
 import { associatedCompanyAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-adapter';
 import {
-  motionProps,
+  motionButtonProps,
   useAssociatedCompaniesBlock,
 } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 
@@ -305,7 +305,7 @@ export const useDefaultBlocksLogic = () => {
     isLoadingOnClose: isLoadingEvent,
     dialog: {
       Trigger: props => (
-        <MotionButton {...motionProps} variant="outline" className={'ms-3.5'} {...props}>
+        <MotionButton {...motionButtonProps} variant="outline" className={'ms-3.5'} {...props}>
           Initiate KYB
         </MotionButton>
       ),

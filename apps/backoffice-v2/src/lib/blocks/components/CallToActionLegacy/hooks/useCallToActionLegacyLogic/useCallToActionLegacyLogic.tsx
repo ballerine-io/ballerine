@@ -132,7 +132,13 @@ export const useCallToActionLegacyLogic = ({
 
         toast.error('Invalid decision');
       },
-    [contextUpdateMethod, mutateApproveTaskById, mutateRejectTaskById, onReuploadNeeded],
+    [
+      contextUpdateMethod,
+      mutateApproveTaskById,
+      mutateRejectTaskById,
+      onReuploadNeeded,
+      workflow?.id,
+    ],
   );
   const workflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??

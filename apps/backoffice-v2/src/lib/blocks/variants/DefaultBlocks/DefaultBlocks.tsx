@@ -1,8 +1,9 @@
-import { BlocksComponent } from '@/lib/blocks/components/BlocksComponent/BlocksComponent';
+import { BlocksComponent } from '@ballerine/blocks';
 import { useDefaultBlocksLogic } from '@/lib/blocks/variants/DefaultBlocks/hooks/useDefaultBlocksLogic/useDefaultBlocksLogic';
 import { NoBlocks } from '@/lib/blocks/components/NoBlocks/NoBlocks';
 import { ChildDocumentBlocks } from '@/lib/blocks/components/ChildDocumentBlocks/ChildDocumentBlocks';
 import { KycBlock } from '@/lib/blocks/components/KycBlock/KycBlock';
+import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
 export const DefaultBlocks = () => {
   const {
@@ -18,9 +19,11 @@ export const DefaultBlocks = () => {
 
   return (
     <>
-      <BlocksComponent blocks={blocks} />
+      <BlocksComponent blocks={blocks} cells={cells}>
+        {(Cell, cell) => <Cell {...cell} />}
+      </BlocksComponent>
       {Array.isArray(kybChildWorkflows) &&
-        kybChildWorkflows?.length &&
+        !!kybChildWorkflows?.length &&
         kybChildWorkflows?.map(childWorkflow => (
           <ChildDocumentBlocks
             parentWorkflowId={workflowId}
@@ -32,7 +35,7 @@ export const DefaultBlocks = () => {
           />
         ))}
       {Array.isArray(kycChildWorkflows) &&
-        kycChildWorkflows?.length > 0 &&
+        !!kycChildWorkflows?.length &&
         kycChildWorkflows?.map(childWorkflow => (
           <KycBlock
             parentWorkflowId={workflowId}
