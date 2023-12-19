@@ -1,10 +1,10 @@
 import { BlocksComponent } from '@ballerine/blocks';
-import { useKybDemoBlocksLogic } from '@/lib/blocks/variants/KybDemoBlocks/hooks/useKybDemoBlocksLogic/useKybDemoBlocksLogic';
+import { useKybExampleBlocksLogic } from '@/lib/blocks/variants/KybExampleBlocks/hooks/useKybExampleBlocksLogic/useKybExampleBlocksLogic';
 import { NoBlocks } from '@/lib/blocks/components/NoBlocks/NoBlocks';
 import { ChildDocumentBlocks } from '@/lib/blocks/components/ChildDocumentBlocks/ChildDocumentBlocks';
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
-export const KybDemoBlocks = () => {
+export const KybExampleBlocks = () => {
   const {
     blocks,
     kybChildWorkflows,
@@ -13,7 +13,7 @@ export const KybDemoBlocks = () => {
     onReuploadNeeded,
     isLoadingReuploadNeeded,
     isLoading,
-  } = useKybDemoBlocksLogic();
+  } = useKybExampleBlocksLogic();
 
   return (
     <>

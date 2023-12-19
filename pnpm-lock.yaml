@@ -61,8 +61,8 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.1.23
-        version: 0.1.23
+        specifier: 0.1.24
+        version: link:../../packages/blocks
       '@ballerine/common':
         specifier: 0.7.37
         version: link:../../packages/common
@@ -6107,22 +6107,6 @@ packages:
     resolution: {integrity: sha512-wMue2Sy4GAVTk6Ic4tJVcnfdau+gx2EnG7S+uAEe+TWJFqE4YoWN4/H8MSLj4eYJKxGg26lZwboEniNiNwZQ6Q==}
     dev: true
 
-  /@ballerine/blocks@0.1.23:
-    resolution: {integrity: sha512-XJ2TqVQzdjJvsp7wCXHgRFJjim57+xH5M38xOAFGhCoUR6Wj0tH71AjeEyiyhwtUNVodnp1tma9LKCfZLY1QvQ==}
-    engines: {node: '>=12'}
-    dependencies:
-      '@ballerine/common': 0.7.35
-    dev: false
-
-  /@ballerine/common@0.7.35:
-    resolution: {integrity: sha512-xIYZu9CnXxEkPeITMO004U6YHN4AlGC7UBB1OCJ6YdWxKiXSD6z6Z0Lj1NMulIRkgr4RtOlwFjZIQ54kjWYNCw==}
-    engines: {node: '>=12'}
-    dependencies:
-      '@sinclair/typebox': 0.31.26
-      ajv: 8.12.0
-      json-schema-to-zod: 0.6.3
-    dev: false
-
   /@base2/pretty-print-object@1.0.1:
     resolution: {integrity: sha512-4iri8i1AqYHJE2DstZYkyEprg6Pq6sKx3xn5FpySk9sNhH7qN2LLlHJCfDTZRILNwQNPD7mATWM0TBui7uC1pA==}
     dev: true
@@ -6972,7 +6956,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.2
+      '@babel/runtime': 7.23.4
       '@emotion/babel-plugin': 11.11.0
       '@emotion/cache': 11.11.0
       '@emotion/serialize': 1.1.2
@@ -7008,7 +6992,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.2
+      '@babel/runtime': 7.23.4
       '@emotion/babel-plugin': 11.11.0
       '@emotion/is-prop-valid': 1.2.1
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
@@ -8490,7 +8474,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.2
+      '@babel/runtime': 7.23.4
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       '@emotion/styled': 11.11.0(@emotion/react@11.11.1)(@types/react@18.2.37)(react@18.2.0)
       '@mui/base': 5.0.0-beta.24(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
@@ -8644,7 +8628,7 @@ packages:
       moment-jalaali:
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.2
+      '@babel/runtime': 7.23.4
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       '@emotion/styled': 11.11.0(@emotion/react@11.11.1)(@types/react@18.2.37)(react@18.2.0)
       '@mui/base': 5.0.0-beta.24(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
@@ -9886,7 +9870,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.2
+      '@babel/runtime': 7.23.4
       '@radix-ui/primitive': 1.0.1
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.37)(react@18.2.0)
       '@radix-ui/react-context': 1.0.1(@types/react@18.2.37)(react@18.2.0)
