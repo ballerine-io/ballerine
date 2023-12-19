@@ -21,7 +21,9 @@
     "imDirector": "I am a director in the company",
     "shareholder": "Shareholder",
     "shareholders": "Shareholders",
+    "shareholderTitleTemplate": "Shareholder {{INDEX}}",
     "shareholdersDescription": "Add all of the natural persons that own or control, <br /><b>directly or indirectly</b> more than 25% of the company.",
+    "shareholdersDescriptionUbo": "<p>add all the natural persons that own or control, <bold>Directly Or Indirectly</bold> more than 25% of the company.</p>",
     "uboIndex": "UBO {{INDEX}}",
     "directorIndex": "Director {{INDEX}}",
     "associatedCompanyIndex": "Associated company {{INDEX}}",
@@ -37,6 +39,7 @@
     "websiteDocuments": "Website documents",
     "officePictures": "Office Pictures",
     "financialDocuments": "Financial Documents",
+    "personalDetails": "Personal details",
     "declarationOfAccuracy": "Declaration of Accuracy and Authenticity",
     "declarationOfAccuracyDescription": "By checking the checkbox below I/we hereby declare that the information which was submitted in the attached Merchant application is truthful and genuine in regards to my/our business, legal status and registration, business practices and all other submitted information.",
     "emailDescription": "By clicking 'Finish', an email containing an identity verification link will be sent to the shareholders listed.",
@@ -97,11 +100,15 @@
       "hint": "CEO / Manager / Partner"
     },
     "dateOfBirth": {
-      "label": "Date of Birth"
+      "label": "Date of Birth",
+      "hint": "DD/MM/YYYY"
     },
     "registrationNumber": {
       "label": "Registration Number",
       "hint": "1000000032985"
+    },
+    "iHaveAuthority": {
+      "label": "I have the signing authority for this company"
     },
     "state": {
       "label": "State",
@@ -255,6 +262,10 @@
       "label": "Monthly Sales Volume (USD)",
       "hint": "5,000,000"
     },
+    "annualSalesVolume": {
+      "label": "Annual Sales Volume (USD)",
+      "hint": "5,000,000"
+    },
     "monthlyTransactions": {
       "label": "Monthly Number of Transactions",
       "hint": "500"
@@ -383,14 +394,17 @@
     "documents": {
       "bankStatement": {
         "label": "Bank Statement",
-        "description": "Not older than 6 months."
+        "description": "Not older than 6 months.",
+        "error": "Bank Statement is Required"
       },
       "companyStructure": {
         "label": "Company structure (directors & legal representatives)",
-        "description": "Notarized document"
+        "description": "Notarized document",
+        "error": "Company structure is Required"
       },
       "certificateOfRegistration": {
-        "label": "Certificate of Registration"
+        "label": "Certificate of Registration",
+        "error": "Certificate of Registration is Required"
       },
       "utilityBill": {
         "label": "Company Utility Bill as Proof of Address",
@@ -403,6 +417,11 @@
       "businessUtilityBill": {
         "label": "Utility Bill",
         "description": "Notarized document"
+      },
+      "proofOfAddress": {
+        "label": "Company Utility Bill as Proof of Address",
+        "description": "Not older than 6 months.",
+        "error": "Proof of Address is Required"
       }
     },
     "companyRegistrationNumber": {
@@ -428,6 +447,15 @@
     "representativeEmail": {
       "label": "Representative Email",
       "hint": "example@example.com"
+    },
+    "dateOfEstablishment": {
+      "label": "Date Of Establishment",
+      "hint": "DD/MM/YYYY"
+    },
+    "hint": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "email@gmail.com"
     }
   },
   "errorMessage": {
@@ -437,6 +465,7 @@
       "productDescription": "Product description should not be empty.",
       "websiteLanguage": "Website language should not be empty.",
       "monthlySalesVolume": "Monthly Sales Volume must be positive.",
+      "annualSalesVolume": "Annual Sales Volume must be positive.",
       "monthlyTransactions": "Monthly Number Of Transactions must be positive.",
       "averageTicketAmount": "Average Ticket Amount must be positive.",
       "mainCategory": "Customer Category is required.",
@@ -449,11 +478,13 @@
       "phone": "A valid phone number is required.",
       "dateOfBirth": "Date of birth is required.",
       "firstName": "First name is required.",
+      "postalCode": "Postal code is required.",
       "lastName": "Last name is required.",
       "email": "Email is required.",
       "additionalInfo": "Additional information is required.",
       "jobTitle": "Job title is required.",
       "registeredCapitalInUsd": "Registered capital in USD is required.",
+      "iHaveSigningAuthority": "You must be authorized to sign on behalf of the company.",
       "businessType": "Business type is required.",
       "numberOfEmployees": "Number of employees is required.",
       "taxIdentificationNumber": "Tax identification number is required.",
@@ -463,6 +494,7 @@
       "street": "Street is required.",
       "streetNumber": "Street number is required.",
       "registrationNumber": "Registration number is required.",
+      "dateOfEstablishment": "Date Of Establishment is required.",
       "physical": "Physical address details are required.",
       "requiredField": "This field is required.",
       "nationality": "Nationality is required.",
@@ -490,6 +522,7 @@
       "productDescription": "Product description is required.",
       "productPrice": "Product price is required.",
       "monthlySalesVolume": "Monthly Sales Volume is required.",
+      "annualSalesVolume": "Monthly Sales Volume is required.",
       "monthlyTransactions": "Monthly Number Of Transactions is required.",
       "averageTicketAmount": "Average Ticket Amount is required.",
       "mainCategory": "Customer Category is required.",
@@ -500,7 +533,9 @@
       "contactDetails": "Contact details are required.",
       "companyWebsite": "Company Website is required.",
       "bankCountry": "Bank Country is required.",
-      "companyRegistrationNumber": "Company registration number is required."
+      "companyRegistrationNumber": "Company registration number is required.",
+      "role": "Title is required.",
+      "dateOfBirth": "Date of Birth is required."
     },
     "minLength": {
       "firstName": "First name must be at least 2 characters long.",

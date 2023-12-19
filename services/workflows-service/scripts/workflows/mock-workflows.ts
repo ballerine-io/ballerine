@@ -3,7 +3,6 @@ import { Workflow } from './workflow-runtime';
 
 export const workflows = (): Workflow[] => {
   return [
-    // German company
     {
       business: {
         id: faker.datatype.uuid(),

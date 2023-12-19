@@ -15,37 +15,18 @@ const validationSchema = {
                 headquarters: {
                   type: 'object',
                   default: {},
-                  required: ['street', 'streetNumber', 'city', 'country'],
+                  required: ['street', 'streetNumber', 'city', 'country', 'postalCode', 'phone'],
                   errorMessage: {
                     required: {
                       street: 'errorMessage.required.street',
                       streetNumber: 'errorMessage.required.streetNumber',
                       city: 'errorMessage.required.city',
                       country: 'errorMessage.required.country',
-                      isDifferentFromPhysical: 'errorMessage.required.requiredField',
-                    },
-                  },
-                  if: {
-                    properties: {
-                      isDifferentFromPhysical: { const: true },
-                    },
-                  },
-                  then: {
-                    required: ['physical'],
-                    errorMessage: {
-                      required: {
-                        street: 'errorMessage.required.street',
-                        streetNumber: 'errorMessage.required.streetNumber',
-                        city: 'errorMessage.required.city',
-                        country: 'errorMessage.required.country',
-                        isDifferentFromPhysical: 'errorMessage.required.requiredField',
-                      },
+                      postalCode: 'errorMessage.required.postalCode',
+                      phone: 'errorMessage.required.phone',
                     },
                   },
                   properties: {
-                    isDifferentFromPhysical: {
-                      type: 'boolean',
-                    },
                     street: {
                       type: 'string',
                       minLength: 3,
@@ -63,6 +44,9 @@ const validationSchema = {
                         minLength: 'errorMessage.minLength.streetNumber',
                         maxLength: 'errorMessage.maxLength.streetNumber',
                       },
+                    },
+                    postalCode: {
+                      type: 'string',
                     },
                     city: {
                       type: 'string',
@@ -84,59 +68,11 @@ const validationSchema = {
                         pattern: 'errorMessage.pattern.country',
                       },
                     },
-                    physical: {
-                      type: 'object',
-                      default: {},
-                      required: ['street', 'streetNumber', 'city', 'country'],
+                    phone: {
+                      type: 'string',
+                      pattern: '^[+]?[0-9]{10,15}$',
                       errorMessage: {
-                        required: {
-                          street: 'errorMessage.required.street',
-                          streetNumber: 'errorMessage.required.streetNumber',
-                          city: 'errorMessage.required.city',
-                          country: 'errorMessage.required.country',
-                          isDifferentFromPhysical: 'errorMessage.required.requiredField',
-                          physical: 'errorMessage.required.physical',
-                        },
-                      },
-                      properties: {
-                        street: {
-                          type: 'string',
-                          minLength: 3,
-                          maxLength: 100,
-                          errorMessage: {
-                            minLength: 'errorMessage.minLength.street',
-                            maxLength: 'errorMessage.maxLength.street',
-                          },
-                        },
-                        streetNumber: {
-                          type: 'number',
-                          minLength: 1,
-                          maxLength: 10,
-                          errorMessage: {
-                            minLength: 'errorMessage.minLength.streetNumber',
-                            maxLength: 'errorMessage.maxLength.streetNumber',
-                          },
-                        },
-                        city: {
-                          type: 'string',
-                          minLength: 2,
-                          maxLength: 50,
-                          errorMessage: {
-                            minLength: 'errorMessage.minLength.city',
-                            maxLength: 'errorMessage.maxLength.city',
-                          },
-                        },
-                        country: {
-                          type: 'string',
-                          minLength: 2,
-                          maxLength: 2,
-                          pattern: '^[A-Z]{2}$',
-                          errorMessage: {
-                            minLength: 'errorMessage.minLength.country',
-                            maxLength: 'errorMessage.maxLength,country',
-                            pattern: 'errorMessage.pattern.country',
-                          },
-                        },
+                        pattern: 'errorMessage.pattern.phone',
                       },
                     },
                   },
@@ -151,15 +87,11 @@ const validationSchema = {
   required: ['entity'],
 };
 
-const physicalAddressForm = {
-  '==': [{ var: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical' }, true],
-};
-
 export const BusinessAddressInfoPage = {
   type: 'page',
   number: 3,
   stateName: 'business_address_information',
-  name: 'text.businessAddress',
+  name: 'text.headquartersAddress',
   pageValidation: [
     {
       type: 'json-schema',
@@ -193,11 +125,12 @@ export const BusinessAddressInfoPage = {
           options: {
             jsonFormDefinition: {
               required: [
-                'search-address-input',
                 'street-input',
                 'street-number-input',
+                'postal-code-input',
                 'city-input',
                 'country-input',
+                'headquarters-phone-number-input',
               ],
             },
           },
@@ -227,6 +160,18 @@ export const BusinessAddressInfoPage = {
               },
             },
             {
+              name: 'postal-code-input',
+              type: 'json-form:text',
+              valueDestination: 'entity.data.additionalInfo.headquarters.postalCode',
+              options: {
+                jsonFormDefinition: {
+                  type: 'string',
+                },
+                label: 'text.postalCode',
+                hint: '76131',
+              },
+            },
+            {
               name: 'city-input',
               type: 'json-form:text',
               valueDestination: 'entity.data.additionalInfo.headquarters.city',
@@ -251,96 +196,22 @@ export const BusinessAddressInfoPage = {
                 uiSchema: {
                   'ui:field': 'CountryPicker',
                   'ui:label': true,
-                  'ui:placeholder': 'text.choose',
+                  'ui:placeholder': 'Choose',
                 },
               },
             },
             {
-              name: 'different-from-physical-checkbox',
-              type: 'checkbox',
-              valueDestination: 'entity.data.additionalInfo.headquarters.isDifferentFromPhysical',
+              name: 'headquarters-phone-number-input',
+              type: 'international-phone-number',
+              valueDestination: 'entity.data.additionalInfo.headquarters.phone',
               options: {
-                label: 'text.differentFromPhysicalAddress',
-                jsonFormDefinition: {
-                  type: 'boolean',
-                },
-                uiSchema: {
-                  'ui:label': false,
-                },
-              },
-            },
-          ],
-        },
-        {
-          type: 'json-form',
-          options: {
-            jsonFormDefinition: {
-              required: [
-                'physical-search-address-input',
-                'physical-street-input',
-                'physical-street-number-input',
-                'physical-city-input',
-                'physical-country-input',
-              ],
-            },
-          },
-          visibleOn: [
-            {
-              type: 'json-logic',
-              value: physicalAddressForm,
-            },
-          ],
-          elements: [
-            {
-              name: 'physical-street-input',
-              type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.headquarters.physical.street',
-              options: {
-                label: 'text.street.label',
-                hint: 'text.street.hint',
-                jsonFormDefinition: {
-                  type: 'string',
-                },
-              },
-            },
-            {
-              name: 'physical-street-number-input',
-              type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.headquarters.physical.streetNumber',
-              options: {
-                jsonFormDefinition: {
-                  type: 'number',
-                },
-                label: 'text.number',
-                hint: '10',
-              },
-            },
-            {
-              name: 'physical-city-input',
-              type: 'json-form:text',
-              valueDestination: 'entity.data.additionalInfo.headquarters.physical.city',
-              options: {
-                label: 'text.city.label',
-                hint: 'text.city.hint',
-                jsonFormDefinition: {
-                  type: 'string',
-                },
-              },
-            },
-            {
-              name: 'physical-country-input',
-              type: 'json-form:country-picker',
-              valueDestination: 'entity.data.additionalInfo.headquarters.physical.country',
-              options: {
-                label: 'text.country',
-                hint: 'text.choose',
+                label: 'text.headquartersPhoneNumber.label',
                 jsonFormDefinition: {
                   type: 'string',
                 },
                 uiSchema: {
-                  'ui:field': 'CountryPicker',
+                  'ui:field': 'PhoneInput',
                   'ui:label': true,
-                  'ui:placeholder': 'text.choose',
                 },
               },
             },
