@@ -25,8 +25,8 @@ export const generateKybWithChildWorkflowDefinition = async (
 
   const kybWithAssociatedParentDefinition = await client.workflowDefinition.create({
     data: composeKybWithAssociatedCompaniesDefinition({
-      definitionId: 'kyb_with_associated_companies',
-      definitionName: 'kyb_with_associated_companies',
+      definitionId: 'kyb_with_associated_companies_example',
+      definitionName: 'kyb_with_associated_companies_example',
       projectId: projectId,
       kycChildWorkflowDefinitionId: kycDefinition.id,
       kybChildWorkflowDefinitionId: kybAsocciatedChildDefinition.id,
