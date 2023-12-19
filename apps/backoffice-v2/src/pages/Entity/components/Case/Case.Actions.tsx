@@ -17,7 +17,6 @@ import { DialogTitle } from '../../../../common/components/organisms/Dialog/Dial
 import { DialogDescription } from '../../../../common/components/organisms/Dialog/Dialog.Description';
 import { DialogFooter } from '../../../../common/components/organisms/Dialog/Dialog.Footer';
 import { tagToBadgeData } from './consts';
-import { toTitleCase } from 'string-ts';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.

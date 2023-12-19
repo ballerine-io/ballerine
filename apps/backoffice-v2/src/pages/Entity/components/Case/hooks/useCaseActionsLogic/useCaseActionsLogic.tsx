@@ -14,8 +14,8 @@ import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilte
 import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
 import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
 import { tagToBadgeData } from '../../consts';
-import { selectDirectorsDocuments } from '../../../../hooks/useTasks/selectors/selectDirectorsDocuments';
 import { AnyObject } from '@ballerine/ui';
+import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();

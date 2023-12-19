@@ -5,22 +5,20 @@ import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fet
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import { Action } from '../../../../../common/enums';
-import { TObjectValues } from '../../../../../common/types';
 
-export const useRevisionTaskByIdMutation = (workflowId: string, postUpdateEventName?: string) => {
+export const useRevisionTaskByIdMutation = (postUpdateEventName?: string) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
-  const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
 
   return useMutation({
     mutationFn: ({
+      workflowId,
       documentId,
-      decision,
       reason,
       contextUpdateMethod,
     }: {
+      workflowId: string;
       documentId: string;
-      decision: TObjectValues<typeof Action> | null;
       reason?: string;
       contextUpdateMethod?: 'base' | 'director';
     }) =>
@@ -29,12 +27,13 @@ export const useRevisionTaskByIdMutation = (workflowId: string, postUpdateEventN
         documentId,
         contextUpdateMethod,
         body: {
-          decision,
+          decision: Action.REVISION,
           reason,
           postUpdateEventName,
         },
       }),
-    onMutate: async ({ documentId, reason }) => {
+    onMutate: async ({ workflowId, documentId, reason }) => {
+      const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
       await queryClient.cancelQueries({
         queryKey: workflowById.queryKey,
       });
@@ -66,15 +65,17 @@ export const useRevisionTaskByIdMutation = (workflowId: string, postUpdateEventN
 
       return { previousWorkflow };
     },
-    onSuccess: (_, { decision }) => {
+    onSuccess: () => {
       // workflowsQueryKeys._def is the base key for all workflows queries
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
-      toast.success(t(`toast:${decision ? 'ask_revision_document' : 'revert_revision'}.success`));
+      toast.success(t(`toast:ask_revision_document.success`));
     },
-    onError: (_error, _variables, context) => {
+    onError: (_error, variables, context) => {
+      const workflowById = workflowsQueryKeys.byId({ workflowId: variables?.workflowId, filterId });
+
       toast.error(
-        t(`toast:${_variables.decision ? 'ask_revision_document' : 'revert_revision'}.error`, {
+        t(`toast:ask_revision_document.error`, {
           errorMessage: _error.message,
         }),
       );

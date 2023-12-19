@@ -1,8 +1,10 @@
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 
-import { useEntity } from '@/pages/Entity/hooks/useEntity/useEntity';
 import { BroadcastChannel } from 'broadcast-channel';
 import { CommunicationChannelEvent, CommunicationChannel } from '@/common/enums';
+import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useParams } from 'react-router-dom';
+import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 
 interface IUseDocumentsToolbarProps {
   imageId: string;
@@ -15,7 +17,9 @@ export const useDocumentsToolbarLogic = ({
   hideOpenExternalButton,
   onOpenDocumentInNewTab,
 }: IUseDocumentsToolbarProps) => {
-  const { workflow } = useEntity();
+  const { entityId: workflowId } = useParams();
+  const filterId = useFilterId();
+  const { data: workflow } = useWorkflowQuery({ workflowId: workflowId, filterId });
 
   const broadcastChannel = useMemo(
     () =>
