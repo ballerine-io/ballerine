@@ -35,7 +35,7 @@ export const generateKybWithChildWorkflowDefinition = async (
 
   return {
     parentKybDefinition: kybWithAssociatedParentDefinition,
-    kybAssociatedDefinition: kybAsocciatedChildDefinition,
-    kycDefinition,
+    kybAssociatedDefinition: kybAssociatedChildDefinition,
+    kycChildDefinition,
   };
 };
