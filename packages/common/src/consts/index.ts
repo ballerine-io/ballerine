@@ -40,12 +40,6 @@ export const CommonWorkflowStates = {
   REVISION: 'revision',
 } as const;
 
-export const WorkflowDefinitionVariant = {
-  MANUAL_REVIEW: 'MANUAL_REVIEW',
-  KYB: 'KYB',
-  DEFAULT: 'DEFAULT',
-} as const;
-
 export type TStateTag = (typeof StateTags)[number];
 
 export const WorkflowDefinitionVariant = {
