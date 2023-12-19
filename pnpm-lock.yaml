@@ -67,7 +67,7 @@ importers:
         specifier: 0.7.35
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.3.24
+        specifier: 0.3.25
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.5.34
@@ -368,7 +368,7 @@ importers:
         specifier: ^0.7.35
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.3.24
+        specifier: 0.3.25
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
         specifier: 0.5.34
@@ -6111,11 +6111,11 @@ packages:
     resolution: {integrity: sha512-XJ2TqVQzdjJvsp7wCXHgRFJjim57+xH5M38xOAFGhCoUR6Wj0tH71AjeEyiyhwtUNVodnp1tma9LKCfZLY1QvQ==}
     engines: {node: '>=12'}
     dependencies:
-      '@ballerine/common': 0.7.34
+      '@ballerine/common': 0.7.35
     dev: false
 
-  /@ballerine/common@0.7.34:
-    resolution: {integrity: sha512-FQ35dWTDtHVpFlGQtLmasWHOravP9VP2cZidla+zVAFt81/WDrb+oiq24kT0QiqoQ3bEeJpOC7vpKREeCgj82g==}
+  /@ballerine/common@0.7.35:
+    resolution: {integrity: sha512-xIYZu9CnXxEkPeITMO004U6YHN4AlGC7UBB1OCJ6YdWxKiXSD6z6Z0Lj1NMulIRkgr4RtOlwFjZIQ54kjWYNCw==}
     engines: {node: '>=12'}
     dependencies:
       '@sinclair/typebox': 0.31.26
