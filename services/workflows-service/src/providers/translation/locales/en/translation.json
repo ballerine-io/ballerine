@@ -577,7 +577,9 @@
       "aboutUsUrl": "About Us URL should be a valid URL.",
       "termsOfUseUrl": "Terms of Use URL should be a valid URL.",
       "privacyPolicyUrl": "Privacy Policy URL should be a valid URL.",
-      "companyWebsite": "Company Website should be as valid URL."
+      "companyWebsite": "Company Website should be as valid URL.",
+      "street": "Street should include letters, numbers and special symbols.",
+      "city": "City should include letters, numbers and special symbols."
     },
     "type": {
       "dateOfBirth": "Date of birth must be a string.",
