@@ -80,6 +80,7 @@ import {
   WorkflowRuntimeDataRepository,
 } from './workflow-runtime-data.repository';
 import mime from 'mime';
+import { env } from '@/env';
 
 type TEntityId = string;
 
@@ -1615,7 +1616,11 @@ export class WorkflowService {
             data: {
               context: {
                 ...workflowRuntimeData.context,
-                metadata: { customerName: customer.displayName, token: workflowToken.token },
+                metadata: {
+                  customerName: customer.displayName,
+                  token: workflowToken.token,
+                  collectionFlowUrl: env.COLLECTION_FLOW_URL,
+                },
               } as InputJsonValue,
               projectId: currentProjectId,
             },

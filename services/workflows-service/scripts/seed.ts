@@ -15,14 +15,15 @@ import { generateDynamicDefinitionForE2eTest } from './workflows/e2e-dynamic-url
 import { generateKycForE2eTest } from './workflows/kyc-dynamic-process-example';
 import { generateKybDefintion } from './workflows';
 import { generateKycSessionDefinition } from './workflows/kyc-email-process-example';
-import { generateParentKybWithSessionKycs } from './workflows/parent-kyb-kyc-session-workflow';
 import { env } from '../src/env';
 import { generateKybKycWorkflowDefinition } from './workflows/kyb-kyc-workflow-definition';
 import { generateBaseTaskLevelStates } from './workflows/generate-base-task-level-states';
 import { generateBaseCaseLevelStates } from './workflows/generate-base-case-level-states';
 import type { InputJsonValue } from '../src/types';
-import { generateDynamicUiWorkflow } from './workflows/dynamic-ui-workflow';
 import { generateWebsiteMonitoringExample } from './workflows/website-monitoring-workflow';
+import { generateCollectionKybWorkflow } from './workflows/generate-collection-kyb-workflow';
+import { generateInitialCollectionFlowExample } from './workflows/runtime/generate-initial-collection-flow-example';
+import { uiKybParentWithAssociatedCompanies } from './workflows/ui-definition/kyb-with-associated-companies/ui-kyb-parent-dynamic-example';
 
 seed(10).catch(error => {
   console.error(error);
@@ -94,6 +95,8 @@ async function createProject(client: PrismaClient, customer: Customer, id: strin
 
 const DEFAULT_INITIAL_STATE = CommonWorkflowStates.MANUAL_REVIEW;
 
+const DEFAULT_SEED_DEFINITION_TOKEN = '12345678-1234-1234-1234-123456789012';
+
 async function seed(bcryptSalt: string | number) {
   console.info('Seeding database...');
   const client = new PrismaClient();
@@ -102,7 +105,7 @@ async function seed(bcryptSalt: string | number) {
     client,
     '1',
     env.API_KEY,
-    'https://assets-global.website-files.com/62827cf4fe5eb528708511d4/645511cb3d3dd84ee28fe04d_CyberAgent.svg',
+    'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/img/ballerine_logo.svg',
     '',
     `webhook-shared-secret-${env.API_KEY}`,
   );
@@ -110,7 +113,7 @@ async function seed(bcryptSalt: string | number) {
     client,
     '2',
     `${env.API_KEY}2`,
-    'https://assets-global.website-files.com/62827cf4fe5eb528708511d4/645d26f285bd18467470e7cd_zenhub-logo.svg',
+    'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/img/ballerine_logo.svg',
     '',
     `webhook-shared-secret-${env.API_KEY}2`,
   );
@@ -1065,7 +1068,8 @@ async function seed(bcryptSalt: string | number) {
         childWorkflowsRuntimeData: true,
       },
       where: {
-        workflowDefinitionId: 'kyb_dynamic_ui_session_example',
+        // workflowDefinitionId: 'dynamic_kyb_parent_example',
+        workflowDefinitionId: 'kyb_with_associated_companies',
         businessId: { not: null },
         state: {
           in: [
@@ -1165,10 +1169,22 @@ async function seed(bcryptSalt: string | number) {
   customSeed();
   await generateKybDefintion(client);
   await generateKycSessionDefinition(client);
-  await generateParentKybWithSessionKycs(client);
   await generateKybKycWorkflowDefinition(client);
   await generateKycForE2eTest(client);
-  await generateDynamicUiWorkflow(client, project1.id);
+  const collectionKybWorkflowDefinition = await generateCollectionKybWorkflow(client, project1.id);
+
+  const { parentWorkflow, uiDefinition } = await uiKybParentWithAssociatedCompanies(
+    client,
+    project1.id,
+  );
   await generateWebsiteMonitoringExample(client, project1.id);
+
+  await generateInitialCollectionFlowExample(client, {
+    workflowDefinitionId: parentWorkflow.id,
+    projectId: project1.id,
+    endUserId: endUserIds[0]!,
+    businessId: businessIds[0]!,
+    token: DEFAULT_SEED_DEFINITION_TOKEN,
+  });
   console.info('Seeded database successfully');
 }

@@ -26,6 +26,10 @@ export const CommonWorkflowEvent = {
   CASE_REVIEWED: 'CASE_REVIEWED',
   RETURN_TO_REVIEW: 'RETURN_TO_REVIEW',
   RESUBMITTED: 'RESUBMITTED',
+  REJECT: 'reject',
+  APPROVE: 'approve',
+  REVISION: 'revision',
+  RESOLVE: 'resolve',
 } as const;
 
 export const CommonWorkflowStates = {

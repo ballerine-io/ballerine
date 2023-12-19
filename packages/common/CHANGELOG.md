@@ -1,5 +1,17 @@
 # @ballerine/common
 
+## 0.7.37
+
+### Patch Changes
+
+- re-release of common
+
+## 0.7.36
+
+### Patch Changes
+
+- added events to workflows
+
 ## 0.7.35
 
 ### Patch Changes

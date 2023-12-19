@@ -8,19 +8,20 @@ import { WorkflowDefinitionVariant } from '@ballerine/common';
 export const BlocksVariant: FunctionComponent<{
   workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'variant' | 'config' | 'version'>;
 }> = ({ workflowDefinition }) => {
-  if (
+  const isKybDemo =
     workflowDefinition?.version >= 0 &&
     workflowDefinition?.variant === WorkflowDefinitionVariant.KYB &&
-    workflowDefinition?.config?.isDemo
-  ) {
+    workflowDefinition?.config?.isDemo;
+  const isManualReview =
+    workflowDefinition?.version >= 0 &&
+    workflowDefinition?.variant === WorkflowDefinitionVariant.MANUAL_REVIEW &&
+    workflowDefinition?.config?.isLegacyReject;
+
+  if (isKybDemo) {
     return <KybDemoBlocks />;
   }
 
-  if (
-    workflowDefinition?.version >= 0 &&
-    workflowDefinition?.variant === WorkflowDefinitionVariant.MANUAL_REVIEW &&
-    workflowDefinition?.config?.isLegacyReject
-  ) {
+  if (isManualReview) {
     return <ManualReviewBlocks />;
   }
 
