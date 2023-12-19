@@ -2,24 +2,24 @@ import { Block } from '@ballerine/blocks';
 import { ComponentProps } from 'react';
 import { MotionBadge } from '@/common/components/molecules/MotionBadge/MotionBadge';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { ICallToActionDocumentSelection } from '@/pages/Entity/components/DirectorsCallToAction/interfaces';
 import { GenericAsyncFunction, GenericFunction } from '@/common/types';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { ICallToActionLegacyProps } from '@/pages/Entity/components/CallToActionLegacy/interfaces';
 import { AnyObject } from '@ballerine/ui';
-import { IEditableDetailsDocument } from '@/pages/Entity/components/EditableDetails/interfaces';
 import { CommonWorkflowStates } from '@ballerine/common';
 import {
   Table,
   TableBody,
   TableCaption,
+  TableCell,
   TableHead,
   TableHeader,
   TableRow,
-  TableCell,
 } from '@/common/components/atoms/Table';
 import { ColumnDef, TableOptions } from '@tanstack/react-table';
 import { Dialog } from '@/common/components/molecules/Dialog/Dialog';
+import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
+import { ICallToActionLegacyProps } from '@/lib/blocks/components/CallToActionLegacy/interfaces';
+import { IEditableDetailsDocument } from '@/lib/blocks/components/EditableDetails/interfaces';
 
 export type TBlockCell = {
   type: 'block';
