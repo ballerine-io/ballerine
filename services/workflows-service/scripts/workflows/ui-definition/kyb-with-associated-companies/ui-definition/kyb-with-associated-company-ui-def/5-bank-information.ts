@@ -1,4 +1,4 @@
-import { currencyCodes } from '../../../../../src/ui-definition/utils/schema-utils/currency-codes';
+import { currencyCodes } from '../../../../../../src/ui-definition/utils/schema-utils/currency-codes';
 
 const validationSchema = {
   type: 'object',
