@@ -1584,13 +1584,16 @@ export class WorkflowService {
       const mainRepresentative =
         workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative;
       if (mergedConfig.createCollectionFlowToken) {
-        const endUserId = await this.__generateTokenEndUserId({
-          entityType,
-          workflowRuntimeData,
-          mainRepresentative,
-          currentProjectId,
-          entityId,
-        });
+        const endUserId =
+          entityType === 'endUser'
+            ? entityId
+            : await this.__generateEndUserWithBusiness({
+                entityType,
+                workflowRuntimeData,
+                entityData: mainRepresentative,
+                currentProjectId,
+                entityId,
+              });
 
         const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         const workflowToken = await this.workflowTokenService.create(currentProjectId, {
@@ -1705,8 +1708,8 @@ export class WorkflowService {
     ] as const;
   }
 
-  private async __generateTokenEndUserId({
-    mainRepresentative,
+  private async __generateEndUserWithBusiness({
+    entityData,
     workflowRuntimeData,
     currentProjectId,
     entityType,
@@ -1714,18 +1717,16 @@ export class WorkflowService {
   }: {
     entityType: string;
     workflowRuntimeData: WorkflowRuntimeData;
-    mainRepresentative?: { firstName: string; lastName: string };
+    entityData?: { firstName: string; lastName: string };
     currentProjectId: string;
     entityId: string;
   }) {
-    if (entityType == 'endUser') return entityId;
-
-    if (mainRepresentative && entityType === 'business')
+    if (entityData && entityType === 'business')
       return (
         await this.endUserService.createWithBusiness(
           {
             endUser: {
-              ...mainRepresentative,
+              ...entityData,
               isContactPerson: true,
             },
             business: {
