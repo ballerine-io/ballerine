@@ -68,6 +68,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
     onReuploadNeeded,
     isLoadingReuploadNeeded,
   });
+  const DialogDescription = dialog?.reupload?.Description;
 
   if (value?.text === 'Reject') {
     return (
@@ -198,7 +199,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
           </MotionButton>
         }
         title={'Mark document for re-upload'}
-        description={<dialog.reupload.Description />}
+        description={<DialogDescription />}
         content={
           <>
             {documentSelection && <DocumentPicker {...documentPickerProps} value={id} />}
