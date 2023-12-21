@@ -76,7 +76,7 @@
     "i18next-browser-languagedetector": "^7.0.1",
     "i18next-http-backend": "^2.1.1",
     "leaflet": "^1.9.4",
-    "lucide-react": "^0.144.0",
+    "lucide-react": "^0.294.0",
     "match-sorter": "^6.3.1",
     "msw": "^1.0.0",
     "qs": "^6.11.2",
