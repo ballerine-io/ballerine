@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { PasswordService } from '../auth/password/password.service';
 import { UserRepository } from './user.repository';
 import type { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
@@ -8,7 +7,6 @@ import { ProjectScopeService } from '@/project/project-scope.service';
 export class UserService {
   constructor(
     protected readonly repository: UserRepository,
-    protected readonly passwordService: PasswordService,
     protected readonly scopeService: ProjectScopeService,
   ) {}
 

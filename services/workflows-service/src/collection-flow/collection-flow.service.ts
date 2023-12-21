@@ -45,7 +45,7 @@ export class CollectionFlowService {
     return await this.endUserService.getById(endUserId, {}, [projectId]);
   }
 
-  private traverseUiSchema(uiSchema: Record<string, unknown>, language: string) {
+  traverseUiSchema(uiSchema: Record<string, unknown>, language: string) {
     for (const key in uiSchema) {
       if (typeof uiSchema[key] === 'object' && uiSchema[key] !== null) {
         // If the property is an object (including arrays), recursively traverse it
