@@ -286,11 +286,7 @@ export class WorkflowControllerInternal {
         const pendingWorkflowEvents =
           updatedWorkflowRuntimeData?.context?.pendingWorkflowEvents?.filter(
             (item: { workflowId: string; event: ObjectValues<typeof CommonWorkflowEvent> }) => {
-              if (data?.decision === null) {
-                return item.workflowId !== params.id || item.event !== CommonWorkflowEvent.REVISION;
-              }
-
-              return item.workflowId !== params.id && item.event !== data?.decision;
+              return item.workflowId !== params.id || item.event !== CommonWorkflowEvent.REVISION;
             },
           ) ?? [];
 
