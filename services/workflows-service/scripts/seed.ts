@@ -901,6 +901,7 @@ async function seed(bcryptSalt: string | number) {
             'revision',
             'rejected',
             'pending_kyc_response_to_finish',
+            'pending_associated_kyb_collection_flow',
           ],
         },
       },
