@@ -13,10 +13,12 @@ import { useCallback, useMemo } from 'react';
 import pullAt from 'lodash/pullAt';
 import get from 'lodash/get';
 import set from 'lodash/set';
+import { useTranslation } from 'react-i18next';
 
 const jsonLogicRuleEngine = new JsonLogicRuleEngine();
 
 export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
+  const { t } = useTranslation();
   const { definition } = useJSONFormDefinition();
   const { stateApi, payload } = useStateManagerContext();
   const isNewItemsCanBeAdded = useMemo(() => {
@@ -26,6 +28,8 @@ export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
       ? definition?.options?.canAdd.every(rule => jsonLogicRuleEngine.test(payload, rule))
       : true;
   }, [payload, definition]);
+
+  const addText = useMemo(() => t('addLabel'), [t]);
 
   const removeElementOnDelete = useCallback(
     (index: number) => {
@@ -61,6 +65,7 @@ export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
   return (
     <ArrayFieldsLayout
       {...props}
+      uiSchema={{ addText }}
       canAdd={isNewItemsCanBeAdded}
       onAddClick={addEmptyElementToDestinationArray}
     >
