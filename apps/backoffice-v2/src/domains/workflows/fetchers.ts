@@ -83,6 +83,14 @@ export const BaseWorkflowByIdSchema = z.object({
       })
       .passthrough()
       .optional(),
+    pendingWorkflowEvents: z
+      .array(
+        z.object({
+          workflowId: z.string(),
+          event: z.string().or(z.null()),
+        }),
+      )
+      .default([]),
   }),
   entity: ObjectWithIdSchema.extend({
     name: z.string(),

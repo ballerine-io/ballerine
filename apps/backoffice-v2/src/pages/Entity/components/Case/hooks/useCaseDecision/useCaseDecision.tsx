@@ -44,9 +44,7 @@ export const useCaseDecision = () => {
     !canRevision &&
     caseState.actionButtonsEnabled &&
     workflow?.nextEvents?.includes(Action.APPROVE);
-  const workflowLevelResolution =
-    workflow?.workflowDefinition?.config?.workflowLevelResolution ??
-    workflow?.context?.entity?.type === 'business';
+  const workflowLevelResolution = workflow?.workflowDefinition?.config?.workflowLevelResolution;
   const noAction = workflowLevelResolution && !canApprove && !canReject && !canRevision;
 
   return {

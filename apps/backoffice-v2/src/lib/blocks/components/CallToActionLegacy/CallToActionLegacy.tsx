@@ -57,6 +57,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
     isReuploadResetable,
     documentPickerProps,
     handleDialogClose,
+    DialogDescription,
   } = useCallToActionLegacyLogic({
     contextUpdateMethod,
     revisionReasons,
@@ -67,6 +68,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
     workflow,
     onReuploadNeeded,
     isLoadingReuploadNeeded,
+    dialog,
   });
 
   if (value?.text === 'Reject') {
@@ -198,7 +200,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
           </MotionButton>
         }
         title={'Mark document for re-upload'}
-        description={<dialog.reupload.Description />}
+        description={<DialogDescription />}
         content={
           <>
             {documentSelection && <DocumentPicker {...documentPickerProps} value={id} />}
