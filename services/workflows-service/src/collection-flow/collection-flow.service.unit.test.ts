@@ -95,7 +95,7 @@ describe('CollectionFlowService', () => {
   });
 
   it('should translate leaf nodes of the uiSchema', () => {
-    const language = 'fr'; // Define the language for translation
+    const language = 'fr';
     const expectedUiSchema = {
       title: 'Translated Title',
       description: 'Translated Description',
@@ -108,7 +108,6 @@ describe('CollectionFlowService', () => {
       array: ['Translated Item 1', 'Translated Item 2'],
     };
 
-    // Mock the translationService.translate method to return the translated text
     translationService.translate = jest.fn((text, lang) =>
       lang === 'fr' ? `Translated ${text}` : text,
     );
