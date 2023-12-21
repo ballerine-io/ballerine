@@ -3,25 +3,22 @@ import { KybExampleBlocks } from '@/lib/blocks/variants/KybExampleBlocks/KybExam
 import { DefaultBlocks } from '@/lib/blocks/variants/DefaultBlocks/DefaultBlocks';
 import { FunctionComponent } from 'react';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { WorkflowDefinitionVariant } from '@ballerine/common';
+import {
+  checkIsKybExampleVariant,
+  checkIsManualReviewVariant,
+} from '@/lib/blocks/variants/variant-checkers';
 
 export const BlocksVariant: FunctionComponent<{
   workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'variant' | 'config' | 'version'>;
 }> = ({ workflowDefinition }) => {
-  const isKybExample =
-    workflowDefinition?.version >= 0 &&
-    workflowDefinition?.variant === WorkflowDefinitionVariant.KYB &&
-    workflowDefinition?.config?.isExample;
-  const isManualReview =
-    workflowDefinition?.version >= 0 &&
-    workflowDefinition?.variant === WorkflowDefinitionVariant.MANUAL_REVIEW &&
-    workflowDefinition?.config?.isLegacyReject;
+  const isKybExampleVariant = checkIsKybExampleVariant(workflowDefinition);
+  const isManualReviewVariant = checkIsManualReviewVariant(workflowDefinition);
 
-  if (isKybExample) {
+  if (isKybExampleVariant) {
     return <KybExampleBlocks />;
   }
 
-  if (isManualReview) {
+  if (isManualReviewVariant) {
     return <ManualReviewBlocks />;
   }
 

@@ -5,7 +5,7 @@ import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { FilterService } from '@/filter/filter.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import type { TProjectId, TProjectIds } from '@/types';
+import type { ObjectValues, TProjectId, TProjectIds } from '@/types';
 import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
 import { DocumentDecisionUpdateQueryInput } from '@/workflow/dtos/document-decision-query.input';
 import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';
@@ -40,6 +40,35 @@ import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
+import { CommonWorkflowEvent, safeEvery } from '@ballerine/common';
+
+/**
+ * Update or insert item in array depending on if it already exists.
+ * @param array - Array to update.
+ * @param item - Item to insert or update.
+ * @param findBy - Key to find item by.
+ */
+const upsertArrayItem = <TItem>({
+  array,
+  item,
+  findBy,
+}: {
+  array: TItem[];
+  item: TItem;
+  findBy: Array<keyof TItem>;
+}) => {
+  const isInExistence = array?.some(arrayItem =>
+    safeEvery(findBy, key => arrayItem[key] === item[key]),
+  );
+
+  if (!isInExistence) {
+    return [...array, item];
+  }
+
+  return array?.map(arrayItem =>
+    safeEvery(findBy, key => arrayItem[key] !== item[key]) ? arrayItem : item,
+  );
+};
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -254,7 +283,7 @@ export class WorkflowControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
-      return await this.service.updateDocumentDecisionById(
+      const updatedWorkflowRuntimeData = await this.service.updateDocumentDecisionById(
         {
           workflowId: params?.id,
           documentId: params?.documentId,
@@ -268,6 +297,61 @@ export class WorkflowControllerInternal {
         currentProjectId,
         data.postUpdateEventName,
       );
+      const workflowDefinition = await this.service.getWorkflowDefinitionById(
+        updatedWorkflowRuntimeData?.workflowDefinitionId,
+        {
+          select: {
+            config: true,
+          },
+        },
+        projectIds,
+      );
+      const isRemovingDecision = data?.decision === null;
+      const workflowLevelResolution = workflowDefinition?.config?.workflowLevelResolution;
+
+      if (workflowLevelResolution && isRemovingDecision) {
+        const pendingWorkflowEvents =
+          updatedWorkflowRuntimeData?.context?.pendingWorkflowEvents?.filter(
+            (item: { workflowId: string; event: ObjectValues<typeof CommonWorkflowEvent> }) => {
+              if (data?.decision === null) {
+                return item.workflowId !== params.id || item.event !== CommonWorkflowEvent.REVISION;
+              }
+
+              return item.workflowId !== params.id && item.event !== data?.decision;
+            },
+          ) ?? [];
+
+        await this.service.syncContextById(
+          updatedWorkflowRuntimeData?.id,
+          {
+            ...updatedWorkflowRuntimeData?.context,
+            pendingWorkflowEvents,
+          },
+          currentProjectId,
+        );
+      }
+
+      if (workflowLevelResolution && !isRemovingDecision) {
+        const pendingWorkflowEvents = upsertArrayItem({
+          array: updatedWorkflowRuntimeData?.context?.pendingWorkflowEvents || [],
+          item: {
+            workflowId: params?.id,
+            event: data?.decision,
+          },
+          findBy: ['workflowId', 'event'],
+        });
+
+        await this.service.syncContextById(
+          updatedWorkflowRuntimeData?.id,
+          {
+            ...updatedWorkflowRuntimeData?.context,
+            pendingWorkflowEvents,
+          },
+          currentProjectId,
+        );
+      }
+
+      return updatedWorkflowRuntimeData;
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);

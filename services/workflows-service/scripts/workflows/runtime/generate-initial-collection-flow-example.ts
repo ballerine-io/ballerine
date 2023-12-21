@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { env } from '../../../src/env';
 
 export const generateInitialCollectionFlowExample = async (
   prismaClient: PrismaClient,
@@ -38,6 +39,10 @@ export const generateInitialCollectionFlowExample = async (
           },
         },
         documents: [],
+        metadata: {
+          collectionFlowUrl: env.COLLECTION_FLOW_URL,
+          token,
+        },
       },
       businessId: businessId,
       workflowDefinitionVersion: 1,
