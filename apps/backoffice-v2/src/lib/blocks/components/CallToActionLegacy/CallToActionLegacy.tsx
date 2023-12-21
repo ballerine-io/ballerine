@@ -70,7 +70,6 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
     isLoadingReuploadNeeded,
     dialog,
   });
-  const DialogDescription = dialog?.reupload?.Description;
 
   if (value?.text === 'Reject') {
     return (
