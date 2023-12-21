@@ -167,7 +167,7 @@ To set up a local environment, follow these steps:
 Once the process is complete,  _2 tabs_   will open in your browser:
 
 1. http://localhost:5173/ - for the _document collection flow_
-2. http://localhost:5137/ - for the  _backffice_
+2. http://localhost:5137/ - for the  _backoffice_
 (It's recommended to have them positioned side-by-side).
 
 ##### KYB Manual Review Workflow:
