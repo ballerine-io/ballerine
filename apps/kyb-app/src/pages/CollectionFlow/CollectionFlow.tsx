@@ -143,13 +143,15 @@ export const CollectionFlow = withSessionProtected(() => {
                                   </div>
                                 </div>
                                 <div className="pb-10">
-                                  <AppShell.Logo
-                                    // @ts-ignore
-                                    logoSrc={customer?.logoImageUri}
-                                    // @ts-ignore
-                                    appName={customer?.displayName}
-                                    onLoad={() => setLogoLoaded(true)}
-                                  />
+                                  {customer?.logoImageUri && (
+                                    <AppShell.Logo
+                                      // @ts-ignore
+                                      logoSrc={customer?.logoImageUri}
+                                      // @ts-ignore
+                                      appName={customer?.displayName}
+                                      onLoad={() => setLogoLoaded(true)}
+                                    />
+                                  )}
                                 </div>
                                 <div className="min-h-0 flex-1 pb-10">
                                   {isLogoLoaded ? <StepperUI /> : null}
