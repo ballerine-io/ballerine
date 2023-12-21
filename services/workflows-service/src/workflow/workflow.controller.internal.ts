@@ -40,35 +40,8 @@ import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
-import { CommonWorkflowEvent, safeEvery } from '@ballerine/common';
-
-/**
- * Update or insert item in array depending on if it already exists.
- * @param array - Array to update.
- * @param item - Item to insert or update.
- * @param findBy - Key to find item by.
- */
-const upsertArrayItem = <TItem>({
-  array,
-  item,
-  findBy,
-}: {
-  array: TItem[];
-  item: TItem;
-  findBy: Array<keyof TItem>;
-}) => {
-  const isInExistence = array?.some(arrayItem =>
-    safeEvery(findBy, key => arrayItem[key] === item[key]),
-  );
-
-  if (!isInExistence) {
-    return [...array, item];
-  }
-
-  return array?.map(arrayItem =>
-    safeEvery(findBy, key => arrayItem[key] !== item[key]) ? arrayItem : item,
-  );
-};
+import { CommonWorkflowEvent } from '@ballerine/common';
+import { upsertArrayItem } from '@/common/upsert-array-item/upsert-array-item';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
