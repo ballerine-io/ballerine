@@ -82,7 +82,7 @@ export const useChildDocumentBlocksLogic = ({
     },
     actions: {
       reuploadNeeded: {
-        isDisabled: isKybExampleVariant,
+        isDisabled: false,
       },
     },
   });

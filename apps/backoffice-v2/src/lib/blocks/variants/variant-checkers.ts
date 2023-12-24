@@ -2,11 +2,12 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { WorkflowDefinitionVariant } from '@ballerine/common';
 
 export const checkIsKybExampleVariant = (
-  workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'variant' | 'config' | 'version'>,
+  workflowDefinition?: TWorkflowById['workflowDefinition'],
 ) =>
-  workflowDefinition?.version >= 0 &&
-  workflowDefinition?.variant === WorkflowDefinitionVariant.KYB &&
-  workflowDefinition?.config?.isExample;
+  !!workflowDefinition &&
+  workflowDefinition.version >= 0 &&
+  workflowDefinition.variant === WorkflowDefinitionVariant.KYB &&
+  workflowDefinition.config?.isExample;
 
 export const checkIsManualReviewVariant = (
   workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'variant' | 'config' | 'version'>,

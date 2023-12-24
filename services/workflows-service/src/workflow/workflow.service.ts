@@ -13,7 +13,6 @@ import { ProjectScopeService } from '@/project/project-scope.service';
 import { FileService } from '@/providers/file/file.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import type { InputJsonValue, IObjectWithId, TProjectId, TProjectIds } from '@/types';
-import { ObjectValues } from '@/types';
 import { UserService } from '@/user/user.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
@@ -27,7 +26,6 @@ import {
 } from '@/workflow/workflow-runtime-list-item.model';
 import {
   AnyRecord,
-  CommonWorkflowEvent,
   DefaultContextSchema,
   getDocumentId,
   isErrorWithMessage,
@@ -1984,26 +1982,10 @@ export class WorkflowService {
       from: workflowRuntimeData.state,
       to: currentState,
     });
-    const updatedPendingWorkflowEvents =
-      workflowRuntimeData?.context?.pendingWorkflowEvents?.filter(
-        (item: { workflowId: string; event: ObjectValues<typeof CommonWorkflowEvent> }) => {
-          if (type === null) {
-            return (
-              item.workflowId !== workflowRuntimeData?.id ||
-              item.event !== CommonWorkflowEvent.REVISION
-            );
-          }
-
-          return item.workflowId !== workflowRuntimeData?.id && item.event !== type;
-        },
-      ) ?? [];
     const updatedRuntimeData = await this.updateWorkflowRuntimeData(
       workflowRuntimeData.id,
       {
-        context: {
-          ...context,
-          pendingWorkflowEvents: updatedPendingWorkflowEvents,
-        },
+        context,
         state: currentState,
         tags: Array.from(snapshot.tags) as unknown as WorkflowDefinitionUpdateInput['tags'],
         status: isFinal ? 'completed' : workflowRuntimeData.status,

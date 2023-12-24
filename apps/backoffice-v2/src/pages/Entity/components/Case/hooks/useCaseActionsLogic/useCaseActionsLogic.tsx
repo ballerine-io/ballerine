@@ -15,8 +15,8 @@ import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hoo
 import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
 import { tagToBadgeData } from '../../consts';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
-import { checkIsKybExampleVariant } from '@/lib/blocks/variants/variant-checkers';
 import { AnyObject } from '@ballerine/ui';
+import { usePendingRevisionEvents } from '@/pages/Entity/components/Case/hooks/usePendingRevisionEvents/usePendingRevisionEvents';
 
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
@@ -57,38 +57,7 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
 
   // Avoid passing the onClick event to mutate
   const onMutateApproveEntity = useCallback(() => mutateApproveEntity(), [mutateApproveEntity]);
-  const childPendingWorkflowEvents = useMemo(
-    () =>
-      workflow?.childWorkflows?.flatMap(
-        childWorkflow => childWorkflow?.context?.pendingWorkflowEvents,
-      ) ?? [],
-    [workflow?.childWorkflows],
-  );
-  const pendingWorkflowEvents = useMemo(() => {
-    return [...childPendingWorkflowEvents, ...(workflow?.context?.pendingWorkflowEvents ?? [])];
-  }, [childPendingWorkflowEvents, workflow?.context?.pendingWorkflowEvents]);
-  const onMutateRevisionCase = useCallback(() => {
-    pendingWorkflowEvents?.forEach(pendingWorkflowEvent => {
-      if (pendingWorkflowEvent?.event !== 'revision') {
-        return;
-      }
-
-      mutateRevisionCase({ workflowId: pendingWorkflowEvent?.workflowId });
-
-      const isKybExampleVariant = checkIsKybExampleVariant({
-        variant: workflow?.workflowDefinition?.variant,
-        config: workflow?.workflowDefinition?.config,
-        version: workflow?.workflowDefinition?.version,
-      });
-
-      if (!isKybExampleVariant || pendingWorkflowEvent?.workflowId !== workflow?.id) return;
-
-      window.open(
-        `${workflow?.context?.metadata?.collectionFlowUrl}/?token=${workflow?.context?.metadata?.token}`,
-        '_blank',
-      );
-    });
-  }, [mutateRevisionCase, pendingWorkflowEvents, workflow]);
+  const { onMutateRevisionCase } = usePendingRevisionEvents(mutateRevisionCase, workflow);
   const onMutateRejectEntity = useCallback(() => mutateRejectEntity(), [mutateRejectEntity]);
   const onMutateAssignWorkflow = useCallback(
     (assigneeId: string, isAssignedToMe: boolean) =>
