@@ -56,5 +56,5 @@ export const usePendingRevisionEvents = (
     });
   }, [mutateRevisionCase, pendingWorkflowEvents, workflow]);
 
-  return { onMutateRevisionCase };
+  return { onMutateRevisionCase, pendingWorkflowEvents };
 };
