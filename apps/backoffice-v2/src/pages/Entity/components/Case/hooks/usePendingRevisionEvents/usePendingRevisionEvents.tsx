@@ -47,11 +47,11 @@ export const usePendingRevisionEvents = (
       mutateRevisionCase({ workflowId: pendingWorkflowEvent!.workflowId });
 
       const isKybExampleVariant = checkIsKybExampleVariant(workflow.workflowDefinition);
-      if (!isKybExampleVariant || pendingWorkflowEvent!.workflowId !== workflow.id) return;
+      if (!isKybExampleVariant) return;
 
       window.open(
-        `${workflow?.context?.metadata?.collectionFlowUrl}/?token=${workflow?.context?.metadata?.token}`,
-        '_blank',
+        `${workflow?.context?.metadata?.collectionFlowUrl}/?token=${pendingWorkflowEvent?.token}`,
+        pendingWorkflowEvent?.token,
       );
     });
   }, [mutateRevisionCase, pendingWorkflowEvents, workflow]);

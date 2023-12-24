@@ -11,6 +11,7 @@ export const calculatePendingWorkflowEvents = (workflow: TWorkflowById): Array<I
           workflowId: workflow.id,
           documentId: document.id as string,
           pendingEvent: calculateWorkflowRevisionableEvent(workflow, document.decision.status),
+          token: workflow?.context?.metadata?.token,
         };
     })
     .filter((a): a is NonNullable<IPendingEvent> => !!a && !!a.pendingEvent);
