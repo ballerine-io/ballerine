@@ -249,6 +249,14 @@ workflowService:
       # - secretName: letsencrypt-staging
       #   hosts:
       #     - workflowsvc.ballerine.io
+  secrets: {}
+    # mysecret:
+    #   type: {}
+    #   annotations: {}
+    #   labels: {}
+    #   stringData: {}
+    #   data: {}
+
   applicationConfig:
     BCRYPT_SALT: "10"
     DB_URL: ""
