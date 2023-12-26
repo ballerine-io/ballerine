@@ -195,7 +195,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
           </MotionButton>
         }
         title={'Mark document for re-upload'}
-        description={DialogDescription ? <DialogDescription /> : null}
+        description={<DialogDescription />}
         content={
           <>
             {!noReasons && (
