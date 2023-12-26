@@ -63,3 +63,15 @@ export const Searchable = {
 export const Disabled = {
   render: () => <DropdownInput name="disabled-input" options={[]} disabled onChange={() => {}} />,
 };
+
+export const AutoOpenOnFocus = {
+  render: () => (
+    <DropdownInput
+      name="disabled-input"
+      searchable
+      options={storyOptions}
+      openOnFocus
+      onChange={() => {}}
+    />
+  ),
+};
