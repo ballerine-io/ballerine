@@ -132,8 +132,10 @@ export const withDynamicUIInput = (
           onChange={handleChange}
           onBlur={handleBlur}
         />
-        {warnings.length ? <ErrorsList errors={warnings.map(err => err.message)} /> : null}
-        {isTouched ? <ErrorsList errors={validationErrors.map(error => error.message)} /> : null}
+        {!!warnings.length && <ErrorsList errors={warnings.map(err => err.message)} />}
+        {isTouched && !!validationErrors.length && (
+          <ErrorsList errors={validationErrors.map(error => error.message)} />
+        )}
       </div>
     );
   }
