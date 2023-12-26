@@ -1,11 +1,6 @@
 import React from 'react';
-import {
-  DefaultContextSchema,
-  getDocumentsByCountry,
-  StateTag,
-  TDocument,
-} from '@ballerine/common';
-import { AnyObject, ctw } from '@ballerine/ui';
+import { getDocumentsByCountry, StateTag, TDocument } from '@ballerine/common';
+import { ctw } from '@ballerine/ui';
 import { UseQueryResult } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import {
@@ -27,9 +22,7 @@ import { X } from 'lucide-react';
 import { getRevisionReasonsForDocument } from '@/lib/blocks/components/DirectorsCallToAction/helpers';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { toTitleCase } from 'string-ts';
-
-export type Director = AnyObject;
-type DecisionStatus = NonNullable<DefaultContextSchema['documents'][number]['decision']>['status'];
+import { DecisionStatus, Director } from '@/lib/blocks/hooks/useDirectorsBlocks/types';
 
 export const useDirectorsBlocks = ({
   workflow,
