@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.35
+
+### Patch Changes
+
+- added x-www-form-urlencoded to api plugin functionality
+
 ## 0.7.34
 
 ### Patch Changes

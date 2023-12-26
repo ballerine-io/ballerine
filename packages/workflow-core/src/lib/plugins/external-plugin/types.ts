@@ -19,6 +19,7 @@ export interface IApiPluginParams {
   successAction?: string;
   errorAction?: string;
   persistResponseDestination?: string;
+  options?: { responseSliceOptions?: { fromText: string; toText: string } };
 
   invoke?(...args: Array<any>): any;
 }

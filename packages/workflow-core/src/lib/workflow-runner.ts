@@ -157,6 +157,7 @@ export class WorkflowRunner {
         successAction: apiPluginSchema.successAction,
         errorAction: apiPluginSchema.errorAction,
         persistResponseDestination: apiPluginSchema.persistResponseDestination,
+        options: apiPluginSchema.options,
       });
     });
   }
@@ -235,7 +236,7 @@ export class WorkflowRunner {
       stateNames: iterarivePluginParams.stateNames,
       //@ts-ignore
       iterateOn: this.fetchTransformers(iterarivePluginParams.iterateOn),
-      action: (context: TContext) => actionPlugin!.invoke(context),
+      action: (context: TContext) => actionPlugin!.invoke(context, context.config),
       successAction: iterarivePluginParams.successAction,
       errorAction: iterarivePluginParams.errorAction,
     };

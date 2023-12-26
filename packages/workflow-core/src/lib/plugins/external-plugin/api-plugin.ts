@@ -15,6 +15,7 @@ export class ApiPlugin {
   successAction?: string;
   errorAction?: string;
   persistResponseDestination?: string;
+  options?: { responseSliceOptions?: { fromText: string; toText: string; addSuffix?: string } };
 
   constructor(pluginParams: IApiPluginParams) {
     this.name = pluginParams.name;
@@ -31,10 +32,16 @@ export class ApiPlugin {
     this.successAction = pluginParams.successAction;
     this.errorAction = pluginParams.errorAction;
     this.persistResponseDestination = pluginParams.persistResponseDestination;
+    this.options = pluginParams.options;
   }
-  async invoke(context: TContext) {
+
+  async invoke(context: TContext, config: unknown) {
     try {
-      const requestPayload = await this.transformData(this.request.transformers, context);
+      const requestPayload = await this.transformData(this.request.transformers, {
+        ...context,
+        workflowRuntimeConfig: config,
+      });
+
       const { isValidRequest, errorMessage } = await this.validateContent(
         this.request.schemaValidator,
         requestPayload,
@@ -57,7 +64,18 @@ export class ApiPlugin {
       console.log(`API Plugin :: Received ${apiResponse.statusText} response from ${this.url}`);
 
       if (apiResponse.ok) {
-        const result = await apiResponse.json();
+        let result;
+        if (this.options?.responseSliceOptions) {
+          const responsePayloadText = await apiResponse.text();
+          result = this.slicePayloadToJson(
+            responsePayloadText,
+            this.options.responseSliceOptions.fromText,
+            this.options.responseSliceOptions.toText,
+            this.options.responseSliceOptions.addSuffix,
+          );
+        } else {
+          result = await apiResponse.json();
+        }
         let responseBody = result as AnyRecord;
 
         if (this.response?.transformers) {
@@ -107,6 +125,7 @@ export class ApiPlugin {
   ): Promise<{
     ok: boolean;
     json: () => Promise<unknown>;
+    text: () => Promise<string>;
     statusText: string;
   }> {
     const requestParams = {
@@ -114,27 +133,41 @@ export class ApiPlugin {
       headers: headers,
     };
 
-    Object.keys(payload).forEach(key => {
-      if (typeof payload[key] === 'string') {
-        payload[key] = this.replaceValuePlaceholders(payload[key] as string, payload);
-      }
-    });
+    isObject(payload) &&
+      Object.keys(payload).forEach(key => {
+        if (typeof payload[key] === 'string' && key != '0') {
+          payload[key] = this.replaceValuePlaceholders(payload[key] as string, payload);
+        }
+      });
 
     // @TODO: Use an enum over string literals for HTTP methods
     if (this.method.toUpperCase() !== 'GET' && payload) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      requestParams.body = JSON.stringify(payload);
+      if (headers['Content-Type'] === 'application/x-www-form-urlencoded') {
+        // @ts-ignore
+        headers['accept'] = '*/*';
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        requestParams.body = payload;
+      } else {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        requestParams.body = JSON.stringify(payload);
+      }
     } else if (this.method.toUpperCase() === 'GET' && payload) {
       const queryParams = new URLSearchParams(payload as Record<string, string>).toString();
       url = `${url}?${queryParams}`;
     }
 
+    console.log('url', url);
+    console.log('request', JSON.stringify(requestParams));
     const res = await fetch(url, requestParams);
+
     if ([204, 202].includes(res.status)) {
       return {
         ok: true,
         json: () => Promise.resolve({ statusCode: res.status }),
+        text: () => Promise.resolve(`{ statusCode: ${res.status} }`),
         statusText: 'OK',
       };
     }
@@ -221,4 +254,21 @@ export class ApiPlugin {
       }
     }, record as unknown);
   }
+
+  slicePayloadToJson = (
+    responsePayloadText: string,
+    fromValue: string,
+    toValue: string,
+    addSuffix?: string,
+  ) => {
+    const fromValueIndex = responsePayloadText.indexOf(fromValue) + fromValue.length;
+    const toValueIndex = responsePayloadText.indexOf(toValue);
+
+    const cleanResponsePayload = responsePayloadText
+      .substring(fromValueIndex, toValueIndex)
+      .trim()
+      .concat(addSuffix ? `${addSuffix}` : '');
+
+    return JSON.parse(cleanResponsePayload);
+  };
 }
