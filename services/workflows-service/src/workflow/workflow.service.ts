@@ -24,7 +24,12 @@ import {
   WorkflowAssignee,
   WorkflowRuntimeListItemModel,
 } from '@/workflow/workflow-runtime-list-item.model';
-import { DefaultContextSchema, getDocumentId, isErrorWithMessage } from '@ballerine/common';
+import {
+  AnyRecord,
+  DefaultContextSchema,
+  getDocumentId,
+  isErrorWithMessage,
+} from '@ballerine/common';
 import {
   ChildPluginCallbackOutput,
   ChildToParentCallback,
@@ -75,6 +80,7 @@ import {
   WorkflowRuntimeDataRepository,
 } from './workflow-runtime-data.repository';
 import mime from 'mime';
+import { env } from '@/env';
 
 type TEntityId = string;
 
@@ -98,10 +104,12 @@ export const ResubmissionReason = {
   FACE_IS_UNCLEAR: 'FACE_IS_UNCLEAR',
   FACE_IS_NOT_MATCHING: 'FACE_IS_NOT_MATCHING',
 } as const;
+
 export interface WorkflowData {
   workflowDefinition: object;
   workflowRuntimeData: object;
 }
+
 export type TEntityType = 'endUser' | 'business';
 
 // Discuss model classes location
@@ -313,6 +321,7 @@ export class WorkflowService {
       await this.createOrUpdateWorkflowRuntime({
         workflowDefinitionId: childPluginConfig.definitionId,
         context: childPluginConfig.initOptions.context as unknown as DefaultContextSchema,
+        config: childPluginConfig.initOptions.config as unknown as AnyRecord,
         parentWorkflowId: childPluginConfig.parentWorkflowRuntimeId,
         projectIds,
         currentProjectId,
@@ -348,6 +357,7 @@ export class WorkflowService {
 
     return childWorkflow;
   }
+
   async getWorkflowRuntimeDataByCorrelationId(
     id: string,
     args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
@@ -1203,6 +1213,21 @@ export class WorkflowService {
     return updatedResult;
   }
 
+  async updateWorkflowRuntimeLanguage(
+    workflowRuntimeId: string,
+    language: string,
+    projectId: TProjectId,
+  ): Promise<WorkflowRuntimeData> {
+    const projectIds: TProjectIds = projectId ? [projectId] : null;
+
+    return await this.workflowRuntimeDataRepository.updateRuntimeConfigById(
+      workflowRuntimeId,
+      { language },
+      'by_index',
+      projectIds,
+    );
+  }
+
   async assignWorkflowToUser(
     workflowRuntimeId: string,
     { assigneeId }: WorkflowAssigneeId,
@@ -1558,30 +1583,22 @@ export class WorkflowService {
 
       const mainRepresentative =
         workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative;
-      if (
-        mergedConfig.createCollectionFlowToken &&
-        mainRepresentative &&
-        entityType === 'business'
-      ) {
-        const endUser = await this.endUserService.createWithBusiness(
-          {
-            endUser: {
-              ...mainRepresentative,
-              isContactPerson: true,
-            },
-            business: {
-              companyName: '',
-              ...workflowRuntimeData.context.entity.data,
-              projectId: currentProjectId,
-            },
-          },
-          currentProjectId,
-          entityId,
-        );
+      if (mergedConfig.createCollectionFlowToken) {
+        const endUserId =
+          entityType === 'endUser'
+            ? entityId
+            : await this.__generateEndUserWithBusiness({
+                entityType,
+                workflowRuntimeData,
+                entityData: mainRepresentative,
+                currentProjectId,
+                entityId,
+              });
+
         const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         const workflowToken = await this.workflowTokenService.create(currentProjectId, {
           workflowRuntimeDataId: workflowRuntimeData.id,
-          endUserId: endUser.id,
+          endUserId: endUserId,
           expiresAt: nowPlus30Days,
         });
 
@@ -1591,7 +1608,12 @@ export class WorkflowService {
             data: {
               context: {
                 ...workflowRuntimeData.context,
-                metadata: { customerName: customer.displayName, token: workflowToken.token },
+                metadata: {
+                  customerName: customer.displayName,
+                  token: workflowToken.token,
+                  collectionFlowUrl: env.COLLECTION_FLOW_URL,
+                  webUiSDKUrl: env.WEB_UI_SDK_URL,
+                },
               } as InputJsonValue,
               projectId: currentProjectId,
             },
@@ -1684,6 +1706,44 @@ export class WorkflowService {
         ballerineEntityId: entityId,
       },
     ] as const;
+  }
+
+  private async __generateEndUserWithBusiness({
+    entityData,
+    workflowRuntimeData,
+    currentProjectId,
+    entityType,
+    entityId,
+  }: {
+    entityType: string;
+    workflowRuntimeData: WorkflowRuntimeData;
+    entityData?: { firstName: string; lastName: string };
+    currentProjectId: string;
+    entityId: string;
+  }) {
+    if (entityData && entityType === 'business')
+      return (
+        await this.endUserService.createWithBusiness(
+          {
+            endUser: {
+              ...entityData,
+              isContactPerson: true,
+            },
+            business: {
+              companyName: '',
+              ...workflowRuntimeData.context.entity.data,
+              projectId: currentProjectId,
+            },
+          },
+          currentProjectId,
+          entityId,
+        )
+      ).id;
+
+    throw new Error(
+      `Invalid entity type or payload for child workflow creation for entity: ${entityType} with context:`,
+      workflowRuntimeData.context.entity,
+    );
   }
 
   private async __persistDocumentPagesFiles(
@@ -1871,6 +1931,7 @@ export class WorkflowService {
       definition: workflowDefinition.definition,
       // @ts-expect-error - error from Prisma types fix
       definitionType: workflowDefinition.definitionType,
+      config: workflowRuntimeData.config,
       workflowContext: {
         machineContext: workflowRuntimeData.context,
         state: workflowRuntimeData.state,
