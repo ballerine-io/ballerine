@@ -6,6 +6,7 @@ import { UnknownRecord } from '@/common/types';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
+import { checkIsKybExampleVariant } from '@/lib/blocks/variants/variant-checkers';
 
 export const useChildDocumentBlocksLogic = ({
   parentWorkflowId,
@@ -39,6 +40,7 @@ export const useChildDocumentBlocksLogic = ({
   const isWorkflowLevelResolution =
     parentWorkflow?.workflowDefinition?.config?.workflowLevelResolution ??
     parentWorkflow?.context?.entity?.type === 'business';
+  const isKybExampleVariant = checkIsKybExampleVariant(parentWorkflow?.workflowDefinition);
 
   const childDocumentBlocks = useDocumentBlocks({
     workflow: childWorkflow,
@@ -77,7 +79,7 @@ export const useChildDocumentBlocksLogic = ({
     },
     actions: {
       reuploadNeeded: {
-        isDisabled: false,
+        isDisabled: isKybExampleVariant,
       },
     },
   });

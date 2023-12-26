@@ -41,6 +41,7 @@ export const generateInitialCollectionFlowExample = async (
         documents: [],
         metadata: {
           collectionFlowUrl: env.COLLECTION_FLOW_URL,
+          webUiSDKUrl: env.WEB_UI_SDK_URL,
           token,
         },
       },
