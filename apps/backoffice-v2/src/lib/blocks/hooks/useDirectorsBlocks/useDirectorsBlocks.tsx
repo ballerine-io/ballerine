@@ -1,5 +1,10 @@
 import React from 'react';
-import { DefaultContextSchema, getDocumentsByCountry, StateTag } from '@ballerine/common';
+import {
+  DefaultContextSchema,
+  getDocumentsByCountry,
+  StateTag,
+  TDocument,
+} from '@ballerine/common';
 import { AnyObject, ctw } from '@ballerine/ui';
 import { UseQueryResult } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
@@ -105,7 +110,7 @@ export const useDirectorsBlocks = ({
         const isDocumentRevision = documents.some(
           document => document?.decision?.status === 'revision',
         );
-        const multiDocumentsBlocks = documents.flatMap((document, docIndex) => {
+        const multiDocumentsBlocks = documents.flatMap((document: TDocument, docIndex) => {
           const isDoneWithRevision = document?.decision?.status === 'revised';
           const additionalProperties = composePickableCategoryType(
             document.category,
