@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { env } from '../../src/env';
 import { kycEmailSessionDefinition } from './kyc-email-process-example';
 
-import { defaultContextSchema, StateTag } from '@ballerine/common';
+import { defaultContextSchema, StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
 import { generateDynamicUiTest } from './ui-definition/ui-kyb-parent-dynamic-example';
 
 const KYC_DONE_RULE =
@@ -370,6 +370,7 @@ export const dynamicUiWorkflowDefinition = {
     schema: defaultContextSchema,
   },
   isPublic: true,
+  variant: WorkflowDefinitionVariant.DEFAULT,
 };
 
 export const generateDynamicUiWorkflow = async (prismaClient: PrismaClient, projectId: string) => {

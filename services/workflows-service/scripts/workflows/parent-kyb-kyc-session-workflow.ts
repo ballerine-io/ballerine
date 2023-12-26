@@ -1,39 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import { kycEmailSessionDefinition } from './kyc-email-process-example';
-import {
-  defaultPersonalInformationData,
-  personalInformationSchema,
-  personalInformationUISchema,
-} from './schemas/personal-information.schema';
-import {
-  companyInformationSchema,
-  companyInformationUISchema,
-  defaultCompanyInformationData,
-} from './schemas/company-information.schema';
-import {
-  defaultHeadquartersData,
-  headquartersSchema,
-  headquartersUISchema,
-} from './schemas/headquarters.schema';
-import { companyActivitySchema, companyActivityUISchema } from './schemas/company-activity.schema';
-import {
-  bankInformationSchema,
-  bankInformationUISchema,
-  defaultBankInformationData,
-} from './schemas/bank-information.schema';
-import {
-  defaultShareholdersData,
-  shareholdersSchema,
-  shareholdersUISchema,
-} from './schemas/shareholders.schema';
-import {
-  companyDocumentsSchema,
-  companyDocumentsUISchema,
-  defaultCompanyDocumentsData,
-} from './schemas/company-documents.schema';
 import { env } from '../../src/env';
 
-import { defaultContextSchema, StateTag } from '@ballerine/common';
+import { defaultContextSchema, StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
 
 export const parentKybWithSessionWorkflowDefinition = {
   id: 'kyb_parent_kyc_session_example',
@@ -252,6 +221,7 @@ export const parentKybWithSessionWorkflowDefinition = {
     schema: defaultContextSchema,
   },
   isPublic: true,
+  variant: WorkflowDefinitionVariant.DEFAULT,
 };
 export const generateParentKybWithSessionKycs = async (prismaClient: PrismaClient) => {
   return await prismaClient.workflowDefinition.create({
