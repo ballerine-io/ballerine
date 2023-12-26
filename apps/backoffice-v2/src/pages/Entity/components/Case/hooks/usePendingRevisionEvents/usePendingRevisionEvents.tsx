@@ -1,6 +1,6 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useCallback, useMemo } from 'react';
-import { calculateAllWorkflowEvents } from '@/pages/Entity/components/Case/hooks/usePendingRevisionEvents/utils/calculate-pending-workflow-events';
+import { calculateAllWorkflowPendingEvents } from '@/pages/Entity/components/Case/hooks/usePendingRevisionEvents/utils/calculate-pending-workflow-events';
 import { CommonWorkflowEvent } from '@ballerine/common';
 import { checkIsKybExampleVariant } from '@/lib/blocks/variants/variant-checkers';
 import { useRevisionCaseMutation } from '@/domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
@@ -30,7 +30,7 @@ export const usePendingRevisionEvents = (
   const pendingWorkflowEvents = useMemo(() => {
     if (!workflow) return;
 
-    return calculateAllWorkflowEvents(workflow);
+    return calculateAllWorkflowPendingEvents(workflow);
   }, [workflow]);
 
   const onMutateRevisionCase = useCallback(() => {
