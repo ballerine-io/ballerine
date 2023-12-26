@@ -539,7 +539,9 @@
       "aboutUsUrl": "关于我们网址应为有效的网址。",
       "termsOfUseUrl": "使用条款网址应为有效的网址。",
       "privacyPolicyUrl": "隐私政策网址应为有效的网址。",
-      "companyWebsite": "公司网站应为有效的网址"
+      "companyWebsite": "公司网站应为有效的网址",
+      "street": "街道名称应包括字母、数字和特殊符号。",
+      "city": "城市名称应包含字母、数字和特殊符号。"
     },
     "type": {
       "dateOfBirth": "出生日期必须为字符串。",

@@ -12,7 +12,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/common/utils/query-client';
 import { Head } from './Head';
 import { sentyRouterInstrumentation } from './router';
-import './i18n';
+import './i18next';
 import { HelmetProvider } from 'react-helmet-async';
 
 Sentry.init({

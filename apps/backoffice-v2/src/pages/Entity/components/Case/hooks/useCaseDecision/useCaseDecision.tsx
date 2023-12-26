@@ -5,8 +5,8 @@ import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/quer
 import { useParams } from 'react-router-dom';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../useCaseState/useCaseState';
-import { selectDirectorsDocuments } from '../../../../hooks/useTasks/selectors/selectDirectorsDocuments';
 import { useMemo } from 'react';
+import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 
 export const useCaseDecision = () => {
   const filterId = useFilterId();

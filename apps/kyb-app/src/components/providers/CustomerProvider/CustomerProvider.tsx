@@ -1,8 +1,9 @@
-import { customerContext } from '@/components/providers/CustomerProvider/customer.context';
-import { CustomerContext } from '@/components/providers/CustomerProvider/types';
-import { useCustomerQuery } from '@/hooks/useCustomerQuery';
+import React, { useMemo } from 'react';
+
 import { AnyChildren } from '@ballerine/ui';
-import { useMemo } from 'react';
+import { useCustomerQuery } from '@/hooks/useCustomerQuery';
+import { CustomerContext } from '@/components/providers/CustomerProvider/types';
+import { customerContext } from '@/components/providers/CustomerProvider/customer.context';
 
 const { Provider } = customerContext;
 
@@ -29,7 +30,7 @@ export const CustomerProvider = ({
     return ctx;
   }, [customer]);
 
-  if (isLoading) return loadingPlaceholder || null;
+  if (isLoading) return <>{loadingPlaceholder}</> || null;
 
   if (error)
     return FallbackComponent ? (
