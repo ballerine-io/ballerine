@@ -76,7 +76,7 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
 
   const documentsToReviseCount = useMemo(
-    () => pendingWorkflowEvents?.filter(pendingEvent => !!pendingEvent.pendingEvent)?.length,
+    () => pendingWorkflowEvents?.filter(pendingEvent => !!pendingEvent.eventName)?.length,
     [pendingWorkflowEvents],
   );
   const assignedUser = workflow?.assignee
