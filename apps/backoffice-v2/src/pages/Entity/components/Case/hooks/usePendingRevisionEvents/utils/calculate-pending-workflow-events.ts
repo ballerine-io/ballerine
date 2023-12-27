@@ -5,23 +5,27 @@ import { IPendingEvent } from '@/pages/Entity/components/Case/hooks/usePendingRe
 
 export const calculatePendingWorkflowEvents = (workflow: TWorkflowById): Array<IPendingEvent> => {
   return workflow.context.documents
+    .filter(
+      document => !!document.decision.status && workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+    )
     .map(document => {
-      if (!!document.decision.status && workflow?.tags?.includes(StateTag.MANUAL_REVIEW))
-        return {
-          workflowId: workflow.id,
-          documentId: document.id as string,
-          pendingEvent: calculateWorkflowRevisionableEvent(workflow, document.decision.status),
-          token: workflow?.context?.metadata?.token,
-        };
+      return {
+        workflowId: workflow.id,
+        documentId: document.id as string,
+        eventName: calculateWorkflowRevisionableEvent(workflow, document.decision.status),
+        token: workflow?.context?.metadata?.token,
+      };
     })
-    .filter((a): a is NonNullable<IPendingEvent> => !!a && !!a.pendingEvent);
+    .filter((a): a is NonNullable<IPendingEvent> => !!a && !!a.eventName);
 };
 
-export const calculateAllWorkflowEvents = (workflow: TWorkflowById): Array<IPendingEvent> => {
+export const calculateAllWorkflowPendingEvents = (
+  workflow: TWorkflowById,
+): Array<IPendingEvent> => {
   return [
     ...calculatePendingWorkflowEvents(workflow),
     ...(workflow.childWorkflows?.flatMap(childWorkflow =>
-      calculateAllWorkflowEvents(childWorkflow),
+      calculateAllWorkflowPendingEvents(childWorkflow),
     ) || []),
   ].flat();
 };
