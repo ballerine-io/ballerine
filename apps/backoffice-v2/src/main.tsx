@@ -7,7 +7,7 @@ import '@fontsource/inter';
 import './index.css';
 import './i18n';
 import { env } from './common/env/env';
-import { Router } from './Router/Router';
+import { ReportTemplate } from '@/lib/pdf-toolkit/templates/report/Report';
 
 const rootElement = document.getElementById('root');
 
@@ -28,7 +28,8 @@ void prepare().then(() => {
 
     root.render(
       <StrictMode>
-        <Router />
+        {/* <Router /> */}
+        <ReportTemplate />
       </StrictMode>,
     );
   }
