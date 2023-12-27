@@ -1,6 +1,6 @@
 export interface IPendingEvent {
   workflowId: string;
   documentId: string;
-  pendingEvent: string;
+  eventName: string;
   token: string;
 }
