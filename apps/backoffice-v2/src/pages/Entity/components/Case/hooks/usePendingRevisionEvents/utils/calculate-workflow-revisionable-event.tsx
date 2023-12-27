@@ -7,14 +7,16 @@ export const calculateWorkflowRevisionableEvent = (
   documentStatus: string,
 ) => {
   const postDecisionEvent = getPostDecisionEventName(workflow);
-  const dispatchableEvent =
-    postDecisionEvent || documentStatus === CommonWorkflowEvent.REVISION
-      ? (CommonWorkflowEvent.REVISION as string)
-      : undefined;
+
+  if (postDecisionEvent) return postDecisionEvent;
+
+  if (documentStatus === CommonWorkflowEvent.REVISION) {
+    return CommonWorkflowEvent.REVISION;
+  }
 
   console.error(
     `Missing Dispatchable Event WorkflowId: ${workflow.id} for documentStatus: ${documentStatus}`,
   );
 
-  return dispatchableEvent;
+  return documentStatus;
 };
