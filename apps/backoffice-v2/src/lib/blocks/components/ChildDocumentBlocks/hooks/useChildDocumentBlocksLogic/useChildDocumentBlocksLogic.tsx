@@ -40,11 +40,8 @@ export const useChildDocumentBlocksLogic = ({
   const isWorkflowLevelResolution =
     parentWorkflow?.workflowDefinition?.config?.workflowLevelResolution ??
     parentWorkflow?.context?.entity?.type === 'business';
-  const isKybExampleVariant = checkIsKybExampleVariant({
-    variant: parentWorkflow?.workflowDefinition?.variant,
-    config: parentWorkflow?.workflowDefinition?.config,
-    version: parentWorkflow?.workflowDefinition?.version,
-  });
+  const isKybExampleVariant = checkIsKybExampleVariant(parentWorkflow?.workflowDefinition);
+
   const childDocumentBlocks = useDocumentBlocks({
     workflow: childWorkflow,
     parentMachine,
