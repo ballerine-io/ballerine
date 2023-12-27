@@ -1,4 +1,4 @@
-import { multipleUrlsPattern } from '../../../../../../prisma/data-migrations/templates/utils/schema-utils/regex';
+import { multipleUrlsPattern } from '../../../../../../src/ui-definition/utils/schema-utils/regex';
 
 const validationSchema = {
   type: 'object',
