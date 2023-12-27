@@ -1,10 +1,15 @@
 import { BaseContextTransformer, THelperFormatingLogic } from './types';
 import { TContext } from '../types';
 import { search } from 'jmespath';
-import { AnyRecord } from '@ballerine/common';
+import { AnyRecord, uniqueArrayOfObjects } from '@ballerine/common';
 import merge from 'lodash.merge';
 
-export type THelperMethod = 'regex' | 'imageUrlToBase64' | 'remove' | 'mergeArrayEachItemWithValue';
+export type THelperMethod =
+  | 'regex'
+  | 'imageUrlToBase64'
+  | 'remove'
+  | 'mergeArrayEachItemWithValue'
+  | 'uniqueArrayOfObjects';
 export class HelpersTransformer extends BaseContextTransformer {
   name = 'helpers-transformer';
   mapping: THelperFormatingLogic;
@@ -32,6 +37,15 @@ export class HelpersTransformer extends BaseContextTransformer {
     }
 
     return context;
+  }
+
+  uniqueArrayOfObjects(
+    context: Parameters<typeof this.transform>[0],
+    attribute: Array<AnyRecord>,
+    _value: string,
+    options: { uniqueAttributes: Array<string> },
+  ) {
+    return uniqueArrayOfObjects(context, options.uniqueAttributes);
   }
 
   mergeArrayEachItemWithValue(

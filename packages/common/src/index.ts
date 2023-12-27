@@ -17,6 +17,7 @@ export {
   sleep,
   someDocumentDecisionStatus,
   uniqueArray,
+  uniqueArrayOfObjects,
   zodErrorToReadable,
 } from './utils';
 
