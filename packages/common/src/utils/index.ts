@@ -8,7 +8,7 @@ export { isNullish } from './is-nullish';
 export { isObject } from './is-object';
 export { noNullish } from './no-nullish';
 export { sleep } from './sleep';
-export { uniqueArray } from './unique-array';
+export { uniqueArray, uniqueArrayOfObjects } from './unique-array';
 export { zodErrorToReadable } from './zod-error-to-readable';
 export { safeEvery } from './safe-every';
 export { someDocumentDecisionStatus } from './some-document-decision-status';
