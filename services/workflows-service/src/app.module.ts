@@ -36,6 +36,7 @@ import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
 import { multerFactory } from '@/common/multer';
 import { initHttpMoudle } from '@/common/http-service/http-config.service';
 import { DataMigrationModule } from '@/data-migration/data-migration.module';
+import { ReportsModule } from '@/reports/reports.module';
 
 @Module({
   controllers: [MetricsController],
@@ -77,6 +78,7 @@ import { DataMigrationModule } from '@/data-migration/data-migration.module';
     FiltersModule,
     MetricsModule,
     CollectionFlowModule,
+    ReportsModule,
     initHttpMoudle(),
   ],
   providers: [
