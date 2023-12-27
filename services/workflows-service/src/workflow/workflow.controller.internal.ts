@@ -5,7 +5,7 @@ import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { FilterService } from '@/filter/filter.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import type { ObjectValues, TProjectId, TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { DocumentDecisionParamsInput } from '@/workflow/dtos/document-decision-params-input';
 import { DocumentDecisionUpdateQueryInput } from '@/workflow/dtos/document-decision-query.input';
 import { DocumentDecisionUpdateInput } from '@/workflow/dtos/document-decision-update-input';
@@ -40,8 +40,6 @@ import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
-import { CommonWorkflowEvent } from '@ballerine/common';
-import { upsertArrayItem } from '@/common/upsert-array-item/upsert-array-item';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -270,55 +268,6 @@ export class WorkflowControllerInternal {
         currentProjectId,
         data.postUpdateEventName,
       );
-      const workflowDefinition = await this.service.getWorkflowDefinitionById(
-        updatedWorkflowRuntimeData?.workflowDefinitionId,
-        {
-          select: {
-            config: true,
-          },
-        },
-        projectIds,
-      );
-      const isRemovingDecision = data?.decision === null;
-      const workflowLevelResolution = workflowDefinition?.config?.workflowLevelResolution;
-
-      if (workflowLevelResolution && isRemovingDecision) {
-        const pendingWorkflowEvents =
-          updatedWorkflowRuntimeData?.context?.pendingWorkflowEvents?.filter(
-            (item: { workflowId: string; event: ObjectValues<typeof CommonWorkflowEvent> }) => {
-              return item.workflowId !== params.id || item.event !== CommonWorkflowEvent.REVISION;
-            },
-          ) ?? [];
-
-        await this.service.syncContextById(
-          updatedWorkflowRuntimeData?.id,
-          {
-            ...updatedWorkflowRuntimeData?.context,
-            pendingWorkflowEvents,
-          },
-          currentProjectId,
-        );
-      }
-
-      if (workflowLevelResolution && !isRemovingDecision) {
-        const pendingWorkflowEvents = upsertArrayItem({
-          array: updatedWorkflowRuntimeData?.context?.pendingWorkflowEvents || [],
-          item: {
-            workflowId: params?.id,
-            event: data?.decision,
-          },
-          findBy: ['workflowId', 'event'],
-        });
-
-        await this.service.syncContextById(
-          updatedWorkflowRuntimeData?.id,
-          {
-            ...updatedWorkflowRuntimeData?.context,
-            pendingWorkflowEvents,
-          },
-          currentProjectId,
-        );
-      }
 
       return updatedWorkflowRuntimeData;
     } catch (error) {
