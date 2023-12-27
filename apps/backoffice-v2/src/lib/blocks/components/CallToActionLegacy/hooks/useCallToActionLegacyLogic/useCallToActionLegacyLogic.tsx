@@ -4,14 +4,11 @@ import toast from 'react-hot-toast';
 import { useApproveTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
-import { useDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/hooks/useDocumentSelection';
-import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
 
 export interface IUseCallToActionLogicParams {
   contextUpdateMethod?: 'base' | 'director';
   revisionReasons?: string[];
   rejectionReasons?: string[];
-  documentSelection?: ICallToActionDocumentSelection;
   onReuploadReset?: () => void;
   onDialogClose?: () => void;
   workflow: TWorkflowById;
@@ -39,7 +36,6 @@ export const useCallToActionLegacyLogic = ({
   contextUpdateMethod = 'base',
   rejectionReasons,
   revisionReasons,
-  documentSelection,
   onReuploadReset,
   onDialogClose,
   workflow,
@@ -150,8 +146,6 @@ export const useCallToActionLegacyLogic = ({
 
   const isReuploadResetable = Boolean(onReuploadReset);
 
-  const documentPickerProps = useDocumentSelection(documentSelection, resetReasonAndComment);
-
   const handleDialogClose = useCallback(
     (isOpen: boolean) => {
       // Calling callback only when dialog is closed.
@@ -169,7 +163,6 @@ export const useCallToActionLegacyLogic = ({
     reasons,
     reason,
     comment,
-    documentPickerProps,
     onReasonChange,
     onActionChange,
     onCommentChange,

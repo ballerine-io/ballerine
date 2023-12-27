@@ -1,6 +1,5 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { FunctionComponent } from 'react';
-import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
 
 export interface ICallToActionLegacyProps {
   value: {
@@ -10,7 +9,6 @@ export interface ICallToActionLegacyProps {
       workflow: TWorkflowById;
       disabled: boolean;
       decision: 'reject' | 'approve' | 'revision' | 'revised';
-      documentSelection?: ICallToActionDocumentSelection;
       contextUpdateMethod?: 'base' | 'director';
       revisionReasons?: string[];
       rejectionReasons?: string[];
