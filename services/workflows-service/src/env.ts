@@ -65,6 +65,10 @@ export const env = createEnv({
       .string()
       .optional()
       .describe('Bucket name of Data migration folders'),
+    REPORT_GENERATION_EXAMPLE_URL: z
+      .string()
+      .optional()
+      .describe('temp var to pass thru cors for report generation exmaple'),
   },
   client: {},
   /**

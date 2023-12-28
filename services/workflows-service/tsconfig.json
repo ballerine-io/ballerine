@@ -9,7 +9,8 @@
       "@/*": ["src/*"],
       "@/env": ["src/env.ts"]
     },
-    "jsx": "react"
+    "jsx": "react",
+    "moduleResolution": "NodeNext"
   },
   "include": ["src", "plugins", "prisma/data-migrations/**/*"]
 }

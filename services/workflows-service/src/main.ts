@@ -32,6 +32,7 @@ const corsOrigins =
     : [
         env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
         env.KYB_EXAMPLE_CORS_ORIGIN,
+        ...(env.REPORT_GENERATION_EXAMPLE_URL ? [env.REPORT_GENERATION_EXAMPLE_URL] : []),
         /\.ballerine\.dev$/,
         /\.ballerine\.app$/,
         /\.ballerine\.io$/,
