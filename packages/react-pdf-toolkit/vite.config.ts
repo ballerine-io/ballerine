@@ -13,8 +13,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/build.ts'),
-      formats: ['cjs'],
-      name: 'react-pdf-toolkit',
+      formats: ['cjs', 'es'],
+      name: 'build',
     },
     rollupOptions: {
       external: ['react', 'react-dom', 'react/jsx-runtime'],
