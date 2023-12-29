@@ -10,9 +10,7 @@ export interface BlocksList extends BaseComponentProps {
 }
 
 export const Blocks = ({ children, styles = [] }: BlocksList) => {
-  return (
-    <View style={mergeStyles([tw('flex flex-row justify-between'), ...styles])}>{children}</View>
-  );
+  return <View style={mergeStyles([tw('flex flex-row gap-12'), ...styles])}>{children}</View>;
 };
 
 Blocks.Block = Block;

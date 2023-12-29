@@ -8,7 +8,7 @@ export interface BlockProps {
 }
 
 export const Block = ({ children }: BlockProps) => {
-  return <View style={tw('flex flex-col gap-3')}>{children}</View>;
+  return <View style={tw('flex flex-col gap-3 shrink')}>{children}</View>;
 };
 
 Block.Label = Label;

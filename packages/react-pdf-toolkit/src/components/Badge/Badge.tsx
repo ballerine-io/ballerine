@@ -1,8 +1,8 @@
-import { View, Text } from '@react-pdf/renderer';
-import { BadgeProps } from './types';
-import { cva } from 'class-variance-authority';
-import { mergeStyles } from '@/utils/merge-styles';
 import { tw } from '@/theme';
+import { mergeStyles } from '@/utils/merge-styles';
+import { Text, View } from '@react-pdf/renderer';
+import { cva } from 'class-variance-authority';
+import { BadgeProps } from './types';
 
 export const badgeCva = cva('badge', {
   variants: {
@@ -10,6 +10,7 @@ export const badgeCva = cva('badge', {
       primary: 'bg-[#007AFF33] text-[#007AFF]',
       error: 'bg-[#DF222233] text-[#DF2222]',
       warning: 'bg-[#FFB35A33] text-[#FFB35A]',
+      success: 'bg-[#00BD5933] text-[#00BD59]',
     },
     rounded: {
       primary: 'rounded-[6px]',
