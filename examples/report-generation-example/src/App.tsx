@@ -1,17 +1,18 @@
+import {
+  Font,
+  PDFDownloadLink,
+  PDFViewer,
+  ReportTemplate,
+  registerFont,
+  reportData,
+} from '@ballerine/react-pdf-toolkit';
 import { useCallback, useMemo } from 'react';
 import './App.css';
-import {
-  ReportTemplate,
-  PDFDownloadLink,
-  registerFont,
-  PDFViewer,
-  Font,
-} from '@ballerine/react-pdf-toolkit';
 
 registerFont(Font);
 
 export default function App() {
-  const report = useMemo(() => <ReportTemplate />, []);
+  const report = useMemo(() => <ReportTemplate report={reportData} />, []);
 
   const handleDownloadFromServer = useCallback(() => {
     fetch(`${import.meta.env.VITE_API_URL}/reports`, {

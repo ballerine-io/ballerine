@@ -1,10 +1,10 @@
-import React from 'react';
 import { Public } from '@/common/decorators/public.decorator';
+import { ReportTemplate, registerFont, reportData } from '@ballerine/react-pdf-toolkit';
 import { Controller, Get, Response } from '@nestjs/common';
-import { ReportTemplate, registerFont } from '@ballerine/react-pdf-toolkit';
 import { Font, renderToFile } from '@react-pdf/renderer';
 import { Response as TResponse } from 'express';
 import fs from 'fs';
+import React from 'react';
 
 @Controller('/reports')
 export class ReportsController {
@@ -16,7 +16,7 @@ export class ReportsController {
 
     const pdfName = `${+new Date()}.pdf`;
 
-    await renderToFile(<ReportTemplate dynamicValue={new Date().toString()} />, pdfName);
+    await renderToFile(<ReportTemplate report={reportData} />, pdfName);
 
     res.download(pdfName, () => {
       fs.unlinkSync(pdfName);
