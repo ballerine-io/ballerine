@@ -1,0 +1,15 @@
+#root {
+  width: 100%;
+  height: 100vh;
+}
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pdf {
+  flex: 1;
+}
