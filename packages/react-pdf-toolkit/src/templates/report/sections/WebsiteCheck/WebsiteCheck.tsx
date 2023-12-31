@@ -54,8 +54,8 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
                   </View>
                   <Section.Blocks.Block>
                     <Section.Blocks.Block.Label text="Line of business risk summary" />
-                    <View style={tw('overflow-hidden max-w-[400px] pr-10')}>
-                      <Text style={tw('text-sm')}>{lineOfBusiness.summary}</Text>
+                    <View style={tw('overflow-hidden w-[300px]')}>
+                      <Text style={tw('text-xs')}>{lineOfBusiness.summary}</Text>
                     </View>
                   </Section.Blocks.Block>
                 </View>
@@ -72,8 +72,8 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
                   </View>
                   <Section.Blocks.Block>
                     <Section.Blocks.Block.Label text="Reputation risk summary" />
-                    <View style={tw('overflow-hidden max-w-[400px] pr-10')}>
-                      <Text style={tw('text-sm')}>{reputation.summary}</Text>
+                    <View style={tw('overflow-hidden w-[300px] pr-10')}>
+                      <Text style={tw('text-xs')}>{reputation.summary}</Text>
                     </View>
                   </Section.Blocks.Block>
                 </View>
@@ -90,8 +90,8 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
                   </View>
                   <Section.Blocks.Block>
                     <Section.Blocks.Block.Label text="Traffic risk summary" />
-                    <View style={tw('overflow-hidden max-w-[400px] pr-10')}>
-                      <Text style={tw('text-sm')}>{traffic.summary}</Text>
+                    <View style={tw('overflow-hidden w-[300px] pr-10')}>
+                      <Text style={tw('text-xs')}>{traffic.summary}</Text>
                     </View>
                   </Section.Blocks.Block>
                 </View>
@@ -108,8 +108,8 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
                   </View>
                   <Section.Blocks.Block>
                     <Section.Blocks.Block.Label text="Pricing risk summary" />
-                    <View style={tw('overflow-hidden max-w-[400px] pr-10')}>
-                      <Text style={tw('text-sm')}>{pricing.summary}</Text>
+                    <View style={tw('overflow-hidden w-[300px] pr-10')}>
+                      <Text style={tw('text-xs')}>{pricing.summary}</Text>
                     </View>
                   </Section.Blocks.Block>
                 </View>

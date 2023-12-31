@@ -32,7 +32,7 @@ export const Badge = ({ text, variant, rounded, styles = [] }: BadgeProps) => {
         ...styles,
       ])}
     >
-      <Text style={tw('font-semibold text-sm leading-5')}>{text}</Text>
+      <Text style={tw('font-semibold text-xs leading-5')}>{text}</Text>
     </View>
   );
 };

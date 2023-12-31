@@ -9,6 +9,6 @@ export interface LabelProps extends BaseComponentProps {
 
 export const Label = ({ text, styles = [] }: LabelProps) => {
   return (
-    <Text style={mergeStyles([tw('text-sm font-inter font-semibold'), ...styles])}>{text}</Text>
+    <Text style={mergeStyles([tw('text-xs font-inter font-semibold'), ...styles])}>{text}</Text>
   );
 };

@@ -37,7 +37,7 @@ export const EcosystemChecks: FunctionComponent<EcosystemChecksProps> = ({ data 
         {checkCreatedAt && (
           <Section.Blocks.Block>
             <Section.Blocks.Block.Label text="Check Created at" />
-            <View style={tw('flex flex-row items-center text-xs h-[25px]')}>
+            <View style={tw('flex flex-row items-center text-[8px] h-[25px]')}>
               <Text>{checkCreatedAt}</Text>
             </View>
           </Section.Blocks.Block>
@@ -52,26 +52,26 @@ export const EcosystemChecks: FunctionComponent<EcosystemChecksProps> = ({ data 
       {websites && !!websites.length && (
         <View style={tw('flex flex-col gap-4')}>
           <View style={tw('flex flex-row gap-4 flex-nowrap')}>
-            <Text style={tw('w-[20%] text-sm font-bold')}>Domain</Text>
-            <Text style={tw('w-[20%] text-sm font-bold')}>Violation</Text>
-            <Text style={tw('w-[20%] text-sm font-bold')}>Related node type</Text>
-            <Text style={tw('w-[20%] text-sm font-bold')}>Related node</Text>
-            <Text style={tw('w-[20%] text-sm font-bold')}>TL Risk Score</Text>
+            <Text style={tw('w-[20%] text-[8px] font-bold')}>Domain</Text>
+            {/* <Text style={tw('w-[25%] text-[8px] font-bold')}>Violation</Text> */}
+            <Text style={tw('w-[35%] text-[8px] font-bold')}>Related node type</Text>
+            <Text style={tw('w-[20%] text-[8px] font-bold')}>Related node</Text>
+            <Text style={tw('w-[20%] text-[8px] font-bold')}>TL Risk Score</Text>
           </View>
           {websites.map(website => {
-            const { url, violations, relatedNode, relatedNodeType, tlRiskScore } = website;
+            const { url, relatedNode, relatedNodeType, tlRiskScore } = website;
 
             return (
               <View style={tw('flex flex-row gap-4 flex-nowrap')} key={`website-row-${url}`}>
-                <Text style={tw('w-[20%] text-sm')}>
+                <Text style={tw('w-[20%] text-[8px]')}>
                   <Link href={url} />
                 </Text>
-                <Text style={tw('w-[20%] text-xs')}>
+                {/* <Text style={tw('w-[25%] text-[8px]')}>
                   {violations.map(violation => violation.type).join(',')}
-                </Text>
-                <Text style={tw('w-[20%] text-sm')}>{relatedNodeType}</Text>
-                <Text style={tw('w-[20%] text-sm')}>{relatedNode}</Text>
-                <Text style={tw('w-[20%] text-sm')}>
+                </Text> */}
+                <Text style={tw('w-[35%] text-[8px]')}>{relatedNodeType}</Text>
+                <Text style={tw('w-[20%] text-[8px]')}>{relatedNode}</Text>
+                <Text style={tw('w-[20%] text-[8px]')}>
                   <Badge variant={'success'} text={String(tlRiskScore)} />
                 </Text>
               </View>

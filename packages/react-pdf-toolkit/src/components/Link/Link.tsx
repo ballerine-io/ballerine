@@ -10,7 +10,7 @@ export interface LinkProps extends BaseComponentProps {
 export const Link = ({ href, styles = [] }: LinkProps) => {
   return (
     <LinkPDF
-      style={mergeStyles([tw('text-xs text-[#14203D] flex flex-row items-center'), ...styles])}
+      style={mergeStyles([tw('text-[8px] text-[#14203D] flex flex-row items-center'), ...styles])}
       src={href}
     >
       {href}

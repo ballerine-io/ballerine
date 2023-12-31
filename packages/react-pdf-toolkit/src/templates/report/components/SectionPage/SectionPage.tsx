@@ -8,5 +8,9 @@ export interface SectionPageProps {
 }
 
 export const SectionPage: FunctionComponent<SectionPageProps> = ({ children }) => {
-  return <Page style={tw('p-7 font-inter flex flex-col gap-8')}>{children}</Page>;
+  return (
+    <Page size={'A4'} style={tw('p-7 font-inter flex flex-col gap-8')}>
+      {children}
+    </Page>
+  );
 };

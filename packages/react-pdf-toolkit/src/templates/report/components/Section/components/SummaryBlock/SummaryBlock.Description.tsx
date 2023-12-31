@@ -8,5 +8,5 @@ export interface DescriptionProps extends BaseComponentProps {
 }
 
 export const Description = ({ text, styles = [] }: DescriptionProps) => {
-  return <Text style={mergeStyles([tw('font-inter text-sm leading-6'), ...styles])}>{text}</Text>;
+  return <Text style={mergeStyles([tw('font-inter text-xs leading-6'), ...styles])}>{text}</Text>;
 };

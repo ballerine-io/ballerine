@@ -9,7 +9,7 @@ export interface TitleProps extends BaseComponentProps {
 
 export const Title = ({ text, styles = [] }: TitleProps) => {
   return (
-    <Text style={mergeStyles([tw('font-inter font-bold text-sm leading-none'), ...styles])}>
+    <Text style={mergeStyles([tw('font-inter font-bold text-xs leading-none'), ...styles])}>
       {text}
     </Text>
   );

@@ -13,7 +13,7 @@ interface SectionProps {
 export const Section = ({ children, title }: SectionProps) => {
   return (
     <View style={tw('flex flex-col p-8 border border-slate-100 rounded-[6px] shadow-lg w-full')}>
-      <Text style={tw('text-2xl font-semibold leading-none mb-8')}>{title}</Text>
+      <Text style={tw('text-xl font-semibold leading-none mb-8')}>{title}</Text>
       <View style={tw('gap-8')}>{children}</View>
     </View>
   );
