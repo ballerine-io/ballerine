@@ -9,7 +9,7 @@ import { Document } from '@react-pdf/renderer';
 export const ReportTemplate = ({ report }: { report: IReport }) => (
   <Document pageLayout="singlePage">
     <SectionPage>
-      <Header title={`Veaiio.com TL Report`} status="published" />
+      <Header title={`${report.meta.companyName || ''} TL Report`} status="published" />
       {report.summary && <SummarySection data={report.summary} />}
     </SectionPage>
     <SectionPage>

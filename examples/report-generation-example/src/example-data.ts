@@ -1,6 +1,6 @@
-import { IReport } from '@/templates/report/schema';
+import { IReport } from '@ballerine/react-pdf-toolkit';
 
-export const reportData: IReport = {
+export const exampleData: IReport = {
   status: 'Published',
   summary: {
     generalRiskLevel: 'High Risk',

@@ -4,15 +4,15 @@ import {
   PDFViewer,
   ReportTemplate,
   registerFont,
-  reportData,
 } from '@ballerine/react-pdf-toolkit';
 import { useCallback, useMemo } from 'react';
 import './App.css';
+import { exampleData } from './example-data';
 
 registerFont(Font);
 
 export default function App() {
-  const report = useMemo(() => <ReportTemplate report={reportData} />, []);
+  const report = useMemo(() => <ReportTemplate report={exampleData} />, []);
 
   const handleDownloadFromServer = useCallback(() => {
     fetch(`${import.meta.env.VITE_API_URL}/reports`, {
