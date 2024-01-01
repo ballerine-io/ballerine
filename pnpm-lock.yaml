@@ -2645,7 +2645,7 @@ importers:
         specifier: ^1.0.4
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.0.3
+        specifier: ^1.0.4
         version: link:../../packages/eslint-config
       eslint:
         specifier: ^8.46.0
