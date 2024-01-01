@@ -44,7 +44,7 @@ export class UserCreateDto {
   })
   @IsArray()
   @IsString({ each: true })
-  projectIds!: Array<string>;
+  projectIds!: string[];
   // @ApiProperty({
   //   required: false,
   //   type: () => WorkflowCreateNestedManyWithoutUsersInput,

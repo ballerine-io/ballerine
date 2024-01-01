@@ -26,7 +26,7 @@ async function __getTables(prisma: PrismaClient): Promise<string[]> {
   return results.map(result => result.tablename);
 }
 
-const __removeAllTableContent = async (prisma: PrismaClient, tableNames: Array<string>) => {
+const __removeAllTableContent = async (prisma: PrismaClient, tableNames: string[]) => {
   for (const table of tableNames) {
     await prisma.$executeRawUnsafe(`DELETE FROM ${TEST_DATABASE_SCHEMA_NAME}."${table}" CASCADE;`);
   }

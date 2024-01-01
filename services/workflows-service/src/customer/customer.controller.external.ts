@@ -44,7 +44,7 @@ export class CustomerControllerExternal {
         customerStatus: true,
         projects: true,
       },
-    })) as Customer & { projects: { id: string }[] };
+    })) as Customer & { projects: Array<{ id: string }> };
 
     if (projectName == 'demo') {
       await createDemoMockData({

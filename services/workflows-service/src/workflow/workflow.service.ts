@@ -407,7 +407,7 @@ export class WorkflowService {
         size: number;
       };
       filters?: {
-        assigneeId?: (string | null)[];
+        assigneeId?: Array<string | null>;
         status?: WorkflowRuntimeDataStatus[];
       };
     },
@@ -2077,7 +2077,7 @@ export class WorkflowService {
           workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
 
         const childrenOfSameDefinition = // @ts-ignore - error from Prisma types fix
-          (parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>)?.filter(
+          (parentWorkflowRuntime.childWorkflowsRuntimeData as WorkflowRuntimeData[])?.filter(
             childWorkflow =>
               childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
           );

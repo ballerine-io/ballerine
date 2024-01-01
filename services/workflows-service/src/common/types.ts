@@ -3,4 +3,4 @@ import { DefaultContextSchema } from '@ballerine/common';
 export type TDocumentWithoutPageType = Omit<DefaultContextSchema['documents'][number], 'pages'> & {
   pages: Array<Omit<DefaultContextSchema['documents'][number]['pages'][number], 'type'>>;
 };
-export type TDocumentsWithoutPageType = Array<TDocumentWithoutPageType>;
+export type TDocumentsWithoutPageType = TDocumentWithoutPageType[];

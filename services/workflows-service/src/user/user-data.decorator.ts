@@ -4,13 +4,11 @@ import { User } from '@prisma/client';
 /**
  * Access the user data from the request object i.e `req.user`.
  */
-function userFactory(ctx: ExecutionContext): User & { projectIds: Array<string> } {
+function userFactory(ctx: ExecutionContext): User & { projectIds: string[] } {
   const contextType = ctx.getType();
   if (contextType === 'http') {
     // do something that is only important in the context of regular HTTP requests (REST)
-    const { user } = ctx
-      .switchToHttp()
-      .getRequest<{ user: User & { projectIds: Array<string> } }>();
+    const { user } = ctx.switchToHttp().getRequest<{ user: User & { projectIds: string[] } }>();
     return user;
   } else if (contextType === 'rpc') {
     // do something that is only important in the context of Microservice requests

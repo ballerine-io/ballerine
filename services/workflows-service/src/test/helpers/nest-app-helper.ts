@@ -52,7 +52,7 @@ export const fetchServiceFromModule = async <T>(
   dependencies: Provider[] = [],
   modules:
     | Array<Type<any> | DynamicModule | Promise<DynamicModule> | ForwardReference>
-    | Type<unknown>[] = [],
+    | Array<Type<unknown>> = [],
 ) => {
   const moduleRef = await Test.createTestingModule({
     providers: [service, ...dependencies],
@@ -65,8 +65,8 @@ export const fetchServiceFromModule = async <T>(
 export const initiateNestApp = async (
   app: INestApplication,
   providers: Provider[] = [],
-  controllers: Array<Type>,
-  modules: Array<Type>,
+  controllers: Type[],
+  modules: Type[],
   middlewares: Array<NestMiddleware['use']> = [],
 ) => {
   const moduleRef = await Test.createTestingModule({

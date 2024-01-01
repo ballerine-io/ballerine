@@ -46,7 +46,7 @@ export class WorkflowDefinitionService {
       await this.filterService.list({ where: { projectId: projectId } }, [projectId])
     ).filter(filter => {
       const { where: whereQuery } = filter.query as {
-        where: { workflowDefinitionId: string | { in: Array<string> } };
+        where: { workflowDefinitionId: string | { in: string[] } };
       };
       if (typeof whereQuery.workflowDefinitionId === 'string') {
         return whereQuery.workflowDefinitionId === id;

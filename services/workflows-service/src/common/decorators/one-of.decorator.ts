@@ -1,6 +1,6 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
 
-export function oneOf(list: (string | number)[], options?: ValidationOptions) {
+export function oneOf(list: Array<string | number>, options?: ValidationOptions) {
   return function (obj: object, paramName: string) {
     registerDecorator({
       name: 'oneOf',

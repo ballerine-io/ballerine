@@ -12,7 +12,7 @@ class PageDto {
 
 class FilterDto {
   @ApiProperty()
-  assigneeId?: (string | null)[];
+  assigneeId?: Array<string | null>;
 
   @ApiProperty()
   status?: WorkflowRuntimeDataStatus[];

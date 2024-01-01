@@ -27,7 +27,7 @@ describe('UnknownArgumentParser', () => {
     });
 
     describe('when working with multiple errors in message', () => {
-      let errorParams: { argumentName: string; failedAtPath: string; type: string }[];
+      let errorParams: Array<{ argumentName: string; failedAtPath: string; type: string }>;
       let expectResult: Record<string, string>;
 
       beforeAll(() => {
