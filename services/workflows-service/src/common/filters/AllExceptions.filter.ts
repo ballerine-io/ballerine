@@ -1,5 +1,4 @@
 import { env } from '@/env';
-import { isObject } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { inspect } from 'util';
 import { ArgumentsHost, Catch, HttpException, InternalServerErrorException } from '@nestjs/common';
@@ -54,11 +53,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   }
 
   isHttpException(error: unknown): error is HttpException {
-    return (
-      isObject(error) &&
-      'status' in error &&
-      typeof (error as HttpException).getStatus() === 'number'
-    );
+    return error instanceof HttpException;
   }
 
   private _logErrorIfRelevant(status: number) {
