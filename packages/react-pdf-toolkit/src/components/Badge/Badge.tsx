@@ -9,8 +9,9 @@ export const badgeCva = cva('badge', {
     variant: {
       primary: 'bg-[#007AFF33] text-[#007AFF]',
       error: 'bg-[#DF222233] text-[#DF2222]',
-      warning: 'bg-[#FFB35A33] text-[#FFB35A]',
-      success: 'bg-[#00BD5933] text-[#00BD59]',
+      warning: 'bg-[#FF971E33] text-[#FF971E]',
+      success: 'bg-[#34A85333] text-[#34A853]',
+      moderate: 'bg-[#FFC93133] text-[#FFC931]',
     },
     rounded: {
       primary: 'rounded-[6px]',
