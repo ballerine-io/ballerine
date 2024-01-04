@@ -106,6 +106,14 @@ jobs:
           exit-code: 1
           vuln-type: 'os,library'
           severity: 'CRITICAL'
+      
+      - name: Checkout cloud-infra-config repository
+        uses: actions/checkout@v3
+        with:
+          repository: ballerine-io/cloud-infra-config
+          token: ${{ secrets.GIT_TOKEN }}
+          ref: iamops/blue-green
+          fetch-depth: 0
 
       - name: Update workdlow-service image version for non Prod in the HelmChart
         if: github.ref != 'refs/heads/prod'
@@ -115,7 +123,7 @@ jobs:
           branch: iamops/blue-green
           commitChange: true
           message: 'Update wf-service image Version to ${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
               "kubernetes/helm/wf-service/custom-values.yaml": {
@@ -131,7 +139,7 @@ jobs:
           branch: iamops/blue-green
           commitChange: true
           message: 'Update wf-service image Version to ${{ steps.get_version.outputs.version }}-prod'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
               "kubernetes/helm/wf-service/custom-values.yaml": {
