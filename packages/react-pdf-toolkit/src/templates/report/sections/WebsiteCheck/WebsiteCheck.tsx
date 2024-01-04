@@ -36,10 +36,7 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
               <Section.Indicators>
                 <Section.Indicators.Title text="Indicators" />
                 {indicators.map((indicator, index) => (
-                  <Section.Indicators.Indicator
-                    text={indicator.indicator}
-                    key={`indicator-${index}`}
-                  />
+                  <Section.Indicators.Indicator text={indicator} key={`indicator-${index}`} />
                 ))}
               </Section.Indicators>
             )}
