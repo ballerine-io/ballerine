@@ -1,4 +1,5 @@
 import { StateTag } from '@ballerine/common';
+import { faker } from '@faker-js/faker';
 
 export const workflow = {
   id: 'clkb7ougv000wy8fhwnechfg3',
@@ -647,6 +648,116 @@ export const workflow = {
             kyc_session_1: {
               type: 'kyc',
               result: {
+                aml: {
+                  totalHits: 1,
+                  createdAt: faker.date.recent().toISOString(),
+                  hits: [
+                    {
+                      aka: ['John Doe', 'John Smith'],
+                      dateOfBirth: '1992-04-13',
+                      countries: ['US', 'GB'],
+                      matchTypes: ['year_of_birth', 'full_name', 'last_name'],
+                      matchedName: `John Doe`,
+                      listingsRelatedToMatch: {
+                        warnings: [
+                          {
+                            sourceUrl:
+                              'http://www.treasury.gov/resource-center/sanctions/SDN-List/Pages/default.aspx',
+                            sourceName: 'FBI Most Wanted',
+                            date: faker.date.recent().toISOString(),
+                          },
+                          {
+                            sourceUrl:
+                              'http://www.treasury.gov/resource-center/sanctions/SDN-List/Pages/default.aspx',
+                            sourceName: 'FBI Most Wanted',
+                            date: faker.date.recent().toISOString(),
+                          },
+                        ],
+                        sanctions: [
+                          {
+                            sourceUrl:
+                              'http://www.treasury.gov/resource-center/sanctions/SDN-List/Pages/default.aspx',
+                            sourceName: 'OFAC SDN List',
+                            date: faker.date.recent().toISOString(),
+                          },
+                          {
+                            sourceUrl:
+                              'http://www.treasury.gov/resource-center/sanctions/SDN-List/Pages/default.aspx',
+                            sourceName: 'OFAC SDN List',
+                            date: faker.date.recent().toISOString(),
+                          },
+                        ],
+                        pep: [
+                          {
+                            sourceName: 'United Kingdom Insolvency Service Disqualified Directors',
+                            sourceUrl: 'https://www.navy.mil/Leadership/Biographies',
+                            date: '2020-01-01',
+                          },
+                        ],
+                        adverseMedia: [
+                          {
+                            sourceName: "SNA's Old Salt Award Passed to Adm. Davidson",
+                            sourceUrl:
+                              'https://www.marinelink.com/amp/news/snas-old-salt-award-passed-adm-davidson-443093',
+                            date: '2021-03-09',
+                          },
+                        ],
+                      },
+                    },
+                    {
+                      aka: ['John Doe', 'John Smith'],
+                      dateOfBirth: '1992-04-13',
+                      countries: ['US', 'GB'],
+                      matchTypes: ['year_of_birth', 'full_name', 'last_name'],
+                      matchedName: `John Doe`,
+                      listingsRelatedToMatch: {
+                        warnings: [
+                          {
+                            sourceUrl:
+                              'http://www.treasury.gov/resource-center/sanctions/SDN-List/Pages/default.aspx',
+                            sourceName: 'FBI Most Wanted',
+                            date: faker.date.recent().toISOString(),
+                          },
+                          {
+                            sourceUrl:
+                              'http://www.treasury.gov/resource-center/sanctions/SDN-List/Pages/default.aspx',
+                            sourceName: 'FBI Most Wanted',
+                            date: faker.date.recent().toISOString(),
+                          },
+                        ],
+                        sanctions: [
+                          {
+                            sourceUrl:
+                              'http://www.treasury.gov/resource-center/sanctions/SDN-List/Pages/default.aspx',
+                            sourceName: 'OFAC SDN List',
+                            date: faker.date.recent().toISOString(),
+                          },
+                          {
+                            sourceUrl:
+                              'http://www.treasury.gov/resource-center/sanctions/SDN-List/Pages/default.aspx',
+                            sourceName: 'OFAC SDN List',
+                            date: faker.date.recent().toISOString(),
+                          },
+                        ],
+                        pep: [
+                          {
+                            sourceName: 'United Kingdom Insolvency Service Disqualified Directors',
+                            sourceUrl: 'https://www.navy.mil/Leadership/Biographies',
+                            date: '2020-01-01',
+                          },
+                        ],
+                        adverseMedia: [
+                          {
+                            sourceName: "SNA's Old Salt Award Passed to Adm. Davidson",
+                            sourceUrl:
+                              'https://www.marinelink.com/amp/news/snas-old-salt-award-passed-adm-davidson-443093',
+                            date: '2021-03-09',
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
                 entity: {
                   data: {
                     lastName: 'BLOKH',
