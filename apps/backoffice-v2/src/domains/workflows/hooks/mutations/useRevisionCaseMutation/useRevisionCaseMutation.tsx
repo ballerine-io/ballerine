@@ -6,16 +6,14 @@ import { fetchWorkflowEvent } from '../../../fetchers';
 import { workflowsQueryKeys } from '../../../query-keys';
 
 export const useRevisionCaseMutation = ({
-  workflowId,
   onSelectNextEntity,
 }: {
-  workflowId: string;
   onSelectNextEntity?: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () =>
+    mutationFn: ({ workflowId }: { workflowId: string }) =>
       fetchWorkflowEvent({
         workflowId,
         body: {

@@ -54,6 +54,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
     workflowLevelResolution,
     isReuploadResetable,
     handleDialogClose,
+    DialogDescription,
   } = useCallToActionLegacyLogic({
     contextUpdateMethod,
     revisionReasons,
@@ -63,8 +64,8 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
     workflow,
     onReuploadNeeded,
     isLoadingReuploadNeeded,
+    dialog,
   });
-  const DialogDescription = dialog?.reupload?.Description;
 
   if (value?.text === 'Reject') {
     return (

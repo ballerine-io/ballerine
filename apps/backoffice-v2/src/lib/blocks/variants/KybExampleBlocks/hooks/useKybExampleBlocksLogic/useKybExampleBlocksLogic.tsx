@@ -104,16 +104,8 @@ export const useKybExampleBlocksLogic = () => {
           reason,
           contextUpdateMethod: 'base',
         });
-        window.open(
-          `${workflow?.context?.metadata?.collectionFlowUrl}/?token=${workflow?.context?.metadata?.token}`,
-          '_blank',
-        );
       },
-    [
-      mutateRevisionTaskById,
-      workflow?.context?.metadata?.collectionFlowUrl,
-      workflow?.context?.metadata?.token,
-    ],
+    [mutateRevisionTaskById],
   );
   const onReuploadNeededDirectors = useCallback(
     ({

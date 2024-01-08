@@ -78,9 +78,11 @@ export type TCallToActionLegacyCell = {
 
 export type TCallToActionCell = {
   type: 'callToAction';
-  text: string;
-  onClick: GenericFunction | GenericAsyncFunction;
-  props?: ComponentProps<typeof MotionButton>;
+  value: {
+    text: string;
+    onClick: GenericFunction | GenericAsyncFunction;
+    props?: ComponentProps<typeof MotionButton>;
+  };
 };
 
 export type TDirectorsCallToActionCell = {
@@ -112,7 +114,7 @@ export type TDetailsCell = {
   value: {
     id: string;
     title: string;
-    subtitle: string;
+    subtitle?: string;
     data: Array<{
       title: string;
       isEditable: boolean;
