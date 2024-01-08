@@ -16,7 +16,6 @@ import { BadgeCell } from '@/lib/blocks/components/BadgeCell/BadgeCell';
 import { Container } from '@/lib/blocks/components/Container/Container';
 import { CallToActionLegacy } from '@/lib/blocks/components/CallToActionLegacy/CallToActionLegacy';
 import { CallToAction } from '@/lib/blocks/components/CallToAction/CallToAction';
-import { DirectorsCallToAction } from '@/lib/blocks/components/DirectorsCallToAction';
 import { TableCell } from '@/lib/blocks/components/TableCell/TableCell';
 
 export const createBlocksTyped = () => createBlocks<TCell>();
@@ -37,7 +36,6 @@ export const cells: CellsMap = {
   container: Container,
   callToActionLegacy: CallToActionLegacy,
   callToAction: CallToAction,
-  directorsCallToAction: DirectorsCallToAction,
   faceComparison: FaceComparison,
   details: Details,
   nestedDetails: NestedDetails,

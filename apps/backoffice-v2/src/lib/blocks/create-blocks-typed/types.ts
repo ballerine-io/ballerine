@@ -60,7 +60,7 @@ export type TBadgeCell = {
 export type TCallToActionLegacyCell = {
   type: 'callToActionLegacy';
   value: {
-    text: string;
+    text: string | React.ReactNode;
     props: {
       id: string;
       workflow: TWorkflowById;

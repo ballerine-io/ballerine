@@ -13,7 +13,6 @@ import { MotionButton } from '../../../../common/components/molecules/MotionButt
 import { Dialog } from '../../../../common/components/molecules/Dialog/Dialog';
 import { capitalize } from '../../../../common/utils/capitalize/capitalize';
 import { ctw } from '../../../../common/utils/ctw/ctw';
-import { DocumentPicker } from '../DirectorsCallToAction/components/DocumentPicker';
 import { ICallToActionLegacyProps } from './interfaces';
 import { useCallToActionLegacyLogic } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 
@@ -26,7 +25,6 @@ const motionProps: ComponentProps<typeof MotionButton> = {
 
 export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = ({ value }) => {
   const {
-    documentSelection,
     contextUpdateMethod,
     revisionReasons,
     rejectionReasons,
@@ -55,14 +53,12 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
     noReasons,
     workflowLevelResolution,
     isReuploadResetable,
-    documentPickerProps,
     handleDialogClose,
     DialogDescription,
   } = useCallToActionLegacyLogic({
     contextUpdateMethod,
     revisionReasons,
     rejectionReasons,
-    documentSelection,
     onDialogClose,
     onReuploadReset,
     workflow,
@@ -203,7 +199,6 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
         description={<DialogDescription />}
         content={
           <>
-            {documentSelection && <DocumentPicker {...documentPickerProps} value={id} />}
             {!noReasons && (
               <div>
                 <label className={`mb-2 block font-bold`} htmlFor={`reason`}>
