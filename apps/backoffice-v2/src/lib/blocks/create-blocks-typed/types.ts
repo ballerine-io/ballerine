@@ -59,18 +59,20 @@ export type TBadgeCell = {
 
 export type TCallToActionLegacyCell = {
   type: 'callToActionLegacy';
-  text: string;
-  props: {
-    id: string;
-    workflow: TWorkflowById;
-    disabled: boolean;
-    decision: 'reject' | 'approve' | 'revision' | 'revised';
-    documentSelection?: ICallToActionDocumentSelection;
-    contextUpdateMethod?: 'base' | 'director';
-    revisionReasons?: string[];
-    rejectionReasons?: string[];
-    onReuploadReset?: () => void;
-    onDialogClose?: () => void;
+  value: {
+    text: string | React.ReactNode;
+    props: {
+      id: string;
+      workflow: TWorkflowById;
+      disabled: boolean;
+      decision: 'reject' | 'approve' | 'revision' | 'revised';
+      documentSelection?: ICallToActionDocumentSelection;
+      contextUpdateMethod?: 'base' | 'director';
+      revisionReasons?: string[];
+      rejectionReasons?: string[];
+      onReuploadReset?: () => void;
+      onDialogClose?: () => void;
+    };
   };
 };
 

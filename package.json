@@ -44,7 +44,7 @@
     "playwright:install": "nx run-many --target=playwright:install",
     "dev": "nx run-many --target=dev --projects=@ballerine/workflows-service,@ballerine/backoffice-v2",
     "start": "nx run-many --target=start --projects=@ballerine/web-ui-sdk",
-    "build": "nx run-many --target=build --projects=@ballerine/workflow-browser-sdk,@ballerine/workflow-core,@ballerine/workflow-node-sdk,@ballerine/rules-engine-lib,@ballerine/common,@ballerine/workflows-service,@ballerine/websocket-service,@ballerine/ui,@ballerine/blocks",
+    "build": "nx run-many --target=build --projects=@ballerine/workflow-browser-sdk,@ballerine/workflow-core,@ballerine/workflow-node-sdk,@ballerine/rules-engine-lib,@ballerine/common,@ballerine/workflows-service,@ballerine/websocket-service,@ballerine/ui,@ballerine/blocks,@ballerine/react-pdf-toolkit",
     "web-ui-sdk:dev": "nx run @ballerine/web-ui-sdk:dev",
     "web-ui-sdk:start": "nx run @ballerine/web-ui-sdk:start",
     "workflows-service:start": "nx run @ballerine/workflows-service:start",
