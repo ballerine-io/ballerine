@@ -1,5 +1,5 @@
 import { CommonWorkflowEvent } from '@ballerine/common';
-import { useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useApproveTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
@@ -22,6 +22,11 @@ export interface IUseCallToActionLogicParams {
     reason?: string;
   }) => () => void;
   isLoadingReuploadNeeded: boolean;
+  dialog: {
+    reupload: {
+      Description: FunctionComponent;
+    };
+  };
 }
 
 export const getPostDecisionEventName = (workflow: TWorkflowById) => {
@@ -41,6 +46,7 @@ export const useCallToActionLegacyLogic = ({
   workflow,
   onReuploadNeeded,
   isLoadingReuploadNeeded,
+  dialog,
 }: IUseCallToActionLogicParams) => {
   const postUpdateEventName = getPostDecisionEventName(workflow);
 
@@ -155,6 +161,7 @@ export const useCallToActionLegacyLogic = ({
     },
     [onDialogClose],
   );
+  const DialogDescription = dialog?.reupload?.Description;
 
   return {
     isLoadingTaskDecisionById,
@@ -171,5 +178,6 @@ export const useCallToActionLegacyLogic = ({
     onMutateTaskDecisionById,
     workflowLevelResolution,
     isReuploadResetable,
+    DialogDescription,
   };
 };

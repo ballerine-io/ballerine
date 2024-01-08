@@ -14,8 +14,7 @@ import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilte
 import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
 import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
 import { tagToBadgeData } from '../../consts';
-import { AnyObject } from '@ballerine/ui';
-import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
+import { usePendingRevisionEvents } from '@/pages/Entity/components/Case/hooks/usePendingRevisionEvents/usePendingRevisionEvents';
 
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
@@ -28,7 +27,6 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     },
   );
   const { mutate: mutateRevisionCase, isLoading: isLoadingRevisionCase } = useRevisionCaseMutation({
-    workflowId: workflowId,
     onSelectNextEntity,
   });
   const { mutate: mutateRejectEntity, isLoading: isLoadingRejectEntity } = useRejectEntityMutation({
@@ -57,7 +55,10 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
 
   // Avoid passing the onClick event to mutate
   const onMutateApproveEntity = useCallback(() => mutateApproveEntity(), [mutateApproveEntity]);
-  const onMutateRevisionCase = useCallback(() => mutateRevisionCase(), [mutateRevisionCase]);
+  const { onMutateRevisionCase, pendingWorkflowEvents } = usePendingRevisionEvents(
+    mutateRevisionCase,
+    workflow,
+  );
   const onMutateRejectEntity = useCallback(() => mutateRejectEntity(), [mutateRejectEntity]);
   const onMutateAssignWorkflow = useCallback(
     (assigneeId: string, isAssignedToMe: boolean) =>
@@ -73,24 +74,11 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   }, [workflow]) as keyof typeof tagToBadgeData;
 
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
-  const allDocuments = useMemo(() => {
-    const directorDocuments = selectDirectorsDocuments(workflow) || [];
-    const parentDocuments = (workflow?.context?.documents || []) as AnyObject[];
-    const childDocuments =
-      workflow?.childWorkflows
-        ?.filter(childWorkflow => childWorkflow?.context?.entity?.type === 'business')
-        ?.flatMap(childWorkflow => childWorkflow?.context?.documents) || [];
-
-    const result = [...directorDocuments, ...parentDocuments, ...childDocuments] as AnyObject[];
-
-    return result;
-  }, [workflow]);
 
   const documentsToReviseCount = useMemo(
-    () => allDocuments.filter(document => document?.decision?.status === 'revision')?.length,
-    [allDocuments],
+    () => pendingWorkflowEvents?.filter(pendingEvent => !!pendingEvent.eventName)?.length,
+    [pendingWorkflowEvents],
   );
-
   const assignedUser = workflow?.assignee
     ? {
         id: workflow?.assignee?.id,

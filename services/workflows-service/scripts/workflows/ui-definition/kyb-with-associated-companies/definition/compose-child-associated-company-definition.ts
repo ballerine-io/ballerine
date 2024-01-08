@@ -58,6 +58,7 @@ export const composeChildAssociatedCompanyDefinition = ({
     },
     config: {
       createCollectionFlowToken: true,
+      workflowLevelResolution: true,
     },
     projectId: projectId,
     isPublic: false,

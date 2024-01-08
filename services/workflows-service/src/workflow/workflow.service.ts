@@ -1609,6 +1609,7 @@ export class WorkflowService {
               context: {
                 ...workflowRuntimeData.context,
                 metadata: {
+                  customerNormalizedName: customer.name,
                   customerName: customer.displayName,
                   token: workflowToken.token,
                   collectionFlowUrl: env.COLLECTION_FLOW_URL,
