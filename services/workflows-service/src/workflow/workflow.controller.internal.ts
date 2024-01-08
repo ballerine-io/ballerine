@@ -80,7 +80,8 @@ export class WorkflowControllerInternal {
   @UsePipes(new ZodValidationPipe(FindWorkflowsListSchema, 'query'))
   async listWorkflowRuntimeData(
     @ProjectIds() projectIds: TProjectIds,
-    @common.Query() { filterId, page, filter: filters, ...queryParams }: FindWorkflowsListDto,
+    @common.Query()
+    { filterId, page, search, filter: filters, ...queryParams }: FindWorkflowsListDto,
   ) {
     const filter = await this.filterService.getById(filterId, {}, projectIds);
 
@@ -95,6 +96,7 @@ export class WorkflowControllerInternal {
         orderBy,
         page,
         filters,
+        search,
       },
       projectIds,
     );

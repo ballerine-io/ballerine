@@ -1,5 +1,5 @@
 import { AnyZodObject, z } from 'zod';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useMemo } from 'react';
 import { IUseZodSearchParams } from './interfaces';
 import { defaultDeserializer } from './utils/default-deserializer';
@@ -9,17 +9,20 @@ export const useZodSearchParams = <TSchema extends AnyZodObject>(
   schema: TSchema,
   options: IUseZodSearchParams = {},
 ) => {
-  const [_searchParams, setSearchParams] = useSearchParams();
+  const { state } = useLocation();
+  const navigate = useNavigate();
   const { search, pathname } = useLocation();
-  const deserializer = options.deserializer ?? defaultDeserializer;
+
   const serializer = options.serializer ?? defaultSerializer;
-  const searchParamsAsObject = useMemo(() => deserializer(search), [deserializer, search]);
+  const deserializer = options.deserializer ?? defaultDeserializer;
+
+  const searchParamsAsObject = useMemo(() => deserializer?.(search), [deserializer, search]);
+
   const parsedSearchParams = useMemo(
     () => schema.parse(searchParamsAsObject),
     [schema, searchParamsAsObject],
   );
-  const navigate = useNavigate();
-  const { state } = useLocation();
+
   const onSetSearchParams = useCallback(
     (searchParams: Record<string, unknown>) => {
       navigate(
@@ -34,12 +37,12 @@ export const useZodSearchParams = <TSchema extends AnyZodObject>(
         },
       );
     },
-    [pathname, parsedSearchParams, setSearchParams],
+    [navigate, pathname, serializer, parsedSearchParams, state?.from],
   );
 
   useEffect(() => {
     onSetSearchParams(parsedSearchParams);
-  }, []);
+  }, [onSetSearchParams, parsedSearchParams]);
 
   return [parsedSearchParams as z.output<TSchema>, onSetSearchParams] as const;
 };

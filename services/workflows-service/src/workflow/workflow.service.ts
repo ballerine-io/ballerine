@@ -398,7 +398,9 @@ export class WorkflowService {
       orderBy,
       page,
       filters,
+      search,
     }: {
+      search?: string;
       args: Parameters<WorkflowRuntimeDataRepository['findMany']>[0];
       entityType: 'individuals' | 'businesses';
       orderBy: Parameters<typeof toPrismaOrderBy>[0];
@@ -431,6 +433,39 @@ export class WorkflowService {
       ),
       projectIds,
     );
+
+    const [orderByColumn, orderByDirection] = (orderBy || 'createdAt:desc').split(':');
+
+    /*
+     {
+        assigneeId: {
+          in: filters.assigneeId.filter((id): id is string => id !== null),
+        },
+      },
+      {
+        assigneeId: filters.assigneeId.includes(null) ? null : undefined,
+      },
+     */
+    const searchStatement = search ? `2=2` : '1=1';
+    const projectIdsStatement = projectIds
+      ? `"projectId" IN (${projectIds.map(projectId => `'${projectId}'`)})`
+      : '1=1';
+    const notNullStatement =
+      entityType === 'individuals' ? `"endUserId" IS NOT NULL` : `"businessId" IS NOT NULL`;
+    const assigneeStatement = filters?.assigneeId
+      ? `("assigneeId" IN (${filters.assigneeId
+          .filter((id): id is string => id !== null)
+          .map(assigneeId => `'${assigneeId}'`)}) ${
+          filters.assigneeId.includes(null) ? 'OR "assigneeId" IS NULL' : ''
+        })`
+      : '';
+    const statusStatement = filters?.status
+      ? `"status" IN (${filters.status.map(status => `'${status}'`)})`
+      : '1=1';
+    const orderByStatement = orderBy ? `ORDER BY "${orderByColumn}" ${orderByDirection}` : '';
+    const paginationStatement = `LIMIT ${page.size} OFFSET ${(page.number - 1) * page.size}`;
+
+    const newQuery = `SELECT * FROM "WorkflowRuntimeData" WHERE ${searchStatement} AND ${projectIdsStatement} AND ${notNullStatement} AND ${assigneeStatement} AND ${statusStatement} ${orderByStatement} ${paginationStatement}`;
 
     const totalWorkflowsCount = await this.workflowRuntimeDataRepository.count(
       {
@@ -543,7 +578,7 @@ export class WorkflowService {
       ),
     ]);
 
-    const result: ListRuntimeDataResult = {
+    return {
       results: this.workflowsRuntimeListItemsFactory(
         workflowsRuntime as unknown as WorkflowRuntimeListQueryResult[],
       ),
@@ -552,8 +587,6 @@ export class WorkflowService {
         total: workflowsRuntimeCount,
       },
     };
-
-    return result;
   }
 
   private _resolveOrderByParams(

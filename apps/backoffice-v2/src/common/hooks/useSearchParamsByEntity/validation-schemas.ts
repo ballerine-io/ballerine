@@ -10,29 +10,25 @@ export const SearchSchema = z.object({
   entity: z.string().catch(''),
 });
 
+const createFilterSchema = (authenticatedUserId: string) =>
+  z
+    .object({
+      assigneeId: z.array(z.string().nullable()).catch([authenticatedUserId, null]),
+      status: z.array(z.enum(CaseStatuses)).catch([CaseStatus.ACTIVE]),
+    })
+    .catch({
+      assigneeId: [authenticatedUserId, null],
+      status: [CaseStatus.ACTIVE],
+    });
+
 export const IndividualsSearchSchema = (authenticatedUserId: string) =>
   SearchSchema.extend({
     sortBy: z.enum(['firstName', 'lastName', 'email', 'createdAt']).catch('createdAt'),
-    filter: z
-      .object({
-        assigneeId: z.array(z.string().nullable()).catch([authenticatedUserId, null]),
-        status: z.array(z.enum(CaseStatuses)).catch([CaseStatus.ACTIVE]),
-      })
-      .catch({
-        assigneeId: [authenticatedUserId, null],
-        status: [CaseStatus.ACTIVE],
-      }),
+    filter: createFilterSchema(authenticatedUserId),
   });
+
 export const BusinessesSearchSchema = (authenticatedUserId: string) =>
   SearchSchema.extend({
     sortBy: z.enum(['createdAt', 'companyName']).catch('createdAt'),
-    filter: z
-      .object({
-        assigneeId: z.array(z.string().nullable()).catch([authenticatedUserId, null]),
-        status: z.array(z.enum(CaseStatuses)).catch([CaseStatus.ACTIVE]),
-      })
-      .catch({
-        assigneeId: [authenticatedUserId, null],
-        status: [CaseStatus.ACTIVE],
-      }),
+    filter: createFilterSchema(authenticatedUserId),
   });
