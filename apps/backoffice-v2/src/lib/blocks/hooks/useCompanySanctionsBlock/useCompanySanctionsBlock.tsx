@@ -40,7 +40,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                     columns: [
                       {
                         accessorKey: 'scanStatus',
-                        header: 'Scan status',
+                        header: 'Scan Status',
                         cell: props => {
                           const value = props.getValue();
                           const variant: ComponentProps<typeof Badge>['variant'] = 'success';
@@ -57,7 +57,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                       },
                       {
                         accessorKey: 'totalMatches',
-                        header: 'Total matches',
+                        header: 'Total Matches',
                         cell: props => {
                           const value = props.getValue();
                           const variant: ComponentProps<typeof Badge>['variant'] =
@@ -77,7 +77,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                       },
                       {
                         accessorKey: 'fullReport',
-                        header: 'Full report',
+                        header: 'Full Report',
                       },
                     ],
                     data: [
@@ -119,11 +119,11 @@ export const useCompanySanctionsBlock = companySanctions => {
                       columns: [
                         {
                           accessorKey: 'primaryName',
-                          header: 'Primary name',
+                          header: 'Primary Name',
                         },
                         {
                           accessorKey: 'lastReviewed',
-                          header: 'Last reviewed',
+                          header: 'Last Reviewed',
                         },
                       ],
                       data: [
@@ -214,7 +214,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                       columns: [
                         {
                           accessorKey: 'alternativeNames',
-                          header: 'Alternative names',
+                          header: 'Alternative Names',
                         },
                       ],
                       data: [
@@ -235,7 +235,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                       columns: [
                         {
                           accessorKey: 'officialList',
-                          header: 'Official lists',
+                          header: 'Official Lists',
                         },
                       ],
                       data: sanction?.officialLists?.map(({ description: officialList }) => ({
@@ -254,7 +254,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                       columns: [
                         {
                           accessorKey: 'furtherInformation',
-                          header: 'Further information',
+                          header: 'Further Information',
                         },
                       ],
                       data: sanction?.furtherInformation?.map(furtherInformation => ({
@@ -273,7 +273,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                       columns: [
                         {
                           accessorKey: 'linkedIndividual',
-                          header: 'Linked individual',
+                          header: 'Linked Individual',
                         },
                         {
                           accessorKey: 'description',
@@ -301,7 +301,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                       columns: [
                         {
                           accessorKey: 'country',
-                          header: 'Linked address',
+                          header: 'Linked Address',
                         },
                         {
                           accessorKey: 'city',
