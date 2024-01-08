@@ -32,6 +32,9 @@ export class FindWorkflowsListDto {
   limit!: number;
 
   @ApiProperty()
+  search?: string;
+
+  @ApiProperty()
   filter?: FilterDto;
 }
 
@@ -56,6 +59,7 @@ const validateOrderBy = (value: unknown, validColumns: readonly string[]) => {
 export const FindWorkflowsListSchema = z.object({
   filterId: z.string(),
   orderBy: z.string(),
+  search: z.string().optional(),
   page: z.object({
     number: z.coerce.number().int().positive(),
     size: z.coerce.number().int().positive(),
