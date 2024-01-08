@@ -12,7 +12,11 @@ export const calculatePendingWorkflowEvents = (workflow: TWorkflowById): Array<I
   ]
     .flat()
     .filter(
-      document => !!document.decision?.status && workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+      document =>
+        !!document.decision?.status &&
+        workflow?.tags?.some((tag: any) =>
+          [StateTag.MANUAL_REVIEW, StateTag.PENDING_PROCESS].includes(tag),
+        ),
     )
     .map(document => {
       return {
