@@ -436,17 +436,16 @@ export class WorkflowService {
 
     const [orderByColumn, orderByDirection] = (orderBy || 'createdAt:desc').split(':');
 
-    /*
-     {
-        assigneeId: {
-          in: filters.assigneeId.filter((id): id is string => id !== null),
-        },
-      },
-      {
-        assigneeId: filters.assigneeId.includes(null) ? null : undefined,
-      },
-     */
     const searchStatement = search ? `2=2` : '1=1';
+    const workflowStatement =
+      args?.where?.workflowDefinitionId &&
+      typeof args.where.workflowDefinitionId === 'object' &&
+      'in' in args.where.workflowDefinitionId &&
+      Array.isArray(args.where.workflowDefinitionId.in)
+        ? `"workflowDefinitionId" IN (${args.where.workflowDefinitionId.in.map(
+            workflowDefinitionId => `'${workflowDefinitionId}'`,
+          )})`
+        : `1=1`;
     const projectIdsStatement = projectIds
       ? `"projectId" IN (${projectIds.map(projectId => `'${projectId}'`)})`
       : '1=1';
@@ -465,7 +464,7 @@ export class WorkflowService {
     const orderByStatement = orderBy ? `ORDER BY "${orderByColumn}" ${orderByDirection}` : '';
     const paginationStatement = `LIMIT ${page.size} OFFSET ${(page.number - 1) * page.size}`;
 
-    const newQuery = `SELECT * FROM "WorkflowRuntimeData" WHERE ${searchStatement} AND ${projectIdsStatement} AND ${notNullStatement} AND ${assigneeStatement} AND ${statusStatement} ${orderByStatement} ${paginationStatement}`;
+    const newQuery = `SELECT * FROM "WorkflowRuntimeData" WHERE ${searchStatement} AND ${workflowStatement} AND ${projectIdsStatement} AND ${notNullStatement} AND ${assigneeStatement} AND ${statusStatement} ${orderByStatement} ${paginationStatement}`;
 
     const totalWorkflowsCount = await this.workflowRuntimeDataRepository.count(
       {
