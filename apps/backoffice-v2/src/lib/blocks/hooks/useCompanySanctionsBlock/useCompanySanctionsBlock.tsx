@@ -1,6 +1,6 @@
 import { Badge } from '@ballerine/ui';
 import * as React from 'react';
-import { useMemo } from 'react';
+import { ComponentProps, useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { WarningFilledSvg } from '@/common/components/atoms/icons';
 import { toTitleCase } from 'string-ts';
@@ -8,7 +8,7 @@ import { isValidUrl } from '@/common/utils/is-valid-url';
 
 export const useCompanySanctionsBlock = companySanctions => {
   return useMemo(() => {
-    if (!Array.isArray(companySanctions) || !companySanctions?.length) {
+    if (!Array.isArray(companySanctions)) {
       return [];
     }
 
@@ -39,17 +39,38 @@ export const useCompanySanctionsBlock = companySanctions => {
                   value: {
                     columns: [
                       {
+                        accessorKey: 'scanStatus',
+                        header: 'Scan status',
+                        cell: props => {
+                          const value = props.getValue();
+                          const variant: ComponentProps<typeof Badge>['variant'] = 'success';
+
+                          return (
+                            <Badge
+                              variant={variant}
+                              className={`mb-1 rounded-lg px-2 py-1 font-bold`}
+                            >
+                              <>{value}</>
+                            </Badge>
+                          );
+                        },
+                      },
+                      {
                         accessorKey: 'totalMatches',
                         header: 'Total matches',
                         cell: props => {
                           const value = props.getValue();
+                          const variant: ComponentProps<typeof Badge>['variant'] =
+                            value === 0 ? 'success' : 'warning';
 
                           return (
                             <Badge
-                              variant={'warning'}
+                              variant={variant}
                               className={`mb-1 rounded-lg px-2 py-1 font-bold`}
                             >
-                              {value} {value === 1 ? 'match' : 'matches'}
+                              <>
+                                {value} {value === 1 ? 'match' : 'matches'}
+                              </>
                             </Badge>
                           );
                         },
@@ -63,6 +84,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                       {
                         totalMatches: companySanctions?.length,
                         fullReport: companySanctions,
+                        scanStatus: 'Completed',
                       },
                     ],
                   },
