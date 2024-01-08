@@ -12,13 +12,13 @@ export const calculatePendingWorkflowEvents = (workflow: TWorkflowById): Array<I
   ]
     .flat()
     .filter(
-      document => !!document.decision.status && workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
+      document => !!document.decision?.status && workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
     )
     .map(document => {
       return {
         workflowId: workflow.id,
         documentId: document.id as string,
-        eventName: calculateWorkflowRevisionableEvent(workflow, document.decision.status),
+        eventName: calculateWorkflowRevisionableEvent(workflow, document.decision?.status),
         token: workflow?.context?.metadata?.token,
       };
     })
