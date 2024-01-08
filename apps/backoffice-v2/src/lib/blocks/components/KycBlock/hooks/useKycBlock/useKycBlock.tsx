@@ -177,12 +177,18 @@ export const useKycBlock = ({
     };
   };
 
+  const hasAml = kycSessionKeys?.some(key => {
+    return (
+      !!childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ||
+      !!childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml
+    );
+  });
   const complianceCheckResults = kycSessionKeys?.length
     ? kycSessionKeys?.flatMap(key => {
-        const { aml } =
-          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult ?? {};
+        const aml =
+          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult ??
+          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml;
 
-        if (!aml) return;
         if (!Object.keys(aml ?? {}).length) return [];
 
         const { totalMatches, fullReport, dateOfCheck, matches } = amlAdapter(aml);
@@ -788,7 +794,7 @@ export const useKycBlock = ({
                 })
                 .addCell({
                   type: 'container',
-                  value: !complianceCheckResults
+                  value: !hasAml
                     ? []
                     : createBlocksTyped()
                         .addBlock()
