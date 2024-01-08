@@ -6,19 +6,20 @@ import { IPendingEvent } from '@/pages/Entity/components/Case/hooks/usePendingRe
 export const calculatePendingWorkflowEvents = (workflow: TWorkflowById): Array<IPendingEvent> => {
   return [
     ...workflow.context.documents,
-    ...(workflow.context.entity?.additionalInfo?.directors?.map(
-      (director: { documents: Array<TDocument> }) => director.documents,
+    ...(workflow.context.entity?.data?.additionalInfo?.directors?.flatMap(
+      (director: { additionalInfo: { documents: Array<TDocument> } }) =>
+        director?.additionalInfo?.documents,
     ) || []),
   ]
     .flat()
-    .filter(
-      document => !!document.decision?.status && workflow?.tags?.includes(StateTag.MANUAL_REVIEW),
-    )
+    .filter(document => {
+      return !!document?.decision?.status && workflow?.tags?.includes(StateTag.MANUAL_REVIEW);
+    })
     .map(document => {
       return {
         workflowId: workflow.id,
-        documentId: document.id as string,
-        eventName: calculateWorkflowRevisionableEvent(workflow, document.decision?.status),
+        documentId: document?.id as string,
+        eventName: calculateWorkflowRevisionableEvent(workflow, document?.decision?.status),
         token: workflow?.context?.metadata?.token,
       };
     })
