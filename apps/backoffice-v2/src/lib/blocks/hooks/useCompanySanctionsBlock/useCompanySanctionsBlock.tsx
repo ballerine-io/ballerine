@@ -1,6 +1,6 @@
 import { Badge } from '@ballerine/ui';
 import * as React from 'react';
-import { useMemo } from 'react';
+import { ComponentProps, useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { WarningFilledSvg } from '@/common/components/atoms/icons';
 import { toTitleCase } from 'string-ts';
@@ -8,7 +8,7 @@ import { isValidUrl } from '@/common/utils/is-valid-url';
 
 export const useCompanySanctionsBlock = companySanctions => {
   return useMemo(() => {
-    if (!Array.isArray(companySanctions) || !companySanctions?.length) {
+    if (!Array.isArray(companySanctions)) {
       return [];
     }
 
@@ -39,30 +39,52 @@ export const useCompanySanctionsBlock = companySanctions => {
                   value: {
                     columns: [
                       {
-                        accessorKey: 'totalMatches',
-                        header: 'Total matches',
+                        accessorKey: 'scanStatus',
+                        header: 'Scan Status',
                         cell: props => {
                           const value = props.getValue();
+                          const variant: ComponentProps<typeof Badge>['variant'] = 'success';
 
                           return (
                             <Badge
-                              variant={'warning'}
+                              variant={variant}
                               className={`mb-1 rounded-lg px-2 py-1 font-bold`}
                             >
-                              {value} {value === 1 ? 'match' : 'matches'}
+                              <>{value}</>
+                            </Badge>
+                          );
+                        },
+                      },
+                      {
+                        accessorKey: 'totalMatches',
+                        header: 'Total Matches',
+                        cell: props => {
+                          const value = props.getValue();
+                          const variant: ComponentProps<typeof Badge>['variant'] =
+                            value === 0 ? 'success' : 'warning';
+
+                          return (
+                            <Badge
+                              variant={variant}
+                              className={`mb-1 rounded-lg px-2 py-1 font-bold`}
+                            >
+                              <>
+                                {value} {value === 1 ? 'match' : 'matches'}
+                              </>
                             </Badge>
                           );
                         },
                       },
                       {
                         accessorKey: 'fullReport',
-                        header: 'Full report',
+                        header: 'Full Report',
                       },
                     ],
                     data: [
                       {
                         totalMatches: companySanctions?.length,
                         fullReport: companySanctions,
+                        scanStatus: 'Completed',
                       },
                     ],
                   },
@@ -97,11 +119,11 @@ export const useCompanySanctionsBlock = companySanctions => {
                       columns: [
                         {
                           accessorKey: 'primaryName',
-                          header: 'Primary name',
+                          header: 'Primary Name',
                         },
                         {
                           accessorKey: 'lastReviewed',
-                          header: 'Last reviewed',
+                          header: 'Last Reviewed',
                         },
                       ],
                       data: [
@@ -192,7 +214,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                       columns: [
                         {
                           accessorKey: 'alternativeNames',
-                          header: 'Alternative names',
+                          header: 'Alternative Names',
                         },
                       ],
                       data: [
@@ -213,7 +235,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                       columns: [
                         {
                           accessorKey: 'officialList',
-                          header: 'Official lists',
+                          header: 'Official Lists',
                         },
                       ],
                       data: sanction?.officialLists?.map(({ description: officialList }) => ({
@@ -232,7 +254,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                       columns: [
                         {
                           accessorKey: 'furtherInformation',
-                          header: 'Further information',
+                          header: 'Further Information',
                         },
                       ],
                       data: sanction?.furtherInformation?.map(furtherInformation => ({
@@ -251,7 +273,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                       columns: [
                         {
                           accessorKey: 'linkedIndividual',
-                          header: 'Linked individual',
+                          header: 'Linked Individual',
                         },
                         {
                           accessorKey: 'description',
@@ -279,7 +301,7 @@ export const useCompanySanctionsBlock = companySanctions => {
                       columns: [
                         {
                           accessorKey: 'country',
-                          header: 'Linked address',
+                          header: 'Linked Address',
                         },
                         {
                           accessorKey: 'city',

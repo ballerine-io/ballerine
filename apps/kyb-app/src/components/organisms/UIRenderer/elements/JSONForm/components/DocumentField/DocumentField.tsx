@@ -223,9 +223,11 @@ export const DocumentField = (
         onBlur={onBlur as () => void}
         onChange={handleChange}
       />
-      {warnings.length ? <ErrorsList errors={warnings.map(err => err.message)} /> : null}
-      {isTouched ? <ErrorsList errors={validationErrors.map(error => error.message)} /> : null}
-      {fieldError ? <ErrorsList errors={[fieldError.message]} /> : null}
+      {!!warnings.length && <ErrorsList errors={warnings.map(err => err.message)} />}
+      {isTouched && !!validationErrors.length && (
+        <ErrorsList errors={validationErrors.map(error => error.message)} />
+      )}
+      {fieldError && <ErrorsList errors={[fieldError.message]} />}
     </div>
   );
 };

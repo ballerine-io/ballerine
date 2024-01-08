@@ -1,8 +1,8 @@
-import { DefaultContextSchema, getDocumentsByCountry, StateTag } from '@ballerine/common';
-import { AnyObject, ctw } from '@ballerine/ui';
+import React from 'react';
+import { getDocumentsByCountry, StateTag, TDocument } from '@ballerine/common';
+import { ctw } from '@ballerine/ui';
 import { UseQueryResult } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
-import { toTitleCase } from 'string-ts';
 import {
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
@@ -17,10 +17,12 @@ import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirecto
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { getPostDecisionEventName } from '../../components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-
-export type Director = AnyObject;
+import { X } from 'lucide-react';
+import { getRevisionReasonsForDocument } from '@/lib/blocks/components/DirectorsCallToAction/helpers';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { toTitleCase } from 'string-ts';
+import { DecisionStatus, Director } from '@/lib/blocks/hooks/useDirectorsBlocks/types';
 
 export const useDirectorsBlocks = ({
   workflow,
@@ -43,7 +45,7 @@ export const useDirectorsBlocks = ({
   }) => () => void;
   isLoadingReuploadNeeded: boolean;
 }) => {
-  const { mutate } = useRemoveDecisionTaskByIdMutation(
+  const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(
     workflow?.id,
     getPostRemoveDecisionEventName(workflow),
   );
@@ -73,9 +75,9 @@ export const useDirectorsBlocks = ({
     const documentsToReset = documents.filter(document => document.decision?.status);
 
     documentsToReset.forEach(document => {
-      mutate({ documentId: document.id, contextUpdateMethod: 'director' });
+      removeDecisionById({ documentId: document.id, contextUpdateMethod: 'director' });
     });
-  }, [documents, mutate]);
+  }, [documents, removeDecisionById]);
 
   const postApproveEventName = getPostDecisionEventName(workflow);
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
@@ -101,7 +103,7 @@ export const useDirectorsBlocks = ({
         const isDocumentRevision = documents.some(
           document => document?.decision?.status === 'revision',
         );
-        const multiDocumentsBlocks = documents.flatMap((document, docIndex) => {
+        const multiDocumentsBlocks = documents.flatMap((document: TDocument, docIndex) => {
           const isDoneWithRevision = document?.decision?.status === 'revised';
           const additionalProperties = composePickableCategoryType(
             document.category,
@@ -129,13 +131,100 @@ export const useDirectorsBlocks = ({
             })
             .cellAt(0, 0);
 
+          const getReuploadStatusOrAction = (
+            decisionStatus: DecisionStatus,
+            workflow: TWorkflowById,
+          ) => {
+            const isRevision = decisionStatus === 'revision';
+
+            if (isRevision) {
+              if (workflow?.tags?.includes(StateTag.REVISION)) {
+                const pendingReUploadBlock = createBlocksTyped()
+                  .addBlock()
+                  .addCell({
+                    type: 'badge',
+                    value: <React.Fragment>Pending re-upload</React.Fragment>,
+                    props: {
+                      variant: 'warning',
+                      className: 'min-h-8 text-sm font-bold',
+                    },
+                  })
+                  .build()
+                  .flat(1);
+
+                return pendingReUploadBlock;
+              } else {
+                const reUploadNeededBlock = createBlocksTyped()
+                  .addBlock()
+                  .addCell({
+                    type: 'badge',
+                    value: (
+                      <React.Fragment>
+                        Re-upload needed
+                        <X
+                          className="h-4 w-4 cursor-pointer"
+                          onClick={() =>
+                            removeDecisionById({
+                              documentId: document.id,
+                              contextUpdateMethod: 'director',
+                            })
+                          }
+                        />
+                      </React.Fragment>
+                    ),
+                    props: {
+                      variant: 'warning',
+                      className: `gap-x-1 min-h-8 text-white bg-warning text-sm font-bold`,
+                    },
+                  })
+                  .build()
+                  .flat(1);
+
+                return reUploadNeededBlock;
+              }
+            }
+
+            return undefined;
+          };
+
+          const getReUploadedNeededAction = (
+            decisionStatus: DecisionStatus,
+            workflow: TWorkflowById,
+          ) => {
+            if (decisionStatus !== 'approved' && decisionStatus !== 'revision') {
+              const reUploadNeededBlock = createBlocksTyped()
+                .addBlock()
+                .addCell({
+                  type: 'callToActionLegacy',
+                  value: {
+                    text: 'Re-upload needed',
+                    props: {
+                      revisionReasons: getRevisionReasonsForDocument(document, workflow),
+                      disabled:
+                        (!isDoneWithRevision && Boolean(document.decision?.status)) || noAction,
+                      decision: 'reject',
+                      id: document.id,
+                      contextUpdateMethod: 'director',
+                      workflow,
+                      onReuploadNeeded,
+                    },
+                  },
+                })
+                .build()
+                .flat(1);
+
+              return reUploadNeededBlock;
+            }
+
+            return undefined;
+          };
+
           const getDecisionStatusOrAction = (
-            decisionStatus: NonNullable<
-              DefaultContextSchema['documents'][number]['decision']
-            >['status'],
+            decisionStatus: DecisionStatus,
+            workflow: TWorkflowById,
           ) => {
             if (decisionStatus === 'approved') {
-              return createBlocksTyped()
+              const approvedBadgeBlock = createBlocksTyped()
                 .addBlock()
                 .addCell({
                   type: 'badge',
@@ -148,32 +237,44 @@ export const useDirectorsBlocks = ({
                 })
                 .build()
                 .flat(1);
+
+              return approvedBadgeBlock;
+            } else {
+              if (decisionStatus !== 'revision') {
+                const approveButtonBlock = createBlocksTyped()
+                  .addBlock()
+                  .addCell({
+                    type: 'callToActionLegacy',
+                    value: {
+                      text: 'Approve',
+                      props: {
+                        decision: 'approve',
+                        id: document.id,
+                        contextUpdateMethod: 'director',
+                        disabled:
+                          (!isDoneWithRevision && Boolean(document?.decision?.status)) || noAction,
+                        workflow,
+                        onReuploadNeeded,
+                      },
+                    },
+                  })
+                  .build()
+                  .flat(1);
+
+                return approveButtonBlock;
+              }
             }
 
-            return createBlocksTyped()
-              .addBlock()
-              .addCell({
-                type: 'callToAction',
-                value: {
-                  text: 'Approve',
-                  onClick: onMutateApproveTaskById({
-                    taskId: document.id,
-                    contextUpdateMethod: 'director',
-                  }),
-                  props: {
-                    disabled:
-                      (!isDoneWithRevision && Boolean(document?.decision?.status)) ||
-                      noAction ||
-                      isLoadingApproveTaskById ||
-                      !caseState.actionButtonsEnabled,
-                    size: 'wide',
-                    variant: 'success',
-                  },
-                },
-              })
-              .build()
-              .flat(1);
+            return undefined;
           };
+
+          const documentHeading = [
+            getReuploadStatusOrAction(document?.decision?.status, workflow),
+            getReUploadedNeededAction(document?.decision?.status, workflow),
+            getDecisionStatusOrAction(document?.decision?.status, workflow),
+          ]
+            .filter(Boolean)
+            .map(block => block?.flat(1)[0]);
 
           return createBlocksTyped()
             .addBlock()
@@ -187,7 +288,7 @@ export const useDirectorsBlocks = ({
                   props: {
                     className: 'mt-0',
                   },
-                  value: getDecisionStatusOrAction(document?.decision?.status),
+                  value: documentHeading,
                 })
                 .addCell({
                   id: 'header',
@@ -284,42 +385,6 @@ export const useDirectorsBlocks = ({
             .build()
             .flat(1);
         });
-        const getReuploadActionOrBadge = (tags: Array<string>) => {
-          if (tags?.includes(StateTag.REVISION)) {
-            return createBlocksTyped()
-              .addBlock()
-              .addCell({
-                type: 'badge',
-                value: 'Pending re-upload',
-                props: {
-                  ...motionBadgeProps,
-                  variant: 'warning',
-                  className: 'text-sm font-bold',
-                },
-              })
-              .build()
-              .flat(1);
-          }
-
-          return createBlocksTyped()
-            .addBlock()
-            .addCell({
-              type: 'directorsCallToAction',
-              value: {
-                text: 'Re-upload needed',
-                props: {
-                  documents,
-                  workflow,
-                  onReset: handleRevisionDecisionsReset,
-                  onReuploadNeeded,
-                  isLoadingReuploadNeeded,
-                  disabled: noAction || !caseState.actionButtonsEnabled,
-                },
-              },
-            })
-            .build()
-            .flat(1);
-        };
 
         return createBlocksTyped()
           .addBlock()
@@ -334,11 +399,6 @@ export const useDirectorsBlocks = ({
                   .addCell({
                     type: 'heading',
                     value: `Director - ${director.firstName} ${director.lastName}`,
-                  })
-                  .addCell({
-                    id: 'actions',
-                    type: 'container',
-                    value: getReuploadActionOrBadge(workflow?.tags ?? []),
                   })
                   .build()
                   .flat(1),

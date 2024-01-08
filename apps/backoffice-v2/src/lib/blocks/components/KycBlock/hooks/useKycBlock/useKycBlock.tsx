@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { ComponentProps, useCallback } from 'react';
 import { isObject, StateTag, TStateTags } from '@ballerine/common';
 
@@ -17,6 +18,9 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { Badge } from '@ballerine/ui';
+import { WarningFilledSvg } from '@/common/components/atoms/icons';
+import { buttonVariants } from '@/common/components/atoms/Button/Button';
 
 const motionProps: ComponentProps<typeof MotionBadge> = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -34,6 +38,7 @@ export const useKycBlock = ({
 }) => {
   const { noAction } = useCaseDecision();
   const results: Array<Array<string>> = [];
+  const kycSessionKeys = Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {});
 
   const docsData = useStorageFilesQuery(
     childWorkflow?.context?.documents?.flatMap(({ pages }) =>
@@ -50,8 +55,8 @@ export const useKycBlock = ({
     });
   });
 
-  const decision = Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.length
-    ? Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.flatMap(key => [
+  const decision = kycSessionKeys?.length
+    ? kycSessionKeys?.flatMap(key => [
         {
           title: 'Verified With',
           value: capitalize(childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.vendor),
@@ -92,42 +97,450 @@ export const useKycBlock = ({
       ]) ?? []
     : [];
 
-  const documentExtractedData = Object.keys(
-    childWorkflow?.context?.pluginsOutput?.kyc_session ?? {},
-  )?.length
-    ? Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {})?.map(
-        (key, index, collection) =>
-          createBlocksTyped()
+  const amlAdapter = (aml: {
+    hits: Array<{
+      matchedName: string;
+      dateOfBirth: string;
+      countries: string[];
+      matchTypes: string[];
+      aka: string[];
+      listingsRelatedToMatch: {
+        warnings: Array<{
+          sourceName: string;
+          sourceUrl: string;
+          date: string;
+        }>;
+        sanctions: Array<{
+          sourceName: string;
+          sourceUrl: string;
+          date: string;
+        }>;
+        pep: Array<{
+          sourceName: string;
+          sourceUrl: string;
+          date: string;
+        }>;
+        adverseMedia: Array<{
+          sourceName: string;
+          sourceUrl: string;
+          date: string;
+        }>;
+      };
+    }>;
+    createdAt: string;
+    totalHits: number;
+  }) => {
+    const { hits, totalHits, createdAt, ...rest } = aml;
+
+    return {
+      totalMatches: totalHits ?? 0,
+      fullReport: rest,
+      dateOfCheck: createdAt,
+      matches:
+        hits?.map(
+          ({ matchedName, dateOfBirth, countries, matchTypes, aka, listingsRelatedToMatch }) => {
+            const { sanctions, warnings, pep, adverseMedia } = listingsRelatedToMatch ?? {};
+
+            return {
+              matchedName,
+              dateOfBirth,
+              countries: countries?.join(', ') ?? '',
+              matchTypes: matchTypes?.join(', ') ?? '',
+              aka: aka?.join(', ') ?? '',
+              sanctions:
+                sanctions?.map(sanction => ({
+                  sanction: sanction?.sourceName,
+                  date: sanction?.date,
+                  source: sanction?.sourceUrl,
+                })) ?? [],
+              warnings:
+                warnings?.map(warning => ({
+                  warning: warning?.sourceName,
+                  date: warning?.date,
+                  source: warning?.sourceUrl,
+                })) ?? [],
+              pep:
+                pep?.map(pepItem => ({
+                  person: pepItem?.sourceName,
+                  date: pepItem?.date,
+                  source: pepItem?.sourceUrl,
+                })) ?? [],
+              adverseMedia:
+                adverseMedia?.map(adverseMediaItem => ({
+                  entry: adverseMediaItem?.sourceName,
+                  date: adverseMediaItem?.date,
+                  source: adverseMediaItem?.sourceUrl,
+                })) ?? [],
+            };
+          },
+        ) ?? [],
+    };
+  };
+
+  const complianceCheckResults = kycSessionKeys?.length
+    ? kycSessionKeys?.flatMap(key => {
+        const { aml } = childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result ?? {};
+
+        if (!Object.keys(aml ?? {}).length) return [];
+
+        const { totalMatches, fullReport, dateOfCheck, matches } = amlAdapter(aml);
+
+        return [
+          ...createBlocksTyped()
             .addBlock()
             .addCell({
-              id: 'decision',
-              type: 'details',
+              type: 'table',
               value: {
-                id: childWorkflow?.id,
-                title: `Details`,
-                hideSeparator: index === collection.length - 1,
-                data: Object.entries({
-                  ...childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.entity?.data,
-                  ...omitPropsFromObject(
-                    childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
-                      ?.properties,
-                    'issuer',
-                  ),
-                  issuer:
-                    childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
-                      ?.issuer?.country,
-                })?.map(([title, value]) => ({
-                  title,
-                  value,
-                  pattern: '',
-                  isEditable: false,
-                  dropdownOptions: undefined,
-                })),
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
+                columns: [
+                  {
+                    accessorKey: 'totalMatches',
+                    header: 'Total Matches',
+                    cell: props => {
+                      const value = props.getValue();
+                      const variant: ComponentProps<typeof Badge>['variant'] =
+                        value === 0 ? 'success' : 'warning';
+
+                      return (
+                        <Badge variant={variant} className={`mb-1 rounded-lg px-2 py-1 font-bold`}>
+                          {value} {value === 1 ? 'match' : 'matches'}
+                        </Badge>
+                      );
+                    },
+                  },
+                  {
+                    accessorKey: 'fullReport',
+                    header: 'Full Report',
+                  },
+                  {
+                    accessorKey: 'dateOfCheck',
+                    header: 'Date Of Check',
+                  },
+                  {
+                    accessorKey: 'scanStatus',
+                    header: 'Scan Status',
+                    cell: props => {
+                      const value = props.getValue();
+                      const variant: ComponentProps<typeof Badge>['variant'] = 'success';
+
+                      return (
+                        <Badge variant={variant} className={`mb-1 rounded-lg px-2 py-1 font-bold`}>
+                          <>{value}</>
+                        </Badge>
+                      );
+                    },
+                  },
+                ],
+                data: [
+                  {
+                    totalMatches,
+                    fullReport,
+                    dateOfCheck,
+                    scanStatus: 'Completed',
+                  },
+                ],
               },
-              workflowId: childWorkflow?.id,
-              documents: childWorkflow?.context?.documents,
             })
-            .cellAt(0, 0),
+            .addCell({
+              type: 'table',
+              value: {
+                props: {
+                  table: {
+                    className: 'my-8',
+                  },
+                },
+                columns: [
+                  {
+                    accessorKey: 'matchedName',
+                    header: 'Matched Name',
+                  },
+                  {
+                    accessorKey: 'dateOfBirth',
+                    header: 'Date Of Birth',
+                  },
+                  {
+                    accessorKey: 'countries',
+                    header: 'Countries',
+                  },
+                  {
+                    accessorKey: 'aka',
+                    header: 'AKA',
+                  },
+                ],
+                data: matches,
+              },
+            })
+            .build()
+            .flat(1),
+          ...(matches?.flatMap(({ warnings, sanctions, pep, adverseMedia }, index) =>
+            createBlocksTyped()
+              .addBlock()
+              .addCell({
+                type: 'container',
+                value: createBlocksTyped()
+                  .addBlock()
+                  .addCell({
+                    type: 'subheading',
+                    value: `Match ${index + 1}`,
+                    props: {
+                      className: 'text-lg block my-6',
+                    },
+                  })
+                  .addCell({
+                    type: 'table',
+                    value: {
+                      props: {
+                        table: {
+                          className: 'my-8 w-full',
+                        },
+                      },
+                      columns: [
+                        {
+                          accessorKey: 'warning',
+                          header: 'Warning',
+                          cell: props => {
+                            const value = props.getValue();
+
+                            return (
+                              <div className={'flex space-x-2'}>
+                                <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
+                                <span>{value}</span>
+                              </div>
+                            );
+                          },
+                        },
+                        {
+                          accessorKey: 'date',
+                          header: 'Date',
+                        },
+                        {
+                          accessorKey: 'source',
+                          header: 'Source URL',
+                          cell: props => {
+                            const value = props.getValue();
+
+                            return (
+                              <a
+                                className={buttonVariants({
+                                  variant: 'link',
+                                  className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
+                                })}
+                                target={'_blank'}
+                                rel={'noopener noreferrer'}
+                                href={value}
+                              >
+                                Link
+                              </a>
+                            );
+                          },
+                        },
+                      ],
+                      data: warnings,
+                    },
+                  })
+                  .addCell({
+                    type: 'table',
+                    props: {
+                      table: {
+                        className: 'my-8 w-full',
+                      },
+                    },
+                    value: {
+                      columns: [
+                        {
+                          accessorKey: 'sanction',
+                          header: 'Sanction',
+                          cell: props => {
+                            const value = props.getValue();
+
+                            return (
+                              <div className={'flex space-x-2'}>
+                                <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
+                                <span>{value}</span>
+                              </div>
+                            );
+                          },
+                        },
+                        {
+                          accessorKey: 'date',
+                          header: 'Date',
+                        },
+                        {
+                          accessorKey: 'source',
+                          header: 'Source URL',
+                          cell: props => {
+                            const value = props.getValue();
+
+                            return (
+                              <a
+                                className={buttonVariants({
+                                  variant: 'link',
+                                  className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
+                                })}
+                                target={'_blank'}
+                                rel={'noopener noreferrer'}
+                                href={value}
+                              >
+                                Link
+                              </a>
+                            );
+                          },
+                        },
+                      ],
+                      data: sanctions,
+                    },
+                  })
+                  .addCell({
+                    type: 'table',
+                    value: {
+                      props: {
+                        table: {
+                          className: 'my-8 w-full',
+                        },
+                      },
+                      columns: [
+                        {
+                          accessorKey: 'person',
+                          header: 'PEP (Politically Exposed Person)',
+                          cell: props => {
+                            const value = props.getValue();
+
+                            return (
+                              <div className={'flex space-x-2'}>
+                                <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
+                                <span>{value}</span>
+                              </div>
+                            );
+                          },
+                        },
+                        {
+                          accessorKey: 'date',
+                          header: 'Date',
+                        },
+                        {
+                          accessorKey: 'source',
+                          header: 'Source URL',
+                          cell: props => {
+                            const value = props.getValue();
+
+                            return (
+                              <a
+                                className={buttonVariants({
+                                  variant: 'link',
+                                  className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
+                                })}
+                                target={'_blank'}
+                                rel={'noopener noreferrer'}
+                                href={value}
+                              >
+                                Link
+                              </a>
+                            );
+                          },
+                        },
+                      ],
+                      data: pep,
+                    },
+                  })
+                  .addCell({
+                    type: 'table',
+                    value: {
+                      props: {
+                        table: {
+                          className: 'my-8',
+                        },
+                      },
+                      columns: [
+                        {
+                          accessorKey: 'entry',
+                          header: 'Adverse Media',
+                          cell: props => {
+                            const value = props.getValue();
+
+                            return (
+                              <div className={'flex space-x-2'}>
+                                <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
+                                <span>{value}</span>
+                              </div>
+                            );
+                          },
+                        },
+                        {
+                          accessorKey: 'date',
+                          header: 'Date',
+                        },
+                        {
+                          accessorKey: 'source',
+                          header: 'Source URL',
+                          cell: props => {
+                            const value = props.getValue();
+
+                            return (
+                              <a
+                                className={buttonVariants({
+                                  variant: 'link',
+                                  className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
+                                })}
+                                target={'_blank'}
+                                rel={'noopener noreferrer'}
+                                href={value}
+                              >
+                                Link
+                              </a>
+                            );
+                          },
+                        },
+                      ],
+                      data: adverseMedia,
+                    },
+                  })
+                  .build()
+                  .flat(1),
+              })
+              .build()
+              .flat(1),
+          ) ?? []),
+        ];
+      })
+    : [];
+
+  const documentExtractedData = kycSessionKeys?.length
+    ? kycSessionKeys?.map((key, index, collection) =>
+        createBlocksTyped()
+          .addBlock()
+          .addCell({
+            id: 'decision',
+            type: 'details',
+            value: {
+              id: childWorkflow?.id,
+              title: `Details`,
+              hideSeparator: index === collection.length - 1,
+              data: Object.entries({
+                ...childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.entity?.data,
+                ...omitPropsFromObject(
+                  childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
+                    ?.properties,
+                  'issuer',
+                ),
+                issuer:
+                  childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.documents?.[0]
+                    ?.issuer?.country,
+              })?.map(([title, value]) => ({
+                title,
+                value,
+                pattern: '',
+                isEditable: false,
+                dropdownOptions: undefined,
+              })),
+            },
+            workflowId: childWorkflow?.id,
+            documents: childWorkflow?.context?.documents,
+          })
+          .cellAt(0, 0),
       ) ?? []
     : [];
 
@@ -369,6 +782,19 @@ export const useKycBlock = ({
                       documents: childWorkflow?.context?.documents,
                     })
                     .build()
+                    .flat(1),
+                })
+                .addCell({
+                  type: 'container',
+                  value: createBlocksTyped()
+                    .addBlock()
+                    .addCell({
+                      id: 'header',
+                      type: 'heading',
+                      value: 'Compliance Check Results',
+                    })
+                    .build()
+                    .concat(complianceCheckResults)
                     .flat(1),
                 })
                 .build()
