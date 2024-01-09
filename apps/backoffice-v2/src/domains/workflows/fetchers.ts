@@ -1,3 +1,6 @@
+import { env } from '@/common/env/env';
+import { WorkflowDefinitionVariant } from '@ballerine/common';
+import { AnyObject } from '@ballerine/ui';
 import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
@@ -7,7 +10,6 @@ import { handleZodError } from '../../common/utils/handle-zod-error/handle-zod-e
 import { ObjectWithIdSchema } from '../../lib/zod/utils/object-with-id/object-with-id';
 import { zPropertyKey } from '../../lib/zod/utils/z-property-key/z-property-key';
 import { IWorkflowId } from './interfaces';
-import { WorkflowDefinitionVariant } from '@ballerine/common';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -67,6 +69,7 @@ export const BaseWorkflowByIdSchema = z.object({
     contextSchema: z.record(z.any(), z.any()).nullable(),
     documentsSchema: z.array(z.any()).optional().nullable(),
     config: z.record(z.any(), z.any()).nullable(),
+    inputSchema: z.record(z.any()),
   }),
   createdAt: z.string().datetime(),
   context: z.object({
@@ -249,6 +252,29 @@ export const fetchWorkflowEventDecision = async ({
     endpoint: `workflows/${workflowId}/event-decision`,
     method: Method.PATCH,
     body,
+    schema: z.any(),
+  });
+
+  return handleZodError(error, workflow);
+};
+
+export const createWorkflow = async ({
+  workflowDefinitionId,
+  context,
+  config,
+}: {
+  workflowDefinitionId: string;
+  context: AnyObject;
+  config: AnyObject;
+}) => {
+  const [workflow, error] = await apiClient({
+    method: Method.POST,
+    url: `${env.VITE_API_URL.replace('internal', 'external')}/workflows/run`,
+    body: {
+      workflowId: workflowDefinitionId,
+      context,
+      config,
+    },
     schema: z.any(),
   });
 
