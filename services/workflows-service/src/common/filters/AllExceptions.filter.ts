@@ -30,11 +30,9 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
 
     const errorRes = serverError.getResponse();
 
-    let errorMessage: unknown;
+    let errorMessage: unknown = errorRes;
 
-    if (typeof errorRes === 'string') {
-      errorMessage = errorRes;
-    } else if (typeof errorRes === 'object' && 'message' in errorRes && errorRes.message) {
+    if (typeof errorRes === 'object' && 'message' in errorRes && errorRes.message) {
       errorMessage = errorRes.message;
     }
 
