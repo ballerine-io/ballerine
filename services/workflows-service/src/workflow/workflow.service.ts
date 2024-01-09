@@ -852,20 +852,15 @@ export class WorkflowService {
     const documentSchema = addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
     const propertiesSchema = documentSchema?.propertiesSchema ?? {};
 
-    if (Object.keys(propertiesSchema)?.length) {
-      let propertiesSchemaForValidation = propertiesSchema;
+    if (Object.keys(propertiesSchema)?.length && validateDocumentSchema) {
+      const propertiesSchemaForValidation = propertiesSchema;
 
-      if (validateDocumentSchema) {
-        const { required: _required, ..._propertiesSchemaForValidation } = propertiesSchema;
-        propertiesSchemaForValidation = _propertiesSchemaForValidation;
+      const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation);
 
-        const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation);
+      const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
 
-        const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
-
-        if (!isValidPropertiesSchema && document.type === documentToUpdate.type) {
-          throw new AjvValidationError(validatePropertiesSchema.errors);
-        }
+      if (!isValidPropertiesSchema && document.type === documentToUpdate.type) {
+        throw new AjvValidationError(validatePropertiesSchema.errors);
       }
     }
 
