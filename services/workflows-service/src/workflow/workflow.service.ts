@@ -81,6 +81,7 @@ import {
 } from './workflow-runtime-data.repository';
 import mime from 'mime';
 import { env } from '@/env';
+import { AjvValidationError } from '@/errors';
 
 type TEntityId = string;
 
@@ -858,13 +859,7 @@ export class WorkflowService {
       const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
 
       if (!isValidPropertiesSchema) {
-        throw new BadRequestException(
-          validatePropertiesSchema.errors?.map(({ instancePath, message, ...rest }) => ({
-            ...rest,
-            message: `${instancePath} ${message}`,
-            instancePath,
-          })),
-        );
+        throw new AjvValidationError(validatePropertiesSchema.errors);
       }
     }
 
@@ -1079,13 +1074,7 @@ export class WorkflowService {
         const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
         if (!isValidPropertiesSchema) {
-          throw new BadRequestException(
-            validatePropertiesSchema.errors?.map(({ instancePath, message, ...rest }) => ({
-              ...rest,
-              message: `${instancePath} ${message}`,
-              instancePath,
-            })),
-          );
+          throw new AjvValidationError(validatePropertiesSchema.errors);
         }
       });
       data.context = mergedContext;
@@ -1900,13 +1889,7 @@ export class WorkflowService {
 
     if (isValid) return;
 
-    throw new BadRequestException(
-      validate.errors?.map(({ instancePath, message, ...rest }) => ({
-        ...rest,
-        instancePath,
-        message: `${instancePath} ${message}`,
-      })),
-    );
+    throw new AjvValidationError(validate.errors);
   }
 
   async event(
