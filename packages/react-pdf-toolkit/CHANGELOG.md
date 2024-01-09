@@ -1,5 +1,11 @@
 # @ballerine/react-pdf-toolkit
 
+## 1.0.5
+
+### Patch Changes
+
+- added version to ReportTemplate header
+
 ## 1.0.4
 
 ### Patch Changes

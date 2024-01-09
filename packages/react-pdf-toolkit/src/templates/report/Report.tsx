@@ -11,11 +11,21 @@ import { TrafficSection } from '@/templates/report/sections/Traffic';
 import { WebsiteCheck } from '@/templates/report/sections/WebsiteCheck';
 import { canRenderSection } from '@/templates/report/utils/canRenderSection';
 import { Document } from '@react-pdf/renderer';
+import { FunctionComponent } from 'react';
 
-export const ReportTemplate = ({ report }: { report: IReport }) => (
+export interface ReportTemplateProps {
+  report: IReport;
+  version?: number;
+}
+
+export const ReportTemplate: FunctionComponent<ReportTemplateProps> = ({ report, version }) => (
   <Document pageLayout="singlePage">
     <SectionPage>
-      <Header title={`${report.meta.companyName || ''} TL Report`} status="published" />
+      <Header
+        title={`${report.meta.companyName || ''} TL Report`}
+        status="published"
+        version={version}
+      />
       {canRenderSection(report.summary) && <SummarySection data={report.summary} />}
     </SectionPage>
 
