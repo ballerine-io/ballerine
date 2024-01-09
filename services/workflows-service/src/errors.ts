@@ -26,11 +26,17 @@ export class SessionExpiredException extends common.UnauthorizedException {
 }
 
 export class AjvValidationError extends common.BadRequestException {
+  @ApiProperty()
+  statusCode!: number;
+  @ApiProperty()
+  message!: string;
+
   constructor(
     public error: ErrorObject<string, Record<string, any>, unknown>[] | null | undefined,
   ) {
     super();
   }
+
   serializeErrors() {
     return this.error?.map(({ instancePath, message }) => {
       return {
