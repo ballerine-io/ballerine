@@ -17,7 +17,7 @@ use linked_hash_map::LinkedHashMap;
 use std::collections::HashMap;
 use std::process;
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
   let matches = app_args();
   let benchmark_file = matches.value_of("benchmark").unwrap();
   let report_path_option = matches.value_of("report");
@@ -57,7 +57,7 @@ fn main() {
   show_stats(&list_reports, stats_option, nanosec, duration);
   compare_benchmark(&list_reports, compare_path_option, threshold_option);
 
-  process::exit(0)
+  Ok(())
 }
 
 fn app_args<'a>() -> clap::ArgMatches<'a> {
