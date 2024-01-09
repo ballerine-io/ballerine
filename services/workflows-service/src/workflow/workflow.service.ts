@@ -80,6 +80,7 @@ import {
   WorkflowRuntimeDataRepository,
 } from './workflow-runtime-data.repository';
 import mime from 'mime';
+import { env } from '@/env';
 
 type TEntityId = string;
 
@@ -1582,30 +1583,22 @@ export class WorkflowService {
 
       const mainRepresentative =
         workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative;
-      if (
-        mergedConfig.createCollectionFlowToken &&
-        mainRepresentative &&
-        entityType === 'business'
-      ) {
-        const endUser = await this.endUserService.createWithBusiness(
-          {
-            endUser: {
-              ...mainRepresentative,
-              isContactPerson: true,
-            },
-            business: {
-              companyName: '',
-              ...workflowRuntimeData.context.entity.data,
-              projectId: currentProjectId,
-            },
-          },
-          currentProjectId,
-          entityId,
-        );
+      if (mergedConfig.createCollectionFlowToken) {
+        const endUserId =
+          entityType === 'endUser'
+            ? entityId
+            : await this.__generateEndUserWithBusiness({
+                entityType,
+                workflowRuntimeData,
+                entityData: mainRepresentative,
+                currentProjectId,
+                entityId,
+              });
+
         const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         const workflowToken = await this.workflowTokenService.create(currentProjectId, {
           workflowRuntimeDataId: workflowRuntimeData.id,
-          endUserId: endUser.id,
+          endUserId: endUserId,
           expiresAt: nowPlus30Days,
         });
 
@@ -1615,7 +1608,13 @@ export class WorkflowService {
             data: {
               context: {
                 ...workflowRuntimeData.context,
-                metadata: { customerName: customer.displayName, token: workflowToken.token },
+                metadata: {
+                  customerNormalizedName: customer.name,
+                  customerName: customer.displayName,
+                  token: workflowToken.token,
+                  collectionFlowUrl: env.COLLECTION_FLOW_URL,
+                  webUiSDKUrl: env.WEB_UI_SDK_URL,
+                },
               } as InputJsonValue,
               projectId: currentProjectId,
             },
@@ -1708,6 +1707,44 @@ export class WorkflowService {
         ballerineEntityId: entityId,
       },
     ] as const;
+  }
+
+  private async __generateEndUserWithBusiness({
+    entityData,
+    workflowRuntimeData,
+    currentProjectId,
+    entityType,
+    entityId,
+  }: {
+    entityType: string;
+    workflowRuntimeData: WorkflowRuntimeData;
+    entityData?: { firstName: string; lastName: string };
+    currentProjectId: string;
+    entityId: string;
+  }) {
+    if (entityData && entityType === 'business')
+      return (
+        await this.endUserService.createWithBusiness(
+          {
+            endUser: {
+              ...entityData,
+              isContactPerson: true,
+            },
+            business: {
+              companyName: '',
+              ...workflowRuntimeData.context.entity.data,
+              projectId: currentProjectId,
+            },
+          },
+          currentProjectId,
+          entityId,
+        )
+      ).id;
+
+    throw new Error(
+      `Invalid entity type or payload for child workflow creation for entity: ${entityType} with context:`,
+      workflowRuntimeData.context.entity,
+    );
   }
 
   private async __persistDocumentPagesFiles(

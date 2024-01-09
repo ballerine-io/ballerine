@@ -10,17 +10,15 @@ export const env = createEnv({
    */
   clientPrefix: 'PUBLIC_',
   server: {
+    LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
     NODE_ENV: z.enum(['development', 'production', 'test', 'local']), // TODO: remove 'test', 'local'
     ENVIRONMENT_NAME: z.enum(['development', 'production', 'staging', 'test', 'local']),
     ENV_FILE_NAME: z.string().optional(),
     BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
     PORT: z.coerce.number(),
-    DB_USER: z.string(),
-    DB_PASSWORD: z.string(),
-    DB_PORT: z.coerce.number(),
     DB_URL: z.string().url(),
     SESSION_SECRET: z.string(),
-    SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().default(60),
+    SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().nonnegative().gt(0).default(60),
     BACKOFFICE_CORS_ORIGIN: z.string().url(),
     WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().url(),
     KYB_EXAMPLE_CORS_ORIGIN: z.string().url(),
@@ -61,6 +59,8 @@ export const env = createEnv({
     SALESFORCE_CONSUMER_KEY: z.string().optional().describe('Salesforce consumer key'),
     SALESFORCE_CONSUMER_SECRET: z.string().optional().describe('Salesforce consumer secret'),
     APP_API_URL: z.string().url().describe('The URL of the workflows-service API'),
+    COLLECTION_FLOW_URL: z.string().url().optional().describe('The URL of the Collection Flow App'),
+    WEB_UI_SDK_URL: z.string().url().optional().describe('The URL of the Web UI SDK App'),
     DATA_MIGRATION_BUCKET_NAME: z
       .string()
       .optional()

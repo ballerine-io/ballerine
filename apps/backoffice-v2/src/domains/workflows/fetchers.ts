@@ -7,6 +7,7 @@ import { handleZodError } from '../../common/utils/handle-zod-error/handle-zod-e
 import { ObjectWithIdSchema } from '../../lib/zod/utils/object-with-id/object-with-id';
 import { zPropertyKey } from '../../lib/zod/utils/z-property-key/z-property-key';
 import { IWorkflowId } from './interfaces';
+import { WorkflowDefinitionVariant } from '@ballerine/common';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -61,6 +62,8 @@ export const BaseWorkflowByIdSchema = z.object({
   tags: z.array(z.string()).nullable().optional(),
   workflowDefinition: ObjectWithIdSchema.extend({
     name: z.string(),
+    version: z.number(),
+    variant: z.string().default(WorkflowDefinitionVariant.DEFAULT),
     contextSchema: z.record(z.any(), z.any()).nullable(),
     documentsSchema: z.array(z.any()).optional().nullable(),
     config: z.record(z.any(), z.any()).nullable(),
@@ -73,6 +76,13 @@ export const BaseWorkflowByIdSchema = z.object({
       status: z.union([z.literal('active'), z.literal('failed'), z.literal('completed')]),
     }).optional(),
     pluginsOutput: z.record(zPropertyKey, z.any()).optional(),
+    metadata: z
+      .object({
+        collectionFlowUrl: z.string().url().optional(),
+        token: z.string().optional(),
+      })
+      .passthrough()
+      .optional(),
   }),
   entity: ObjectWithIdSchema.extend({
     name: z.string(),
