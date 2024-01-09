@@ -4,6 +4,7 @@
 
 ### Patch Changes
 
+- Fixed risk score colors & fixed rendering of empty sections & fixed typo
 - added version to ReportTemplate header
 
 ## 1.0.4

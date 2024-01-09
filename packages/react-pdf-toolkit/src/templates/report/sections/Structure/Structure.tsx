@@ -16,7 +16,7 @@ export const StructureSection: FunctionComponent<StructureProps> = ({ data }) =>
       <Section.Blocks>
         {score && (
           <Section.Blocks.Block>
-            <Section.Blocks.Block.Label text="Reputation Risk Score" />
+            <Section.Blocks.Block.Label text="Structure Risk Score" />
             <Badge text={String(score)} variant={resolveBadgeStyleToRiskScore(score)} />
           </Section.Blocks.Block>
         )}
