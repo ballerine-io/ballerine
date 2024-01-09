@@ -47,6 +47,7 @@ export const useFileUploading = (uploader: UploadFileFn): UseFileUploadingResult
             {} as NormalizedOptions,
           ),
         }));
+
         throw error;
       }
     },
