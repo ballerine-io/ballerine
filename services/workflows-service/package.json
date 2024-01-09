@@ -43,7 +43,7 @@
     "@aws-sdk/s3-request-presigner": "3.325.0",
     "@ballerine/common": "0.6.7-hotfix.3",
     "@ballerine/workflow-core": "0.4.30",
-    "@ballerine/workflow-node-sdk": "0.4.16",
+    "@ballerine/workflow-node-sdk": "0.5.36",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
     "@nestjs/common": "^9.3.12",
