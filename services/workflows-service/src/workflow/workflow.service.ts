@@ -787,13 +787,13 @@ export class WorkflowService {
         status,
       },
     };
-    const checkRequiredFields = status === 'approved';
+    const validateDocumentSchema = status === 'approved';
 
     const updatedWorkflow = await this.updateDocumentById(
       {
         workflowId,
         documentId,
-        checkRequiredFields,
+        validateDocumentSchema,
         documentsUpdateContextMethod: documentsUpdateContextMethod,
       },
       documentWithDecision as unknown as DefaultContextSchema['documents'][number],
@@ -821,12 +821,12 @@ export class WorkflowService {
     {
       workflowId,
       documentId,
-      checkRequiredFields = true,
+      validateDocumentSchema = true,
       documentsUpdateContextMethod,
     }: {
       workflowId: string;
       documentId: string;
-      checkRequiredFields?: boolean;
+      validateDocumentSchema?: boolean;
       documentsUpdateContextMethod?: 'base' | 'director';
     },
     data: DefaultContextSchema['documents'][number] & { propertiesSchema?: object },
@@ -855,17 +855,17 @@ export class WorkflowService {
     if (Object.keys(propertiesSchema)?.length) {
       let propertiesSchemaForValidation = propertiesSchema;
 
-      if (!checkRequiredFields) {
+      if (validateDocumentSchema) {
         const { required: _required, ..._propertiesSchemaForValidation } = propertiesSchema;
         propertiesSchemaForValidation = _propertiesSchemaForValidation;
-      }
 
-      const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation);
+        const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation);
 
-      const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
+        const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
 
-      if (!isValidPropertiesSchema && document.type === documentToUpdate.type) {
-        throw new AjvValidationError(validatePropertiesSchema.errors);
+        if (!isValidPropertiesSchema && document.type === documentToUpdate.type) {
+          throw new AjvValidationError(validatePropertiesSchema.errors);
+        }
       }
     }
 
