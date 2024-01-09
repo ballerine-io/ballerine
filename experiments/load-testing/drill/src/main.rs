@@ -195,7 +195,10 @@ fn compare_benchmark(list_reports: &[Vec<Report>], compare_path_option: Option<&
 
       match compare_result {
         Ok(_) => process::exit(0),
-        Err(_) => process::exit(1),
+        Err(err) => {
+  eprintln!("Error comparing benchmark reports: {:?}", err);
+  process::exit(1);
+},
       }
     } else {
       panic!("Threshold needed!");
