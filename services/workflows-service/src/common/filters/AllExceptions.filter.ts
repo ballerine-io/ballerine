@@ -28,12 +28,20 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       this.logError(request, serverError);
     }
 
+    const errorRes = serverError.getResponse();
+
+    let errorMessage: unknown = errorRes;
+
+    if (typeof errorRes === 'object' && 'message' in errorRes && errorRes.message) {
+      errorMessage = errorRes.message;
+    }
+
     response
       .status(serverError.getStatus())
       .setHeader('Content-Type', 'application/json')
       .json({
         errorCode: String(HttpStatusCode[serverError.getStatus()]),
-        message: serverError.message,
+        message: errorMessage,
         statusCode: serverError.getStatus(),
         timestamp: new Date().toISOString(),
         path: request.url,
