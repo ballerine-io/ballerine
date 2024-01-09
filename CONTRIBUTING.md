@@ -93,7 +93,7 @@ When creating a pull request, make sure to follow the pull request template.
 2. Click on the "Fork" button on the top right corner of the GitHub page.
 3. Create the fork.
 4. Follow the instructions from [prerequisites](#prerequisites) up to creating a pull request.
-5. On the compare page, click **compare across forks**.
+5. Click on the 'compare & pull request' button to proceed to open a new pull request.
 6. In the "base branch" drop-down menu, select the branch of the upstream repository you'd like to merge changes into.
 7. In the "head fork" drop-down menu, select your fork, then in the "compare branch" drop-down menu to select the branch you made your changes in.
 8. Create the pull request.
