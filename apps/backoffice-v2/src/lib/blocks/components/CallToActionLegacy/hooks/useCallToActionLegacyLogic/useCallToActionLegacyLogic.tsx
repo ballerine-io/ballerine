@@ -1,5 +1,5 @@
 import { CommonWorkflowEvent } from '@ballerine/common';
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { ComponentProps, FunctionComponent, useCallback, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useApproveTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
@@ -161,7 +161,15 @@ export const useCallToActionLegacyLogic = ({
     },
     [onDialogClose],
   );
-  const DialogDescription = dialog?.reupload?.Description;
+  const DialogDescription: FunctionComponent<
+    ComponentProps<(typeof dialog)['reupload']['Description']>
+  > = () => {
+    if (dialog?.reupload?.Description) {
+      return <dialog.reupload.Description />;
+    }
+
+    return null;
+  };
 
   return {
     isLoadingTaskDecisionById,

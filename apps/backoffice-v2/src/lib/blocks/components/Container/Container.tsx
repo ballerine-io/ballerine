@@ -5,6 +5,8 @@ import { IContainerProps } from './interfaces';
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
 export const Container: FunctionComponent<IContainerProps> = ({ value, id, props }) => {
+  if (!Array.isArray(value) || !value?.length) return null;
+
   return (
     <div
       className={ctw(
