@@ -81,7 +81,7 @@ git push
 
 5. GitHub Actions
 
-Now that the changes are pushed to the remote branch, GitHub Actions will run workflows for building, testing, linting, and formatting. Before creating a pull request, make sure that all workflows have passed.
+Now that the changes are pushed to the remote branch, make sure that all workflows have passed by checking the GitHub Actions page.
 
 6. Create a pull request
 
