@@ -1,5 +1,8 @@
 import * as common from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
+import { ErrorObject } from 'ajv';
+import startCase from 'lodash/startCase';
+import lowerCase from 'lodash/lowerCase';
 
 export class ForbiddenException extends common.ForbiddenException {
   @ApiProperty()
@@ -20,4 +23,20 @@ export class SessionExpiredException extends common.UnauthorizedException {
   statusCode!: number;
   @ApiProperty()
   message!: string;
+}
+
+export class AjvValidationError extends common.BadRequestException {
+  constructor(
+    public error: ErrorObject<string, Record<string, any>, unknown>[] | null | undefined,
+  ) {
+    super();
+  }
+  serializeErrors() {
+    return this.error?.map(({ instancePath, message }) => {
+      return {
+        message: `${startCase(lowerCase(instancePath)).replace('/', '')} ${message}.`,
+        path: instancePath,
+      };
+    });
+  }
 }
