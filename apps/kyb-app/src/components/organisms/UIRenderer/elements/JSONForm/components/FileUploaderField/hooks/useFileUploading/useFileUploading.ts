@@ -35,7 +35,7 @@ export const useFileUploading = (uploader: UploadFileFn): UseFileUploadingResult
         if (error instanceof HTTPError) {
           console.log(`Failed to upload file. Error ${error.message}`);
           setState(prev => ({ ...prev, isUploading: false, error: error as HTTPError }));
-          return;
+          throw error;
         }
 
         setState(prev => ({
@@ -47,6 +47,7 @@ export const useFileUploading = (uploader: UploadFileFn): UseFileUploadingResult
             {} as NormalizedOptions,
           ),
         }));
+        throw error;
       }
     },
     [uploader],
