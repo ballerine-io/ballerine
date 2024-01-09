@@ -840,6 +840,9 @@ export class WorkflowService {
       {},
       [projectId],
     );
+    const documentToUpdate = runtimeData?.context?.documents?.find(
+      (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
+    );
 
     const document = {
       ...data,
@@ -848,17 +851,20 @@ export class WorkflowService {
 
     const documentSchema = addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
     const propertiesSchema = documentSchema?.propertiesSchema ?? {};
+
     if (Object.keys(propertiesSchema)?.length) {
       let propertiesSchemaForValidation = propertiesSchema;
+
       if (!checkRequiredFields) {
         const { required: _required, ..._propertiesSchemaForValidation } = propertiesSchema;
         propertiesSchemaForValidation = _propertiesSchemaForValidation;
       }
+
       const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation);
 
       const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
 
-      if (!isValidPropertiesSchema) {
+      if (!isValidPropertiesSchema && document.type === documentToUpdate.type) {
         throw new AjvValidationError(validatePropertiesSchema.errors);
       }
     }
