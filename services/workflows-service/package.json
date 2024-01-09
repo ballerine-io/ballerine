@@ -96,7 +96,6 @@
     "passport-local": "^1.0.0",
     "reflect-metadata": "0.1.13",
     "rxjs": "^7.8.0",
-    "string-ts": "^1.2.0",
     "swagger-ui-express": "4.6.2",
     "tmp": "^0.2.1",
     "winston": "^3.9.0",
@@ -145,6 +144,7 @@
     "testcontainers": "^9.8.0",
     "ts-jest": "29.1.1",
     "ts-node": "^10.9.1",
-    "type-fest": "0.11.0"
+    "type-fest": "0.11.0",
+    "typescript": "^4.9.3"
   }
 }
