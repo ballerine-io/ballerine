@@ -15,16 +15,13 @@ export const useCreateWorkflowMutation = () => {
     mutationFn: ({
       workflowDefinitionId,
       context,
-      config,
     }: {
       workflowDefinitionId: string;
       context: AnyObject;
-      config: AnyObject;
     }) =>
       createWorkflow({
         workflowDefinitionId: workflowDefinitionId,
         context,
-        config,
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries();

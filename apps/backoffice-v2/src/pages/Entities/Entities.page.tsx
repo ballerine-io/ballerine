@@ -35,7 +35,7 @@ export const Entities: FunctionComponent = () => {
         search={search}
         count={caseCount}
       >
-        <MotionScrollArea className="h-[calc(100vh-240px)]">
+        <MotionScrollArea className="h-[calc(100vh-300px)]">
           <Cases.List>
             {isLoading
               ? skeletonEntities.map(index => (
@@ -63,8 +63,10 @@ export const Entities: FunctionComponent = () => {
           </Cases.List>
         </MotionScrollArea>
         <div className={`divider my-0 px-4`}></div>
-        <Pagination onPaginate={onPaginate} page={page} totalPages={totalPages} />
-        <CaseGeneration />
+        <div className="flex flex-col gap-5 px-4">
+          <Pagination onPaginate={onPaginate} page={page} totalPages={totalPages} />
+          <CaseGeneration />
+        </div>
       </Cases>
       {/* Display skeleton individual when loading the entities list */}
       {isLoading && (
