@@ -2,6 +2,7 @@ import { TWorkflowDefinition } from '@/domains/workflows/fetchers';
 import { SubmitSection } from '@/pages/Entities/components/CaseGeneration/components/CaseGenerationForm/components/SubmitSection';
 import { useCaseGenerationForm } from '@/pages/Entities/components/CaseGeneration/components/CaseGenerationForm/hooks/useCaseGenerationForm';
 import { useFormSchema } from '@/pages/Entities/components/CaseGeneration/components/CaseGenerationForm/hooks/useFormSchema';
+import { transformErrors } from '@/pages/Entities/components/CaseGeneration/components/CaseGenerationForm/utils/transformErrors';
 import { DynamicForm, baseLayouts } from '@ballerine/ui';
 import { FunctionComponent } from 'react';
 
@@ -27,6 +28,7 @@ export const CaseGenerationForm: FunctionComponent<FormProps> = ({ workflowDefin
       uiSchema={uiSchema}
       onSubmit={handleSubmit}
       disabled={isLoading}
+      transformErrors={transformErrors}
       layouts={layouts as typeof baseLayouts}
     />
   );
