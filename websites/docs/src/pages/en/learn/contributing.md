@@ -93,9 +93,9 @@ pnpm commit
 git push
 ```
 
-5. GitHub Actions
+5. Creating a Fork
 
-Now that the changes are pushed to the remote branch, GitHub Actions will run workflows for building, testing, linting, and formatting. Before creating a pull request, make sure that all workflows have passed.
+Now that the fork has been created and the changes are pushed to the forked repository, make sure to follow the next steps for creating a pull request.
 
 6. Create a pull request
 
@@ -103,11 +103,11 @@ When creating a pull request, make sure to follow the pull request template.
 
 ## Contributing using a fork
 
-1. Head to the [repository](https://www.github.com/ballerine-io/ballerine).
+1. Navigate to the [repository](https://www.github.com/ballerine-io/ballerine).
 2. Click on the "Fork" button on the top right corner of the GitHub page.
-3. Create the fork.
-4. Follow the instructions from [prerequisites](#prerequisites) up to creating a pull request.
-5. On the compare page, click **compare across forks**.
-6. In the "base branch" drop-down menu, select the branch of the upstream repository you'd like to merge changes into.
+3. Follow the instructions to create the fork.
+4. Follow the instructions from [prerequisites](#prerequisites) up to pushing the changes to the forked repository.
+5. On the compare page, click **compare across forks**. 7. In the "head fork" drop-down menu, select your fork, then in the "compare branch" drop-down menu, select the branch you made your changes in.
+6. In the "base branch" drop-down menu, select the branch of the upstream repository to which you'd like to merge changes.
 7. In the "head fork" drop-down menu, select your fork, then in the "compare branch" drop-down menu to select the branch you made your changes in.
-8. Create the pull request.
+9. Create the pull request.
