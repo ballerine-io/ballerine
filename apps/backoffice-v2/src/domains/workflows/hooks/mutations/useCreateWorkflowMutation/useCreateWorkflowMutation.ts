@@ -26,7 +26,7 @@ export const useCreateWorkflowMutation = () => {
     onSuccess: () => {
       void queryClient.invalidateQueries();
 
-      toast.success('Case created.');
+      toast.success('Case created successfully.');
     },
     onError: () => {
       toast.error(`Failed to create case.`);
