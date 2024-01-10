@@ -49,7 +49,7 @@ To start the Docker services defined in the `docker-compose.yml` file, follow th
 3. Run the following command to start the containers:
 
    ```shell
-   docker-compose up
+   docker-compose up -d --build
    ```
 
    Docker Compose will read the `docker-compose.yml` file and initiate the containers accordingly. The container logs will be displayed in the terminal.
@@ -71,7 +71,17 @@ To start the containers in Dev mode for easy debugging do the following.
    docker-compose up -f docker-compose-dev.yml
    ```
 
-## Additional Docker Compose Commands
+## Troubleshooting Common Issues
+
+If you encounter issues when running the containers, consider the following troubleshooting steps:
+1. Check the logs of the containers using the following command:
+   ```shell
+   docker-compose logs
+   ```
+2. Use the `docker-compose ps` command to list the status of the containers and identify any containers that are not running as expected.
+3. If a specific service is encountering issues, use the `docker-compose logs <service_name>` command to display the logs of that service.
+4. Verify that the necessary dependencies and configuration files are present and accessible in the environment where the containers are running.
+5. If the containers fail to start, run `docker-compose up -d --build` to rebuild the containers and resolve any configuration issues.
 
 Here are some additional Docker Compose commands that might be useful when working with the repository:
 
@@ -88,4 +98,4 @@ Here are some additional Docker Compose commands that might be useful when worki
 
 ## Conclusion
 
-By utilizing the `docker-compose.yml` file in a repository, you can easily set up and manage the required Docker services for the project. Cloning the repository and running `docker-compose up` allows you to quickly start the defined containers. Be sure to refer to the repository's documentation for any specific instructions or configurations related to the `docker-compose.yml` file.
+By utilizing the `docker-compose.yml` file in a repository, you can easily set up and manage the required Docker services for the project. Make sure that the necessary dependencies and configuration files are present and accessible in the environment where the containers are running. Cloning the repository and running `docker-compose up` allows you to quickly start the defined containers. Be sure to refer to the repository's documentation for any specific instructions or configurations related to the `docker-compose.yml` file. Be sure to refer to the repository's documentation for any specific instructions or configurations related to the `docker-compose.yml` file.
