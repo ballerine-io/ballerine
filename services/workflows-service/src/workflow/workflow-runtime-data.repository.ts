@@ -8,6 +8,7 @@ import { FindLastActiveFlowParams } from '@/workflow/types/params';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { SortOrder } from '@/common/query-filters/sort-order';
 import type { TProjectIds } from '@/types';
+import { Sql } from '@prisma/client/runtime';
 
 export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 
@@ -209,8 +210,8 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
-  async queryRawUnscoped<TValue>(query: string, values: any[] = []): Promise<TValue> {
-    return (await this.prisma.$queryRawUnsafe.apply(this.prisma, [query, ...values])) as TValue;
+  async queryRawUnscoped<TValue>(sql: Sql): Promise<TValue> {
+    return (await this.prisma.$queryRaw(sql)) as TValue;
   }
 
   async findLastActive(
@@ -231,8 +232,6 @@ export class WorkflowRuntimeDataRepository {
       projectIds,
     );
 
-    const latestWorkflowRuntimeData = await this.findOne(query, projectIds);
-
-    return latestWorkflowRuntimeData;
+    return await this.findOne(query, projectIds);
   }
 }
