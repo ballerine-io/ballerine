@@ -80,6 +80,16 @@ git push
 ```
 
 5. GitHub Actions
+Ensure that the following workflows have passed before creating a pull request:
+- Building
+- Testing
+- Linting
+- Formatting
+Ensure that the following workflows have passed before creating a pull request:
+- Building
+- Testing
+- Linting
+- Formatting
 
 Now that the changes are pushed to the remote branch, GitHub Actions will run workflows for building, testing, linting, and formatting. Before creating a pull request, make sure that all workflows have passed.
 
@@ -88,6 +98,8 @@ Now that the changes are pushed to the remote branch, GitHub Actions will run wo
 When creating a pull request, make sure to follow the pull request template.
 
 ## Contributing using a fork
+
+If any of the workflows fail, please check the specific error messages or logs to identify the issue.
 
 1. Head to the [repository](https://www.github.com/ballerine-io/ballerine).
 2. Click on the "Fork" button on the top right corner of the GitHub page.
