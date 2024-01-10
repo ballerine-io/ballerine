@@ -8,7 +8,10 @@ This Markdown file provides guidance on how to utilize the `docker-compose.yml` 
 
 Before proceeding, make sure you have the following installed:
 
-- Docker: Ensure that Docker is installed on your system. If you haven't installed it yet, please refer to the official Docker documentation for instructions on how to install it for your specific operating system.
+- Docker: Ensure that Docker (version 19.03 or later) is installed on your system. If you haven't installed it yet, please refer to the official Docker documentation for instructions on how to install it for your specific operating system:
+  - For Linux: Visit https://docs.docker.com/engine/install/ for installation instructions specific to your Linux distribution.
+  - For Windows: Visit https://docs.docker.com/docker-for-windows/install/ for installation instructions on Windows.
+  - For Mac: Visit https://docs.docker.com/docker-for-mac/install/ for installation instructions on Mac.
 
 ## Cloning the Repository
 
