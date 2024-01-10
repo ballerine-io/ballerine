@@ -1,5 +1,5 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
-import { fetchWorkflowById, fetchWorkflows } from './fetchers';
+import { fetchWorkflowById, fetchWorkflowDefinition, fetchWorkflows } from './fetchers';
 
 export const workflowsQueryKeys = createQueryKeys('workflows', {
   list: ({
@@ -30,6 +30,10 @@ export const workflowsQueryKeys = createQueryKeys('workflows', {
       queryFn: () => fetchWorkflows(data),
     };
   },
+  workflowDefinition: ({ workflowDefinitionId }: { workflowDefinitionId: string }) => ({
+    queryKey: [{ workflowDefinitionId }],
+    queryFn: () => fetchWorkflowDefinition({ workflowDefinitionId }),
+  }),
   byId: ({ workflowId, filterId }: { workflowId: string; filterId: string }) => ({
     queryKey: [{ workflowId, filterId }],
     queryFn: () => fetchWorkflowById({ workflowId, filterId }),

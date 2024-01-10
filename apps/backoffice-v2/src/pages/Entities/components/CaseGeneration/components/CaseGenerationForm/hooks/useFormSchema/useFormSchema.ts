@@ -2,39 +2,21 @@ import { TWorkflowDefinition } from '@/domains/workflows/fetchers';
 import { useMemo } from 'react';
 
 export const useFormSchema = (workflowDefinition: TWorkflowDefinition) => {
+  const transitionSchema = useMemo(
+    () =>
+      workflowDefinition?.transitionSchema?.find(
+        schema => schema.state === workflowDefinition?.definition?.initial,
+      ) ?? null,
+    [workflowDefinition],
+  );
+
   const jsonSchema = useMemo(() => {
-    return workflowDefinition?.inputSchema || { type: 'object' };
-  }, [workflowDefinition]);
+    return transitionSchema?.schema || { type: 'object' };
+  }, [transitionSchema]);
 
   const uiSchema = useMemo(
-    () => ({
-      data: {
-        'ui:label': false,
-        companyName: {
-          'ui:title': 'Company Name',
-        },
-        additionalInfo: {
-          'ui:label': false,
-          companyName: {
-            'ui:title': 'Hello World',
-          },
-          mainRepresentative: {
-            'ui:label': false,
-            'ui:order': ['email', 'firstName', 'lastName'],
-            email: {
-              'ui:title': 'Email',
-            },
-            firstName: {
-              'ui:title': 'First Name',
-            },
-            lastName: {
-              'ui:title': 'Last Name',
-            },
-          },
-        },
-      },
-    }),
-    [],
+    () => transitionSchema?.additionalParameters?.uiSchema || {},
+    [transitionSchema],
   );
 
   return {

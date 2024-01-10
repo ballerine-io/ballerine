@@ -155,7 +155,7 @@ model WorkflowDefinition {
 
   definitionType     String
   definition         Json
-  inputSchema        Json?
+  transitionSchema   Json?
   contextSchema      Json?
   documentsSchema    Json?
   config             Json?
