@@ -72,13 +72,25 @@ pnpm dev
 
 ### Branch name
 
+This project uses branchlint to ensure all branch names follow a consistent format. To use branchlint, make sure that it's installed as a dev dependency in the repository. Also, ensure that the necessary configuration files and settings for commitizen and commitlint are present in the repository for successful execution.
+1. Run the following NPM script in the root of the monorepo and follow the CLI prompts: `pnpm branchlint`
+
+This project employs commitizen and commitlint to ensure consistent commit messages. Use the following steps to push a formatted commit:
+
+```
+# Run the following NPM script in the root of the monorepo and follow the CLI prompts
+pnpm branchlint
+```
+
 This project makes use of [branchlint](https://github.com/Omri-Levy/branchlint) to ensure that all branch names follow a consistent format with a CLI to help with the process of creating a new branch, setting upstream, and checking out to the new branch.
 
 ### Commit message
 
 This project makes use of tools like [commitizen](https://github.com/commitizen/cz-cli) and [commitlint](https://github.com/conventional-changelog/commitlint) to ensure that all commits follow a consistent commit message format with a CLI to help with the process of pushing a commit.
 
-1. Create a new branch, set upstream, and checkout to the new branch
+1. Run `pnpm commit` to begin the commit process.
+2. Make your changes
+3. Push the commit
 
 Make sure to run this NPM script in the root of the monorepo and follow the CLI prompts.
 
