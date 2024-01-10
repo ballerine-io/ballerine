@@ -27,11 +27,7 @@ export const useEntities = () => {
   const entity = useEntityType();
   const individualsSearchOptions = ['entity.name', 'entity.email'];
   const businessesSearchOptions = ['entity.name'];
-  const {
-    searched: cases,
-    onSearch,
-    search: searchValue,
-  } = useSearch({
+  const { onSearch, search: searchValue } = useSearch({
     data: workflows,
     searchBy: entity === 'individuals' ? individualsSearchOptions : businessesSearchOptions,
   });
@@ -99,7 +95,7 @@ export const useEntities = () => {
     onSortBy: onSortByChange,
     onSortDirToggle,
     search: searchValue,
-    cases,
+    cases: data?.data,
     caseCount: data?.meta?.totalItems || 0,
     isLoading,
     page,

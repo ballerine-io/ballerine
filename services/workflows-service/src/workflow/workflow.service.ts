@@ -73,7 +73,7 @@ import {
   WorkflowRuntimeListQueryResult,
 } from './types';
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
-import { WorkflowDefinitionRepository } from '../workflow-defintion/workflow-definition.repository';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import {
   ArrayMergeOption,
@@ -434,56 +434,47 @@ export class WorkflowService {
       projectIds,
     );
 
-    const [orderByColumn, orderByDirection] = (orderBy || 'createdAt:desc').split(':');
+    const { workflowDefinitionIds, statuses, asigneeIds, includeUnassigned } = {
+      workflowDefinitionIds:
+        query.where.workflowDefinitionId &&
+        typeof query.where.workflowDefinitionId === 'object' &&
+        'in' in query.where.workflowDefinitionId &&
+        Array.isArray(query.where.workflowDefinitionId.in)
+          ? query.where.workflowDefinitionId.in
+          : [],
+      statuses:
+        query?.where?.status &&
+        typeof query.where.status === 'object' &&
+        'in' in query.where.status &&
+        Array.isArray(query.where.status.in)
+          ? query.where.status?.in
+          : [],
+      asigneeIds: filters?.assigneeId?.filter((id): id is string => id !== null) ?? [],
+      includeUnassigned: filters?.assigneeId?.includes(null),
+    };
 
-    const searchStatement = search ? `2=2` : '1=1';
-    const workflowStatement =
-      args?.where?.workflowDefinitionId &&
-      typeof args.where.workflowDefinitionId === 'object' &&
-      'in' in args.where.workflowDefinitionId &&
-      Array.isArray(args.where.workflowDefinitionId.in)
-        ? `"workflowDefinitionId" IN (${args.where.workflowDefinitionId.in.map(
-            workflowDefinitionId => `'${workflowDefinitionId}'`,
-          )})`
-        : `1=1`;
-    const projectIdsStatement = projectIds
-      ? `"projectId" IN (${projectIds.map(projectId => `'${projectId}'`)})`
-      : '1=1';
-    const notNullStatement =
-      entityType === 'individuals' ? `"endUserId" IS NOT NULL` : `"businessId" IS NOT NULL`;
-    const assigneeStatement = filters?.assigneeId
-      ? `("assigneeId" IN (${filters.assigneeId
-          .filter((id): id is string => id !== null)
-          .map(assigneeId => `'${assigneeId}'`)}) ${
-          filters.assigneeId.includes(null) ? 'OR "assigneeId" IS NULL' : ''
-        })`
-      : '';
-    const statusStatement = filters?.status
-      ? `"status" IN (${filters.status.map(status => `'${status}'`)})`
-      : '1=1';
-    const orderByStatement = orderBy ? `ORDER BY "${orderByColumn}" ${orderByDirection}` : '';
-    const paginationStatement = `LIMIT ${page.size} OFFSET ${(page.number - 1) * page.size}`;
+    const sql = Prisma.sql`SELECT id FROM search_workflow_data(${search}, array[${workflowDefinitionIds}]::text[], array[${statuses}]::text[], array[${projectIds}]::text[], ${entityType}, array[${asigneeIds}]::text[], ${includeUnassigned})`;
 
-    const newQuery = `SELECT * FROM "WorkflowRuntimeData" WHERE ${searchStatement} AND ${workflowStatement} AND ${projectIdsStatement} AND ${notNullStatement} AND ${assigneeStatement} AND ${statusStatement} ${orderByStatement} ${paginationStatement}`;
+    const workflowIds = await this.workflowRuntimeDataRepository.queryRawUnscoped<
+      WorkflowRuntimeData[]
+    >(sql);
 
-    const totalWorkflowsCount = await this.workflowRuntimeDataRepository.count(
-      {
-        where: query.where,
-      },
-      projectIds,
-    );
-
-    if (page.number > 1 && totalWorkflowsCount < (page.number - 1) * page.size + 1) {
+    if (page.number > 1 && workflowIds.length < (page.number - 1) * page.size + 1) {
       throw new NotFoundException('Page not found');
     }
 
-    const workflows = await this.workflowRuntimeDataRepository.findMany(query, projectIds);
+    const workflowsQuery = {
+      ...query,
+      where: { id: { in: workflowIds.map(workflowId => workflowId.id) } },
+    };
+
+    const workflows = await this.workflowRuntimeDataRepository.findMany(workflowsQuery, projectIds);
 
     return {
       data: this.formatWorkflowsRuntimeData(workflows as unknown as TWorkflowWithRelations[]),
       meta: {
-        totalItems: totalWorkflowsCount,
-        totalPages: Math.max(Math.ceil(totalWorkflowsCount / page.size), 1),
+        totalItems: workflows.length,
+        totalPages: Math.max(Math.ceil(workflowIds.length / page.size), 1),
       },
     };
   }

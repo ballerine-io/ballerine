@@ -30,7 +30,7 @@ import * as swagger from '@nestjs/swagger';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 import * as nestAccessControl from 'nest-access-control';
 import * as errors from '../errors';
-import { isRecordNotFoundError } from '../prisma/prisma.util';
+import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
 import { DocumentUpdateInput } from './dtos/document-update-update-input';
 import { EmitSystemBodyInput, EmitSystemParamInput } from './dtos/emit-system-event-input';
@@ -40,6 +40,7 @@ import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
+import { FilterQuery } from '@/workflow/types';
 
 @swagger.ApiTags('internal/workflows')
 @common.Controller('internal/workflows')
@@ -91,7 +92,7 @@ export class WorkflowControllerInternal {
 
     return await this.service.listWorkflowRuntimeDataWithRelations(
       {
-        args: filter.query as any,
+        args: filter.query as FilterQuery,
         entityType,
         orderBy,
         page,
