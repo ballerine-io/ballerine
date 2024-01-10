@@ -31,12 +31,20 @@ pnpm: ">=7.11.0"
 
 ```bash
 git clone git@github.com:ballerine-io/ballerine.git
+
+#### Create a new branch, set upstream, and checkout to the new branch
+
+```bash
+git checkout -b new-branch
+git push --set-upstream origin new-branch
+```
 ```
 
 2. Navigate to the directory and install dependencies
 
 ```bash
-cd ballerine && pnpm install
+cd ballerine
+pnpm install
 ```
 
 3. Start the dev server
@@ -78,6 +86,9 @@ pnpm branchlint
 ```
 
 2. Make your changes
+
+#### Troubleshooting commit process
+If you encounter issues during the commit process, ensure that your changes are staged using `git add` before running the commit command. Additionally, verify that you are making the commit in the correct branch.
 
 3. Push a formatted commit
 
