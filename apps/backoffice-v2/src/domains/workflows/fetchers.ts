@@ -73,7 +73,8 @@ export const BaseWorkflowDefinition = ObjectWithIdSchema.extend({
         additionalParameters: z.record(z.any()).optional(),
       }),
     )
-    .optional(),
+    .nullable(),
+  isManualCreationEnabled: z.boolean().optional(),
 });
 
 export type TWorkflowDefinition = z.output<typeof BaseWorkflowDefinition>;
@@ -308,7 +309,7 @@ export const fetchWorkflowDefinition = async ({
     options: {
       headers: { Authorization: 'Bearer clipspay_secret' },
     },
-    schema: z.any(),
+    schema: BaseWorkflowDefinition,
   });
 
   return handleZodError(error, workflowDefinition);
