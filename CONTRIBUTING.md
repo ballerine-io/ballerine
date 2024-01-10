@@ -79,7 +79,7 @@ pnpm commit
 git push
 ```
 
-5. GitHub Actions
+
 Ensure that the following workflows have passed before creating a pull request:
 - Building
 - Testing
@@ -105,7 +105,7 @@ If any of the workflows fail, please check the specific error messages or logs t
 2. Click on the "Fork" button on the top right corner of the GitHub page.
 3. Create the fork.
 4. Follow the instructions from [prerequisites](#prerequisites) up to creating a pull request.
-5. On the compare page, click **compare across forks**.
+4. On the compare page, click **compare across forks**.
 6. In the "base branch" drop-down menu, select the branch of the upstream repository you'd like to merge changes into.
 7. In the "head fork" drop-down menu, select your fork, then in the "compare branch" drop-down menu to select the branch you made your changes in.
 8. Create the pull request.
