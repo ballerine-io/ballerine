@@ -6,14 +6,7 @@ Before moving forward please read our [code of conduct](CODE_OF_CONDUCT.md), and
 
 ## What to contribute
 
-We accept contributions in different sizes and varied difficulty, from documentation and typos, to features and bug fixes. To see what you could help with, report an issue, or suggest a feature see [issues](https://github.com/ballerine-io/ballerine/issues) and [discussions](https://github.com/ballerine-io/ballerine/discussions).
-
-## Need help?
-
-- Join our [Discord](https://discord.gg/e2rQE4YygA) or [Slack](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw)
-- Head to our [documentation](README.md)
-- Contact us at [oss@ballerine.com](mailto:oss@ballerine.com)
-
+We accept contributions in different sizes and varied difficulty, from documentation and typos, to features and bug fixes. To see what you could help with, report an issue, suggest a feature, or contribute to discussions, please visit our [issues](https://github.com/ballerine-io/ballerine/issues) and [discussions](https://github.com/ballerine-io/ballerine/discussions) pages.
 ## Prerequisites
 
 ```bash
@@ -28,7 +21,9 @@ git clone git@github.com:ballerine-io/ballerine.git
 ```
 2. Navigate to the directory and install dependencies
 ```bash
-cd ballerine && pnpm install
+cd ballerine
+pnpm install
+pnpm install
 ```
 3. Start the dev server
 ```bash
@@ -63,9 +58,6 @@ Make sure to run this NPM script in the root of the monorepo and follow the CLI 
 ```bash
 pnpm branchlint
 ```
-
-2. Make your changes
-
 3. Push a formatted commit
 
 Make sure to run this NPM script in the root of the monorepo and follow the CLI prompts.
