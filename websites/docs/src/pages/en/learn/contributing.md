@@ -24,9 +24,13 @@ We accept contributions in different sizes and varied difficulty, from documenta
 node: ">=16.15.1"
 pnpm: ">=7.11.0"
 <additional_dependency>:=<version>
-```
+
+### Relevant Files and Dependencies
+- The repository code
 
 ## Setup
+1. [Clone the repository](#clone-repository)
+2. [Navigate to the directory and install dependencies](#navigate-and-install)
 
 1. Clone Ballerine's repository
 
@@ -38,12 +42,16 @@ git clone git@github.com:ballerine-io/ballerine.git
 
 ```bash
 cd ballerine && pnpm install
+3. Start the dev server
 ```
 
 3. Start the dev server
 
 ```bash
 pnpm dev
+4. Open the page in your [browser](http://localhost:3000/)
+
+## Project structure
 ```
 
 4. Open the page in your [browser](http://localhost:3000/)
@@ -85,8 +93,7 @@ pnpm branchlint
 Make sure to run this NPM script in the root of the monorepo and follow the CLI prompts.
 
 ```bash
-pnpm commit
-```
+3. Push the commit
 
 4. Push the commit
 
