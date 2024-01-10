@@ -757,40 +757,44 @@ export const useKycBlock = ({
                 })
                 .addCell({
                   type: 'container',
-                  value: createBlocksTyped()
-                    .addBlock()
-                    .addCell({
-                      id: 'header',
-                      type: 'heading',
-                      value: 'Document Extracted Data',
-                    })
-                    .build()
-                    .concat(documentExtractedData)
-                    .flat(1),
+                  value: documentExtractedData?.length
+                    ? createBlocksTyped()
+                        .addBlock()
+                        .addCell({
+                          id: 'header',
+                          type: 'heading',
+                          value: 'Document Extracted Data',
+                        })
+                        .build()
+                        .concat(documentExtractedData)
+                        .flat(1)
+                    : [],
                 })
                 .addCell({
                   type: 'container',
-                  value: createBlocksTyped()
-                    .addBlock()
-                    .addCell({
-                      id: 'header',
-                      type: 'heading',
-                      value: 'Document Verification Results',
-                    })
-                    .addCell({
-                      id: 'decision',
-                      type: 'details',
-                      hideSeparator: true,
-                      value: {
-                        id: 1,
-                        title: 'Decision',
-                        data: decision,
-                      },
-                      workflowId: childWorkflow?.id,
-                      documents: childWorkflow?.context?.documents,
-                    })
-                    .build()
-                    .flat(1),
+                  value: decision?.length
+                    ? createBlocksTyped()
+                        .addBlock()
+                        .addCell({
+                          id: 'header',
+                          type: 'heading',
+                          value: 'Document Verification Results',
+                        })
+                        .addCell({
+                          id: 'decision',
+                          type: 'details',
+                          hideSeparator: true,
+                          value: {
+                            id: 1,
+                            title: 'Decision',
+                            data: decision,
+                          },
+                          workflowId: childWorkflow?.id,
+                          documents: childWorkflow?.context?.documents,
+                        })
+                        .build()
+                        .flat(1)
+                    : [],
                 })
                 .addCell({
                   type: 'container',
