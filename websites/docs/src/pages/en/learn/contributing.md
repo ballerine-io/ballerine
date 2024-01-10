@@ -106,6 +106,12 @@ git push
 
 5. GitHub Actions
 
+### Checking Workflow Status and Troubleshooting
+
+After pushing the changes to the remote branch, you can check the status of the GitHub Actions workflows on the GitHub UI. In case of issues, refer to the GitHub Actions documentation for troubleshooting common problems. Always ensure that the workflows have passed before creating a pull request.
+
+Once the changes are pushed to the remote branch, the GitHub Actions workflows will run automatically for building, testing, linting, and formatting. Make sure all workflows have passed before creating a pull request.
+
 Now that the changes are pushed to the remote branch, GitHub Actions will run workflows for building, testing, linting, and formatting. Before creating a pull request, make sure that all workflows have passed.
 
 6. Create a pull request
@@ -118,7 +124,7 @@ When creating a pull request, make sure to follow the pull request template.
 2. Click on the "Fork" button on the top right corner of the GitHub page.
 3. Create the fork.
 4. Follow the instructions from [prerequisites](#prerequisites) up to creating a pull request.
-5. On the compare page, click **compare across forks**.
-6. In the "base branch" drop-down menu, select the branch of the upstream repository you'd like to merge changes into.
+5. On the compare page, click **compare across forks**. Ensure that the pull request template is followed for creating the pull request.
+6. In the "base branch" drop-down menu, select the branch of the upstream repository you'd like to merge changes into. Make sure to follow the pull request template while creating the pull request.
 7. In the "head fork" drop-down menu, select your fork, then in the "compare branch" drop-down menu to select the branch you made your changes in.
 8. Create the pull request.
