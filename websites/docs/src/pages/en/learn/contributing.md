@@ -93,9 +93,9 @@ pnpm commit
 git push
 ```
 
-5. Creating a Fork
+5. GitHub Actions Workflows
 
-Now that the fork has been created and the changes are pushed to the forked repository, make sure to follow the next steps for creating a pull request.
+Now that the fork has been created, the changes are pushed to the forked repository, and the GitHub Actions workflows have passed, you can proceed with creating a pull request for the changes by following the next steps:
 
 6. Create a pull request
 
@@ -107,7 +107,7 @@ When creating a pull request, make sure to follow the pull request template.
 2. Click on the "Fork" button on the top right corner of the GitHub page.
 3. Follow the instructions to create the fork.
 4. Follow the instructions from [prerequisites](#prerequisites) up to pushing the changes to the forked repository.
-5. On the compare page, click **compare across forks**. 7. In the "head fork" drop-down menu, select your fork, then in the "compare branch" drop-down menu, select the branch you made your changes in.
+5. On the compare page, click **compare across forks**. 7. In the "head fork" drop-down menu, select your fork, then in the "compare branch" drop-down menu, select the branch you made your changes in to check the status of the GitHub Actions workflows.
 6. In the "base branch" drop-down menu, select the branch of the upstream repository to which you'd like to merge changes.
 7. In the "head fork" drop-down menu, select your fork, then in the "compare branch" drop-down menu to select the branch you made your changes in.
 9. Create the pull request.
