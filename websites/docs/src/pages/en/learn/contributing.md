@@ -23,6 +23,7 @@ We accept contributions in different sizes and varied difficulty, from documenta
 ```bash
 node: ">=16.15.1"
 pnpm: ">=7.11.0"
+<additional_dependency>:=<version>
 ```
 
 ## Setup
@@ -56,7 +57,7 @@ pnpm dev
 ├── sdks # dev kits for developers to create experiences and applications, interacts with apps
  (can load an app into a certain platform such as web or native)
 └── services # backend microservices, services communicate through a communication layer
-(i.e REST/HTTP requests), and may communicate with a database
+(i.e REST/HTTP requests, relevant dependencies or files), and may communicate with a database
 ```
 
 ## First commit
