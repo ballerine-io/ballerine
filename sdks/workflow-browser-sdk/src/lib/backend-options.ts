@@ -1,7 +1,7 @@
 import type { BackendOptions } from './types';
 
 export const backendOptions = {
-  baseUrl: 'https://api-dev.ballerine.io/external',
+  baseUrl: 'https://api.ballerine.io',
   endpoints: {
     persist: {
       endpoint: '/workflows/:workflowId',
@@ -14,7 +14,7 @@ export const backendOptions = {
   },
   headers: {
     'Content-Type': 'application/json',
-    Authorization: 'Bearer 123',
-    credentials: 'include',
+    Authorization: 'correct_token',
+    ,
   },
 } as const satisfies BackendOptions;
