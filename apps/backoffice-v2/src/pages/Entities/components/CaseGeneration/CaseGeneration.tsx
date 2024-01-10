@@ -2,46 +2,22 @@ import { Button } from '@/common/components/atoms/Button/Button';
 import { SheetContent, SheetTrigger } from '@/common/components/atoms/Sheet';
 import { Sheet } from '@/common/components/atoms/Sheet/Sheet';
 import { CaseGenerationForm } from '@/pages/Entities/components/CaseGeneration/components/CaseGenerationForm';
+import { withCaseGeneration } from '@/pages/Entities/components/CaseGeneration/context/case-generation-context/hocs/withCaseGeneration';
+import { useCaseGenerationContext } from '@/pages/Entities/components/CaseGeneration/context/case-generation-context/hooks/useCaseGenerationContext';
 import { useCaseGenerationWorkflow } from '@/pages/Entities/components/CaseGeneration/hooks/useCaseGenerationWorkflow';
 import { PlusIcon } from '@radix-ui/react-icons';
 
-const uiSchema = {
-  data: {
-    'ui:label': false,
-    companyName: {
-      'ui:title': 'Company Name',
-    },
-    additionalInfo: {
-      'ui:label': false,
-      companyName: {
-        'ui:title': 'Hello World',
-      },
-      mainRepresentative: {
-        'ui:label': false,
-        'ui:order': ['email', 'firstName', 'lastName'],
-        email: {
-          'ui:title': 'Email',
-        },
-        firstName: {
-          'ui:title': 'First Name',
-        },
-        lastName: {
-          'ui:title': 'Last Name',
-        },
-      },
-    },
-  },
-};
-
-export const CaseGeneration = () => {
+export const CaseGeneration = withCaseGeneration(() => {
   const { workflow } = useCaseGenerationWorkflow();
+  const { isOpen, setOpen } = useCaseGenerationContext();
 
   return (
-    <Sheet>
+    <Sheet open={isOpen} onOpenChange={setOpen}>
       <SheetTrigger>
         <Button
           variant="outline"
           className="flex w-full items-center justify-start gap-2 font-semibold"
+          onClick={() => setOpen(true)}
         >
           <PlusIcon />
           <span>Add case manually</span>
@@ -71,4 +47,4 @@ export const CaseGeneration = () => {
       </SheetContent>
     </Sheet>
   );
-};
+});

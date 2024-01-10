@@ -70,6 +70,8 @@
     "@radix-ui/react-select": "^1.2.1",
     "@radix-ui/react-separator": "^1.0.2",
     "@radix-ui/react-slot": "^1.0.1",
+    "@radix-ui/react-switch": "^1.0.3",
+    "@rjsf/utils": "^5.9.0",
     "@tanstack/react-query": "^4.19.1",
     "@tanstack/react-table": "^8.9.2",
     "broadcast-channel": "^7.0.0",
