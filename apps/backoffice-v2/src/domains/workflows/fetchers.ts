@@ -56,21 +56,25 @@ export const fetchWorkflows = async (params: {
 
 export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
 
+export const BaseWorkflowDefinition = ObjectWithIdSchema.extend({
+  name: z.string(),
+  version: z.number(),
+  variant: z.string().default(WorkflowDefinitionVariant.DEFAULT),
+  contextSchema: z.record(z.any(), z.any()).nullable(),
+  documentsSchema: z.array(z.any()).optional().nullable(),
+  config: z.record(z.any(), z.any()).nullable(),
+  inputSchema: z.record(z.any()),
+});
+
+export type TWorkflowDefinition = z.output<typeof BaseWorkflowDefinition>;
+
 export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
   status: z.string(),
   state: z.string().nullable(),
   nextEvents: z.array(z.any()),
   tags: z.array(z.string()).nullable().optional(),
-  workflowDefinition: ObjectWithIdSchema.extend({
-    name: z.string(),
-    version: z.number(),
-    variant: z.string().default(WorkflowDefinitionVariant.DEFAULT),
-    contextSchema: z.record(z.any(), z.any()).nullable(),
-    documentsSchema: z.array(z.any()).optional().nullable(),
-    config: z.record(z.any(), z.any()).nullable(),
-    inputSchema: z.record(z.any()),
-  }),
+  workflowDefinition: BaseWorkflowDefinition,
   createdAt: z.string().datetime(),
   context: z.object({
     documents: z.array(z.any()).default([]),
@@ -261,11 +265,9 @@ export const fetchWorkflowEventDecision = async ({
 export const createWorkflow = async ({
   workflowDefinitionId,
   context,
-  config,
 }: {
   workflowDefinitionId: string;
   context: AnyObject;
-  config: AnyObject;
 }) => {
   const [workflow, error] = await apiClient({
     method: Method.POST,
@@ -273,7 +275,6 @@ export const createWorkflow = async ({
     body: {
       workflowId: workflowDefinitionId,
       context,
-      config,
     },
     schema: z.any(),
   });
