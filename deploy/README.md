@@ -1,5 +1,7 @@
 # How to Use docker-compose.yml to kickstart Ballerine
 
+## Configuring and Running GitHub Actions Workflows
+
 ## Introduction
 
 This Markdown file provides guidance on how to utilize the `docker-compose.yml` file in a repository effectively.
@@ -71,7 +73,9 @@ To start the containers in Dev mode for easy debugging do the following.
    docker-compose up -f docker-compose-dev.yml
    ```
 
-## Additional Docker Compose Commands
+## Building, Testing, Linting, and Formatting the Code
+
+Here are the necessary steps to build, test, lint, and format the code:
 
 Here are some additional Docker Compose commands that might be useful when working with the repository:
 
@@ -87,5 +91,7 @@ Here are some additional Docker Compose commands that might be useful when worki
 - `docker-compose up --build --force-recreate`: Builds or rebuilds all the services in `docker-compose.yml`
 
 ## Conclusion
+
+## GitHub Actions Workflows
 
 By utilizing the `docker-compose.yml` file in a repository, you can easily set up and manage the required Docker services for the project. Cloning the repository and running `docker-compose up` allows you to quickly start the defined containers. Be sure to refer to the repository's documentation for any specific instructions or configurations related to the `docker-compose.yml` file.
