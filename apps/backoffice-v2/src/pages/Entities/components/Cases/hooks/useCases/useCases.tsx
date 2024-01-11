@@ -1,81 +1,128 @@
-import { useDocumentListener } from '../../../../../../common/hooks/useDocumentListener/useDocumentListener';
-import { useCallback, useRef } from 'react';
-import { useUsersQuery } from '../../../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
-import { useEntityType } from '../../../../../../common/hooks/useEntityType/useEntityType';
-import { useSearchParamsByEntity } from '../../../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { useDocumentListener } from '@/common/hooks/useDocumentListener/useDocumentListener';
+import { useCallback, useMemo, useRef } from 'react';
+import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
+import { useEntityType } from '@/common/hooks/useEntityType/useEntityType';
+import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { tagToBadgeData } from '@/pages/Entity/components/Case/consts';
+import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useParams } from 'react-router-dom';
+
+const sharedSortByOptions = [
+  {
+    label: 'Created At',
+    value: 'createdAt',
+  },
+];
+
+const individualsSortByOptions = [
+  ...sharedSortByOptions,
+  {
+    label: 'First Name',
+    value: 'firstName',
+  },
+  {
+    label: 'Last Name',
+    value: 'lastName',
+  },
+  {
+    label: 'Email',
+    value: 'email',
+  },
+] as const;
+
+const businessesSortByOptions = [
+  ...sharedSortByOptions,
+  {
+    label: 'Business Name',
+    value: 'companyName',
+  },
+];
 
 export const useCases = () => {
-  const [{ filter, sortBy }] = useSearchParamsByEntity();
+  const { entityId: workflowId } = useParams();
+  const [{ filterId, filter, sortBy }] = useSearchParamsByEntity();
   const entity = useEntityType();
-  const sharedSortByOptions = [
-    {
-      label: 'Created At',
-      value: 'createdAt',
-    },
-  ];
-  const individualsSortByOptions = [
-    ...sharedSortByOptions,
-    {
-      label: 'First Name',
-      value: 'firstName',
-    },
-    {
-      label: 'Last Name',
-      value: 'lastName',
-    },
-    {
-      label: 'Email',
-      value: 'email',
-    },
-  ] as const;
+
+  const { data: workflow } = useWorkflowQuery({ workflowId, filterId });
+
+  const states = useMemo(
+    () => workflow?.workflowDefinition.definition.states,
+    [workflow?.workflowDefinition.definition.states],
+  );
+
+  const statuses = useMemo(
+    () => [
+      ...new Set(
+        Object.keys(states || {})
+          .map(key => states?.[key]?.tags)
+          .flat(),
+      ),
+    ],
+    [states],
+  );
+
   const { data: users } = useUsersQuery();
-  const businessesSortByOptions = [
-    ...sharedSortByOptions,
-    {
-      label: 'Business Name',
-      value: 'companyName',
-    },
-  ];
-  const sortByOptions =
-    entity === 'individuals' ? individualsSortByOptions : businessesSortByOptions;
-  const filterByOptions = [
-    {
-      label: 'Status',
-      value: 'status',
-      options: [
+
+  const sortByOptions = useMemo(
+    () => (entity === 'individuals' ? individualsSortByOptions : businessesSortByOptions),
+    [entity],
+  );
+
+  const filterByOptions = useMemo(
+    () =>
+      [
         {
-          label: 'Active',
-          value: 'active',
+          label: 'Assignee',
+          value: 'assigneeId',
+          options: [
+            ...(users?.map(({ id, fullName }) => ({
+              label: fullName,
+              value: id,
+              key: id,
+            })) ?? []),
+            {
+              label: 'Unassigned',
+              value: null,
+            },
+          ],
         },
         {
-          label: 'Completed',
-          value: 'completed',
+          label: 'Status',
+          value: 'status',
+          options: [
+            ...(statuses?.map(status => ({
+              label: tagToBadgeData[status].text,
+              value: status,
+              key: status,
+            })) ?? []),
+          ],
         },
         {
-          label: 'Failed',
-          value: 'failed',
+          label: 'State',
+          value: 'state',
+          options: [
+            {
+              label: 'Active',
+              value: 'active',
+            },
+            {
+              label: 'Completed',
+              value: 'completed',
+            },
+            {
+              label: 'Failed',
+              value: 'failed',
+            },
+          ],
         },
-      ],
-    },
-    {
-      label: 'Assignee',
-      value: 'assigneeId',
-      options: [
-        ...(users?.map(({ id, fullName }) => ({
-          label: fullName,
-          value: id,
-          key: id,
-        })) ?? []),
-        {
-          label: 'Unassigned',
-          value: null,
-        },
-      ],
-    },
-  ] as const;
+      ] as const,
+    [statuses, users],
+  );
+
   const searchRef = useRef<HTMLInputElement>();
   const sortRef = useRef<HTMLButtonElement>();
   const filterRef = useRef<HTMLButtonElement>();
+
   const handleDropdown = useCallback(e => {
     const dropdown = e.target.closest('.dropdown');
 
@@ -93,6 +140,7 @@ export const useCases = () => {
     if (!listeners.includes(event.key?.toLowerCase() as (typeof listeners)[number])) return;
 
     event.preventDefault();
+    let dropdown;
 
     switch (event.key?.toLowerCase()) {
       case 'k':
@@ -104,15 +152,16 @@ export const useCases = () => {
         if (!sortRef.current) break;
 
         sortRef.current.focus();
+        break;
       case 'f':
         if (!filterRef.current) break;
 
-        const dropdown = filterRef.current.closest('.dropdown');
+        dropdown = filterRef.current.closest('.dropdown');
 
-        dropdown.classList.toggle('dropdown-open');
-        dropdown.classList.toggle('dropdown-hover');
+        dropdown?.classList.toggle('dropdown-open');
+        dropdown?.classList.toggle('dropdown-hover');
 
-        if (!dropdown.classList.contains('dropdown-hover')) {
+        if (!dropdown?.classList.contains('dropdown-hover')) {
           filterRef.current.click();
         }
 

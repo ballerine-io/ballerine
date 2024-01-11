@@ -12,6 +12,7 @@ export interface PrismaGeneralQueryArgs {
   skip?: number;
   distinct?: Record<string, unknown> | null;
 }
+
 export interface PrismaGeneralInsertArgs extends PrismaGeneralQueryArgs {
   data: Record<string, unknown> | null;
 }
