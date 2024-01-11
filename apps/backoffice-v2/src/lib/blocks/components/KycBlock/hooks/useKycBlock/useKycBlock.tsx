@@ -186,7 +186,7 @@ export const useKycBlock = ({
   const complianceCheckResults = kycSessionKeys?.length
     ? kycSessionKeys?.flatMap(key => {
         const aml =
-          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult ??
+          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ??
           childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml;
 
         if (!Object.keys(aml ?? {}).length) return [];
