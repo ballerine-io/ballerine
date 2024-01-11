@@ -473,7 +473,7 @@ export class WorkflowService {
     return {
       data: this.formatWorkflowsRuntimeData(workflows as unknown as TWorkflowWithRelations[]),
       meta: {
-        totalItems: workflows.length,
+        totalItems: workflowIds.length,
         totalPages: Math.max(Math.ceil(workflowIds.length / page.size), 1),
       },
     };
