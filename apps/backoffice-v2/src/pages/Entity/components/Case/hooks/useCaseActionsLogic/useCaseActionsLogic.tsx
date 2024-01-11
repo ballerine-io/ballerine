@@ -15,6 +15,7 @@ import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hoo
 import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
 import { tagToBadgeData } from '../../consts';
 import { usePendingRevisionEvents } from '@/pages/Entity/components/Case/hooks/usePendingRevisionEvents/usePendingRevisionEvents';
+import { CommonWorkflowEvent } from '@ballerine/common';
 
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
@@ -76,7 +77,10 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
 
   const documentsToReviseCount = useMemo(
-    () => pendingWorkflowEvents?.filter(pendingEvent => !!pendingEvent.eventName)?.length,
+    () =>
+      pendingWorkflowEvents?.filter(
+        pendingEvent => pendingEvent.eventName === CommonWorkflowEvent.REVISION,
+      )?.length,
     [pendingWorkflowEvents],
   );
   const assignedUser = workflow?.assignee
