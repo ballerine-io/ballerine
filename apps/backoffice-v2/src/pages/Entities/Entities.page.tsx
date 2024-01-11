@@ -1,4 +1,5 @@
 import { CaseGeneration } from '@/pages/Entities/components/CaseGeneration';
+import { ctw } from '@ballerine/ui';
 import { FunctionComponent } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Assignee } from '../../common/components/atoms/AssignDropdown/AssignDropdown';
@@ -23,6 +24,7 @@ export const Entities: FunctionComponent = () => {
     totalPages,
     caseCount,
     skeletonEntities,
+    showCaseGeneration,
   } = useEntities();
 
   return (
@@ -35,7 +37,12 @@ export const Entities: FunctionComponent = () => {
         search={search}
         count={caseCount}
       >
-        <MotionScrollArea className="h-[calc(100vh-300px)]">
+        <MotionScrollArea
+          className={ctw({
+            'h-[calc(100vh-300px)]': showCaseGeneration,
+            'h-[calc(100vh-240px)]': !showCaseGeneration,
+          })}
+        >
           <Cases.List>
             {isLoading
               ? skeletonEntities.map(index => (

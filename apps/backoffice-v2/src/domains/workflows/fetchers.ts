@@ -1,4 +1,5 @@
 import { env } from '@/common/env/env';
+import { getOriginUrl } from '@/domains/workflows/utils/get-origin-url';
 import { WorkflowDefinitionVariant } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
 import qs from 'qs';
@@ -63,7 +64,17 @@ export const BaseWorkflowDefinition = ObjectWithIdSchema.extend({
   contextSchema: z.record(z.any(), z.any()).nullable(),
   documentsSchema: z.array(z.any()).optional().nullable(),
   config: z.record(z.any(), z.any()).nullable(),
-  inputSchema: z.record(z.any()),
+  definition: z.record(z.any()),
+  transitionSchema: z
+    .array(
+      z.object({
+        state: z.string(),
+        schema: z.record(z.any()),
+        additionalParameters: z.record(z.any()).optional(),
+      }),
+    )
+    .nullable(),
+  isManualCreationEnabled: z.boolean().optional(),
 });
 
 export type TWorkflowDefinition = z.output<typeof BaseWorkflowDefinition>;
@@ -271,16 +282,29 @@ export const createWorkflow = async ({
 }) => {
   const [workflow, error] = await apiClient({
     method: Method.POST,
-    url: `${env.VITE_API_URL.replace('internal', 'external')}/workflows/run`,
+    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/workflows/run`,
     body: {
       workflowId: workflowDefinitionId,
       context,
-    },
-    options: {
-      headers: { Authorization: 'Bearer clipspay_secret' },
     },
     schema: z.any(),
   });
 
   return handleZodError(error, workflow);
+};
+
+export const fetchWorkflowDefinition = async ({
+  workflowDefinitionId,
+}: {
+  workflowDefinitionId: string;
+}) => {
+  const [workflowDefinition, error] = await apiClient({
+    method: Method.GET,
+    url: `${getOriginUrl(
+      env.VITE_API_URL,
+    )}/api/v1/external/workflows/workflow-definition/${workflowDefinitionId}`,
+    schema: BaseWorkflowDefinition,
+  });
+
+  return handleZodError(error, workflowDefinition);
 };
