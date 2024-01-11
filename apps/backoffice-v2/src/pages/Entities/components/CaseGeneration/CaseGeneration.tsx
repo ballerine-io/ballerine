@@ -53,30 +53,3 @@ export const CaseGeneration = withCaseGeneration(() => {
     </Sheet>
   );
 });
-
-const q = {
-  entity: {
-    id: 'my-user-1704895417',
-    data: {
-      companyName: 'Dudi Inc',
-      additionalInfo: {
-        mainRepresentative: {
-          email: 'illiar+1704895417@ballerine.com',
-          lastName: 'Dude',
-          firstName: 'Ben',
-        },
-      },
-    },
-    type: 'business',
-    ballerineEntityId: 'clr7upmuu0000tlziisncbgro',
-  },
-  metadata: {
-    token: '3011b542-94f9-48b6-98b9-53bd1f9a439f',
-    customerName: 'Clipspay',
-    customerNormalizedName: 'clipspay',
-  },
-  documents: [],
-  customerName: 'Clipspay',
-  pluginsOutput: { collection_invite_email: {} },
-  workflowRuntimeId: 'clr7upmva0002tlzi3xjwd0v9',
-};
