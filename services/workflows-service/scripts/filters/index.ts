@@ -4,6 +4,7 @@ export const baseFilterDefinitionSelect = {
       id: true,
       name: true,
       contextSchema: true,
+      documentsSchema: true,
       config: true,
       definition: true,
       variant: true,

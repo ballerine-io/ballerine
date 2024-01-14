@@ -196,7 +196,7 @@ const reportData: Partial<IReport> = {
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <div className="h-screen">
     <ViewerDEV>
-      <ReportTemplate report={reportData as IReport} />
+      <ReportTemplate report={reportData as IReport} version={1} />
     </ViewerDEV>
   </div>,
 );

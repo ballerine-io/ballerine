@@ -1,5 +1,12 @@
 # @ballerine/react-pdf-toolkit
 
+## 1.0.5
+
+### Patch Changes
+
+- Fixed risk score colors & fixed rendering of empty sections & fixed typo
+- added version to ReportTemplate header
+
 ## 1.0.4
 
 ### Patch Changes
