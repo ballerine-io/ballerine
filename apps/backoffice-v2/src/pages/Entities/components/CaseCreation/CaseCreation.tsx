@@ -13,7 +13,7 @@ export const CaseCreation = withCaseCreation(() => {
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
-      <SheetTrigger>
+      <SheetTrigger asChild>
         <Button
           variant="outline"
           className="flex w-full items-center justify-start gap-2 font-semibold"
