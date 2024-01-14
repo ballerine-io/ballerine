@@ -1,6 +1,6 @@
 import { useCurrentFilter } from '@/common/hooks/useCurrentFilter/useCurrentFilter';
 import { TFilter } from '@/domains/filters/types';
-import { useWorkflowDefinitionQuery } from '@/domains/workflows/hooks/queries/useWorkflowDefinitionQuery/useWorkflowDefinitionQuery';
+import { useWorkflowDefinitionByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowDefinitionQuery/useWorkflowDefinitionQuery';
 import { selectWorkflowDefinitionId } from '@/pages/Entities/components/CaseGeneration/hooks/useCaseGenerationWorkflowDefinition/selectors/select-workflow-definition-id';
 import { useMemo } from 'react';
 
@@ -14,7 +14,7 @@ export const useCaseGenerationWorkflowDefinition = () => {
     data: workflowDefinition,
     isLoading,
     error,
-  } = useWorkflowDefinitionQuery({
+  } = useWorkflowDefinitionByIdQuery({
     workflowDefinitionId,
   });
 
