@@ -273,7 +273,7 @@ export const fetchWorkflowEventDecision = async ({
   return handleZodError(error, workflow);
 };
 
-export const createWorkflow = async ({
+export const createWorkflowRequest = async ({
   workflowDefinitionId,
   context,
 }: {

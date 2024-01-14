@@ -1,4 +1,4 @@
-import { createWorkflow } from '@/domains/workflows/fetchers';
+import { createWorkflowRequest } from '@/domains/workflows/fetchers';
 import { AnyObject } from '@ballerine/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
@@ -19,7 +19,7 @@ export const useCreateWorkflowMutation = () => {
       workflowDefinitionId: string;
       context: AnyObject;
     }) =>
-      createWorkflow({
+      createWorkflowRequest({
         workflowDefinitionId: workflowDefinitionId,
         context,
       }),
