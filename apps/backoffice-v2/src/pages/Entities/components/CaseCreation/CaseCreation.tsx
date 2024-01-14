@@ -9,7 +9,7 @@ import { Plus } from 'lucide-react';
 
 export const CaseCreation = withCaseCreation(() => {
   const { workflowDefinition, isLoading, error } = useCaseCreationWorkflowDefinition();
-  const { isOpen, setOpen } = useCaseCreationContext();
+  const { isOpen, setIsOpen: setOpen } = useCaseCreationContext();
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>

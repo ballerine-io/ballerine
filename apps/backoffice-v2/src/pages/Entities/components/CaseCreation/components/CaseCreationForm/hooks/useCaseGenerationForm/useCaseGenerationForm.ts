@@ -7,7 +7,7 @@ import { useCallback } from 'react';
 
 export const useCaseCreationForm = (workflowDefinition: TWorkflowDefinition) => {
   const { isLoading, mutateAsync } = useCreateWorkflowMutation();
-  const { isMultipleCasesCreation, setOpen } = useCaseCreationContext();
+  const { isMultipleCasesCreation, setIsOpen: setOpen } = useCaseCreationContext();
 
   const handleSubmit = useCallback(
     async (formData: AnyObject) => {

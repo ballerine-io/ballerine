@@ -3,9 +3,9 @@ export interface CaseCreationContextState {
   isOpen: boolean;
 }
 
-export interface CaseCreationApi {
+export interface CaseCreationLogic {
   toggleMultiCaseCreation: () => void;
-  setOpen: (open: boolean) => void;
+  setIsOpen: (isOpen: boolean) => void;
 }
 
-export type CaseGenerationContext = CaseCreationContextState & CaseCreationApi;
+export type CaseGenerationContext = CaseCreationContextState & CaseCreationLogic;
