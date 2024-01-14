@@ -1,5 +1,5 @@
 export interface TransitionSchema {
   state: string;
-  schema: object;
-  additionalParameters?: object;
+  schema: Record<PropertyKey, unknown>;
+  additionalParameters?: Record<PropertyKey, unknown>;
 }

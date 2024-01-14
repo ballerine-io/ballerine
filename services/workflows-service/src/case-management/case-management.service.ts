@@ -3,7 +3,7 @@ import { AjvValidationError } from '@/errors';
 import { TProjectId } from '@/types';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowRunDto } from '@/workflow/dtos/workflow-run';
-import { ajv } from '@/workflow/utils/ajv.validator';
+import { ajv } from '@/common/ajv/ajv.validator';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { WorkflowDefinition } from '@prisma/client';

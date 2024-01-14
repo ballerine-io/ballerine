@@ -79,7 +79,7 @@ import {
 import mime from 'mime';
 import { env } from '@/env';
 import { AjvValidationError } from '@/errors';
-import { ajv } from '@/workflow/utils/ajv.validator';
+import { ajv } from '@/common/ajv/ajv.validator';
 
 type TEntityId = string;
 

@@ -2,7 +2,7 @@ import { CaseManagementService } from '@/case-management/case-management.service
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import type { TProjectId, TProjectIds } from '@/types';
+import type { AuthenticatedEntity, TProjectId, TProjectIds } from '@/types';
 import { UserData } from '@/user/user-data.decorator';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowRunDto } from '@/workflow/dtos/workflow-run';
@@ -21,7 +21,7 @@ export class CaseManagementController {
   ) {}
 
   @Get('workflow-definition/:workflowDefinitionId')
-  async getCaseDefinition(
+  async getCaseDefinitionById(
     @Param('workflowDefinitionId') workflowDefinitionId: string,
     @ProjectIds() projectIds: TProjectId[],
   ) {
@@ -34,13 +34,15 @@ export class CaseManagementController {
   @ApiForbiddenResponse({ type: ForbiddenException })
   async createCase(
     @Body() body: WorkflowRunDto,
-    @UserData() user: { user: User },
+    @UserData() authenticatedEntity: AuthenticatedEntity,
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
     const result = this.caseManagementService.create(body, projectIds!, currentProjectId);
 
-    this.logger.log(`User ${user?.user?.id} created workflow ${(await result).workflowRuntimeId}`);
+    this.logger.log(
+      `User ${authenticatedEntity?.user?.id} created workflow ${(await result).workflowRuntimeId}`,
+    );
 
     return result;
   }
