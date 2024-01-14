@@ -5,7 +5,7 @@ import { CaseGenerationForm } from '@/pages/Entities/components/CaseCreation/com
 import { withCaseCreation } from '@/pages/Entities/components/CaseCreation/context/case-creation-context/hocs/withCaseCreation';
 import { useCaseCreationContext } from '@/pages/Entities/components/CaseCreation/context/case-creation-context/hooks/useCaseCreationContext';
 import { useCaseCreationWorkflowDefinition } from '@/pages/Entities/components/CaseCreation/hooks/useCaseCreationWorkflowDefinition';
-import { PlusIcon } from '@radix-ui/react-icons';
+import { Plus } from 'lucide-react';
 
 export const CaseCreation = withCaseCreation(() => {
   const { workflowDefinition, isLoading, error } = useCaseCreationWorkflowDefinition();
@@ -19,7 +19,7 @@ export const CaseCreation = withCaseCreation(() => {
           className="flex w-full items-center justify-start gap-2 font-semibold"
           onClick={() => setOpen(true)}
         >
-          <PlusIcon />
+          <Plus />
           <span>Add case manually</span>
         </Button>
       </SheetTrigger>
