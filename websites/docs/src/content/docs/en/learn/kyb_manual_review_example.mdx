@@ -78,7 +78,7 @@ In this guide, we will create a simple KYB workflow, collect documents and infor
 
 ## Running the KYB Manual Review Example
 
-Once the command below is executed, two browser windows will open, one for the collection flow, and one for the case management. You should also see the workflows service running in the terminal.
+Once the command below is executed, two browser windows will open, one for the collection flow, and one for the case management. You should also see the workflows service running in the terminal. Note that outside the example the link to the collection flow would be sent to the end-user via email.
 
   <PackageManagersTabs
     lang={`bash`}
@@ -123,8 +123,28 @@ You should see a list of navigation items on the left side of the screen, each r
 
 ![Case Management KYB with UBO's](../../../../assets/case-management-marked.png)
 
-Let's start by assigning the case to ourselves. Click on the dropdown currently with the text "Unassigned" and select your name from the list also marked by (You).
+Let's start by assigning the case to ourselves. Click on the dropdown currently with the text "Unassigned" and select your name from the list also marked by "(You)".
 
 ![Case Management Assign](../../../../assets/case-management-assignment.png)
 
-Now let's take a look at the various actions we can take on the case. Click on the first instance you can find of a "Re-upload needed" button.
+Next let's look at actions. There are two types of actions in the case management, there are case actions, and there are task actions. In the screenshot below, the case actions are marked by "1.", and the task actions are marked by "2.".
+
+![Case Management Actions](../../../../assets/case-management-actions.png)
+
+Case actions are actions that can be taken on the case as a whole, such as approving or rejecting the case, or use "Ask for all re-uploads" as a last step after marking a group of tasks with "Re-upload needed".
+
+Task actions are actions that can be taken on a specific document or a singular "block" seen as individual bordered cards in the UI, such as requesting the end-user to re-upload documents or approving a specific document. For this example, we'll be going through the re-upload flow.
+
+1. Click on the "Re-upload needed" button on a single task.
+
+2. You should see a modal with a way of choosing a reason for the re-upload request and a comment. Once confirmed you'll now see the task actions changed to a single "Re-upload" button with an "X" icon next to it allowing to cancel the re-upload request, and the "Ask for all re-uploads" case action now has a counter next to it with the number of tasks marked with "Re-upload needed".
+
+![Case Management Re-upload](../../../../assets/case-management-re-upload.png)
+
+3. Click on the "Ask for all re-uploads" case action, a modal will appear with a confirmation button of "Send email". Once clicked, a new tab will open to the collection flow with inputs relevant to the re-upload request marked with a validation error. Note that outside the example the link to the re-upload flow would be sent to the end-user via email.
+
+![Collection Flow Re-upload](../../../../assets/collection-flow-re-upload.png)
+
+4. Once submitted, the case management will be updated with the new information, and the task actions will be updated to allow approving the re-uploaded documents once more.
+
+That's it! You've completed the KYB manual review example. Once the case is approved or rejected, it will be removed from the case management's default filter and outside the example a webhook would be sent with the case's decision.
