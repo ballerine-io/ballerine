@@ -57,7 +57,7 @@ export const fetchWorkflows = async (params: {
 
 export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
 
-export const BaseWorkflowDefinition = ObjectWithIdSchema.extend({
+export const WorkflowDefinitionSchema = ObjectWithIdSchema.extend({
   name: z.string(),
   version: z.number(),
   variant: z.string().default(WorkflowDefinitionVariant.DEFAULT),
@@ -77,7 +77,7 @@ export const BaseWorkflowDefinition = ObjectWithIdSchema.extend({
   isManualCreationEnabled: z.boolean().optional(),
 });
 
-export type TWorkflowDefinition = z.output<typeof BaseWorkflowDefinition>;
+export type TWorkflowDefinition = z.output<typeof WorkflowDefinitionSchema>;
 
 export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
@@ -85,7 +85,7 @@ export const BaseWorkflowByIdSchema = z.object({
   state: z.string().nullable(),
   nextEvents: z.array(z.any()),
   tags: z.array(z.string()).nullable().optional(),
-  workflowDefinition: BaseWorkflowDefinition,
+  workflowDefinition: WorkflowDefinitionSchema,
   createdAt: z.string().datetime(),
   context: z.object({
     documents: z.array(z.any()).default([]),
@@ -303,7 +303,7 @@ export const fetchWorkflowDefinition = async ({
     url: `${getOriginUrl(
       env.VITE_API_URL,
     )}/api/v1/external/workflows/workflow-definition/${workflowDefinitionId}`,
-    schema: BaseWorkflowDefinition,
+    schema: WorkflowDefinitionSchema,
   });
 
   return handleZodError(error, workflowDefinition);
