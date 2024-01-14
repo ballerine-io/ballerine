@@ -1,11 +1,11 @@
 import { TWorkflowDefinition } from '@/domains/workflows/fetchers';
 import { useCreateWorkflowMutation } from '@/domains/workflows/hooks/mutations/useCreateWorkflowMutation/useCreateWorkflowMutation';
-import { prepareContext } from '@/pages/Entities/components/CaseCreation/components/CaseGenerationForm/hooks/useCaseGenerationForm/utils/prepare-context';
+import { prepareContext } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/hooks/useCaseGenerationForm/utils/prepare-context';
 import { useCaseCreationContext } from '@/pages/Entities/components/CaseCreation/context/case-creation-context/hooks/useCaseCreationContext';
 import { AnyObject } from '@ballerine/ui';
 import { useCallback } from 'react';
 
-export const useCaseGenerationForm = (workflowDefinition: TWorkflowDefinition) => {
+export const useCaseCreationForm = (workflowDefinition: TWorkflowDefinition) => {
   const { isLoading, mutateAsync } = useCreateWorkflowMutation();
   const { isMultipleCasesCreation, setOpen } = useCaseCreationContext();
 

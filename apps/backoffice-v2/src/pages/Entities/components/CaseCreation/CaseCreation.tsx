@@ -1,7 +1,7 @@
 import { Button } from '@/common/components/atoms/Button/Button';
 import { SheetContent, SheetTrigger } from '@/common/components/atoms/Sheet';
 import { Sheet } from '@/common/components/atoms/Sheet/Sheet';
-import { CaseGenerationForm } from '@/pages/Entities/components/CaseCreation/components/CaseGenerationForm';
+import { CaseCreationForm } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm';
 import { withCaseCreation } from '@/pages/Entities/components/CaseCreation/context/case-creation-context/hocs/withCaseCreation';
 import { useCaseCreationContext } from '@/pages/Entities/components/CaseCreation/context/case-creation-context/hooks/useCaseCreationContext';
 import { useCaseCreationWorkflowDefinition } from '@/pages/Entities/components/CaseCreation/hooks/useCaseCreationWorkflowDefinition';
@@ -39,7 +39,7 @@ export const CaseCreation = withCaseCreation(() => {
             </div>
             <div>
               {workflowDefinition ? (
-                <CaseGenerationForm workflowDefinition={workflowDefinition} />
+                <CaseCreationForm workflowDefinition={workflowDefinition} />
               ) : (
                 <p>Workflow definition is missing.</p>
               )}

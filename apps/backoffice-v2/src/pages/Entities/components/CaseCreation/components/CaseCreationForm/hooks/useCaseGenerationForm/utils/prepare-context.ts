@@ -1,4 +1,4 @@
-import { generateEntityId } from '@/pages/Entities/components/CaseCreation/components/CaseGenerationForm/hooks/useCaseGenerationForm/utils/generate-entity-id';
+import { generateEntityId } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/hooks/useCaseGenerationForm/utils/generate-entity-id';
 import { AnyObject } from '@ballerine/ui';
 
 export const prepareContext = (formData: AnyObject): AnyObject => {
