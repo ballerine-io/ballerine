@@ -1,4 +1,5 @@
 import { TransitionSchema } from '@/case-management/types/transition-schema';
+import { AjvValidationError } from '@/errors';
 import { TProjectId } from '@/types';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowRunDto } from '@/workflow/dtos/workflow-run';
@@ -63,14 +64,7 @@ export class CaseManagementService {
     const isValid = validate(entity);
 
     if (!isValid) {
-      throw new BadRequestException({
-        message: 'Entity validation failed.',
-        errors: validate.errors?.map(({ instancePath, message, ...rest }) => ({
-          ...rest,
-          message: `${instancePath} ${message}`,
-          instancePath,
-        })),
-      });
+      throw new AjvValidationError(validate.errors);
     }
   }
 }
