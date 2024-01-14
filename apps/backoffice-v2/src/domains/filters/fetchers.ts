@@ -4,7 +4,7 @@ import { Method } from '../../common/enums';
 import { handleZodError } from '../../common/utils/handle-zod-error/handle-zod-error';
 import { ObjectWithIdSchema } from '../../lib/zod/utils/object-with-id/object-with-id';
 
-export const BaseFilter = ObjectWithIdSchema.extend({
+export const FilterSchema = ObjectWithIdSchema.extend({
   entity: z.enum(['individuals', 'businesses']),
   name: z.string(),
   query: z
@@ -12,13 +12,13 @@ export const BaseFilter = ObjectWithIdSchema.extend({
     .optional(),
 });
 
-export type TFilter = z.output<typeof BaseFilter>;
+export type TFilter = z.output<typeof FilterSchema>;
 
 export const fetchFilterById = async (filterId: string) => {
   const [filter, error] = await apiClient({
     endpoint: `filters/${filterId}`,
     method: Method.GET,
-    schema: BaseFilter,
+    schema: FilterSchema,
   });
 
   return handleZodError(error, filter);
@@ -28,7 +28,7 @@ export const fetchFilters = async () => {
   const [filters, error] = await apiClient({
     endpoint: `filters`,
     method: Method.GET,
-    schema: z.array(BaseFilter),
+    schema: z.array(FilterSchema),
   });
 
   return handleZodError(error, filters);
