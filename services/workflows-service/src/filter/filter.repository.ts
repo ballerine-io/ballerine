@@ -27,13 +27,10 @@ export class FilterRepository {
 
   async findById(id: string, args: Prisma.FilterFindFirstArgs, projectIds: TProjectIds) {
     return await this.prisma.filter.findFirst(
-      this.scopeService.scopeFindFirst(
-        {
-          ...args,
-          where: { ...args?.where, id: id },
-        },
-        projectIds,
-      ),
+      this.scopeService.scopeFindFirst({
+        ...args,
+        where: { ...args?.where, id: id },
+      }),
     );
   }
 
