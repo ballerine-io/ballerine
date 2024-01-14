@@ -1,7 +1,8 @@
 ---
-title: Deployment Guide 
+title: Deployment Guide
 
 ---
+
 
 import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
 
@@ -16,12 +17,12 @@ import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
 3. **Run Docker Compose**: Now, you can start all services using Docker Compose:
 <CodeBlock lang={`shell`} code={`docker-compose up -d`}/>
 
-The application should now be running at the ports defined in your Docker Compose configuration. 
+The application should now be running at the ports defined in your Docker Compose configuration.
 
 ### Kubernetes Deployment (Helm)
 #### Install ballerine using helm chart
 
-Ballerine is a collection of services like workflow-service, backendoffice.
+Ballerine is a collection of services like workflow-service, and backoffice.
 In values.yaml we have sections to enable/disable them based on the necessity like below
 
 <CodeBlock lang={`bash`} code={`workflowService:

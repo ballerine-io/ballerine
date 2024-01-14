@@ -57,17 +57,21 @@ export default defineConfig({
               label: `Guides`,
               items: [
                 {
-                  label: `KYB Workflow with External Integrations`,
+                  label: `KYB Manual Review Example`,
                   link: `/en/learn/simple_kyb_guide`,
                 },
-                {
-                  label: `KYC Manual Review Workflow Guide`,
-                  link: `/en/learn/kyc_manual_review_workflow_guide`,
-                },
-                {
-                  label: `Creating a KYC UI Flow`,
-                  link: `/en/learn/creating_a_kyc_flow_and_deploying_it`,
-                },
+                // {
+                //   label: `KYB Workflow with External Integrations`,
+                //   link: `/en/learn/simple_kyb_guide`,
+                // },
+                // {
+                //   label: `KYC Manual Review Workflow Guide`,
+                //   link: `/en/learn/kyc_manual_review_workflow_guide`,
+                // },
+                // {
+                //   label: `Creating a KYC UI Flow`,
+                //   link: `/en/learn/creating_a_kyc_flow_and_deploying_it`,
+                // },
               ],
             },
             {
@@ -96,118 +100,128 @@ export default defineConfig({
             //   items: [],
             // },
             {
-              label: `UI SDK`,
+              label: `Case Management`,
               items: [
                 {
-                  label: `SDK Events`,
-                  link: `/en/learn/sdk_events`,
-                },
-                {
-                  label: `SDK Backend Configuration`,
-                  link: `/en/learn/sdk_backend_configuration`,
-                },
-                {
-                  label: `SDK UI Configuration`,
-                  link: `/en/learn/sdk_ui_configuration`,
-                },
-                {
-                  label: `SDK Translations`,
-                  link: `/en/learn/sdk_translations`,
-                },
-                {
-                  label: `Case Management`,
-                  link: `/en/learn/case_management`,
-                },
-                {
-                  label: `SDK UI Flows`,
-                  link: `/en/learn/sdk_ui_flows`,
-                },
-                {
-                  label: `Workflow Builder & Rule Engine`,
-                  link: `/en/learn/workflow_builder_and_rule_engine`,
-                },
-                {
-                  label: `Native Mobile Apps`,
-                  link: `/en/learn/native_mobile_apps`,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          label: `API`,
-          collapsed: true,
-          items: [
-            {
-              label: `SDK`,
-              items: [
-                {
-                  label: `Flows`,
-                  link: `/en/api/sdk/ballerine_sdk_flows`,
+                  label: `Overview`,
+                  link: `/en/learn/case_management_overview`,
                 },
               ],
             },
             {
-              label: `Interfaces`,
+              label: `Workflow Builder & Rule Engine`,
               items: [
                 {
-                  label: `FlowsInitOptions`,
-                  link: `/en/api/sdk/flows_init_options`,
-                },
-                {
-                  label: `FlowsBackendConfig`,
-                  link: `/en/api/sdk/flows_backend_config`,
-                },
-                {
-                  label: `FlowsMountOptions`,
-                  link: `/en/api/sdk/flows_mount_options`,
-                },
-                {
-                  label: `FlowsEventsConfig`,
-                  link: `/en/api/sdk/flows_events_config`,
-                },
-                {
-                  label: `EndUserInfo`,
-                  link: `/en/api/sdk/end_user_info`,
-                },
-                {
-                  label: `FlowsTranslations`,
-                  link: `/en/api/sdk/flows_translations`,
+                  label: `Overview`,
+                  link: `/en/learn/workflow_builder_and_rule_engine_overview`,
                 },
               ],
             },
+            // {
+            //   label: `UI SDK`,
+            //   items: [
+            //     {
+            //       label: `SDK Events`,
+            //       link: `/en/learn/sdk_events`,
+            //     },
+            //     {
+            //       label: `SDK Backend Configuration`,
+            //       link: `/en/learn/sdk_backend_configuration`,
+            //     },
+            //     {
+            //       label: `SDK UI Configuration`,
+            //       link: `/en/learn/sdk_ui_configuration`,
+            //     },
+            //     {
+            //       label: `SDK Translations`,
+            //       link: `/en/learn/sdk_translations`,
+            //     },
+            //     {
+            //       label: `SDK UI Flows`,
+            //       link: `/en/learn/sdk_ui_flows`,
+            //     },
+            // {
+            //   label: `Native Mobile Apps`,
+            //   link: `/en/learn/native_mobile_apps`,
+            // },
+            // ],
+            // },
           ],
         },
-        {
-          label: `Examples`,
-          collapsed: true,
-          items: [
-            {
-              label: `KYC`,
-              link: `/en/examples/kyc_example`,
-            },
-            {
-              label: `KYB`,
-              link: `/en/examples/kyb_example`,
-            },
-            {
-              label: `Kitchen Sink`,
-              link: `/en/examples/kitchen_sink_example`,
-            },
-            {
-              label: `Package Manager`,
-              link: `/en/examples/package_manager_example`,
-            },
-            {
-              label: `CDN`,
-              link: `/en/examples/cdn_example`,
-            },
-            {
-              label: `Hosted KYC`,
-              link: `https://simple-kyc-demo.ballerine.app/`,
-            },
-          ],
-        },
+        // {
+        //   label: `API`,
+        //   collapsed: true,
+        //   items: [
+        //     {
+        //       label: `SDK`,
+        //       items: [
+        //         {
+        //           label: `Flows`,
+        //           link: `/en/api/sdk/ballerine_sdk_flows`,
+        //         },
+        //       ],
+        //     },
+        //     {
+        //       label: `Interfaces`,
+        //       items: [
+        //         {
+        //           label: `FlowsInitOptions`,
+        //           link: `/en/api/sdk/flows_init_options`,
+        //         },
+        //         {
+        //           label: `FlowsBackendConfig`,
+        //           link: `/en/api/sdk/flows_backend_config`,
+        //         },
+        //         {
+        //           label: `FlowsMountOptions`,
+        //           link: `/en/api/sdk/flows_mount_options`,
+        //         },
+        //         {
+        //           label: `FlowsEventsConfig`,
+        //           link: `/en/api/sdk/flows_events_config`,
+        //         },
+        //         {
+        //           label: `EndUserInfo`,
+        //           link: `/en/api/sdk/end_user_info`,
+        //         },
+        //         {
+        //           label: `FlowsTranslations`,
+        //           link: `/en/api/sdk/flows_translations`,
+        //         },
+        //       ],
+        //     },
+        //   ],
+        // },
+        // {
+        //   label: `Examples`,
+        //   collapsed: true,
+        //   items: [
+        //     {
+        //       label: `KYC`,
+        //       link: `/en/examples/kyc_example`,
+        //     },
+        //     {
+        //       label: `KYB`,
+        //       link: `/en/examples/kyb_example`,
+        //     },
+        //     {
+        //       label: `Kitchen Sink`,
+        //       link: `/en/examples/kitchen_sink_example`,
+        //     },
+        //     {
+        //       label: `Package Manager`,
+        //       link: `/en/examples/package_manager_example`,
+        //     },
+        //     {
+        //       label: `CDN`,
+        //       link: `/en/examples/cdn_example`,
+        //     },
+        //     {
+        //       label: `Hosted KYC`,
+        //       link: `https://simple-kyc-demo.ballerine.app/`,
+        //     },
+        //   ],
+        // },
         {
           label: `Contributing`,
           collapsed: true,
