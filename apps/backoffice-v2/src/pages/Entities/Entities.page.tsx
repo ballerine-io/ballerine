@@ -1,4 +1,4 @@
-import { CaseGeneration } from '@/pages/Entities/components/CaseGeneration';
+import { CaseCreation } from '@/pages/Entities/components/CaseCreation';
 import { ctw } from '@ballerine/ui';
 import { FunctionComponent } from 'react';
 import { Outlet } from 'react-router-dom';
@@ -72,7 +72,7 @@ export const Entities: FunctionComponent = () => {
         <div className={`divider my-0 px-4`}></div>
         <div className="flex flex-col gap-5 px-4">
           <Pagination onPaginate={onPaginate} page={page} totalPages={totalPages} />
-          <CaseGeneration />
+          <CaseCreation />
         </div>
       </Cases>
       {/* Display skeleton individual when loading the entities list */}

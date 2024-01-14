@@ -30,7 +30,7 @@ export const workflowsQueryKeys = createQueryKeys('workflows', {
       queryFn: () => fetchWorkflows(data),
     };
   },
-  workflowDefinition: ({ workflowDefinitionId }: { workflowDefinitionId: string }) => ({
+  workflowDefinitionById: ({ workflowDefinitionId }: { workflowDefinitionId: string }) => ({
     queryKey: [{ workflowDefinitionId }],
     queryFn: () => fetchWorkflowDefinition({ workflowDefinitionId }),
   }),

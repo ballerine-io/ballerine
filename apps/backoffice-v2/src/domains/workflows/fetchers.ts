@@ -1,7 +1,6 @@
 import { env } from '@/common/env/env';
 import { getOriginUrl } from '@/domains/workflows/utils/get-origin-url';
 import { WorkflowDefinitionVariant } from '@ballerine/common';
-import { AnyObject } from '@ballerine/ui';
 import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
@@ -57,27 +56,27 @@ export const fetchWorkflows = async (params: {
 
 export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
 
-export const BaseWorkflowDefinition = ObjectWithIdSchema.extend({
+export const WorkflowDefinitionSchema = ObjectWithIdSchema.extend({
   name: z.string(),
   version: z.number(),
   variant: z.string().default(WorkflowDefinitionVariant.DEFAULT),
   contextSchema: z.record(z.any(), z.any()).nullable(),
   documentsSchema: z.array(z.any()).optional().nullable(),
   config: z.record(z.any(), z.any()).nullable(),
-  definition: z.record(z.any()),
+  definition: z.record(z.any(), z.unknown()),
   transitionSchema: z
     .array(
       z.object({
         state: z.string(),
-        schema: z.record(z.any()),
-        additionalParameters: z.record(z.any()).optional(),
+        schema: z.record(z.any(), z.unknown()),
+        additionalParameters: z.record(z.any(), z.unknown()).optional(),
       }),
     )
     .nullable(),
   isManualCreationEnabled: z.boolean().optional(),
 });
 
-export type TWorkflowDefinition = z.output<typeof BaseWorkflowDefinition>;
+export type TWorkflowDefinition = z.output<typeof WorkflowDefinitionSchema>;
 
 export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
@@ -85,7 +84,7 @@ export const BaseWorkflowByIdSchema = z.object({
   state: z.string().nullable(),
   nextEvents: z.array(z.any()),
   tags: z.array(z.string()).nullable().optional(),
-  workflowDefinition: BaseWorkflowDefinition,
+  workflowDefinition: WorkflowDefinitionSchema,
   createdAt: z.string().datetime(),
   context: z.object({
     documents: z.array(z.any()).default([]),
@@ -273,12 +272,12 @@ export const fetchWorkflowEventDecision = async ({
   return handleZodError(error, workflow);
 };
 
-export const createWorkflow = async ({
+export const createWorkflowRequest = async ({
   workflowDefinitionId,
   context,
 }: {
   workflowDefinitionId: string;
-  context: AnyObject;
+  context: TWorkflowById['context'];
 }) => {
   const [workflow, error] = await apiClient({
     method: Method.POST,
@@ -302,8 +301,8 @@ export const fetchWorkflowDefinition = async ({
     method: Method.GET,
     url: `${getOriginUrl(
       env.VITE_API_URL,
-    )}/api/v1/case-management/workflow-definition/${workflowDefinitionId}`,
-    schema: BaseWorkflowDefinition,
+    )}/api/v1/external/workflows/workflow-definition/${workflowDefinitionId}`,
+    schema: WorkflowDefinitionSchema,
   });
 
   return handleZodError(error, workflowDefinition);

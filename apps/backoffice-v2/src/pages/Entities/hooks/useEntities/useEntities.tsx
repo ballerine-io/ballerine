@@ -1,4 +1,4 @@
-import { useCaseGenerationWorkflowDefinition } from '@/pages/Entities/components/CaseGeneration/hooks/useCaseGenerationWorkflowDefinition';
+import { useCaseCreationWorkflowDefinition } from '@/pages/Entities/components/CaseCreation/hooks/useCaseCreationWorkflowDefinition';
 import { ChangeEventHandler, useCallback } from 'react';
 import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
 import { useSearch } from '../../../../common/hooks/useSearch/useSearch';
@@ -91,7 +91,7 @@ export const useEntities = () => {
 
   useSelectEntityOnMount();
 
-  const { workflowDefinition } = useCaseGenerationWorkflowDefinition();
+  const { workflowDefinition } = useCaseCreationWorkflowDefinition();
 
   return {
     onPaginate,
