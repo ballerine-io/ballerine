@@ -15,10 +15,12 @@ const createFilterSchema = (authenticatedUserId: string) =>
     .object({
       assigneeId: z.array(z.string().nullable()).catch([authenticatedUserId, null]),
       status: z.array(z.enum(CaseStatuses)).catch([CaseStatus.ACTIVE]),
+      caseStatus: z.array(z.string()).catch([]),
     })
     .catch({
       assigneeId: [authenticatedUserId, null],
       status: [CaseStatus.ACTIVE],
+      caseStatus: [],
     });
 
 export const IndividualsSearchSchema = (authenticatedUserId: string) =>

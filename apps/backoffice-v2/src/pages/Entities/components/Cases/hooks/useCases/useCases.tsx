@@ -88,7 +88,7 @@ export const useCases = () => {
         },
         {
           label: 'Status',
-          value: 'status',
+          value: 'caseStatus',
           options: [
             ...(statuses?.map(status => ({
               label: tagToBadgeData[status].text,
@@ -99,7 +99,7 @@ export const useCases = () => {
         },
         {
           label: 'State',
-          value: 'state',
+          value: 'status',
           options: [
             {
               label: 'Active',

@@ -16,6 +16,9 @@ class FilterDto {
 
   @ApiProperty()
   status?: WorkflowRuntimeDataStatus[];
+
+  @ApiProperty()
+  caseStatus?: string[];
 }
 
 export class FindWorkflowsListDto {
@@ -70,6 +73,7 @@ export const FindWorkflowsListSchema = z.object({
         .array(z.union([z.literal('').transform(() => null), z.string().nonempty()]))
         .optional(),
       status: z.array(z.nativeEnum(WorkflowRuntimeDataStatus)).optional(),
+      caseStatus: z.array(z.string()).optional(),
     })
     .optional(),
 });

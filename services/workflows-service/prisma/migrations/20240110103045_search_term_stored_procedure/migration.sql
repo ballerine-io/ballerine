@@ -5,6 +5,7 @@ CREATE OR REPLACE FUNCTION public.search_workflow_data(
     project_ids text[],
     entity_type text,
     assignee_ids text[],
+    case_statuses text[],
     include_unassigned boolean
 )
 RETURNS TABLE (id text) AS $$
@@ -12,6 +13,7 @@ BEGIN
     RETURN QUERY
     SELECT wrd."id"
     FROM public."WorkflowRuntimeData" wrd
+    CROSS JOIN LATERAL jsonb_array_elements_text(wrd.tags) as tag
     WHERE
         (
             ("context"->'entity'->'data'->>'companyName' ILIKE '%' || search_text || '%'
@@ -49,6 +51,12 @@ BEGIN
         AND
         (
             "assigneeId" = ANY(assignee_ids) OR (include_unassigned AND "assigneeId" IS NULL)
-        );
+        )
+       	AND
+       	(
+       		tag = ANY(case_statuses)
+       		OR
+       		array_length(case_statuses, 1) IS NULL
+       	);
 END;
 $$ LANGUAGE plpgsql;

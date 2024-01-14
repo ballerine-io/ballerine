@@ -411,6 +411,7 @@ export class WorkflowService {
       filters?: {
         assigneeId?: (string | null)[];
         status?: WorkflowRuntimeDataStatus[];
+        caseStatus?: string[];
       };
     },
     projectIds: TProjectIds,
@@ -453,7 +454,7 @@ export class WorkflowService {
       includeUnassigned: filters?.assigneeId?.includes(null),
     };
 
-    const sql = Prisma.sql`SELECT id FROM search_workflow_data(${search}, array[${workflowDefinitionIds}]::text[], array[${statuses}]::text[], array[${projectIds}]::text[], ${entityType}, array[${asigneeIds}]::text[], ${includeUnassigned})`;
+    const sql = Prisma.sql`SELECT id FROM search_workflow_data(${search}, array[${workflowDefinitionIds}]::text[], array[${statuses}]::text[], array[${projectIds}]::text[], ${entityType}, array[${asigneeIds}]::text[], array[${filters?.caseStatus}]::text[], ${includeUnassigned}::boolean)`;
 
     const workflowIds = await this.workflowRuntimeDataRepository.queryRawUnscoped<
       WorkflowRuntimeData[]
