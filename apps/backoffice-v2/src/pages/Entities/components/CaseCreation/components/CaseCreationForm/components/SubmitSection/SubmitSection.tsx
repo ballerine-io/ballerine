@@ -6,15 +6,15 @@ import { getSubmitButtonOptions, SubmitButtonProps } from '@rjsf/utils';
 
 export const SubmitSection = ({ uiSchema }: SubmitButtonProps) => {
   const { norender } = getSubmitButtonOptions(uiSchema);
-  const caseGenerationContext = useCaseCreationContext();
+  const caseCreationContext = useCaseCreationContext();
   const disabled = Boolean(uiSchema?.['ui:options']?.submitButtonOptions?.props?.disabled);
 
   return (
     <div className="flex flex-row justify-end gap-6">
       <div className="flex items-center space-x-2">
         <Switch
-          checked={caseGenerationContext.isMultipleCasesCreation}
-          onClick={caseGenerationContext.toggleMultiCaseCreation}
+          checked={caseCreationContext.isMultipleCasesCreation}
+          onClick={caseCreationContext.toggleMultiCaseCreation}
           id="add_more_switch"
         />
         <Label htmlFor="add_more_switch">Add more</Label>

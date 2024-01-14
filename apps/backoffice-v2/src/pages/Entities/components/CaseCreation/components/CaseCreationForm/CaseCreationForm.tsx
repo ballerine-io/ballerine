@@ -1,6 +1,6 @@
 import { TWorkflowDefinition } from '@/domains/workflows/fetchers';
 import { SubmitSection } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/components/SubmitSection';
-import { useCaseCreationForm } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/hooks/useCaseGenerationForm';
+import { useCaseCreationForm } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/hooks/useCaseCreationForm';
 import { useFormSchema } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/hooks/useFormSchema';
 import { transformErrors } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/utils/transformErrors';
 import { DynamicForm, baseLayouts } from '@ballerine/ui';

@@ -1,8 +1,8 @@
-import { TFilter } from '@/domains/filters/types';
+import { TFilter } from '@/domains/filters/fetchers';
 
-export const selectWorkflowDefinitionId = (obj: TFilter | null) => {
-  if (!obj) return null;
+export const selectWorkflowDefinitionId = (filter: TFilter | null) => {
+  if (!filter) return null;
 
   // TO DO: Find better place to aquire workflowDefinitionId
-  return obj?.query?.where?.workflowDefinitionId?.in[0] ?? null;
+  return filter?.query?.where?.workflowDefinitionId?.in[0] ?? null;
 };

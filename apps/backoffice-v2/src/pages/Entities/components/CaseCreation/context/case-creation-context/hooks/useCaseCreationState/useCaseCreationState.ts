@@ -1,13 +1,13 @@
 import { initialCaseCreationContext } from '@/pages/Entities/components/CaseCreation/context/case-creation-context/case-creation.context';
 import {
   CaseCreationLogic,
-  CaseGenerationContext,
+  CaseCreationContext,
 } from '@/pages/Entities/components/CaseCreation/context/case-creation-context/types';
 import { useCallback, useMemo, useState } from 'react';
 
 export const useCaseCreationState = () => {
   const [state, setState] = useState<
-    Pick<CaseGenerationContext, 'isMultipleCasesCreation' | 'isOpen'>
+    Pick<CaseCreationContext, 'isMultipleCasesCreation' | 'isOpen'>
   >({
     isMultipleCasesCreation: initialCaseCreationContext.isMultipleCasesCreation,
     isOpen: initialCaseCreationContext.isOpen,
@@ -26,7 +26,7 @@ export const useCaseCreationState = () => {
     [toggleMultiCaseCreation, setIsOpen],
   );
 
-  const context: CaseGenerationContext = useMemo(
+  const context: CaseCreationContext = useMemo(
     () => ({ ...state, ...caseCreationLogic }),
     [state, caseCreationLogic],
   );

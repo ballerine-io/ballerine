@@ -24,7 +24,7 @@ export const Entities: FunctionComponent = () => {
     totalPages,
     caseCount,
     skeletonEntities,
-    showCaseGeneration,
+    showCaseCreation,
   } = useEntities();
 
   return (
@@ -39,8 +39,8 @@ export const Entities: FunctionComponent = () => {
       >
         <MotionScrollArea
           className={ctw({
-            'h-[calc(100vh-300px)]': showCaseGeneration,
-            'h-[calc(100vh-240px)]': !showCaseGeneration,
+            'h-[calc(100vh-300px)]': showCaseCreation,
+            'h-[calc(100vh-240px)]': !showCaseCreation,
           })}
         >
           <Cases.List>

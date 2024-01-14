@@ -99,7 +99,7 @@ export const useEntities = () => {
     onFilter: onFilterChange,
     onSortBy: onSortByChange,
     onSortDirToggle,
-    showCaseGeneration: workflowDefinition?.isManualCreationEnabled,
+    showCaseCreation: workflowDefinition?.isManualCreationEnabled,
     search,
     cases,
     caseCount: data?.meta?.totalItems,

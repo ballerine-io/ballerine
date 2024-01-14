@@ -5,11 +5,11 @@ import { FunctionComponent } from 'react';
 
 const { Provider } = caseCreationContext;
 
-export interface CaseGenerationProviderProps {
+export interface CaseCreationProviderProps {
   children: AnyChildren;
 }
 
-export const CaseGenerationContextProvider: FunctionComponent<CaseGenerationProviderProps> = ({
+export const CaseCreationContextProvider: FunctionComponent<CaseCreationProviderProps> = ({
   children,
 }) => {
   const { context } = useCaseCreationState();

@@ -8,4 +8,4 @@ export interface CaseCreationLogic {
   setIsOpen: (isOpen: boolean) => void;
 }
 
-export type CaseGenerationContext = CaseCreationContextState & CaseCreationLogic;
+export type CaseCreationContext = CaseCreationContextState & CaseCreationLogic;
