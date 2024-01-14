@@ -11,8 +11,7 @@ import { FilterModel } from '@/filter/filter.model';
 import { FilterWhereUniqueInput } from '@/filter/dtos/filter-where-unique-input';
 import { FilterService } from '@/filter/filter.service';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import type { TProjectId, TProjectIds } from '@/types';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import type { TProjectIds } from '@/types';
 
 @swagger.ApiTags('internal/filters')
 @common.Controller('internal/filters')
@@ -32,7 +31,6 @@ export class FilterControllerInternal {
     @common.Req() request: Request,
   ): Promise<FilterModel[]> {
     const args = plainToClass(FilterFindManyArgs, request.query);
-
     return this.service.list(args, projectIds);
   }
 
