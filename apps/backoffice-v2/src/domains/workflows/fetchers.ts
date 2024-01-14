@@ -278,7 +278,7 @@ export const createWorkflowRequest = async ({
   context,
 }: {
   workflowDefinitionId: string;
-  context: AnyObject;
+  context: TWorkflowById['context'];
 }) => {
   const [workflow, error] = await apiClient({
     method: Method.POST,
