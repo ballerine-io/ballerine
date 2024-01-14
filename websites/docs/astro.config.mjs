@@ -58,7 +58,7 @@ export default defineConfig({
               items: [
                 {
                   label: `KYB Manual Review Example`,
-                  link: `/en/learn/simple_kyb_guide`,
+                  link: `/en/learn/kyb_manual_review_example`,
                 },
                 // {
                 //   label: `KYB Workflow with External Integrations`,
@@ -108,15 +108,15 @@ export default defineConfig({
                 },
               ],
             },
-            {
-              label: `Workflow Builder & Rule Engine`,
-              items: [
-                {
-                  label: `Overview`,
-                  link: `/en/learn/workflow_builder_and_rule_engine_overview`,
-                },
-              ],
-            },
+            // {
+            //   label: `Workflow Builder & Rule Engine`,
+            //   items: [
+            //     {
+            //       label: `Overview`,
+            //       link: `/en/learn/workflow_builder_and_rule_engine_overview`,
+            //     },
+            //   ],
+            // },
             // {
             //   label: `UI SDK`,
             //   items: [
