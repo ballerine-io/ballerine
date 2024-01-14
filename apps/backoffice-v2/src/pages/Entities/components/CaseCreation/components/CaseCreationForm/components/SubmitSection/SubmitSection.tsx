@@ -9,8 +9,6 @@ export const SubmitSection = ({ uiSchema }: SubmitButtonProps) => {
   const caseGenerationContext = useCaseCreationContext();
   const disabled = Boolean(uiSchema?.['ui:options']?.submitButtonOptions?.props?.disabled);
 
-  if (norender) return null;
-
   return (
     <div className="flex flex-row justify-end gap-6">
       <div className="flex items-center space-x-2">
