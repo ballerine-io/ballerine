@@ -186,7 +186,7 @@ export const useKycBlock = ({
   const complianceCheckResults = kycSessionKeys?.length
     ? kycSessionKeys?.flatMap(key => {
         const aml =
-          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult ??
+          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ??
           childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml;
 
         if (!Object.keys(aml ?? {}).length) return [];
@@ -523,10 +523,10 @@ export const useKycBlock = ({
           .addCell({
             id: 'decision',
             type: 'details',
+            hideSeparator: index === collection.length - 1,
             value: {
               id: childWorkflow?.id,
               title: `Details`,
-              hideSeparator: index === collection.length - 1,
               data: Object.entries({
                 ...childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.entity?.data,
                 ...omitPropsFromObject(

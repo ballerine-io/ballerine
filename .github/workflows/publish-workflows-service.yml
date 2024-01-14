@@ -126,7 +126,7 @@ jobs:
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
-              "kubernetes/helm/wf-service/custom-values.yaml": {
+              "kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml": {
                 "image.tag": "${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}"
               }
             }
@@ -142,7 +142,7 @@ jobs:
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
-              "kubernetes/helm/wf-service/custom-values.yaml": {
+              "kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml": {
                 "image.tag": "${{ steps.get_version.outputs.version }}-prod"
               }
             }

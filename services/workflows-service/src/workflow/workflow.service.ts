@@ -81,6 +81,7 @@ import {
 } from './workflow-runtime-data.repository';
 import mime from 'mime';
 import { env } from '@/env';
+import { AjvValidationError } from '@/errors';
 
 type TEntityId = string;
 
@@ -786,13 +787,13 @@ export class WorkflowService {
         status,
       },
     };
-    const checkRequiredFields = status === 'approved';
+    const validateDocumentSchema = status === 'approved';
 
     const updatedWorkflow = await this.updateDocumentById(
       {
         workflowId,
         documentId,
-        checkRequiredFields,
+        validateDocumentSchema,
         documentsUpdateContextMethod: documentsUpdateContextMethod,
       },
       documentWithDecision as unknown as DefaultContextSchema['documents'][number],
@@ -820,12 +821,12 @@ export class WorkflowService {
     {
       workflowId,
       documentId,
-      checkRequiredFields = true,
+      validateDocumentSchema = true,
       documentsUpdateContextMethod,
     }: {
       workflowId: string;
       documentId: string;
-      checkRequiredFields?: boolean;
+      validateDocumentSchema?: boolean;
       documentsUpdateContextMethod?: 'base' | 'director';
     },
     data: DefaultContextSchema['documents'][number] & { propertiesSchema?: object },
@@ -839,6 +840,9 @@ export class WorkflowService {
       {},
       [projectId],
     );
+    const documentToUpdate = runtimeData?.context?.documents?.find(
+      (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
+    );
 
     const document = {
       ...data,
@@ -847,24 +851,16 @@ export class WorkflowService {
 
     const documentSchema = addPropertiesSchemaToDocument(document, workflowDef.documentsSchema);
     const propertiesSchema = documentSchema?.propertiesSchema ?? {};
-    if (Object.keys(propertiesSchema)?.length) {
-      let propertiesSchemaForValidation = propertiesSchema;
-      if (!checkRequiredFields) {
-        const { required: _required, ..._propertiesSchemaForValidation } = propertiesSchema;
-        propertiesSchemaForValidation = _propertiesSchemaForValidation;
-      }
+
+    if (Object.keys(propertiesSchema)?.length && validateDocumentSchema) {
+      const propertiesSchemaForValidation = propertiesSchema;
+
       const validatePropertiesSchema = ajv.compile(propertiesSchemaForValidation);
 
       const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
 
-      if (!isValidPropertiesSchema) {
-        throw new BadRequestException(
-          validatePropertiesSchema.errors?.map(({ instancePath, message, ...rest }) => ({
-            ...rest,
-            message: `${instancePath} ${message}`,
-            instancePath,
-          })),
-        );
+      if (!isValidPropertiesSchema && document.type === documentToUpdate.type) {
+        throw new AjvValidationError(validatePropertiesSchema.errors);
       }
     }
 
@@ -1079,13 +1075,7 @@ export class WorkflowService {
         const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
         if (!isValidPropertiesSchema) {
-          throw new BadRequestException(
-            validatePropertiesSchema.errors?.map(({ instancePath, message, ...rest }) => ({
-              ...rest,
-              message: `${instancePath} ${message}`,
-              instancePath,
-            })),
-          );
+          throw new AjvValidationError(validatePropertiesSchema.errors);
         }
       });
       data.context = mergedContext;
@@ -1900,13 +1890,7 @@ export class WorkflowService {
 
     if (isValid) return;
 
-    throw new BadRequestException(
-      validate.errors?.map(({ instancePath, message, ...rest }) => ({
-        ...rest,
-        instancePath,
-        message: `${instancePath} ${message}`,
-      })),
-    );
+    throw new AjvValidationError(validate.errors);
   }
 
   async event(

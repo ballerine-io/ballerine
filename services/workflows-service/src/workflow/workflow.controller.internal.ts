@@ -213,7 +213,7 @@ export class WorkflowControllerInternal {
       {
         workflowId: params?.id,
         documentId: params?.documentId,
-        checkRequiredFields: false,
+        validateDocumentSchema: false,
         documentsUpdateContextMethod: query.contextUpdateMethod,
       },
       data.document,
