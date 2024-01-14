@@ -1,9 +1,9 @@
 CREATE OR REPLACE FUNCTION public.search_workflow_data(
     search_text text,
+    entity_type text,
     workflow_ids text[],
     statuses text[],
     project_ids text[],
-    entity_type text,
     assignee_ids text[],
     case_statuses text[],
     include_unassigned boolean
@@ -50,7 +50,11 @@ BEGIN
         )
         AND
         (
-            "assigneeId" = ANY(assignee_ids) OR (include_unassigned AND "assigneeId" IS NULL)
+            "assigneeId" = ANY(assignee_ids)
+            or
+            (include_unassigned AND "assigneeId" IS NULL)
+            or
+            (include_unassigned = false and array_length(assignee_ids, 1) is null)
         )
        	AND
        	(

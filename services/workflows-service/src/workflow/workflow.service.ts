@@ -436,7 +436,7 @@ export class WorkflowService {
       projectIds,
     );
 
-    const { workflowDefinitionIds, statuses, asigneeIds, includeUnassigned } = {
+    const { workflowDefinitionIds, statuses, assigneeIds, includeUnassigned } = {
       workflowDefinitionIds:
         query.where.workflowDefinitionId &&
         typeof query.where.workflowDefinitionId === 'object' &&
@@ -451,11 +451,41 @@ export class WorkflowService {
         Array.isArray(query.where.status.in)
           ? query.where.status?.in
           : [],
-      asigneeIds: filters?.assigneeId?.filter((id): id is string => id !== null) ?? [],
+      assigneeIds: filters?.assigneeId?.filter((id): id is string => id !== null) ?? [],
       includeUnassigned: filters?.assigneeId?.includes(null),
     };
 
-    const sql = Prisma.sql`SELECT id FROM search_workflow_data(${search}, array[${workflowDefinitionIds}]::text[], array[${statuses}]::text[], array[${projectIds}]::text[], ${entityType}, array[${asigneeIds}]::text[], array[${filters?.caseStatus}]::text[], ${includeUnassigned}::boolean)`;
+    const assigneeIdsParam = assigneeIds.length
+      ? Prisma.join(assigneeIds.map(id => Prisma.sql`${id}`))
+      : Prisma.sql``;
+
+    const workflowDefinitionIdsParam = Prisma.join(
+      workflowDefinitionIds.map(id => Prisma.sql`${id}`),
+    );
+
+    const statusesParam = statuses.length
+      ? Prisma.join(statuses.map(status => Prisma.sql`${status}`))
+      : Prisma.sql``;
+
+    const projectIdsParam = Prisma.join((projectIds || []).map(id => Prisma.sql`${id}`));
+
+    const caseStatusParam = filters?.caseStatus
+      ? Prisma.join(filters.caseStatus.map(status => Prisma.sql`${status}`))
+      : Prisma.sql``;
+
+    const sql = Prisma.sql`
+        SELECT id
+        FROM search_workflow_data(
+            ${search},
+            ${entityType},
+            array[${workflowDefinitionIdsParam}]::text[],
+            array[${statusesParam}]::text[],
+            array[${projectIdsParam}]::text[],
+            array[${assigneeIdsParam}]::text[],
+            array[${caseStatusParam}]::text[],
+            ${includeUnassigned}::boolean
+        )
+    `;
 
     const workflowIds = await this.workflowRuntimeDataRepository.queryRawUnscoped<
       WorkflowRuntimeData[]
