@@ -15,12 +15,17 @@ export const useWatchDropdownOptions = ({ form, data, setFormData }) => {
           item.dropdownOptions.find(dropdownOption => dropdownOption.dependantOn === name),
         )
         .forEach(item => {
-          item.dropdownOptions = item.dropdownOptions.filter(
+          const itemDropdownOptions = item.dropdownOptions.filter(
             (dropdownOption: TDropdownOption) => dropdownOption.dependantValue === value[name],
           );
-          item.value = item.dropdownOptions.find(
-            dropDownOption => dropDownOption.value == value,
+
+          item.dropdownOptions = itemDropdownOptions;
+
+          const itemValue = item.dropdownOptions.find(
+            dropDownOption => dropDownOption.value === value[item.title],
           )?.value;
+
+          item.value = itemValue;
 
           if (item.value) {
             form.setValue(item.title, `${item.value}`);
