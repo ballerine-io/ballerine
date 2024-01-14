@@ -2,6 +2,7 @@ import { TWorkflowById, createWorkflowRequest } from '@/domains/workflows/fetche
 import { AnyObject } from '@ballerine/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
+import { t } from 'i18next';
 
 export interface WorkflowCreationParams {
   workflowDefinitionId: string;
@@ -26,10 +27,10 @@ export const useCreateWorkflowMutation = () => {
     onSuccess: () => {
       void queryClient.invalidateQueries();
 
-      toast.success('Case created successfully.');
+      toast.success(t('toast:case_creation.success'));
     },
     onError: () => {
-      toast.error(`Failed to create case.`);
+      toast.error(t('toast:case_creation.error'));
     },
   });
 };

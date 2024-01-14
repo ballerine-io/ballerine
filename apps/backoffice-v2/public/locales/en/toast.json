@@ -45,5 +45,9 @@
   "event": {
     "success": "Event sent successfully.",
     "error": "Error occurred while sending event."
+  },
+  "case_creation": {
+    "success": "Case created successfully.",
+    "error": "Failed to create case."
   }
 }
