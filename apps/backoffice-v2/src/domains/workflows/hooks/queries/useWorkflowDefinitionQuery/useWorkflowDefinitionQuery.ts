@@ -7,7 +7,7 @@ export const useWorkflowDefinitionByIdQuery = ({
   workflowDefinitionId: string;
 }) => {
   return useQuery({
-    ...workflowsQueryKeys.workflowDefinition({ workflowDefinitionId }),
+    ...workflowsQueryKeys.workflowDefinitionById({ workflowDefinitionId }),
     enabled: !!workflowDefinitionId,
     staleTime: 10_000,
   });
