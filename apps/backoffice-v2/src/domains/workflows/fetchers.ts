@@ -281,7 +281,7 @@ export const createWorkflowRequest = async ({
 }) => {
   const [workflow, error] = await apiClient({
     method: Method.POST,
-    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/workflows/run`,
+    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/case-management`,
     body: {
       workflowId: workflowDefinitionId,
       context,
