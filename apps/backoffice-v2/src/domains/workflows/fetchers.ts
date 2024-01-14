@@ -1,7 +1,6 @@
 import { env } from '@/common/env/env';
 import { getOriginUrl } from '@/domains/workflows/utils/get-origin-url';
 import { WorkflowDefinitionVariant } from '@ballerine/common';
-import { AnyObject } from '@ballerine/ui';
 import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
@@ -64,13 +63,13 @@ export const WorkflowDefinitionSchema = ObjectWithIdSchema.extend({
   contextSchema: z.record(z.any(), z.any()).nullable(),
   documentsSchema: z.array(z.any()).optional().nullable(),
   config: z.record(z.any(), z.any()).nullable(),
-  definition: z.record(z.any()),
+  definition: z.record(z.any(), z.unknown()),
   transitionSchema: z
     .array(
       z.object({
         state: z.string(),
-        schema: z.record(z.any()),
-        additionalParameters: z.record(z.any()).optional(),
+        schema: z.record(z.any(), z.unknown()),
+        additionalParameters: z.record(z.any(), z.unknown()).optional(),
       }),
     )
     .nullable(),
