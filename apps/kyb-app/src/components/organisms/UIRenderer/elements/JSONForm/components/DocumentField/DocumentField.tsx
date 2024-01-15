@@ -142,6 +142,14 @@ export const DocumentField = (
           return;
         }
 
+        console.error('Unexpected exception', error);
+        setFieldError({
+          //@ts-ignore
+          fieldId: document?.id,
+          message: 'Failed to upload file.',
+          type: 'error',
+        });
+
         throw error;
       } finally {
         toggleElementLoading();
