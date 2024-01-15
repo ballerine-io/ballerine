@@ -40,7 +40,7 @@ export const Entities: FunctionComponent = () => {
               ? skeletonEntities.map(index => (
                   <Cases.SkeletonItem key={`cases-list-skeleton-${index}`} />
                 ))
-              : (Array.isArray(cases) ? cases : []).map(case_ => (
+              : cases?.map(case_ => (
                   <Cases.Item
                     key={case_.id}
                     id={case_.id}

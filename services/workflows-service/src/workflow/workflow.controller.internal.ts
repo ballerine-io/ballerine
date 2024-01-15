@@ -257,7 +257,7 @@ export class WorkflowControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<WorkflowRuntimeData> {
     try {
-      const updatedWorkflowRuntimeData = await this.service.updateDocumentDecisionById(
+      return await this.service.updateDocumentDecisionById(
         {
           workflowId: params?.id,
           documentId: params?.documentId,
@@ -271,8 +271,6 @@ export class WorkflowControllerInternal {
         currentProjectId,
         data.postUpdateEventName,
       );
-
-      return updatedWorkflowRuntimeData;
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);

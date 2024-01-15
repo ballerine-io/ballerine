@@ -82,6 +82,7 @@ import {
 import mime from 'mime';
 import { env } from '@/env';
 import { AjvValidationError } from '@/errors';
+import { StringFilter } from '@/common/query-filters/string-filter';
 
 type TEntityId = string;
 
@@ -436,60 +437,20 @@ export class WorkflowService {
       projectIds,
     );
 
-    const { workflowDefinitionIds, statuses, assigneeIds, includeUnassigned } = {
-      workflowDefinitionIds:
-        query.where.workflowDefinitionId &&
-        typeof query.where.workflowDefinitionId === 'object' &&
-        'in' in query.where.workflowDefinitionId &&
-        Array.isArray(query.where.workflowDefinitionId.in)
-          ? query.where.workflowDefinitionId.in
-          : [],
-      statuses:
-        query?.where?.status &&
-        typeof query.where.status === 'object' &&
-        'in' in query.where.status &&
-        Array.isArray(query.where.status.in)
-          ? query.where.status?.in
-          : [],
-      assigneeIds: filters?.assigneeId?.filter((id): id is string => id !== null) ?? [],
-      includeUnassigned: filters?.assigneeId?.includes(null),
-    };
-
-    const assigneeIdsParam = assigneeIds.length
-      ? Prisma.join(assigneeIds.map(id => Prisma.sql`${id}`))
-      : Prisma.sql``;
-
-    const workflowDefinitionIdsParam = Prisma.join(
-      workflowDefinitionIds.map(id => Prisma.sql`${id}`),
+    const workflowIds = await this.workflowRuntimeDataRepository.search(
+      {
+        query: {
+          search,
+          entityType,
+          statuses:
+            ((query.where.status as Prisma.EnumWorkflowRuntimeDataStatusFilter)?.in as string[]) ||
+            [],
+          workflowDefinitionIds: (query.where.workflowDefinitionId as StringFilter).in,
+        },
+        filters,
+      },
+      projectIds,
     );
-
-    const statusesParam = statuses.length
-      ? Prisma.join(statuses.map(status => Prisma.sql`${status}`))
-      : Prisma.sql``;
-
-    const projectIdsParam = Prisma.join((projectIds || []).map(id => Prisma.sql`${id}`));
-
-    const caseStatusParam = filters?.caseStatus
-      ? Prisma.join(filters.caseStatus.map(status => Prisma.sql`${status}`))
-      : Prisma.sql``;
-
-    const sql = Prisma.sql`
-        SELECT id
-        FROM search_workflow_data(
-            ${search},
-            ${entityType},
-            array[${workflowDefinitionIdsParam}]::text[],
-            array[${statusesParam}]::text[],
-            array[${projectIdsParam}]::text[],
-            array[${assigneeIdsParam}]::text[],
-            array[${caseStatusParam}]::text[],
-            ${includeUnassigned}::boolean
-        )
-    `;
-
-    const workflowIds = await this.workflowRuntimeDataRepository.queryRawUnscoped<
-      WorkflowRuntimeData[]
-    >(sql);
 
     if (page.number > 1 && workflowIds.length < (page.number - 1) * page.size + 1) {
       throw new NotFoundException('Page not found');
