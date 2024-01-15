@@ -97,7 +97,7 @@ const Traffic = Type.Object({
 });
 
 const LOB = Type.Object({
-  businessConsistensy: Type.Object({
+  businessConsistency: Type.Object({
     summary: Type.String(),
     lobFromWebsite: Type.String(),
     lobFromExternalData: Type.String(),
