@@ -53,12 +53,12 @@ export const EcosystemChecks: FunctionComponent<EcosystemChecksProps> = ({ data 
             <Text style={tw('w-[25%] text-[8px] font-bold')}>TL Risk Score</Text>
           </View>
           {websites.map(website => {
-            const { url, relatedNode, relatedNodeType, tlRiskScore } = website;
+            const { domain, relatedNode, relatedNodeType, tlRiskScore } = website;
 
             return (
               <View style={tw('flex flex-row gap-4 flex-nowrap')} key={`website-row-${url}`}>
                 <Text style={tw('w-[25%] text-[8px]')}>
-                  <Link href={url} />
+                  <Link href={domain.href} url={domain.domain ?? domain.href} />
                 </Text>
                 <Text style={tw('w-[25%] text-[8px]')}>{relatedNodeType}</Text>
                 <Text style={tw('w-[25%] text-[8px]')}>{relatedNode}</Text>
