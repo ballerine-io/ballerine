@@ -213,6 +213,7 @@ export class WorkflowControllerExternal {
     const { token } = await this.workflowTokenService.create(currentProjectId, {
       workflowRuntimeDataId: body.workflowRuntimeDataId,
       expiresAt,
+      endUserId: '',
     });
 
     return res.json({
