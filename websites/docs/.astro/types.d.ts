@@ -311,9 +311,9 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.mdx'] };
-      'en/learn/case_management.md': {
-        id: 'en/learn/case_management.md';
-        slug: 'en/learn/case_management';
+      'en/learn/case_management_overview.md': {
+        id: 'en/learn/case_management_overview.md';
+        slug: 'en/learn/case_management_overview';
         body: string;
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
@@ -353,6 +353,13 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.md'] };
+      'en/learn/kyb_manual_review_example.mdx': {
+        id: 'en/learn/kyb_manual_review_example.mdx';
+        slug: 'en/learn/kyb_manual_review_example';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
       'en/learn/kyc_manual_review_workflow_guide.mdx': {
         id: 'en/learn/kyc_manual_review_workflow_guide.mdx';
         slug: 'en/learn/kyc_manual_review_workflow_guide';
@@ -430,9 +437,9 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.md'] };
-      'en/learn/workflow_builder_and_rule_engine.md': {
-        id: 'en/learn/workflow_builder_and_rule_engine.md';
-        slug: 'en/learn/workflow_builder_and_rule_engine';
+      'en/learn/workflow_builder_and_rule_engine_overview.md': {
+        id: 'en/learn/workflow_builder_and_rule_engine_overview.md';
+        slug: 'en/learn/workflow_builder_and_rule_engine_overview';
         body: string;
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
