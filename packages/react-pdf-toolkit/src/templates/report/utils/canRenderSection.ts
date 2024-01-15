@@ -24,7 +24,7 @@ const isObjectPropertiesHasAnyValue = (obj: AnyObject) => {
 };
 
 export const canRenderSection = (value: unknown): boolean => {
-  if (!value) return false;
+  if (value === null || value === undefined) return false;
 
   if (typeof value === 'object' && !isObjectPropertiesHasAnyValue(value)) {
     return false;

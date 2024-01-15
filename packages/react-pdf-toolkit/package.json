@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/react-pdf-toolkit",
   "private": false,
-  "version": "1.0.5",
+  "version": "1.0.7",
   "types": "./dist/build.d.ts",
   "main": "./dist/react-pdf-toolkit.js",
   "module": "./dist/react-pdf-toolkit.mjs",
