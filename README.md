@@ -8,7 +8,7 @@
     <img src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/646372b198f456345c69339c_logo%20github.png" alt="Ballerine's website">
 </a>
 
-#### Open-Source Risk Management Infrastructure
+## Open-Source Risk Management Infrastructure
 
 <br/>
 
