@@ -70,7 +70,7 @@ import {
   WorkflowRuntimeListQueryResult,
 } from './types';
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
-import { WorkflowDefinitionRepository } from '../workflow-defintion/workflow-definition.repository';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import {
   ArrayMergeOption,
@@ -80,6 +80,7 @@ import mime from 'mime';
 import { env } from '@/env';
 import { AjvValidationError } from '@/errors';
 import { ajv } from '@/common/ajv/ajv.validator';
+import { StringFilter } from '@/common/query-filters/string-filter';
 
 type TEntityId = string;
 
@@ -387,7 +388,9 @@ export class WorkflowService {
       orderBy,
       page,
       filters,
+      search,
     }: {
+      search?: string;
       args: Parameters<WorkflowRuntimeDataRepository['findMany']>[0];
       entityType: 'individuals' | 'businesses';
       orderBy: Parameters<typeof toPrismaOrderBy>[0];
@@ -398,6 +401,7 @@ export class WorkflowService {
       filters?: {
         assigneeId?: (string | null)[];
         status?: WorkflowRuntimeDataStatus[];
+        caseStatus?: string[];
       };
     },
     projectIds: TProjectIds,
@@ -421,24 +425,37 @@ export class WorkflowService {
       projectIds,
     );
 
-    const totalWorkflowsCount = await this.workflowRuntimeDataRepository.count(
+    const workflowIds = await this.workflowRuntimeDataRepository.search(
       {
-        where: query.where,
+        query: {
+          search,
+          entityType,
+          statuses:
+            ((query.where.status as Prisma.EnumWorkflowRuntimeDataStatusFilter)?.in as string[]) ||
+            [],
+          workflowDefinitionIds: (query.where.workflowDefinitionId as StringFilter).in,
+        },
+        filters,
       },
       projectIds,
     );
 
-    if (page.number > 1 && totalWorkflowsCount < (page.number - 1) * page.size + 1) {
+    if (page.number > 1 && workflowIds.length < (page.number - 1) * page.size + 1) {
       throw new NotFoundException('Page not found');
     }
 
-    const workflows = await this.workflowRuntimeDataRepository.findMany(query, projectIds);
+    const workflowsQuery = {
+      ...query,
+      where: { id: { in: workflowIds.map(workflowId => workflowId.id) } },
+    };
+
+    const workflows = await this.workflowRuntimeDataRepository.findMany(workflowsQuery, projectIds);
 
     return {
       data: this.formatWorkflowsRuntimeData(workflows as unknown as TWorkflowWithRelations[]),
       meta: {
-        totalItems: totalWorkflowsCount,
-        totalPages: Math.max(Math.ceil(totalWorkflowsCount / page.size), 1),
+        totalItems: workflowIds.length,
+        totalPages: Math.max(Math.ceil(workflowIds.length / page.size), 1),
       },
     };
   }
@@ -532,7 +549,7 @@ export class WorkflowService {
       ),
     ]);
 
-    const result: ListRuntimeDataResult = {
+    return {
       results: this.workflowsRuntimeListItemsFactory(
         workflowsRuntime as unknown as WorkflowRuntimeListQueryResult[],
       ),
@@ -541,8 +558,6 @@ export class WorkflowService {
         total: workflowsRuntimeCount,
       },
     };
-
-    return result;
   }
 
   private _resolveOrderByParams(

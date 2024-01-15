@@ -2,8 +2,13 @@
 title: Back-office
 ---
 
+
+
+
+
 import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
-import PackageManagersTabs from '../../../../components/PackageManagersTabs/PackageManagersTabs.astro';
+import PackageManagersTabs
+  from '../../../../components/PackageManagersTabs/PackageManagersTabs.astro';
 
 <a href="https://ballerine.com" title="Ballerine - Open-source Infrastructure for Identity and Risk management.">
     <img src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/646372b198f456345c69339c_logo%20github.png" alt="Ballerine's website"/>
@@ -21,7 +26,7 @@ import PackageManagersTabs from '../../../../components/PackageManagersTabs/Pack
 
 Give your operating team a case management back office so they can approve or reject users, initiate requests for document re-upload or escalate cases to others in the company.
 
-What can be done with the case managament back office?
+What can be done with the case management back office?
 
 **General use**
 * Approve or reject customers, businesses, and documents manually.
@@ -33,7 +38,7 @@ What can be done with the case managament back office?
 **KYB**
 * Show a holistic view of a business, including multiple UBOs, documents, information collected and more.
 * Present data from various vendors, data repositories,
-* Manage back-and-forth communicaion with your customers regarding their application.
+* Manage back-and-forth communication with your customers regarding their application.
 
 **KYC**
 
@@ -42,14 +47,7 @@ What can be done with the case managament back office?
 **Document approval**
 
 * Use the case management to create review processes for when customers want to improve their status
-* (e.g. credit score, better loans, higher limits, less ristrictions)
-
-
-
-
-
-
-
+* (e.g. credit score, better loans, higher limits, less restrictions)
 
 ## Getting Started
 
@@ -67,7 +65,7 @@ What can be done with the case managament back office?
 **Getting started**
 To install the dev version use the following steps:
 
-#### Use backoffice with through API
+#### Use backoffice through the KYB manual review example
 
 Follow the steps below to run the backoffice app and the workflow service.
 Open cases in the backoffice by sending API requests to the workflow service.
@@ -78,14 +76,14 @@ Open cases in the backoffice by sending API requests to the workflow service.
    <CodeBlock lang={`shell`} code={`git checkout dev`}/>
    3.  Install dependencies:
    <PackageManagersTabs code={`install`}/>
-   5. Init to monorepo (build packages):
+   5. Initialize monorepo:
    <PackageManagersTabs code={`run monorepo:init`}/>
-   6. Initilazie monorepo:
-   <PackageManagersTabs code={`run api-flow-example`}/>
+   6. Run example:
+   <PackageManagersTabs code={`run kyb-manual-review-example`}/>
 
  _Now the backoffice will run on http://localhost:5137/, and the workflow service will accept calls at http://localhost:3000/_
 
- Default user name and password for the backoffice:<br/><br/>
+ Default username and password for the backoffice:<br/><br/>
     **Username:**
     <CodeBlock lang={`shell`} code={`admin@admin.com`}/>
     **Password:**
@@ -282,4 +280,4 @@ checkout the  **environment variables** (workflows-service/.env) to setup the we
 
 ## Contact Ballerine
 
-To start using the paid version or if you need any assistance, reach out to us at oss@ballerine.com. Join our [Discord Channel](discord-link) and [Slack Channel](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw) to stay updated and engage with our community.
+To start using the paid version or if you need any assistance, reach out to us at oss@ballerine.com. Join our [Discord Channel](https://discord.gg/e2rQE4YygA) and [Slack Channel](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw) to stay updated and engage with our community.

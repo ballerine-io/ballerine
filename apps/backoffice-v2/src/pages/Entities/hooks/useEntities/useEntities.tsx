@@ -8,8 +8,9 @@ import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSe
 import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
 
 export const useEntities = () => {
-  const [{ filterId, filter, sortBy, sortDir, page, pageSize }, setSearchParams] =
+  const [{ filterId, filter, sortBy, sortDir, page, pageSize, search }, setSearchParams] =
     useSearchParamsByEntity();
+
   const { data, isLoading } = useWorkflowsQuery({
     filterId,
     filter,
@@ -17,6 +18,7 @@ export const useEntities = () => {
     sortDir,
     page,
     pageSize,
+    search,
   });
 
   const {
@@ -26,11 +28,7 @@ export const useEntities = () => {
   const entity = useEntityType();
   const individualsSearchOptions = ['entity.name', 'entity.email'];
   const businessesSearchOptions = ['entity.name'];
-  const {
-    searched: cases,
-    onSearch,
-    search,
-  } = useSearch({
+  const { onSearch, search: searchValue } = useSearch({
     data: workflows,
     searchBy: entity === 'individuals' ? individualsSearchOptions : businessesSearchOptions,
   });
@@ -100,9 +98,9 @@ export const useEntities = () => {
     onSortBy: onSortByChange,
     onSortDirToggle,
     showCaseCreation: workflowDefinition?.isManualCreationEnabled,
-    search,
-    cases,
-    caseCount: data?.meta?.totalItems,
+    search: searchValue,
+    cases: data?.data,
+    caseCount: data?.meta?.totalItems || 0,
     isLoading,
     page,
     totalPages,
