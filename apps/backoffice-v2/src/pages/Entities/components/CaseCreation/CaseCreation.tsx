@@ -27,7 +27,9 @@ export const CaseCreation = withCaseCreation(() => {
         {!isLoading && workflowDefinition ? (
           <div className="flex flex-col px-[60px] py-[72px]">
             <div className="flex flex-col">
-              <span className="pb-3 text-base font-bold">{workflowDefinition?.name}</span>
+              <span className="pb-3 text-base font-bold capitalize">
+                {workflowDefinition?.name?.replaceAll('_', ' ')}
+              </span>
               <h1 className="leading-0 pb-5 text-3xl font-bold">Add a Case</h1>
               <p className="pb-10">
                 Create a {workflowDefinition?.name} case by filling in the information below. Please
