@@ -20,8 +20,14 @@ const WebsiteCheck = Type.Object({
   indicators: Type.Array(Indicator),
   riskAnalysis: RiskAnalysis,
 });
+
+const EcosystemDomain = Type.Object({
+  domain: Type.Optional(Type.String()),
+  href: Type.String(),
+});
+
 const EcosystemWebsite = Type.Object({
-  url: Type.String({ format: 'uri' }),
+  domain: EcosystemDomain,
   violations: Type.Array(Violation),
   relatedNodeType: Type.String(),
   relatedNode: Type.String(),
