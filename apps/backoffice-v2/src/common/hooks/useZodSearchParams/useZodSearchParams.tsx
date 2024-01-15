@@ -42,7 +42,7 @@ export const useZodSearchParams = <TSchema extends AnyZodObject>(
 
   useEffect(() => {
     onSetSearchParams(parsedSearchParams);
-  }, [onSetSearchParams, parsedSearchParams]);
+  }, []);
 
   return [parsedSearchParams as z.output<TSchema>, onSetSearchParams] as const;
 };
