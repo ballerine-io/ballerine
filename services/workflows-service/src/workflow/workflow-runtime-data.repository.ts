@@ -209,8 +209,65 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
-  async queryRawUnscoped<TValue>(query: string, values: any[] = []): Promise<TValue> {
-    return (await this.prisma.$queryRawUnsafe.apply(this.prisma, [query, ...values])) as TValue;
+  async search(
+    {
+      query: { search, entityType, workflowDefinitionIds, statuses },
+      filters,
+    }: {
+      query: {
+        search?: string;
+        entityType: string;
+        statuses: string[];
+        workflowDefinitionIds?: string[];
+      };
+      filters?: {
+        caseStatus?: string[];
+        assigneeId?: (string | null)[];
+        status?: WorkflowRuntimeDataStatus[];
+      };
+    },
+    projectIds: TProjectIds,
+  ): Promise<WorkflowRuntimeData[]> {
+    const { assigneeIds, includeUnassigned } = {
+      assigneeIds: filters?.assigneeId?.filter((id): id is string => id !== null) ?? [],
+      includeUnassigned: filters?.assigneeId?.includes(null),
+    };
+
+    const assigneeIdsParam = assigneeIds.length
+      ? Prisma.join(assigneeIds.map(id => Prisma.sql`${id}`))
+      : Prisma.sql``;
+
+    const workflowDefinitionIdsParam = Prisma.join(
+      (workflowDefinitionIds || []).map(id => Prisma.sql`${id}`),
+    );
+
+    const statusesParam = statuses.length
+      ? Prisma.join(statuses.map(status => Prisma.sql`${status}`))
+      : Prisma.sql``;
+
+    const projectIdsParam = projectIds?.length
+      ? Prisma.join(projectIds.map(id => Prisma.sql`${id}`))
+      : Prisma.sql``;
+
+    const caseStatusParam = filters?.caseStatus
+      ? Prisma.join(filters.caseStatus.map(status => Prisma.sql`${status}`))
+      : Prisma.sql``;
+
+    const sql = Prisma.sql`
+        SELECT id
+        FROM search_workflow_data(
+            ${search},
+            ${entityType},
+            array[${workflowDefinitionIdsParam}]::text[],
+            array[${statusesParam}]::text[],
+            array[${projectIdsParam}]::text[],
+            array[${assigneeIdsParam}]::text[],
+            array[${caseStatusParam}]::text[],
+            ${includeUnassigned}::boolean
+        )
+    `;
+
+    return (await this.prisma.$queryRaw(sql)) as WorkflowRuntimeData[];
   }
 
   async findLastActive(
@@ -231,8 +288,6 @@ export class WorkflowRuntimeDataRepository {
       projectIds,
     );
 
-    const latestWorkflowRuntimeData = await this.findOne(query, projectIds);
-
-    return latestWorkflowRuntimeData;
+    return await this.findOne(query, projectIds);
   }
 }

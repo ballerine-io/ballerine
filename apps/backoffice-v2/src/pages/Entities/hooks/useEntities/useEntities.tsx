@@ -1,14 +1,15 @@
-import { useSearch } from '../../../../common/hooks/useSearch/useSearch';
+import { useSearch } from '@/common/hooks/useSearch/useSearch';
 import { ChangeEventHandler, useCallback } from 'react';
-import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
-import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
-import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
-import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
-import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
+import { createArrayOfNumbers } from '@/common/utils/create-array-of-numbers/create-array-of-numbers';
+import { useSelectEntityOnMount } from '@/domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
+import { useWorkflowsQuery } from '@/domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
+import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { useEntityType } from '@/common/hooks/useEntityType/useEntityType';
 
 export const useEntities = () => {
-  const [{ filterId, filter, sortBy, sortDir, page, pageSize }, setSearchParams] =
+  const [{ filterId, filter, sortBy, sortDir, page, pageSize, search }, setSearchParams] =
     useSearchParamsByEntity();
+
   const { data, isLoading } = useWorkflowsQuery({
     filterId,
     filter,
@@ -16,6 +17,7 @@ export const useEntities = () => {
     sortDir,
     page,
     pageSize,
+    search,
   });
 
   const {
@@ -25,11 +27,7 @@ export const useEntities = () => {
   const entity = useEntityType();
   const individualsSearchOptions = ['entity.name', 'entity.email'];
   const businessesSearchOptions = ['entity.name'];
-  const {
-    searched: cases,
-    onSearch,
-    search,
-  } = useSearch({
+  const { onSearch, search: searchValue } = useSearch({
     data: workflows,
     searchBy: entity === 'individuals' ? individualsSearchOptions : businessesSearchOptions,
   });
@@ -96,9 +94,9 @@ export const useEntities = () => {
     onFilter: onFilterChange,
     onSortBy: onSortByChange,
     onSortDirToggle,
-    search,
-    cases,
-    caseCount: data?.meta?.totalItems,
+    search: searchValue,
+    cases: data?.data,
+    caseCount: data?.meta?.totalItems || 0,
     isLoading,
     page,
     totalPages,

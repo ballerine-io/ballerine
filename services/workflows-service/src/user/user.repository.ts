@@ -120,8 +120,4 @@ export class UserRepository {
       ...args,
     });
   }
-
-  async queryRawUnscoped<TValue>(query: string, values: any[] = []): Promise<TValue> {
-    return (await this.prisma.$queryRawUnsafe.apply(this.prisma, [query, ...values])) as TValue;
-  }
 }

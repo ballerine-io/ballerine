@@ -12,13 +12,13 @@ export const Group: FunctionComponentWithChildren<IGroupProps> = ({
   titleProps = {},
   innerContainerProps = {},
 }) => {
-  const { className, ...restTitle } = titleProps;
+  const { className: titleClassName, ...restTitle } = titleProps;
   const { className: innerContainerClassName, ...restInnerContainer } = innerContainerProps;
 
   return (
     <Provider values={values} onChange={onChange}>
       <div>
-        <h4 className={ctw(`mb-2 text-base-content`, className)} {...restTitle}>
+        <h4 className={ctw(`mb-2 text-base-content`, titleClassName)} {...restTitle}>
           {label}
         </h4>
         <div
