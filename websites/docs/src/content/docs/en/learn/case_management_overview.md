@@ -1,5 +1,5 @@
 ---
-title: Case Management (soon Open Source)
+title: Case Management Overview
 description: Case management documentation
 
 ---
@@ -14,9 +14,6 @@ Give your operating team Ballerine’s case management dashboard so they can app
 - Use as a standalone tool or embed in your existing dashboard.
 
 <br/>
-
-> _We are working on releasing our case management dashboard as Open-Source. Join our mailing list in the button below to get an update once it's out._
-<a href="https://www.ballerine.com/mailing-list" title="Ballerine - Request Access"> <br/> <br/> <img width="160px" src="https://blrn-staging-assets.s3.eu-central-1.amazonaws.com/email-updates.png" alt="Ballerine's Early Access"> </a>
 
 <br/>
 

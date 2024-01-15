@@ -78,8 +78,9 @@ Watch a brief video explaining what we're building.
 
 ## Features
 View each component's current state in the [roadmap](#roadmap) below.
+
 ####  Released  - 🎉
-- [**Back office**](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/back-office.md) - Case management dashboard for manual decision-making.
+- [**Back office**](https://docs.ballerine.com/en/learn/back_office) - Case management dashboard for manual decision-making.
 
 - **Workflow engine** - Orchestrates and automates the different system's parts.
 
@@ -87,9 +88,6 @@ View each component's current state in the [roadmap](#roadmap) below.
 - **Plugin system** - Integrates with 3rd-party vendors, APIs, and data sources.
 
 - **Rule engine** - Leverage various rule types to ensure user compliance with your risk policy.
-
-####   Planned on roadmap - 📌
-- **Frontend headless SDK**- Real-time modification of KYC/KYB frontend user journeys.
 
 #### Community driven building blocks - 🌍
 - [**User flows UX/UI**](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md) - KYC/KYB/Document collection flows and UI via mobile & web SDK.
@@ -111,27 +109,13 @@ We believe in enabling companies to manage user  identity  and risk according to
 
 **In the following example you can test a simple form of the following infrastructure capabilities**
 
-1. Document collection flow controlled by our **Headless SDK**.
+1. Document collection flow
 2. A manual review case management **Back Office**.
 3. Live communication between the parts using a **Workflow Engine**, that also defines the process steps.
 4. A simple JSON containing **Risk Rules** that are checked during the flow.
 
 **Parts of the system you might look for but are not in THIS demo:**
-- Advanced Back Office - To try it out go to our [Case management back office page](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/back-office.md).
-- KYC/KYB UI flows - To try it out go to our  [Community driven building blocks page](https://github.com/ballerine-io/ballerine/blob/main/websites/docs/src/pages/en/learn/kit.md).
 - Our Plugin System and Rule Engine are still under construction and will soon be released.
-
-
-**Demo example video**
-
-Watch a video of how the demo works, with explanations:
-[Watch now](https://youtu.be/EzBXhUM7gb8)
-
-<br/>
-
-<a href="https://youtu.be/EzBXhUM7gb8" title="Ballerine Demo">
-    <img src="https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/646b32fd3d69c9698cd511a1_vid%20thumbnail.png" alt="Demo video">
-</a>
 
 <br/>
 <br/>
@@ -150,40 +134,35 @@ To set up a local environment, follow these steps:
    ```sh
    git clone https://github.com/ballerine-io/ballerine.git
    ```
-   2. Install npm depenencies:
+   2. Install npm dependencies:
    ```sh
    pnpm install
    ```
-   3. Initilazie monorepo:
+   3. Initialize monorepo:
    ```sh
    pnpm monorepo:init
    ```
 
 3. #### Run the example
    ```sh
-   pnpm kyc-manual-review-example
+   pnpm kyb-manual-review-example
    ```
 
 Once the process is complete,  _2 tabs_   will open in your browser:
 
-1. http://localhost:5173/ - for the _document collection flow_
+1. http://localhost:5201/ - for the _document collection flow_
 2. http://localhost:5137/ - for the  _backoffice_
 (It's recommended to have them positioned side-by-side).
 
-##### KYB Manual Review Workflow:
-The following command will run the workflow's backend (workflow service API), the backoffice, and UI example using the headless web SDK:
-```sh
-pnpm kyb-manual-review-example
-```
 <sub>If the tabs have not opened automatically, please use the links provided above.</sub>
 
 **Steps to go over the flow:**
 
-1.  On the KYC UI, click the "Start KYC" button
+1.  On the collection flow tab, fill in the required fields each step
 2.  Go through and complete the flow
 3.  Go to the backoffice tab to review the new user that was created
 4.  Approve/reject/ask to revision
-5.  Get back to the KYC UI to see the result
+5.  For ask to revision get back to the collection flow to see the result
 
 *Note: some components are currently in beta, if you run into an issue please ping us on Slack
 <br/>
@@ -193,7 +172,7 @@ To start using the paid version or if you need any assistance, reach out to us a
 
 ## Contributing
 
-We appreciate all types of contributions and believe that an active community is the secret to a rich and stable oriduct.
+We appreciate all types of contributions and believe that an active community is the secret to a rich and stable product.
 Here are some of the ways you can contribute:
 
 -   Give us feedback in our  [Slack community](https://join.slack.com/t/ballerine-oss/shared_invite/zt-1iu6otkok-OqBF3TrcpUmFd9oUjNs2iw)
@@ -201,14 +180,16 @@ Here are some of the ways you can contribute:
 -   Submit a  [feature request](https://github.com/ballerine-io/ballerine/issues/new?assignees=&labels=enhancement%2C+feature&template=feature_request.md)  or  [bug report](https://github.com/ballerine-io/ballerine/issues/new?assignees=&labels=bug&template=bug_report.md)
 
 ## Roadmap
+
 ### High level roadmap
+
 #### Back office
-- [x] ~~View, approve, rejece pr ask for re-submittion~~
+- [x] ~~View, approve, reject or ask for re-submission~~
 	- [x] ~~individuals~~
 	- [x] ~~businesses (multiple documents and individuals)~~
 	- [x] ~~Custom documents/information~~
 	- [ ] Transactions
-- [x] ~~Process managment~~
+- [x] ~~Process management~~
 	- [x] ~~Collect audit logs~~
 	- [x] ~~Assign/re-assign agents~~
 	- [x] ~~Decision results and reasons webhooks~~
@@ -233,7 +214,7 @@ Here are some of the ways you can contribute:
 **Workflow engine**
 - [x] ~~Orchestrate all parts of the flow~~
 - [x] ~~Visualize a workflow (using XState)~~
-- [ ] No code/Low code rules managmgnet UI for non technical team members
+- [ ] No code/Low code rules magnet UI for non-technical team members
 - [ ] A/B test different vendors/rules/flows
 
 **Rule engine**
@@ -241,7 +222,7 @@ Here are some of the ways you can contribute:
 - [x] ~~Simple rule types ("if this than that" rules)~~
 - [ ] Advance rule types (Matrix, tables, etc.)
 - [x] ~~JSON configuration ability~~
-- [ ] No code/Low code rules managmgnet UI for non technical team members
+- [ ] No code/Low code rules management UI for non-technical team members
 
 **Frontend headless SDK**
 - [x] ~~Get KYC/KYB steps from workflow~~
