@@ -52,9 +52,7 @@ describe('useFileUploading - hook', () => {
 
       const { result } = renderHook(() => useFileUploading(uploader));
 
-      act(() => {
-        void result.current.uploadFile({} as File);
-      });
+      expect(() => result.current.uploadFile({} as File)).rejects.toThrow(HTTPError);
 
       await waitFor(() => {
         expect(result.current.error).toBeInstanceOf(HTTPError);
@@ -87,9 +85,7 @@ describe('useFileUploading - hook', () => {
 
       rerender(uploadAndThrow);
 
-      act(() => {
-        void result.current.uploadFile({} as File);
-      });
+      expect(() => result.current.uploadFile({} as File)).rejects.toThrow(HTTPError);
 
       await waitFor(() => {
         expect(Boolean(result.current.error)).toBe(true);
