@@ -91,7 +91,7 @@ export const useCases = () => {
           value: 'caseStatus',
           options: [
             ...(statuses?.map(status => ({
-              label: tagToBadgeData[status].text,
+              label: tagToBadgeData[status]?.text,
               value: status,
               key: status,
             })) ?? []),

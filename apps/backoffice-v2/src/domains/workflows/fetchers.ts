@@ -68,7 +68,12 @@ export const BaseWorkflowByIdSchema = z.object({
     documentsSchema: z.array(z.any()).optional().nullable(),
     config: z.record(z.any(), z.any()).nullable(),
     definition: z.object({
-      states: z.record(z.string(), z.object({ tags: z.array(z.string()) })),
+      states: z.record(
+        z.string(),
+        z.object({
+          tags: z.array(z.string()).nullable().optional(),
+        }),
+      ),
     }),
   }),
   createdAt: z.string().datetime(),

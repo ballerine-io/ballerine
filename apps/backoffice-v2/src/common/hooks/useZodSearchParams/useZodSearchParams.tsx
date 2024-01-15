@@ -16,7 +16,7 @@ export const useZodSearchParams = <TSchema extends AnyZodObject>(
   const serializer = options.serializer ?? defaultSerializer;
   const deserializer = options.deserializer ?? defaultDeserializer;
 
-  const searchParamsAsObject = useMemo(() => deserializer?.(search), [deserializer, search]);
+  const searchParamsAsObject = useMemo(() => deserializer(search), [deserializer, search]);
 
   const parsedSearchParams = useMemo(
     () => schema.parse(searchParamsAsObject),
@@ -42,7 +42,7 @@ export const useZodSearchParams = <TSchema extends AnyZodObject>(
 
   useEffect(() => {
     onSetSearchParams(parsedSearchParams);
-  }, [onSetSearchParams, parsedSearchParams]);
+  }, []);
 
   return [parsedSearchParams as z.output<TSchema>, onSetSearchParams] as const;
 };
