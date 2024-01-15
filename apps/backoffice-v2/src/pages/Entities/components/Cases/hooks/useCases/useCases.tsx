@@ -140,7 +140,6 @@ export const useCases = () => {
     if (!listeners.includes(event.key?.toLowerCase() as (typeof listeners)[number])) return;
 
     event.preventDefault();
-    let dropdown;
 
     switch (event.key?.toLowerCase()) {
       case 'k':
@@ -153,10 +152,10 @@ export const useCases = () => {
 
         sortRef.current.focus();
         break;
-      case 'f':
+      case 'f': {
         if (!filterRef.current) break;
 
-        dropdown = filterRef.current.closest('.dropdown');
+        const dropdown = filterRef.current.closest('.dropdown');
 
         dropdown?.classList.toggle('dropdown-open');
         dropdown?.classList.toggle('dropdown-hover');
@@ -166,6 +165,7 @@ export const useCases = () => {
         }
 
         break;
+      }
     }
   });
 

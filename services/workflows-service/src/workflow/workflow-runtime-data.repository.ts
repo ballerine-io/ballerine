@@ -8,7 +8,6 @@ import { FindLastActiveFlowParams } from '@/workflow/types/params';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { SortOrder } from '@/common/query-filters/sort-order';
 import type { TProjectIds } from '@/types';
-import { Sql } from '@prisma/client/runtime';
 
 export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 
@@ -210,8 +209,65 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
-  async queryRawUnscoped<TValue>(sql: Sql): Promise<TValue> {
-    return (await this.prisma.$queryRaw(sql)) as TValue;
+  async search(
+    {
+      query: { search, entityType, workflowDefinitionIds, statuses },
+      filters,
+    }: {
+      query: {
+        search?: string;
+        entityType: string;
+        statuses: string[];
+        workflowDefinitionIds?: string[];
+      };
+      filters?: {
+        caseStatus?: string[];
+        assigneeId?: (string | null)[];
+        status?: WorkflowRuntimeDataStatus[];
+      };
+    },
+    projectIds: TProjectIds,
+  ): Promise<WorkflowRuntimeData[]> {
+    const { assigneeIds, includeUnassigned } = {
+      assigneeIds: filters?.assigneeId?.filter((id): id is string => id !== null) ?? [],
+      includeUnassigned: filters?.assigneeId?.includes(null),
+    };
+
+    const assigneeIdsParam = assigneeIds.length
+      ? Prisma.join(assigneeIds.map(id => Prisma.sql`${id}`))
+      : Prisma.sql``;
+
+    const workflowDefinitionIdsParam = Prisma.join(
+      (workflowDefinitionIds || []).map(id => Prisma.sql`${id}`),
+    );
+
+    const statusesParam = statuses.length
+      ? Prisma.join(statuses.map(status => Prisma.sql`${status}`))
+      : Prisma.sql``;
+
+    const projectIdsParam = projectIds?.length
+      ? Prisma.join(projectIds.map(id => Prisma.sql`${id}`))
+      : Prisma.sql``;
+
+    const caseStatusParam = filters?.caseStatus
+      ? Prisma.join(filters.caseStatus.map(status => Prisma.sql`${status}`))
+      : Prisma.sql``;
+
+    const sql = Prisma.sql`
+        SELECT id
+        FROM search_workflow_data(
+            ${search},
+            ${entityType},
+            array[${workflowDefinitionIdsParam}]::text[],
+            array[${statusesParam}]::text[],
+            array[${projectIdsParam}]::text[],
+            array[${assigneeIdsParam}]::text[],
+            array[${caseStatusParam}]::text[],
+            ${includeUnassigned}::boolean
+        )
+    `;
+
+    return (await this.prisma.$queryRaw(sql)) as WorkflowRuntimeData[];
   }
 
   async findLastActive(
