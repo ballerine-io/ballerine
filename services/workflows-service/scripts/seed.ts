@@ -231,7 +231,7 @@ async function seed(bcryptSalt: string | number) {
       true,
     );
 
-    const mockData = {
+    return {
       entity: {
         type: 'business',
         data: {
@@ -339,8 +339,6 @@ async function seed(bcryptSalt: string | number) {
         },
       ],
     };
-
-    return mockData;
   };
 
   async function createMockEndUserContextData(endUserId: string, countOfIndividual: number) {
@@ -359,7 +357,7 @@ async function seed(bcryptSalt: string | number) {
       true,
     );
 
-    const mockData = {
+    return {
       entity: {
         type: 'individual',
         data: {
@@ -467,8 +465,6 @@ async function seed(bcryptSalt: string | number) {
         },
       ],
     };
-
-    return mockData;
   }
 
   function createFilter(
@@ -990,17 +986,20 @@ async function seed(bcryptSalt: string | number) {
   void client.$disconnect();
 
   console.info('Seeding database with custom seed...');
-  customSeed();
+
+  await customSeed();
+
   await generateKybDefintion(client);
   await generateKycSessionDefinition(client);
   await generateKybKycWorkflowDefinition(client);
   await generateKycForE2eTest(client);
-  const collectionKybWorkflowDefinition = await generateCollectionKybWorkflow(client, project1.id);
+  await generateCollectionKybWorkflow(client, project1.id);
 
   const { parentWorkflow, uiDefinition } = await uiKybParentWithAssociatedCompanies(
     client,
     project1.id,
   );
+
   await generateWebsiteMonitoringExample(client, project1.id);
 
   await generateInitialCollectionFlowExample(client, {
@@ -1010,5 +1009,6 @@ async function seed(bcryptSalt: string | number) {
     businessId: businessIds[0]!,
     token: DEFAULT_SEED_DEFINITION_TOKEN,
   });
+
   console.info('Seeded database successfully');
 }

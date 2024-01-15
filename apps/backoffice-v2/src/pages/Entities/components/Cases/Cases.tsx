@@ -78,7 +78,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
               Filter
             </button>
             <div
-              className={`dropdown-content space-y-2 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}
+              className={`dropdown-content space-y-4 rounded-md border border-neutral/10 bg-base-100 p-2 theme-dark:border-neutral/60`}
             >
               {filterByOptions.map(({ label, value, options }) => {
                 return (
