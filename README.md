@@ -11,9 +11,6 @@
 
 ## Open-Source Infrastructure for User Risk Decisioning
 
-
-
-
 </br>
   <!-- Nav header - Start -->
 
