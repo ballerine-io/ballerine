@@ -1,6 +1,8 @@
 import { ComponentProps, FunctionComponent } from 'react';
-import { Card, CardContent } from '@/components';
+import { Card } from '@/components';
 import { AccordionTitle } from '@/components/molecules/AccordionCard/AccordionCard.Title';
+import { AccordionCardContent } from '@/components/molecules/AccordionCard/AccordionCard.Content';
+import { AccordionItem } from '@/components/molecules/AccordionCard/AccordionCard.Item';
 
 export const AccordionCard: FunctionComponent<ComponentProps<typeof Card>> = ({
   children,
@@ -13,7 +15,7 @@ AccordionCard.displayName = 'AccordionCard';
 AccordionCard.Title = AccordionTitle;
 AccordionCard.Title.displayName = 'AccordionCard.Title';
 
-AccordionCard.Content = CardContent;
+AccordionCard.Content = AccordionCardContent;
 AccordionCard.Content.displayName = 'AccordionCard.Content';
 
-// AccordionCard.SubItem = AccordionSubItem;
+AccordionCard.Item = AccordionItem;
