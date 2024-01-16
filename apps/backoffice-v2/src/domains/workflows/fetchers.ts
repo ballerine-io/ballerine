@@ -56,7 +56,7 @@ export const fetchWorkflows = async (params: {
 
 export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
 
-export const WorkflowDefinitionConfig = z
+export const WorkflowDefinitionConfigSchema = z
   .object({
     isManualCreation: z.boolean().default(false),
   })
@@ -69,7 +69,7 @@ export const WorkflowDefinitionSchema = ObjectWithIdSchema.extend({
   variant: z.string().default(WorkflowDefinitionVariant.DEFAULT),
   contextSchema: z.record(z.any(), z.any()).nullable(),
   documentsSchema: z.array(z.any()).optional().nullable(),
-  config: WorkflowDefinitionConfig,
+  config: WorkflowDefinitionConfigSchema,
   definition: z.record(z.any(), z.unknown()),
   transitionSchema: z
     .array(
@@ -80,7 +80,6 @@ export const WorkflowDefinitionSchema = ObjectWithIdSchema.extend({
       }),
     )
     .nullable(),
-  isManualCreationEnabled: z.boolean().optional(),
 });
 
 export type TWorkflowDefinition = z.output<typeof WorkflowDefinitionSchema>;
