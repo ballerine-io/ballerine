@@ -16,8 +16,11 @@ export class CreateCollectionFlowUrlDto {
 
   @ApiProperty({
     required: false,
+    default: 30,
+    type: Number,
+    description: 'Default expiry in days',
   })
   @IsOptional()
   @IsNumber()
-  expiry!: number;
+  expiry?: number;
 }

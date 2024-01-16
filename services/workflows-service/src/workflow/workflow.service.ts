@@ -1541,7 +1541,11 @@ export class WorkflowService {
       validatedConfig || {},
     ) as InputJsonValue;
 
-    const entities = { endUserId: '', businessId: '' };
+    const entities: {
+      id: string;
+      type: 'individual' | 'business';
+      tags?: ('mainRepresentative' | 'UBO')[];
+    }[] = [];
 
     // Creating new workflow
     if (!existingWorkflowRuntimeData || mergedConfig?.allowMultipleActiveWorkflows) {
@@ -1588,11 +1592,14 @@ export class WorkflowService {
         workflowRuntimeData,
       });
 
+      let endUserId: string;
+
       if (mergedConfig.createCollectionFlowToken) {
         if (entityType === 'endUser') {
-          entities.endUserId = entityId;
+          endUserId = entityId;
+          entities.push({ type: 'individual', id: entityId });
         } else {
-          entities.endUserId = await this.__generateEndUserWithBusiness({
+          endUserId = await this.__generateEndUserWithBusiness({
             entityType,
             workflowRuntimeData,
             entityData:
@@ -1601,13 +1608,18 @@ export class WorkflowService {
             entityId,
           });
 
-          entities.businessId = entityId;
+          entities.push({
+            type: 'individual',
+            id: endUserId,
+          });
+
+          entities.push({ type: 'business', id: entityId });
         }
 
         const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         const workflowToken = await this.workflowTokenService.create(currentProjectId, {
           workflowRuntimeDataId: workflowRuntimeData.id,
-          endUserId: entities.endUserId,
+          endUserId: endUserId,
           expiresAt: nowPlus30Days,
         });
 
