@@ -1541,6 +1541,8 @@ export class WorkflowService {
       validatedConfig || {},
     ) as InputJsonValue;
 
+    const entities = { endUserId: '', businessId: '' };
+
     // Creating new workflow
     if (!existingWorkflowRuntimeData || mergedConfig?.allowMultipleActiveWorkflows) {
       const contextWithoutDocumentPageType = {
@@ -1586,24 +1588,26 @@ export class WorkflowService {
         workflowRuntimeData,
       });
 
-      const mainRepresentative =
-        workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative;
       if (mergedConfig.createCollectionFlowToken) {
-        const endUserId =
-          entityType === 'endUser'
-            ? entityId
-            : await this.__generateEndUserWithBusiness({
-                entityType,
-                workflowRuntimeData,
-                entityData: mainRepresentative,
-                currentProjectId,
-                entityId,
-              });
+        if (entityType === 'endUser') {
+          entities.endUserId = entityId;
+        } else {
+          entities.endUserId = await this.__generateEndUserWithBusiness({
+            entityType,
+            workflowRuntimeData,
+            entityData:
+              workflowRuntimeData.context.entity?.data?.additionalInfo?.mainRepresentative,
+            currentProjectId,
+            entityId,
+          });
+
+          entities.businessId = entityId;
+        }
 
         const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         const workflowToken = await this.workflowTokenService.create(currentProjectId, {
           workflowRuntimeDataId: workflowRuntimeData.id,
-          endUserId: endUserId,
+          endUserId: entities.endUserId,
           expiresAt: nowPlus30Days,
         });
 
@@ -1636,6 +1640,7 @@ export class WorkflowService {
           projectIds,
           currentProjectId,
         ));
+
       workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
         workflowRuntimeData.id,
         {},
@@ -1710,6 +1715,7 @@ export class WorkflowService {
         workflowDefinition,
         workflowRuntimeData,
         ballerineEntityId: entityId,
+        entities,
       },
     ] as const;
   }

@@ -195,6 +195,7 @@ export class WorkflowControllerExternal {
       workflowDefinitionId: actionResult[0]!.workflowDefinition.id,
       workflowRuntimeId: actionResult[0]!.workflowRuntimeData.id,
       ballerineEntityId: actionResult[0]!.ballerineEntityId,
+      entities: actionResult[0]!.entities,
     });
   }
 
@@ -204,16 +205,16 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createCollectionFlowUrl(
-    @common.Body() body: CreateCollectionFlowUrlDto,
+    @common.Body() { expiry, workflowRuntimeDataId, endUserId }: CreateCollectionFlowUrlDto,
     @Res() res: Response,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const expiresAt = new Date(Date.now() + (body.expiry || 30) * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + (expiry || 30) * 24 * 60 * 60 * 1000);
 
     const { token } = await this.workflowTokenService.create(currentProjectId, {
-      workflowRuntimeDataId: body.workflowRuntimeDataId,
+      workflowRuntimeDataId: workflowRuntimeDataId,
       expiresAt,
-      endUserId: '',
+      endUserId,
     });
 
     return res.json({
