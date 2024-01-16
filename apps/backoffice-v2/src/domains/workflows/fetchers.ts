@@ -1,11 +1,11 @@
 import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
-import { apiClient } from '../../common/api-client/api-client';
-import { Method, States } from '../../common/enums';
-import { handleZodError } from '../../common/utils/handle-zod-error/handle-zod-error';
-import { ObjectWithIdSchema } from '../../lib/zod/utils/object-with-id/object-with-id';
-import { zPropertyKey } from '../../lib/zod/utils/z-property-key/z-property-key';
+import { apiClient } from '@/common/api-client/api-client';
+import { Method, States } from '@/common/enums';
+import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
+import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
+import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
 import { IWorkflowId } from './interfaces';
 import { WorkflowDefinitionVariant } from '@ballerine/common';
 
@@ -67,6 +67,14 @@ export const BaseWorkflowByIdSchema = z.object({
     contextSchema: z.record(z.any(), z.any()).nullable(),
     documentsSchema: z.array(z.any()).optional().nullable(),
     config: z.record(z.any(), z.any()).nullable(),
+    definition: z.object({
+      states: z.record(
+        z.string(),
+        z.object({
+          tags: z.array(z.string()).nullable().optional(),
+        }),
+      ),
+    }),
   }),
   createdAt: z.string().datetime(),
   context: z.object({
