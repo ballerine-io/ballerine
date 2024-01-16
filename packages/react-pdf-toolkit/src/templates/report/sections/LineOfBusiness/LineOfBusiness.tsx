@@ -9,10 +9,10 @@ export interface LineOfBusinessProps {
 }
 
 export const LineOfBusinessSection: FunctionComponent<LineOfBusinessProps> = ({ data }) => {
-  const { businessConsistensy } = data;
+  const { businessConsistency } = data;
 
   const { summary, lobFromWebsite, lobFromExternalData, lobConsistensyRiskScore, lobReason } =
-    businessConsistensy || {};
+    businessConsistency || {};
   const { explanation, examples } = lobReason || {};
 
   return (
