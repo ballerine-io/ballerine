@@ -48,6 +48,6 @@
   },
   "case_creation": {
     "success": "Case created successfully.",
-    "error": "Failed to create case."
+    "error": "Error occurred while creating a case."
   }
 }

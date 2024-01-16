@@ -292,7 +292,7 @@ export const createWorkflowRequest = async ({
   return handleZodError(error, workflow);
 };
 
-export const fetchWorkflowDefinition = async ({
+export const fetchWorkflowDefinitionById = async ({
   workflowDefinitionId,
 }: {
   workflowDefinitionId: string;
