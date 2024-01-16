@@ -244,7 +244,7 @@
       "hint": "www.example.com/privacy"
     },
     "productQuantity": {
-      "label": "Quantity (not less than 5)",
+      "label": "Product quantity (not less than 5)",
       "hint": "100"
     },
     "productDescription": {
