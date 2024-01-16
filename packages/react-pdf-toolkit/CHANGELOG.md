@@ -1,5 +1,17 @@
 # @ballerine/react-pdf-toolkit
 
+## 1.0.7
+
+### Patch Changes
+
+- Added domains to ecosystem
+
+## 1.0.6
+
+### Patch Changes
+
+- bump
+
 ## 1.0.5
 
 ### Patch Changes
