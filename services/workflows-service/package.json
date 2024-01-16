@@ -129,7 +129,7 @@
     "dotenv": "^16.0.3",
     "eslint": "^8.35.0",
     "eslint-config-prettier": "^8.7.0",
-    "eslint-import-resolver-typescript": "^3.5.3",
+    "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-ballerine": "file:./plugins/verify-repository-project-scoped",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-unused-imports": "^2.0.0",
@@ -144,6 +144,7 @@
     "testcontainers": "^9.8.0",
     "ts-jest": "29.1.1",
     "ts-node": "^10.9.1",
+    "tsconfig-paths": "4.2.0",
     "type-fest": "0.11.0",
     "typescript": "^4.9.3"
   }
