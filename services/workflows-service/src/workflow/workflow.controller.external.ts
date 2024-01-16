@@ -142,9 +142,9 @@ export class WorkflowControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    // @TODO: Rename to intent or getRunnableWorkflowDataByIntent?
     const entityType = intentName === 'kycSignup' ? 'endUser' : 'business';
 
+    // @TODO: Rename to intent or getRunnableWorkflowDataByIntent?
     return await this.service.resolveIntent(
       intentName,
       entityId,
@@ -217,10 +217,10 @@ export class WorkflowControllerExternal {
       endUserId,
     });
 
-    return res.json({
+    return {
       token,
       collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${token}`,
-    });
+    };
   }
 
   /// POST /event
