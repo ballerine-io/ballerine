@@ -80,7 +80,6 @@ import mime from 'mime';
 import { env } from '@/env';
 import { AjvValidationError } from '@/errors';
 import { ajv } from '@/common/ajv/ajv.validator';
-import { StringFilter } from '@/common/query-filters/string-filter';
 
 type TEntityId = string;
 
@@ -425,6 +424,17 @@ export class WorkflowService {
       projectIds,
     );
 
+    const getWorkflowDefinitionIds = () => {
+      if (typeof query?.where?.workflowDefinitionId === 'string') {
+        return [query.where.workflowDefinitionId];
+      }
+
+      if (Array.isArray(query?.where?.workflowDefinitionId?.in)) {
+        return query?.where?.workflowDefinitionId?.in;
+      }
+
+      return [];
+    };
     const workflowIds = await this.workflowRuntimeDataRepository.search(
       {
         query: {
@@ -433,7 +443,7 @@ export class WorkflowService {
           statuses:
             ((query.where.status as Prisma.EnumWorkflowRuntimeDataStatusFilter)?.in as string[]) ||
             [],
-          workflowDefinitionIds: (query.where.workflowDefinitionId as StringFilter).in,
+          workflowDefinitionIds: getWorkflowDefinitionIds(),
         },
         filters,
       },
