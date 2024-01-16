@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { UserModule } from './user/user.module';
-import { WorkflowModule } from './workflow/workflow.module';
+import { WorkflowControllerModule } from './workflow/workflow-controller.module';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
@@ -49,7 +49,7 @@ import { CaseManagementModule } from '@/case-management/case-management.module';
     }),
     EventEmitterModule.forRoot(),
     UserModule,
-    WorkflowModule,
+    WorkflowControllerModule,
     UiDefinitionModule,
     StorageModule,
     DataMigrationModule,

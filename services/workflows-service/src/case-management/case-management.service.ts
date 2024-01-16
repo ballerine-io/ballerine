@@ -1,4 +1,4 @@
-import { TransitionSchema } from '@/case-management/types/transition-schema';
+import { ITransitionSchema } from '@/case-management/types/transition-schema';
 import { AjvValidationError } from '@/errors';
 import { TProjectId } from '@/types';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
@@ -54,7 +54,7 @@ export class CaseManagementService {
     const inputState = (workflowDefinition?.definition as { initial: string })?.initial as string;
 
     const transitionSchema = (
-      workflowDefinition.transitionSchema as unknown as TransitionSchema[]
+      workflowDefinition.transitionSchema as unknown as ITransitionSchema[]
     )?.find(schema => schema.state === inputState);
 
     if (!transitionSchema || !transitionSchema.schema) return;
