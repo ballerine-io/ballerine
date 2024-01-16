@@ -1,21 +1,26 @@
-import { ComponentProps, FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { Card } from '@/components';
-import { AccordionTitle } from '@/components/molecules/AccordionCard/AccordionCard.Title';
+import { AccordionCardTitle } from '@/components/molecules/AccordionCard/AccordionCard.Title';
 import { AccordionCardContent } from '@/components/molecules/AccordionCard/AccordionCard.Content';
-import { AccordionItem } from '@/components/molecules/AccordionCard/AccordionCard.Item';
+import { AccordionCardItem } from '@/components/molecules/AccordionCard/AccordionCard.Item';
+import { IAccordionCardChildren } from '@/components/molecules/AccordionCard/interfaces';
+import { AccordionCardProvider } from '@/components/molecules/AccordionCard/context/AccordionCardProvider/AccordionCardProvider';
+import { AccordionCardProps } from '@/components/molecules/AccordionCard/types';
 
-export const AccordionCard: FunctionComponent<ComponentProps<typeof Card>> = ({
+export const AccordionCard: FunctionComponent<AccordionCardProps> & IAccordionCardChildren = ({
   children,
+  value,
+  onValueChange,
   ...props
 }) => {
-  return <Card {...props}>{children}</Card>;
+  return (
+    <AccordionCardProvider value={value} onValueChange={onValueChange}>
+      <Card {...props}>{children}</Card>
+    </AccordionCardProvider>
+  );
 };
 AccordionCard.displayName = 'AccordionCard';
 
-AccordionCard.Title = AccordionTitle;
-AccordionCard.Title.displayName = 'AccordionCard.Title';
-
+AccordionCard.Title = AccordionCardTitle;
 AccordionCard.Content = AccordionCardContent;
-AccordionCard.Content.displayName = 'AccordionCard.Content';
-
-AccordionCard.Item = AccordionItem;
+AccordionCard.Item = AccordionCardItem;

@@ -1,15 +1,19 @@
-import { ComponentProps, FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { CardHeader, CardTitle } from '@/components';
+import { ctw } from '@/utils';
+import { AccordionTitle } from '@/components/molecules/AccordionCard/types';
 
-interface IAccordionTitle {
-  children: ComponentProps<typeof CardTitle>['children'];
-}
-
-export const AccordionTitle: FunctionComponent<IAccordionTitle> = ({ children }) => {
+export const AccordionCardTitle: FunctionComponent<AccordionTitle> = ({
+  children,
+  cardTitleProps,
+  ...props
+}) => {
   return (
-    <CardHeader>
-      <CardTitle className={`text-xl`}>{children}</CardTitle>
+    <CardHeader {...props} className={ctw(`pb-2`, props?.className)}>
+      <CardTitle {...cardTitleProps} className={ctw(`text-xl`, cardTitleProps?.className)}>
+        {children}
+      </CardTitle>
     </CardHeader>
   );
 };
-AccordionTitle.displayName = 'Accordion.Title';
+AccordionCardTitle.displayName = 'Accordion.Title';

@@ -1,15 +1,24 @@
 import { Accordion } from '@/components/molecules/Accordion/Accordion';
-import { ComponentProps, FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { CardContent } from '@/components';
 
-export interface IAccordionCardContentProps {
-  children: ComponentProps<typeof Accordion>;
-}
+import { AccordionCardContentProps } from '@/components/molecules/AccordionCard/types';
+import { ctw } from '@/utils';
+import { useAccordionCardContext } from '@/components/molecules/AccordionCard/context/AccordionCardProvider/hooks/useAccordionCardContext/useAccordionCardContext';
 
-export const AccordionCardContent: FunctionComponent<IAccordionCardContentProps> = () => {
+export const AccordionCardContent: FunctionComponent<AccordionCardContentProps> = ({
+  children,
+  cardProps,
+  ...props
+}) => {
+  const { value, onValueChange } = useAccordionCardContext();
+
   return (
-    <CardContent>
-      <Accordion type={'multiple'}></Accordion>
+    <CardContent {...cardProps} className={ctw(`pb-2`, cardProps?.className)}>
+      <Accordion type={'single'} collapsible {...props} value={value} onValueChange={onValueChange}>
+        {children}
+      </Accordion>
     </CardContent>
   );
 };
+AccordionCardContent.displayName = 'AccordionCard.Content';
