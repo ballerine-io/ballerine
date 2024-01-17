@@ -79,11 +79,11 @@ pnpm commit
 git push
 ```
 
-5. GitHub Actions
+5. GitHub Actions: Ensure that all workflows, including building, testing, linting, and formatting, have passed.: Ensure that all workflows, including building, testing, linting, and formatting, have passed.: Ensure that all workflows, including building, testing, linting, and formatting, have passed.
 
 Now that the changes are pushed to the remote branch, GitHub Actions will run workflows for building, testing, linting, and formatting. Before creating a pull request, make sure that all workflows have passed.
 
-6. Create a pull request
+6. Check the status of the workflows by visiting the GitHub Actions tab and ensure that all workflows have passed. Once all workflows have passed, create a pull request.
 
 When creating a pull request, make sure to follow the pull request template.
 
