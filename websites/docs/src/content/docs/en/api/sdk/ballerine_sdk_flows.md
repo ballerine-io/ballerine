@@ -8,7 +8,8 @@ description: SDK API documentation
 
 ### init
 
-• **init**: (`config`: [`FlowsInitOptions`](/en/api/sdk/flows_init_options/)) => `Promise`<`void`\>
+• **init**: (`config`: [`FlowsInitOptions`](/en/api/sdk/flows_init_options/)) => `Promise`<`void`
+More","hard","to","find`\>
 
 #### Type declaration
 
@@ -32,7 +33,8 @@ description: SDK API documentation
 
 ### mount
 
-• **mount**: (`config`: [`IFlowsMountOptions`](/en/api/sdk/flows_mount_options/)) => `Promise`<`void`\>
+• **mount**: (`config`: [`IFlowsMountOptions`](/en/api/sdk/flows_mount_options/)) => `Promise`<`void`
+More","hard","to","find`\>
 
 #### Type declaration
 
