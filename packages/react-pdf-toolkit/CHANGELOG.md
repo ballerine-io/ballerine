@@ -1,5 +1,11 @@
 # @ballerine/react-pdf-toolkit
 
+## 1.0.8
+
+### Patch Changes
+
+- Fixed typos & bump
+
 ## 1.0.7
 
 ### Patch Changes

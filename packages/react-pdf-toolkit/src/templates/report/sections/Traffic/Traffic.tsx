@@ -11,21 +11,19 @@ export interface TrafficProps {
 export const TrafficSection: FunctionComponent<TrafficProps> = ({ data }) => {
   const { suspiciousTraffic } = data;
 
-  const { summary, trafficAnalysisRiskScore, trafficAnalysisReason } = suspiciousTraffic || {};
+  const { summary, trafficAnalysisRiskScore = 0, trafficAnalysisReason } = suspiciousTraffic || {};
   const { examples, explanation } = trafficAnalysisReason || {};
 
   return (
     <Section title="Traffic">
       <Section.Blocks>
-        {trafficAnalysisRiskScore && (
-          <Section.Blocks.Block>
-            <Section.Blocks.Block.Label text="Traffic Risk Score" />
-            <Badge
-              text={String(trafficAnalysisRiskScore)}
-              variant={resolveBadgeStyleToRiskScore(trafficAnalysisRiskScore)}
-            />
-          </Section.Blocks.Block>
-        )}
+        <Section.Blocks.Block>
+          <Section.Blocks.Block.Label text="Traffic Risk Score" />
+          <Badge
+            text={String(trafficAnalysisRiskScore)}
+            variant={resolveBadgeStyleToRiskScore(trafficAnalysisRiskScore)}
+          />
+        </Section.Blocks.Block>
       </Section.Blocks>
       {summary && (
         <Section.SummaryBlock>

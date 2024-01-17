@@ -134,7 +134,7 @@ export const kybKycWorkflowDefinition = {
               receivers: [mainRepresentative.email],
               name: mainRepresentative.fullName,
               provider: customerName,
-              url: join('',['${env.KYB_EXAMPLE_CORS_ORIGIN}?token=',token])
+              url: join('',['${env.KYB_EXAMPLE_CORS_ORIGIN[0]}?token=',token])
               }`, // jmespath
             },
           ],
