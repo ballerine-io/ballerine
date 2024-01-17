@@ -50,16 +50,20 @@ export class ApiPlugin {
         return this.returnErrorResponse(errorMessage!);
       }
 
-      console.log(`API Plugin :: Sending ${this.method} API request to ${this.url}`);
+      const urlWithoutPlaceholders = this.replaceValuePlaceholders(this.url, context);
+
+      console.log(`API Plugin :: Sending ${this.method} API request to ${urlWithoutPlaceholders}`);
 
       const apiResponse = await this.makeApiRequest(
-        this.replaceValuePlaceholders(this.url, context),
+        urlWithoutPlaceholders,
         this.method,
         requestPayload,
         this.composeRequestHeaders(this.headers!, context),
       );
 
-      console.log(`API Plugin :: Received ${apiResponse.statusText} response from ${this.url}`);
+      console.log(
+        `API Plugin :: Received ${apiResponse.statusText} response from ${urlWithoutPlaceholders}`,
+      );
 
       if (apiResponse.ok) {
         const result = await apiResponse.json();
