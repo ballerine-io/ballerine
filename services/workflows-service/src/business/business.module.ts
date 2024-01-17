@@ -27,6 +27,8 @@ import { SalesforceService } from '@/salesforce/salesforce.service';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 
 @Module({
   imports: [HttpModule, AppLoggerModule, ProjectModule, CustomerModule],
@@ -54,6 +56,8 @@ import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.re
     SalesforceIntegrationRepository,
     WorkflowTokenService,
     WorkflowTokenRepository,
+    UiDefinitionRepository,
+    UiDefinitionService,
   ],
 })
 export class BusinessModule {}

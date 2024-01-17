@@ -4,6 +4,7 @@ import { AccordionContent } from '@/components/molecules/Accordion/Accordion.Con
 import { AccordionItem as ShadCNAccordionItem } from '@/components/molecules/Accordion/Accordion.Item';
 import { ctw } from '@/utils';
 import { AccordionCardItemProps } from '@/components/molecules/AccordionCard/types';
+import { ScrollArea } from '@/components';
 
 export const AccordionCardItem: FunctionComponent<AccordionCardItemProps> = ({
   title,
@@ -31,19 +32,21 @@ export const AccordionCardItem: FunctionComponent<AccordionCardItemProps> = ({
         {title}
       </AccordionTrigger>
       <AccordionContent {...accordionContentProps}>
-        <ul {...ulProps} className={ctw(`flex flex-col space-y-2`, ulProps?.className)}>
-          {subitems?.map(({ leftIcon, text, rightIcon }, index) => (
-            <li
-              className={ctw(`flex items-center gap-x-2`, liProps?.className)}
-              key={typeof text === 'string' ? text : index}
-              {...liProps}
-            >
-              {leftIcon}
-              {text}
-              {rightIcon}
-            </li>
-          ))}
-        </ul>
+        <ScrollArea orientation="vertical" className={`h-32`}>
+          <ul {...ulProps} className={ctw(`flex flex-col space-y-2`, ulProps?.className)}>
+            {subitems?.map(({ leftIcon, text, rightIcon }, index) => (
+              <li
+                className={ctw(`flex items-center gap-x-2`, liProps?.className)}
+                key={typeof text === 'string' ? text : index}
+                {...liProps}
+              >
+                {leftIcon}
+                {text}
+                {rightIcon}
+              </li>
+            ))}
+          </ul>
+        </ScrollArea>
       </AccordionContent>
     </ShadCNAccordionItem>
   );

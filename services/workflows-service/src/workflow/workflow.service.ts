@@ -52,6 +52,7 @@ import {
   Business,
   EndUser,
   Prisma,
+  UiDefinitionContext,
   WorkflowDefinition,
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
@@ -83,6 +84,7 @@ import mime from 'mime';
 import { env } from '@/env';
 import { AjvValidationError } from '@/errors';
 import { StringFilter } from '@/common/query-filters/string-filter';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 
 type TEntityId = string;
 
@@ -144,6 +146,7 @@ export class WorkflowService {
     private readonly userService: UserService,
     private readonly salesforceService: SalesforceService,
     private readonly workflowTokenService: WorkflowTokenService,
+    private readonly uiDefinitionService: UiDefinitionService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
@@ -1498,6 +1501,12 @@ export class WorkflowService {
       {},
       projectIds,
     );
+    const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
+      workflowDefinitionId,
+      UiDefinitionContext.collection_flow,
+      projectIds,
+      {},
+    );
     config = merge(workflowDefinition.config, config);
     let validatedConfig: WorkflowConfig;
     try {
@@ -1525,7 +1534,30 @@ export class WorkflowService {
         projectIds,
       );
 
-    let contextToInsert = structuredClone(context);
+    const uiSchema = (uiDefinition as Record<string, any>)?.uiSchema;
+    let contextToInsert = structuredClone({
+      ...context,
+      flowConfig: {
+        stepsProgress: (
+          uiSchema?.elements as Array<{
+            type: string;
+            number: number;
+            stateName: string;
+          }>
+        ).reduce((acc, curr) => {
+          if (curr?.type !== 'page') {
+            return acc;
+          }
+
+          acc[curr?.stateName] = {
+            number: curr?.number,
+            isCompleted: false,
+          };
+
+          return acc;
+        }, {} as { [key: string]: { number: number; isCompleted: boolean } }),
+      },
+    });
 
     // @ts-ignore
     contextToInsert.entity.ballerineEntityId ||= entityId;

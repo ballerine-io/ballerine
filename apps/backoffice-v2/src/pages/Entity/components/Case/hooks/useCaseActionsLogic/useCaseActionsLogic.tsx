@@ -9,7 +9,7 @@ import { useUsersQuery } from '../../../../../../domains/users/hooks/queries/use
 import { useAssignWorkflowMutation } from '../../../../../../domains/workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
 import { useRejectEntityMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectEntityMutation/useRejectEntityMutation';
 import { useSelectNextEntity } from '../../../../../../domains/entities/hooks/useSelectNextEntity/useSelectNextEntity';
-import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
 import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
 import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
@@ -20,7 +20,10 @@ import { CommonWorkflowEvent } from '@ballerine/common';
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
   const filterId = useFilterId();
-  const { data: workflow, isLoading: isLoadingCase } = useWorkflowQuery({ workflowId, filterId });
+  const { data: workflow, isLoading: isLoadingCase } = useWorkflowByIdQuery({
+    workflowId,
+    filterId,
+  });
   const { mutate: mutateApproveEntity, isLoading: isLoadingApproveEntity } = useApproveCaseMutation(
     {
       workflowId: workflowId,

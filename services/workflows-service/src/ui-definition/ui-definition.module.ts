@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ProjectModule } from '@/project/project.module';
 import { WorkflowModule } from '@/workflow/workflow.module';
 import { UiDefinitionController } from '@/ui-definition/ui-definition.controller.internal';
@@ -7,9 +7,9 @@ import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 
 @Module({
-  imports: [ProjectModule, WorkflowModule],
+  imports: [ProjectModule, forwardRef(() => WorkflowModule)],
   controllers: [UiDefinitionController],
   providers: [WorkflowRuntimeDataRepository, UiDefinitionRepository, UiDefinitionService],
-  exports: [UiDefinitionRepository],
+  exports: [UiDefinitionRepository, UiDefinitionService],
 })
 export class UiDefinitionModule {}

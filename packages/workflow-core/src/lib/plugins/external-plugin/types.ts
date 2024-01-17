@@ -20,6 +20,9 @@ export interface IApiPluginParams {
   errorAction?: string;
   persistResponseDestination?: string;
 
+  displayName: string | undefined;
+  tags: string[];
+
   invoke?(...args: Array<any>): any;
 }
 export interface WebhookPluginParams {
