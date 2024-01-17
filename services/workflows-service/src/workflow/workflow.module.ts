@@ -33,6 +33,8 @@ import { SalesforceService } from '@/salesforce/salesforce.service';
 import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integration.repository';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definition.module';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 
 @Module({
   imports: [
@@ -71,6 +73,8 @@ import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definiti
     SalesforceService,
     SalesforceIntegrationRepository,
     WorkflowDefinitionService,
+    UiDefinitionRepository,
+    UiDefinitionService,
   ],
   exports: [
     WorkflowService,
