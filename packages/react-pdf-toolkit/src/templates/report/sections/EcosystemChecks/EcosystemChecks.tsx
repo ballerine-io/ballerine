@@ -12,17 +12,15 @@ export interface EcosystemChecksProps {
 }
 
 export const EcosystemChecks: FunctionComponent<EcosystemChecksProps> = ({ data }) => {
-  const { riskScore, url, checkCreatedAt, generalSummary, websites } = data;
+  const { riskScore = 0, url, checkCreatedAt, generalSummary, websites } = data;
 
   return (
     <Section title="Ecosystem domains">
       <Section.Blocks>
-        {riskScore && (
-          <Section.Blocks.Block>
-            <Section.Blocks.Block.Label text="General Risk Score" />
-            <Badge text={String(riskScore)} variant={resolveBadgeStyleToRiskScore(riskScore)} />
-          </Section.Blocks.Block>
-        )}
+        <Section.Blocks.Block>
+          <Section.Blocks.Block.Label text="General Risk Score" />
+          <Badge text={String(riskScore)} variant={resolveBadgeStyleToRiskScore(riskScore)} />
+        </Section.Blocks.Block>
         {url && (
           <Section.Blocks.Block>
             <Section.Blocks.Block.Label text="URL" />
