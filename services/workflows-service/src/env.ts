@@ -8,7 +8,7 @@ const urlArrayTransformer = (value: string) => {
   const urlSchema = z.string().url();
   const urlArray = value.split(',');
 
-  return urlArray.map(url => urlSchema.parse(url));
+  return urlArray.map(url => urlSchema.parse(url)).sort((a, b) => a.length - b.length);
 };
 
 export const env = createEnv({
