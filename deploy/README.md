@@ -49,7 +49,7 @@ To start the Docker services defined in the `docker-compose.yml` file, follow th
 3. Run the following command to start the containers:
 
    ```shell
-   docker-compose up -f docker-compose.yml
+   docker-compose up -d --detach -f docker-compose.yml
    ```
 
    Docker Compose will read the `docker-compose.yml` file and initiate the containers accordingly. The container logs will be displayed in the terminal.
@@ -57,7 +57,7 @@ To start the Docker services defined in the `docker-compose.yml` file, follow th
    If you prefer to run the containers in the background, use the detached mode with the `-d` flag:
 
    ```shell
-   docker-compose up -d
+   docker-compose up -d --detach
    ```
 
 4. Once the containers are running, you can access the services as specified in the repository's documentation or the `docker-compose.yml` file.
