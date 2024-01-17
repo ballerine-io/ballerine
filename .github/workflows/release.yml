@@ -3,10 +3,11 @@ name: Release
 on:
   push:
     branches:
-      - dev
-      - demo
+      - master
+      - release
+      - hotfix
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+concurrency: ${{ github.repository }}-${{ github.ref }}
 
 jobs:
   # ci-workflow:
@@ -14,12 +15,13 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    # needs: [ ci-workflow ]
+    needs: [ ci-workflow ]
+        if: ${{ needs.ci-workflow.result=='success' }}
     # if: ${{ needs.ci-workflow.result=='success' }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -43,7 +45,9 @@ jobs:
         name: Setup pnpm cache
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
@@ -55,7 +59,7 @@ jobs:
         uses: changesets/action@v1
         with:
           commit: 'chore: release package(s)'
-          publish: pnpm release
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}          publish: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
