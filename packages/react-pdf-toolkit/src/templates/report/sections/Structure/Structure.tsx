@@ -9,17 +9,15 @@ export interface StructureProps {
 }
 
 export const StructureSection: FunctionComponent<StructureProps> = ({ data }) => {
-  const { score, analysisSummary, suspiciousElements } = data;
+  const { score = 0, analysisSummary, suspiciousElements } = data;
 
   return (
     <Section title="Structure">
       <Section.Blocks>
-        {score && (
-          <Section.Blocks.Block>
-            <Section.Blocks.Block.Label text="Structure Risk Score" />
-            <Badge text={String(score)} variant={resolveBadgeStyleToRiskScore(score)} />
-          </Section.Blocks.Block>
-        )}
+        <Section.Blocks.Block>
+          <Section.Blocks.Block.Label text="Structure Risk Score" />
+          <Badge text={String(score)} variant={resolveBadgeStyleToRiskScore(score)} />
+        </Section.Blocks.Block>
       </Section.Blocks>
       {analysisSummary && (
         <Section.SummaryBlock>

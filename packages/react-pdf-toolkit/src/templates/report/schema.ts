@@ -107,7 +107,7 @@ const LOB = Type.Object({
     summary: Type.String(),
     lobFromWebsite: Type.String(),
     lobFromExternalData: Type.String(),
-    lobConsistensyRiskScore: Type.Number(),
+    lobConsistencyRiskScore: Type.Number(),
     lobReason: Type.Object({
       explanation: Type.String(),
       examples: Type.Array(Indicator),
