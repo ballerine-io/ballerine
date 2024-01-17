@@ -64,7 +64,7 @@
     "@sentry/integrations": "^7.52.1",
     "@sentry/node": "^7.52.1",
     "@sinclair/typebox": "^0.31.7",
-    "@t3-oss/env-core": "^0.3.1",
+    "@t3-oss/env-core": "^0.6.1",
     "@types/tmp": "^0.2.3",
     "accesscontrol": "^2.2.1",
     "ajv": "^8.12.0",
