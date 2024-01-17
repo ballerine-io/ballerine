@@ -2,17 +2,6 @@ import { TContext, Transformer, Transformers, Validator } from '../../utils';
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
 import { IApiPluginParams } from './types';
 
-const PluginStatus = {
-  IDLE: 'IDLE',
-  IN_PROGRESS: 'IN_PROGRESS',
-  SUCCESS: 'SUCCESS',
-  ERROR: 'ERROR',
-} as const;
-
-const PluginTag = {
-  WEBHOOK: 'WEBHOOK',
-} as const;
-
 export class ApiPlugin {
   public static pluginType = 'http';
   public static pluginKind = 'api';
@@ -26,10 +15,7 @@ export class ApiPlugin {
   successAction?: string;
   errorAction?: string;
   persistResponseDestination?: string;
-
   displayName: string | undefined;
-  status: (typeof PluginStatus)[keyof typeof PluginStatus] = PluginStatus.IDLE;
-  tags: string[] = [];
 
   constructor(pluginParams: IApiPluginParams) {
     this.name = pluginParams.name;
@@ -48,7 +34,6 @@ export class ApiPlugin {
     this.persistResponseDestination = pluginParams.persistResponseDestination;
 
     this.displayName = pluginParams.displayName;
-    this.tags = pluginParams.tags;
   }
 
   async invoke(context: TContext, config: unknown) {
@@ -95,10 +80,6 @@ export class ApiPlugin {
 
         if (!isValidResponse) {
           return this.returnErrorResponse(errorMessage!);
-        }
-
-        if (!this.tags.includes(PluginTag.WEBHOOK)) {
-          this.status = PluginStatus.SUCCESS;
         }
 
         if (this.successAction) {
