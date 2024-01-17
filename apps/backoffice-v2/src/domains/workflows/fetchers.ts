@@ -70,19 +70,7 @@ export const WorkflowDefinitionSchema = ObjectWithIdSchema.extend({
   contextSchema: z.record(z.any(), z.any()).nullable(),
   documentsSchema: z.array(z.any()).optional().nullable(),
   config: WorkflowDefinitionConfigSchema,
-  definition: z
-    .object({
-      transitionSchema: z
-        .array(
-          z.object({
-            state: z.string(),
-            schema: z.record(z.any(), z.unknown()),
-            additionalParameters: z.record(z.any(), z.unknown()).optional(),
-          }),
-        )
-        .nullable(),
-    })
-    .passthrough(),
+  definition: z.record(z.any(), z.any()),
 });
 
 export type TWorkflowDefinition = z.output<typeof WorkflowDefinitionSchema>;

@@ -28,11 +28,14 @@ import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definit
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
+import { WorkflowControllerExternal } from '@/workflow/workflow.controller.external';
+import { WorkflowControllerInternal } from '@/workflow/workflow.controller.internal';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { Module, forwardRef } from '@nestjs/common';
 
 @Module({
+  controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
   imports: [
     ACLModule,
     forwardRef(() => AuthModule),

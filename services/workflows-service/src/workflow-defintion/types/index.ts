@@ -1,14 +1,20 @@
 import { WorkflowDefinition } from '@prisma/client';
 
-export interface ITransitionSchema {
-  state: string;
-  schema: Record<PropertyKey, unknown>;
-  additionalParameters?: Record<PropertyKey, unknown>;
+export interface IDefinitionStateSchema<TSchema = Record<PropertyKey, unknown>> {
+  dataSchema: TSchema;
+  [k: string]: unknown;
 }
 
 export type TWorkflowDefinitionWithTransitionSchema = WorkflowDefinition & {
   definition: WorkflowDefinition['definition'] & {
-    transitionSchema?: ITransitionSchema[] | null;
     initial?: string;
+    states: Record<
+      PropertyKey,
+      {
+        meta?: {
+          inputSchema?: IDefinitionStateSchema;
+        };
+      }
+    >;
   };
 };

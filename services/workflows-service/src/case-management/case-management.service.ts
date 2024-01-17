@@ -56,13 +56,12 @@ export class CaseManagementService {
   ) {
     const inputState = workflowDefinition?.definition?.initial as string;
 
-    const transitionSchema = workflowDefinition.definition.transitionSchema?.find(
-      schema => schema.state === inputState,
-    );
+    const dataSchema =
+      workflowDefinition.definition?.states[inputState]?.meta?.inputSchema?.dataSchema;
 
-    if (!transitionSchema?.schema) return;
+    if (!dataSchema?.schema) return;
 
-    const validate = ajv.compile(transitionSchema.schema);
+    const validate = ajv.compile(dataSchema.schema);
 
     const isValid = validate(entity);
 
