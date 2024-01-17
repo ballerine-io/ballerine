@@ -37,7 +37,7 @@ export const AccordionCardItem: FunctionComponent<AccordionCardItemProps> = ({
             {subitems?.map(({ leftIcon, text, rightIcon }, index) => (
               <li
                 className={ctw(`flex items-center gap-x-2`, liProps?.className)}
-                key={typeof text === 'string' ? text : index}
+                key={typeof text === 'string' ? `${text}-${index}` : index}
                 {...liProps}
               >
                 {leftIcon}

@@ -1,4 +1,7 @@
-import { StateProvider } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
+import {
+  StateProvider,
+  useStateManagerContext,
+} from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useMachineLogic } from '@/components/organisms/DynamicUI/StateManager/hooks/useMachineLogic';
 import { useStateLogic } from '@/components/organisms/DynamicUI/StateManager/hooks/useStateLogic';
 import { createStateMachine } from '@/components/organisms/DynamicUI/StateManager/state-machine.factory';
@@ -7,6 +10,9 @@ import {
   StateManagerProps,
 } from '@/components/organisms/DynamicUI/StateManager/types';
 import { useMemo } from 'react';
+import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
+import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
+import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
 
 export const StateManager = ({
   definition,
@@ -16,6 +22,11 @@ export const StateManager = ({
   workflowId,
   initialContext,
 }: StateManagerProps) => {
+  const { stateApi } = useStateManagerContext();
+  const { language } = useLanguageParam();
+  const { data: schema } = useUISchemasQuery(language);
+  const { refetch } = useFlowContextQuery();
+  const elements = schema?.uiSchema?.elements;
   const machine = useMemo(() => {
     const initialMachineState = {
       ...initialContext,

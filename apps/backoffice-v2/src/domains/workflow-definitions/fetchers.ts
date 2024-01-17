@@ -7,10 +7,7 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { env } from '@/common/env/env';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 
-import {
-  ProcessStatus,
-  ProcessStatuses,
-} from '@/common/components/molecules/ProcessTracker/constants';
+import { ProcessStatuses } from '@/common/components/molecules/ProcessTracker/constants';
 
 export const WorkflowDefinitionConfigSchema = z
   .object({
@@ -20,9 +17,9 @@ export const WorkflowDefinitionConfigSchema = z
   .nullable();
 
 export const PluginSchema = z.object({
+  name: z.string(),
   displayName: z.string().or(z.undefined()),
-  tags: z.array(z.string()).default([]),
-  status: z.enum(ProcessStatuses).default(ProcessStatus.IDLE),
+  status: z.enum(ProcessStatuses),
 });
 
 export type TPlugin = z.infer<typeof PluginSchema>;

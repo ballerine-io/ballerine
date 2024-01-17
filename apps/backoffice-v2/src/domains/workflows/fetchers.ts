@@ -111,7 +111,17 @@ export const BaseWorkflowByIdSchema = z.object({
 });
 
 export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
-  childWorkflows: z.array(BaseWorkflowByIdSchema).optional(),
+  childWorkflows: z
+    .array(
+      BaseWorkflowByIdSchema.omit({
+        context: true,
+      }).extend({
+        context: BaseWorkflowByIdSchema.shape.context.omit({
+          flowConfig: true,
+        }),
+      }),
+    )
+    .optional(),
 });
 
 export const fetchWorkflowById = async ({

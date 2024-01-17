@@ -1501,12 +1501,7 @@ export class WorkflowService {
       {},
       projectIds,
     );
-    const uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
-      workflowDefinitionId,
-      UiDefinitionContext.collection_flow,
-      projectIds,
-      {},
-    );
+
     config = merge(workflowDefinition.config, config);
     let validatedConfig: WorkflowConfig;
     try {
@@ -1534,30 +1529,7 @@ export class WorkflowService {
         projectIds,
       );
 
-    const uiSchema = (uiDefinition as Record<string, any>)?.uiSchema;
-    let contextToInsert = structuredClone({
-      ...context,
-      flowConfig: {
-        stepsProgress: (
-          uiSchema?.elements as Array<{
-            type: string;
-            number: number;
-            stateName: string;
-          }>
-        ).reduce((acc, curr) => {
-          if (curr?.type !== 'page') {
-            return acc;
-          }
-
-          acc[curr?.stateName] = {
-            number: curr?.number,
-            isCompleted: false,
-          };
-
-          return acc;
-        }, {} as { [key: string]: { number: number; isCompleted: boolean } }),
-      },
-    });
+    let contextToInsert = structuredClone(context);
 
     // @ts-ignore
     contextToInsert.entity.ballerineEntityId ||= entityId;
@@ -1586,6 +1558,22 @@ export class WorkflowService {
         currentProjectId,
         customer.name,
       );
+      let uiDefinition;
+
+      try {
+        uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
+          workflowDefinitionId,
+          UiDefinitionContext.collection_flow,
+          projectIds,
+          {},
+        );
+      } catch (err) {
+        if (isErrorWithMessage(err)) {
+          this.logger.error(err.message);
+        }
+      }
+
+      const uiSchema = (uiDefinition as Record<string, any>)?.uiSchema;
 
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
         data: {
@@ -1594,6 +1582,26 @@ export class WorkflowService {
           context: {
             ...contextToInsert,
             documents: documentsWithPersistedImages,
+            flowConfig: (contextToInsert as any)?.flowConfig ?? {
+              stepsProgress: (
+                uiSchema?.elements as Array<{
+                  type: string;
+                  number: number;
+                  stateName: string;
+                }>
+              )?.reduce((acc, curr) => {
+                if (curr?.type !== 'page') {
+                  return acc;
+                }
+
+                acc[curr?.stateName] = {
+                  number: curr?.number,
+                  isCompleted: false,
+                };
+
+                return acc;
+              }, {} as { [key: string]: { number: number; isCompleted: boolean } }),
+            },
           } as InputJsonValue,
           config: mergedConfig as InputJsonValue,
           // @ts-expect-error - error from Prisma types fix

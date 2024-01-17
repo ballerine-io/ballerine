@@ -15,13 +15,20 @@ export const ProcessTracker: FunctionComponent<{
     | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['commonPlugins']>[number]
   >;
   context: TWorkflowById['context'];
-}> = ({ tags, plugins, context }) => {
-  const { uncollapsedItemValue, onValueChange, subitems, collectionFlowSubitems } =
-    useProcessTrackerLogic({
-      tags,
-      plugins,
-      context,
-    });
+  childWorkflows: TWorkflowById['childWorkflows'];
+}> = ({ tags, plugins, context, childWorkflows }) => {
+  const {
+    uncollapsedItemValue,
+    onValueChange,
+    thirdPartyProcessesSubitems,
+    collectionFlowSubitems,
+    uboFlowsSubitems,
+  } = useProcessTrackerLogic({
+    tags,
+    plugins,
+    context,
+    childWorkflows,
+  });
 
   return (
     <div className={`max-w-xs`}>
@@ -36,9 +43,9 @@ export const ProcessTracker: FunctionComponent<{
           <AccordionCard.Item
             title={`3rd party processes`}
             value={`3rd party processes`}
-            subitems={subitems}
+            subitems={thirdPartyProcessesSubitems}
           />
-          <AccordionCard.Item title={`UBO flows`} value={`UBO flows`} subitems={[]} />
+          <AccordionCard.Item title={`UBO flows`} value={`UBO flows`} subitems={uboFlowsSubitems} />
         </AccordionCard.Content>
       </AccordionCard>
     </div>

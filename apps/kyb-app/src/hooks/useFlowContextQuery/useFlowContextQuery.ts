@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 
 export const useFlowContextQuery = () => {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     ...collectionFlowQuerykeys.getContext(),
     // @ts-ignore
     staleTime: Infinity,
@@ -13,5 +13,6 @@ export const useFlowContextQuery = () => {
     data,
     isLoading,
     error: error ? (error as HTTPError) : null,
+    refetch,
   };
 };

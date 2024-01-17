@@ -19,9 +19,7 @@ export interface IApiPluginParams {
   successAction?: string;
   errorAction?: string;
   persistResponseDestination?: string;
-
   displayName: string | undefined;
-  tags: string[];
 
   invoke?(...args: Array<any>): any;
 }

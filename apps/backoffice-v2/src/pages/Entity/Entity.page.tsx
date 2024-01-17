@@ -26,6 +26,7 @@ export const Entity = () => {
             tags={workflow?.tags ?? []}
             plugins={plugins}
             context={workflow?.context}
+            childWorkflows={workflow?.childWorkflows ?? []}
           />
         )}
         {workflow?.workflowDefinition && (
