@@ -85,6 +85,20 @@ Here are some additional Docker Compose commands that might be useful when worki
 - `docker-compose build`: Builds or rebuilds the images defined in the `docker-compose.yml` file.
 - `docker-compose up -d --no-deps <service_name>`: Builds or rebuilds the service specified in <service_name>.
 - `docker-compose up --build --force-recreate`: Builds or rebuilds all the services in `docker-compose.yml`
+- `docker-compose exec <service_name> <command>`: Runs a command inside a specific service container.
+- `docker-compose restart <service_name>`: Restarts a specific service.
+- `docker-compose build`: Builds or rebuilds the images defined in the `docker-compose.yml` file.
+- `docker-compose up -d --no-deps <service_name>`: Builds or rebuilds the service specified in <service_name>.
+- `docker-compose up --build --force-recreate`: Builds or rebuilds all the services in `docker-compose.yml`: Lists the status of the containers defined in `docker-compose.yml`.
+- `docker-compose logs`: Displays the logs of the running containers.
+- `docker-compose logs -f`: Displays the stream of logs of the running containers.
+- `docker-compose logs <service_name>`: Displays the logs of the specific service containers.
+- `docker-compose logs -f <service_name>`: Displays the stream of logs of the specific service.
+- `docker-compose exec <service_name> <command>`: Runs a command inside a specific service container.
+- `docker-compose restart <service_name>`: Restarts a specific service.
+- `docker-compose build`: Builds or rebuilds the images defined in the `docker-compose.yml` file.
+- `docker-compose up -d --no-deps <service_name>`: Builds or rebuilds the service specified in <service_name>.
+- `docker-compose up --build --force-recreate`: Builds or rebuilds all the services in `docker-compose.yml`
 
 ## Conclusion
 
