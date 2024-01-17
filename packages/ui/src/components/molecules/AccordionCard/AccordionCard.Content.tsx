@@ -1,6 +1,6 @@
 import { Accordion } from '@/components/molecules/Accordion/Accordion';
 import { FunctionComponent } from 'react';
-import { CardContent } from '@/components';
+import { CardContent, ScrollArea } from '@/components';
 
 import { AccordionCardContentProps } from '@/components/molecules/AccordionCard/types';
 import { ctw } from '@/utils';
@@ -15,9 +15,18 @@ export const AccordionCardContent: FunctionComponent<AccordionCardContentProps> 
 
   return (
     <CardContent {...cardProps} className={ctw(`pb-2`, cardProps?.className)}>
-      <Accordion type={'single'} collapsible {...props} value={value} onValueChange={onValueChange}>
-        {children}
-      </Accordion>
+      <ScrollArea orientation="vertical" className={`h-80`}>
+        {/* @ts-expect-error - Can't know discriminated union type at compile-time (changes based the `type` prop) */}
+        <Accordion
+          type={'single'}
+          collapsible
+          {...props}
+          value={value}
+          onValueChange={onValueChange}
+        >
+          {children}
+        </Accordion>
+      </ScrollArea>
     </CardContent>
   );
 };

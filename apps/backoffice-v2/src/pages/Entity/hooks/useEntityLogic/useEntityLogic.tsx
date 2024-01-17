@@ -7,9 +7,15 @@ export const useEntityLogic = () => {
   const filterId = useFilterId();
   const { data: workflow } = useWorkflowQuery({ workflowId: entityId, filterId });
   const selectedEntity = workflow?.entity;
+  const plugins = [
+    ...workflow?.workflowDefinition?.extensions?.apiPlugins,
+    ...workflow?.workflowDefinition?.extensions?.childWorkflowPlugins,
+    ...workflow?.workflowDefinition?.extensions?.commonPlugins,
+  ];
 
   return {
     selectedEntity,
     workflow,
+    plugins,
   };
 };
