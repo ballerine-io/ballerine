@@ -1,4 +1,10 @@
-export const aggregateUsersResolvedCasesStatisticQuery = `
+import { TProjectIds } from '@/types';
+import { Prisma } from '@prisma/client';
+
+export const buildAggregateUsersResolvedCasesStatisticQuery = (
+  fromDate: Date = new Date(),
+  projectIds: TProjectIds,
+) => Prisma.sql`
 select
   id,
   "firstName",
@@ -13,8 +19,8 @@ inner join (
     count(*) as "casesCount"
   from
     "WorkflowRuntimeData"
-  where "resolvedAt" >= $1
-  AND "projectId" in ($2)
+  where "resolvedAt" >= ${fromDate}
+  AND "projectId" in (${projectIds?.join(',')})
   group by "assigneeId"
 ) as agent_workflow_runtime on
 agent_workflow_runtime."assigneeId" = "id"
