@@ -49,7 +49,7 @@ To start the Docker services defined in the `docker-compose.yml` file, follow th
 3. Run the following command to start the containers:
 
    ```shell
-   docker-compose up
+   docker-compose up -f docker-compose.yml
    ```
 
    Docker Compose will read the `docker-compose.yml` file and initiate the containers accordingly. The container logs will be displayed in the terminal.
