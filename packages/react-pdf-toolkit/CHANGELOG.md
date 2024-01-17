@@ -1,5 +1,11 @@
 # @ballerine/react-pdf-toolkit
 
+## 1.0.9
+
+### Patch Changes
+
+- Removed duplicate on LOB section
+
 ## 1.0.8
 
 ### Patch Changes
