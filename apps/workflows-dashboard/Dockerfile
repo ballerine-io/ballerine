@@ -1,10 +1,10 @@
-FROM node:18.17.1-bullseye-slim as dev
+FROM node:18.17.1 as dev
 
 WORKDIR /app
 
 COPY ./package.json .
 
-RUN npm install --legacy-peer-deps
+RUN npm ci
 
 COPY . .
 
@@ -13,7 +13,7 @@ RUN npm run build
 
 ENV PATH="$PATH:./node_modules/.bin"
 
-EXPOSE 5200
+EXPOSE 3000
 
 CMD ["npm", "run", "dev", "--host"]
 
