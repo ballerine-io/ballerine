@@ -1,11 +1,11 @@
 import { CaseManagementService } from '@/case-management/case-management.service';
 import { CaseManagementController } from '@/case-management/controllers/case-management.controller';
 import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definition.module';
-import { WorkflowServiceModule } from '@/workflow/workflow.module';
+import { WorkflowModule } from '@/workflow/workflow.module';
 import { Module } from '@nestjs/common';
 
 @Module({
-  imports: [WorkflowDefinitionModule, WorkflowServiceModule],
+  imports: [WorkflowDefinitionModule, WorkflowModule],
   providers: [CaseManagementService],
   controllers: [CaseManagementController],
 })

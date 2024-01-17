@@ -9,7 +9,6 @@ import { WorkflowRunDto } from '@/workflow/dtos/workflow-run';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { Body, Controller, ForbiddenException, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiOkResponse } from '@nestjs/swagger';
-import { User } from '@prisma/client';
 
 @Controller('case-management')
 export class CaseManagementController {
@@ -38,7 +37,7 @@ export class CaseManagementController {
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const result = this.caseManagementService.create(body, projectIds!, currentProjectId);
+    const result = await this.caseManagementService.create(body, projectIds!, currentProjectId);
 
     this.logger.log(
       `User ${authenticatedEntity?.user?.id} created workflow ${(await result).workflowRuntimeId}`,

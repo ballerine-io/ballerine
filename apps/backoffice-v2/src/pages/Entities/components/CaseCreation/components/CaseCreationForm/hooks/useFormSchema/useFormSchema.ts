@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 export const useFormSchema = (workflowDefinition: TWorkflowDefinition) => {
   const transitionSchema = useMemo(
     () =>
-      workflowDefinition?.transitionSchema?.find(
+      workflowDefinition?.definition?.transitionSchema?.find(
         schema => schema.state === workflowDefinition?.definition?.initial,
       ) ?? null,
     [workflowDefinition],

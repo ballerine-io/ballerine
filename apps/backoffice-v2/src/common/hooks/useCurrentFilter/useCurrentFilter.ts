@@ -6,11 +6,10 @@ export const useCurrentFilter = () => {
   const filterId = useFilterId();
   const { data: filters } = useFiltersQuery();
 
-  const currentFilter = useMemo(() => {
-    if (!Array.isArray(filters) || !filterId) return null;
-
-    return filters.find(filter => filter.id === filterId) ?? null;
-  }, [filterId, filters]);
+  const currentFilter = useMemo(
+    () => filters?.find(filter => filter.id === filterId) ?? null,
+    [filterId, filters],
+  );
 
   return currentFilter;
 };

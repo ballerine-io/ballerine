@@ -1,12 +1,11 @@
-import { ITransitionSchema } from '@/case-management/types/transition-schema';
 import { AjvValidationError } from '@/errors';
 import { TProjectId } from '@/types';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowRunDto } from '@/workflow/dtos/workflow-run';
 import { ajv } from '@/common/ajv/ajv.validator';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { WorkflowDefinition } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { TWorkflowDefinitionWithTransitionSchema } from '@/workflow-defintion/types';
 
 @Injectable()
 export class CaseManagementService {
@@ -24,10 +23,11 @@ export class CaseManagementService {
 
     const hasSalesforceRecord =
       Boolean(inputWorkflow.salesforceObjectName) && Boolean(inputWorkflow.salesforceRecordId);
-    const latestDefinitionVersion = await this.workflowDefinitionService.getLatestVersion(
-      workflowId,
-      currentProjectId,
-    );
+    const latestDefinitionVersion =
+      await this.workflowDefinitionService.getLatestDefinitionWithTransitionSchema(
+        workflowId,
+        currentProjectId,
+      );
 
     this.validateEntity(latestDefinitionVersion, context?.entity);
 
@@ -50,14 +50,17 @@ export class CaseManagementService {
     };
   }
 
-  private validateEntity(workflowDefinition: WorkflowDefinition, entity: unknown) {
-    const inputState = (workflowDefinition?.definition as { initial: string })?.initial as string;
+  private validateEntity(
+    workflowDefinition: TWorkflowDefinitionWithTransitionSchema,
+    entity: unknown,
+  ) {
+    const inputState = workflowDefinition?.definition?.initial as string;
 
-    const transitionSchema = (
-      workflowDefinition.transitionSchema as unknown as ITransitionSchema[]
-    )?.find(schema => schema.state === inputState);
+    const transitionSchema = workflowDefinition.definition.transitionSchema?.find(
+      schema => schema.state === inputState,
+    );
 
-    if (!transitionSchema || !transitionSchema.schema) return;
+    if (!transitionSchema?.schema) return;
 
     const validate = ajv.compile(transitionSchema.schema);
 

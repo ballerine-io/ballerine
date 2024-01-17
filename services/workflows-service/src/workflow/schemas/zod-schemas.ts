@@ -56,6 +56,10 @@ export const ConfigSchema = z
       .optional()
       .describe('Main representative of the company'),
     customerName: z.string().optional().describe('The customer (tenant) display name'),
+    isManualCreation: z
+      .boolean()
+      .optional()
+      .describe('Indicates if workflow could be created in backoffice'),
   })
   .strict()
   .optional();

@@ -6,6 +6,7 @@ import { TProjectId } from '@/types';
 import { merge } from 'lodash';
 import { FilterService } from '@/filter/filter.service';
 import { replaceNullsWithUndefined } from '@ballerine/common';
+import { TWorkflowDefinitionWithTransitionSchema } from '@/workflow-defintion/types';
 
 @Injectable()
 export class WorkflowDefinitionService {
@@ -84,5 +85,14 @@ export class WorkflowDefinitionService {
     ]);
 
     return latestVersion;
+  }
+
+  async getLatestDefinitionWithTransitionSchema(
+    id: string,
+    projectId: TProjectId,
+  ): Promise<TWorkflowDefinitionWithTransitionSchema> {
+    const workflowDefinition = await this.getLatestVersion(id, projectId);
+
+    return workflowDefinition as TWorkflowDefinitionWithTransitionSchema;
   }
 }

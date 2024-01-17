@@ -81,6 +81,7 @@ import { Module, forwardRef } from '@nestjs/common';
     WorkflowDefinitionService,
     FilterService,
     ProjectScopeService,
+    WorkflowTokenService,
   ],
 })
-export class WorkflowServiceModule {}
+export class WorkflowModule {}
