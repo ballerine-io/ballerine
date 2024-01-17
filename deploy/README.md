@@ -68,7 +68,7 @@ To start the containers in Dev mode for easy debugging do the following.
 
    ```shell
    cd deploy/
-   docker-compose up -f docker-compose-dev.yml
+   docker-compose -f docker-compose-dev.yml up
    ```
 
 ## Additional Docker Compose Commands
