@@ -49,12 +49,6 @@ export const LineOfBusinessSection: FunctionComponent<LineOfBusinessProps> = ({ 
           <Section.SummaryBlock.Description text={lobFromExternalData} />
         </Section.SummaryBlock>
       )}
-      {lobFromExternalData && (
-        <Section.SummaryBlock>
-          <Section.SummaryBlock.Title text="LOB From External Data" />
-          <Section.SummaryBlock.Description text={lobFromExternalData} />
-        </Section.SummaryBlock>
-      )}
       {explanation && (
         <Section.SummaryBlock>
           <Section.SummaryBlock.Title text="LOB Reason Explanation" />
