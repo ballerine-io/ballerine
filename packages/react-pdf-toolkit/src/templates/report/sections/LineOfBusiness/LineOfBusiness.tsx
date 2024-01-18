@@ -11,22 +11,25 @@ export interface LineOfBusinessProps {
 export const LineOfBusinessSection: FunctionComponent<LineOfBusinessProps> = ({ data }) => {
   const { businessConsistency } = data;
 
-  const { summary, lobFromWebsite, lobFromExternalData, lobConsistensyRiskScore, lobReason } =
-    businessConsistency || {};
+  const {
+    summary,
+    lobFromWebsite,
+    lobFromExternalData,
+    lobConsistencyRiskScore = 0,
+    lobReason,
+  } = businessConsistency || {};
   const { explanation, examples } = lobReason || {};
 
   return (
     <Section title="Line of Business">
       <Section.Blocks>
-        {lobConsistensyRiskScore && (
-          <Section.Blocks.Block>
-            <Section.Blocks.Block.Label text="LOB Consistency Risk Score" />
-            <Badge
-              text={String(lobConsistensyRiskScore)}
-              variant={resolveBadgeStyleToRiskScore(lobConsistensyRiskScore)}
-            />
-          </Section.Blocks.Block>
-        )}
+        <Section.Blocks.Block>
+          <Section.Blocks.Block.Label text="LOB Consistency Risk Score" />
+          <Badge
+            text={String(lobConsistencyRiskScore)}
+            variant={resolveBadgeStyleToRiskScore(lobConsistencyRiskScore)}
+          />
+        </Section.Blocks.Block>
       </Section.Blocks>
       {summary && (
         <Section.SummaryBlock>
@@ -38,12 +41,6 @@ export const LineOfBusinessSection: FunctionComponent<LineOfBusinessProps> = ({ 
         <Section.SummaryBlock>
           <Section.SummaryBlock.Title text="LOB From Website" />
           <Section.SummaryBlock.Description text={lobFromWebsite} />
-        </Section.SummaryBlock>
-      )}
-      {lobFromExternalData && (
-        <Section.SummaryBlock>
-          <Section.SummaryBlock.Title text="LOB From External Data" />
-          <Section.SummaryBlock.Description text={lobFromExternalData} />
         </Section.SummaryBlock>
       )}
       {lobFromExternalData && (

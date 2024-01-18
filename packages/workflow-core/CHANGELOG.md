@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.5.37
+
+### Patch Changes
+
+- Better logging for api plugin
+
 ## 0.5.36
 
 ### Patch Changes

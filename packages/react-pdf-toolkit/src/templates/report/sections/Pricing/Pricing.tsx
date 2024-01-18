@@ -10,8 +10,8 @@ export interface PricingProps {
 
 export const PricingSection: FunctionComponent<PricingProps> = ({ data }) => {
   const {
-    discrepancyScore,
-    pricingPatternsScore,
+    discrepancyScore = 0,
+    pricingPatternsScore = 0,
     reasonForDiscrepancy,
     reasonForPricingPatterns,
     pricingPatternsExamples,
@@ -21,24 +21,20 @@ export const PricingSection: FunctionComponent<PricingProps> = ({ data }) => {
   return (
     <Section title="Pricing">
       <Section.Blocks>
-        {discrepancyScore && (
-          <Section.Blocks.Block>
-            <Section.Blocks.Block.Label text="Discrepancy Score" />
-            <Badge
-              text={String(discrepancyScore)}
-              variant={resolveBadgeStyleToRiskScore(discrepancyScore)}
-            />
-          </Section.Blocks.Block>
-        )}
-        {pricingPatternsScore && (
-          <Section.Blocks.Block>
-            <Section.Blocks.Block.Label text="Pricing Patterns Score" />
-            <Badge
-              text={String(pricingPatternsScore)}
-              variant={resolveBadgeStyleToRiskScore(pricingPatternsScore)}
-            />
-          </Section.Blocks.Block>
-        )}
+        <Section.Blocks.Block>
+          <Section.Blocks.Block.Label text="Discrepancy Score" />
+          <Badge
+            text={String(discrepancyScore)}
+            variant={resolveBadgeStyleToRiskScore(discrepancyScore)}
+          />
+        </Section.Blocks.Block>
+        <Section.Blocks.Block>
+          <Section.Blocks.Block.Label text="Pricing Patterns Score" />
+          <Badge
+            text={String(pricingPatternsScore)}
+            variant={resolveBadgeStyleToRiskScore(pricingPatternsScore)}
+          />
+        </Section.Blocks.Block>
       </Section.Blocks>
       {reasonForDiscrepancy && (
         <Section.SummaryBlock>

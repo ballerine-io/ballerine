@@ -237,9 +237,9 @@ export class WorkflowRuntimeDataRepository {
       ? Prisma.join(assigneeIds.map(id => Prisma.sql`${id}`))
       : Prisma.sql``;
 
-    const workflowDefinitionIdsParam = Prisma.join(
-      (workflowDefinitionIds || []).map(id => Prisma.sql`${id}`),
-    );
+    const workflowDefinitionIdsParam = workflowDefinitionIds?.length
+      ? Prisma.join(workflowDefinitionIds.map(id => Prisma.sql`${id}`))
+      : Prisma.sql``;
 
     const statusesParam = statuses.length
       ? Prisma.join(statuses.map(status => Prisma.sql`${status}`))
@@ -249,7 +249,7 @@ export class WorkflowRuntimeDataRepository {
       ? Prisma.join(projectIds.map(id => Prisma.sql`${id}`))
       : Prisma.sql``;
 
-    const caseStatusParam = filters?.caseStatus
+    const caseStatusParam = filters?.caseStatus?.length
       ? Prisma.join(filters.caseStatus.map(status => Prisma.sql`${status}`))
       : Prisma.sql``;
 

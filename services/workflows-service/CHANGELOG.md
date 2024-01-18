@@ -1,5 +1,14 @@
 # @ballerine/workflows-service
 
+## 0.5.37
+
+### Patch Changes
+
+- Better logging for api plugin
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.37
+  - @ballerine/workflow-node-sdk@0.5.37
+
 ## 0.5.36
 
 ### Patch Changes

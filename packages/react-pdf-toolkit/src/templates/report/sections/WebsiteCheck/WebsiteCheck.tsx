@@ -13,7 +13,7 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
   return (
     <>
       {data.map(websiteInfo => {
-        const { website, riskLevel, riskScore, indicators, riskAnalysis } = websiteInfo;
+        const { website, riskLevel, riskScore = 0, indicators, riskAnalysis } = websiteInfo;
         const { lineOfBusiness, reputation, traffic, pricing } = riskAnalysis || {};
 
         return (
@@ -25,12 +25,10 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
                   <Badge text={riskLevel} variant="error" />
                 </Section.Blocks.Block>
               )}
-              {riskScore && (
-                <Section.Blocks.Block>
-                  <Section.Blocks.Block.Label text="General Risk Score" />
-                  <Badge text={String(riskScore)} variant="error" />
-                </Section.Blocks.Block>
-              )}
+              <Section.Blocks.Block>
+                <Section.Blocks.Block.Label text="General Risk Score" />
+                <Badge text={String(riskScore)} variant="error" />
+              </Section.Blocks.Block>
             </Section.Blocks>
             {indicators && !!indicators.length && (
               <Section.Indicators>
