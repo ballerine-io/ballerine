@@ -19,7 +19,7 @@ export const EcosystemChecks: FunctionComponent<EcosystemChecksProps> = ({ data 
       <Section.Blocks>
         <Section.Blocks.Block>
           <Section.Blocks.Block.Label text="General Risk Score" />
-          <Badge text={String(riskScore)} variant={resolveBadgeStyleToRiskScore(riskScore)} />
+          <Badge text={String(riskScore || 0)} variant={resolveBadgeStyleToRiskScore(riskScore)} />
         </Section.Blocks.Block>
         {url && (
           <Section.Blocks.Block>
