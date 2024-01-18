@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches-ignore:
+    branches:
       - main
     paths:
       # Run this pipeline only if there are changes in specified path
@@ -10,6 +10,7 @@ on:
       - "services/**"
       - "examples/**"
       - "experiments/**"
+      - "other_directory/**"
   workflow_call:
 
 jobs:
