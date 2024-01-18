@@ -98,7 +98,6 @@ export interface FlowsBackendConfigEndpoints {
   processStepData?: string;
   getConfig?: string;
 }
-
 export interface FlowsBackendConfig {
   baseUrl?: string;
   auth?: {
@@ -134,11 +133,10 @@ export interface IFlowsMountOptions {
   elementId?: string;
   callbacks?: FlowsEventsConfig;
   /**
-   * @description A JWT or generated token to use in the Authorization header.
+   * @description A JWT token to use in the Authorization header. Requires {@link FlowsInitOptions.backendConfig.auth} method to be set as 'jwt'
    */
-  authToken?: string;
+  jwt?: string;
 }
-
 export interface FlowsTranslations {
   overrides?: Partial<TranslationType>;
   remoteUrl?: string;

@@ -22,10 +22,11 @@ const defaultFlowOrder = [
 
 export const configuration: IAppConfiguration = {
   backendConfig: {
-    baseUrl: 'http://localhost:3000',
+    baseUrl: 'https://api-dev.ballerine.io',
     auth: {
       method: 'jwt',
-      authorizationHeader: '',
+      authorizationHeader:
+        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbmRVc2VySWQiOiJhMzE5Yzk1ZC03ODY4LTQyNDAtOTQ5YS1mMDRmNDEwMzRlYzEiLCJjbGllbnRJZCI6IjJlOGJiZTJjLTJhYjktNGRkZi1iOWI5LTZlZWM5M2Q3YjQzMSIsImlhdCI6MTY1OTM1NDAwNywiZXhwIjoxODczODcyOTU4Njc0MTM4OCwiaXNzIjoiMmU4YmJlMmMtMmFiOS00ZGRmLWI5YjktNmVlYzkzZDdiNDMxIn0.aEaz4y7pBYG6Ia1Yb74cUOp0E0UsgtCItgLd2EXjo3U',
     },
     endpoints: {
       startVerification: '/v2/enduser/verify',

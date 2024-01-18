@@ -1,7 +1,7 @@
 import ConfigurationProvider from './ConfigurationProvider.svelte';
 import type { BallerineSDKFlows, FlowsInitOptions } from './types/BallerineSDK';
 import {
-  setAuthorizationHeader,
+  setAuthorizationHeaderJwt,
   setFlowCallbacks,
   appInit,
   mergeTranslationsOverrides,
@@ -55,7 +55,7 @@ export const flows: BallerineSDKFlows = {
   mount({
     flowName = getConfigFromQueryParams().flowName,
     callbacks,
-    authToken,
+    jwt,
     useModal = false,
     elementId = '',
   }) {
@@ -78,8 +78,9 @@ export const flows: BallerineSDKFlows = {
     // Calling setFlowCallbacks below ConfigurationProvider results in stale state for instances of get(configuration).
     setFlowCallbacks(flowName, callbacks);
 
-    if (authToken) {
-      setAuthorizationHeader(authToken);
+    // Skipped if not using JWT auth.
+    if (jwt) {
+      setAuthorizationHeaderJwt(jwt);
     }
 
     new ConfigurationProvider({

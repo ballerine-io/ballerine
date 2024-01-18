@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class CreateTokenOrCollectionFlowUrlDto {
+export class CreateCollectionFlowUrlDto {
   @ApiProperty({
     required: true,
     type: String,
