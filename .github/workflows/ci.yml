@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build
-        uses: ./.github/actions/build-action
+        uses: ./path/to/correct/build-action
 
   spell_check:
     runs-on: ubuntu-latest
