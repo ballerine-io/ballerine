@@ -6,12 +6,8 @@ import './index.scss';
 import { IReport, ReportTemplate } from './templates/report';
 registerFont(Font);
 
-const reportData: Partial<IReport> = {
-  status: 'Published',
-  meta: {
-    companyName: 'Test',
-  } as IReport['meta'],
-};
+const reportData: Partial<IReport> = {};
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <div className="h-screen">
     <ViewerDEV>
