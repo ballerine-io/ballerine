@@ -26,7 +26,7 @@ export const LineOfBusinessSection: FunctionComponent<LineOfBusinessProps> = ({ 
         <Section.Blocks.Block>
           <Section.Blocks.Block.Label text="LOB Consistency Risk Score" />
           <Badge
-            text={String(lobConsistencyRiskScore)}
+            text={String(lobConsistencyRiskScore || 0)}
             variant={resolveBadgeStyleToRiskScore(lobConsistencyRiskScore)}
           />
         </Section.Blocks.Block>

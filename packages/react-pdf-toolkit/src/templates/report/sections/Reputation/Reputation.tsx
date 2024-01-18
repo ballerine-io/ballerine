@@ -25,7 +25,7 @@ export const ReputationSection: FunctionComponent<ReputationProps> = ({ data }) 
         <Section.Blocks.Block>
           <Section.Blocks.Block.Label text="Reputation Risk Score" />
           <Badge
-            text={String(reputationRiskScore)}
+            text={String(reputationRiskScore || 0)}
             variant={resolveBadgeStyleToRiskScore(reputationRiskScore)}
           />
         </Section.Blocks.Block>
