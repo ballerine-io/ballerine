@@ -31,7 +31,7 @@ import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { Public } from '@/common/decorators/public.decorator';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
-import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
+import { CreateTokenOrCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
 import { env } from '@/env';
 
 @swagger.ApiBearerAuth()
@@ -205,8 +205,7 @@ export class WorkflowControllerExternal {
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createCollectionFlowUrl(
-    @common.Body() { expiry, workflowRuntimeDataId, endUserId }: CreateCollectionFlowUrlDto,
-    @Res() res: Response,
+    @common.Body() { expiry, workflowRuntimeDataId, endUserId }: CreateTokenOrCollectionFlowUrlDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
     const expiresAt = new Date(Date.now() + (expiry || 30) * 24 * 60 * 60 * 1000);
@@ -220,6 +219,28 @@ export class WorkflowControllerExternal {
     return {
       token,
       collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${token}`,
+    };
+  }
+
+  @common.Post('/create-token')
+  @swagger.ApiOkResponse()
+  @UseCustomerAuthGuard()
+  @common.HttpCode(200)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async createToken(
+    @common.Body() { expiry, workflowRuntimeDataId, endUserId }: CreateTokenOrCollectionFlowUrlDto,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    const expiresAt = new Date(Date.now() + (expiry || 30) * 24 * 60 * 60 * 1000);
+
+    const { token } = await this.workflowTokenService.create(currentProjectId, {
+      workflowRuntimeDataId: workflowRuntimeDataId,
+      expiresAt,
+      endUserId,
+    });
+
+    return {
+      token,
     };
   }
 

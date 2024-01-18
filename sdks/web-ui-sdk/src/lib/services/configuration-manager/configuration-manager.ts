@@ -152,24 +152,19 @@ const preloadBasicSteps = async (flow: IFlow): Promise<IFlow> => {
 };
 
 /**
- * @description If {@link configuration.backendConfig.auth.method} is set to 'jwt' sets {@link configuration.backendConfig.auth.authorizationHeader} to \`Bearer ${jwt}\`
- * @param jwt - JWT token as string
+ * @description Sets {@link configuration.backendConfig.auth.authorizationHeader} to \`Bearer ${authToken}\`
+ * @param authToken - JWT or generated token as string
  *
  * @see {@link configuration.backendConfig.auth}
  */
-export const setAuthorizationHeaderJwt = (jwt: string) => {
-  const { backendConfig } = get(configurationStore);
-  const { method } = backendConfig?.auth ?? {};
-
-  if (method !== 'jwt') return;
-
+export const setAuthorizationHeader = (authToken: string) => {
   return configurationStore.update(config => ({
     ...config,
     backendConfig: {
       ...config.backendConfig,
       auth: {
         ...config.backendConfig.auth,
-        authorizationHeader: `Bearer ${jwt}`,
+        authorizationHeader: `Bearer ${authToken}`,
       },
     },
   }));

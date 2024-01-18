@@ -109,11 +109,11 @@ const ballerineInitConfig: FlowsInitOptions = {
     enabled: true,
   },
 };
-console.log(ballerineInitConfig);
 
 void flows.init(ballerineInitConfig).then(() => {
   void flows.mount({
     flowName: 'my-kyc-flow',
     useModal: true,
+    authToken: '156f8f17-797d-4a32-90a4-79b2b0b49da5',
   });
 });

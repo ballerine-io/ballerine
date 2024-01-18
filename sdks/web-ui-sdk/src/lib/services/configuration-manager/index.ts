@@ -3,5 +3,5 @@ export {
   mergeTranslationsOverrides,
   setFlowCallbacks,
   texts,
-  setAuthorizationHeaderJwt,
+  setAuthorizationHeader,
 } from './configuration-manager';
