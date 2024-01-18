@@ -70,10 +70,10 @@ importers:
         specifier: ^0.3.25
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.36
+        specifier: 0.5.37
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.36
+        specifier: 0.5.37
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -371,7 +371,7 @@ importers:
         specifier: 0.3.24
         version: 0.3.24(@mui/system@5.14.18)(@types/react-dom@18.2.15)(@types/react@18.2.37)
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.36
+        specifier: 0.5.37
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -796,7 +796,7 @@ importers:
         specifier: 0.7.37
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.36
+        specifier: 0.5.37
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -1932,7 +1932,7 @@ importers:
         specifier: 0.7.37
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.36
+        specifier: 0.5.37
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -2071,7 +2071,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.5.36
+        specifier: 0.5.37
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2316,10 +2316,10 @@ importers:
         specifier: 0.7.37
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.36
+        specifier: 0.5.37
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.36
+        specifier: 0.5.37
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2376,8 +2376,8 @@ importers:
         specifier: ^0.31.7
         version: 0.31.26
       '@t3-oss/env-core':
-        specifier: ^0.3.1
-        version: 0.3.1(typescript@4.9.5)(zod@3.22.4)
+        specifier: ^0.6.1
+        version: 0.6.1(typescript@4.9.5)(zod@3.22.4)
       '@types/tmp':
         specifier: ^0.2.3
         version: 0.2.6
@@ -2566,7 +2566,7 @@ importers:
         specifier: ^8.7.0
         version: 8.10.0(eslint@8.54.0)
       eslint-import-resolver-typescript:
-        specifier: ^3.5.3
+        specifier: ^3.6.1
         version: 3.6.1(@typescript-eslint/parser@5.62.0)(eslint-plugin-import@2.29.0)(eslint@8.54.0)
       eslint-plugin-ballerine:
         specifier: file:./plugins/verify-repository-project-scoped
@@ -2610,6 +2610,9 @@ importers:
       ts-node:
         specifier: ^10.9.1
         version: 10.9.1(@types/node@18.17.19)(typescript@4.9.5)
+      tsconfig-paths:
+        specifier: 4.2.0
+        version: 4.2.0
       type-fest:
         specifier: 0.11.0
         version: 0.11.0
@@ -13915,6 +13918,16 @@ packages:
 
   /@t3-oss/env-core@0.3.1(typescript@4.9.5)(zod@3.22.4):
     resolution: {integrity: sha512-iEnBuWeSjzqQLDTUw7H+YhstV4OZrGXTkQGL6ZOMxZQoCmwGX7GVS+1KCd5RvCzOtrIAD9jeOItSWNjC7sG4Sg==}
+    peerDependencies:
+      typescript: '>=4.7.2'
+      zod: ^3.0.0
+    dependencies:
+      typescript: 4.9.5
+      zod: 3.22.4
+    dev: false
+
+  /@t3-oss/env-core@0.6.1(typescript@4.9.5)(zod@3.22.4):
+    resolution: {integrity: sha512-KQD7qEDJtkWIWWmTVjNvk0wnHpkvAQ6CRbUxbWMFNG/fiosBQDQvtRpBNu6USxBscJCoC4z6y7P9MN52/mLOzw==}
     peerDependencies:
       typescript: '>=4.7.2'
       zod: ^3.0.0
