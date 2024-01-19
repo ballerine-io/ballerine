@@ -24,14 +24,14 @@ export const PricingSection: FunctionComponent<PricingProps> = ({ data }) => {
         <Section.Blocks.Block>
           <Section.Blocks.Block.Label text="Discrepancy Score" />
           <Badge
-            text={String(discrepancyScore)}
+            text={String(discrepancyScore || 0)}
             variant={resolveBadgeStyleToRiskScore(discrepancyScore)}
           />
         </Section.Blocks.Block>
         <Section.Blocks.Block>
           <Section.Blocks.Block.Label text="Pricing Patterns Score" />
           <Badge
-            text={String(pricingPatternsScore)}
+            text={String(pricingPatternsScore || 0)}
             variant={resolveBadgeStyleToRiskScore(pricingPatternsScore)}
           />
         </Section.Blocks.Block>
