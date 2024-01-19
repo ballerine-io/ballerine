@@ -23,7 +23,7 @@ export const SummarySection: FunctionComponent<SummaryProps> = ({ data }) => {
         <Section.Blocks.Block>
           <Section.Blocks.Block.Label text="Transaction Laundering Risk Score" />
           <Badge
-            text={String(transactionLaunderingRiskScore)}
+            text={String(transactionLaunderingRiskScore || 0)}
             variant={resolveBadgeStyleToRiskScore(transactionLaunderingRiskScore)}
           />
         </Section.Blocks.Block>
