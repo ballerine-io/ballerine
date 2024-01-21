@@ -14,7 +14,7 @@ export const Icon = {
   CHECK: <CheckCircle2 size={18} className={`fill-success stroke-white`} />,
   X: <XCircle size={18} className={`fill-destructive stroke-white`} />,
   REFRESH: <RefreshCcw size={18} className={`fill-warning stroke-white`} />,
-};
+} as const;
 
 export const processStatusToIcon = {
   DEFAULT: Icon.MINUS,
@@ -22,7 +22,7 @@ export const processStatusToIcon = {
   [ProcessStatus.IN_PROGRESS]: Icon.CLOCK,
   [ProcessStatus.SUCCESS]: Icon.CHECK,
   [ProcessStatus.ERROR]: Icon.X,
-};
+} as const;
 
 export const tagToIcon = {
   DEFAULT: Icon.MINUS,
@@ -33,6 +33,6 @@ export const tagToIcon = {
   [StateTag.REJECTED]: Icon.CHECK,
   [StateTag.FAILURE]: Icon.X,
   [StateTag.REVISION]: Icon.REFRESH,
-};
+} as const;
 
 export const pluginsWhiteList = ['kyb', 'ubo', 'company_sanctions'] as const;
