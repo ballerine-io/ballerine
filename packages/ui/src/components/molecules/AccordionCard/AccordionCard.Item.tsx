@@ -15,7 +15,7 @@ export const AccordionCardItem: FunctionComponent<AccordionCardItemProps> = ({
   accordionContentProps,
   ulProps,
   liProps,
-  contentFallback = <span className={`text-slate-400`}>No content</span>,
+  subitemsFallback = <span className={`text-slate-400`}>No content</span>,
   ...props
 }) => {
   return (
@@ -34,11 +34,19 @@ export const AccordionCardItem: FunctionComponent<AccordionCardItemProps> = ({
         {title}
       </AccordionTrigger>
       <AccordionContent {...accordionContentProps}>
-        <ScrollArea orientation="vertical" className={`h-32`}>
+        <ScrollArea
+          orientation="vertical"
+          className={ctw(`h-32`, {
+            'h-6': !isNonEmptyArray(subitems),
+          })}
+        >
           <ul {...ulProps} className={ctw(`flex flex-col space-y-2`, ulProps?.className)}>
             {!isNonEmptyArray(subitems) && (
-              <li className={ctw(`flex items-center gap-x-2`, liProps?.className)} {...liProps}>
-                {contentFallback}
+              <li
+                className={ctw(`fallback flex items-center gap-x-2`, liProps?.className)}
+                {...liProps}
+              >
+                {subitemsFallback}
               </li>
             )}
             {isNonEmptyArray(subitems) &&
