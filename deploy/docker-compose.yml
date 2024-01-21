@@ -68,12 +68,12 @@ services:
         condition: service_healthy
     restart: on-failure
   ballerine-postgres:
-    image: sibedge/postgres-plv8-bigint:15.3-3.1.7
+    image: sibedge/postgres-plv8:15.3-3.1.7
     ports:
       - 5432:5432
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
+      POSTGRES_PASSWORD: password
     volumes:
       - postgres15:/var/lib/postgresql/data
     healthcheck:
