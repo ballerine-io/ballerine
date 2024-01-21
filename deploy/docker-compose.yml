@@ -35,7 +35,7 @@ services:
       - -c
       - |
         npm run db:init
-        npm run seed:ex
+        npm run seed
         dumb-init npm run prod
     ports:
       - 3000:3000
@@ -62,6 +62,7 @@ services:
       UNIFIED_API_URL: 'https://unified-api-test.eu.ballerine.app'
       UNIFIED_API_TOKEN: ''
       UNIFIED_API_SHARED_SECRET: ''
+      ENVIRONMENT_NAME: 'development'
     depends_on:
       ballerine-postgres:
         condition: service_healthy

@@ -21,7 +21,6 @@
     "test:e2e": "jest --testRegex '.*\\.e2e\\.test\\.ts$'",
     "test:watch": "jest --verbose --watch",
     "seed": "ts-node scripts/seed.ts",
-    "seed:ex": "ts-node scripts/seed-ex.ts",
     "db:migrate-dev": "prisma migrate dev",
     "db:migrate-up": "prisma migrate deploy",
     "db:reset": "prisma migrate reset --skip-seed -f",
