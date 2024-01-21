@@ -1,22 +1,15 @@
 import { FunctionComponent } from 'react';
-import { TWorkflowDefinitionById } from '@/domains/workflow-definitions/fetchers';
 import { AccordionCard } from '@ballerine/ui';
 
 import { useProcessTrackerLogic } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/useProcessTrackerLogic';
-import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { IProcessTrackerProps } from '@/common/components/molecules/ProcessTracker/interfaces';
 
-export const ProcessTracker: FunctionComponent<{
-  tags: TWorkflowById['tags'];
-  plugins: Array<
-    | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['apiPlugins']>[number]
-    | NonNullable<
-        NonNullable<TWorkflowDefinitionById['extensions']>['childWorkflowPlugins']
-      >[number]
-    | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['commonPlugins']>[number]
-  >;
-  context: TWorkflowById['context'];
-  childWorkflows: TWorkflowById['childWorkflows'];
-}> = ({ tags, plugins, context, childWorkflows }) => {
+export const ProcessTracker: FunctionComponent<IProcessTrackerProps> = ({
+  tags,
+  plugins,
+  context,
+  childWorkflows,
+}) => {
   const {
     uncollapsedItemValue,
     onValueChange,

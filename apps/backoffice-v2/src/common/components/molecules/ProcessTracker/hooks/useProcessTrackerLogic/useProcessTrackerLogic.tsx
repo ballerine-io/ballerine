@@ -1,4 +1,3 @@
-import { TWorkflowDefinitionById } from '@/domains/workflow-definitions/fetchers';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   pluginsWhiteList,
@@ -10,24 +9,14 @@ import { titleCase } from 'string-ts';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { ProcessStatus } from '@ballerine/common';
+import { IUseProcessTrackerLogicParams } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/interfaces';
 
 export const useProcessTrackerLogic = ({
   tags,
   plugins,
   context,
   childWorkflows,
-}: {
-  tags: TWorkflowById['tags'];
-  plugins: Array<
-    | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['apiPlugins']>[number]
-    | NonNullable<
-        NonNullable<TWorkflowDefinitionById['extensions']>['childWorkflowPlugins']
-      >[number]
-    | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['commonPlugins']>[number]
-  >;
-  context: TWorkflowById['context'];
-  childWorkflows: TWorkflowById['childWorkflows'];
-}) => {
+}: IUseProcessTrackerLogicParams) => {
   const [uncollapsedItemValue, setUncollapsedItemValue] = useState<string>();
   const onValueChange = useCallback((value: string) => {
     setUncollapsedItemValue(value);
