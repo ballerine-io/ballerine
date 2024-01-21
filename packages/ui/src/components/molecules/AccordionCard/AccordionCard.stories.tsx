@@ -27,10 +27,6 @@ export const Default = {
                   text: 'Registry Verification',
                 },
                 {
-                  leftIcon: <Clock4 size={18} className={`fill-purple-500 stroke-white`} />,
-                  text: 'Registry Verification',
-                },
-                {
                   leftIcon: <CheckCircle2 size={18} className={`fill-green-500 stroke-white`} />,
                   text: 'UBO Check',
                 },
