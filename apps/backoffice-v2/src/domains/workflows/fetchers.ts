@@ -141,13 +141,6 @@ export const fetchWorkflowById = async ({
     method: Method.GET,
     schema: WorkflowByIdSchema.transform(data => ({
       ...data,
-      workflowDefinition: {
-        ...data.workflowDefinition,
-        config: {
-          ...data.workflowDefinition.config,
-          isCaseOverviewEnabled: true,
-        },
-      },
       context: {
         ...data.context,
         pluginsOutput: {

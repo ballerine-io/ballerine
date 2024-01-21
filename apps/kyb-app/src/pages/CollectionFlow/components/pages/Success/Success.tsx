@@ -4,38 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { useCustomer } from '@/components/providers/CustomerProvider';
 import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Button, Card } from '@ballerine/ui';
-import { useEffect } from 'react';
-import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
-import set from 'lodash/set';
-import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
-import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
-import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
-
-// TODO: Find a way to make this work via the workflow-browser-sdk `subscribe` method.
-export const useCompleteLastStep = () => {
-  const { stateApi } = useStateManagerContext();
-  const { language } = useLanguageParam();
-  const { data: schema } = useUISchemasQuery(language);
-  const { refetch } = useFlowContextQuery();
-  const elements = schema?.uiSchema?.elements;
-
-  useEffect(() => {
-    (async () => {
-      const { data: context } = await refetch();
-
-      if (!context) return;
-
-      set(context, `flowConfig.stepsProgress.${elements?.at(-1)?.stateName}.isCompleted`, true);
-      await stateApi.invokePlugin('sync_workflow_runtime');
-    })();
-  }, []);
-};
 
 export const Success = withSessionProtected(() => {
   const { t } = useTranslation();
   const { customer } = useCustomer();
-
-  useCompleteLastStep();
 
   return (
     <div className="flex h-full items-center justify-center">
