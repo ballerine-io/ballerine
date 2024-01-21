@@ -2,7 +2,6 @@ import { TWorkflowDefinitionById } from '@/domains/workflow-definitions/fetchers
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   pluginsWhiteList,
-  ProcessStatus,
   processStatusToIcon,
   tagToAccordionCardItem,
   tagToIcon,
@@ -10,6 +9,7 @@ import {
 import { titleCase } from 'string-ts';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { ProcessStatus } from '@ballerine/common';
 
 export const useProcessTrackerLogic = ({
   tags,
@@ -67,14 +67,35 @@ export const useProcessTrackerLogic = ({
       };
     });
   }, [getCollectionFlowStatus, steps]);
+  const getPluginByName = useCallback(
+    (name: string) => {
+      let plugin: NonNullable<TWorkflowById['context']['pluginsOutput']>[string];
+
+      Object.keys(context?.pluginsOutput ?? {})?.forEach(key => {
+        if (context?.pluginsOutput?.[key]?.name !== name) {
+          return;
+        }
+
+        plugin = context?.pluginsOutput?.[key];
+      });
+
+      return plugin;
+    },
+    [context?.pluginsOutput],
+  );
   const thirdPartyProcessesSubitems = useMemo(() => {
     return plugins
       ?.filter(({ name }) => pluginsWhiteList.includes(name as (typeof pluginsWhiteList)[number]))
-      ?.map(({ displayName, status }) => ({
+      ?.map(({ displayName, name, status }) => ({
         text: displayName,
-        leftIcon: processStatusToIcon[status],
+        leftIcon:
+          processStatusToIcon[
+            (getPluginByName(name)?.status as keyof typeof processStatusToIcon) ??
+              status ??
+              ProcessStatus.DEFAULT
+          ],
       }));
-  }, [plugins]);
+  }, [getPluginByName, plugins]);
 
   const getUboFlowStatus = useCallback((tags: TWorkflowById['tags']) => {
     const tag = tags?.find(tag => tagToIcon[tag as keyof typeof tagToIcon]);

@@ -1,4 +1,4 @@
-import { WorkflowDefinitionVariant } from '@ballerine/common';
+import { ProcessStatuses, WorkflowDefinitionVariant } from '@ballerine/common';
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
 import { z } from 'zod';
 import { apiClient } from '@/common/api-client/api-client';
@@ -6,8 +6,6 @@ import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { env } from '@/common/env/env';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
-
-import { ProcessStatuses } from '@/common/components/molecules/ProcessTracker/constants';
 
 export const WorkflowDefinitionConfigSchema = z
   .object({

@@ -52,3 +52,22 @@ export const WorkflowDefinitionVariant = {
 } as const;
 
 export type TStateTags = typeof StateTags;
+
+export const ProcessStatus = {
+  DEFAULT: 'DEFAULT',
+  IDLE: 'IDLE',
+  IN_PROGRESS: 'IN_PROGRESS',
+  SUCCESS: 'SUCCESS',
+  ERROR: 'ERROR',
+} as const;
+
+export const ProcessStatuses = [
+  ProcessStatus.IDLE,
+  ProcessStatus.IN_PROGRESS,
+  ProcessStatus.SUCCESS,
+  ProcessStatus.ERROR,
+] as const satisfies ReadonlyArray<keyof typeof ProcessStatus>;
+
+export type TProcessStatus = (typeof ProcessStatuses)[number];
+
+export type TProcessStatuses = typeof ProcessStatuses;
