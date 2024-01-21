@@ -36,7 +36,7 @@ export const AccordionCardItem: FunctionComponent<AccordionCardItemProps> = ({
       <AccordionContent {...accordionContentProps}>
         <ScrollArea
           orientation="vertical"
-          className={ctw(`h-32`, {
+          className={ctw(`h-24`, {
             'h-6': !isNonEmptyArray(subitems),
           })}
         >
