@@ -2,6 +2,7 @@ version: '3'
 services:
   ballerine-case-managment:
     image: ghcr.io/ballerine-io/backoffice:latest
+    platform: linux/amd64
     ports:
       - 5137:80
     depends_on:
@@ -9,6 +10,7 @@ services:
     restart: on-failure
   ballerine-kyb-app:
     image: ghcr.io/ballerine-io/kyb-app:latest
+    platform: linux/amd64
     ports:
       - 5201:80
     depends_on:
@@ -19,6 +21,7 @@ services:
       VITE_KYB_DEFINITION_ID: 'kyb_parent_kyc_session_example'
   ballerine-workflows-dashboard:
     image: ghcr.io/ballerine-io/workflows-dashboard:latest
+    platform: linux/amd64
     ports:
       - 5200:80
     depends_on:
@@ -26,6 +29,7 @@ services:
     restart: on-failure
   ballerine-workflow-service:
     image: ghcr.io/ballerine-io/workflows-service:latest
+    platform: linux/amd64
     command:
       - /bin/sh
       - -c
