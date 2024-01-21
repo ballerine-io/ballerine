@@ -16,7 +16,7 @@ export type AccordionCardItemProps = ComponentProps<typeof ShadCNAccordionItem> 
   accordionContentProps?: ComponentProps<typeof AccordionContent>;
   ulProps?: ComponentProps<'ul'>;
   liProps?: ComponentProps<'li'>;
-  contentFallback?: ReactNode | ReactNode[];
+  subitemsFallback?: ReactNode | ReactNode[];
 };
 
 export type AccordionCardContentProps = Omit<
