@@ -16,10 +16,15 @@ BEGIN
     LEFT JOIN LATERAL jsonb_array_elements_text(wrd.tags) AS tag ON TRUE
     WHERE
         (
-            ("context"->'entity'->'data'->>'companyName' ILIKE '%' || search_text || '%'
-            OR "context"->'entity'->'data'->>'email' ILIKE '%' || search_text || '%'
-            OR "context"->'entity'->'data'->>'firstName' ILIKE '%' || search_text || '%'
-            OR "context"->'entity'->'data'->>'lastName' ILIKE '%' || search_text || '%')
+            "context"->'entity'->'data'->>'companyName' ILIKE '%' || search_text || '%'
+            OR
+            "context"->'entity'->'data'->>'email' ILIKE '%' || search_text || '%'
+            OR
+            "context"->'entity'->'data'->>'firstName' ILIKE '%' || search_text || '%'
+            OR
+            "context"->'entity'->'data'->>'lastName' ILIKE '%' || search_text || '%'
+            OR
+            concat_ws(' ', ("context"->'entity'->'data'->>'firstName'), ("context"->'entity'->'data'->>'lastName')) ILIKE '%' || search_text || '%'
             OR
             search_text IS NULL
         )
