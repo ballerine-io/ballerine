@@ -58,7 +58,7 @@ export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
 
 export const WorkflowDefinitionConfigSchema = z
   .object({
-    isManualCreation: z.boolean().default(false),
+    enableManualCreation: z.boolean().default(false),
   })
   .passthrough()
   .nullable();
