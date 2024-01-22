@@ -1,5 +1,5 @@
 import { AjvValidationError } from '@/errors';
-import { TProjectId } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowRunDto } from '@/workflow/dtos/workflow-run';
 import { ajv } from '@/common/ajv/ajv.validator';
@@ -16,7 +16,7 @@ export class CaseManagementService {
 
   async create(
     inputWorkflow: WorkflowRunDto,
-    projectIds: TProjectId[],
+    projectIds: TProjectIds,
     currentProjectId: TProjectId,
   ) {
     const { workflowId, context, config } = inputWorkflow;
@@ -26,7 +26,7 @@ export class CaseManagementService {
     const latestDefinitionVersion =
       await this.workflowDefinitionService.getLatestDefinitionWithTransitionSchema(
         workflowId,
-        currentProjectId,
+        projectIds,
       );
 
     this.validateEntity(latestDefinitionVersion, context?.entity);

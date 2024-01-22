@@ -24,7 +24,7 @@ export class CaseManagementController {
     @Param('workflowDefinitionId') workflowDefinitionId: string,
     @ProjectIds() projectIds: TProjectId[],
   ) {
-    return this.workflowDefinitionService.getLatestVersion(workflowDefinitionId, projectIds[0]!);
+    return this.workflowDefinitionService.getLatestVersion(workflowDefinitionId, projectIds);
   }
 
   @Post()
