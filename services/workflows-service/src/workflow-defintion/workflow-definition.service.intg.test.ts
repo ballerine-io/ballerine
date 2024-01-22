@@ -202,10 +202,9 @@ describe('WorkflowDefinitionService', () => {
       // @ts-ignore
       expect(otherWorkflowFilter.query.where).toEqual(otherWorkflowFilter.query.where);
 
-      const latestWorkflowVersion = await workflowDefinitionService.getLatestVersion(
-        id,
+      const latestWorkflowVersion = await workflowDefinitionService.getLatestVersion(id, [
         project.id,
-      );
+      ]);
 
       expect(latestWorkflowVersion.id).toEqual(updatedWorkflowDefintiion.id);
     });
