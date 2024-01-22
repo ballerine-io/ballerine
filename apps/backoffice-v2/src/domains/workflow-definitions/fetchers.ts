@@ -1,4 +1,4 @@
-import { ProcessStatuses, WorkflowDefinitionVariant } from '@ballerine/common';
+import { WorkflowDefinitionVariant } from '@ballerine/common';
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
 import { z } from 'zod';
 import { apiClient } from '@/common/api-client/api-client';
@@ -17,7 +17,6 @@ export const WorkflowDefinitionConfigSchema = z
 export const PluginSchema = z.object({
   name: z.string(),
   displayName: z.string().or(z.undefined()),
-  status: z.enum(ProcessStatuses),
 });
 
 export type TPlugin = z.infer<typeof PluginSchema>;

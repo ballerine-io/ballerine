@@ -75,12 +75,11 @@ export const useProcessTrackerLogic = ({
   const thirdPartyProcessesSubitems = useMemo(() => {
     return plugins
       ?.filter(({ name }) => pluginsWhiteList.includes(name as (typeof pluginsWhiteList)[number]))
-      ?.map(({ displayName, name, status }) => ({
+      ?.map(({ displayName, name }) => ({
         text: displayName,
         leftIcon:
           processStatusToIcon[
             (getPluginByName(name)?.status as keyof typeof processStatusToIcon) ??
-              status ??
               ProcessStatus.DEFAULT
           ],
       }));
