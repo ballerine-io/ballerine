@@ -1,5 +1,5 @@
-import { Prisma, PrismaClient } from '@prisma/client';
 import { StateTag } from '@ballerine/common';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 export const kybWithDynamicExternalRequestWorkflowExample = {
   id: 'dynamic_external_request_example',
