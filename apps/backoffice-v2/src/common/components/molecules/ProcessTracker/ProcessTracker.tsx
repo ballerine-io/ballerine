@@ -1,8 +1,10 @@
 import { FunctionComponent } from 'react';
-import { AccordionCard } from '@ballerine/ui';
+import { AccordionCard, HoverCard, HoverCardContent, HoverCardTrigger } from '@ballerine/ui';
 
 import { useProcessTrackerLogic } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/useProcessTrackerLogic';
 import { IProcessTrackerProps } from '@/common/components/molecules/ProcessTracker/interfaces';
+import { HelpCircle } from 'lucide-react';
+import { Icon } from '@/common/components/molecules/ProcessTracker/constants';
 
 export const ProcessTracker: FunctionComponent<IProcessTrackerProps> = ({
   tags,
@@ -40,6 +42,37 @@ export const ProcessTracker: FunctionComponent<IProcessTrackerProps> = ({
           />
           <AccordionCard.Item title={`UBO flows`} value={`UBO flows`} subitems={uboFlowsSubitems} />
         </AccordionCard.Content>
+        <AccordionCard.Footer className={`pb-4`}>
+          <HoverCard openDelay={0}>
+            <HoverCardTrigger className={`ms-auto`}>
+              <HelpCircle size={18} className={`stroke-slate-400/70`} />
+            </HoverCardTrigger>
+            <HoverCardContent side={'top'} align={'end'}>
+              <ul className={`flex flex-col space-y-2`}>
+                <li className={`flex items-center gap-x-2`}>
+                  {Icon.MINUS}
+                  Process not started
+                </li>
+                <li className={`flex items-center gap-x-2`}>
+                  {Icon.CLOCK}
+                  Process started
+                </li>
+                <li className={`flex items-center gap-x-2`}>
+                  {Icon.CHECK}
+                  Process complete
+                </li>
+                <li className={`flex items-center gap-x-2`}>
+                  {Icon.X}
+                  Process failed
+                </li>
+                <li className={`flex items-center gap-x-2`}>
+                  {Icon.REFRESH}
+                  Re-do process started
+                </li>
+              </ul>
+            </HoverCardContent>
+          </HoverCard>
+        </AccordionCard.Footer>
       </AccordionCard>
     </div>
   );
