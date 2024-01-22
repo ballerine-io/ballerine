@@ -1,4 +1,5 @@
 import { TWorkflowDefinition } from '@/domains/workflows/fetchers';
+import { FieldLayout } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/components/FieldLayout';
 import { SubmitSection } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/components/SubmitSection';
 import { useCaseCreationForm } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/hooks/useCaseCreationForm';
 import { useFormSchema } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/hooks/useFormSchema';
@@ -12,6 +13,7 @@ interface FormProps {
 
 const layouts = {
   ...baseLayouts,
+  FieldTemplate: FieldLayout,
   ButtonTemplates: {
     ...baseLayouts.ButtonTemplates,
     SubmitButton: SubmitSection,
