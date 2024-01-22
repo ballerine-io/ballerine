@@ -6,6 +6,7 @@ import { AccordionCardItem } from '@/components/molecules/AccordionCard/Accordio
 import { IAccordionCardChildren } from '@/components/molecules/AccordionCard/interfaces';
 import { AccordionCardProvider } from '@/components/molecules/AccordionCard/context/AccordionCardProvider/AccordionCardProvider';
 import { AccordionCardProps } from '@/components/molecules/AccordionCard/types';
+import { AccordionCardFooter } from '@/components/molecules/AccordionCard/AccordionCard.Footer';
 
 export const AccordionCard: FunctionComponent<AccordionCardProps> & IAccordionCardChildren = ({
   children,
@@ -23,4 +24,5 @@ AccordionCard.displayName = 'AccordionCard';
 
 AccordionCard.Title = AccordionCardTitle;
 AccordionCard.Content = AccordionCardContent;
+AccordionCard.Footer = AccordionCardFooter;
 AccordionCard.Item = AccordionCardItem;

@@ -13,7 +13,7 @@ export const Icon = {
   CLOCK: <Clock4 size={18} className={`fill-violet-500 stroke-white`} />,
   CHECK: <CheckCircle2 size={18} className={`fill-success stroke-white`} />,
   X: <XCircle size={18} className={`fill-destructive stroke-white`} />,
-  REFRESH: <RefreshCcw size={18} className={`fill-warning stroke-white`} />,
+  REFRESH: <RefreshCcw size={18} className={`stroke-warning`} />,
 } as const;
 
 export const processStatusToIcon = {
