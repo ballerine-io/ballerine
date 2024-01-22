@@ -68,7 +68,6 @@
     "release": "pnpm build && changeset publish",
     "upload-sourcemaps": "nx run-many --target=upload-sourcemaps --all"
   },
-  "license": "ISC",
   "devDependencies": {
     "@branchlint/cli": "^1.0.5",
     "@branchlint/default-config": "^1.0.3",
