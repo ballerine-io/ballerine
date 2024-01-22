@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.3.26
+
+### Patch Changes
+
+- Added CountryPicker adapter for DynamicForm & portal on Popover now could be disabled by prop
+
 ## 0.3.25
 
 ### Patch Changes

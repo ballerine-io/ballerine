@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/ui",
   "private": false,
-  "version": "0.3.25",
+  "version": "0.3.26",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -46,6 +46,7 @@
     "clsx": "^1.2.1",
     "cmdk": "^0.2.0",
     "dayjs": "^1.11.6",
+    "i18n-iso-countries": "^7.6.0",
     "lodash": "^4.17.21",
     "lucide-react": "^0.144.0",
     "react": "^18.0.37",
