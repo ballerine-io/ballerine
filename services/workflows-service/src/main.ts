@@ -27,6 +27,7 @@ const corsOrigins = [
   ...env.BACKOFFICE_CORS_ORIGIN,
   ...env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
   ...env.KYB_EXAMPLE_CORS_ORIGIN,
+  'http://localhost:5202',
   /\.ballerine\.app$/,
   ...(env.ENVIRONMENT_NAME !== 'production' ? devOrigins : []),
 ];

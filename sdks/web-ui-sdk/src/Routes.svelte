@@ -12,6 +12,7 @@
     const flow = $configuration.flows[flowName];
     return flow.steps as RecursivePartial<IStepConfiguration>[];
   };
+
   const flowSteps = getFlowSteps();
   const configurationStepIds = flowSteps.map(s => s.id) as string[];
   let stepId = configurationStepIds[0];
@@ -23,18 +24,27 @@
     const flowSteps = getFlowSteps();
     const configurationStepIds = flowSteps.map(s => s.id) as string[];
     const configurationStepId = configurationStepIds.find((id: string) => id === currentStepId);
-    if (configurationStepId === stepId) return;
+
+    if (configurationStepId === stepId) {
+      return;
+    }
+
     if (!configurationStepId) {
       stepId = currentStepId;
+
       const flowStep = flowSteps.find(s => s.id === currentStepId) as IStepConfiguration;
       step = steps.find(s => s.name === flowStep.name);
     } else {
       stepId = configurationStepId;
+
       const flowStep = flowSteps.find(s => s.id === currentStepId) as IStepConfiguration;
       step = steps.find(s => s.name === flowStep.name);
+
       const newStepIndex = configurationStepIds.indexOf(stepId);
+
       if (newStepIndex !== currentStepIdx) {
         currentStepIdx = newStepIndex;
+
         sendNavigationUpdateEvent();
         visitedPage(currentStepId, $currentParams ? $currentParams.toString() : '');
       } else {
