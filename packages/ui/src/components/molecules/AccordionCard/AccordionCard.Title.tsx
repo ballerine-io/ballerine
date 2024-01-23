@@ -6,13 +6,17 @@ import { AccordionTitle } from '@/components/molecules/AccordionCard/types';
 export const AccordionCardTitle: FunctionComponent<AccordionTitle> = ({
   children,
   cardTitleProps,
+  leftChildren,
+  rightChildren,
   ...props
 }) => {
   return (
     <CardHeader {...props} className={ctw(`pb-2`, props?.className)}>
+      {leftChildren}
       <CardTitle {...cardTitleProps} className={ctw(`text-xl`, cardTitleProps?.className)}>
         {children}
       </CardTitle>
+      {rightChildren}
     </CardHeader>
   );
 };

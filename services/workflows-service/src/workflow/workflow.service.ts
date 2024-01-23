@@ -83,7 +83,6 @@ import {
 import mime from 'mime';
 import { env } from '@/env';
 import { AjvValidationError } from '@/errors';
-import { StringFilter } from '@/common/query-filters/string-filter';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 
 type TEntityId = string;

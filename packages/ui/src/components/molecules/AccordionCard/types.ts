@@ -28,6 +28,8 @@ export type AccordionCardContentProps = Omit<
 
 export type AccordionTitle = ComponentProps<typeof CardTitle> & {
   cardTitleProps?: ComponentProps<typeof CardTitle>;
+  leftChildren?: ReactNode | ReactNode[];
+  rightChildren?: ReactNode | ReactNode[];
 };
 
 export type AccordionCardProps = ComponentProps<typeof Card> & {
