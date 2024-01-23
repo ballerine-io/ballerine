@@ -75,14 +75,19 @@ export const useProcessTrackerLogic = ({
   const thirdPartyProcessesSubitems = useMemo(() => {
     return plugins
       ?.filter(({ name }) => pluginsWhiteList.includes(name as (typeof pluginsWhiteList)[number]))
-      ?.map(({ displayName, name }) => ({
-        text: displayName,
-        leftIcon:
-          processStatusToIcon[
-            (getPluginByName(name)?.status as keyof typeof processStatusToIcon) ??
-              ProcessStatus.DEFAULT
-          ],
-      }));
+      ?.map(({ displayName, name }) => {
+        const pluginStatus = getPluginByName(name)?.status ?? ProcessStatus.DEFAULT;
+
+        return {
+          text:
+            pluginStatus === ProcessStatus.CANCELED ? (
+              <span className={`text-slate-400/40 line-through`}>{displayName}</span>
+            ) : (
+              displayName
+            ),
+          leftIcon: processStatusToIcon[pluginStatus as keyof typeof processStatusToIcon],
+        };
+      });
   }, [getPluginByName, plugins]);
 
   const getUboFlowStatus = useCallback((tags: TWorkflowById['tags']) => {
