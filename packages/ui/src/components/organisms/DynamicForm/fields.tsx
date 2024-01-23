@@ -9,6 +9,7 @@ import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/
 import { RegistryFieldsType } from '@rjsf/utils';
 import { MultiSelectProps, MultiSelectValue } from '@/components';
 import { CountryPicker } from '@/components/organisms/DynamicForm/components/custom-inputs/CountryPicker';
+import { RadioInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/RadioInputAdapter';
 
 export const fields: Record<
   keyof RegistryFieldsType,
@@ -32,4 +33,5 @@ export const fields: Record<
 
   // CustomInputs
   CountryPicker: CountryPicker,
+  RadioInput: RadioInputAdapter,
 };
