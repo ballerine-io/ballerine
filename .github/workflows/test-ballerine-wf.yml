@@ -1,0 +1,57 @@
+name: Publish workflows-service image
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      # Run this pipeline only if there are changes in specified path
+      - "services/workflows-service/**"
+    branches:
+      - dev
+      - test
+      - prod
+      - staging
+      - sb
+      - demo
+
+jobs:
+  ci-test:
+    runs-on: ubuntu-latest
+    defaults:
+        run:
+          shell: bash
+    # Service containers to run with this job. Required for running tests
+    services:
+        # Label used to access the service container
+        postgres:
+          # Docker Hub image for Redis
+          image: sibedge/postgres-plv8:15.3-3.1.7
+          ports:
+            # Opens tcp port 5432 on the host and service container
+            - 5432:5432
+
+    steps:
+      - name: Download ballerine docker-compose
+        run: |
+           mkdir ballerine;
+           cd ballerine;
+           curl https://raw.githubusercontent.com/ballerine-io/ballerine/dev/deploy/docker-compose.yml -o docker-compose.yml;
+           docker-compose up -d  --force-recreate;
+           sleep 120
+
+      - name : Run health check if workflow service is running
+        run: |
+           ready_http_code=$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost:3000/_health/ready)
+           live_http_code=$(curl -o /dev/null -s -w "%{http_code}\n" http://localhost:3000/_health/live)
+           if [[ "$ready_http_code" == 200 ]];
+             then echo "ready endpoint working";
+           else
+              echo " ready endpoint failed";
+              exit 1
+           fi
+           if [[ "$live_http_code" == 200 ]];
+             then echo "live endpoint working";
+           else
+              echo "live endpoint failed";
+              exit 1
+           fi
