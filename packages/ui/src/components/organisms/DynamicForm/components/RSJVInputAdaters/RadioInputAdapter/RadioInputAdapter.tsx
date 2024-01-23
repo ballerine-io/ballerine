@@ -17,21 +17,19 @@ export const RadioInputAdapter: RJSFInputAdapter<string> = ({
     [schema],
   );
 
-  return (
-    !!options?.length && (
-      <RadioGroup
-        value={formData}
-        onValueChange={onChange}
-        onBlur={() => onBlur(id as string, formData)}
-        disabled={disabled}
-      >
-        {options.map(({ value, label }) => (
-          <div className="flex items-center space-x-2" key={`radio-group-item-${value}`}>
-            <RadioGroupItem value={value} id={`radio-group-item-${value}`}></RadioGroupItem>
-            <Label htmlFor={`radio-group-item-${value}`}>{label}</Label>
-          </div>
-        ))}
-      </RadioGroup>
-    )
-  );
+  return options?.length ? (
+    <RadioGroup
+      value={formData}
+      onValueChange={onChange}
+      onBlur={() => onBlur(id as string, formData)}
+      disabled={disabled}
+    >
+      {options.map(({ value, label }) => (
+        <div className="flex items-center space-x-2" key={`radio-group-item-${value}`}>
+          <RadioGroupItem value={value} id={`radio-group-item-${value}`}></RadioGroupItem>
+          <Label htmlFor={`radio-group-item-${value}`}>{label}</Label>
+        </div>
+      ))}
+    </RadioGroup>
+  ) : null;
 };
