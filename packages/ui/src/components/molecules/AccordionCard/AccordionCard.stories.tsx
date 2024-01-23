@@ -17,7 +17,42 @@ export const Default = {
     return (
       <div className={`max-w-xs`}>
         <AccordionCard>
-          <AccordionCard.Title>Processes</AccordionCard.Title>
+          <AccordionCard.Title
+            className={`flex-row items-center justify-between`}
+            rightChildren={
+              <HoverCard openDelay={0}>
+                <HoverCardTrigger className={`pb-1`}>
+                  <HelpCircle size={18} className={`stroke-slate-400/70`} />
+                </HoverCardTrigger>
+                <HoverCardContent side={'top'} align={'start'}>
+                  <ul className={`flex flex-col space-y-2`}>
+                    <li className={`flex items-center gap-x-2`}>
+                      <MinusCircle size={18} className={`fill-slate-500/40 stroke-white`} />
+                      Process not started
+                    </li>
+                    <li className={`flex items-center gap-x-2`}>
+                      <Clock4 size={18} className={`fill-purple-500 stroke-white`} />
+                      Process started
+                    </li>
+                    <li className={`flex items-center gap-x-2`}>
+                      <CheckCircle2 size={18} className={`fill-green-500 stroke-white`} />
+                      Process complete
+                    </li>
+                    <li className={`flex items-center gap-x-2`}>
+                      <XCircle size={18} className={`fill-red-500 stroke-white`} />
+                      Process failed
+                    </li>
+                    <li className={`flex items-center gap-x-2`}>
+                      <RefreshCcw size={18} className={`stroke-orange-500`} />
+                      Re-do process started
+                    </li>
+                  </ul>
+                </HoverCardContent>
+              </HoverCard>
+            }
+          >
+            Processes
+          </AccordionCard.Title>
           <AccordionCard.Content>
             <AccordionCard.Item
               title={`3rd party processes`}
@@ -44,37 +79,6 @@ export const Default = {
             <AccordionCard.Item title={`Collection flow`} value={`Collection flow`} subitems={[]} />
             <AccordionCard.Item title={`UBO flows`} value={`UBO flows`} subitems={[]} />
           </AccordionCard.Content>
-          <AccordionCard.Footer className={`pb-4`}>
-            <HoverCard openDelay={0}>
-              <HoverCardTrigger className={`ms-auto`}>
-                <HelpCircle size={18} className={`stroke-slate-400/70`} />
-              </HoverCardTrigger>
-              <HoverCardContent side={'top'} align={'end'}>
-                <ul className={`flex flex-col space-y-2`}>
-                  <li className={`flex items-center gap-x-2`}>
-                    <MinusCircle size={18} className={`fill-slate-500/40 stroke-white`} />
-                    Process not started
-                  </li>
-                  <li className={`flex items-center gap-x-2`}>
-                    <Clock4 size={18} className={`fill-purple-500 stroke-white`} />
-                    Process started
-                  </li>
-                  <li className={`flex items-center gap-x-2`}>
-                    <CheckCircle2 size={18} className={`fill-green-500 stroke-white`} />
-                    Process complete
-                  </li>
-                  <li className={`flex items-center gap-x-2`}>
-                    <XCircle size={18} className={`fill-red-500 stroke-white`} />
-                    Process failed
-                  </li>
-                  <li className={`flex items-center gap-x-2`}>
-                    <RefreshCcw size={18} className={`stroke-orange-500`} />
-                    Re-do process started
-                  </li>
-                </ul>
-              </HoverCardContent>
-            </HoverCard>
-          </AccordionCard.Footer>
         </AccordionCard>
       </div>
     );

@@ -1,5 +1,9 @@
 import { ProcessStatus, StateTag } from '@ballerine/common';
-import { CheckCircle2, Clock4, MinusCircle, RefreshCcw, XCircle } from 'lucide-react';
+import { RefreshCircle } from '@/common/components/atoms/RefreshCircle/RefreshCircle';
+import { ClockCircle } from '@/common/components/atoms/ClockCircle/ClockCircle';
+import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
+import { MinusCircle } from '@/common/components/atoms/MinusCircle/MinusCircle';
+import { CheckCircle } from '@/common/components/atoms/CheckCircle/CheckCircle';
 
 export const tagToAccordionCardItem = {
   [StateTag.COLLECTION_FLOW]: 'Collection flow',
@@ -9,11 +13,51 @@ export const tagToAccordionCardItem = {
 } as const;
 
 export const Icon = {
-  MINUS: <MinusCircle size={18} className={`fill-slate-500/40 stroke-white`} />,
-  CLOCK: <Clock4 size={18} className={`fill-violet-500 stroke-white`} />,
-  CHECK: <CheckCircle2 size={18} className={`fill-success stroke-white`} />,
-  X: <XCircle size={18} className={`fill-destructive stroke-white`} />,
-  REFRESH: <RefreshCcw size={18} className={`stroke-warning`} />,
+  MINUS: (
+    <MinusCircle
+      size={18}
+      className={`stroke-slate-500`}
+      containerProps={{
+        className: 'bg-slate-500/20',
+      }}
+    />
+  ),
+  CLOCK: (
+    <ClockCircle
+      size={18}
+      className={`fill-violet-500 stroke-white`}
+      containerProps={{
+        className: 'bg-violet-500/20',
+      }}
+    />
+  ),
+  CHECK: (
+    <CheckCircle
+      size={18}
+      className={`stroke-success`}
+      containerProps={{
+        className: 'bg-success/20',
+      }}
+    />
+  ),
+  X: (
+    <XCircle
+      size={18}
+      className={`stroke-destructive`}
+      containerProps={{
+        className: 'bg-destructive/20',
+      }}
+    />
+  ),
+  REFRESH: (
+    <RefreshCircle
+      size={18}
+      className={`stroke-warning`}
+      containerProps={{
+        className: 'bg-warning/20',
+      }}
+    />
+  ),
 } as const;
 
 export const processStatusToIcon = {
