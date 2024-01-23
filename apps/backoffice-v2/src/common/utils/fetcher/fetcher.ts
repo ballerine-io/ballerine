@@ -1,8 +1,8 @@
-import { IFetcher } from './interfaces';
+import { terminal } from 'virtual:terminal';
+import { HttpError } from '../../errors/http-error';
 import { handlePromise } from '../handle-promise/handle-promise';
 import { isZodError } from '../is-zod-error/is-zod-error';
-import { HttpError } from '../../errors/http-error';
-import { terminal } from 'virtual:terminal';
+import { IFetcher } from './interfaces';
 
 export const fetcher: IFetcher = async ({
   url,

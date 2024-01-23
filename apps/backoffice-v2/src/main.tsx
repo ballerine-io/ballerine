@@ -4,10 +4,10 @@ import { createRoot } from 'react-dom/client';
 import '@ballerine/ui/dist/style.css';
 import '@fontsource/inter';
 
-import './index.css';
-import './i18n';
-import { env } from './common/env/env';
 import { Router } from './Router/Router';
+import { env } from './common/env/env';
+import './i18n';
+import './index.css';
 
 const rootElement = document.getElementById('root');
 
