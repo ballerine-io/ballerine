@@ -176,7 +176,7 @@ export class WorkflowControllerExternal {
       Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
     const latestDefinitionVersion = await this.workflowDefinitionService.getLatestVersion(
       workflowId,
-      currentProjectId,
+      projectIds,
     );
 
     const actionResult = await this.service.createOrUpdateWorkflowRuntime({
