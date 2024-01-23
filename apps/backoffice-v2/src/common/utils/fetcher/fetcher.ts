@@ -1,8 +1,8 @@
-import { IFetcher } from './interfaces';
+import { terminal } from 'virtual:terminal';
+import { HttpError } from '../../errors/http-error';
 import { handlePromise } from '../handle-promise/handle-promise';
 import { isZodError } from '../is-zod-error/is-zod-error';
-import { HttpError } from '../../errors/http-error';
-import { terminal } from 'virtual:terminal';
+import { IFetcher } from './interfaces';
 
 export const fetcher: IFetcher = async ({
   url,
@@ -44,8 +44,8 @@ export const fetcher: IFetcher = async ({
     if (res.status === 400) {
       const json = await res.json();
 
-      message = Array.isArray(json?.message)
-        ? json?.message?.map(({ message }) => `${message}\n`)?.join('')
+      message = Array.isArray(json?.errors)
+        ? json?.errors?.map(({ message }) => `${message}\n`)?.join('')
         : message;
     }
 
@@ -64,6 +64,7 @@ export const fetcher: IFetcher = async ({
     }
 
     if (!res.headers.get('content-length') || res.headers.get('content-length') > '0') {
+      // TODO: make sure its json by checking the content-type in order to safe access to json method
       return await handlePromise(res.json());
     }
 

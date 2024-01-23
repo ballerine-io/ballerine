@@ -1,4 +1,6 @@
-import { FocusEvent } from 'react';
+import React, { ComponentProps, FocusEvent } from 'react';
+import { string } from 'fast-glob/out/utils';
+import { PopoverContent } from '@/components';
 
 export interface DropdownOption {
   label: string;
@@ -18,6 +20,16 @@ export interface DropdownInputProps {
   notFoundText?: string;
   searchable?: boolean;
   disabled?: boolean;
+  openOnFocus?: boolean;
   onChange: (value: string, inputName: string) => void;
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
+  props?: {
+    trigger?: Pick<ComponentProps<typeof PopoverContent>, 'className'> & {
+      icon?: React.ReactNode;
+    };
+    content?: Pick<ComponentProps<typeof PopoverContent>, 'align' | 'className'>;
+    item?: {
+      variant: string;
+    };
+  };
 }

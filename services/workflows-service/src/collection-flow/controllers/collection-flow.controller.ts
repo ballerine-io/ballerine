@@ -2,7 +2,7 @@ import * as common from '@nestjs/common';
 import { CollectionFlowService } from '@/collection-flow/collection-flow.service';
 import { WorkflowAdapterManager } from '@/collection-flow/workflow-adapter.manager';
 import { UnsupportedFlowTypeException } from '@/collection-flow/exceptions/unsupported-flow-type.exception';
-import { UpdateFlowDto } from '@/collection-flow/dto/update-flow-input.dto';
+import { UpdateFlowDto, UpdateFlowLanguageDto } from '@/collection-flow/dto/update-flow-input.dto';
 import { FlowConfigurationModel } from '@/collection-flow/models/flow-configuration.model';
 import { UpdateConfigurationDto } from '@/collection-flow/dto/update-configuration-input.dto';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
@@ -103,6 +103,14 @@ export class ColectionFlowController {
   @common.Put('')
   async updateFlow(@common.Body() payload: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
     return await this.service.updateWorkflowRuntimeData(payload, tokenScope);
+  }
+
+  @common.Put('/language')
+  async updateFlowLanguage(
+    @common.Body() { language }: UpdateFlowLanguageDto,
+    @TokenScope() tokenScope: ITokenScope,
+  ) {
+    return await this.service.updateWorkflowRuntimeLanguage(language, tokenScope);
   }
 
   @common.Put('/sync')

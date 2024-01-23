@@ -29,7 +29,7 @@
   },
   "update_document_properties": {
     "success": "The document has been updated successfully.",
-    "error": "Error occurred while updating the document. {{errorMessage}}"
+    "error": "Error occurred while updating the document.\n\n{{errorMessage}}"
   },
   "assign_case": {
     "success": "The case has been assigned to {{assignee}} successfully.",
@@ -45,5 +45,9 @@
   "event": {
     "success": "Event sent successfully.",
     "error": "Error occurred while sending event."
+  },
+  "case_creation": {
+    "success": "Case created successfully.",
+    "error": "Error occurred while creating a case."
   }
 }

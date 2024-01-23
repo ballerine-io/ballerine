@@ -7,9 +7,9 @@ import { SessionExpiredExceptionFilter } from './session-exception.filter';
 
 @Module({
   providers: [
+    { provide: APP_FILTER, useClass: HttpExceptionFilter },
     { provide: APP_FILTER, useClass: SessionExpiredExceptionFilter },
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
-    { provide: APP_FILTER, useClass: HttpExceptionFilter },
     { provide: APP_FILTER, useClass: PrismaClientValidationFilter },
   ],
 })

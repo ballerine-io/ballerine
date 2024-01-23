@@ -9,7 +9,7 @@
     "businessInformation": "业务信息",
     "businessAddress": "营业地址",
     "registeredAddress": "注册地址",
-    "directorsAndUBOs": "董董事与最终受益人",
+    "directorsAndUBOs": "董事与最终受益人",
     "ubos": "最终受益人",
     "directors": "董事",
     "contacts": "联系人",
@@ -139,7 +139,7 @@
       "hint": "2,000,000"
     },
     "holderName": {
-      "label": "持卡人姓名",
+      "label": "账户名称",
       "hint": "约翰 多伊"
     },
     "accountHolderName": {
@@ -147,7 +147,7 @@
       "hint": "OpenAI Technologies, Inc."
     },
     "holderFullAddress": {
-      "label": "居民地址",
+      "label": "注册地址",
       "hint": "香港皇后大道123号2座5楼A室"
     },
     "accountNumber": {
@@ -163,7 +163,7 @@
       "hint": "BBBBCCDDXXX"
     },
     "routeNumber": {
-      "label": "路线号码",
+      "label": "路由号码",
       "hint": "123456789"
     },
     "bankName": {
@@ -337,7 +337,7 @@
     },
     "passportSelfie": {
       "label": "持有身份证/护照的自拍照",
-      "description": "将相同的文件放在主管脸旁边"
+      "description": "将相同的文件放在拍照人脸旁"
     },
     "iHaveSigningAuthority": {
       "label": "我有这家公司的签署权"
@@ -539,7 +539,9 @@
       "aboutUsUrl": "关于我们网址应为有效的网址。",
       "termsOfUseUrl": "使用条款网址应为有效的网址。",
       "privacyPolicyUrl": "隐私政策网址应为有效的网址。",
-      "companyWebsite": "公司网站应为有效的网址"
+      "companyWebsite": "公司网站应为有效的网址",
+      "street": "街道名称应包括字母、数字和特殊符号。",
+      "city": "城市名称应包含字母、数字和特殊符号。"
     },
     "type": {
       "dateOfBirth": "出生日期必须为字符串。",

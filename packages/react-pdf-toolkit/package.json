@@ -1,0 +1,50 @@
+{
+  "name": "@ballerine/react-pdf-toolkit",
+  "private": false,
+  "version": "1.0.10",
+  "types": "./dist/build.d.ts",
+  "main": "./dist/react-pdf-toolkit.js",
+  "module": "./dist/react-pdf-toolkit.mjs",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/build.d.ts",
+        "default": "./dist/react-pdf-toolkit.mjs"
+      },
+      "require": {
+        "types": "./dist/build.d.ts",
+        "default": "./dist/react-pdf-toolkit.js"
+      }
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ballerine/config": "^1.0.4",
+    "@ballerine/ui": "0.3.24",
+    "@react-pdf/renderer": "^3.1.14",
+    "@sinclair/typebox": "^0.31.7",
+    "class-variance-authority": "^0.7.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-pdf-tailwind": "^2.2.1",
+    "tailwindcss": "^3.4.0",
+    "vite-plugin-dts": "^1.6.6"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8"
+  }
+}

@@ -1,18 +1,24 @@
-import '@ballerine/ui/dist/style.css';
-import * as Sentry from '@sentry/react';
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { App } from './App';
-import './index.css';
-import '@ballerine/ui/dist/style.css';
-import settingsJson from '../settings.json';
 import { SettingsProvider } from '@/common/providers/SettingsProvider/SettingsProvider';
 import { ThemeProvider } from '@/common/providers/ThemeProvider/ThemeProvider';
-import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/common/utils/query-client';
+import '@ballerine/ui/dist/style.css';
+import * as Sentry from '@sentry/react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { HelmetProvider } from 'react-helmet-async';
+import settingsJson from '../settings.json';
+import { App } from './App';
 import { Head } from './Head';
+import './i18next';
+import './index.css';
 import { sentyRouterInstrumentation } from './router';
-import './i18n';
+
+const getApiOrigin = () => {
+  const url = new URL(import.meta.env.VITE_API_URL);
+
+  return url.origin;
+};
 
 Sentry.init({
   // @ts-ignore
@@ -36,6 +42,7 @@ Sentry.init({
     new Sentry.Replay({
       maskAllText: false,
       blockAllMedia: true,
+      networkDetailAllowUrls: [getApiOrigin()],
     }),
   ],
   // Performance Monitoring
@@ -48,13 +55,15 @@ Sentry.init({
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Head />
-      <SettingsProvider settings={settingsJson}>
-        <ThemeProvider theme={settingsJson.theme}>
-          <App />
-        </ThemeProvider>
-      </SettingsProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <Head />
+        <SettingsProvider settings={settingsJson}>
+          <ThemeProvider theme={settingsJson.theme}>
+            <App />
+          </ThemeProvider>
+        </SettingsProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   </React.StrictMode>,
 );

@@ -1,4 +1,4 @@
-import { Type } from '@sinclair/typebox';
+import { Static, Type } from '@sinclair/typebox';
 
 const entitySchema = Type.Object(
   {
@@ -175,3 +175,5 @@ export const defaultContextSchema = Type.Object({
     ),
   ),
 });
+
+export type DefaultContextSchema = Static<typeof defaultContextSchema>;

@@ -1,5 +1,51 @@
 # @ballerine/workflows-service
 
+## 0.5.37
+
+### Patch Changes
+
+- Better logging for api plugin
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.37
+  - @ballerine/workflow-node-sdk@0.5.37
+
+## 0.5.36
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.37
+  - @ballerine/workflow-core@0.5.36
+  - @ballerine/workflow-node-sdk@0.5.36
+
+## 0.5.35
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.36
+  - @ballerine/workflow-core@0.5.35
+  - @ballerine/workflow-node-sdk@0.5.35
+
+## 0.5.34
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.7.35
+  - @ballerine/workflow-core@0.5.34
+  - @ballerine/workflow-node-sdk@0.5.34
+
+## 0.5.33
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.34
+  - @ballerine/workflow-core@0.5.33
+  - @ballerine/workflow-node-sdk@0.5.33
+
 ## 0.5.32
 
 ### Patch Changes

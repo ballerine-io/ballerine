@@ -5,10 +5,6 @@ import { MachineConfig } from 'xstate';
 
 export type State = MachineConfig<AnyObject, AnyObject, any>;
 
-export interface UIState {
-  isLoading: boolean;
-}
-
 export interface StateManagerContext {
   stateApi: StateMachineAPI;
   state: string;

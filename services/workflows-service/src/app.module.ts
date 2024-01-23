@@ -1,7 +1,6 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { UserModule } from './user/user.module';
-import { WorkflowModule } from './workflow/workflow.module';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
@@ -18,7 +17,7 @@ import { FilterModule } from '@/filter/filter.module';
 import { configs, env } from '@/env';
 import { SentryModule } from '@/sentry/sentry.module';
 import { RequestIdMiddleware } from '@/common/middlewares/request-id.middleware';
-import { LogRequestInterceptor } from '@/common/interceptors/log-request.interceptor';
+import { AxiosRequestErrorInterceptor } from '@/common/interceptors/axios-request-error.interceptor';
 import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { ClsModule } from 'nestjs-cls';
 import { FiltersModule } from '@/common/filters/filters.module';
@@ -33,8 +32,11 @@ import { SessionAuthGuard } from '@/common/guards/session-auth.guard';
 import { CollectionFlowModule } from '@/collection-flow/collection-flow.module';
 import { SalesforceModule } from '@/salesforce/salesforce.module';
 import { UiDefinitionModule } from '@/ui-definition/ui-definition.module';
-import { multerFactory } from './common/multer';
+import { multerFactory } from '@/common/multer';
+import { initHttpMoudle } from '@/common/http-service/http-config.service';
 import { DataMigrationModule } from '@/data-migration/data-migration.module';
+import { CaseManagementModule } from '@/case-management/case-management.module';
+import { WorkflowModule } from '@/workflow/workflow.module';
 
 @Module({
   controllers: [MetricsController],
@@ -76,11 +78,13 @@ import { DataMigrationModule } from '@/data-migration/data-migration.module';
     FiltersModule,
     MetricsModule,
     CollectionFlowModule,
+    CaseManagementModule,
+    initHttpMoudle(),
   ],
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      useClass: LogRequestInterceptor,
+      useClass: AxiosRequestErrorInterceptor,
     },
     {
       provide: APP_GUARD,

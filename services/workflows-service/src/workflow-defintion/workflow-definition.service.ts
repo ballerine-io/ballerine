@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { CustomerService } from '@/customer/customer.service';
 import { Prisma } from '@prisma/client';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
-import { TProjectId } from '@/types';
+import { TProjectId, TProjectIds } from '@/types';
 import { merge } from 'lodash';
 import { FilterService } from '@/filter/filter.service';
 import { replaceNullsWithUndefined } from '@ballerine/common';
+import { TWorkflowDefinitionWithTransitionSchema } from '@/workflow-defintion/types';
 
 @Injectable()
 export class WorkflowDefinitionService {
@@ -77,12 +78,22 @@ export class WorkflowDefinitionService {
     return newVersionDefinition;
   }
 
-  async getLatestVersion(id: string, projectId: TProjectId) {
-    const workflowDefinition = await this.repository.findById(id, {}, [projectId]);
-    const latestVersion = await this.repository.findByLatestVersion(workflowDefinition.name, [
-      projectId,
-    ]);
+  async getLatestVersion(id: string, projectIds: TProjectIds) {
+    const workflowDefinition = await this.repository.findById(id, {}, projectIds);
+    const latestVersion = await this.repository.findByLatestVersion(
+      workflowDefinition.name,
+      projectIds,
+    );
 
     return latestVersion;
+  }
+
+  async getLatestDefinitionWithTransitionSchema(
+    id: string,
+    projectIds: TProjectIds,
+  ): Promise<TWorkflowDefinitionWithTransitionSchema> {
+    const workflowDefinition = await this.getLatestVersion(id, projectIds);
+
+    return workflowDefinition as TWorkflowDefinitionWithTransitionSchema;
   }
 }

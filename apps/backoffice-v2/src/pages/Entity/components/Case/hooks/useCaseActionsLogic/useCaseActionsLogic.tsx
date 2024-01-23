@@ -14,8 +14,8 @@ import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilte
 import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
 import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
 import { tagToBadgeData } from '../../consts';
-import { selectDirectorsDocuments } from '../../../../hooks/useTasks/selectors/selectDirectorsDocuments';
-import { AnyObject } from '@ballerine/ui';
+import { usePendingRevisionEvents } from '@/pages/Entity/components/Case/hooks/usePendingRevisionEvents/usePendingRevisionEvents';
+import { CommonWorkflowEvent } from '@ballerine/common';
 
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
@@ -28,7 +28,6 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     },
   );
   const { mutate: mutateRevisionCase, isLoading: isLoadingRevisionCase } = useRevisionCaseMutation({
-    workflowId: workflowId,
     onSelectNextEntity,
   });
   const { mutate: mutateRejectEntity, isLoading: isLoadingRejectEntity } = useRejectEntityMutation({
@@ -57,7 +56,10 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
 
   // Avoid passing the onClick event to mutate
   const onMutateApproveEntity = useCallback(() => mutateApproveEntity(), [mutateApproveEntity]);
-  const onMutateRevisionCase = useCallback(() => mutateRevisionCase(), [mutateRevisionCase]);
+  const { onMutateRevisionCase, pendingWorkflowEvents } = usePendingRevisionEvents(
+    mutateRevisionCase,
+    workflow,
+  );
   const onMutateRejectEntity = useCallback(() => mutateRejectEntity(), [mutateRejectEntity]);
   const onMutateAssignWorkflow = useCallback(
     (assigneeId: string, isAssignedToMe: boolean) =>
@@ -73,20 +75,14 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   }, [workflow]) as keyof typeof tagToBadgeData;
 
   const isActionButtonDisabled = !caseState.actionButtonsEnabled;
-  const allDocuments = useMemo(() => {
-    const directorDocuments = selectDirectorsDocuments(workflow) || [];
-    const workflowDocuments = (workflow?.context?.documents || []) as AnyObject[];
-
-    const result = [...directorDocuments, ...workflowDocuments] as AnyObject[];
-
-    return result;
-  }, [workflow]);
 
   const documentsToReviseCount = useMemo(
-    () => allDocuments.filter(document => document?.decision?.status === 'revision')?.length,
-    [allDocuments],
+    () =>
+      pendingWorkflowEvents?.filter(
+        pendingEvent => pendingEvent.eventName === CommonWorkflowEvent.REVISION,
+      )?.length,
+    [pendingWorkflowEvents],
   );
-
   const assignedUser = workflow?.assignee
     ? {
         id: workflow?.assignee?.id,
