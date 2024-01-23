@@ -14,11 +14,11 @@ enum UserStatus {
 }
 
 model User {
-  id        String  @id @default(cuid())
+  id        String     @id @default(cuid())
   firstName String
   lastName  String
-  email     String  @unique
-  phone     String? @unique
+  email     String     @unique
+  phone     String?    @unique
   password  String
   avatarUrl String?
   roles     Json
@@ -160,6 +160,7 @@ model WorkflowDefinition {
   config             Json?
   supportedPlatforms Json?
   extensions         Json?
+  variant            String @default("DEFAULT")
 
   backend       Json?
   persistStates Json?

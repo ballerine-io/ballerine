@@ -20,7 +20,10 @@ export class FilterService {
     projectIds: TProjectIds,
   ) {
     const filter = await this.repository.findById(id, args, projectIds);
-    if (!filter) throw new NotFoundException(`No Filter with id [${id}] was found`);
+
+    if (!filter) {
+      throw new NotFoundException(`No Filter with id [${id}] was found`);
+    }
 
     return filter;
   }

@@ -34,14 +34,18 @@ export const fetchCollectionFlowSchema = async (): Promise<{
   };
 };
 
-export const fetchUISchema = async (lng = 'en'): Promise<UISchema> => {
+export const fetchUISchema = async (language: string): Promise<UISchema> => {
   return await request
-    .get(`collection-flow/configuration/${lng}`, {
+    .get(`collection-flow/configuration/${language}`, {
       searchParams: {
         uiContext: 'collection_flow',
       },
     })
     .json<UISchema>();
+};
+
+export const updateLanguage = async (language: string) => {
+  await request.put(`collection-flow/language`, { json: { language } });
 };
 
 export const updateFlow = async (dto: UpdateFlowDto) => {

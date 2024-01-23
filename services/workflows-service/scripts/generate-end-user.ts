@@ -65,7 +65,10 @@ export const generateBusiness = ({
   numberOfEmployees = faker.datatype.number({ min: 1, max: 1000 }),
   businessPurpose = faker.company.catchPhrase(),
   shareholderStructure = [
-    { name: faker.name.fullName(), ownershipPercentage: Number(faker.finance.amount(0, 100, 2)) },
+    {
+      name: faker.name.fullName(),
+      ownershipPercentage: Number(faker.finance.amount(0, 100, 2)),
+    },
   ],
   documents = {
     registrationDocument: faker.system.filePath(),

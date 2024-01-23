@@ -1,12 +1,14 @@
-import { Cases } from './components/Cases/Cases';
-import { Outlet } from 'react-router-dom';
-import { Pagination } from '../../common/components/organisms/Pagination/Pagination';
-import { useEntities } from './hooks/useEntities/useEntities';
-import { Case } from '../Entity/components/Case/Case';
-import { MotionScrollArea } from '../../common/components/molecules/MotionScrollArea/MotionScrollArea';
+import { CaseCreation } from '@/pages/Entities/components/CaseCreation';
+import { ctw } from '@ballerine/ui';
 import { FunctionComponent } from 'react';
-import { NoCasesSvg } from '../../common/components/atoms/icons';
+import { Outlet } from 'react-router-dom';
 import { Assignee } from '../../common/components/atoms/AssignDropdown/AssignDropdown';
+import { NoCasesSvg } from '../../common/components/atoms/icons';
+import { MotionScrollArea } from '../../common/components/molecules/MotionScrollArea/MotionScrollArea';
+import { Pagination } from '../../common/components/organisms/Pagination/Pagination';
+import { Case } from '../Entity/components/Case/Case';
+import { Cases } from './components/Cases/Cases';
+import { useEntities } from './hooks/useEntities/useEntities';
 
 export const Entities: FunctionComponent = () => {
   const {
@@ -22,6 +24,7 @@ export const Entities: FunctionComponent = () => {
     totalPages,
     caseCount,
     skeletonEntities,
+    showCaseCreation,
   } = useEntities();
 
   return (
@@ -34,7 +37,12 @@ export const Entities: FunctionComponent = () => {
         search={search}
         count={caseCount}
       >
-        <MotionScrollArea className="h-[calc(100vh-240px)]">
+        <MotionScrollArea
+          className={ctw({
+            'h-[calc(100vh-300px)]': showCaseCreation,
+            'h-[calc(100vh-240px)]': !showCaseCreation,
+          })}
+        >
           <Cases.List>
             {isLoading
               ? skeletonEntities.map(index => (
@@ -62,7 +70,10 @@ export const Entities: FunctionComponent = () => {
           </Cases.List>
         </MotionScrollArea>
         <div className={`divider my-0 px-4`}></div>
-        <Pagination onPaginate={onPaginate} page={page} totalPages={totalPages} />
+        <div className="flex flex-col gap-5 px-4">
+          <Pagination onPaginate={onPaginate} page={page} totalPages={totalPages} />
+          <CaseCreation />
+        </div>
       </Cases>
       {/* Display skeleton individual when loading the entities list */}
       {isLoading && (

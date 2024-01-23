@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
 import { FilterModel } from './filter.model';
 import type { TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';

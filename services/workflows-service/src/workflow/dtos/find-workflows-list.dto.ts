@@ -16,6 +16,9 @@ class FilterDto {
 
   @ApiProperty()
   status?: WorkflowRuntimeDataStatus[];
+
+  @ApiProperty()
+  caseStatus?: string[];
 }
 
 export class FindWorkflowsListDto {
@@ -30,6 +33,9 @@ export class FindWorkflowsListDto {
 
   @ApiProperty()
   limit!: number;
+
+  @ApiProperty()
+  search?: string;
 
   @ApiProperty()
   filter?: FilterDto;
@@ -56,6 +62,7 @@ const validateOrderBy = (value: unknown, validColumns: readonly string[]) => {
 export const FindWorkflowsListSchema = z.object({
   filterId: z.string(),
   orderBy: z.string(),
+  search: z.string().optional(),
   page: z.object({
     number: z.coerce.number().int().positive(),
     size: z.coerce.number().int().positive(),
@@ -66,6 +73,7 @@ export const FindWorkflowsListSchema = z.object({
         .array(z.union([z.literal('').transform(() => null), z.string().nonempty()]))
         .optional(),
       status: z.array(z.nativeEnum(WorkflowRuntimeDataStatus)).optional(),
+      caseStatus: z.array(z.string()).optional(),
     })
     .optional(),
 });

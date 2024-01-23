@@ -14,7 +14,7 @@ import {
   AutocompleteTextInputAdapter,
   baseLayouts,
   BooleanFieldAdapter,
-  DateInputAdater,
+  DateInputAdapter,
   FileInputAdapter,
   PhoneInputAdapter,
   TextInputAdapter,
@@ -27,7 +27,7 @@ export const jsonFormFields = {
 
   // Component with suffix Input is an extend of supported field types
   FileInput: withDynamicUIInput(FileInputAdapter),
-  DateInput: withDynamicUIInput(DateInputAdater),
+  DateInput: withDynamicUIInput(DateInputAdapter),
   PhoneInput: withDynamicUIInput(PhoneInputAdapter),
   AutocompleteInput: withDynamicUIInput(AutocompleteTextInputAdapter),
   DocumentInput: withDynamicUIInput(DocumentField),

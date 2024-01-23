@@ -5,7 +5,9 @@ import { AclFilterResponseInterceptor } from '@/common/access-control/intercepto
 import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
 import {
   CallHandler,
+  DynamicModule,
   ExecutionContext,
+  ForwardReference,
   INestApplication,
   NestMiddleware,
   Provider,
@@ -16,6 +18,7 @@ import { ClsMiddleware, ClsModule, ClsService } from 'nestjs-cls';
 import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
 import { CustomerModule } from '@/customer/customer.module';
 import { CustomerService } from '@/customer/customer.service';
+import { HttpModule } from '@nestjs/axios';
 
 export const commonTestingModules = [
   ClsModule.forRoot({
@@ -23,6 +26,7 @@ export const commonTestingModules = [
   }),
   AppLoggerModule,
   CustomerModule,
+  HttpModule,
 ];
 
 const acGuard = {
@@ -46,7 +50,9 @@ const aclFilterResponseInterceptor = {
 export const fetchServiceFromModule = async <T>(
   service: Type<T>,
   dependencies: Provider[] = [],
-  modules: Type<any>[] = [],
+  modules:
+    | Array<Type<any> | DynamicModule | Promise<DynamicModule> | ForwardReference>
+    | Type<unknown>[] = [],
 ) => {
   const moduleRef = await Test.createTestingModule({
     providers: [service, ...dependencies],

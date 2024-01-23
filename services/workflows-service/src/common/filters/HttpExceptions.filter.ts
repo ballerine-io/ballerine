@@ -1,7 +1,6 @@
 import { ArgumentsHost, Catch, HttpException, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
-import type { Response } from 'express';
 
 export type ErrorCodesStatusMapping = {
   [key: string]: number;
@@ -10,7 +9,7 @@ export type ErrorCodesStatusMapping = {
 /**
  * {@link PrismaClientExceptionFilter} handling {@link Prisma.PrismaClientKnownRequestError} exceptions.
  */
-@Catch(Prisma?.PrismaClientKnownRequestError)
+@Catch(Prisma.PrismaClientKnownRequestError)
 export class HttpExceptionFilter extends BaseExceptionFilter {
   /**
    * default error codes mapping
@@ -40,12 +39,10 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     const statusCode = this.errorCodesStatusMapping[exception.code] ?? 500;
-    let message;
+    let message = '';
     if (host.getType() === 'http') {
       // for http requests (REST)
       // Todo : Add all other exception types and also add mapping
-      const ctx = host.switchToHttp();
-      const response = ctx.getResponse<Response>();
       if (exception.code === 'P2002') {
         // Handling Unique Key Constraint Violation Error
         const fields = (exception.meta as { target: string[] }).target;
@@ -56,14 +53,10 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
       if (!Object.keys(this.errorCodesStatusMapping).includes(exception.code)) {
         return super.catch(exception, host);
       }
-      const errorResponse = {
-        message: message,
-        statusCode: statusCode,
-      };
-      console.error('HTTP exception filter:', errorResponse);
-      response.status(statusCode).send(errorResponse);
+
+      throw new HttpException(message, statusCode);
     }
-    return new HttpException({ statusCode, message }, statusCode);
+    throw new HttpException(message, statusCode);
   }
 
   /**

@@ -1,5 +1,5 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import { StateTag } from '@ballerine/common';
+import { StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
 
 export const websiteMonitoringDefinition = {
   id: 'merchant_website_monitoring',
@@ -92,6 +92,7 @@ export const websiteMonitoringDefinition = {
   config: {
     initialEvent: 'START',
   },
+  variant: WorkflowDefinitionVariant.DEFAULT,
 } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput;
 export const generateWebsiteMonitoringExample = async (
   prismaClient: PrismaClient,

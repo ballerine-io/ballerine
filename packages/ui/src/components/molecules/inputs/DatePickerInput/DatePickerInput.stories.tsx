@@ -32,3 +32,11 @@ const ControlledComponent = () => {
 export const Controlled = {
   render: ControlledComponent,
 };
+
+export const DisabledFutureDate = {
+  render: () => <DatePickerInput onChange={() => {}} params={{ disableFuture: true }} />,
+};
+
+export const DisabledPastDate = {
+  render: () => <DatePickerInput onChange={() => {}} params={{ disablePast: true }} />,
+};

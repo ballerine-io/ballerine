@@ -1,7 +1,7 @@
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { FocusEvent, useCallback, useMemo, useState } from 'react';
+import { FocusEvent, FunctionComponent, useCallback, useMemo, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
 import { muiTheme } from '@/common/mui-theme';
@@ -17,10 +17,16 @@ export interface DatePickerChangeEvent {
 
 export type DatePickerValue = number | string | Date | null;
 
+export interface DatePickerParams {
+  disableFuture?: boolean;
+  disablePast?: boolean;
+}
+
 export interface DatePickerProps {
   value?: DatePickerValue;
   name?: string;
   disabled?: boolean;
+  params?: DatePickerParams;
   onChange: (event: DatePickerChangeEvent) => void;
   onBlur?: (event: FocusEvent<any>) => void;
 }
@@ -29,6 +35,7 @@ export const DatePickerInput = ({
   value: _value,
   name,
   disabled = false,
+  params,
   onChange,
   onBlur,
 }: DatePickerProps) => {
@@ -69,8 +76,8 @@ export const DatePickerInput = ({
     return deserializeValue(_value);
   }, [_value, deserializeValue]);
 
-  const Field = useMemo(
-    () => (props: TextFieldProps) => {
+  const Field = useMemo(() => {
+    const Component: FunctionComponent<TextFieldProps> = props => {
       return (
         <TextField
           {...props}
@@ -107,14 +114,16 @@ export const DatePickerInput = ({
           }}
         />
       );
-    },
-    [isFocused],
-  );
+    };
+
+    return Component;
+  }, [isFocused]);
 
   return (
     <ThemeProvider theme={muiTheme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
+          {...params}
           disabled={disabled}
           value={value}
           onChange={handleChange}

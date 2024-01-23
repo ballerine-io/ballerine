@@ -3,6 +3,7 @@ import { WorkflowRuntimeListItemModel } from '@/workflow/workflow-runtime-list-i
 import {
   Business,
   EndUser,
+  Prisma,
   WorkflowDefinition,
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
@@ -140,3 +141,18 @@ export interface KYBParentKYCSessionExampleContext {
   };
   documents: any[];
 }
+
+export type FilterQuery = {
+  skip: number;
+  take: number;
+  entityType: string;
+  orderBy: Record<string, string>;
+  select: Prisma.WorkflowRuntimeDataSelect;
+  where: {
+    businessId: { not: null };
+    workflowDefinitionId: { in: string[] };
+    status: { in: WorkflowRuntimeDataStatus[] };
+    project: { id: { in: string[] } };
+    OR?: Prisma.WorkflowRuntimeDataWhereInput[];
+  };
+};

@@ -5,6 +5,7 @@
   "progressSaved": "Progress saved",
   "contact": "Contact {{companyName}} for support",
   "backToPortal": "Back to {{companyName}} Portal",
+  "addLabel": "Add",
   "optionalLabel": " (optional) ",
   "rejected": {
     "header": "Account activation rejected",

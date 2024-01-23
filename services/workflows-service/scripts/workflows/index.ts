@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { StateTag } from '@ballerine/common';
+import { StateTag, WorkflowDefinitionVariant } from '@ballerine/common';
 
 export const kybWithExternalRequestWorkflowExample = {
   id: 'kyb_external_request_example',
@@ -177,6 +177,7 @@ export const kybWithExternalRequestWorkflowExample = {
     ],
   },
   isPublic: true,
+  variant: WorkflowDefinitionVariant.DEFAULT,
 };
 
 export const generateKybDefintion = async (prismaClient: PrismaClient) => {

@@ -1,6 +1,6 @@
 export * from './AutocompleteTextInputAdapter';
 export * from './BooleanFieldAdapter';
-export * from './DateInputAdater';
+export * from './DateInputAdapter';
 export * from './FileInputAdapter';
 export * from './PhoneInputAdapter';
 export * from './TextInputAdapter';

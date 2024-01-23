@@ -1,7 +1,7 @@
 import { MultiselectInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters';
 import { AutocompleteTextInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/AutocompleteTextInputAdapter';
 import { BooleanFieldAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/BooleanFieldAdapter';
-import { DateInputAdater } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/DateInputAdater';
+import { DateInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/DateInputAdapter';
 import { FileInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/FileInputAdapter';
 import { PhoneInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/PhoneInputAdapter';
 import { TextInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/TextInputAdapter';
@@ -24,7 +24,7 @@ export const fields: Record<
 
   // Component with suffix Input is an extend of supported field types
   FileInput: FileInputAdapter,
-  DateInput: DateInputAdater,
+  DateInput: DateInputAdapter,
   PhoneInput: PhoneInputAdapter,
   AutocompleteInput: AutocompleteTextInputAdapter,
   Multiselect: MultiselectInputAdapter,

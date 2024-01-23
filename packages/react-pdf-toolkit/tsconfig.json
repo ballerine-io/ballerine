@@ -1,0 +1,14 @@
+{
+  "extends": "@ballerine/config/tsconfig.dom-bundler.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": ["./src/*"],
+      "class-variance-authority": ["./node_modules/class-variance-authority"]
+    },
+    "moduleResolution": "node"
+  },
+  "include": ["vite-env.d.ts", "src", "e2e", "tests/**/*.js", "jest.config.ts"]
+}

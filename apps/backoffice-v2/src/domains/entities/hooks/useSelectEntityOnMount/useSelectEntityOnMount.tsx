@@ -2,8 +2,8 @@ import { useEffect, useMemo } from 'react';
 import { matchPath, useLocation, useParams } from 'react-router-dom';
 import { useSelectEntity } from '../useSelectEntity/useSelectEntity';
 import { useWorkflowsQuery } from '../../../workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
-import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
-import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
+import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { useEntityType } from '@/common/hooks/useEntityType/useEntityType';
 
 /**
  * @description Sets the selected end user to the first end user in the array on mount if no user is currently selected. Returns the select end user handler.

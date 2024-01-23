@@ -30,11 +30,12 @@ export class AppLoggerService implements LoggerService, OnModuleDestroy {
   }
 
   private getLogMetadata() {
-    const metadata = {};
+    const metadata = {
+      reqId: undefined,
+    };
 
     const reqId = this.cls.get('requestId');
-    if (!reqId) {
-      // @ts-ignore
+    if (reqId) {
       metadata.reqId = reqId;
     }
 

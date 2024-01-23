@@ -5,7 +5,7 @@ import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { getCountries } from '@/helpers/countries-data';
 
 export const CountryPicker = (props: RJSFInputProps) => {
-  const language = useLanguageParam() || 'en';
+  const { language } = useLanguageParam();
 
   props.schema.oneOf = useMemo(() => getCountries(language), [language]);
 

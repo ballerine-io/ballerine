@@ -8,8 +8,6 @@ import type { TProjectIds } from '@/types';
 import { UiDefinitionModel } from '@/ui-definition/ui-definition.model';
 import { WhereIdInput } from '@/common/where-id-input';
 import { UiDefinitionByRuntimeIdDto } from '@/ui-definition/dtos/ui-definition-by-runtime-id.dto';
-import { UiDefinitionByRuntimeIdDocumentSchemaDto } from '@/ui-definition/dtos/ui-definition-by-runtime-id-document-schema.dto';
-import { TDocument } from '@ballerine/common';
 import { UiDefinitionByWorkflowDefinitionIdDto } from '@/ui-definition/dtos/ui-definition-by-workflow-definition-id.dto';
 
 @swagger.ApiTags('internal/ui-definition')
@@ -66,25 +64,5 @@ export class UiDefinitionController {
     );
 
     return uiDefinition;
-  }
-
-  @common.Get('/workflow-runtime/:workflowRuntimeId/document-schema')
-  @swagger.ApiOkResponse({})
-  @swagger.ApiForbiddenResponse()
-  async getByRuntimeDocumentSchemaId(
-    @common.Param('workflowRuntimeId') workflowRuntimeId: string,
-    @common.Query() params: UiDefinitionByRuntimeIdDocumentSchemaDto,
-    @ProjectIds() projectIds: TProjectIds,
-  ): Promise<TDocument | undefined> {
-    const uiDocumentSchema = await this.service.getDocumentSchemaByRuntimeId(
-      workflowRuntimeId,
-      params.uiContext,
-      projectIds,
-      params.countryCode,
-      params.category,
-      params.type,
-    );
-
-    return uiDocumentSchema;
   }
 }

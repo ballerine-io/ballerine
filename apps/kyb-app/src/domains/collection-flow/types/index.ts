@@ -30,6 +30,7 @@ export interface DocumentConfiguration {
   name: string;
   type: string;
 }
+
 export interface TFlowConfiguration {
   id: string;
   steps: TFlowStep[];
@@ -132,6 +133,7 @@ export interface UIPage {
 
 export interface UISchema {
   id: string;
+  config: Record<string, unknown>;
   uiSchema: {
     elements: UIPage[];
   };

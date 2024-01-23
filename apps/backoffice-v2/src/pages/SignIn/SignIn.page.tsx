@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isErrorWithCode } from '@ballerine/common';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form } from '../../common/components/organisms/Form/Form';
@@ -10,7 +11,6 @@ import { useSignInMutation } from '../../domains/auth/hooks/mutations/useSignInM
 import { FunctionComponent, useCallback } from 'react';
 import { useAuthContext } from '../../domains/auth/context/AuthProvider/hooks/useAuthContext/useAuthContext';
 import { useIsAuthenticated } from '../../domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
-import { isErrorWithCode } from '../../lib/react-query/query-client';
 import { CardHeader } from '../../common/components/atoms/Card/Card.Header';
 import { CardContent } from '../../common/components/atoms/Card/Card.Content';
 import { FormField } from '../../common/components/organisms/Form/Form.Field';

@@ -18,23 +18,22 @@ export class TokenAuthGuard implements CanActivate {
       throw new UnauthorizedException('Unauthorized');
     }
 
-    try {
-      const tokenEntity = await this.tokenService.findByToken(token);
-      if (!tokenEntity) throw new UnauthorizedException('Unauthorized');
+    const tokenEntity = await this.tokenService.findByToken(token);
 
-      this.cls.set('entity', {
-        endUser: {
-          workflowRuntimeDataId: tokenEntity.workflowRuntimeDataId,
-          endUserId: tokenEntity.endUserId,
-          id: tokenEntity.id,
-        },
-        type: 'endUser',
-      });
-
-      (req as any).tokenScope = tokenEntity;
-    } catch (error) {
+    if (!tokenEntity) {
       throw new UnauthorizedException('Unauthorized');
     }
+
+    this.cls.set('entity', {
+      endUser: {
+        workflowRuntimeDataId: tokenEntity.workflowRuntimeDataId,
+        endUserId: tokenEntity.endUserId,
+        id: tokenEntity.id,
+      },
+      type: 'endUser',
+    });
+
+    (req as any).tokenScope = tokenEntity;
 
     return true;
   }

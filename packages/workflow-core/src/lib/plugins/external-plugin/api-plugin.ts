@@ -32,9 +32,14 @@ export class ApiPlugin {
     this.errorAction = pluginParams.errorAction;
     this.persistResponseDestination = pluginParams.persistResponseDestination;
   }
-  async invoke(context: TContext) {
+
+  async invoke(context: TContext, config: unknown) {
     try {
-      const requestPayload = await this.transformData(this.request.transformers, context);
+      const requestPayload = await this.transformData(this.request.transformers, {
+        ...context,
+        workflowRuntimeConfig: config,
+      });
+
       const { isValidRequest, errorMessage } = await this.validateContent(
         this.request.schemaValidator,
         requestPayload,
@@ -45,16 +50,20 @@ export class ApiPlugin {
         return this.returnErrorResponse(errorMessage!);
       }
 
-      console.log(`API Plugin :: Sending ${this.method} API request to ${this.url}`);
+      const urlWithoutPlaceholders = this.replaceValuePlaceholders(this.url, context);
+
+      console.log(`API Plugin :: Sending ${this.method} API request to ${urlWithoutPlaceholders}`);
 
       const apiResponse = await this.makeApiRequest(
-        this.replaceValuePlaceholders(this.url, context),
+        urlWithoutPlaceholders,
         this.method,
         requestPayload,
         this.composeRequestHeaders(this.headers!, context),
       );
 
-      console.log(`API Plugin :: Received ${apiResponse.statusText} response from ${this.url}`);
+      console.log(
+        `API Plugin :: Received ${apiResponse.statusText} response from ${urlWithoutPlaceholders}`,
+      );
 
       if (apiResponse.ok) {
         const result = await apiResponse.json();

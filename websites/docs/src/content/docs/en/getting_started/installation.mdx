@@ -3,9 +3,11 @@ title: Ballerine Installation Guide
 description: his guide provides a step-by-step process for setting up and running the Ballerine stack on your local environment.
 ---
 
-import {TabItem, Tabs} from "@astrojs/starlight/components";
 
-import PackageManagersTabs from '../../../../components/PackageManagersTabs/PackageManagersTabs.astro';
+
+
+import PackageManagersTabs
+  from '../../../../components/PackageManagersTabs/PackageManagersTabs.astro';
 import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
 
 ## Prerequisites
@@ -33,11 +35,11 @@ Before you can install and use Ballerine, you will need the following:
 
 ## Run one of the examples, or follow a guide from the [guide sections](https://docs.ballerine.com/en/learn/simple_kyb_guide/)
 
-**Start the KYC example**: To start the example API, use the following command:
+**Start the KYB example**: To start the example flow, use the following command:
 
-<PackageManagersTabs code={`run kyc-manual-review-example`}/>
+<PackageManagersTabs code={`run kyb-manual-review-example`}/>
 
-After performing these steps, the backoffice should be running on http://localhost:5137/, and the workflow service will be accepting calls at http://localhost:3000/.
+After performing these steps, the backoffice should be running on http://localhost:5137/, the collection flow on http://localhost:5201/ and the workflow service will be accepting calls at http://localhost:3000/.
 
 The default username and password for the backoffice are:
 

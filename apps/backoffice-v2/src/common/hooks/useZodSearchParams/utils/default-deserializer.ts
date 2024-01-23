@@ -2,7 +2,9 @@ import qs from 'qs';
 import { parseNullAndEmptyArrayDeep } from './parse-null-and-empty-array-deep';
 import { IUseZodSearchParams } from '../interfaces';
 
-export const defaultDeserializer: IUseZodSearchParams['deserializer'] = (searchParams: string) => {
+export const defaultDeserializer: NonNullable<IUseZodSearchParams['deserializer']> = (
+  searchParams: string,
+) => {
   const parsedSearchParams = qs.parse(searchParams, {
     ignoreQueryPrefix: true,
     strictNullHandling: true,

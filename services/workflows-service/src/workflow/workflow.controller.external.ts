@@ -28,10 +28,11 @@ import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import type { TProjectId, TProjectIds } from '@/types';
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import { EndUserService } from '@/end-user/end-user.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { Public } from '@/common/decorators/public.decorator';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
+import { env } from '@/env';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -42,7 +43,6 @@ export class WorkflowControllerExternal {
     protected readonly normalizeService: HookCallbackHandlerService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
-    private readonly endUserService: EndUserService,
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly workflowDefinitionService: WorkflowDefinitionService,
   ) {}
@@ -142,8 +142,9 @@ export class WorkflowControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    // Rename to intent or getRunnableWorkflowDataByIntent?
     const entityType = intentName === 'kycSignup' ? 'endUser' : 'business';
+
+    // @TODO: Rename to intent or getRunnableWorkflowDataByIntent?
     return await this.service.resolveIntent(
       intentName,
       entityId,
@@ -167,6 +168,7 @@ export class WorkflowControllerExternal {
     const { workflowId, context, config } = body;
     const { entity } = context;
 
+    // @ts-ignore
     if (!entity.id && !entity.ballerineEntityId)
       throw new common.BadRequestException('Entity id is required');
 
@@ -174,7 +176,7 @@ export class WorkflowControllerExternal {
       Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
     const latestDefinitionVersion = await this.workflowDefinitionService.getLatestVersion(
       workflowId,
-      currentProjectId,
+      projectIds,
     );
 
     const actionResult = await this.service.createOrUpdateWorkflowRuntime({
@@ -193,7 +195,32 @@ export class WorkflowControllerExternal {
       workflowDefinitionId: actionResult[0]!.workflowDefinition.id,
       workflowRuntimeId: actionResult[0]!.workflowRuntimeData.id,
       ballerineEntityId: actionResult[0]!.ballerineEntityId,
+      entities: actionResult[0]!.entities,
     });
+  }
+
+  @common.Post('/create-collection-flow-url')
+  @swagger.ApiOkResponse()
+  @UseCustomerAuthGuard()
+  @common.HttpCode(200)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async createCollectionFlowUrl(
+    @common.Body() { expiry, workflowRuntimeDataId, endUserId }: CreateCollectionFlowUrlDto,
+    @Res() res: Response,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    const expiresAt = new Date(Date.now() + (expiry || 30) * 24 * 60 * 60 * 1000);
+
+    const { token } = await this.workflowTokenService.create(currentProjectId, {
+      workflowRuntimeDataId: workflowRuntimeDataId,
+      expiresAt,
+      endUserId,
+    });
+
+    return {
+      token,
+      collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${token}`,
+    };
   }
 
   /// POST /event

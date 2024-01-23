@@ -38,6 +38,7 @@ describe('updateDocuments', () => {
             country: 'Israel',
           },
           properties: {
+            // @ts-ignore
             nationality: 'Panama',
             fullName: 'Constance Kuvalis',
             dateOfBirth: '2002-04-03',
@@ -85,6 +86,7 @@ describe('updateDocuments', () => {
             country: 'Grenada',
           },
           properties: {
+            // @ts-ignore
             nationality: 'Panama',
             fullName: 'Lorem',
             dateOfBirth: '2002-04-03',
@@ -163,6 +165,7 @@ function getMockDocuments(): Documents {
         country: 'Grenada',
       },
       properties: {
+        // @ts-ignore
         nationality: 'Panama',
         fullName: 'Constance Kuvalis',
         dateOfBirth: '2002-04-03',
@@ -211,6 +214,7 @@ function getMockDocuments(): Documents {
         country: 'Grenada',
       },
       properties: {
+        // @ts-ignore
         nationality: 'Panama',
         fullName: 'Constance Kuvalis',
         dateOfBirth: '2002-04-03',
@@ -259,6 +263,7 @@ function getMockDocuments(): Documents {
         country: 'Grenada',
       },
       properties: {
+        // @ts-ignore
         nationality: 'Panama',
         fullName: 'Constance Kuvalis',
         dateOfBirth: '2002-04-03',

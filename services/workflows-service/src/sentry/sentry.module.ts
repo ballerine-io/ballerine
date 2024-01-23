@@ -24,15 +24,14 @@ export class SentryModule implements OnModuleInit, OnModuleDestroy {
   ) {
     this._sentryDsn = this.configService.get('SENTRY_DSN');
     this._envName =
-      this.configService.get('ENVIRONMENT_ENV') || this.configService.get('NODE_ENV', 'local');
+      this.configService.get('ENVIRONMENT_NAME') || this.configService.get('NODE_ENV', 'local');
   }
 
   onModuleInit() {
-    if (!this.configService.get('SENTRY_DSN')) {
-      return;
-    }
+    const isEnabled = typeof this._sentryDsn !== 'undefined' && this._sentryDsn !== null;
 
     Sentry.init({
+      enabled: isEnabled,
       dsn: this._sentryDsn,
       environment: this._envName,
       enableTracing: true,

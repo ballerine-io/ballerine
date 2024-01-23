@@ -23,7 +23,7 @@ describe('WorkflowDefinitionService', () => {
   let project: Project;
   let differentProject: Project;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         WorkflowDefinitionService,
@@ -46,7 +46,9 @@ describe('WorkflowDefinitionService', () => {
     );
     filterService = module.get<FilterService>(FilterService);
     prismaService = module.get<PrismaService>(PrismaService);
+  });
 
+  beforeEach(async () => {
     await prismaService.workflowDefinition.create({
       data: buildWorkflowDefinition(1),
     });
@@ -64,12 +66,12 @@ describe('WorkflowDefinitionService', () => {
   });
 
   describe('#upgradeDefinitionVersion', () => {
-    it('should generate a new definition with the new version and updates only the relevant filters', async () => {
+    it('should generate a new definition with the new version and update only the relevant filters', async () => {
       // Arrange
       const workflowDefintion = await prismaService.workflowDefinition.create({
         data: buildWorkflowDefinition(2, project.id),
       });
-      const { id, definition, contextSchema } = workflowDefintion;
+      const { id, definition } = workflowDefintion;
 
       const updateArgs = {
         definition: definition,
@@ -200,10 +202,9 @@ describe('WorkflowDefinitionService', () => {
       // @ts-ignore
       expect(otherWorkflowFilter.query.where).toEqual(otherWorkflowFilter.query.where);
 
-      const latestWorkflowVersion = await workflowDefinitionService.getLatestVersion(
-        id,
+      const latestWorkflowVersion = await workflowDefinitionService.getLatestVersion(id, [
         project.id,
-      );
+      ]);
 
       expect(latestWorkflowVersion.id).toEqual(updatedWorkflowDefintiion.id);
     });

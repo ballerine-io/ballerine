@@ -6,10 +6,10 @@ import { getNationalities } from '@/helpers/countries-data';
 import { useTranslation } from 'react-i18next';
 
 export const NationalityPicker = (props: RJSFInputProps) => {
-  const language = useLanguageParam();
+  const { language } = useLanguageParam();
   const { t } = useTranslation();
 
-  const nationalities = useMemo(() => getNationalities(language || 'en', t), [language, t]);
+  const nationalities = useMemo(() => getNationalities(language, t), [language, t]);
 
   const propsWithOptions = useMemo(
     () => ({

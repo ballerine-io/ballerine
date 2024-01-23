@@ -1,14 +1,15 @@
-import { useCrop } from '../../../../../../common/hooks/useCrop/useCrop';
-import { ComponentProps, useCallback, useRef, useState } from 'react';
-import { useTesseract } from '../../../../../../common/hooks/useTesseract/useTesseract';
-import { IDocumentsProps } from '../../interfaces';
-import { createArrayOfNumbers } from '../../../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
-import toast from 'react-hot-toast';
 import { t } from 'i18next';
-import { useToggle } from '../../../../../../common/hooks/useToggle/useToggle';
+import toast from 'react-hot-toast';
+import { ComponentProps, useCallback, useRef, useState } from 'react';
+
+import { IDocumentsProps } from '../../interfaces';
 import { TransformWrapper } from 'react-zoom-pan-pinch';
-import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
+import { useCrop } from '@/common/hooks/useCrop/useCrop';
 import { DOWNLOAD_ONLY_MIME_TYPES } from '@/common/constants';
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
+import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
+import { useTesseract } from '@/common/hooks/useTesseract/useTesseract';
+import { createArrayOfNumbers } from '@/common/utils/create-array-of-numbers/create-array-of-numbers';
 import { useStorageFileByIdQuery } from '@/domains/storage/hooks/queries/useStorageFileByIdQuery/useStorageFileByIdQuery';
 
 export const useDocuments = (documents: IDocumentsProps['documents']) => {
@@ -93,12 +94,16 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
     [],
   );
 
-  const onOpenDocumentInNewTab = useCallback(documentId => {
-    const baseUrl = location.href.split('?')[0];
-    const url = `${baseUrl}/document/${documentId}?filterId=${filterId}`;
+  const onOpenDocumentInNewTab = useCallback(
+    documentId => {
+      const baseUrl = location.href.split('?')[0];
+      const url = `${baseUrl}/document/${documentId}?filterId=${filterId}`;
 
-    window.open(url, '_blank');
-  }, []);
+      window.open(url, '_blank');
+    },
+    [filterId],
+  );
+
   const shouldDownload = DOWNLOAD_ONLY_MIME_TYPES.includes(selectedImage?.fileType);
   const { data: fileToDownloadBase64 } = useStorageFileByIdQuery(selectedImage?.id, {
     isEnabled: shouldDownload,

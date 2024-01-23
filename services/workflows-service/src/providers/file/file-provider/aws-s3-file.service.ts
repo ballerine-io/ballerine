@@ -14,6 +14,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
 import fs, { createReadStream } from 'fs';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isErrorWithName } from '@ballerine/common';
 import { Upload } from '@aws-sdk/lib-storage';
 import { IStreamableFileProvider } from '../types/interfaces';
@@ -22,7 +23,9 @@ import path from 'path';
 
 export class AwsS3FileService implements IStreamableFileProvider {
   protected client;
-  constructor(s3ClientConfig: S3ClientConfig) {
+  protected logger;
+  constructor(s3ClientConfig: S3ClientConfig, logger: AppLoggerService) {
+    this.logger = logger;
     this.client = new S3Client(s3ClientConfig);
   }
   async download(
@@ -50,7 +53,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
           });
       });
     } catch (error) {
-      console.error('Error downloading file from S3:', error);
+      this.logger.error('Error downloading file from S3:', { error, localeFilePath });
       throw error;
     }
   }
@@ -170,7 +173,10 @@ export class AwsS3FileService implements IStreamableFileProvider {
   }
 
   private __fetchBucketPath(remoteFileConfig: TS3BucketConfig) {
-    return { Bucket: remoteFileConfig.bucketName, Key: remoteFileConfig.fileNameInBucket };
+    return {
+      Bucket: remoteFileConfig.bucketName,
+      Key: remoteFileConfig.fileNameInBucket,
+    };
   }
 
   private __generateAwsBucketUri(bucketName: string, fileName: string) {

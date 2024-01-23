@@ -13,14 +13,20 @@ import { StorageService } from '@/storage/storage.service';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
 import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.service';
 import { LocalFileService } from '@/providers/file/file-provider/local-file.service';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { streamToBuffer } from '@/common/stream-to-buffer/stream-to-buffer';
 import { Readable } from 'stream';
 import * as fs from 'fs/promises';
+import { HttpService } from '@nestjs/axios';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 
 @Injectable()
 export class FileService {
-  constructor(private readonly storageService: StorageService) {}
+  constructor(
+    private readonly storageService: StorageService,
+    protected readonly logger: AppLoggerService,
+    protected readonly httpService: HttpService,
+  ) {}
 
   async copyFromSourceToDestination(
     sourceServiceProvider: TFileServiceProvider,
@@ -58,15 +64,17 @@ export class FileService {
       );
 
       return filePaths;
-    } catch (err) {
+    } catch (error) {
       const remoteFileName =
         typeof sourceRemoteFileConfig !== 'string'
           ? sourceRemoteFileConfig.fileNameInBucket
           : sourceRemoteFileConfig;
 
-      console.warn(
-        `Unable to download file - ${remoteFileName} - ` +
-          (isErrorWithMessage(err) ? err.message : ''),
+      this.logger.log(
+        `Unable to download file - ${remoteFileName} - ${
+          isErrorWithMessage(error) ? error.message : ''
+        }`,
+        { error },
       );
 
       throw new BadRequestException(
@@ -193,7 +201,10 @@ export class FileService {
   } {
     if (provider == 'http' && z.string().parse(uri)) {
       return {
-        sourceServiceProvider: new HttpFileService(),
+        sourceServiceProvider: new HttpFileService({
+          client: this.httpService,
+          logger: this.logger,
+        }),
         sourceRemoteFileConfig: uri,
       };
     }
@@ -203,7 +214,7 @@ export class FileService {
       const s3BucketConfig = this.__fetchAwsConfigForFileNameInBucket(uri);
 
       return {
-        sourceServiceProvider: new AwsS3FileService(s3ClientConfig),
+        sourceServiceProvider: new AwsS3FileService(s3ClientConfig, this.logger),
         sourceRemoteFileConfig: s3BucketConfig,
       };
     }
@@ -237,7 +248,7 @@ export class FileService {
 
     if (this.__fetchBucketName(process.env, false)) {
       const s3ClientConfig = AwsS3FileConfig.fetchClientConfig(process.env);
-      const awsFileService = new AwsS3FileService(s3ClientConfig);
+      const awsFileService = new AwsS3FileService(s3ClientConfig, this.logger);
 
       const remoteFileNameInDocument = awsFileService.generateRemotePath(properties);
 

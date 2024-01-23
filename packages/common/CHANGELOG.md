@@ -1,5 +1,29 @@
 # @ballerine/common
 
+## 0.7.37
+
+### Patch Changes
+
+- added variants to common
+
+## 0.7.36
+
+### Patch Changes
+
+- upgraded common package variants
+
+## 0.7.35
+
+### Patch Changes
+
+- version bump
+
+## 0.7.34
+
+### Patch Changes
+
+- updated DefaultContextSchema type to use Typebox over deprecated generation script
+
 ## 0.7.33
 
 ### Patch Changes

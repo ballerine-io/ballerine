@@ -1,4 +1,5 @@
 import { IAppLogger, LogPayload } from '@/common/abstract-logger/abstract-logger';
+import { env } from '@/env';
 import { createLogger, format, transports, Logger as TWinstonLogger } from 'winston';
 
 export class WinstonLogger implements IAppLogger {
@@ -26,6 +27,7 @@ export class WinstonLogger implements IAppLogger {
     this.logger = createLogger({
       format: isLocal ? prettyFormat : jsonFormat,
       transports: [new transports.Console()],
+      level: env.LOG_LEVEL,
     });
   }
 
