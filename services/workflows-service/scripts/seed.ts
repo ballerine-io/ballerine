@@ -69,7 +69,7 @@ async function createCustomer(
   faviconImageUri: string,
   webhookSharedSecret: string,
 ) {
-  return await client.customer.create({
+  return client.customer.create({
     data: {
       id: `customer-${id}`,
       name: `customer-${id}`,
@@ -101,7 +101,10 @@ async function createProject(client: PrismaClient, customer: Customer, id: strin
 
 const DEFAULT_INITIAL_STATE = CommonWorkflowStates.MANUAL_REVIEW;
 
-const DEFAULT_SEED_DEFINITION_TOKEN = '12345678-1234-1234-1234-123456789012';
+const DEFAULT_TOKENS = {
+  KYB: '12345678-1234-1234-1234-123456789012',
+  KYC: '12345678-1234-1234-1234-123456789000',
+};
 
 async function seed(bcryptSalt: string | number) {
   console.info('Seeding database...');
@@ -1007,7 +1010,7 @@ async function seed(bcryptSalt: string | number) {
     projectId: project1.id,
     endUserId: endUserIds[0]!,
     businessId: businessIds[0]!,
-    token: DEFAULT_SEED_DEFINITION_TOKEN,
+    token: DEFAULT_TOKENS.KYB,
   });
 
   console.info('Seeded database successfully');

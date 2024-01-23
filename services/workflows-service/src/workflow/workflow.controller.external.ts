@@ -206,7 +206,6 @@ export class WorkflowControllerExternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createCollectionFlowUrl(
     @common.Body() { expiry, workflowRuntimeDataId, endUserId }: CreateCollectionFlowUrlDto,
-    @Res() res: Response,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
     const expiresAt = new Date(Date.now() + (expiry || 30) * 24 * 60 * 60 * 1000);
@@ -220,6 +219,22 @@ export class WorkflowControllerExternal {
     return {
       token,
       collectionFlowUrl: `${env.COLLECTION_FLOW_URL}?token=${token}`,
+    };
+  }
+
+  @common.Post('/create-token')
+  @swagger.ApiOkResponse()
+  @UseCustomerAuthGuard()
+  @common.HttpCode(200)
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async createToken(
+    @common.Body() body: CreateCollectionFlowUrlDto,
+    @CurrentProject() currentProjectId: TProjectId,
+  ) {
+    const { token } = await this.createCollectionFlowUrl(body, currentProjectId);
+
+    return {
+      token,
     };
   }
 
