@@ -4,6 +4,7 @@ import { ClockCircle } from '@/common/components/atoms/ClockCircle/ClockCircle';
 import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
 import { MinusCircle } from '@/common/components/atoms/MinusCircle/MinusCircle';
 import { CheckCircle } from '@/common/components/atoms/CheckCircle/CheckCircle';
+import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
 
 export const tagToAccordionCardItem = {
   [StateTag.COLLECTION_FLOW]: 'Collection flow',
@@ -58,18 +59,28 @@ export const Icon = {
       }}
     />
   ),
+  INDICATOR: (
+    <IndicatorCircle
+      size={18}
+      className={`stroke-transparent`}
+      containerProps={{
+        className: 'bg-slate-500/20',
+      }}
+    />
+  ),
 } as const;
 
 export const processStatusToIcon = {
-  DEFAULT: Icon.MINUS,
-  [ProcessStatus.IDLE]: Icon.MINUS,
+  DEFAULT: Icon.INDICATOR,
+  [ProcessStatus.IDLE]: Icon.INDICATOR,
   [ProcessStatus.IN_PROGRESS]: Icon.CLOCK,
   [ProcessStatus.SUCCESS]: Icon.CHECK,
   [ProcessStatus.ERROR]: Icon.X,
+  [ProcessStatus.CANCELED]: Icon.MINUS,
 } as const;
 
 export const tagToIcon = {
-  DEFAULT: Icon.MINUS,
+  DEFAULT: Icon.INDICATOR,
   [StateTag.PENDING_PROCESS]: Icon.CLOCK,
   [StateTag.DATA_ENRICHMENT]: Icon.CLOCK,
   [StateTag.MANUAL_REVIEW]: Icon.CHECK,

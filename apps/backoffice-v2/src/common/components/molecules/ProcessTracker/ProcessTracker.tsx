@@ -38,7 +38,7 @@ export const ProcessTracker: FunctionComponent<IProcessTrackerProps> = ({
               <HoverCardContent side={'top'} align={'start'}>
                 <ul className={`flex flex-col space-y-2`}>
                   <li className={`flex items-center gap-x-2`}>
-                    {Icon.MINUS}
+                    {Icon.INDICATOR}
                     Process not started
                   </li>
                   <li className={`flex items-center gap-x-2`}>
@@ -48,6 +48,10 @@ export const ProcessTracker: FunctionComponent<IProcessTrackerProps> = ({
                   <li className={`flex items-center gap-x-2`}>
                     {Icon.CHECK}
                     Process complete
+                  </li>
+                  <li className={`flex items-center gap-x-2`}>
+                    {Icon.MINUS}
+                    <span className={`text-slate-400/40 line-through`}>Process cancelled</span>
                   </li>
                   <li className={`flex items-center gap-x-2`}>
                     {Icon.X}

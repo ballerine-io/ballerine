@@ -30,6 +30,8 @@ import { PasswordService } from '@/auth/password/password.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -66,6 +68,8 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       WorkflowTokenService,
       WorkflowTokenRepository,
       WorkflowRuntimeDataRepository,
+      UiDefinitionService,
+      UiDefinitionRepository,
     ];
 
     workflowRuntimeRepository = (await fetchServiceFromModule(

@@ -7,19 +7,20 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { env } from '@/common/env/env';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 
-export const WorkflowDefinitionConfigSchema = z
-  .object({
-    isManualCreation: z.boolean().default(false),
-  })
-  .passthrough()
-  .nullable();
-
 export const PluginSchema = z.object({
   name: z.string(),
   displayName: z.string().or(z.undefined()),
 });
 
 export type TPlugin = z.infer<typeof PluginSchema>;
+
+export const WorkflowDefinitionConfigSchema = z
+  .object({
+    enableManualCreation: z.boolean().default(false),
+    isManualCreation: z.boolean().default(false),
+  })
+  .passthrough()
+  .nullable();
 
 export const WorkflowDefinitionByIdSchema = ObjectWithIdSchema.extend({
   name: z.string(),
@@ -28,19 +29,7 @@ export const WorkflowDefinitionByIdSchema = ObjectWithIdSchema.extend({
   contextSchema: z.record(z.any(), z.any()).nullable(),
   documentsSchema: z.array(z.any()).optional().nullable(),
   config: WorkflowDefinitionConfigSchema,
-  definition: z
-    .object({
-      // transitionSchema: z
-      //   .array(
-      //     z.object({
-      //       state: z.string(),
-      //       schema: z.record(z.any(), z.unknown()),
-      //       additionalParameters: z.record(z.any(), z.unknown()).optional(),
-      //     }),
-      //   )
-      //   .nullable(),
-    })
-    .passthrough(),
+  definition: z.record(z.string(), z.unknown()),
   extensions: z
     .object({
       apiPlugins: z.array(PluginSchema).optional(),

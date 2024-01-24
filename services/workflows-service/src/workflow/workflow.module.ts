@@ -22,9 +22,11 @@ import { FileRepository } from '@/storage/storage.repository';
 import { StorageService } from '@/storage/storage.service';
 import { UserRepository } from '@/user/user.repository';
 import { UserService } from '@/user/user.service';
-import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definition.module';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definition.module';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
@@ -33,8 +35,6 @@ import { WorkflowControllerInternal } from '@/workflow/workflow.controller.inter
 import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { Module, forwardRef } from '@nestjs/common';
-import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
