@@ -34,7 +34,7 @@ import { WorkflowControllerExternal } from '@/workflow/workflow.controller.exter
 import { WorkflowControllerInternal } from '@/workflow/workflow.controller.internal';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],

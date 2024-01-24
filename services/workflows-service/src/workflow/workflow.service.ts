@@ -81,7 +81,6 @@ import mime from 'mime';
 import { env } from '@/env';
 import { AjvValidationError } from '@/errors';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { ajv } from '@/common/ajv/ajv.validator';
 
 type TEntityId = string;
 
