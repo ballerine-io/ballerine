@@ -1579,6 +1579,29 @@ export class WorkflowService {
 
       const uiSchema = (uiDefinition as Record<string, any>)?.uiSchema;
 
+      const createFlowConfig = (uiSchema: Record<string, any>) => {
+        return {
+          stepsProgress: (
+            uiSchema?.elements as Array<{
+              type: string;
+              number: number;
+              stateName: string;
+            }>
+          )?.reduce((acc, curr) => {
+            if (curr?.type !== 'page') {
+              return acc;
+            }
+
+            acc[curr?.stateName] = {
+              number: curr?.number,
+              isCompleted: false,
+            };
+
+            return acc;
+          }, {} as { [key: string]: { number: number; isCompleted: boolean } }),
+        };
+      };
+
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
         data: {
           ...entityConnect,
@@ -1586,26 +1609,7 @@ export class WorkflowService {
           context: {
             ...contextToInsert,
             documents: documentsWithPersistedImages,
-            flowConfig: (contextToInsert as any)?.flowConfig ?? {
-              stepsProgress: (
-                uiSchema?.elements as Array<{
-                  type: string;
-                  number: number;
-                  stateName: string;
-                }>
-              )?.reduce((acc, curr) => {
-                if (curr?.type !== 'page') {
-                  return acc;
-                }
-
-                acc[curr?.stateName] = {
-                  number: curr?.number,
-                  isCompleted: false,
-                };
-
-                return acc;
-              }, {} as { [key: string]: { number: number; isCompleted: boolean } }),
-            },
+            flowConfig: (contextToInsert as any)?.flowConfig ?? createFlowConfig(uiSchema),
           } as InputJsonValue,
           config: mergedConfig as InputJsonValue,
           // @ts-expect-error - error from Prisma types fix

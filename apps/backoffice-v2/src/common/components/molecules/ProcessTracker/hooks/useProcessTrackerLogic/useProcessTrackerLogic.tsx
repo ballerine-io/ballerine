@@ -21,6 +21,13 @@ export const useProcessTrackerLogic = ({
   const onValueChange = useCallback((value: string) => {
     setUncollapsedItemValue(value);
   }, []);
+
+  const kycChildWorkflows = useMemo(() => {
+    return childWorkflows?.filter(
+      childWorkflow => childWorkflow?.context?.entity?.type === 'individual',
+    );
+  }, [childWorkflows]);
+
   const tag = useMemo(
     () => tags?.find(tag => tagToAccordionCardItem[tag as keyof typeof tagToAccordionCardItem]),
     [tags],
@@ -33,11 +40,7 @@ export const useProcessTrackerLogic = ({
       );
     });
   }, [context?.flowConfig?.stepsProgress]);
-  const kycChildWorkflows = useMemo(() => {
-    return childWorkflows?.filter(
-      childWorkflow => childWorkflow?.context?.entity?.type === 'individual',
-    );
-  }, [childWorkflows]);
+
   const getCollectionFlowStatus = useCallback(
     (step: string) => {
       if (context?.flowConfig?.stepsProgress?.[step]?.isCompleted) {
@@ -48,14 +51,6 @@ export const useProcessTrackerLogic = ({
     },
     [context?.flowConfig?.stepsProgress],
   );
-  const collectionFlowSubitems = useMemo(() => {
-    return steps?.map(step => {
-      return {
-        text: titleCase(step),
-        leftIcon: getCollectionFlowStatus(step),
-      };
-    });
-  }, [getCollectionFlowStatus, steps]);
   const getPluginByName = useCallback(
     (name: string) => {
       let plugin: NonNullable<TWorkflowById['context']['pluginsOutput']>[string];
@@ -72,6 +67,24 @@ export const useProcessTrackerLogic = ({
     },
     [context?.pluginsOutput],
   );
+  const getUboFlowStatus = useCallback((tags: TWorkflowById['tags']) => {
+    const tag = tags?.find(tag => tagToIcon[tag as keyof typeof tagToIcon]);
+
+    if (!tag) {
+      return tagToIcon.DEFAULT;
+    }
+
+    return tagToIcon[tag as keyof typeof tagToIcon];
+  }, []);
+
+  const collectionFlowSubitems = useMemo(() => {
+    return steps?.map(step => {
+      return {
+        text: titleCase(step),
+        leftIcon: getCollectionFlowStatus(step),
+      };
+    });
+  }, [getCollectionFlowStatus, steps]);
   const thirdPartyProcessesSubitems = useMemo(() => {
     return plugins
       ?.filter(({ name }) => pluginsWhiteList.includes(name as (typeof pluginsWhiteList)[number]))
@@ -89,16 +102,6 @@ export const useProcessTrackerLogic = ({
         };
       });
   }, [getPluginByName, plugins]);
-
-  const getUboFlowStatus = useCallback((tags: TWorkflowById['tags']) => {
-    const tag = tags?.find(tag => tagToIcon[tag as keyof typeof tagToIcon]);
-
-    if (!tag) {
-      return tagToIcon.DEFAULT;
-    }
-
-    return tagToIcon[tag as keyof typeof tagToIcon];
-  }, []);
   const uboFlowsSubitems = useMemo(() => {
     return kycChildWorkflows?.map(({ context, tags }) => {
       return {
