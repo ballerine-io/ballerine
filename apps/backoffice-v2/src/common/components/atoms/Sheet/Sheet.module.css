@@ -1,0 +1,31 @@
+.leftOpen {
+  @apply data-[state=closed]:slide-out-to-left !important;
+}
+
+.leftClose {
+  @apply data-[state=open]:slide-in-from-left !important;
+}
+
+.rightOpen {
+  @apply data-[state=open]:slide-in-from-right !important;
+}
+
+.rightClose {
+  @apply data-[state=closed]:slide-out-to-right !important;
+}
+
+.topOpen {
+  @apply data-[state=closed]:slide-out-to-top !important;
+}
+
+.topClose {
+  @apply data-[state=open]:slide-in-from-top !important;
+}
+
+.bottomOpen {
+  @apply data-[state=open]:slide-in-from-bottom !important;
+}
+
+.bottomClose {
+  @apply data-[state=closed]:slide-out-to-bottom !important;
+}

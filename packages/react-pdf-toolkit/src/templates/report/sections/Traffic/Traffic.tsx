@@ -20,7 +20,7 @@ export const TrafficSection: FunctionComponent<TrafficProps> = ({ data }) => {
         <Section.Blocks.Block>
           <Section.Blocks.Block.Label text="Traffic Risk Score" />
           <Badge
-            text={String(trafficAnalysisRiskScore)}
+            text={String(trafficAnalysisRiskScore || 0)}
             variant={resolveBadgeStyleToRiskScore(trafficAnalysisRiskScore)}
           />
         </Section.Blocks.Block>

@@ -1,10 +1,11 @@
-import { useSearch } from '@/common/hooks/useSearch/useSearch';
+import { useCaseCreationWorkflowDefinition } from '@/pages/Entities/components/CaseCreation/hooks/useCaseCreationWorkflowDefinition';
 import { ChangeEventHandler, useCallback } from 'react';
-import { createArrayOfNumbers } from '@/common/utils/create-array-of-numbers/create-array-of-numbers';
-import { useSelectEntityOnMount } from '@/domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
-import { useWorkflowsQuery } from '@/domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
-import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
-import { useEntityType } from '@/common/hooks/useEntityType/useEntityType';
+import { useEntityType } from '../../../../common/hooks/useEntityType/useEntityType';
+import { useSearch } from '../../../../common/hooks/useSearch/useSearch';
+import { useSearchParamsByEntity } from '../../../../common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
+import { createArrayOfNumbers } from '../../../../common/utils/create-array-of-numbers/create-array-of-numbers';
+import { useSelectEntityOnMount } from '../../../../domains/entities/hooks/useSelectEntityOnMount/useSelectEntityOnMount';
+import { useWorkflowsQuery } from '../../../../domains/workflows/hooks/queries/useWorkflowsQuery/useWorkflowsQuery';
 
 export const useEntities = () => {
   const [{ filterId, filter, sortBy, sortDir, page, pageSize, search }, setSearchParams] =
@@ -88,12 +89,15 @@ export const useEntities = () => {
 
   useSelectEntityOnMount();
 
+  const { workflowDefinition } = useCaseCreationWorkflowDefinition();
+
   return {
     onPaginate,
     onSearch: onSearchChange,
     onFilter: onFilterChange,
     onSortBy: onSortByChange,
     onSortDirToggle,
+    showCaseCreation: workflowDefinition?.config?.enableManualCreation,
     search: searchValue,
     cases: data?.data,
     caseCount: data?.meta?.totalItems || 0,
