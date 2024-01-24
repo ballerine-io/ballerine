@@ -9,7 +9,11 @@ export default ({ mode }: { mode: UserConfig['mode'] }) => {
   return defineConfig({
     server: {
       port: 5202,
+      open: true,
       host: 'localhost',
+    },
+    preview: {
+      port: 5202,
     },
     build: {
       reportCompressedSize: true,

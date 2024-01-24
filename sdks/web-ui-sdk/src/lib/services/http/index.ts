@@ -118,7 +118,6 @@ const createDocument = (
   },
   pages: { ballerineFileId: string; metadata: { side: string } }[],
 ) => ({
-  id: metadata.id,
   metadata,
   type,
   category: kind,

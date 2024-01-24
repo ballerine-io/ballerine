@@ -27,13 +27,9 @@ export const generateKycManualReviewRuntimeAndToken = async (
           ballerineEntityId: endUserId,
           type: 'individuals',
           data: {
-            additionalInfo: {
-              mainRepresentative: {
-                firstName: 'John',
-                lastName: 'Doe',
-                email: 'test@gmail.com',
-              },
-            },
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'test@gmail.com',
           },
         },
         documents: [],

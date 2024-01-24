@@ -650,9 +650,9 @@ async function seed(bcryptSalt: string | number) {
         firstName: Type.Optional(Type.String()),
         lastName: Type.Optional(Type.String()),
         documentNumber: Type.Optional(Type.String()),
-        dateOfBirth: Type.String({ format: 'date' }),
-        expirationDate: Type.Optional(Type.String()),
-        isFaceMatching: Type.Boolean(),
+        dateOfBirth: Type.Optional(Type.String({ format: 'date' })),
+        expirationDate: Type.Optional(Type.String({ format: 'date' })),
+        isFaceMatching: Type.Optional(Type.Boolean()),
       }),
     }));
 
