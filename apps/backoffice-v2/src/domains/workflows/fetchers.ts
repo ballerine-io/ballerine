@@ -1,5 +1,4 @@
 import { env } from '@/common/env/env';
-import { WorkflowDefinitionVariant } from '@ballerine/common';
 import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
@@ -10,6 +9,7 @@ import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-i
 import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
 import { IWorkflowId } from './interfaces';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
+import { WorkflowDefinitionByIdSchema } from '@/domains/workflow-definitions/fetchers';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -56,32 +56,13 @@ export const fetchWorkflows = async (params: {
 
 export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
 
-export const WorkflowDefinitionConfigSchema = z
-  .object({
-    enableManualCreation: z.boolean().default(false),
-  })
-  .passthrough()
-  .nullable();
-
-export const WorkflowDefinitionSchema = ObjectWithIdSchema.extend({
-  name: z.string(),
-  version: z.number(),
-  variant: z.string().default(WorkflowDefinitionVariant.DEFAULT),
-  contextSchema: z.record(z.any(), z.any()).nullable(),
-  documentsSchema: z.array(z.any()).optional().nullable(),
-  config: WorkflowDefinitionConfigSchema,
-  definition: z.record(z.any(), z.any()),
-});
-
-export type TWorkflowDefinition = z.output<typeof WorkflowDefinitionSchema>;
-
 export const BaseWorkflowByIdSchema = z.object({
   id: z.string(),
   status: z.string(),
   state: z.string().nullable(),
   nextEvents: z.array(z.any()),
   tags: z.array(z.string()).nullable().optional(),
-  workflowDefinition: WorkflowDefinitionSchema,
+  workflowDefinition: WorkflowDefinitionByIdSchema,
   createdAt: z.string().datetime(),
   context: z.object({
     documents: z.array(z.any()).default([]),
