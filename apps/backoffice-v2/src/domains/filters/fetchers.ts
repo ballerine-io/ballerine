@@ -8,7 +8,11 @@ export const FilterSchema = ObjectWithIdSchema.extend({
   entity: z.enum(['individuals', 'businesses']),
   name: z.string(),
   query: z
-    .object({ where: z.object({ workflowDefinitionId: z.object({ in: z.array(z.string()) }) }) })
+    .object({
+      where: z.object({
+        workflowDefinitionId: z.union([z.object({ in: z.array(z.string()) }), z.string()]),
+      }),
+    })
     .optional(),
 });
 
