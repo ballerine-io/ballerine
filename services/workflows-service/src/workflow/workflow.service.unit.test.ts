@@ -51,6 +51,12 @@ class FakeCustomerRepo extends BaseFakeRepository {
   }
 }
 
+class FakeUiDefinitionService extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
 function buildWorkflowDeifintion(sequenceNum) {
   return {
     id: sequenceNum.toString(),
@@ -103,6 +109,7 @@ describe('WorkflowService', () => {
   let entityRepo;
   let userService;
   let workflowTokenService;
+  let uiDefinitionService;
   let salesforceService;
   let fakeHttpService;
   let testingModule: TestingModule;
@@ -133,6 +140,7 @@ describe('WorkflowService', () => {
     userService = new FakeEntityRepo();
     salesforceService = new FakeEntityRepo();
     workflowTokenService = new FakeEntityRepo();
+    uiDefinitionService = new FakeUiDefinitionService();
 
     fakeHttpService = {
       requests: [],
@@ -186,6 +194,7 @@ describe('WorkflowService', () => {
       userService,
       salesforceService,
       workflowTokenService,
+      uiDefinitionService,
     );
   });
 

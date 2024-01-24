@@ -59,6 +59,7 @@ export const ProcessStatus = {
   IN_PROGRESS: 'IN_PROGRESS',
   SUCCESS: 'SUCCESS',
   ERROR: 'ERROR',
+  CANCELED: 'CANCELED',
 } as const;
 
 export const ProcessStatuses = [
@@ -66,8 +67,21 @@ export const ProcessStatuses = [
   ProcessStatus.IN_PROGRESS,
   ProcessStatus.SUCCESS,
   ProcessStatus.ERROR,
-] as const satisfies ReadonlyArray<keyof typeof ProcessStatus>;
+  ProcessStatus.CANCELED,
+] as const satisfies ReadonlyArray<(typeof ProcessStatus)[keyof typeof ProcessStatus]>;
 
 export type TProcessStatus = (typeof ProcessStatuses)[number];
 
 export type TProcessStatuses = typeof ProcessStatuses;
+
+export const UnifiedApiReason = {
+  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
+} as const;
+
+export const UnifiedApiReasons = [
+  UnifiedApiReason.NOT_IMPLEMENTED,
+] as const satisfies ReadonlyArray<(typeof UnifiedApiReason)[keyof typeof UnifiedApiReason]>;
+
+export type TUnifiedApiReason = (typeof UnifiedApiReasons)[number];
+
+export type TUnifiedApiReasons = typeof UnifiedApiReasons;
