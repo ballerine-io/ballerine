@@ -6,7 +6,6 @@ import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import packageJson from '../../package.json';
 import { ConfigService } from '@nestjs/config';
-import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -49,6 +48,12 @@ class FakeCustomerRepo extends BaseFakeRepository {
         webhookSharedSecret: 'webhook_secret',
       },
     };
+  }
+}
+
+class FakeUiDefinitionService extends BaseFakeRepository {
+  constructor() {
+    super(Object);
   }
 }
 
@@ -104,6 +109,7 @@ describe('WorkflowService', () => {
   let entityRepo;
   let userService;
   let workflowTokenService;
+  let uiDefinitionService;
   let salesforceService;
   let fakeHttpService;
   let testingModule: TestingModule;
@@ -134,6 +140,7 @@ describe('WorkflowService', () => {
     userService = new FakeEntityRepo();
     salesforceService = new FakeEntityRepo();
     workflowTokenService = new FakeEntityRepo();
+    uiDefinitionService = new FakeUiDefinitionService();
 
     fakeHttpService = {
       requests: [],
@@ -187,7 +194,7 @@ describe('WorkflowService', () => {
       userService,
       salesforceService,
       workflowTokenService,
-      UiDefinitionService,
+      uiDefinitionService,
     );
   });
 

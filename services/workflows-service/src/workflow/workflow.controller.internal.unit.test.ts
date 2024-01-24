@@ -7,7 +7,6 @@ import { BusinessModel } from '@/business/business.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -34,6 +33,12 @@ class FakeEndUserRepo extends BaseFakeRepository {
 }
 
 class FakeEntityRepo extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
+class FakeUiDefinitionService extends BaseFakeRepository {
   constructor() {
     super(Object);
   }
@@ -81,6 +86,7 @@ describe('WorkflowControllerInternal', () => {
   let userService;
   let salesforceService;
   let workflowTokenService;
+  let uiDefinitionService;
   const numbUserInfo = Symbol();
   let testingModule: TestingModule;
 
@@ -101,6 +107,7 @@ describe('WorkflowControllerInternal', () => {
     userService = new FakeEntityRepo();
     salesforceService = new FakeEntityRepo();
     workflowTokenService = new FakeEntityRepo();
+    uiDefinitionService = new FakeUiDefinitionService();
 
     eventEmitterSpy = {
       emitted: [],
@@ -124,7 +131,7 @@ describe('WorkflowControllerInternal', () => {
       userService,
       salesforceService,
       workflowTokenService,
-      UiDefinitionService,
+      uiDefinitionService,
     );
     const filterService = {} as any;
     const rolesBuilder = {} as any;
