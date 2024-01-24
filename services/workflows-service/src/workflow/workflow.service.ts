@@ -57,9 +57,6 @@ import {
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
-import addKeywords from 'ajv-keywords';
 import { plainToClass } from 'class-transformer';
 import { isEqual, merge } from 'lodash';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
@@ -84,18 +81,9 @@ import mime from 'mime';
 import { env } from '@/env';
 import { AjvValidationError } from '@/errors';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { ajv } from '@/common/ajv/ajv.validator';
 
 type TEntityId = string;
-
-const ajv = new Ajv({
-  strict: false,
-  coerceTypes: true,
-});
-addFormats(ajv, {
-  formats: ['email', 'uri', 'date', 'date-time'],
-  keywords: true,
-});
-addKeywords(ajv);
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
