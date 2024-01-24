@@ -7,6 +7,7 @@ import { BusinessModel } from '@/business/business.model';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { Test, TestingModule } from '@nestjs/testing';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -123,6 +124,7 @@ describe('WorkflowControllerInternal', () => {
       userService,
       salesforceService,
       workflowTokenService,
+      UiDefinitionService,
     );
     const filterService = {} as any;
     const rolesBuilder = {} as any;

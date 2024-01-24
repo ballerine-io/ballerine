@@ -6,6 +6,7 @@ import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import packageJson from '../../package.json';
 import { ConfigService } from '@nestjs/config';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
   constructor() {
@@ -186,6 +187,7 @@ describe('WorkflowService', () => {
       userService,
       salesforceService,
       workflowTokenService,
+      UiDefinitionService,
     );
   });
 
