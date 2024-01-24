@@ -30,6 +30,8 @@ import {
   baseFilterDefinitionSelect,
   baseFilterEndUserSelect,
 } from './filters';
+import { generateKycManualReviewRuntimeAndToken } from './workflows/runtime/geneate-kyc-manual-review-runtime-and-token';
+import { Type } from '@sinclair/typebox';
 
 seed(10).catch(error => {
   console.error(error);
@@ -185,6 +187,8 @@ async function seed(bcryptSalt: string | number) {
   const kycManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
   const kybManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9bbb';
   const manualMachineVersion = 1;
+
+  const kycWorkflowDefinitionId = 'kyc-manual-review';
 
   const onboardingMachineKycId = 'COLLECT_DOCS_b0002zpeid7bq9aaa';
   const onboardingMachineKybId = 'COLLECT_DOCS_b0002zpeid7bq9bbb';
@@ -635,6 +639,54 @@ async function seed(bcryptSalt: string | number) {
     },
   });
 
+  const getDocumentsSchema = () =>
+    ['id_card', 'passport', 'drivers_license', 'voter_id'].map(name => ({
+      category: name,
+      type: name,
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        firstName: Type.Optional(Type.String()),
+        lastName: Type.Optional(Type.String()),
+        documentNumber: Type.Optional(Type.String()),
+        dateOfBirth: Type.String({ format: 'date' }),
+        expirationDate: Type.Optional(Type.String()),
+        isFaceMatching: Type.Boolean(),
+      }),
+    }));
+
+  await client.workflowDefinition.create({
+    data: {
+      ...baseReviewDefinition(generateBaseTaskLevelStates()),
+      id: kycWorkflowDefinitionId,
+      documentsSchema: getDocumentsSchema(),
+      config: {
+        workflowLevelResolution: false,
+        availableDocuments: [
+          {
+            category: 'id_card',
+            type: 'id_card',
+          },
+          {
+            category: 'passport',
+            type: 'passport',
+          },
+          {
+            category: 'drivers_license',
+            type: 'drivers_license',
+          },
+          {
+            category: 'voter_id',
+            type: 'voter_id',
+          },
+        ],
+      },
+      version: 3,
+      projectId: project1.id,
+    },
+  });
+
   // KYB
   await client.workflowDefinition.create({
     data: {
@@ -776,6 +828,30 @@ async function seed(bcryptSalt: string | number) {
     project1.id,
   );
 
+  await createFilter(
+    'KYC - Manual Review',
+    'individuals',
+    {
+      select: {
+        id: true,
+        status: true,
+        assigneeId: true,
+        context: true,
+        createdAt: true,
+        state: true,
+        tags: true,
+        ...baseFilterDefinitionSelect,
+        ...baseFilterEndUserSelect,
+        ...baseFilterAssigneeSelect,
+      },
+      where: {
+        workflowDefinitionId: { in: [kycWorkflowDefinitionId] },
+        endUserId: { not: null },
+      },
+    },
+    project1.id,
+  );
+
   // KYB Onboarding
   await client.workflowDefinition.create({
     data: {
@@ -890,8 +966,7 @@ async function seed(bcryptSalt: string | number) {
         childWorkflowsRuntimeData: true,
       },
       where: {
-        // workflowDefinitionId: 'dynamic_kyb_parent_example',
-        workflowDefinitionId: 'kyb_with_associated_companies_example',
+        workflowDefinitionId: { in: ['kyb_with_associated_companies_example'] },
         businessId: { not: null },
         state: {
           in: [
@@ -1011,6 +1086,13 @@ async function seed(bcryptSalt: string | number) {
     endUserId: endUserIds[0]!,
     businessId: businessIds[0]!,
     token: DEFAULT_TOKENS.KYB,
+  });
+
+  await generateKycManualReviewRuntimeAndToken(client, {
+    workflowDefinitionId: kycWorkflowDefinitionId,
+    projectId: project1.id,
+    endUserId: endUserIds[0]!,
+    token: DEFAULT_TOKENS.KYC,
   });
 
   console.info('Seeded database successfully');

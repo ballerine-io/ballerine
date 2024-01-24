@@ -108,7 +108,7 @@ const base64ToBlob = (dataURI: string) => {
 
 const createDocument = (
   {
-    metadata: { id },
+    metadata,
     type,
     kind,
   }: {
@@ -116,12 +116,15 @@ const createDocument = (
     type: string;
     kind?: string;
   },
-  pages: { ballerineFileId: string }[],
+  pages: { ballerineFileId: string; metadata: { side: string } }[],
 ) => ({
-  id: id,
-  type: type,
+  id: metadata.id,
+  metadata,
+  type,
   category: kind,
   properties: {},
+  issuingVersion: 1,
+  version: 1,
   issuer: {
     country: 'ZZ',
   },
@@ -133,50 +136,31 @@ const updateContext = async (context: Record<string, unknown>) => {
 };
 
 export const verifyDocuments = async (data: IStoreData): Promise<string> => {
-  let documents = [];
-  let formData = new FormData();
-
   if (data.selfie) {
-    formData.append('file', base64ToBlob(data.selfie), 'selfie.jpeg');
-
-    const { id: selfieId } = await httpPost<{ id: string }>(uploadFileEndpoint, formData);
-
-    documents.push(
-      createDocument(
-        {
-          metadata: { id: selfieId },
-          type: 'selfie',
-          kind: 'selfie',
-        },
-        [{ ballerineFileId: selfieId }],
-      ),
-    );
+    data.docs[0].pages.push({
+      side: 'selfie',
+      base64: data.selfie,
+    });
   }
 
   const promises = data.docs.flatMap(doc =>
-    doc.pages.map(page => {
-      formData = new FormData();
+    doc.pages.map(async page => {
+      const formData = new FormData();
       formData.append('file', base64ToBlob(page.base64 as string), `${doc.type}.jpeg`);
 
-      return httpPost<{ id: string }>(uploadFileEndpoint, formData);
+      const { id } = await httpPost<{ id: string }>(uploadFileEndpoint, formData);
+
+      return { ballerineFileId: id, metadata: { side: page.side } };
     }),
   );
 
   const results = await Promise.all(promises);
 
-  documents = [
-    ...documents,
-    ...data.docs.map(doc =>
-      createDocument(
-        doc,
-        results.map(result => ({ ballerineFileId: result.id })),
-      ),
-    ),
-  ];
+  const documents = data.docs.map(doc => createDocument(doc, results));
 
   await updateContext({ documents });
 
-  localStorage.setItem('verificationId', results[0].id);
+  localStorage.setItem('verificationId', results[0].ballerineFileId);
 
-  return results[0].id;
+  return results[0].ballerineFileId;
 };

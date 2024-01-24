@@ -26,6 +26,7 @@ export const addPropertiesSchemaToDocument = (
     propertiesSchema,
   };
 };
+
 function getPropertiesSchemaForDocument(document: DefaultContextSchema['documents'][number]) {
   const documentsByCountry = getDocumentsByCountry(document?.issuer?.country);
   const documentSchemaForDocument = findDocumentSchemaForDocument(documentsByCountry, document);
@@ -67,9 +68,9 @@ const findDocumentSchemaForDocument = (
   documentsByCountry: TDocument[],
   document: DefaultContextSchema['documents'][number],
 ) => {
-  return documentsByCountry?.find(
-    doc => getDocumentId(doc, false) === getDocumentId(document, false),
-  );
+  const documentId = getDocumentId(document, false);
+
+  return documentsByCountry?.find(doc => getDocumentId(doc, false) === documentId);
 };
 
 function composePropertiesSchema(

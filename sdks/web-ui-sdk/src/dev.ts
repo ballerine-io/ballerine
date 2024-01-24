@@ -110,7 +110,7 @@ const ballerineInitConfig: FlowsInitOptions = {
   },
   backendConfig: {
     auth: {
-      authorizationHeader: 'Bearer 60e43d50-e3e4-472c-b8f0-9470c96f26b5',
+      authorizationHeader: 'Bearer 12345678-1234-1234-1234-123456789000',
     },
   },
 };
