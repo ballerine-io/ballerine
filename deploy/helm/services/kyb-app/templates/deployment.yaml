@@ -38,10 +38,21 @@ spec:
               image: "{{ .Values.kybapp.image.registry }}/{{ .Values.kybapp.image.repository }}:{{ .Values.kybapp.image.tag }}"
               imagePullPolicy: {{ .Values.kybapp.image.pullPolicy }}
               command: ["nginx", "-g", "daemon off;"]
+              env:
+                - name: ENV_VARIABLE_NAME
+                  value: ENV_VARIABLE_VALUE:
+            - name: {{ .Values.kybapp.nameOverride }}
+              image: "{{ .Values.kybapp.image.registry }}/{{ .Values.kybapp.image.repository }}:{{ .Values.kybapp.image.tag }}"
+              imagePullPolicy: {{ .Values.kybapp.image.pullPolicy }}
+              command: ["nginx", "-g", "daemon off;"]
               envFrom:
                 - configMapRef:
                     name: {{ .Values.kybapp.nameOverride }}
-            {{- if .Values.kybapp.image.pullSecrets}}
+            volumeMounts:
+            - name: example-volume
+              mountPath: /path/to/volume
+              mountPath: /path/to/volume
+              {{- if .Values.kybapp.image.pullSecrets}}
             imagePullSecrets:
               - name: {{ .Values.kybapp.image.pullSecrets }}
             {{- end }}
