@@ -11,7 +11,7 @@ postgresql:
     database: postgres
   # Local dev purpose
   persistence:
-    existingClaim: postgresql-pv-claim
+    existingClaim: postgres-pv-claim
   volumePermissions:
     enabled: true
 
@@ -180,7 +180,7 @@ websocketService:
     maxUnavailable: '0'
   nameOverride: websocketservice
   service:
-    port: 3500
+    port: 3000
     type: ClusterIP
     protocol: TCP
   image:
@@ -208,7 +208,7 @@ websocketService:
   applicationConfig:
     PORT: 3500
     NODE_ENV: development
-    COMPOSE_PROJECT_NAME: ballerine-x
+    COMPOSE_PROJECT_NAME: ballerine-app
 
 workflowService:
   enabled: true
@@ -256,9 +256,9 @@ workflowService:
     DB_PASSWORD: ""
     DB_PORT: "5432"
     PORT: "3000"
-    COMPOSE_PROJECT_NAME: "ballerine-x"
+    COMPOSE_PROJECT_NAME: "ballerine-app"
     SESSION_SECRET: "iGdnj4A0YOhj8dHJK7IWSvQKEZsG7P70FFehuddhFPjtg/bSkzFejYILk4Xue6Ilx9y3IAwzR8pV1gb4"
-    SESSION_EXPIRATION_IN_MINUTES: '60'
+    SESSION_EXPIRATION_IN_MINUTES: "60"
     BACKOFFICE_CORS_ORIGIN: "http://localhost:5137"
     HEADLESS_EXAMPLE_CORS_ORIGIN: "http://localhost:5173"
     API_KEY: "secret"
