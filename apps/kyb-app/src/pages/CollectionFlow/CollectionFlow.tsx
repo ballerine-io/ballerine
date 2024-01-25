@@ -130,8 +130,6 @@ export const CollectionFlow = withSessionProtected(() => {
     setLogoLoaded(false);
   }, [customer?.logoImageUri]);
 
-  useCompleteLastStep();
-
   if (initialContext?.flowConfig?.appState === 'approved') return <Approved />;
   if (initialContext?.flowConfig?.appState == 'rejected') return <Rejected />;
 
