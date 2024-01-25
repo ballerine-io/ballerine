@@ -10,7 +10,7 @@
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check && tsc",
-    "_format": "prettier --write --plugin-search-dir=. \"./**/*.{cjs,js,ts,tsx,ts,mts}\"",
+    "format": "prettier --write --plugin-search-dir=. \"./**/*.{cjs,js,ts,tsx,ts,mts}\"",
     "format:check": "prettier --check --plugin-search-dir=. \"./**/*.{cjs,js,ts,tsx,ts,mts}\"",
     "lint": "eslint . --fix"
   },
