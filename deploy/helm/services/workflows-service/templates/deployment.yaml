@@ -1,5 +1,6 @@
 {{- if .Values.workflowService.enabled }}
-apiVersion: apps/v1
+# Request: Ensuring the deployment configuration for workflowService is correct
+apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
     name: {{ .Values.workflowService.nameOverride }}
@@ -15,10 +16,10 @@ spec:
     {{- if .Values.workflowService.updateStrategy }}
       rollingUpdate:
         {{- if .Values.workflowService.updateStrategy.maxSurge }}
-        maxSurge: {{ .Values.workflowService.updateStrategy.maxSurge}}
+        maxSurge: 25%
         {{- end }}
         {{- if .Values.workflowService.updateStrategy.maxUnavailable }}
-        maxUnavailable: {{ .Values.workflowService.updateStrategy.maxUnavailable }}
+        maxUnavailable: 25%
         {{- end }}
     {{- end }}
     selector:
@@ -41,7 +42,7 @@ spec:
             {{- end }}
             {{- if .Values.workflowService.migration }}
             - name: migration-init-container
-              image: {{ .Values.workflowService.image.registry }}/{{ .Values.workflowService.image.repository }}:{{ .Values.workflowService.image.tag }}
+              image: registry/repository:latest
               command: ['npm','run','db:init']
               envFrom:
                 - configMapRef:
@@ -51,7 +52,7 @@ spec:
             - name: {{ .Values.workflowService.nameOverride }}
               image: "{{ .Values.workflowService.image.registry }}/{{ .Values.workflowService.image.repository }}:{{ .Values.workflowService.image.tag }}"
               imagePullPolicy: {{ .Values.workflowService.image.pullPolicy }}
-              command: [ "dumb-init", "npm", "run", "prod" ]
+              command: [ "npm", "run", "start" ]
               envFrom:
                 - configMapRef:
                     name: {{ .Values.workflowService.nameOverride }}
