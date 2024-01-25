@@ -52,3 +52,36 @@ export const WorkflowDefinitionVariant = {
 } as const;
 
 export type TStateTags = typeof StateTags;
+
+export const ProcessStatus = {
+  DEFAULT: 'DEFAULT',
+  IDLE: 'IDLE',
+  IN_PROGRESS: 'IN_PROGRESS',
+  SUCCESS: 'SUCCESS',
+  ERROR: 'ERROR',
+  CANCELED: 'CANCELED',
+} as const;
+
+export const ProcessStatuses = [
+  ProcessStatus.IDLE,
+  ProcessStatus.IN_PROGRESS,
+  ProcessStatus.SUCCESS,
+  ProcessStatus.ERROR,
+  ProcessStatus.CANCELED,
+] as const satisfies ReadonlyArray<(typeof ProcessStatus)[keyof typeof ProcessStatus]>;
+
+export type TProcessStatus = (typeof ProcessStatuses)[number];
+
+export type TProcessStatuses = typeof ProcessStatuses;
+
+export const UnifiedApiReason = {
+  NOT_IMPLEMENTED: 'NOT_IMPLEMENTED',
+} as const;
+
+export const UnifiedApiReasons = [
+  UnifiedApiReason.NOT_IMPLEMENTED,
+] as const satisfies ReadonlyArray<(typeof UnifiedApiReason)[keyof typeof UnifiedApiReason]>;
+
+export type TUnifiedApiReason = (typeof UnifiedApiReasons)[number];
+
+export type TUnifiedApiReasons = typeof UnifiedApiReasons;

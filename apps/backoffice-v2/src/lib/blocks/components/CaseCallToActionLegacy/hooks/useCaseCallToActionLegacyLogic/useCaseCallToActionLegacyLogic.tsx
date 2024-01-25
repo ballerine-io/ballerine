@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 import { useApproveCaseAndDocumentsMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveCaseAndDocumentsMutation/useApproveCaseAndDocumentsMutation';
@@ -35,7 +35,7 @@ export const useCaseCallToActionLegacyLogic = ({
   // Queries
   const { data: session } = useAuthenticatedUserQuery();
   // Parent workflow
-  const { data: parentWorkflow } = useWorkflowQuery({
+  const { data: parentWorkflow } = useWorkflowByIdQuery({
     workflowId: parentWorkflowId,
     filterId,
   });

@@ -1,6 +1,6 @@
 import { useCurrentFilter } from '@/common/hooks/useCurrentFilter/useCurrentFilter';
 import { TFilter } from '@/domains/filters/fetchers';
-import { useWorkflowDefinitionByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowDefinitionByIdQuery/useWorkflowDefinitionByIdQuery';
+import { useWorkflowDefinitionByIdQuery } from '@/domains/workflow-definitions/hooks/queries/useWorkflowDefinitionByQuery/useWorkflowDefinitionByIdQuery';
 import { selectWorkflowDefinitionId } from '@/pages/Entities/components/CaseCreation/hooks/useCaseCreationWorkflowDefinition/selectors/select-workflow-definition-id';
 import { useMemo } from 'react';
 
