@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.workflowsdashboard.nameOverride }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ .Values.workflowsdashboard.nameOverride }}
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: '0'
+  selector:
+    matchLabels:
+      app: {{ .Values.workflowsdashboard.nameOverride }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.workflowsdashboard.nameOverride }}
+    spec:
+      containers:
+        - name: {{ .Values.workflowsdashboard.nameOverride }}
+          image: "{{ .Values.workflowsdashboard.image.registry }}/{{ .Values.workflowsdashboard.image.repository }}:{{ .Values.workflowsdashboard.image.tag }}"
+          imagePullPolicy: {{ .Values.workflowsdashboard.image.pullPolicy }}
+          command: ["sh", "-c", "echo 'Hello from the workflowsdashboard container'"]
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.workflowsdashboard.nameOverride }}
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: example-volume
+              mountPath: /path/to/volume
+      volumes:
+        - name: example-volume
+          persistentVolumeClaim:
+            claimName: example-claim
