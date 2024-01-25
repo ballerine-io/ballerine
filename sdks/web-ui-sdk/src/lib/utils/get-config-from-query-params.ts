@@ -1,5 +1,5 @@
 /**
- * @description Gets config specific query params as an object - see -docs url here-
+ * @description Gets config specific query params as an object
  */
 export const getConfigFromQueryParams = () => {
   // Make sure non-unrelated query params are passed to the config
