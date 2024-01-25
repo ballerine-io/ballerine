@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { AnyRecord, isObject, uniqueArray } from '@ballerine/common';
+import { AnyRecord, isObject, ProcessStatus, uniqueArray } from '@ballerine/common';
 import * as jsonLogic from 'json-logic-js';
 import type { ActionFunction, MachineOptions, StateMachine } from 'xstate';
 import { assign, createMachine, interpret } from 'xstate';
@@ -597,6 +597,16 @@ export class WorkflowRunner {
   }
 
   private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
+    if (apiPlugin.persistResponseDestination) {
+      this.#__context = this.mergeToContext(
+        this.#__context,
+        {
+          status: ProcessStatus.IN_PROGRESS,
+        },
+        apiPlugin.persistResponseDestination,
+      );
+    }
+
     // @ts-expect-error - multiple types of plugins return different responses
     const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(
       this.#__context,
@@ -612,17 +622,65 @@ export class WorkflowRunner {
       return;
     }
 
-    if (apiPlugin.persistResponseDestination && responseBody) {
+    const mergeAsyncCallbackPluginsOutputToContext = () => {
+      const { status: _status, ...responseBodyRest } = responseBody ?? {};
+
+      if (!apiPlugin.persistResponseDestination || !responseBody) {
+        this.#__context.pluginsOutput = {
+          ...(this.#__context.pluginsOutput || {}),
+          ...{
+            [apiPlugin.name]: responseBody
+              ? {
+                  data: responseBodyRest,
+                  ...(responseBody.error || error ? { status: ProcessStatus.ERROR } : {}),
+                }
+              : { error },
+          },
+        };
+
+        return;
+      }
+
       this.#__context = this.mergeToContext(
         this.#__context,
-        responseBody,
+        {
+          data: responseBodyRest,
+          ...(responseBody.error || error ? { status: ProcessStatus.ERROR } : {}),
+        },
         apiPlugin.persistResponseDestination,
       );
-    } else {
-      this.#__context.pluginsOutput = {
-        ...(this.#__context.pluginsOutput || {}),
-        ...{ [apiPlugin.name]: responseBody ? responseBody : { error: error } },
-      };
+    };
+
+    const mergePluginsOutputToContext = () => {
+      const { status, ...responseBodyRest } = responseBody ?? {};
+
+      if (!apiPlugin.persistResponseDestination || !responseBody) {
+        this.#__context.pluginsOutput = {
+          ...(this.#__context.pluginsOutput || {}),
+          ...{
+            [apiPlugin.name]: responseBody ? { status, data: responseBodyRest } : { error },
+          },
+        };
+
+        return;
+      }
+
+      this.#__context = this.mergeToContext(
+        this.#__context,
+        {
+          status,
+          data: responseBodyRest,
+        },
+        apiPlugin.persistResponseDestination,
+      );
+    };
+
+    if (apiPlugin.isAsyncCallback) {
+      mergeAsyncCallbackPluginsOutputToContext();
+    }
+
+    if (!apiPlugin.isAsyncCallback) {
+      mergePluginsOutputToContext();
     }
 
     await this.sendEvent({ type: callbackAction });
