@@ -7,7 +7,7 @@ metadata:
     labels:
       app: {{ .Values.headlessexample.nameOverride }}
 spec:
-    replicas: {{ .Values.headlessexample.replicas }}
+    replicas: 3
     {{- if .Values.headlessexample.strategyType }}
     strategy:
       type: {{ .Values.headlessexample.strategyType }}
@@ -29,6 +29,12 @@ spec:
             labels:
                 app: {{ .Values.headlessexample.nameOverride }}
         spec:
+          volumes:
+          - name: example-volume
+            persistentVolumeClaim:
+              claimName: example-claim
+          containers:
+            - name: headlessexample
             {{- with .Values.nodeSelector }}
             nodeSelector:
             {{- toYaml . | nindent 8 }}
@@ -37,10 +43,13 @@ spec:
             - name: {{ .Values.headlessexample.nameOverride }}
               image: "{{ .Values.headlessexample.image.registry }}/{{ .Values.headlessexample.image.repository }}:{{ .Values.headlessexample.image.tag }}"
               imagePullPolicy: {{ .Values.headlessexample.image.pullPolicy }}
-              command: ["nginx", "-g", "daemon off;"]
-              envFrom:
-                - configMapRef:
-                    name: {{ .Values.headlessexample.nameOverride }}
+              command: ["sh", "-c", "echo 'Hello from the headlessexample container'"]
+              env:
+                - name: ENV_VARIABLE_NAME
+                  value: ENV_VARIABLE_VALUE
+          volumeMounts:
+            - name: example-volume
+deadlePath: /path/to/deadle
             {{- if .Values.headlessexample.image.pullSecrets}}
             imagePullSecrets:
               - name: {{ .Values.headlessexample.image.pullSecrets }}
