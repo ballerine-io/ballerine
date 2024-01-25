@@ -15,6 +15,7 @@ export class ApiPlugin {
   successAction?: string;
   errorAction?: string;
   persistResponseDestination?: string;
+  displayName: string | undefined;
 
   constructor(pluginParams: IApiPluginParams) {
     this.name = pluginParams.name;
@@ -31,6 +32,8 @@ export class ApiPlugin {
     this.successAction = pluginParams.successAction;
     this.errorAction = pluginParams.errorAction;
     this.persistResponseDestination = pluginParams.persistResponseDestination;
+
+    this.displayName = pluginParams.displayName;
   }
 
   async invoke(context: TContext, config: unknown) {

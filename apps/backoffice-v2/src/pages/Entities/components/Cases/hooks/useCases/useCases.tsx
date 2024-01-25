@@ -4,7 +4,7 @@ import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUs
 import { useEntityType } from '@/common/hooks/useEntityType/useEntityType';
 import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { tagToBadgeData } from '@/pages/Entity/components/Case/consts';
-import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useParams } from 'react-router-dom';
 
 const sharedSortByOptions = [
@@ -43,7 +43,7 @@ export const useCases = () => {
   const [{ filterId, filter, sortBy }] = useSearchParamsByEntity();
   const entity = useEntityType();
 
-  const { data: workflow } = useWorkflowQuery({ workflowId, filterId });
+  const { data: workflow } = useWorkflowByIdQuery({ workflowId, filterId });
 
   const states = useMemo(
     () => workflow?.workflowDefinition.definition.states,

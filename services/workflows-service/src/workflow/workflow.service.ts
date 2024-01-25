@@ -52,6 +52,7 @@ import {
   Business,
   EndUser,
   Prisma,
+  UiDefinitionContext,
   WorkflowDefinition,
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
@@ -79,6 +80,7 @@ import {
 import mime from 'mime';
 import { env } from '@/env';
 import { AjvValidationError } from '@/errors';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { ajv } from '@/common/ajv/ajv.validator';
 
 type TEntityId = string;
@@ -131,6 +133,7 @@ export class WorkflowService {
     private readonly userService: UserService,
     private readonly salesforceService: SalesforceService,
     private readonly workflowTokenService: WorkflowTokenService,
+    private readonly uiDefinitionService: UiDefinitionService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
@@ -1496,6 +1499,7 @@ export class WorkflowService {
       {},
       projectIds,
     );
+
     config = merge(workflowDefinition.config, config);
     let validatedConfig: WorkflowConfig;
     try {
@@ -1558,6 +1562,45 @@ export class WorkflowService {
         currentProjectId,
         customer.name,
       );
+      let uiDefinition;
+
+      try {
+        uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
+          workflowDefinitionId,
+          UiDefinitionContext.collection_flow,
+          projectIds,
+          {},
+        );
+      } catch (err) {
+        if (isErrorWithMessage(err)) {
+          this.logger.error(err.message);
+        }
+      }
+
+      const uiSchema = (uiDefinition as Record<string, any>)?.uiSchema;
+
+      const createFlowConfig = (uiSchema: Record<string, any>) => {
+        return {
+          stepsProgress: (
+            uiSchema?.elements as Array<{
+              type: string;
+              number: number;
+              stateName: string;
+            }>
+          )?.reduce((acc, curr) => {
+            if (curr?.type !== 'page') {
+              return acc;
+            }
+
+            acc[curr?.stateName] = {
+              number: curr?.number,
+              isCompleted: false,
+            };
+
+            return acc;
+          }, {} as { [key: string]: { number: number; isCompleted: boolean } }),
+        };
+      };
 
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
         data: {
@@ -1566,6 +1609,7 @@ export class WorkflowService {
           context: {
             ...contextToInsert,
             documents: documentsWithPersistedImages,
+            flowConfig: (contextToInsert as any)?.flowConfig ?? createFlowConfig(uiSchema),
           } as InputJsonValue,
           config: mergedConfig as InputJsonValue,
           // @ts-expect-error - error from Prisma types fix

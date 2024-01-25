@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { workflowsQueryKeys } from '../../../query-keys';
 
-export const useWorkflowQuery = ({
+export const useWorkflowByIdQuery = ({
   workflowId,
   filterId,
 }: {

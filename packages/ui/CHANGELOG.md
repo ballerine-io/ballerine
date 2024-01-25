@@ -1,5 +1,14 @@
 # @ballerine/ui
 
+## 0.3.26
+
+### Patch Changes
+
+- 0d9eefa07: added accordion card component
+- Added process tracker changes
+- Updated dependencies
+  - @ballerine/common@0.7.38
+
 ## 0.3.25
 
 ### Patch Changes

@@ -1,14 +1,14 @@
-import { TWorkflowDefinition } from '@/domains/workflows/fetchers';
+import { TWorkflowDefinitionById } from '@/domains/workflow-definitions/fetchers';
 import { FieldLayout } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/components/FieldLayout';
 import { SubmitSection } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/components/SubmitSection';
 import { useCaseCreationForm } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/hooks/useCaseCreationForm';
 import { useFormSchema } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/hooks/useFormSchema';
-import { transformErrors } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/utils/transformErrors';
-import { DynamicForm, baseLayouts } from '@ballerine/ui';
+import { transformErrors } from '@/pages/Entities/components/CaseCreation/components/CaseCreationForm/utils/transform-errors';
+import { baseLayouts, DynamicForm } from '@ballerine/ui';
 import { FunctionComponent } from 'react';
 
 interface FormProps {
-  workflowDefinition: TWorkflowDefinition;
+  workflowDefinition: TWorkflowDefinitionById;
 }
 
 const layouts = {

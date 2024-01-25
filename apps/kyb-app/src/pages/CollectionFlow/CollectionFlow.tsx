@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
@@ -26,6 +26,7 @@ import { Success } from '@/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
 import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import set from 'lodash/set';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 
 const elems = {
   h1: Title,
@@ -45,6 +46,36 @@ const elems = {
   'submit-button': SubmitButton,
   stepper: StepperUI,
   divider: Divider,
+};
+
+// TODO: Find a way to make this work via the workflow-browser-sdk `subscribe` method.
+export const useCompleteLastStep = () => {
+  const { stateApi, state } = useStateManagerContext();
+  const { language } = useLanguageParam();
+  const { data: schema } = useUISchemasQuery(language);
+  const { refetch } = useFlowContextQuery();
+  const elements = schema?.uiSchema?.elements;
+  const isPendingSync = useRef(false);
+
+  useEffect(() => {
+    (async () => {
+      if (state !== 'finish') return;
+
+      const { data: context } = await refetch();
+
+      if (
+        !context ||
+        context?.flowConfig?.stepsProgress?.[elements?.at(-1)?.stateName ?? '']?.isCompleted ||
+        isPendingSync.current
+      ) {
+        return;
+      }
+
+      set(context, `flowConfig.stepsProgress.${elements?.at(-1)?.stateName}.isCompleted`, true);
+      await stateApi.invokePlugin('sync_workflow_runtime');
+      isPendingSync.current = true;
+    })();
+  }, [elements, refetch, state, stateApi]);
 };
 
 export const CollectionFlow = withSessionProtected(() => {

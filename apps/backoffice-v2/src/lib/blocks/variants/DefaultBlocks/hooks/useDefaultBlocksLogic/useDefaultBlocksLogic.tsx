@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
@@ -44,7 +44,7 @@ import {
 export const useDefaultBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
   const filterId = useFilterId();
-  const { data: workflow, isLoading } = useWorkflowQuery({
+  const { data: workflow, isLoading } = useWorkflowByIdQuery({
     workflowId,
     filterId,
   });
