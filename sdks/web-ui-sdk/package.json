@@ -47,7 +47,7 @@
     "playwright:install": "playwright install --with-deps",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "_format": "prettier --write \"./**/*.{cjs,js,svelte,html,ts,mts}\"",
-    "format:check": "prettier --check \"./**/*.{cjs,js,svelte,html,ts,mts}\"",
+    "_format:check": "prettier --check \"./**/*.{cjs,js,svelte,html,ts,mts}\"",
     "lint": "eslint \"./**/*.{cjs,js,ts,mts,svelte}\" --fix",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
