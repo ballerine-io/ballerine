@@ -7,7 +7,7 @@ export const useCurrentFilter = () => {
   const { data: filters } = useFiltersQuery();
 
   const currentFilter = useMemo(
-    () => filters?.find(filter => filter.id === filterId) ?? null,
+    () => filters?.find(filter => filter.id === filterId),
     [filterId, filters],
   );
 
