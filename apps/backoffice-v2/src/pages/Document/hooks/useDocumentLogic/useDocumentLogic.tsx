@@ -5,9 +5,9 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { CommunicationChannelEvent, CommunicationChannel } from '@/common/enums';
+import { CommunicationChannel, CommunicationChannelEvent } from '@/common/enums';
 
 export const useDocumentLogic = () => {
   const { state } = useLocation();
@@ -58,7 +58,7 @@ export const useDocumentLogic = () => {
     };
   }, [broadcastChannel, handler]);
 
-  const { data: workflow, isLoading: isLoadingWorkflow } = useWorkflowQuery({
+  const { data: workflow, isLoading: isLoadingWorkflow } = useWorkflowByIdQuery({
     workflowId: entityId,
     filterId,
   });

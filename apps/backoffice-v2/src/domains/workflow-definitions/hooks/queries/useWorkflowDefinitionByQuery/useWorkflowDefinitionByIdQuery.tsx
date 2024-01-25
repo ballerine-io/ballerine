@@ -1,5 +1,5 @@
+import { workflowDefinitionsQueryKeys } from '@/domains/workflow-definitions/query-keys';
 import { useQuery } from '@tanstack/react-query';
-import { workflowsQueryKeys } from '../../../query-keys';
 
 export const useWorkflowDefinitionByIdQuery = ({
   workflowDefinitionId,
@@ -7,7 +7,7 @@ export const useWorkflowDefinitionByIdQuery = ({
   workflowDefinitionId: string;
 }) => {
   return useQuery({
-    ...workflowsQueryKeys.workflowDefinitionById({ workflowDefinitionId }),
+    ...workflowDefinitionsQueryKeys.byId({ workflowDefinitionId }),
     enabled: !!workflowDefinitionId,
     staleTime: 10_000,
   });

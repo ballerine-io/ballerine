@@ -13,7 +13,7 @@ import { useApproveCaseAndDocumentsMutation } from '@/domains/entities/hooks/mut
 import { useRevisionCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useRevisionCaseAndDocumentsMutation/useRevisionCaseAndDocumentsMutation';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { ctw } from '@/common/utils/ctw/ctw';
@@ -581,7 +581,7 @@ export const useKycBlock = ({
   });
   const onMutateApproveCase = useCallback(() => mutateApproveCase(), [mutateApproveCase]);
   const filterId = useFilterId();
-  const { data: parentWorkflow } = useWorkflowQuery({
+  const { data: parentWorkflow } = useWorkflowByIdQuery({
     workflowId: parentWorkflowId,
     filterId,
   });
@@ -694,6 +694,9 @@ export const useKycBlock = ({
     .addCell({
       id: 'header',
       type: 'container',
+      props: {
+        className: 'items-start',
+      },
       value: createBlocksTyped()
         .addBlock()
         .addCell({
