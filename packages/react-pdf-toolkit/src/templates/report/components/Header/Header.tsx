@@ -1,4 +1,4 @@
-import { Badge } from '@/components/Badge';
+import { Badge } from '@/components/atoms/Badge';
 import { tw } from '@/theme';
 import { Image, Text, View } from '@react-pdf/renderer';
 import ballerinelogo from '../../../../assets/ballerine-logo-report.png';
