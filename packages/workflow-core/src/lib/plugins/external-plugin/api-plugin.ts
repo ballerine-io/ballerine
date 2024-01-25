@@ -16,6 +16,7 @@ export class ApiPlugin {
   errorAction?: string;
   persistResponseDestination?: string;
   displayName: string | undefined;
+  isAsyncCallback: boolean;
 
   constructor(pluginParams: IApiPluginParams) {
     this.name = pluginParams.name;
@@ -34,6 +35,23 @@ export class ApiPlugin {
     this.persistResponseDestination = pluginParams.persistResponseDestination;
 
     this.displayName = pluginParams.displayName;
+
+    const checkIsAsyncCallback = (transformers: Transformers) => {
+      const transformersMapping = transformers
+        .filter(
+          (
+            transformer,
+          ): transformer is Omit<typeof transformer, 'mapping'> & {
+            mapping: string;
+          } => typeof transformer?.mapping === 'string',
+        )
+        .flatMap(({ mapping }) => mapping)
+        .join(' ');
+
+      return transformersMapping.includes('callbackUrl:');
+    };
+
+    this.isAsyncCallback = checkIsAsyncCallback(this.request.transformers);
   }
 
   async invoke(context: TContext, config: unknown) {

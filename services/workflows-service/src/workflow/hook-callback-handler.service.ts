@@ -1,7 +1,7 @@
 import { set } from 'lodash';
 import { Injectable } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { AnyRecord } from '@ballerine/common';
+import { AnyRecord, ProcessStatus } from '@ballerine/common';
 import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
@@ -43,7 +43,10 @@ export class HookCallbackHandlerService {
       );
     }
 
-    set(workflowRuntime.context, resultDestinationPath, data);
+    set(workflowRuntime.context, resultDestinationPath, {
+      data,
+      status: ProcessStatus.SUCCESS,
+    });
 
     await this.workflowService.updateWorkflowRuntimeData(
       workflowRuntime.id,
