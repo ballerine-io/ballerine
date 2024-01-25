@@ -34,7 +34,7 @@ export const getConfigFromQueryParams = () => {
   return Object.entries(queryParamsConfig).reduce((acc, [key, value]) => {
     if (!value) return acc;
 
-    // TODO: Remove casting and fix the type
+    // @TODO: Remove casting and fix the type
     acc[key as keyof typeof queryParamsConfig] = value;
 
     return acc;
