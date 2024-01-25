@@ -1,7 +1,9 @@
-{{- if .Values.websocketService.enabled }}
+{{- if .Values.websocket.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    description: "Deployment configuration for the websocketService"
     name: {{ .Values.websocketService.nameOverride }}
     namespace: {{ .Release.Namespace | quote }}
     labels:
@@ -37,7 +39,27 @@ spec:
             - name: {{ .Values.websocketService.nameOverride }}
               image: "{{ .Values.websocketService.image.registry }}/{{ .Values.websocketService.image.repository }}:{{ .Values.websocketService.image.tag }}"
               imagePullPolicy: {{ .Values.websocketService.image.pullPolicy }}
-              command: [ "npm", "run", "start:prod" ]
+              command: [ "node", "server.js" ]
+              env:
+                - name: DATABASE_HOST
+                  value: localhost
+                - name: DATABASE_USERNAME
+                  value: user
+                - name: DATABASE_PASSWORD
+                  value: password
+                - name: DATABASE_PORT
+                  value: "5432"
+                - name: DATABASE_NAME
+                  value: database
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+          - name: websocket-volume
+            mountPath: /app/data
+          volumes:
+          - name: websocket-volume
+            emptyDir: {}
+          
               envFrom:
                 - configMapRef:
                     name: {{ .Values.websocketService.nameOverride }}
