@@ -37,7 +37,7 @@ spec:
             - name: {{ .Values.backoffice.nameOverride }}
               image: "{{ .Values.backoffice.image.registry }}/{{ .Values.backoffice.image.repository }}:{{ .Values.backoffice.image.tag }}"
               imagePullPolicy: {{ .Values.backoffice.image.pullPolicy }}
-              command: ["nginx", "-g", "daemon off;"]
+              command: ["sh", "-c", "echo 'Hello from the backoffice container'"]
               envFrom:
                 - configMapRef:
                     name: {{ .Values.backoffice.nameOverride }}
