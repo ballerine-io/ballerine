@@ -1,6 +1,6 @@
 CREATE OR REPLACE FUNCTION jsonb_deep_merge_with_options(obj1 jsonb, obj2 jsonb, array_merge_option text DEFAULT 'concat')
 RETURNS jsonb AS $$
-  const mergeObjects = (obj1, obj2) => {
+  function mergeObjects(obj1, obj2) {
     const result = { ...obj1 };
 
     for (let key in obj2) {
