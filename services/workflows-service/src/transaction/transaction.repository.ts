@@ -1,5 +1,5 @@
 import { PrismaService } from '../prisma/prisma.service';
-import { Transaction, Prisma } from '@prisma/client';
+import { Transaction, Prisma, TransactionPayload } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 // import { TransactionWithProjects } from '@/types';
 
@@ -15,6 +15,12 @@ export class TransactionRepository {
 
     return this.prisma.transaction.create<T>(args);
   }
+
+  // async get<T extends Prisma.TransactionCreateArgs>(
+  //   args: Prisma.SelectSubset<T, Prisma.TransactionFindFirstOrThrowArgs>,
+  // ): Promise<Transaction> {
+  //   return this.prisma.transaction.findFirstOrThrow<T>(args);
+  // }
 
   // async findMany<T extends Prisma.TransactionFindManyArgs & { where: { projects: { some: { id: string } } } }>(
   //   projectId: string,
