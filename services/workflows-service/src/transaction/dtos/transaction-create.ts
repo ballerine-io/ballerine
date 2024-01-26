@@ -19,8 +19,8 @@ class SenderInfo {
   @ApiProperty({ required: false }) @IsString() @IsOptional() ipAddress?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() geoLocation?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() userAgent?: string;
-  @ApiProperty({ required: false }) @IsBoolean() @IsOptional() PEPStatus?: boolean;
-  @ApiProperty({ required: false }) @IsBoolean() @IsOptional() sanctionListMatchStatus?: boolean;
+  @ApiProperty({ required: false }) @IsBoolean() @IsOptional() PEPStatus?: string;
+  @ApiProperty({ required: false }) @IsBoolean() @IsOptional() sanctionListMatchStatus?: string;
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
@@ -37,8 +37,8 @@ class RecipientInfo {
   @IsString()
   @IsOptional()
   verificationStatus?: VerificationStatus;
-  @ApiProperty({ required: false }) @IsBoolean() @IsOptional() sanctionListMatchStatus?: boolean;
-  @ApiProperty({ required: false }) @IsBoolean() @IsOptional() PEPStatus?: boolean;
+  @ApiProperty({ required: false }) @IsBoolean() @IsOptional() sanctionListMatchStatus?: string;
+  @ApiProperty({ required: false }) @IsBoolean() @IsOptional() PEPStatus?: string;
 }
 
 class PaymentInfo {
@@ -59,10 +59,11 @@ class ProductInfo {
 }
 
 export class TransactionCreateDto {
-  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() correlationId!: string;
   @ApiProperty({ required: true }) @IsDate() @IsNotEmpty() date!: Date;
   @ApiProperty({ required: true }) @IsNumber() @IsNotEmpty() amount!: number;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() currency!: string;
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() projectId!: string;
+  @ApiProperty({ required: false }) @IsString() @IsOptional() correlationId?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() description?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() category?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() type?: TransactionType;
@@ -90,5 +91,4 @@ export class TransactionCreateDto {
   // Nullable relations
   @ApiProperty({ required: false }) @IsString() @IsOptional() businessId?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() endUserId?: string;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() projectId?: string;
 }

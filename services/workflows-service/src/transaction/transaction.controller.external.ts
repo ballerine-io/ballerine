@@ -7,7 +7,6 @@ import { TransactionCreateDto } from '@/transaction/dtos/transaction-create';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 
 import * as types from '@/types';
-import { createDemoMockData } from '../../scripts/workflows/workflow-runtime';
 import { PrismaService } from '@/prisma/prisma.service';
 
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
@@ -30,7 +29,6 @@ export class TransactionControllerExternal {
     @ProjectIds() projectIds: types.TProjectIds,
     @CurrentProject() currentProjectId: types.TProjectId,
   ) {
-
     const projectName = await this.prisma.project.findUnique({
       where: {
         id: currentProjectId,
