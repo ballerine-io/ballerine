@@ -414,24 +414,11 @@ enum TransactionType {
   Chargeback
 }
 
-enum TransactionStatus {
-  Pending
-  Completed
-  Cancelled
-  Failed
-}
-
 enum ReviewStatus {
   Pending
   Reviewed
   Flagged
   Cleared
-}
-
-enum RiskLevel {
-  Low
-  Medium
-  High
 }
 
 enum VerificationStatus {
@@ -440,19 +427,7 @@ enum VerificationStatus {
   Pending
 }
 
-enum MatchStatus {
-  Matched
-  NotMatched
-  Pending
-}
-
-enum RiskScoreType {
-  LowRisk
-  MediumRisk
-  HighRisk
-}
-
-enum Status {
+enum TransactionStatus {
   New
   Pending
   Active
@@ -463,47 +438,66 @@ enum Status {
 }
 
 model Transaction {
-  id                  String   @id @default(cuid())
-  correlationId       String   @unique @db.VarChar
-  transactionDate     DateTime // Date and time of the transaction
-  transactionAmount   Float // Amount of the transaction
-  transactionCurrency String // Currency of the transaction
+  id                       String            @id @default(cuid())
+  transactionCorrelationId String?            @unique @db.VarChar
+  transactionDate          DateTime // Date and time of the transaction
+  transactionAmount        Float // Amount of the transaction
+  transactionCurrency      String // Currency of the transaction
+  transactionDescription   String? // Description of the transaction
+  transactionCategory      String? // Category of the transaction
+  transactionType          TransactionType? // Enum for transaction type
+  transactionStatus        TransactionStatus @default(Completed)
+  transactionStatusReason  String? // Reason for the transaction status
 
   senderAccountId               String? // Account ID of the sender
   senderName                    String? // Name of the sender
+  senderCorrelationId           String?
   senderCountry                 String? // Country of the sender
-  recipientAccountId            String? // Account ID of the recipient
-  recipientName                 String? // Name of the recipient
-  recipientCountry              String? // Country of the recipient
-  paymentMethod                 String? // Payment method used for the transaction
-  Status                        String? // Current status of the transaction
-  transactionCategory           String? // Category of the transaction
-  relatedTransactions           Json? // Related transaction IDs (if any)
-  riskScore                     Float? // Risk score assigned to the transaction
-  reviewStatus                  String? // Review status of the transaction
-  reviewerComments              String? // Comments from the reviewer (if any)
-  sourceOfFunds                 String // Description of the source of funds
-  destinationOfFunds            String // Description of the destination of funds
-  correspondentBankName         String? // Name of the correspondent bank (if applicable)
-  additionalInfo                Json? // Additional information related to the transaction
   senderIpAddress               String? // IP address of the transaction initiator
   senderGeoLocation             String? // Geolocation of the transaction initiator
   senderUserAgent               String? // User agent of the device used for the transaction
-  industryCode                  String? // Industry code related to the transaction
   senderPEPStatus               String? // Indicator if the transaction involves a politically exposed person
   senderSanctionListMatchStatus String? // Indicator if the transaction involves an entity on the sanction list
-  transactionType               TransactionType? // Enum for transaction type
-  riskScoreType                 RiskScoreType? // Enum for categorizing risk score
   senderVerificationStatus      VerificationStatus? // Enum for verification status
-  recipientVerificationStatus   VerificationStatus? // Enum for verification status
-  unusualActivityFlags          Json? // Flags indicating unusual activity in the transaction
 
-  regulatoryAuthority     String? // Regulatory authority overseeing the business involved
-  regulatoryActionHistory Json? // History of regulatory actions against the business involved
-  auditTrail              Json? // Audit trail for the transaction
-  comment                 String?
-  tags                    Json?
-  transactionStatus       Status  @default(Completed)
+  recipientAccountId               String? // Account ID of the recipient
+  recipientName                    String? // Name of the recipient
+  recipientCorrelationId           String? // Name of the recipient
+  recipientCountry                 String? // Country of the recipient
+  recipientVerificationStatus      VerificationStatus? // Enum for verification status
+  recipientSanctionListMatchStatus String? // Indicator if the transaction involves an entity on the sanction list
+  recipientPEPStatus               String? // Indicator if the transaction involves a politically exposed person
+
+  paymentMethod    String? // Payment method used for the transaction
+  paymentType      String? // Payment type used for the transaction
+  paymentChannel   String? // Payment channel used for the transaction
+  paymentIssuer    String? // Payment issuer used for the transaction
+  paymentGateway   String? // Payment gateway used for the transaction
+  paymentAcquirer  String? // Payment acquirer used for the transaction
+  paymentProcessor String? // Payment processor used for the transaction
+
+  cardFingerprint   String?
+  cardIssuedCountry String?
+  completed3ds      Boolean?
+  cardType          String?
+  cardIssuer        String?
+  cardBrand         String?
+
+  cardExpiryMonth String?
+  cardExpiryYear  String?
+  cardHolderName  String?
+  cardTokenized   String?
+
+  tags             Json?
+  reviewStatus     String? // Review status of the transaction
+  reviewerComments String? // Comments from the reviewer (if any)
+  auditTrail       Json? // Audit trail for the transaction
+
+  unusualActivityFlags Json? // Flags indicating unusual activity in the transaction
+  riskScore            Float? // Risk score assigned to the transaction
+  regulatoryAuthority  String? // Regulatory authority overseeing the business involved
+
+  additionalInfo Json? // Additional information related to the transaction
 
   // Fields for merchant transactions
   productName        String?
@@ -526,9 +520,8 @@ model Transaction {
   @@index([businessId])
   @@index([endUserId])
   @@index([transactionType])
-  @@index([senderAccountId, recipientAccountId])
   @@index([transactionDate])
   @@index([reviewStatus])
   @@index([projectId])
-  @@index([correlationId])
+  @@index([transactionCorrelationId])
 }
