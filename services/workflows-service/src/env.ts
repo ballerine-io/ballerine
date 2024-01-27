@@ -4,6 +4,13 @@ import { z } from 'zod';
 
 config({ path: process.env.CI ? '.env.example' : '.env' });
 
+const urlArrayTransformer = (value: string) => {
+  const urlSchema = z.string().url();
+  const urlArray = value.split(',');
+
+  return urlArray.map(url => urlSchema.parse(url)).sort((a, b) => a.length - b.length);
+};
+
 export const env = createEnv({
   /*
    * clientPrefix is required.
@@ -12,16 +19,16 @@ export const env = createEnv({
   server: {
     LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
     NODE_ENV: z.enum(['development', 'production', 'test', 'local']), // TODO: remove 'test', 'local'
-    ENVIRONMENT_NAME: z.enum(['development', 'production', 'staging', 'test', 'local']),
+    ENVIRONMENT_NAME: z.enum(['development', 'sandbox', 'production', 'staging', 'test', 'local']),
     ENV_FILE_NAME: z.string().optional(),
     BCRYPT_SALT: z.coerce.number().int().nonnegative().or(z.string()),
     PORT: z.coerce.number(),
     DB_URL: z.string().url(),
     SESSION_SECRET: z.string(),
     SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().nonnegative().gt(0).default(60),
-    BACKOFFICE_CORS_ORIGIN: z.string().url(),
-    WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().url(),
-    KYB_EXAMPLE_CORS_ORIGIN: z.string().url(),
+    BACKOFFICE_CORS_ORIGIN: z.string().transform(urlArrayTransformer),
+    WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().transform(urlArrayTransformer),
+    KYB_EXAMPLE_CORS_ORIGIN: z.string().transform(urlArrayTransformer),
     AWS_S3_BUCKET_NAME: z.string().optional(),
     AWS_S3_BUCKET_KEY: z.string().optional(),
     AWS_S3_BUCKET_SECRET: z.string().optional(),

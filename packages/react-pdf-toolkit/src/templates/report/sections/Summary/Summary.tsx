@@ -10,7 +10,7 @@ export interface SummaryProps {
 
 export const SummarySection: FunctionComponent<SummaryProps> = ({ data }) => {
   const {
-    transactionLaunderingRiskScore,
+    transactionLaunderingRiskScore = 0,
     websiteSummary,
     pricingSummary,
     riskSummary,
@@ -20,15 +20,13 @@ export const SummarySection: FunctionComponent<SummaryProps> = ({ data }) => {
   return (
     <Section title="Summary">
       <Section.Blocks>
-        {transactionLaunderingRiskScore && (
-          <Section.Blocks.Block>
-            <Section.Blocks.Block.Label text="Transaction Laundering Risk Score" />
-            <Badge
-              text={String(transactionLaunderingRiskScore)}
-              variant={resolveBadgeStyleToRiskScore(transactionLaunderingRiskScore)}
-            />
-          </Section.Blocks.Block>
-        )}
+        <Section.Blocks.Block>
+          <Section.Blocks.Block.Label text="Transaction Laundering Risk Score" />
+          <Badge
+            text={String(transactionLaunderingRiskScore || 0)}
+            variant={resolveBadgeStyleToRiskScore(transactionLaunderingRiskScore)}
+          />
+        </Section.Blocks.Block>
       </Section.Blocks>
       {websiteSummary && (
         <Section.SummaryBlock>

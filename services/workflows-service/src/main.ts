@@ -21,22 +21,15 @@ import { AppLoggerService } from './common/app-logger/app-logger.service';
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
 global.__rootdir__ = __dirname || process.cwd();
 
-const corsOrigins =
-  env.ENVIRONMENT_NAME === 'production'
-    ? [
-        env.BACKOFFICE_CORS_ORIGIN,
-        env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
-        env.KYB_EXAMPLE_CORS_ORIGIN,
-        /\.ballerine\.app$/,
-      ]
-    : [
-        env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
-        env.KYB_EXAMPLE_CORS_ORIGIN,
-        /\.ballerine\.dev$/,
-        /\.ballerine\.app$/,
-        /\.ballerine\.io$/,
-        /^http:\/\/localhost:\d+$/,
-      ];
+const devOrigins = [/\.ballerine\.dev$/, /\.ballerine\.io$/, /^http:\/\/localhost:\d+$/];
+
+const corsOrigins = [
+  ...env.BACKOFFICE_CORS_ORIGIN,
+  ...env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
+  ...env.KYB_EXAMPLE_CORS_ORIGIN,
+  /\.ballerine\.app$/,
+  ...(env.ENVIRONMENT_NAME !== 'production' ? devOrigins : []),
+];
 
 const main = async () => {
   const app = await NestFactory.create(AppModule, {

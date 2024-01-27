@@ -38,33 +38,41 @@ class FakeEntityRepo extends BaseFakeRepository {
   }
 }
 
-export const buildWorkflowDefinition = (sequenceNum: number, projectId?: string) => ({
-  id: sequenceNum.toString(),
-  name: `name ${sequenceNum}`,
-  version: sequenceNum,
-  definition: {
-    initial: 'initial',
-    states: {
-      initial: {
-        on: {
-          COMPLETE: 'completed',
+class FakeUiDefinitionService extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
+export const buildWorkflowDefinition = (sequenceNum: number, projectId?: string) => {
+  return {
+    id: sequenceNum.toString(),
+    name: `name ${sequenceNum}`,
+    version: sequenceNum,
+    definition: {
+      initial: 'initial',
+      states: {
+        initial: {
+          on: {
+            COMPLETE: 'completed',
+          },
+        },
+        completed: {
+          type: 'final',
         },
       },
-      completed: {
-        type: 'final',
-      },
     },
-  },
-  definitionType: `definitionType ${sequenceNum}`,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  contextSchema: {
-    type: 'json-schema',
-    schema: {},
-  },
-  projectId: projectId,
-  isPublic: false,
-});
+    definitionType: `definitionType ${sequenceNum}`,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    contextSchema: {
+      type: 'json-schema',
+      schema: {},
+    },
+    projectId: projectId,
+    isPublic: false,
+  };
+};
 
 describe('WorkflowControllerInternal', () => {
   let controller;
@@ -78,6 +86,7 @@ describe('WorkflowControllerInternal', () => {
   let userService;
   let salesforceService;
   let workflowTokenService;
+  let uiDefinitionService;
   const numbUserInfo = Symbol();
   let testingModule: TestingModule;
 
@@ -98,6 +107,7 @@ describe('WorkflowControllerInternal', () => {
     userService = new FakeEntityRepo();
     salesforceService = new FakeEntityRepo();
     workflowTokenService = new FakeEntityRepo();
+    uiDefinitionService = new FakeUiDefinitionService();
 
     eventEmitterSpy = {
       emitted: [],
@@ -121,6 +131,7 @@ describe('WorkflowControllerInternal', () => {
       userService,
       salesforceService,
       workflowTokenService,
+      uiDefinitionService,
     );
     const filterService = {} as any;
     const rolesBuilder = {} as any;

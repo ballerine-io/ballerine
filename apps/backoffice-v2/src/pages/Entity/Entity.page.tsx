@@ -2,8 +2,10 @@ import { Case } from './components/Case/Case';
 import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
 import { BlocksVariant } from '@/lib/blocks/variants/BlocksVariant/BlocksVariant';
 
+import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
+
 export const Entity = () => {
-  const { workflow, selectedEntity } = useEntityLogic();
+  const { workflow, selectedEntity, plugins } = useEntityLogic();
 
   // Selected entity
   return (
@@ -19,6 +21,14 @@ export const Entity = () => {
         }
       />
       <Case.Content key={selectedEntity?.id}>
+        {workflow?.workflowDefinition?.config?.isCaseOverviewEnabled && (
+          <ProcessTracker
+            tags={workflow?.tags ?? []}
+            plugins={plugins}
+            context={workflow?.context}
+            childWorkflows={workflow?.childWorkflows ?? []}
+          />
+        )}
         {workflow?.workflowDefinition && (
           <BlocksVariant
             workflowDefinition={{

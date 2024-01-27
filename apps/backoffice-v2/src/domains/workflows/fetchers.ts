@@ -1,13 +1,15 @@
+import { env } from '@/common/env/env';
 import qs from 'qs';
 import { deepCamelKeys } from 'string-ts';
 import { z } from 'zod';
-import { apiClient } from '../../common/api-client/api-client';
-import { Method, States } from '../../common/enums';
-import { handleZodError } from '../../common/utils/handle-zod-error/handle-zod-error';
-import { ObjectWithIdSchema } from '../../lib/zod/utils/object-with-id/object-with-id';
-import { zPropertyKey } from '../../lib/zod/utils/z-property-key/z-property-key';
+import { apiClient } from '@/common/api-client/api-client';
+import { Method, States } from '@/common/enums';
+import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
+import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
+import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
 import { IWorkflowId } from './interfaces';
-import { WorkflowDefinitionVariant } from '@ballerine/common';
+import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
+import { WorkflowDefinitionByIdSchema } from '@/domains/workflow-definitions/fetchers';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -60,14 +62,7 @@ export const BaseWorkflowByIdSchema = z.object({
   state: z.string().nullable(),
   nextEvents: z.array(z.any()),
   tags: z.array(z.string()).nullable().optional(),
-  workflowDefinition: ObjectWithIdSchema.extend({
-    name: z.string(),
-    version: z.number(),
-    variant: z.string().default(WorkflowDefinitionVariant.DEFAULT),
-    contextSchema: z.record(z.any(), z.any()).nullable(),
-    documentsSchema: z.array(z.any()).optional().nullable(),
-    config: z.record(z.any(), z.any()).nullable(),
-  }),
+  workflowDefinition: WorkflowDefinitionByIdSchema,
   createdAt: z.string().datetime(),
   context: z.object({
     documents: z.array(z.any()).default([]),
@@ -83,6 +78,18 @@ export const BaseWorkflowByIdSchema = z.object({
       })
       .passthrough()
       .optional(),
+    flowConfig: z
+      .object({
+        stepsProgress: z.record(
+          z.string(),
+          z.object({
+            // TODO Until backwards compatibility is handled
+            number: z.number().default(0),
+            isCompleted: z.boolean(),
+          }),
+        ),
+      })
+      .optional(),
   }),
   entity: ObjectWithIdSchema.extend({
     name: z.string(),
@@ -97,7 +104,17 @@ export const BaseWorkflowByIdSchema = z.object({
 });
 
 export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
-  childWorkflows: z.array(BaseWorkflowByIdSchema).optional(),
+  childWorkflows: z
+    .array(
+      BaseWorkflowByIdSchema.omit({
+        context: true,
+      }).extend({
+        context: BaseWorkflowByIdSchema.shape.context.omit({
+          flowConfig: true,
+        }),
+      }),
+    )
+    .optional(),
 });
 
 export const fetchWorkflowById = async ({
@@ -249,6 +266,26 @@ export const fetchWorkflowEventDecision = async ({
     endpoint: `workflows/${workflowId}/event-decision`,
     method: Method.PATCH,
     body,
+    schema: z.any(),
+  });
+
+  return handleZodError(error, workflow);
+};
+
+export const createWorkflowRequest = async ({
+  workflowDefinitionId,
+  context,
+}: {
+  workflowDefinitionId: string;
+  context: TWorkflowById['context'];
+}) => {
+  const [workflow, error] = await apiClient({
+    method: Method.POST,
+    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/case-management`,
+    body: {
+      workflowId: workflowDefinitionId,
+      context,
+    },
     schema: z.any(),
   });
 

@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
@@ -32,7 +32,7 @@ import { useAssociatedCompaniesInformationBlock } from '@/lib/blocks/hooks/useAs
 export const useKybExampleBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
   const filterId = useFilterId();
-  const { data: workflow, isLoading } = useWorkflowQuery({
+  const { data: workflow, isLoading } = useWorkflowByIdQuery({
     workflowId: workflowId ?? '',
     filterId: filterId ?? '',
   });
@@ -104,16 +104,8 @@ export const useKybExampleBlocksLogic = () => {
           reason,
           contextUpdateMethod: 'base',
         });
-        window.open(
-          `${workflow?.context?.metadata?.collectionFlowUrl}/?token=${workflow?.context?.metadata?.token}`,
-          '_blank',
-        );
       },
-    [
-      mutateRevisionTaskById,
-      workflow?.context?.metadata?.collectionFlowUrl,
-      workflow?.context?.metadata?.token,
-    ],
+    [mutateRevisionTaskById],
   );
   const onReuploadNeededDirectors = useCallback(
     ({

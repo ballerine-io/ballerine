@@ -23,6 +23,10 @@ import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/
 import { getPostDecisionEventName } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
 import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
+import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
+import { checkCanRevision } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-revision/check-can-revision';
+import { checkCanReject } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-reject/check-can-reject';
+import { checkCanApprove } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-approve/check-can-approve';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -33,6 +37,7 @@ export const useDocumentBlocks = ({
   onReuploadNeeded,
   isLoadingReuploadNeeded,
   dialog,
+  actions,
 }: {
   workflow: TWorkflowById;
   parentMachine: TWorkflowById['context']['parentMachine'];
@@ -54,6 +59,11 @@ export const useDocumentBlocks = ({
       Description: FunctionComponent;
     };
   };
+  actions?: {
+    reuploadNeeded?: {
+      isDisabled?: boolean;
+    };
+  };
 }) => {
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
   const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
@@ -68,6 +78,10 @@ export const useDocumentBlocks = ({
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id, postDecisionEventName);
+  const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(
+    workflow?.id,
+    postDecisionEventName,
+  );
   const onMutateApproveTaskById = useCallback(
     ({
         taskId,
@@ -103,6 +117,27 @@ export const useDocumentBlocks = ({
           decision?.status === CommonWorkflowStates.REVISION && (!isDoneWithRevision || noAction);
 
         const isLegacyReject = workflow?.workflowDefinition?.config?.isLegacyReject;
+        const canRevision = checkCanRevision({
+          caseState,
+          noAction,
+          workflow,
+          decision,
+          isLoadingRevision: isLoadingReuploadNeeded,
+        });
+        const canReject = checkCanReject({
+          caseState,
+          noAction,
+          workflow,
+          decision,
+          isLoadingReject: isLoadingRejectTaskById,
+        });
+        const canApprove = checkCanApprove({
+          caseState,
+          noAction,
+          workflow,
+          decision,
+          isLoadingApprove: isLoadingApproveTaskById,
+        });
         const getDecisionStatusOrAction = (isDocumentRevision: boolean) => {
           const badgeClassNames = 'text-sm font-bold';
 
@@ -133,7 +168,12 @@ export const useDocumentBlocks = ({
                     {!isLegacyReject && (
                       <X
                         className="h-4 w-4 cursor-pointer"
-                        onClick={() => onMutateRemoveDecisionById({ documentId: id })}
+                        onClick={() =>
+                          onMutateRemoveDecisionById({
+                            documentId: id,
+                            contextUpdateMethod: 'base',
+                          })
+                        }
                       />
                     )}
                   </React.Fragment>
@@ -202,9 +242,8 @@ export const useDocumentBlocks = ({
                   id,
                   workflow,
                   disabled:
-                    (!isDoneWithRevision && Boolean(decision?.status)) ||
-                    noAction ||
-                    !caseState.actionButtonsEnabled,
+                    actions?.reuploadNeeded?.isDisabled ||
+                    (isLegacyReject ? !canReject && !canRevision : !canRevision),
                   onReuploadNeeded,
                   isLoadingReuploadNeeded,
                   decision: 'reject',
@@ -221,11 +260,7 @@ export const useDocumentBlocks = ({
                   contextUpdateMethod: 'base',
                 }),
                 props: {
-                  disabled:
-                    (!isDoneWithRevision && Boolean(decision?.status)) ||
-                    noAction ||
-                    isLoadingApproveTaskById ||
-                    !caseState.actionButtonsEnabled,
+                  disabled: !canApprove,
                   size: 'wide',
                   variant: 'success',
                 },
@@ -246,6 +281,9 @@ export const useDocumentBlocks = ({
           .addCell({
             id: 'header',
             type: 'container',
+            props: {
+              className: 'items-start',
+            },
             value: createBlocksTyped()
               .addBlock()
               .addCell({

@@ -13,7 +13,7 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
   return (
     <>
       {data.map(websiteInfo => {
-        const { website, riskLevel, riskScore, indicators, riskAnalysis } = websiteInfo;
+        const { website, riskLevel, riskScore = 0, indicators, riskAnalysis } = websiteInfo;
         const { lineOfBusiness, reputation, traffic, pricing } = riskAnalysis || {};
 
         return (
@@ -25,12 +25,10 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
                   <Badge text={riskLevel} variant="error" />
                 </Section.Blocks.Block>
               )}
-              {riskScore && (
-                <Section.Blocks.Block>
-                  <Section.Blocks.Block.Label text="General Risk Score" />
-                  <Badge text={String(riskScore)} variant="error" />
-                </Section.Blocks.Block>
-              )}
+              <Section.Blocks.Block>
+                <Section.Blocks.Block.Label text="General Risk Score" />
+                <Badge text={String(riskScore || 0)} variant="error" />
+              </Section.Blocks.Block>
             </Section.Blocks>
             {indicators && !!indicators.length && (
               <Section.Indicators>
@@ -64,7 +62,7 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
                   <View style={tw('w-[140px]')}>
                     <Section.Blocks.Block>
                       <Section.Blocks.Block.Label text="Reputation risk score" />
-                      <Badge text={String(reputation.riskScore)} variant="warning" />
+                      <Badge text={String(reputation.riskScore || 0)} variant="warning" />
                     </Section.Blocks.Block>
                   </View>
                   <Section.Blocks.Block>
@@ -82,7 +80,7 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
                   <View style={tw('w-[140px]')}>
                     <Section.Blocks.Block>
                       <Section.Blocks.Block.Label text="Traffic risk score" />
-                      <Badge text={String(traffic.riskScore)} variant="warning" />
+                      <Badge text={String(traffic.riskScore || 0)} variant="warning" />
                     </Section.Blocks.Block>
                   </View>
                   <Section.Blocks.Block>
@@ -100,7 +98,7 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
                   <View style={tw('w-[140px]')}>
                     <Section.Blocks.Block>
                       <Section.Blocks.Block.Label text="Pricing risk score" />
-                      <Badge text={String(pricing.riskScore)} variant="success" />
+                      <Badge text={String(pricing.riskScore || 0)} variant="success" />
                     </Section.Blocks.Block>
                   </View>
                   <Section.Blocks.Block>

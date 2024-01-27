@@ -51,31 +51,39 @@ class FakeCustomerRepo extends BaseFakeRepository {
   }
 }
 
-const buildWorkflowDeifintion = (sequenceNum: number) => ({
-  id: sequenceNum.toString(),
-  name: `name ${sequenceNum}`,
-  version: sequenceNum,
-  definition: {
-    initial: 'initial',
-    states: {
-      initial: {
-        on: {
-          COMPLETE: 'completed',
+class FakeUiDefinitionService extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
+const buildWorkflowDeifintion = (sequenceNum: number) => {
+  return {
+    id: sequenceNum.toString(),
+    name: `name ${sequenceNum}`,
+    version: sequenceNum,
+    definition: {
+      initial: 'initial',
+      states: {
+        initial: {
+          on: {
+            COMPLETE: 'completed',
+          },
+        },
+        completed: {
+          type: 'final',
         },
       },
-      completed: {
-        type: 'final',
-      },
     },
-  },
-  definitionType: `definitionType ${sequenceNum}`,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  contextSchema: {
-    type: 'json-schema',
-    schema: {},
-  },
-});
+    definitionType: `definitionType ${sequenceNum}`,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    contextSchema: {
+      type: 'json-schema',
+      schema: {},
+    },
+  };
+};
 
 const buildDocument = (category: string, status: string, fileType = 'jpg') => ({
   category: category,
@@ -99,6 +107,7 @@ describe('WorkflowService', () => {
   let entityRepo;
   let userService;
   let workflowTokenService;
+  let uiDefinitionService;
   let salesforceService;
   let fakeHttpService;
   let testingModule: TestingModule;
@@ -129,6 +138,7 @@ describe('WorkflowService', () => {
     userService = new FakeEntityRepo();
     salesforceService = new FakeEntityRepo();
     workflowTokenService = new FakeEntityRepo();
+    uiDefinitionService = new FakeUiDefinitionService();
 
     fakeHttpService = {
       requests: [],
@@ -182,6 +192,7 @@ describe('WorkflowService', () => {
       userService,
       salesforceService,
       workflowTokenService,
+      uiDefinitionService,
     );
   });
 

@@ -13,7 +13,7 @@ export const ReputationSection: FunctionComponent<ReputationProps> = ({ data }) 
     summary,
     positiveSignals,
     negativeSignals,
-    reputationRiskScore,
+    reputationRiskScore = 0,
     reputationRedFlags,
     industryStandardComparison,
     keyReputationIndicators,
@@ -22,15 +22,13 @@ export const ReputationSection: FunctionComponent<ReputationProps> = ({ data }) 
   return (
     <Section title="Reputation">
       <Section.Blocks>
-        {reputationRiskScore && (
-          <Section.Blocks.Block>
-            <Section.Blocks.Block.Label text="Reputation Risk Score" />
-            <Badge
-              text={String(reputationRiskScore)}
-              variant={resolveBadgeStyleToRiskScore(reputationRiskScore)}
-            />
-          </Section.Blocks.Block>
-        )}
+        <Section.Blocks.Block>
+          <Section.Blocks.Block.Label text="Reputation Risk Score" />
+          <Badge
+            text={String(reputationRiskScore || 0)}
+            variant={resolveBadgeStyleToRiskScore(reputationRiskScore)}
+          />
+        </Section.Blocks.Block>
       </Section.Blocks>
       {summary && (
         <Section.SummaryBlock>

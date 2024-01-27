@@ -13,7 +13,7 @@ import { useApproveCaseAndDocumentsMutation } from '@/domains/entities/hooks/mut
 import { useRevisionCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useRevisionCaseAndDocumentsMutation/useRevisionCaseAndDocumentsMutation';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { ctw } from '@/common/utils/ctw/ctw';
@@ -177,9 +177,17 @@ export const useKycBlock = ({
     };
   };
 
+  const hasAml = kycSessionKeys?.some(key => {
+    return (
+      !!childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ||
+      !!childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml
+    );
+  });
   const complianceCheckResults = kycSessionKeys?.length
     ? kycSessionKeys?.flatMap(key => {
-        const { aml } = childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result ?? {};
+        const aml =
+          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ??
+          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml;
 
         if (!Object.keys(aml ?? {}).length) return [];
 
@@ -515,10 +523,10 @@ export const useKycBlock = ({
           .addCell({
             id: 'decision',
             type: 'details',
+            hideSeparator: index === collection.length - 1,
             value: {
               id: childWorkflow?.id,
               title: `Details`,
-              hideSeparator: index === collection.length - 1,
               data: Object.entries({
                 ...childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.entity?.data,
                 ...omitPropsFromObject(
@@ -573,7 +581,7 @@ export const useKycBlock = ({
   });
   const onMutateApproveCase = useCallback(() => mutateApproveCase(), [mutateApproveCase]);
   const filterId = useFilterId();
-  const { data: parentWorkflow } = useWorkflowQuery({
+  const { data: parentWorkflow } = useWorkflowByIdQuery({
     workflowId: parentWorkflowId,
     filterId,
   });
@@ -686,6 +694,9 @@ export const useKycBlock = ({
     .addCell({
       id: 'header',
       type: 'container',
+      props: {
+        className: 'items-start',
+      },
       value: createBlocksTyped()
         .addBlock()
         .addCell({
@@ -786,16 +797,18 @@ export const useKycBlock = ({
                 })
                 .addCell({
                   type: 'container',
-                  value: createBlocksTyped()
-                    .addBlock()
-                    .addCell({
-                      id: 'header',
-                      type: 'heading',
-                      value: 'Compliance Check Results',
-                    })
-                    .build()
-                    .concat(complianceCheckResults)
-                    .flat(1),
+                  value: !hasAml
+                    ? []
+                    : createBlocksTyped()
+                        .addBlock()
+                        .addCell({
+                          id: 'header',
+                          type: 'heading',
+                          value: 'Compliance Check Results',
+                        })
+                        .build()
+                        .concat(complianceCheckResults)
+                        .flat(1),
                 })
                 .build()
                 .flat(1),

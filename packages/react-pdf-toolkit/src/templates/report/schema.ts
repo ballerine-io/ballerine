@@ -1,135 +1,180 @@
 import { Static, Type } from '@sinclair/typebox';
 
-const Violation = Type.String();
-const Indicator = Type.String();
-const RiskCategory = Type.Object({
-  riskLevel: Type.String(),
-  riskScore: Type.Number(),
-  summary: Type.String(),
-});
-const RiskAnalysis = Type.Object({
-  lineOfBusiness: RiskCategory,
-  reputation: RiskCategory,
-  traffic: RiskCategory,
-  pricing: RiskCategory,
-});
-const WebsiteCheck = Type.Object({
-  website: Type.String(),
-  riskLevel: Type.String(),
-  riskScore: Type.Number(),
-  indicators: Type.Array(Indicator),
-  riskAnalysis: RiskAnalysis,
-});
-const EcosystemWebsite = Type.Object({
-  url: Type.String({ format: 'uri' }),
-  violations: Type.Array(Violation),
-  relatedNodeType: Type.String(),
-  relatedNode: Type.String(),
-  tlRiskScore: Type.Number(),
-});
-const EcosystemChecks = Type.Object({
-  riskLevel: Type.String(),
-  riskScore: Type.Number(),
-  url: Type.String({ format: 'uri' }),
-  checkCreatedAt: Type.String(),
-  generalSummary: Type.String(),
-  websites: Type.Array(EcosystemWebsite),
-});
-const ContactInfo = Type.Object({
-  analystName: Type.String(),
-  analystContact: Type.String(),
-});
-const Meta = Type.Object({
-  companyId: Type.String(),
-  reportId: Type.String(),
-  companyName: Type.String(),
-  generatedBy: Type.String(),
-  reportVersion: Type.String(),
-  assessmentMethodology: Type.String(),
-  contactInfo: ContactInfo,
-  confidentialityLevel: Type.String(),
-  reportFor: Type.String(),
-  disclaimer: Type.String(),
-  additionalNotes: Type.String(),
-});
-const Summary = Type.Object({
-  transactionLaunderingRiskScore: Type.Number(),
-  websiteSummary: Type.String(),
-  pricingSummary: Type.String(),
-  riskSummary: Type.String(),
-  violations: Type.Array(Violation),
+const ScoreValueType = Type.Optional(
+  Type.Union([Type.Null({ default: 0 }), Type.Number({ default: 0 })]),
+);
+
+const ViolationType = Type.String();
+const IndicatorType = Type.String();
+const RiskCategorySchema = Type.Object(
+  {
+    riskLevel: Type.Optional(Type.String()),
+    riskScore: ScoreValueType,
+    summary: Type.Optional(Type.String()),
+  },
+  { additionalProperties: false },
+);
+const RiskAnalysisSchema = Type.Object(
+  {
+    lineOfBusiness: RiskCategorySchema,
+    reputation: RiskCategorySchema,
+    traffic: RiskCategorySchema,
+    pricing: RiskCategorySchema,
+  },
+  { additionalProperties: false },
+);
+const WebsiteCheckSchema = Type.Object(
+  {
+    website: Type.Optional(Type.String()),
+    riskLevel: Type.Optional(Type.String()),
+    riskScore: ScoreValueType,
+    indicators: Type.Optional(Type.Array(IndicatorType)),
+    riskAnalysis: RiskAnalysisSchema,
+  },
+  { additionalProperties: false },
+);
+
+const EcosystemDomainSchema = Type.Object({
+  domain: Type.Optional(Type.String()),
+  href: Type.String(),
 });
 
-const Reputation = Type.Object({
-  summary: Type.String(),
-  negativeSignals: Type.String(),
-  positiveSignals: Type.String(),
-  reputationRedFlags: Type.String(),
-  reputationRiskScore: Type.Number(),
-  industryStandardComparison: Type.String(),
-  keyReputationIndicators: Type.Array(Indicator),
-});
+const EcosystemWebsiteSchema = Type.Object(
+  {
+    domain: EcosystemDomainSchema,
+    violations: Type.Optional(Type.Array(ViolationType)),
+    relatedNodeType: Type.Optional(Type.String()),
+    relatedNode: Type.Optional(Type.String()),
+    tlRiskScore: ScoreValueType,
+    url: Type.Optional(Type.String()),
+  },
+  { additionalProperties: false },
+);
+const EcosystemChecksSchema = Type.Object(
+  {
+    riskLevel: Type.Optional(Type.String()),
+    riskScore: ScoreValueType,
+    url: Type.Optional(Type.String()),
+    checkCreatedAt: Type.Optional(Type.String()),
+    generalSummary: Type.Optional(Type.String()),
+    websites: Type.Optional(Type.Array(EcosystemWebsiteSchema)),
+  },
+  { additionalProperties: false },
+);
 
-const Structure = Type.Object({
-  score: Type.Number(),
-  analysisSummary: Type.String(),
-  suspiciousElements: Type.Array(Indicator),
-});
+const MetaSchema = Type.Object(
+  {
+    companyName: Type.Optional(Type.String()),
+  },
+  { additionalProperties: false },
+);
+const SummarySchema = Type.Object(
+  {
+    transactionLaunderingRiskScore: ScoreValueType,
+    websiteSummary: Type.Optional(Type.String()),
+    pricingSummary: Type.Optional(Type.String()),
+    riskSummary: Type.Optional(Type.String()),
+    violations: Type.Optional(Type.Array(ViolationType)),
+  },
+  { additionalProperties: false },
+);
 
-const Pricing = Type.Object({
-  discrepancyScore: Type.Number(),
-  pricingPatternsScore: Type.Number(),
-  reasonForDiscrepancy: Type.String(),
-  reasonForPricingPatterns: Type.String(),
-  pricingPatternsIndicators: Type.Array(Indicator),
-  pricingPatternsExamples: Type.Array(Indicator),
-});
+const ReputationSchema = Type.Object(
+  {
+    summary: Type.Optional(Type.String()),
+    negativeSignals: Type.Optional(Type.String()),
+    positiveSignals: Type.Optional(Type.String()),
+    reputationRedFlags: Type.Optional(Type.String()),
+    reputationRiskScore: ScoreValueType,
+    industryStandardComparison: Type.Optional(Type.String()),
+    keyReputationIndicators: Type.Optional(Type.Array(IndicatorType)),
+  },
+  { additionalProperties: false },
+);
 
-const Traffic = Type.Object({
-  suspiciousTraffic: Type.Object({
-    summary: Type.String(),
-    trafficAnalysisRiskScore: Type.Number(),
-    trafficAnalysisReason: Type.Object({
-      explanation: Type.String(),
-      examples: Type.Array(Indicator),
-    }),
-  }),
-});
+const StructureSchema = Type.Object(
+  {
+    score: ScoreValueType,
+    analysisSummary: Type.Optional(Type.String()),
+    suspiciousElements: Type.Optional(Type.Array(IndicatorType)),
+  },
+  { additionalProperties: false },
+);
 
-const LOB = Type.Object({
-  businessConsistensy: Type.Object({
-    summary: Type.String(),
-    lobFromWebsite: Type.String(),
-    lobFromExternalData: Type.String(),
-    lobConsistensyRiskScore: Type.Number(),
-    lobReason: Type.Object({
-      explanation: Type.String(),
-      examples: Type.Array(Indicator),
-    }),
-  }),
-});
+const PricingSchema = Type.Object(
+  {
+    discrepancyScore: ScoreValueType,
+    pricingPatternsScore: ScoreValueType,
+    reasonForDiscrepancy: Type.Optional(Type.String()),
+    reasonForPricingPatterns: Type.Optional(Type.String()),
+    pricingPatternsIndicators: Type.Optional(Type.Array(IndicatorType)),
+    pricingPatternsExamples: Type.Optional(Type.Array(IndicatorType)),
+  },
+  { additionalProperties: false },
+);
 
-const Report = Type.Object({
-  status: Type.String(),
-  summary: Summary,
-  reputation: Reputation,
-  structure: Structure,
-  pricing: Pricing,
-  traffic: Traffic,
-  LOB: LOB,
-  websiteChecks: Type.Array(WebsiteCheck),
-  ecosystemChecks: EcosystemChecks,
-  meta: Meta,
-});
+const TrafficSchema = Type.Object(
+  {
+    suspiciousTraffic: Type.Optional(
+      Type.Object({
+        summary: Type.Optional(Type.String()),
+        trafficAnalysisRiskScore: ScoreValueType,
+        trafficAnalysisReason: Type.Optional(
+          Type.Object({
+            explanation: Type.Optional(Type.String()),
+            examples: Type.Optional(Type.Array(IndicatorType)),
+          }),
+        ),
+      }),
+    ),
+  },
+  { additionalProperties: false },
+);
 
-export type ISummary = Static<typeof Summary>;
-export type IReputation = Static<typeof Reputation>;
-export type IStructure = Static<typeof Structure>;
-export type IPricing = Static<typeof Pricing>;
-export type ITraffic = Static<typeof Traffic>;
-export type ILOB = Static<typeof LOB>;
-export type IWebsiteCheck = Array<Static<typeof WebsiteCheck>>;
-export type IEcosystemChecks = Static<typeof EcosystemChecks>;
-export type IReport = Static<typeof Report>;
+const LOBSchema = Type.Object(
+  {
+    businessConsistency: Type.Optional(
+      Type.Object({
+        summary: Type.Optional(Type.String()),
+        lobFromWebsite: Type.Optional(Type.String()),
+        lobFromExternalData: Type.Optional(Type.String()),
+        lobConsistencyRiskScore: ScoreValueType,
+        lobReason: Type.Optional(
+          Type.Object({
+            explanation: Type.Optional(Type.String()),
+            examples: Type.Optional(Type.Array(IndicatorType)),
+          }),
+        ),
+      }),
+    ),
+  },
+  { additionalProperties: false },
+);
 
-export { Report };
+const ReportSchema = Type.Object(
+  {
+    status: Type.Optional(Type.String()),
+    summary: Type.Optional(SummarySchema),
+    reputation: Type.Optional(ReputationSchema),
+    structure: Type.Optional(StructureSchema),
+    pricing: Type.Optional(PricingSchema),
+    traffic: Type.Optional(TrafficSchema),
+    LOB: Type.Optional(LOBSchema),
+    websiteChecks: Type.Optional(Type.Array(WebsiteCheckSchema)),
+    ecosystemChecks: Type.Optional(EcosystemChecksSchema),
+    meta: MetaSchema,
+  },
+  { additionalProperties: false },
+);
+
+export type ISummary = Static<typeof SummarySchema>;
+export type IReputation = Static<typeof ReputationSchema>;
+export type IStructure = Static<typeof StructureSchema>;
+export type IPricing = Static<typeof PricingSchema>;
+export type ITraffic = Static<typeof TrafficSchema>;
+export type ILOB = Static<typeof LOBSchema>;
+export type IWebsiteCheck = Array<Static<typeof WebsiteCheckSchema>>;
+export type IEcosystemChecks = Static<typeof EcosystemChecksSchema>;
+export type IReport = Static<typeof ReportSchema>;
+
+export { ReportSchema };

@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { getDocumentsByCountry, StateTag, TDocument } from '@ballerine/common';
 import { ctw } from '@ballerine/ui';
 import { UseQueryResult } from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
 import {
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
@@ -115,10 +114,11 @@ export const useDirectorsBlocks = ({
             .addBlock()
             .addCell({
               type: 'details',
+              contextUpdateMethod: 'director',
+              hideSeparator: true,
               value: {
                 id: document.id,
                 title: 'Decision',
-                hideSeparator: true,
                 data: document?.decision?.status
                   ? Object.entries(document?.decision ?? {}).map(([title, value]) => ({
                       title,
@@ -293,6 +293,9 @@ export const useDirectorsBlocks = ({
                 .addCell({
                   id: 'header',
                   type: 'container',
+                  props: {
+                    className: 'items-start',
+                  },
                   value: createBlocksTyped()
                     .addBlock()
                     .addCell({
@@ -307,6 +310,7 @@ export const useDirectorsBlocks = ({
                         })
                         .addCell({
                           type: 'details',
+                          contextUpdateMethod: 'director',
                           value: {
                             id: document.id,
                             data: Object.entries(
