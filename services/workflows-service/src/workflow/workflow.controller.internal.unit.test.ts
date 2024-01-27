@@ -38,35 +38,33 @@ class FakeEntityRepo extends BaseFakeRepository {
   }
 }
 
-export function buildWorkflowDefinition(sequenceNum: number, projectId?: string) {
-  return {
-    id: sequenceNum.toString(),
-    name: `name ${sequenceNum}`,
-    version: sequenceNum,
-    definition: {
-      initial: 'initial',
-      states: {
-        initial: {
-          on: {
-            COMPLETE: 'completed',
-          },
-        },
-        completed: {
-          type: 'final',
+export const buildWorkflowDefinition = (sequenceNum: number, projectId?: string) => ({
+  id: sequenceNum.toString(),
+  name: `name ${sequenceNum}`,
+  version: sequenceNum,
+  definition: {
+    initial: 'initial',
+    states: {
+      initial: {
+        on: {
+          COMPLETE: 'completed',
         },
       },
+      completed: {
+        type: 'final',
+      },
     },
-    definitionType: `definitionType ${sequenceNum}`,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    contextSchema: {
-      type: 'json-schema',
-      schema: {},
-    },
-    projectId: projectId,
-    isPublic: false,
-  };
-}
+  },
+  definitionType: `definitionType ${sequenceNum}`,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  contextSchema: {
+    type: 'json-schema',
+    schema: {},
+  },
+  projectId: projectId,
+  isPublic: false,
+});
 
 describe('WorkflowControllerInternal', () => {
   let controller;

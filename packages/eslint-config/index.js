@@ -29,7 +29,7 @@ module.exports = {
     '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
     'prefer-arrow/prefer-arrow-functions': [
-      'warn',
+      'error',
       {
         disallowPrototype: true,
         singleReturnOnly: false,

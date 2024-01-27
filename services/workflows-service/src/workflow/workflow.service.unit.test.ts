@@ -51,47 +51,43 @@ class FakeCustomerRepo extends BaseFakeRepository {
   }
 }
 
-function buildWorkflowDeifintion(sequenceNum) {
-  return {
-    id: sequenceNum.toString(),
-    name: `name ${sequenceNum}`,
-    version: sequenceNum,
-    definition: {
-      initial: 'initial',
-      states: {
-        initial: {
-          on: {
-            COMPLETE: 'completed',
-          },
-        },
-        completed: {
-          type: 'final',
+const buildWorkflowDeifintion = (sequenceNum: number) => ({
+  id: sequenceNum.toString(),
+  name: `name ${sequenceNum}`,
+  version: sequenceNum,
+  definition: {
+    initial: 'initial',
+    states: {
+      initial: {
+        on: {
+          COMPLETE: 'completed',
         },
       },
+      completed: {
+        type: 'final',
+      },
     },
-    definitionType: `definitionType ${sequenceNum}`,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    contextSchema: {
-      type: 'json-schema',
-      schema: {},
-    },
-  };
-}
+  },
+  definitionType: `definitionType ${sequenceNum}`,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  contextSchema: {
+    type: 'json-schema',
+    schema: {},
+  },
+});
 
-function buildDocument(category, status, fileType = 'jpg') {
-  return {
-    category: category,
-    decision: {
-      status: status,
+const buildDocument = (category: string, status: string, fileType = 'jpg') => ({
+  category: category,
+  decision: {
+    status: status,
+  },
+  pages: [
+    {
+      type: fileType,
     },
-    pages: [
-      {
-        type: fileType,
-      },
-    ],
-  };
-}
+  ],
+});
 
 describe('WorkflowService', () => {
   let service;
@@ -138,7 +134,7 @@ describe('WorkflowService', () => {
       requests: [],
 
       axiosRef: {
-        async post(url, data, config) {
+        post: async (url, data, config) => {
           fakeHttpService.requests.push({ url, data });
           return {
             status: 200,

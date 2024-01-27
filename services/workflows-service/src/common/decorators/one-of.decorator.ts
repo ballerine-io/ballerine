@@ -1,7 +1,8 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
 
-export function oneOf(list: Array<string | number>, options?: ValidationOptions) {
-  return function (obj: object, paramName: string) {
+export const oneOf =
+  (list: Array<string | number>, options?: ValidationOptions) =>
+  (obj: object, paramName: string) => {
     registerDecorator({
       name: 'oneOf',
       target: obj.constructor,
@@ -16,4 +17,3 @@ export function oneOf(list: Array<string | number>, options?: ValidationOptions)
       },
     });
   };
-}

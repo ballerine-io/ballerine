@@ -16,13 +16,13 @@ import { CustomerService } from '@/customer/customer.service';
 import { env } from '@/env';
 import { sign } from '@/common/utils/sign/sign';
 
-function getExtensionFromMimeType(mimeType: string): string {
+const getExtensionFromMimeType = (mimeType: string): string => {
   const parts = mimeType.split('/');
   if (parts.length === 2) {
     return parts[1] as string;
   }
   return mimeType;
-}
+};
 
 @Injectable()
 export class DocumentChangedWebhookCaller {

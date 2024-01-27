@@ -4,7 +4,7 @@ import { User } from '@prisma/client';
 /**
  * Access the user data from the request object i.e `req.user`.
  */
-function userFactory(ctx: ExecutionContext): User & { projectIds: string[] } {
+const userFactory = (ctx: ExecutionContext): User & { projectIds: string[] } => {
   const contextType = ctx.getType();
   if (contextType === 'http') {
     // do something that is only important in the context of regular HTTP requests (REST)
@@ -19,7 +19,7 @@ function userFactory(ctx: ExecutionContext): User & { projectIds: string[] } {
   }
 
   throw new Error('Invalid context');
-}
+};
 
 export const UserData = createParamDecorator<undefined, ExecutionContext, User>(
   (data, ctx: ExecutionContext) => userFactory(ctx),
