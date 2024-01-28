@@ -1,7 +1,14 @@
 import { isNullish, isObject } from '@ballerine/common';
 import { JsonDialog } from '@ballerine/ui';
 import { FileJson2 } from 'lucide-react';
-import { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
+import {
+  ChangeEvent,
+  ComponentProps,
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { toTitleCase } from 'string-ts';
 import { Button, buttonVariants } from '../../../../common/components/atoms/Button/Button';
@@ -27,6 +34,8 @@ import { useUpdateDocumentByIdMutation } from '../../../../domains/workflows/hoo
 import { useWatchDropdownOptions } from './hooks/useWatchDropdown';
 import { IEditableDetails } from './interfaces';
 import { isValidDatetime } from '../../../../common/utils/is-valid-datetime';
+import dayjs from 'dayjs';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 
 const useInitialCategorySetValue = ({ form, data }) => {
   useEffect(() => {
@@ -34,6 +43,61 @@ const useInitialCategorySetValue = ({ form, data }) => {
 
     form.setValue('category', categoryValue);
   }, [form, data]);
+};
+
+interface IDetailProps extends ComponentProps<'div'> {
+  type: string;
+  children: string;
+  isDecisionComponent: boolean;
+  isDecisionPositive: (isDecisionComponent: boolean, value: string) => boolean;
+  isDecisionNegative: (isDecisionComponent: boolean, value: string) => boolean;
+}
+
+export const Detail: FunctionComponent<IDetailProps> = ({
+  type,
+  children,
+  isDecisionPositive,
+  isDecisionComponent,
+  isDecisionNegative,
+  className,
+  ...props
+}) => {
+  const getValue = (value: unknown) => {
+    if (type === 'datetime-local') {
+      return dayjs(value).utc().format('DD/MM/YYYY HH:mm');
+    }
+
+    if (isValidDate(value, { isStrict: false }) || isValidIsoDate(value)) {
+      return dayjs(value).format('DD/MM/YYYY');
+    }
+
+    if (typeof value === 'boolean') {
+      return value.toString();
+    }
+
+    return value;
+  };
+  const value = getValue(children);
+
+  return (
+    <div
+      tabIndex={0}
+      role={'textbox'}
+      aria-readonly={true}
+      {...props}
+      className={ctw(
+        'flex w-full max-w-[30ch] items-center break-all rounded-md p-1 pl-[0.3rem] pt-1.5 text-sm',
+        {
+          'font-bold text-success': isDecisionPositive(isDecisionComponent, value),
+          'font-bold text-destructive': isDecisionNegative(isDecisionComponent, value),
+          'text-slate-400': isNullish(value) || value === '',
+        },
+        className,
+      )}
+    >
+      {valueOrNA(value)}
+    </div>
+  );
 };
 
 export const EditableDetails: FunctionComponent<IEditableDetails> = ({
@@ -54,14 +118,14 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
       return false;
     }
 
-    return isDecisionComponent && value && POSITIVE_VALUE_INDICATOR.includes(value.toLowerCase());
+    return isDecisionComponent && !!value && POSITIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
   const isDecisionNegative = (isDecisionComponent: boolean, value: string) => {
     if (typeof value !== 'string') {
       return false;
     }
 
-    return isDecisionComponent && value && NEGATIVE_VALUE_INDICATOR.includes(value.toLowerCase());
+    return isDecisionComponent && !!value && NEGATIVE_VALUE_INDICATOR.includes(value.toLowerCase());
   };
   const defaultValues = data?.reduce((acc, curr) => {
     acc[curr.title] = curr.value;
@@ -314,7 +378,17 @@ export const EditableDetails: FunctionComponent<IEditableDetails> = ({
                             </SelectContent>
                           </Select>
                         )}
-                        {isInput && !isSelect && (
+                        {!isEditable && inputType !== 'checkbox' && isInput && !isSelect && (
+                          <Detail
+                            type={inputType}
+                            isDecisionComponent={isDecisionComponent}
+                            isDecisionPositive={isDecisionPositive}
+                            isDecisionNegative={isDecisionNegative}
+                          >
+                            {value}
+                          </Detail>
+                        )}
+                        {(isEditable || inputType === 'checkbox') && isInput && !isSelect && (
                           <FormControl>
                             <Input
                               {...field}
