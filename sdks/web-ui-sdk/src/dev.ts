@@ -108,7 +108,13 @@ const ballerineInitConfig: FlowsInitOptions = {
   metricsConfig: {
     enabled: true,
   },
+  backendConfig: {
+    auth: {
+      authorizationHeader: 'Bearer 12345678-1234-1234-1234-123456789000',
+    },
+  },
 };
+
 console.log(ballerineInitConfig);
 
 void flows.init(ballerineInitConfig).then(() => {

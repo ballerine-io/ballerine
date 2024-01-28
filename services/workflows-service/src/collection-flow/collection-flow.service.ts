@@ -229,16 +229,6 @@ export class CollectionFlowService {
     );
   }
 
-  async finishFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
-    await this.workflowService.event({ id: flowId, name: 'start' }, projectIds, currentProjectId);
-
-    const workflowRuntimeData = await this.workflowService.getWorkflowRuntimeDataById(
-      flowId,
-      {},
-      projectIds,
-    );
-  }
-
   async resubmitFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
     await this.workflowService.event(
       { id: flowId, name: 'RESUBMITTED' },
@@ -268,7 +258,7 @@ export class CollectionFlowService {
     // Remove non characters
     const alphabeticOnlyName = nameWithoutExtension.replace(/\W/g, '');
 
-    const persistedFile = await this.fileService.copyToDestinationAndCreate(
+    return await this.fileService.copyToDestinationAndCreate(
       {
         id: alphabeticOnlyName,
         uri: file.path,
@@ -280,7 +270,5 @@ export class CollectionFlowService {
       customer.name,
       { shouldDownloadFromSource: false },
     );
-
-    return persistedFile;
   }
 }
