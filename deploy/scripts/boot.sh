@@ -14,7 +14,8 @@ install_docker(){
 
 deploy_ballerine(){
 	mkdir -p $HOME/ballerine; cd $HOME/ballerine
-  curl https://raw.githubusercontent.com/ballerine-io/ballerine/dev/deploy/docker-compose.yml -o docker-compose.yml 
+  curl https://raw.githubusercontent.com/ballerine-io/ballerine/dev/deploy/docker-compose.yml -o docker-compose.yml;
+  docker-compose up -d --force-recreate
 }
 
 install_docker
