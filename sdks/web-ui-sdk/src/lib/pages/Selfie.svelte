@@ -62,10 +62,10 @@
   const handleTakePhoto = () => {
     if (!cameraPhoto || $isDisabled) return;
 
-    const dataUri = cameraPhoto.getDataUri(
+    $selfieUri = cameraPhoto.getDataUri(
       $configuration.settings?.selfieCameraSettings as CaptureConfigOption,
     );
-    $selfieUri = dataUri;
+
     goToNextStep(currentStepId, $configuration, $currentStepId);
     toggleOnIsDisabled();
   };

@@ -360,6 +360,13 @@ declare module 'astro:content' {
         collection: 'docs';
         data: InferEntrySchema<'docs'>;
       } & { render(): Render['.mdx'] };
+      'en/learn/kyc_manual_review_example.mdx': {
+        id: 'en/learn/kyc_manual_review_example.mdx';
+        slug: 'en/learn/kyc_manual_review_example';
+        body: string;
+        collection: 'docs';
+        data: InferEntrySchema<'docs'>;
+      } & { render(): Render['.mdx'] };
       'en/learn/kyc_manual_review_workflow_guide.mdx': {
         id: 'en/learn/kyc_manual_review_workflow_guide.mdx';
         slug: 'en/learn/kyc_manual_review_workflow_guide';

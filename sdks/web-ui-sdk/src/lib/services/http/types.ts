@@ -2,7 +2,7 @@ import { TDecisionStatus } from '../../contexts/app-state/types';
 import { TVerificationStatuses } from '../../utils/event-service/types';
 
 export interface ISendDocumentsResponse {
-  status: 'success' | 'fail';
+  id: string;
 }
 
 export interface IDocumentVerificationResponse {
