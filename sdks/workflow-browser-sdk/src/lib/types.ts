@@ -9,7 +9,7 @@ export type Serializable =
   | boolean
   | null
   | undefined
-  | Array<Serializable>
+  | Serializable[]
   | { [key: PropertyKey]: Serializable };
 
 export type AnyRecord = Record<PropertyKey, unknown>;
@@ -60,7 +60,7 @@ export interface BackendOptions {
 
 export interface WorkflowOptionsBrowser extends Omit<WorkflowOptions, 'workflowActions'> {
   backend?: DeepPartial<BackendOptions>;
-  persistStates?: Array<IPersistState>;
+  persistStates?: IPersistState[];
   submitStates?: Array<Omit<IPersistState, 'persistence'>>;
 }
 
@@ -120,7 +120,7 @@ export type TSubscriber = {
         },
   ): void;
 };
-export type TSubscribers = Array<TSubscriber>;
+export type TSubscribers = TSubscriber[];
 
 export interface IUserStepEvent {
   type: string;

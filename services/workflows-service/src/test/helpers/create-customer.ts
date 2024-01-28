@@ -1,14 +1,14 @@
 import { PrismaClient } from '@prisma/client';
 
-export async function createCustomer(
+export const createCustomer = async (
   client: PrismaClient,
   id: string,
   apiKey: string,
   logoImageUri: string,
   faviconImageUri: string,
   webhookSharedSecret: string,
-) {
-  return await client.customer.create({
+) =>
+  await client.customer.create({
     data: {
       id: `customer-${id}`,
       name: `Customer ${id}`,
@@ -26,4 +26,3 @@ export async function createCustomer(
       language: 'en',
     },
   });
-}
