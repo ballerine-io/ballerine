@@ -1,4 +1,4 @@
-name: Publish workflows-service image
+name: Test Ballerine workflow message
 
 on:
   workflow_dispatch:
