@@ -1,6 +1,6 @@
 import { verifySignature } from './verify-signature';
 
-const cases: {
+const cases: Array<{
   name: string;
   valid: {
     payload: unknown;
@@ -10,7 +10,7 @@ const cases: {
     payload: unknown;
     signature: string;
   };
-}[] = [
+}> = [
   {
     name: 'When the payload is an object',
     valid: {

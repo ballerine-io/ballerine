@@ -3,7 +3,7 @@ import { StatePlugin } from './state-plugin';
 import { IFetchOptions, TBackendPersistPluginParams } from './types';
 
 export class BackendPersistPlugin extends StatePlugin {
-  stateNames: Array<string>;
+  stateNames: string[];
   name = 'SYNC_BACKEND';
   when: 'pre' | 'post';
   isBlocking;

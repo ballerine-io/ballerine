@@ -83,7 +83,8 @@ export const BaseWorkflowByIdSchema = z.object({
         stepsProgress: z.record(
           z.string(),
           z.object({
-            number: z.number(),
+            // TODO Until backwards compatibility is handled
+            number: z.number().default(0),
             isCompleted: z.boolean(),
           }),
         ),

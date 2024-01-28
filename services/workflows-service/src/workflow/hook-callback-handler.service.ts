@@ -174,7 +174,7 @@ export class HookCallbackHandlerService {
   async formatPages(data: AnyRecord) {
     const documentImages: AnyRecord[] = [];
 
-    for (const image of data.images as { context?: string; content: string }[]) {
+    for (const image of data.images as Array<{ context?: string; content: string }>) {
       const tmpFile = tmp.fileSync().name;
       const base64ImageContent = image.content.split(',')[1];
       const buffer = Buffer.from(base64ImageContent as string, 'base64');
@@ -210,7 +210,7 @@ export class HookCallbackHandlerService {
     return properties;
   }
 
-  setNestedProperty(obj: Record<string, any>, path: Array<string>, value: AnyRecord) {
+  setNestedProperty(obj: Record<string, any>, path: string[], value: AnyRecord) {
     let current = obj;
 
     for (let i = 0; i < path.length; i++) {

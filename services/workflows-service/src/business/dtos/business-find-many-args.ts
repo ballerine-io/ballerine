@@ -16,7 +16,7 @@ export class BusinessFindManyArgs {
     type: [BusinessOrderByInput],
   })
   @Type(() => BusinessOrderByInput)
-  orderBy?: Array<BusinessOrderByInput>;
+  orderBy?: BusinessOrderByInput[];
 
   @ApiProperty({
     required: false,
