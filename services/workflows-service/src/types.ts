@@ -7,9 +7,9 @@ export interface IObjectWithId {
   id: string;
 }
 
-export type Unpacked<T> = T extends (infer U)[] ? U : T;
+export type Unpacked<T> = T extends Array<infer U> ? U : T;
 
-export type TProjectIds = Array<string> | null;
+export type TProjectIds = string[] | null;
 export type TProjectId = string;
 
 export type TExpires = { expires: Date };
@@ -17,7 +17,7 @@ export type UserWithProjects = User & {
   userToProjects?: Omit<UserToProject[], 'userId'>;
 };
 export type CustomerWithProjectIds = Customer & { projectIds: TProjectIds };
-export type CustomerWithProjects = Partial<Customer & { projects: Array<Project> }>;
+export type CustomerWithProjects = Partial<Customer & { projects: Project[] }>;
 export type AuthenticatedEntity = {
   user?: Partial<User>;
   customer?: Partial<Customer>;

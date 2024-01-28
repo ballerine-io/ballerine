@@ -5,12 +5,12 @@ import { response } from './msw';
 import { shortWorkflow, workflowOptions } from './workflow-options';
 
 interface IContext {
-  documents: Array<string>;
+  documents: string[];
   email: string;
 }
 
 let workflowService: WorkflowBrowserSDK;
-let documents: Array<string> = [];
+let documents: string[] = [];
 let context: IContext;
 let state: string;
 

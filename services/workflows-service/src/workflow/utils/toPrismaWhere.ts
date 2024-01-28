@@ -1,7 +1,7 @@
 import { Prisma, WorkflowRuntimeDataStatus } from '@prisma/client';
 
 type Filters = {
-  assigneeId?: (string | null)[];
+  assigneeId?: Array<string | null>;
   status?: WorkflowRuntimeDataStatus[];
 };
 

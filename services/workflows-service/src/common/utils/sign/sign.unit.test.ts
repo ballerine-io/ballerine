@@ -1,11 +1,11 @@
 import { sign } from './sign';
 
-const cases: {
+const cases: Array<{
   name: string;
   payload: unknown;
   differentPayload: unknown;
   expectedSignature: string;
-}[] = [
+}> = [
   {
     name: 'When the payload is an object',
     payload: { foo: 'bar' },

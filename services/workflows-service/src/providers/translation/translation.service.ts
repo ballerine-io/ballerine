@@ -14,7 +14,7 @@ export class TranslationService {
   private __i18next = i18next;
 
   constructor() {
-    this.__i18next.init({
+    void this.__i18next.init({
       fallbackLng: 'en',
       initImmediate: false,
       nsSeparator: false,

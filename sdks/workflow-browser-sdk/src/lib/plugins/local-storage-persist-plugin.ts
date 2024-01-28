@@ -2,7 +2,7 @@ import { StatePlugin } from './state-plugin';
 import { TStatePluginParams } from './types';
 
 export class LocalStoragePersistPlugin extends StatePlugin {
-  stateNames: Array<string>;
+  stateNames: string[];
   name = 'SYNC_LOCAL_STORAGE';
   when: 'pre' | 'post';
   isBlocking = false;

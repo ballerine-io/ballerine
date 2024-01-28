@@ -23,7 +23,7 @@ const USER = {
 };
 
 const userService = {
-  getByEmail(email: string): any | null {
+  getByEmail: (email: string): any | null => {
     if (email === VALID_CREDENTIALS.email) {
       return USER;
     }
@@ -35,7 +35,7 @@ const userService = {
 };
 
 const passwordService = {
-  compare() {
+  compare: () => {
     return true;
   },
 };

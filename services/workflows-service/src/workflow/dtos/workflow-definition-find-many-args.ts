@@ -16,7 +16,7 @@ export class WorkflowDefinitionFindManyArgs {
     type: [WorkflowDefinitionOrderByInput],
   })
   @Type(() => WorkflowDefinitionOrderByInput)
-  orderBy?: Array<WorkflowDefinitionOrderByInput>;
+  orderBy?: WorkflowDefinitionOrderByInput[];
 
   @ApiProperty({
     required: false,

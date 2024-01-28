@@ -91,7 +91,7 @@ export class WorkflowBrowserSDK {
     submitStates: WorkflowOptionsBrowser['submitStates'];
     workflowId: string;
   }) {
-    const statePlugins: Array<StatePlugin> = [];
+    const statePlugins: StatePlugin[] = [];
     const finalStates = Object.keys(states ?? {})?.filter(
       state => states?.[state]?.type === 'final',
     );
