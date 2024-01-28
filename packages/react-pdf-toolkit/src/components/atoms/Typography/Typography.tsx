@@ -8,6 +8,7 @@ import { FunctionComponent } from 'react';
 export const typographyCva = cva(['font-inter', 'leading-0'], {
   variants: {
     size: {
+      small: 'text-[6px]',
       regular: 'text-[8px]',
       medium: 'text-[11px]',
       large: 'text-[14px]',

@@ -13,15 +13,26 @@ export const Footer: FunctionComponent<FooterProps> = ({ domain, contactEmail, c
           <BallerineLogo size="small" styles={[tw('opacity-50')]} />
         </View>
         <View style={tw('flex flex-col gap-2')}>
-          <Typography color="silent">Report powered by {companyName}.</Typography>
-          <Typography color="silent">All rights reserved.</Typography>
+          <Typography size="small" color="silent">
+            Report powered by {companyName}.
+          </Typography>
+          <Typography size="small" color="silent">
+            All rights reserved.
+          </Typography>
         </View>
         <View style={tw('flex flex-col gap-2')}>
-          <Typography color="silent">For support and inquiries: </Typography>
-          <Typography color="silent">{contactEmail}</Typography>
+          <Typography size="small" color="silent">
+            For support and inquiries:{' '}
+          </Typography>
+          \
+          <Typography size="small" color="silent">
+            {contactEmail}
+          </Typography>
         </View>
         <View style={tw('flex flex-col gap-2')}>
-          <Typography color="silent">{domain}</Typography>
+          <Typography size="small" color="silent">
+            {domain}
+          </Typography>
         </View>
       </View>
     </View>
