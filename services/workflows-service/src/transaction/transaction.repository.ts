@@ -1,7 +1,6 @@
 import { PrismaService } from '../prisma/prisma.service';
-import { Transaction, Prisma, TransactionPayload } from '@prisma/client';
+import { Transaction, Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
-// import { TransactionWithProjects } from '@/types';
 
 @Injectable()
 export class TransactionRepository {
@@ -10,10 +9,32 @@ export class TransactionRepository {
   async create<T extends Prisma.TransactionCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.TransactionCreateArgs>,
   ): Promise<Transaction> {
-    // @ts-expect-error - prisma json not updated
-    await this.validateApiKey(args.data?.authenticationConfiguration?.authValue);
+    // #TODO: Fix this
+    const { projectId, businessId, endUserId, ...rest } = args.data;
 
-    return this.prisma.transaction.create<T>(args);
+    args = {
+      ...args,
+      data: {
+        ...rest,
+        project: {
+          connect: { id: projectId },
+        },
+      },
+    } as any;
+
+    if (businessId) {
+      args.data.business = {
+        connect: { id: businessId },
+      } as any;
+    }
+
+    if (endUserId) {
+      args.data.endUser = {
+        connect: { id: endUserId },
+      } as any;
+    }
+    const res = await this.prisma.transaction.create<T>(args);
+    return res;
   }
 
   // async get<T extends Prisma.TransactionCreateArgs>(
