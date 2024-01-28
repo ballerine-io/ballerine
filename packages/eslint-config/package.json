@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@ballerine/eslint-config",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "",
   "main": "index.js",
   "scripts": {},
@@ -13,6 +13,7 @@
     "@typescript-eslint/parser": "^6.11.0",
     "eslint": "^8.53.0",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-unused-imports": "^3.0.0"
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "eslint-plugin-prefer-arrow": "^1.2.3"
   }
 }

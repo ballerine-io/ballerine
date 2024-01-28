@@ -16,7 +16,7 @@ export class EndUserFindManyArgs {
     type: [EndUserOrderByInput],
   })
   @Type(() => EndUserOrderByInput)
-  orderBy?: Array<EndUserOrderByInput>;
+  orderBy?: EndUserOrderByInput[];
 
   @ApiProperty({
     required: false,

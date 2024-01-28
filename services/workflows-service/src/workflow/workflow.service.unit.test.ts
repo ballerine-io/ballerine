@@ -57,7 +57,7 @@ class FakeUiDefinitionService extends BaseFakeRepository {
   }
 }
 
-function buildWorkflowDeifintion(sequenceNum) {
+const buildWorkflowDeifintion = (sequenceNum: number) => {
   return {
     id: sequenceNum.toString(),
     name: `name ${sequenceNum}`,
@@ -83,21 +83,19 @@ function buildWorkflowDeifintion(sequenceNum) {
       schema: {},
     },
   };
-}
+};
 
-function buildDocument(category, status, fileType = 'jpg') {
-  return {
-    category: category,
-    decision: {
-      status: status,
+const buildDocument = (category: string, status: string, fileType = 'jpg') => ({
+  category: category,
+  decision: {
+    status: status,
+  },
+  pages: [
+    {
+      type: fileType,
     },
-    pages: [
-      {
-        type: fileType,
-      },
-    ],
-  };
-}
+  ],
+});
 
 describe('WorkflowService', () => {
   let service;
@@ -146,7 +144,7 @@ describe('WorkflowService', () => {
       requests: [],
 
       axiosRef: {
-        async post(url, data, config) {
+        post: async (url, data, config) => {
           fakeHttpService.requests.push({ url, data });
           return {
             status: 200,

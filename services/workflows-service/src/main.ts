@@ -32,7 +32,7 @@ const corsOrigins = [
   ...(env.ENVIRONMENT_NAME !== 'production' ? devOrigins : []),
 ];
 
-async function main() {
+const main = async () => {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true, //will be buffered until a custom logger is attached
     snapshot: true,
@@ -149,6 +149,6 @@ async function main() {
   logger.log(`Listening on port ${port}`);
 
   return app;
-}
+};
 
 module.exports = main();

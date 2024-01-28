@@ -1,5 +1,5 @@
-import { Badge } from '@/components/Badge';
-import { Link } from '@/components/Link';
+import { Badge } from '@/components/atoms/Badge';
+import { Link } from '@/components/atoms/Link';
 import { Section } from '@/templates/report/components/Section';
 import { IEcosystemChecks } from '@/templates/report/schema';
 import { tw } from '@/theme';

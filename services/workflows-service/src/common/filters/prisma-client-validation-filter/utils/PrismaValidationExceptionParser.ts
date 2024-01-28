@@ -14,7 +14,7 @@ import { removeAnsiEscapeCodes } from './remove-ansi-escape-codes';
 
 export class PrismaValidationExceptionParser {
   constructor(
-    private readonly parsers: (new (message: string) => IParser)[],
+    private readonly parsers: Array<new (message: string) => IParser>,
     private readonly exception: Prisma.PrismaClientValidationError,
   ) {}
 

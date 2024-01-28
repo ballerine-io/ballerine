@@ -1248,6 +1248,9 @@ importers:
       eslint-config-prettier:
         specifier: ^9.0.0
         version: 9.0.0(eslint@8.53.0)
+      eslint-plugin-prefer-arrow:
+        specifier: ^1.2.3
+        version: 1.2.3(eslint@8.53.0)
       eslint-plugin-unused-imports:
         specifier: ^3.0.0
         version: 3.0.0(@typescript-eslint/eslint-plugin@6.11.0)(eslint@8.53.0)
@@ -2660,7 +2663,7 @@ importers:
         specifier: ^1.0.4
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.0.3
+        specifier: ^1.0.4
         version: link:../../packages/eslint-config
       eslint:
         specifier: ^8.46.0
@@ -21448,6 +21451,14 @@ packages:
       resolve: 1.22.8
       semver: 7.5.4
     dev: true
+
+  /eslint-plugin-prefer-arrow@1.2.3(eslint@8.53.0):
+    resolution: {integrity: sha512-J9I5PKCOJretVuiZRGvPQxCbllxGAV/viI20JO3LYblAodofBxyMnZAJ+WGeClHgANnSJberTNoFWWjrWKBuXQ==}
+    peerDependencies:
+      eslint: '>=2.0.0'
+    dependencies:
+      eslint: 8.53.0
+    dev: false
 
   /eslint-plugin-promise@6.1.1(eslint@8.54.0):
     resolution: {integrity: sha512-tjqWDwVZQo7UIPMeDReOpUgHCmCiH+ePnVT+5zVapL0uuHnegBUs2smM13CzOs2Xb5+MHMRFTs9v24yjba4Oig==}

@@ -28,12 +28,12 @@ export const initHttpMoudle = () =>
     imports: [ConfigModule],
     // useClass: HttpConfigService,
     useFactory: (configService: ConfigService) => {
-      function newAbortSignal(timeoutMs: number) {
+      const newAbortSignal = (timeoutMs: number) => {
         const abortController = new AbortController();
         setTimeout(() => abortController.abort(), timeoutMs || 0);
 
         return abortController.signal;
-      }
+      };
 
       const timeout = configService.get('HTTP_TIMEOUT_IN_MS', 10_000);
       return {

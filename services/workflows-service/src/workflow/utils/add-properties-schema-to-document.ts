@@ -7,6 +7,38 @@ import {
 } from '@ballerine/common';
 import { WorkflowDefinition } from '@prisma/client';
 
+const composePropertiesSchema = (
+  documentSchemaForDocument: ReturnType<typeof findDocumentSchemaForDocument>,
+) => ({
+  ...(documentSchemaForDocument?.propertiesSchema ?? {}),
+  properties: Object.fromEntries(
+    Object.entries(documentSchemaForDocument?.propertiesSchema?.properties ?? {}).map(
+      ([key, value]) => {
+        if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string')
+          return [key, value];
+
+        return [
+          key,
+          {
+            ...value,
+            dropdownOptions: value.enum.map(item => ({
+              value: item,
+              label: item,
+            })),
+          },
+        ];
+      },
+    ),
+  ),
+});
+
+const getPropertiesSchemaForDocument = (document: DefaultContextSchema['documents'][number]) => {
+  const documentsByCountry = getDocumentsByCountry(document?.issuer?.country);
+  const documentSchemaForDocument = findDocumentSchemaForDocument(documentsByCountry, document);
+
+  return composePropertiesSchema(documentSchemaForDocument);
+};
+
 export const addPropertiesSchemaToDocument = (
   document: DefaultContextSchema['documents'][number],
   documentSchema: WorkflowDefinition['documentsSchema'],
@@ -26,14 +58,6 @@ export const addPropertiesSchemaToDocument = (
     propertiesSchema,
   };
 };
-
-function getPropertiesSchemaForDocument(document: DefaultContextSchema['documents'][number]) {
-  const documentsByCountry = getDocumentsByCountry(document?.issuer?.country);
-  const documentSchemaForDocument = findDocumentSchemaForDocument(documentsByCountry, document);
-  const propertiesSchema = composePropertiesSchema(documentSchemaForDocument);
-
-  return propertiesSchema;
-}
 
 const getPropertiesFromDefinition = (
   document: DefaultContextSchema['documents'][number],
@@ -72,30 +96,3 @@ const findDocumentSchemaForDocument = (
 
   return documentsByCountry?.find(doc => getDocumentId(doc, false) === documentId);
 };
-
-function composePropertiesSchema(
-  documentSchemaForDocument: ReturnType<typeof findDocumentSchemaForDocument>,
-) {
-  return {
-    ...(documentSchemaForDocument?.propertiesSchema ?? {}),
-    properties: Object.fromEntries(
-      Object.entries(documentSchemaForDocument?.propertiesSchema?.properties ?? {}).map(
-        ([key, value]) => {
-          if (!isObject(value) || !Array.isArray(value.enum) || value.type !== 'string')
-            return [key, value];
-
-          return [
-            key,
-            {
-              ...value,
-              dropdownOptions: value.enum.map(item => ({
-                value: item,
-                label: item,
-              })),
-            },
-          ];
-        },
-      ),
-    ),
-  };
-}
