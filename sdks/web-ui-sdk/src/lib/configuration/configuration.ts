@@ -22,17 +22,18 @@ const defaultFlowOrder = [
 
 export const configuration: IAppConfiguration = {
   backendConfig: {
-    baseUrl: 'https://api-dev.ballerine.io',
+    baseUrl: 'http://localhost:3000/api/v1',
     auth: {
-      method: 'jwt',
-      authorizationHeader:
-        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbmRVc2VySWQiOiJhMzE5Yzk1ZC03ODY4LTQyNDAtOTQ5YS1mMDRmNDEwMzRlYzEiLCJjbGllbnRJZCI6IjJlOGJiZTJjLTJhYjktNGRkZi1iOWI5LTZlZWM5M2Q3YjQzMSIsImlhdCI6MTY1OTM1NDAwNywiZXhwIjoxODczODcyOTU4Njc0MTM4OCwiaXNzIjoiMmU4YmJlMmMtMmFiOS00ZGRmLWI5YjktNmVlYzkzZDdiNDMxIn0.aEaz4y7pBYG6Ia1Yb74cUOp0E0UsgtCItgLd2EXjo3U',
+      method: 'basic',
+      authorizationHeader: `Bearer 12345678-1234-1234-1234-123456789012`,
     },
     endpoints: {
       startVerification: '/v2/enduser/verify',
       getVerificationStatus: '/v2/enduser/verify/status/{verificationId}',
       processStepData: '/v2/enduser/verify/partial',
       getConfig: '/v2/clients/{clientId}/config',
+      uploadFile: '/collection-flow/files',
+      updateContext: '/collection-flow/sync/context',
     },
   },
   isDevelopment: false,

@@ -53,8 +53,8 @@
   .background {
     z-index: 9999;
     position: fixed;
-    top: 0px;
-    left: 0px;
+    top: 0;
+    left: 0;
     overflow: hidden;
     width: 100%;
     height: 100%;
@@ -66,7 +66,7 @@
   .content {
     width: 415px;
     height: 660px;
-    box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
     border-radius: 35px;
     overflow: hidden;
   }
