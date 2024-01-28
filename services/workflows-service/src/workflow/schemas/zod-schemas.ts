@@ -15,6 +15,7 @@ export const ConfigSchema = z
     isCaseOverviewEnabled: z.boolean().optional(),
     isLegacyReject: z.boolean().optional(),
     isLockedDocumentCategoryAndType: z.boolean().optional(),
+    isManualCreation: z.boolean().optional(),
     isDemo: z.boolean().optional(),
     isExample: z.boolean().optional(), // OSS only
     language: z.string().optional(),
