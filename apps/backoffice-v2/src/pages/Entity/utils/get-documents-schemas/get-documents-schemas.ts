@@ -25,15 +25,18 @@ export const getDocumentsSchemas = (
       return unique;
     }, [] as TDocument[])
     .filter((documentSchema: TDocument) => {
-      if (!workflow?.workflowDefinition?.config?.availableDocuments) return true;
+      if (
+        !workflow?.workflowDefinition?.config?.availableDocuments ||
+        !Array.isArray(workflow?.workflowDefinition?.config?.availableDocuments)
+      ) {
+        return true;
+      }
 
-      const isIncludes = !!workflow?.workflowDefinition?.config?.availableDocuments.find(
+      return !!workflow?.workflowDefinition?.config?.availableDocuments.find(
         (availableDocument: TAvailableDocuments[number]) =>
           availableDocument.type === documentSchema.type &&
           availableDocument.category === documentSchema.category,
       );
-
-      return isIncludes;
     });
 
   if (!Array.isArray(documentSchemaByCountry) || !documentSchemaByCountry.length) {

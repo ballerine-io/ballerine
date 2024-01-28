@@ -97,7 +97,10 @@ export interface FlowsBackendConfigEndpoints {
   getVerificationStatus?: string;
   processStepData?: string;
   getConfig?: string;
+  uploadFile?: string;
+  updateContext?: string;
 }
+
 export interface FlowsBackendConfig {
   baseUrl?: string;
   auth?: {
@@ -137,6 +140,7 @@ export interface IFlowsMountOptions {
    */
   jwt?: string;
 }
+
 export interface FlowsTranslations {
   overrides?: Partial<TranslationType>;
   remoteUrl?: string;

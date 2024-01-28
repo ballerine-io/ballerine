@@ -27,13 +27,17 @@ export const getFlowOrders = (configuration: IAppConfiguration) => {
 
 export const getFlowConfig = (configuration: IAppConfiguration): IFlow => {
   const flowName = sessionStorage.getItem(FLOW_STORE_KEY);
+
   if (!flowName) {
     throw new Error("Flow name wasn't provided");
   }
+
   const flowConfiguration = configuration.flows[flowName];
+
   if (!flowConfiguration) {
     throw new Error(`Flow configuration doesn't exist for the name: ${flowName}`);
   }
+
   return flowConfiguration;
 };
 
