@@ -4,12 +4,14 @@ import { z } from 'zod';
 
 config({ path: process.env.CI ? '.env.example' : '.env' });
 
-const urlArrayTransformer = (value: string) => {
-  const urlSchema = z.string().url();
-  const urlArray = value.split(',');
-
-  return urlArray.map(url => urlSchema.parse(url)).sort((a, b) => a.length - b.length);
-};
+const corsType = z
+  .string()
+  .optional()
+  .transform(value => {
+    if (!value) return [];
+    return value.split(',');
+  })
+  .pipe(z.string().array());
 
 export const env = createEnv({
   /*
@@ -26,19 +28,10 @@ export const env = createEnv({
     DB_URL: z.string().url(),
     SESSION_SECRET: z.string(),
     SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().nonnegative().gt(0).default(60),
-    BACKOFFICE_CORS_ORIGIN: z.string().transform(urlArrayTransformer),
-    WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().transform(urlArrayTransformer),
-    KYB_EXAMPLE_CORS_ORIGIN: z.string().transform(urlArrayTransformer),
-    KYC_EXAMPLE_CORS_ORIGIN: z
-      .string()
-      .optional()
-      .transform(value => {
-        if (value === undefined) {
-          return value;
-        }
-
-        return urlArrayTransformer(value);
-      }),
+    BACKOFFICE_CORS_ORIGIN: corsType,
+    WORKFLOW_DASHBOARD_CORS_ORIGIN: corsType,
+    KYB_EXAMPLE_CORS_ORIGIN: corsType,
+    KYC_EXAMPLE_CORS_ORIGIN: corsType,
     AWS_S3_BUCKET_NAME: z.string().optional(),
     AWS_S3_BUCKET_KEY: z.string().optional(),
     AWS_S3_BUCKET_SECRET: z.string().optional(),
