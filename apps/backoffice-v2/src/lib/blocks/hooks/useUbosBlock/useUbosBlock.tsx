@@ -1,30 +1,19 @@
 import { useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { WarningFilledSvg } from '@/common/components/atoms/icons';
 
-export const useUbosBlock = ubos => {
-  return useMemo(() => {
-    if (!Array.isArray(ubos) || !ubos?.length) {
-      return [];
-    }
+type Ubo = {
+  name?: string;
+  type?: string;
+  level?: number;
+  percentage?: number;
+};
 
-    return createBlocksTyped()
-      .addBlock()
-      .addCell({
-        type: 'block',
-        value: createBlocksTyped()
-          .addBlock()
-          .addCell({
-            type: 'heading',
-            value: 'UBOs',
-          })
-          .addCell({
-            type: 'subheading',
-            value: 'Registry-provided Data',
-            props: {
-              className: 'mb-4',
-            },
-          })
-          .addCell({
+export const useUbosBlock = (ubos: Ubo[] | undefined, message: string | undefined) =>
+  useMemo(() => {
+    const cell =
+      Array.isArray(ubos) && ubos?.length
+        ? ({
             type: 'table',
             value: {
               columns: [
@@ -45,17 +34,53 @@ export const useUbosBlock = ubos => {
                   header: 'Level',
                 },
               ],
-              data: ubos.map(({ name, percentage, type, level }) => ({
-                name,
-                percentage,
-                type,
-                level,
-              })),
+              data: ubos,
+            },
+          } satisfies Extract<
+            Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
+            {
+              type: 'table';
+            }
+          >)
+        : ({
+            type: 'paragraph',
+            value: (
+              <span className="flex text-sm text-black/60">
+                <WarningFilledSvg
+                  className={'mr-[8px] mt-px text-black/20'}
+                  width={'20'}
+                  height={'20'}
+                />
+                <span>{message}</span>
+              </span>
+            ),
+          } satisfies Extract<
+            Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
+            {
+              type: 'paragraph';
+            }
+          >);
+
+    return createBlocksTyped()
+      .addBlock()
+      .addCell({
+        type: 'block',
+        value: createBlocksTyped()
+          .addBlock()
+          .addCell({
+            type: 'heading',
+            value: 'UBOs',
+          })
+          .addCell({
+            type: 'subheading',
+            value: 'Registry-provided Data',
+            props: {
+              className: 'mb-4',
             },
           })
+          .addCell(cell)
           .build()
           .flat(1),
       })
       .build();
-  }, [ubos]);
-};
+  }, [message, ubos]);

@@ -94,12 +94,18 @@ To set up a local environment, follow these steps:
    ```sh
    pnpm monorepo:init
    ```
-3. #### Run the example
+3. #### Run an example
+   * KYB
    ```sh
    pnpm kyb-manual-review-example
    ```
+   * KYC
+    ```sh
+   pnpm kyc-manual-review-example
+   ```
 Once the process is complete,  _2 tabs_   will open in your browser:
-1. http://localhost:5173/ - for the _document collection flow_
+1. http://localhost:5173/ - for the _KYB document collection flow_
+   OR http://localhost:5202 - for the _KYC document collection flow_
 2. http://localhost:5137/ - for the  _backoffice_
    (It's recommended to have them positioned side-by-side).
 
@@ -113,10 +119,10 @@ Once the process is complete,  _2 tabs_   will open in your browser:
    4. Sign-in with the following credentials:
       - **Email:** `admin@admin.com`
       - **Password:** `admin`
-4.  Approve/reject/ask to resubmit
+4.  Approve / Reject / Ask to resubmit
 5.  For ask to resubmit, go back to the collection flow to re-upload, then go back to the backoffice to see the updated information
 
-    *Note: some components are currently in beta, if you run into an issue please ping us on Slack
+* Note: some components are currently in beta, if you run into an issue please ping us on Slack
 
 ## Contributing
 

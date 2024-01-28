@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker';
 import { Prisma } from '@prisma/client';
 import { StateTag } from '@ballerine/common';
 
-export const assignedTo = faker.image.avatar();
 export const endUserIds = [
   'ckkt3qnv40001qxtt7nmj9r2r',
   'ckkt3r0v40002qxtt8sxk7fvi',
@@ -188,18 +187,19 @@ export const generateEndUser = ({
     avatarUrl,
     project: { connect: { id: projectId } },
   };
+
   if (workflowDefinitionId) {
     res = {
       ...res,
       workflowRuntimeData: {
         create: {
-          workflowDefinitionVersion,
+          state,
           context,
+          projectId,
           workflowDefinitionId,
+          workflowDefinitionVersion,
           createdAt: faker.date.recent(2),
-          projectId: projectId,
           parentRuntimeDataId: workflow.parentRuntimeId,
-          state: state,
           tags: [StateTag.MANUAL_REVIEW],
         },
       },
@@ -207,5 +207,6 @@ export const generateEndUser = ({
   }
 
   res.project = { connect: { id: projectId } };
+
   return res;
 };

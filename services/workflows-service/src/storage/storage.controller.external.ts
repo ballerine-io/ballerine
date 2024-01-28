@@ -59,7 +59,7 @@ export class StorageControllerExternal {
     @UploadedFile() file: Partial<Express.MulterS3.File>,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const fileInfo = await this.service.createFileLink({
+    return await this.service.createFileLink({
       uri: file.location || String(file.path),
       fileNameOnDisk: String(file.path),
       fileNameInBucket: file.key,
@@ -76,8 +76,6 @@ export class StorageControllerExternal {
           })
         )?.mimeType,
     });
-
-    return fileInfo;
   }
 
   // curl -v http://localhost:3000/api/v1/storage/1679322938093

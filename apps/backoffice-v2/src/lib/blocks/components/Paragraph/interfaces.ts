@@ -1,6 +1,6 @@
-import { ComponentProps } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 
 export interface IParagraphProps {
-  value: string;
+  value: ReactNode | ReactNode[];
   props?: ComponentProps<'p'>;
 }
