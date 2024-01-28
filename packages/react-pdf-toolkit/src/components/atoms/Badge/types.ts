@@ -1,4 +1,4 @@
-import { badgeCva } from '@/components/Badge/Badge';
+import { badgeCva } from '@/components/atoms/Badge/Badge';
 import { BaseComponentProps } from '@/types/base-component-props';
 import { VariantProps } from 'class-variance-authority';
 

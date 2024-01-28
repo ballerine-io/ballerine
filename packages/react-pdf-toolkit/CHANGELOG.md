@@ -1,5 +1,11 @@
 # @ballerine/react-pdf-toolkit
 
+## 1.0.11
+
+### Patch Changes
+
+- Added new components & bump
+
 ## 1.0.10
 
 ### Patch Changes

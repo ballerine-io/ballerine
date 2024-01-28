@@ -1,4 +1,4 @@
-import { BadgeProps } from '@/components/Badge/types';
+import { BadgeProps } from '@/components/atoms/Badge/types';
 
 export const resolveBadgeStyleToRiskScore = (score: number | null = 0): BadgeProps['variant'] => {
   score = score === null ? 0 : score;
