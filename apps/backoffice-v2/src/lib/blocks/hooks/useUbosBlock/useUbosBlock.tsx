@@ -4,16 +4,16 @@ import { WarningFilledSvg } from '@/common/components/atoms/icons';
 
 type Ubo = {
   name?: string;
-  percentage?: number;
   type?: string;
-  level: number;
+  level?: number;
+  percentage?: number;
 };
 
 export const useUbosBlock = (ubos: Ubo[] | undefined, message: string | undefined) =>
   useMemo(() => {
     const cell =
       Array.isArray(ubos) && ubos?.length
-        ? {
+        ? ({
             type: 'table',
             value: {
               columns: [
@@ -36,11 +36,16 @@ export const useUbosBlock = (ubos: Ubo[] | undefined, message: string | undefine
               ],
               data: ubos,
             },
-          }
-        : {
+          } satisfies Extract<
+            Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
+            {
+              type: 'table';
+            }
+          >)
+        : ({
             type: 'paragraph',
             value: (
-              <span className="mt-[20px] flex text-sm text-black/60">
+              <span className="flex text-sm text-black/60">
                 <WarningFilledSvg
                   className={'mr-[8px] mt-px text-black/20'}
                   width={'20'}
@@ -49,7 +54,12 @@ export const useUbosBlock = (ubos: Ubo[] | undefined, message: string | undefine
                 <span>{message}</span>
               </span>
             ),
-          };
+          } satisfies Extract<
+            Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
+            {
+              type: 'paragraph';
+            }
+          >);
 
     return createBlocksTyped()
       .addBlock()
