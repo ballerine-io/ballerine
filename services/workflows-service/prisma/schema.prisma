@@ -439,8 +439,8 @@ enum TransactionStatus {
 
 model Transaction {
   id                       String            @id @default(cuid())
-  transactionCorrelationId String?            @unique @db.VarChar
-  transactionDate          DateTime // Date and time of the transaction
+  transactionCorrelationId String            @unique @db.VarChar
+  transactionDate          DateTime
   transactionAmount        Float // Amount of the transaction
   transactionCurrency      String // Currency of the transaction
   transactionDescription   String? // Description of the transaction
@@ -489,9 +489,9 @@ model Transaction {
   cardTokenized   String?
 
   tags             Json?
-  reviewStatus     String? // Review status of the transaction
-  reviewerComments String? // Comments from the reviewer (if any)
-  auditTrail       Json? // Audit trail for the transaction
+  reviewStatus     String?
+  reviewerComments String?
+  auditTrail       Json?
 
   unusualActivityFlags Json? // Flags indicating unusual activity in the transaction
   riskScore            Float? // Risk score assigned to the transaction

@@ -1,13 +1,90 @@
 import { Injectable } from '@nestjs/common';
 import { TransactionRepository } from '@/transaction/transaction.repository';
-// import { Prisma } from '@prisma/client';
+import { TransactionCreateDto } from './dtos/transaction-create';
+import { TransactionEntityMapper } from './transaction.mapper';
+import { Prisma, Transaction } from '@prisma/client';
+import { sleep } from '@ballerine/common';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 @Injectable()
 export class TransactionService {
-  constructor(protected readonly repository: TransactionRepository) {}
+  constructor(
+    protected readonly repository: TransactionRepository,
+    protected readonly logger: AppLoggerService,
+  ) {}
 
-  async create(args: Parameters<TransactionRepository['create']>[0]) {
-    return this.repository.create(args);
+  async create(payload: TransactionCreateDto): Promise<Transaction> {
+    const transactionEntity: Prisma.TransactionCreateInput = {
+      ...TransactionEntityMapper.toEntity(payload),
+      project: {
+        connect: { id: payload.projectId },
+      },
+      // #TODO: fix types - this is a workaround, prisma defines jsonb's as prsima "json input"
+      tags: payload.tags as any,
+      auditTrail: payload.auditTrail as any,
+      unusualActivityFlags: payload.unusualActivityFlags as any,
+      additionalInfo: payload.additionalInfo as any,
+    };
+
+    return this.repository.create({ data: transactionEntity });
+  }
+
+  async createBatch(payload: TransactionCreateDto[]): Promise<{
+    txCreationResponse: {
+      txid: string;
+      status: 'success' | 'failed';
+      txCorrelationId: string;
+      errorMessage?: string;
+    }[];
+    overallStatus: 'success' | 'partial';
+  }> {
+    // TEMP IMPLEMENTATION - REMOVE WHEN TASK BASED BATCH CREATE IS IMPLEMENTED
+
+    const txCreationResponse: {
+      txid: string;
+      status: 'success' | 'failed';
+      txCorrelationId: string;
+      errorMessage?: string;
+    }[] = [];
+    let overallStatus: 'success' | 'partial' = 'success';
+
+    for (const transaction of payload) {
+      const transactionEntity: Prisma.TransactionCreateInput = {
+        ...TransactionEntityMapper.toEntity(transaction),
+        project: {
+          connect: { id: transaction.projectId },
+        },
+        // #TODO: fix types - this is a workaround, prisma defines jsonb's as prsima "json input"
+        tags: transaction.tags as any,
+        auditTrail: transaction.auditTrail as any,
+        unusualActivityFlags: transaction.unusualActivityFlags as any,
+        additionalInfo: transaction.additionalInfo as any,
+      };
+
+      await sleep(200);
+
+      let res;
+      try {
+        res = await this.repository.create({ data: transactionEntity });
+        txCreationResponse.push({
+          txid: res.id,
+          txCorrelationId: transaction.correlationId,
+          status: 'success',
+        });
+      } catch (error: unknown) {
+        overallStatus = 'partial';
+
+        txCreationResponse.push({
+          txid: res?.id ?? '',
+          status: 'failed',
+          txCorrelationId: transaction.correlationId,
+          errorMessage: (error as Error).message ?? '',
+        });
+      }
+    }
+    this.logger.log('txCreationResponse', txCreationResponse);
+
+    return { txCreationResponse, overallStatus };
   }
 
   // async list(args?: Parameters<TransactionRepository['findMany']>[0]) {

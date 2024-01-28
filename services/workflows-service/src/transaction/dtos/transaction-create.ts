@@ -1,15 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TransactionType, VerificationStatus, TransactionStatus } from '@prisma/client';
-import {
-  IsBoolean,
-  IsDate,
-  IsJSON,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
-import { type InputJsonValue } from '@/types';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { JsonValue } from 'type-fest';
 
 class SenderInfo {
   @ApiProperty({ required: false }) @IsString() @IsOptional() accountId?: string;
@@ -59,11 +52,20 @@ class ProductInfo {
 }
 
 export class TransactionCreateDto {
-  @ApiProperty({ required: true }) @IsDate() @IsNotEmpty() date!: Date;
+  @ApiProperty({
+    required: true,
+    type: String,
+    description: 'ISO8061',
+    example: '2021-01-01:00:00:00.000Z',
+  })
+  @Transform(({ value }) => new Date(value))
+  @IsDate()
+  @IsNotEmpty()
+  date!: Date;
   @ApiProperty({ required: true }) @IsNumber() @IsNotEmpty() amount!: number;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() currency!: string;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() projectId!: string;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() correlationId?: string;
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() correlationId!: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() description?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() category?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() type?: TransactionType;
@@ -75,15 +77,26 @@ export class TransactionCreateDto {
   @ApiProperty({ type: PaymentInfo }) @IsOptional() payment?: PaymentInfo;
   @ApiProperty({ type: ProductInfo }) @IsOptional() product?: ProductInfo;
 
-  @ApiProperty({ required: false }) @IsString() @IsOptional() tags?: InputJsonValue;
+  @ApiProperty({ required: false, type: 'object' })
+  @IsOptional()
+  tags?: JsonValue | null;
+
   @ApiProperty({ required: false }) @IsString() @IsOptional() reviewStatus?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() reviewerComments?: string;
-  @ApiProperty({ required: false }) @IsJSON() @IsOptional() auditTrail?: InputJsonValue;
 
-  @ApiProperty({ required: false }) @IsJSON() @IsOptional() unusualActivityFlags?: InputJsonValue;
+  @ApiProperty({ required: false, type: 'object' })
+  @IsOptional()
+  auditTrail?: JsonValue | null;
+
+  @ApiProperty({ required: false, type: 'object' })
+  @IsOptional()
+  unusualActivityFlags?: JsonValue | null;
+
   @ApiProperty({ required: false }) @IsNumber() @IsOptional() riskScore?: number;
   @ApiProperty({ required: false }) @IsString() @IsOptional() regulatoryAuthority?: string;
-  @ApiProperty({ required: false }) @IsJSON() @IsOptional() additionalInfo?: InputJsonValue;
+  @ApiProperty({ required: false, type: 'object' })
+  @IsOptional()
+  additionalInfo?: JsonValue | null;
 
   @ApiProperty({ required: false }) @IsDate() @IsOptional() createdAt?: Date;
   @ApiProperty({ required: false }) @IsDate() @IsOptional() updatedAt?: Date;
