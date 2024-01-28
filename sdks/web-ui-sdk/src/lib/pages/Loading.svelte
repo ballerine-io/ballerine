@@ -1,6 +1,6 @@
 <script lang="ts">
   import { toast } from '@zerodevx/svelte-toast';
-  import { Elements } from '../contexts/configuration/types';
+  import { Elements } from '../contexts/configuration';
   import { FlyingText, Image, Loader } from '../atoms';
   import { configuration } from '../contexts/configuration';
   import {
@@ -33,11 +33,9 @@
   const flowName: string = getFlowName();
   const step = getStepConfiguration($configuration, stepId);
   const style = getLayoutStyles($configuration, step);
-  const stepNamespace = step.namespace!;
 
   let timeout: NodeJS.Timeout;
   let veryficationTimeout: NodeJS.Timeout;
-  let dataVerified = false;
   let review = false;
   let showText = true;
 
@@ -81,8 +79,8 @@
   const makeRequest = async (data: IStoreData) => {
     let res;
     try {
-      res = await verifyDocuments(data, endUserId, $configuration);
-    } catch (error) {
+      res = await verifyDocuments(data);
+    } catch (error: Error) {
       toast.push(t('general', 'errorDocuments'));
       console.error('Error sending documents', error);
       $currentParams = { message: error } as ISelectedParams;
@@ -94,12 +92,13 @@
       return;
     }
 
-    dataVerified = true;
     const flowConfig = getFlowConfig($configuration);
+
     if (flowConfig.syncFlow) {
       checkStatus(res);
       return;
     }
+
     showText = false;
     await preloadStepById($configuration, configuration, 'final', flowName);
     $currentStepId = 'final';
@@ -111,7 +110,9 @@
       selectedDocumentInfo: $selectedDocumentInfo,
       selfie: $selfieUri,
     };
+
     makeRequest(data);
+
     timeout = setTimeout(async () => {
       showText = false;
       await preloadStepById($configuration, configuration, 'decline', flowName);

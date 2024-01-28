@@ -96,22 +96,21 @@ export const Documents: FunctionComponent<IDocumentsProps> = ({
         </div>
       </div>
       <ImageViewer.List>
-        {isLoading &&
-          skeletons.map(index => (
-            <ImageViewer.SkeletonItem key={`image-viewer-skeleton-${index}`} />
-          ))}
-        {!isLoading &&
-          documents?.map(({ imageUrl, title, fileType, fileName, id }) => (
-            <ImageViewer.Item
-              id={id}
-              key={keyFactory(id, title, fileName, fileType, imageUrl)}
-              src={imageUrl}
-              fileType={fileType}
-              fileName={fileName}
-              alt={title}
-              caption={title}
-            />
-          ))}
+        {isLoading
+          ? skeletons.map(index => (
+              <ImageViewer.SkeletonItem key={`image-viewer-skeleton-${index}`} />
+            ))
+          : documents?.map(({ imageUrl, title, fileType, fileName, id }) => (
+              <ImageViewer.Item
+                id={id}
+                key={keyFactory(id, title, fileName, fileType, imageUrl)}
+                src={imageUrl}
+                fileType={fileType}
+                fileName={fileName}
+                alt={title}
+                caption={title}
+              />
+            ))}
       </ImageViewer.List>
       <ImageViewer.ZoomModal />
     </ImageViewer>

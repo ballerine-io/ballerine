@@ -6,7 +6,6 @@ import {
   TFlowStep,
   TUser,
   UISchema,
-  UpdateFlowDto,
 } from '@/domains/collection-flow/types';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 
@@ -46,18 +45,6 @@ export const fetchUISchema = async (language: string): Promise<UISchema> => {
 
 export const updateLanguage = async (language: string) => {
   await request.put(`collection-flow/language`, { json: { language } });
-};
-
-export const updateFlow = async (dto: UpdateFlowDto) => {
-  await request.put(`collection-flow`, { json: dto });
-};
-
-export const startFlow = async () => {
-  await request.post(`collection-flow/finish`);
-};
-
-export const resubmitFlow = async () => {
-  await request.post(`collection-flow/resubmit`);
 };
 
 export const fetchCustomer = async (): Promise<TCustomer> => {

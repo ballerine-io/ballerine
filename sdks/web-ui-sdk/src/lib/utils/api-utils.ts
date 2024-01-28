@@ -21,22 +21,27 @@ export const verifyDocumentsAndCloseFlow = (configuration: IAppConfiguration) =>
   let _documents: IDocument[] = [];
   let _selectedDocumentInfo;
   let _selfie;
+
   documents.update(d => {
     _documents = d;
     return d;
   });
+
   selectedDocumentInfo.update(d => {
     _selectedDocumentInfo = d;
     return d;
   });
+
   selfieUri.update(d => {
     _selfie = d;
     return d;
   });
+
   const data: IStoreData = {
     docs: _documents,
     selectedDocumentInfo: _selectedDocumentInfo,
     selfie: _selfie,
   };
-  return verifyDocuments(data, endUserId, configuration);
+
+  return verifyDocuments(data);
 };

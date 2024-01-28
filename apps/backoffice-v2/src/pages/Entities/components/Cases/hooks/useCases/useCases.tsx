@@ -86,17 +86,21 @@ export const useCases = () => {
             },
           ],
         },
-        {
-          label: 'Status',
-          value: 'caseStatus',
-          options: [
-            ...(statuses?.map(status => ({
-              label: tagToBadgeData[status]?.text,
-              value: status,
-              key: status,
-            })) ?? []),
-          ],
-        },
+        ...(statuses?.length
+          ? [
+              {
+                label: 'Status',
+                value: 'caseStatus',
+                options: [
+                  ...(statuses?.map(status => ({
+                    label: tagToBadgeData[status]?.text,
+                    value: status,
+                    key: status,
+                  })) ?? []),
+                ],
+              },
+            ]
+          : []),
         {
           label: 'State',
           value: 'status',
