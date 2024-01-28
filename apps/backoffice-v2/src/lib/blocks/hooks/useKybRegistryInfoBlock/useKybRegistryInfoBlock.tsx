@@ -5,8 +5,6 @@ import * as React from 'react';
 
 export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) =>
   useMemo(() => {
-    console.log(pluginsOutput?.businessInformation);
-
     const cell = Object.keys(pluginsOutput?.businessInformation?.data?.[0] ?? {}).length
       ? {
           type: 'details',

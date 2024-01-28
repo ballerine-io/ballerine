@@ -9,7 +9,7 @@ type Ubo = {
   level: number;
 };
 
-export const useUbosBlock = (ubos?: Ubo[], message?: string) =>
+export const useUbosBlock = (ubos: Ubo[] | undefined, message: string | undefined) =>
   useMemo(() => {
     const cell =
       Array.isArray(ubos) && ubos?.length
