@@ -27,7 +27,7 @@ To start using the `docker-compose.yml` file in a repository, you need to clone 
 4. Once the cloning process is complete, navigate to the cloned repository directory:
 
    ```shell
-   cd deploy
+   cd ballerine
    ```
 
 ## Understanding the docker-compose.yml File
@@ -88,4 +88,4 @@ Here are some additional Docker Compose commands that might be useful when worki
 
 ## Conclusion
 
-By utilizing the `docker-compose.yml` file in a repository, you can easily set up and manage the required Docker services for the project. Cloning the repository and running `docker-compose up` allows you to quickly start the defined containers. Be sure to refer to the repository's documentation for any specific instructions or configurations related to the `docker-compose.yml` file.
+By utilizing the `docker-compose.yml` file, and then visit http://localhost:port where `port` is the port number specified for the service in a repository, you can easily set up and manage the required Docker services for the project. Cloning the repository and running `docker-compose up` allows you to quickly start the defined containers. Be sure to refer to the repository's documentation for any specific instructions or configurations related to the `docker-compose.yml` file.
