@@ -17,6 +17,7 @@ services:
       - ballerine-workflow-service
     restart: on-failure
     environment:
+      environment:
       VITE_API_URL: 'http://localhost:3000/api/v1/'
       VITE_KYB_DEFINITION_ID: 'kyb_parent_kyc_session_example'
   ballerine-workflows-dashboard:
@@ -28,6 +29,9 @@ services:
       - ballerine-workflow-service
     restart: on-failure
   ballerine-workflow-service:
+    environment:
+      WORKFLOW_DASHBOARD_CORS_ORIGIN: 'http://localhost:5200'
+      WORKFLOW_DASHBOARD_PORT: 5200
     image: ghcr.io/ballerine-io/workflows-service:latest
     platform: linux/amd64
     command:
@@ -38,7 +42,11 @@ services:
         npm run seed
         dumb-init npm run prod
     ports:
-      - 3000:3000
+            - 3000:3000
+    environment:
+      API_KEY: secret
+      BCRYPT_SALT: 10
+      BACKOFFICE_CORS_ORIGIN: 'http://localhost:5137'
     environment:
       API_KEY: secret
       BCRYPT_SALT: 10
@@ -46,7 +54,12 @@ services:
       COMPOSE_PROJECT_NAME: ballerine-x
       DB_URL: postgres://admin:password@ballerine-postgres:5432
       DB_PORT: 5432
-      DB_USER: admin
+            DB_URL: postgres://admin:admin@ballerine-postgres:5432
+      NODE_ENV: 'development'
+      SESSION_EXPIRATION_IN_MINUTES: 60
+      SESSION_SECRET: secret
+      WORKFLOW_DASHBOARD_CORS_ORIGIN: 'http://localhost:5200'
+      KYB_EXAMPLE_CORS_ORIGIN: 'http://localhost:5201'
       DB_PASSWORD: password
       NODE_ENV: development
       PORT: 3000
@@ -63,9 +76,15 @@ services:
       UNIFIED_API_TOKEN: ''
       UNIFIED_API_SHARED_SECRET: ''
       ENVIRONMENT_NAME: 'development'
-    depends_on:
+        depends_on:
       ballerine-postgres:
         condition: service_healthy
+    environment:
+      EMAIL_API_URL: https://api.sendgrid.com/v3/mail/send
+      UNIFIED_API_URL: 'https://unified-api-test.eu.ballerine.app'
+      UNIFIED_API_TOKEN: ''
+      UNIFIED_API_SHARED_SECRET: ''
+      ENVIRONMENT_NAME: 'development'
     restart: on-failure
   ballerine-postgres:
     image: sibedge/postgres-plv8:15.3-3.1.7
@@ -73,7 +92,7 @@ services:
       - 5432:5432
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: admin
     volumes:
       - postgres15:/var/lib/postgresql/data
     healthcheck:
