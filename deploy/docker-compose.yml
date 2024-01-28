@@ -54,7 +54,7 @@ services:
       SESSION_SECRET: secret
       WORKFLOW_DASHBOARD_CORS_ORIGIN: http://localhost:5200
       KYB_EXAMPLE_CORS_ORIGIN: http://localhost:5201
-      IS_DEMO: true
+      IS_DEMO: "true"
       WEBHOOK_SECRET: webhook_secret
       APP_API_URL: https://alon.ballerine.dev
       EMAIL_API_TOKEN: ''
