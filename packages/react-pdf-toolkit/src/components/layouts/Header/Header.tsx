@@ -10,7 +10,7 @@ export const Header: FunctionComponent<HeaderProps> = ({
   createdAtTimestamp,
 }) => {
   return (
-    <View style={tw('flex flex-row pb-4 justify-between')}>
+    <View style={tw('flex flex-row justify-between')}>
       <View style={tw('flex flex-col gap-4')}>
         <View>{logoElement}</View>
         <View>{titleElement}</View>
