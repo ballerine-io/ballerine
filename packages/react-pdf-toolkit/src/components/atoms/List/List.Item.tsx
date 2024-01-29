@@ -9,7 +9,7 @@ export const ListItem: FunctionComponent<ListItemProps> = ({
   prependIcon,
   styles = [],
 }) => (
-  <View style={mergeStyles([tw('flex flex-row items-center gap-3'), ...styles])}>
+  <View style={mergeStyles([tw('flex flex-row items-center gap-2'), ...styles])}>
     {prependIcon && <View>{prependIcon}</View>}
     <View>{children}</View>
   </View>
