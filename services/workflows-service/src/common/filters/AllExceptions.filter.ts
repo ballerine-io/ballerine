@@ -23,7 +23,6 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
 
   private _handleHttpErrorResponse(exception: unknown, request: Request, response: Response) {
     const serverError = this.getHttpException(exception);
-    const errors = exception instanceof AjvValidationError ? exception.serializeErrors() : [];
 
     if (this._logErrorIfRelevant(serverError.getStatus())) {
       this.logError(request, serverError);
@@ -35,11 +34,9 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       .json({
         errorCode: String(HttpStatusCode[serverError.getStatus()]),
         message: serverError.message,
-        errors,
         statusCode: serverError.getStatus(),
         timestamp: new Date().toISOString(),
         path: request.url,
-        ...(typeof error === 'string' ? { message: error } : error),
       });
   }
 

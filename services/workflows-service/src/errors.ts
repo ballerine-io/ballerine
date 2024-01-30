@@ -27,9 +27,7 @@ export class SessionExpiredException extends common.UnauthorizedException {
 }
 
 export class ZodValidationException extends common.BadRequestException {
-  error: ZodError;
-
-  constructor(error: ZodError) {
+  constructor(public error: ZodError) {
     super({
       statusCode: common.HttpStatus.BAD_REQUEST,
       message: error.errors, // Backwards compatibility - Legacy code message excepts array
@@ -37,29 +35,31 @@ export class ZodValidationException extends common.BadRequestException {
     });
     this.error = error;
   }
-  getZodError() {
+  getError() {
     return this.error;
   }
 }
 
 export class AjvValidationError extends common.BadRequestException {
-  @ApiProperty()
-  statusCode!: number;
-  @ApiProperty()
-  message!: string;
-
   constructor(
     public error: ErrorObject<string, Record<string, any>, unknown>[] | null | undefined,
   ) {
-    super();
-  }
-
-  serializeErrors() {
-    return this.error?.map(({ instancePath, message }) => {
+    const errors = error?.map(({ instancePath, message }) => {
       return {
         message: `${startCase(lowerCase(instancePath)).replace('/', '')} ${message}.`,
         path: instancePath,
       };
     });
+
+    super({
+      statusCode: common.HttpStatus.BAD_REQUEST,
+      message: errors, // Backwards compatibility - Legacy code message excepts array
+      errors: errors,
+    });
+    this.error = error;
+  }
+
+  getError() {
+    return this.error;
   }
 }
