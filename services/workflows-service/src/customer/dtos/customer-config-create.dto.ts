@@ -1,10 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import type { TCustomerSubscription } from '../schemas/zod-schemas';
+import { CustomerSubscriptionSchema, type TCustomerSubscription } from '../schemas/zod-schemas';
 
-export class CustomerConfigCreateDto {
+class Subscription {
+  type!: string;
+  url!: string;
+  events!: string[];
+}
+export class CustomerSubscriptionDto {
   @ApiProperty({
     required: true,
-    type: Object,
+    type: () => Subscription,
   })
   subscriptions!: TCustomerSubscription;
 }

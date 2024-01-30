@@ -6,14 +6,14 @@ import { CustomerService } from '@/customer/customer.service';
 import { Customer, Prisma } from '@prisma/client';
 import { CustomerCreateDto } from '@/customer/dtos/customer-create';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
-import { CustomerModel } from '@/customer/customer.model';
+import { CustomerModel, CustomerSubscriptionModel } from '@/customer/customer.model';
 import { AuthenticatedEntity } from '@/types';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
 import { createDemoMockData } from '../../scripts/workflows/workflow-runtime';
 import { PrismaService } from '@/prisma/prisma.service';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
-import z from 'zod';
-import { CustomerConfigCreateDto } from './dtos/customer-config-create.dto';
+import { CustomerSubscriptionDto } from './dtos/customer-config-create.dto';
+import { ValidationError } from '@/errors';
 
 @swagger.ApiTags('external/customers')
 @common.Controller('external/customers')
@@ -70,12 +70,13 @@ export class CustomerControllerExternal {
   }
 
   @common.Post('subscriptions')
-  @swagger.ApiOkResponse()
+  @swagger.ApiOkResponse({ type: [CustomerSubscriptionModel] })
   @swagger.ApiForbiddenResponse()
+  @swagger.ApiBadRequestResponse({ type: ValidationError })
   @UseGuards(CustomerAuthGuard)
   @UsePipes(new ZodValidationPipe(CustomerSubscriptionSchema, 'body'))
   async createSubscriptions(
-    @common.Body() data: CustomerConfigCreateDto,
+    @common.Body() data: CustomerSubscriptionDto,
     @Request() req: any,
   ): Promise<Pick<Customer, 'subscriptions'>> {
     const customer = (req.user as AuthenticatedEntity).customer!;

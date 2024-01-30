@@ -89,6 +89,7 @@
     "nest-access-control": "2.2.0",
     "nestjs-cls": "^3.5.0",
     "nestjs-prisma": "0.20.0",
+    "nestjs-zod": "^3.0.0",
     "passport": "0.6.0",
     "passport-http": "0.3.0",
     "passport-jwt": "4.0.1",

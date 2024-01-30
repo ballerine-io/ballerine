@@ -1,5 +1,6 @@
+import { CustomerSubscriptionSchema } from './schemas/zod-schemas';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsString, ValidateNested } from 'class-validator';
 
 export class CustomerModel {
   @ApiProperty({
@@ -53,4 +54,32 @@ export class CustomerModel {
   })
   @IsString()
   country?: string;
+}
+
+class Subscription {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  url!: string;
+
+  @ApiProperty({
+    required: true,
+    type: [String],
+  })
+  events!: string[];
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  type!: string;
+}
+
+export class CustomerSubscriptionModel {
+  @ApiProperty({
+    type: [Subscription],
+  })
+  @ValidateNested({ each: true })
+  subscriptions?: Subscription[];
 }
