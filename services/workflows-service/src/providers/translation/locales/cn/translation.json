@@ -439,6 +439,7 @@
       "holderFullAddress": "需要持卡人完整地址。",
       "accountNumber": "需要帐号。",
       "swiftCode": "需要SWIFT代码。",
+      "routeNumber": "路线号码为必填项。",
       "bankName": "需要银行名称。",
       "bankAddress": "需要银行地址。",
       "currency": "需要帐户货币。",
