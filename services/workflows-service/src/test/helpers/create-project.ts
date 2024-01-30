@@ -7,7 +7,7 @@ export const createProject = async (client: PrismaClient, customer: Customer, id
     },
     update: {},
     create: {
-      id: `project-${id}`,
+      id: `${id}`,
       name: `Project ${id}`,
       customerId: customer.id,
     },

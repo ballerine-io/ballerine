@@ -36,6 +36,9 @@ import { CustomerService } from './customer.service';
 import { CustomerControllerExternal } from './customer.controller.external';
 import { CustomerRepository } from './customer.repository';
 import { EndUserService } from '@/end-user/end-user.service';
+import { before } from 'lodash';
+import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
+import { string } from 'zod';
 
 describe('#CustomerControllerExternal', () => {
   let app: INestApplication;
@@ -46,9 +49,10 @@ describe('#CustomerControllerExternal', () => {
   afterEach(tearDownDatabase);
 
   beforeAll(async () => {
-    await cleanupDatabase();
+    // await cleanupDatabase();
 
     const servicesProviders = [
+      AllExceptionsFilter,
       CustomerService,
       CustomerRepository,
       EndUserService,
@@ -93,41 +97,51 @@ describe('#CustomerControllerExternal', () => {
       [CustomerControllerExternal],
       [PrismaModule, ClsModule],
     );
-
-    customer = await createCustomer(
-      await app.get(PrismaService),
-      'someRandomId',
-      'secret3',
-      '',
-      '',
-      'webhook-shared-secret',
-    );
-    project = await createProject(await app.get(PrismaService), customer, '1');
   });
 
   describe('POST /subscriptions', () => {
-    it('creates a subsriptions for customer', async () => {
-      expect(await customerService.getByProjectId(project.id)).toMatchInlineSnapshot(`
-        {
-          "country": "GB",
-          "displayName": "Customer someRandomId",
-          "faviconImageUri": "",
-          "id": "customer-someRandomId",
-          "language": "en",
-          "logoImageUri": "",
-          "name": "Customer someRandomId",
-          "projects": [
-            {
-              "customerId": "customer-someRandomId",
-              "id": "project-1",
-              "name": "Project 1",
-            },
-          ],
-          "subscriptions": null,
-          "websiteUrl": null,
-        }
-      `);
+    let customerId: string;
+    let projectId: string;
 
+    beforeEach(async () => {
+      const prismaClient = app.get(PrismaService);
+      customerId = faker.datatype.uuid();
+
+      customer = await createCustomer(
+        prismaClient,
+        customerId,
+        'secret3',
+        '',
+        '',
+        'webhook-shared-secret',
+      );
+      projectId = faker.datatype.uuid();
+      project = await createProject(prismaClient, customer, projectId);
+
+      const { id, ...restCustomerFields } = await customerService.getByProjectId(projectId);
+
+      expect(restCustomerFields).toMatchInlineSnapshot(`
+      {
+        "country": "GB",
+        "displayName": "Customer ${customerId}",
+        "faviconImageUri": "",
+        "language": "en",
+        "logoImageUri": "",
+        "name": "Customer ${customerId}",
+        "projects": [
+          {
+            "customerId": "${customerId}",
+            "id": "${projectId}",
+            "name": "Project ${projectId}",
+          },
+        ],
+        "subscriptions": null,
+        "websiteUrl": null,
+      }
+    `);
+    });
+
+    it('creates a subsriptions for customer', async () => {
       const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const payload = {
         subscriptions: [
@@ -146,8 +160,46 @@ describe('#CustomerControllerExternal', () => {
 
       expect(response.status).toBe(201);
 
-      const dbCustomer = await customerService.getByProjectId(project.id);
+      const dbCustomer = await customerService.getById(customerId);
       expect(dbCustomer.subscriptions).toMatchObject(payload.subscriptions);
+    });
+
+    it('subsriptions has to be valid url', async () => {
+      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
+      const payload = {
+        subscriptions: [
+          {
+            url: 'non-url',
+            events: ['bbb'],
+            type: 'webhook',
+          },
+        ],
+      };
+
+      const response = await request(app.getHttpServer())
+        .post('/external/customers/subscriptions')
+        .send(payload)
+        .set('authorization', `Bearer ${apiKey}`);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toMatchObject({
+        errors: [
+          {
+            message: 'Invalid url',
+            path: 'subscriptions.0.url',
+          },
+        ],
+        message: [
+          {
+            message: 'Invalid url',
+            path: 'subscriptions.0.url',
+          },
+        ],
+        statusCode: 400,
+      });
+      const dbCustomer = await customerService.getByProjectId(projectId);
+
+      expect(dbCustomer.subscriptions).toBe(null);
     });
   });
 });
