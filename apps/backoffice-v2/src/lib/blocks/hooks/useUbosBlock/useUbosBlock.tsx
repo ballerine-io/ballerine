@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { WarningFilledSvg } from '@/common/components/atoms/icons';
 
@@ -9,57 +9,68 @@ type Ubo = {
   percentage?: number;
 };
 
-export const useUbosBlock = (ubos: Ubo[] | undefined, message: string | undefined) =>
-  useMemo(() => {
-    const cell =
-      Array.isArray(ubos) && ubos?.length
-        ? ({
-            type: 'table',
-            value: {
-              columns: [
-                {
-                  accessorKey: 'name',
-                  header: 'Name',
-                },
-                {
-                  accessorKey: 'percentage',
-                  header: 'Percentage (25% or higher)',
-                },
-                {
-                  accessorKey: 'type',
-                  header: 'Type',
-                },
-                {
-                  accessorKey: 'level',
-                  header: 'Level',
-                },
-              ],
-              data: ubos,
+export const useUbosBlock = (ubos: Ubo[] | undefined, message: string | undefined) => {
+  const getCell = useCallback(() => {
+    if (Array.isArray(ubos) && ubos?.length) {
+      return {
+        type: 'table',
+        value: {
+          columns: [
+            {
+              accessorKey: 'name',
+              header: 'Name',
             },
-          } satisfies Extract<
-            Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
             {
-              type: 'table';
-            }
-          >)
-        : ({
-            type: 'paragraph',
-            value: (
-              <span className="flex text-sm text-black/60">
-                <WarningFilledSvg
-                  className={'mr-[8px] mt-px text-black/20'}
-                  width={'20'}
-                  height={'20'}
-                />
-                <span>{message}</span>
-              </span>
-            ),
-          } satisfies Extract<
-            Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
+              accessorKey: 'percentage',
+              header: 'Percentage (25% or higher)',
+            },
             {
-              type: 'paragraph';
-            }
-          >);
+              accessorKey: 'type',
+              header: 'Type',
+            },
+            {
+              accessorKey: 'level',
+              header: 'Level',
+            },
+          ],
+          data: ubos,
+        },
+      } satisfies Extract<
+        Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
+        {
+          type: 'table';
+        }
+      >;
+    }
+
+    if (message) {
+      return {
+        type: 'paragraph',
+        value: (
+          <span className="flex text-sm text-black/60">
+            <WarningFilledSvg
+              className={'mr-[8px] mt-px text-black/20'}
+              width={'20'}
+              height={'20'}
+            />
+            <span>{message}</span>
+          </span>
+        ),
+      } satisfies Extract<
+        Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
+        {
+          type: 'paragraph';
+        }
+      >;
+    }
+  }, [ubos]);
+
+  return useMemo(() => {
+    const cell = getCell();
+
+    if (!cell) {
+      return [];
+    }
 
     return createBlocksTyped()
       .addBlock()
@@ -83,4 +94,5 @@ export const useUbosBlock = (ubos: Ubo[] | undefined, message: string | undefine
           .flat(1),
       })
       .build();
-  }, [message, ubos]);
+  }, [getCell]);
+};
