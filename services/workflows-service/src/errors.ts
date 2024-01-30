@@ -72,7 +72,7 @@ export class ValidationError extends common.BadRequestException {
 
   static fromZodError(error: ZodError) {
     const errors = error.errors.map(zodIssue => ({
-      message: fromZodIssue(zodIssue).message.replace('Validation error: ', ''),
+      message: zodIssue.message,
       path: zodIssue.path.join('.'), // Backwards compatibility - Legacy code message excepts array
     }));
 
