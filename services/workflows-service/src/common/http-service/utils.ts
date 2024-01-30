@@ -1,5 +1,6 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
-import { AxiosError, isAxiosError } from 'axios';
+import { HttpException, HttpStatus, LoggerService } from '@nestjs/common';
+import { AxiosError, AxiosInstance, isAxiosError } from 'axios';
+import { removeSensitiveHeaders } from '../utils/request-response/request';
 
 const __httpStatusFromAxiosMap = {
   ENOTFOUND: HttpStatus.NOT_FOUND,
@@ -44,5 +45,37 @@ export const handleAxiosError = (error: AxiosError) => {
 
   throw new HttpException(lightweightError, getHttpStatusFromAxiosError(lightweightError.code), {
     cause: error.cause,
+  });
+};
+
+export const interceptAxiosRequests = (
+  logger: LoggerService,
+  client: AxiosInstance,
+  moduleName: string,
+) => {
+  client.interceptors.request.use(config => {
+    logger.debug?.('Axios outgoing request interceptor', {
+      moduleName,
+      headers: removeSensitiveHeaders(config.headers),
+      url: config.url,
+      method: config.method?.toUpperCase(),
+    });
+
+    return config;
+  });
+
+  client.interceptors.response.use(response => {
+    if (Buffer.isBuffer(response.data) || response.headers['Content-Type'] !== 'application/json') {
+      return response;
+    }
+
+    logger.debug?.('Axios outgoing response interceptor', {
+      moduleName,
+      data: response.data,
+      url: response.config.url,
+      method: response.config.method?.toUpperCase(),
+      // TODO: should we add also response's headers?
+    });
+    return response;
   });
 };
