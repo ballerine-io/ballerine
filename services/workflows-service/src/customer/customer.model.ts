@@ -59,26 +59,26 @@ export class CustomerModel {
 class Subscription {
   @ApiProperty({
     required: true,
-    type: String,
+    type: () => String,
   })
   url!: string;
 
   @ApiProperty({
     required: true,
-    type: [String],
+    type: Array<String>,
   })
   events!: string[];
 
   @ApiProperty({
     required: true,
-    type: String,
+    type: () => String,
   })
   type!: string;
 }
 
 export class CustomerSubscriptionModel {
   @ApiProperty({
-    type: [Subscription],
+    type: () => Array<Subscription>,
   })
   @ValidateNested({ each: true })
   subscriptions?: Subscription[];
