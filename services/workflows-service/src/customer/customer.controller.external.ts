@@ -6,7 +6,7 @@ import { CustomerService } from '@/customer/customer.service';
 import { Customer, Prisma } from '@prisma/client';
 import { CustomerCreateDto } from '@/customer/dtos/customer-create';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
-import { CustomerModel, CustomerSubscriptionModel } from '@/customer/customer.model';
+import { CustomerModel } from '@/customer/customer.model';
 import { AuthenticatedEntity } from '@/types';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
 import { createDemoMockData } from '../../scripts/workflows/workflow-runtime';
@@ -70,7 +70,7 @@ export class CustomerControllerExternal {
   }
 
   @common.Post('subscriptions')
-  @swagger.ApiOkResponse({ type: [CustomerSubscriptionModel] })
+  @swagger.ApiOkResponse({ type: CustomerSubscriptionDto })
   @swagger.ApiForbiddenResponse()
   @swagger.ApiBadRequestResponse({ type: ValidationError })
   @UseGuards(CustomerAuthGuard)
@@ -85,6 +85,6 @@ export class CustomerControllerExternal {
       data,
     });
 
-    return { subscriptions };
+    return { subscriptions: data.subscriptions };
   }
 }

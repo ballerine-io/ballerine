@@ -1,15 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CustomerSubscriptionSchema, type TCustomerSubscription } from '../schemas/zod-schemas';
+import { type TCustomerSubscription } from '../schemas/zod-schemas';
+import { Subscription } from '../customer.model';
 
-class Subscription {
-  type!: string;
-  url!: string;
-  events!: string[];
-}
 export class CustomerSubscriptionDto {
   @ApiProperty({
-    required: true,
-    type: () => Subscription,
+    type: Subscription,
+    example: [
+      {
+        url: 'http://site',
+        events: ['hook1'],
+        type: 'webhook',
+      },
+    ],
   })
-  subscriptions!: TCustomerSubscription;
+  subscriptions!: TCustomerSubscription[];
 }

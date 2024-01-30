@@ -56,30 +56,16 @@ export class CustomerModel {
   country?: string;
 }
 
-class Subscription {
-  @ApiProperty({
-    required: true,
-    type: () => String,
-  })
+export class Subscription {
+  @ApiProperty()
   url!: string;
 
-  @ApiProperty({
-    required: true,
-    type: Array<String>,
-  })
+  @ApiProperty()
   events!: string[];
 
   @ApiProperty({
-    required: true,
-    type: () => String,
+    example: 'webhook',
+    default: 'webhook',
   })
   type!: string;
-}
-
-export class CustomerSubscriptionModel {
-  @ApiProperty({
-    type: () => Array<Subscription>,
-  })
-  @ValidateNested({ each: true })
-  subscriptions?: Subscription[];
 }
