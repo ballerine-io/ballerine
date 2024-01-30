@@ -3,4 +3,10 @@ import { z } from 'zod';
 
 export const CustomerSubscriptionSchema = z.array(SubscriptionSchema);
 
-export type TCustomerSubscription = z.infer<typeof CustomerSubscriptionSchema>;
+export const CustomerConfigSchema = z
+  .object({
+    subscriptions: z.array(SubscriptionSchema),
+  })
+  .strict();
+
+export type CustomerConfig = z.infer<typeof CustomerConfigSchema>;

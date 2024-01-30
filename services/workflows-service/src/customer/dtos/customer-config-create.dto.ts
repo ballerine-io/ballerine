@@ -8,3 +8,6 @@ export class CustomerConfigCreateDto {
   })
   subscriptions!: TCustomerSubscription;
 }
+
+// import { z } from 'nestjs-zod/z';
+// export class CustomerConfigCreateDto extends createZodDto(z.object({ config: CustomerConfigSchema })) {}
