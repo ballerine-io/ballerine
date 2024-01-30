@@ -6,6 +6,7 @@ import { Readable } from 'stream';
 import { IStreamableFileProvider } from '../types/interfaces';
 import { removeSensitiveHeaders } from '@/common/utils/request-response/request';
 import { LoggerService } from '@nestjs/common';
+import { interceptAxiosRequests } from '@/common/http-service/utils';
 
 export class HttpFileService implements IStreamableFileProvider {
   protected logger: LoggerService;
@@ -14,32 +15,7 @@ export class HttpFileService implements IStreamableFileProvider {
     this.logger = logger;
     this.client = client.axiosRef;
 
-    this.client.interceptors.request.use(config => {
-      this.logger.debug?.('Axios outgoing request interceptor', {
-        headers: removeSensitiveHeaders(config.headers),
-        url: config.url,
-        method: config.method?.toUpperCase(),
-      });
-
-      return config;
-    });
-
-    this.client.interceptors.response.use(response => {
-      if (
-        Buffer.isBuffer(response.data) ||
-        response.headers['Content-Type'] !== 'application/json'
-      ) {
-        return response;
-      }
-
-      this.logger.debug?.('Axios outgoing response interceptor', {
-        data: response.data,
-        url: response.config.url,
-        method: response.config.method?.toUpperCase(),
-        // TODO: should we add also response's headers?
-      });
-      return response;
-    });
+    interceptAxiosRequests(this.logger, this.client, HttpFileService.name);
   }
 
   // private _shouldRetry(error: AxiosError) {
