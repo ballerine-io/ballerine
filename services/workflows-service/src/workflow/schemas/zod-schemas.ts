@@ -1,14 +1,5 @@
+import { SubscriptionSchema } from '@/common/types';
 import { z } from 'zod';
-
-export const SubscriptionSchema = z.discriminatedUnion('type', [
-  z
-    .object({
-      type: z.literal('webhook'),
-      url: z.string().url(),
-      events: z.array(z.string().nonempty()),
-    })
-    .strict(),
-]);
 
 export const ConfigSchema = z
   .object({

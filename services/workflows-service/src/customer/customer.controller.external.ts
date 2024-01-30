@@ -1,3 +1,4 @@
+import { CustomerSubscriptionSchema } from './schemas/zod-schemas';
 import * as common from '@nestjs/common';
 import { Request, UseGuards } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
@@ -10,6 +11,9 @@ import { AuthenticatedEntity } from '@/types';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
 import { createDemoMockData } from '../../scripts/workflows/workflow-runtime';
 import { PrismaService } from '@/prisma/prisma.service';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
+import z from 'zod';
+import { CustomerConfigCreateDto } from './dtos/customer-config-create.dto';
 
 @swagger.ApiTags('external/customers')
 @common.Controller('external/customers')
@@ -63,5 +67,23 @@ export class CustomerControllerExternal {
   @swagger.ApiForbiddenResponse()
   find(@Request() req: any): Partial<Customer> {
     return (req.user as AuthenticatedEntity).customer!;
+  }
+
+  @common.Post('subscriptions')
+  @swagger.ApiOkResponse()
+  @swagger.ApiForbiddenResponse()
+  @UseGuards(CustomerAuthGuard)
+  @common.UsePipes(new ZodValidationPipe(z.object({ config: CustomerSubscriptionSchema }), 'body'))
+  async createSubscriptions(
+    @common.Body() data: CustomerConfigCreateDto,
+    @Request() req: any,
+  ): Promise<Pick<Customer, 'subscriptions'>> {
+    const customer = (req.user as AuthenticatedEntity).customer!;
+
+    const { subscriptions, ...updatedCustomer } = await this.service.updateById(customer.id!, {
+      data,
+    });
+
+    return { subscriptions };
   }
 }
