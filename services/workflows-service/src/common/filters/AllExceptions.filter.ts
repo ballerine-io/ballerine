@@ -39,6 +39,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
         statusCode: serverError.getStatus(),
         timestamp: new Date().toISOString(),
         path: request.url,
+        ...(typeof error === 'string' ? { message: error } : error),
       });
   }
 

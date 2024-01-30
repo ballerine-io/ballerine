@@ -11,9 +11,16 @@ import { AuthenticatedEntity } from '@/types';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
 import { createDemoMockData } from '../../scripts/workflows/workflow-runtime';
 import { PrismaService } from '@/prisma/prisma.service';
+<<<<<<< HEAD
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import z from 'zod';
 import { CustomerConfigCreateDto } from './dtos/customer-config-create.dto';
+=======
+import { CustomerConfigCreateDto } from './dtos/customer-config-create.dto';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
+import z from 'zod';
+import { CustomerConfigSchema } from './schemas/zod-schemas';
+>>>>>>> 0349fd95 (fix: add zod exception)
 
 @swagger.ApiTags('external/customers')
 @common.Controller('external/customers')
@@ -73,7 +80,11 @@ export class CustomerControllerExternal {
   @swagger.ApiOkResponse()
   @swagger.ApiForbiddenResponse()
   @UseGuards(CustomerAuthGuard)
+<<<<<<< HEAD
   @common.UsePipes(new ZodValidationPipe(z.object({ config: CustomerSubscriptionSchema }), 'body'))
+=======
+  @UsePipes(new ZodValidationPipe(z.object({ config: CustomerConfigSchema }), 'body'))
+>>>>>>> 0349fd95 (fix: add zod exception)
   async createSubscriptions(
     @common.Body() data: CustomerConfigCreateDto,
     @Request() req: any,
