@@ -80,14 +80,16 @@ export const BaseWorkflowByIdSchema = z.object({
       .optional(),
     flowConfig: z
       .object({
-        stepsProgress: z.record(
-          z.string(),
-          z.object({
-            // TODO Until backwards compatibility is handled
-            number: z.number().default(0),
-            isCompleted: z.boolean(),
-          }),
-        ),
+        stepsProgress: z
+          .record(
+            z.string(),
+            z.object({
+              // TODO Until backwards compatibility is handled
+              number: z.number().default(0),
+              isCompleted: z.boolean(),
+            }),
+          )
+          .or(z.undefined()),
       })
       .optional(),
   }),
