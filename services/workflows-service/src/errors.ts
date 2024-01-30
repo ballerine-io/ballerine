@@ -4,7 +4,6 @@ import { ErrorObject } from 'ajv';
 import startCase from 'lodash/startCase';
 import lowerCase from 'lodash/lowerCase';
 import { ZodError } from 'zod';
-import { fromZodIssue } from 'zod-validation-error';
 
 export class ForbiddenException extends common.ForbiddenException {
   @ApiProperty()

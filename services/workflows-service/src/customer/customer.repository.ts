@@ -58,6 +58,7 @@ export class CustomerRepository {
           language: true,
           websiteUrl: true,
           projects: true,
+          subscriptions: true,
         },
       }),
     });
