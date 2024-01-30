@@ -288,7 +288,6 @@ model Customer {
   language                    String?
   websiteUrl                  String?
   subscriptions               Json?
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

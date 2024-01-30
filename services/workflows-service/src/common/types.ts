@@ -11,7 +11,7 @@ export const SubscriptionSchema = z.discriminatedUnion('type', [
     .object({
       type: z.literal('webhook'),
       url: z.string().url(),
-      events: z.array(z.string().nonempty()),
+      events: z.array(z.string()),
     })
     .strict(),
 ]);
