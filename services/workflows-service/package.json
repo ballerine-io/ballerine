@@ -98,7 +98,8 @@
     "swagger-ui-express": "4.6.2",
     "tmp": "^0.2.1",
     "winston": "^3.9.0",
-    "zod": "^3.22.3"
+    "zod": "^3.22.3",
+    "zod-validation-error": "^3.0.0"
   },
   "devDependencies": {
     "@ballerine/config": "^1.0.3",
