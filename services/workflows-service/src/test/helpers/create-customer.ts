@@ -10,7 +10,7 @@ export const createCustomer = async (
 ) =>
   await client.customer.create({
     data: {
-      id: `customer-${id}`,
+      id,
       name: `Customer ${id}`,
       displayName: `Customer ${id}`,
       authenticationConfiguration: {
