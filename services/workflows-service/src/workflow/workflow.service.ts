@@ -79,7 +79,7 @@ import {
 } from './workflow-runtime-data.repository';
 import mime from 'mime';
 import { env } from '@/env';
-import { AjvValidationError } from '@/errors';
+import { ValidationError } from '@/errors';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { ajv } from '@/common/ajv/ajv.validator';
 
@@ -876,7 +876,7 @@ export class WorkflowService {
       const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
 
       if (!isValidPropertiesSchema && document.type === documentToUpdate.type) {
-        throw new AjvValidationError(validatePropertiesSchema.errors);
+        throw ValidationError.fromAjvError(validatePropertiesSchema.errors!);
       }
     }
 
@@ -1091,7 +1091,7 @@ export class WorkflowService {
         const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
         if (!isValidPropertiesSchema) {
-          throw new AjvValidationError(validatePropertiesSchema.errors);
+          throw ValidationError.fromAjvError(validatePropertiesSchema.errors!);
         }
       });
       data.context = mergedContext;
@@ -1502,11 +1502,12 @@ export class WorkflowService {
 
     config = merge(workflowDefinition.config, config);
     let validatedConfig: WorkflowConfig;
-    try {
-      validatedConfig = ConfigSchema.parse(config);
-    } catch (error) {
-      throw new BadRequestException(error);
+    const result = ConfigSchema.safeParse(config);
+
+    if (!result.success) {
+      throw ValidationError.fromZodError(result.error);
     }
+
     const customer = await this.customerService.getByProjectId(projectIds![0]!);
     // @ts-ignore
     context.customerName = customer.displayName;
@@ -1965,7 +1966,7 @@ export class WorkflowService {
 
     if (isValid) return;
 
-    throw new AjvValidationError(validate.errors);
+    throw ValidationError.fromAjvError(validate.errors!);
   }
 
   async event(

@@ -1,6 +1,6 @@
 import { CustomerSubscriptionSchema } from './schemas/zod-schemas';
 import * as common from '@nestjs/common';
-import { Request, UseGuards } from '@nestjs/common';
+import { Request, UseGuards, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { CustomerService } from '@/customer/customer.service';
 import { Customer, Prisma } from '@prisma/client';
@@ -73,7 +73,7 @@ export class CustomerControllerExternal {
   @swagger.ApiOkResponse()
   @swagger.ApiForbiddenResponse()
   @UseGuards(CustomerAuthGuard)
-  @common.UsePipes(new ZodValidationPipe(z.object({ config: CustomerSubscriptionSchema }), 'body'))
+  @UsePipes(new ZodValidationPipe(CustomerSubscriptionSchema, 'body'))
   async createSubscriptions(
     @common.Body() data: CustomerConfigCreateDto,
     @Request() req: any,
