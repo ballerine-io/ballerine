@@ -2,7 +2,7 @@ declare module '@prisma/client' {
   import type {
     WorkflowRuntimeData as _WorkflowRuntimeData,
     WorkflowDefinition as _WorkflowDefinition,
-    Customer as _Customer,
+    Customer as Customer_,
   } from '@prisma/client/index';
   export * from '@prisma/client/index';
 
