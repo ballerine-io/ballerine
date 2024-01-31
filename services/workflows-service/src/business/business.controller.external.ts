@@ -24,7 +24,7 @@ import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
-@swagger.ApiTags('external/businesses')
+@swagger.ApiTags('Businesses')
 @common.Controller('external/businesses')
 export class BusinessControllerExternal {
   constructor(

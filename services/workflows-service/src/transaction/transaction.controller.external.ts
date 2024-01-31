@@ -12,7 +12,7 @@ import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import express from 'express';
 
-@swagger.ApiTags('external/transactions')
+@swagger.ApiTags('Transactions')
 @common.Controller('external/transactions')
 export class TransactionControllerExternal {
   constructor(

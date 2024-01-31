@@ -2,7 +2,6 @@ import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { TransactionService } from '@/transaction/transaction.service';
 
-@swagger.ApiTags('internal/transactions')
 @common.Controller('internal/transactions')
 export class TransactionControllerInternal {
   constructor(protected readonly service: TransactionService) {}

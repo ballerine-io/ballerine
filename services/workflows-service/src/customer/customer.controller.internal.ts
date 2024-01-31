@@ -7,7 +7,6 @@ import { Customer } from '@prisma/client';
 import type { TProjectIds } from '@/types';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 
-@swagger.ApiTags('internal/customers')
 @common.Controller('internal/customers')
 export class CustomerControllerInternal {
   constructor(protected readonly service: CustomerService) {}
