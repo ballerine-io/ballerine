@@ -438,6 +438,7 @@ export class WorkflowService {
 
       return [];
     };
+
     const workflowIds = await this.workflowRuntimeDataRepository.search(
       {
         query: {
@@ -453,22 +454,25 @@ export class WorkflowService {
       projectIds,
     );
 
-    if (page.number > 1 && workflowIds.length < (page.number - 1) * page.size + 1) {
-      throw new NotFoundException('Page not found');
-    }
-
     const workflowsQuery = {
       ...query,
-      where: { id: { in: workflowIds.map(workflowId => workflowId.id) } },
+      where: { ...query.where, id: { in: workflowIds.map(workflowId => workflowId.id) } },
     };
 
-    const workflows = await this.workflowRuntimeDataRepository.findMany(workflowsQuery, projectIds);
+    const [workflowCount, workflows] = await Promise.all([
+      this.workflowRuntimeDataRepository.count({ where: workflowsQuery.where }, projectIds),
+      this.workflowRuntimeDataRepository.findMany(workflowsQuery, projectIds),
+    ]);
+
+    if (page.number > 1 && workflowCount < (page.number - 1) * page.size + 1) {
+      throw new NotFoundException('Page not found');
+    }
 
     return {
       data: this.formatWorkflowsRuntimeData(workflows as unknown as TWorkflowWithRelations[]),
       meta: {
-        totalItems: workflowIds.length,
-        totalPages: Math.max(Math.ceil(workflowIds.length / page.size), 1),
+        totalItems: workflowCount,
+        totalPages: Math.max(Math.ceil(workflowCount / page.size), 1),
       },
     };
   }
@@ -1543,11 +1547,11 @@ export class WorkflowService {
       validatedConfig || {},
     ) as InputJsonValue;
 
-    const entities: {
+    const entities: Array<{
       id: string;
       type: 'individual' | 'business';
-      tags?: ('mainRepresentative' | 'UBO')[];
-    }[] = [];
+      tags?: Array<'mainRepresentative' | 'UBO'>;
+    }> = [];
 
     // Creating new workflow
     if (!existingWorkflowRuntimeData || mergedConfig?.allowMultipleActiveWorkflows) {
