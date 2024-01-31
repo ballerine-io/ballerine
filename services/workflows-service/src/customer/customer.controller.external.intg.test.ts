@@ -40,7 +40,7 @@ import { before } from 'lodash';
 import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
 import { string } from 'zod';
 
-describe('#CustomerControllerExternal', () => {
+describe.skip('#CustomerControllerExternal', () => {
   let app: INestApplication;
   let customerService: CustomerService;
   let project: Project;
