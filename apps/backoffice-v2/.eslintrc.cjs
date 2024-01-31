@@ -6,6 +6,9 @@ module.exports = {
       callees: ['ctw'],
     },
   },
+  parserOptions: {
+    project: './tsconfig.json',
+  },
   rules: {
     'tailwindcss/no-custom-classname': 'off',
     'tailwindcss/classnames-order': 'off',
