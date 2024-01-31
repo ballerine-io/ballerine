@@ -1,22 +1,34 @@
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { alertService } from '@/alert/alert.service';
+import { AlertService } from '@/alert/alert.service';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import * as types from '@/types';
 
-@swagger.ApiTags('internal/alerts')
-@common.Controller('internal/alerts')
-export class alertControllerInternal {
-  constructor(protected readonly service: alertService) {}
+import { AlertCheckDto } from './dto/alert-check.dto'; // Path to your DTO
 
-  // STUB
+@common.Controller('internal/alerts')
+export class AlertControllerInternal {
+  constructor(protected readonly service: AlertService) {}
+
   @common.Post()
   @common.UseGuards(AdminAuthGuard)
-  // @swagger.ApiCreatedResponse({ type: [alertCreateDto] })
-  @swagger.ApiForbiddenResponse()
-  async check(@common.Body() body: any, @CurrentProject() currentProjectId: types.TProjectId) {
-    console.log('check alert', currentProjectId);
-    return 'OK';
+  @swagger.ApiCreatedResponse({ description: 'Alert check executed', type: String })
+  @swagger.ApiForbiddenResponse({ description: 'Forbidden' })
+  async check(
+    @common.Body() body: AlertCheckDto,
+    @CurrentProject() currentProjectId: types.TProjectId,
+  ): Promise<string> {
+    console.log('check alert', body.alertType, 'for project', currentProjectId);
+
+    try {
+      const result = await this.service.checkAlert(body.alertType, currentProjectId);
+      return result ? 'Alert triggered' : 'No alert triggered';
+    } catch (error) {
+      throw new common.HttpException(
+        'Error checking alert',
+        common.HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

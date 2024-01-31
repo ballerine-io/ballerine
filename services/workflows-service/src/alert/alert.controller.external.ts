@@ -1,59 +1,56 @@
 import * as common from '@nestjs/common';
-
 import * as swagger from '@nestjs/swagger';
-import { alertService } from '@/alert/alert.service';
-import { alertCreateDto } from '@/alert/dtos/alert-create';
+import { AlertService } from '@/alert/alert.service';
+import { AlertCreateDto } from '@/alert/dtos/alert-create.dto'; // Ensure this DTO is correctly defined
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
-
 import * as types from '@/types';
 import { PrismaService } from '@/prisma/prisma.service';
-
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import express from 'express';
+import { Response } from 'express';
 
 @swagger.ApiTags('external/alerts')
 @common.Controller('external/alerts')
-export class alertControllerExternal {
+export class AlertControllerExternal {
   constructor(
-    protected readonly service: alertService,
+    protected readonly service: AlertService,
     protected readonly prisma: PrismaService,
     protected readonly logger: AppLoggerService,
   ) {}
 
   @common.Post()
   @UseCustomerAuthGuard()
-  @swagger.ApiCreatedResponse({ type: alertCreateDto })
-  @swagger.ApiForbiddenResponse()
-  async create(
-    @common.Body() body: alertCreateDto,
+  @swagger.ApiCreatedResponse({ description: 'Alert checks initiated', type: [AlertCreateDto] })
+  @swagger.ApiForbiddenResponse({ description: 'Forbidden' })
+  async checkAlerts(
+    @common.Body() body: AlertCreateDto[],
+    @common.Res() response: Response,
     @CurrentProject() currentProjectId: types.TProjectId,
-  ) {
-    this.logger.log('create alert');
-    const alert: alertCreateDto = {
-      ...body,
-      projectId: currentProjectId,
-    };
+  ): Promise<Response> {
+    try {
+      // Log the request
+      this.logger.log(
+        `Checking alerts for project: ${currentProjectId}`,
+        'AlertControllerExternal',
+      );
 
-    const createdalert = await this.service.create(alert);
+      // Call the service to check the alerts
+      await this.service.checkAllAlerts(); // Modify this as needed to handle `body` or `currentProjectId`
 
-    return createdalert;
-  }
-
-  @common.Get()
-  @UseCustomerAuthGuard()
-  @swagger.ApiCreatedResponse({ type: [alertCreateDto] })
-  @swagger.ApiForbiddenResponse()
-  async createBatch(
-    @common.Body() body: alertCreateDto[],
-    @common.Res() response: express.Response,
-    @CurrentProject() currentProjectId: types.TProjectId,
-  ) {
-    const batchCreateResponse = await this.service.createBatch(body);
-    if (batchCreateResponse.overallStatus === 'partial') {
-      response.status(207);
+      // Respond with success message
+      return response
+        .status(common.HttpStatus.CREATED)
+        .json({ message: 'Alert checks initiated successfully' });
+    } catch (error) {
+      this.logger.error(
+        `Error checking alerts: ${error.message}`,
+        error.stack,
+        'AlertControllerExternal',
+      );
+      return response
+        .status(common.HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: 'Error checking alerts' });
     }
-
-    response.json(batchCreateResponse.txCreationResponse);
   }
 }
+ƒ;

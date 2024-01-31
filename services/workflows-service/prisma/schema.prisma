@@ -84,6 +84,7 @@ model EndUser {
   project                  Project                    @relation(fields: [projectId], references: [id])
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   Transaction              Transaction[]
+  AlertExecution           AlertExecution[]
 
   @@index([endUserType])
   @@index([approvalState])
@@ -135,9 +136,10 @@ model Business {
   endUsers             EndUser[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
-  projectId   String
-  project     Project       @relation(fields: [projectId], references: [id])
-  Transaction Transaction[]
+  projectId      String
+  project        Project          @relation(fields: [projectId], references: [id])
+  Transaction    Transaction[]
+  AlertExecution AlertExecution[]
 
   @@index([companyName])
   @@index([approvalState])
@@ -318,6 +320,8 @@ model Project {
   uiDefinitions            UiDefinition[]
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   Transaction              Transaction[]
+  AlertDefinition          AlertDefinition[]
+  AlertExecution           AlertExecution[]
 
   @@unique([name, customerId])
   @@index(name)
@@ -524,4 +528,85 @@ model Transaction {
   @@index([reviewStatus])
   @@index([projectId])
   @@index([transactionCorrelationId])
+}
+
+enum AlertState {
+  Triggered
+  Resolved
+  Acknowledged
+  Dismissed
+}
+
+enum AlertStatus {
+  Pending
+  Completed
+  UnderReview
+  Escalated
+}
+
+enum AlertType {
+  HighRiskTransaction
+  DormantAccountActivity
+  UnusualPattern
+  // Add other alert types as needed
+}
+
+// ... (Other models and enums)
+
+model AlertDefinition {
+  id          String @id @default(cuid())
+  projectId   String
+  name        String
+  description String
+  rulesetId   Int // Set of rules reference
+  ruleId      Int // Specific rule within the ruleset
+
+  inlineRule Json? // JSON format for rule definitions
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  createdBy  String
+  modifiedBy String
+  enabled    Boolean    @default(true)
+  type       AlertType? // Type of the alert
+
+  dedupeStrategies Json // Deduplication strategies
+  config           Json // Additional configurations
+
+  tags           String[] // Tags for the alert
+  additionalInfo Json // Additional information
+
+  workflowDefinitionId String? // Reference to a workflow definition
+
+  project         Project          @relation(fields: [projectId], references: [id])
+  alertExecutions AlertExecution[]
+
+  @@index([projectId])
+}
+
+model AlertExecution {
+  id                String      @id @default(cuid())
+  businessId        String? // Reference to a Business
+  endUserId         String? // Reference to an EndUser
+  projectId         String
+  dataTimestamp     DateTime
+  state             AlertState // Using AlertState enum
+  status            AlertStatus // Using AlertStatus enum
+  alertDefinitionId String
+
+  executionDetails Json // Execution details
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  handledBy             String? // User who handled the alert
+  workflowRuntimeDataId String?
+
+  project         Project         @relation(fields: [projectId], references: [id])
+  business        Business?       @relation(fields: [businessId], references: [id])
+  endUser         EndUser?        @relation(fields: [endUserId], references: [id])
+  alertDefinition AlertDefinition @relation(fields: [alertDefinitionId], references: [id])
+
+  @@index([businessId])
+  @@index([endUserId])
+  @@index([projectId])
+  @@index([alertDefinitionId])
 }

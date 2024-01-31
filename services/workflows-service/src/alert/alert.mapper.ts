@@ -1,5 +1,5 @@
 import { alert, alertType } from '@prisma/client';
-import { alertCreateDto } from './dtos/alert-create';
+import { alertCreateDto } from './dtos/alert-check';
 import { cleanUndefinedValues } from '@/common/utils/clean-undefined-values';
 import { JsonValue } from 'type-fest';
 
