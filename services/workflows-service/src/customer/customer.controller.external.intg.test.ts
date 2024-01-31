@@ -120,25 +120,23 @@ describe('#CustomerControllerExternal', () => {
 
       const { id, ...restCustomerFields } = await customerService.getByProjectId(projectId);
 
-      expect(restCustomerFields).toMatchInlineSnapshot(`
-      {
-        "country": "GB",
-        "displayName": "Customer ${customerId}",
-        "faviconImageUri": "",
-        "language": "en",
-        "logoImageUri": "",
-        "name": "Customer ${customerId}",
-        "projects": [
+      expect(restCustomerFields).toMatchObject({
+        country: 'GB',
+        displayName: `Customer ${customerId}`,
+        faviconImageUri: '',
+        language: 'en',
+        logoImageUri: '',
+        name: `Customer ${customerId}`,
+        projects: [
           {
-            "customerId": "${customerId}",
-            "id": "${projectId}",
-            "name": "Project ${projectId}",
+            customerId: customerId,
+            id: projectId,
+            name: `Project ${projectId}`,
           },
         ],
-        "subscriptions": null,
-        "websiteUrl": null,
-      }
-    `);
+        subscriptions: null,
+        websiteUrl: null,
+      });
     });
 
     it('creates a subsriptions for customer', async () => {
