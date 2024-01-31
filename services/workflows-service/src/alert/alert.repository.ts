@@ -146,29 +146,6 @@ HAVING
       workflowDefinitionId: null,
     },
   ],
-  AlertExecutions: [
-    {
-      id: 1001,
-      businessId: 1,
-      endUserId: 1,
-      projectId: 1,
-      dataTimestamp: '2024-01-29T13:00:00Z',
-      state: 'triggered',
-      status: 'pending',
-      alertDefinitionId: 1,
-      executionDetails: {
-        triggerValues: {
-          amount: 15000,
-          transactionType: 'international',
-        },
-        result: 'pending review',
-      },
-      createdAt: '2024-01-29T13:30:00Z',
-      updatedAt: '2024-01-29T13:45:00Z',
-      handledBy: null,
-      workflowRuntimeDataId: null,
-    },
-  ],
 };
 
 @Injectable()

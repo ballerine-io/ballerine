@@ -1,10 +1,12 @@
-import { Transaction, TransactionType } from '@prisma/client';
+import { TransactionRecord, TransactionRecordType } from '@prisma/client';
 import { TransactionCreateDto } from './dtos/transaction-create';
 import { cleanUndefinedValues } from '@/common/utils/clean-undefined-values';
 import { JsonValue } from 'type-fest';
 
 export class TransactionEntityMapper {
-  static toEntity(dto: TransactionCreateDto): Omit<Transaction, 'createdAt' | 'updatedAt' | 'id'> {
+  static toEntity(
+    dto: TransactionCreateDto,
+  ): Omit<TransactionRecord, 'createdAt' | 'updatedAt' | 'id'> {
     return {
       transactionCorrelationId: dto.correlationId,
       transactionDate: dto.date,
@@ -67,7 +69,7 @@ export class TransactionEntityMapper {
     };
   }
 
-  static toDto(entity: Transaction): TransactionCreateDto & { id: string } {
+  static toDto(entity: TransactionRecord): TransactionCreateDto & { id: string } {
     const dto = {
       id: entity.id,
       correlationId: entity.transactionCorrelationId,
@@ -76,7 +78,7 @@ export class TransactionEntityMapper {
       currency: entity.transactionCurrency,
       description: entity.transactionDescription ?? undefined,
       category: entity.transactionCategory ?? undefined,
-      type: entity.transactionType as TransactionType | undefined,
+      type: entity.transactionType as TransactionRecordType | undefined,
       status: entity.transactionStatus ?? undefined,
       statusReason: entity.transactionStatusReason ?? undefined,
       sender: {

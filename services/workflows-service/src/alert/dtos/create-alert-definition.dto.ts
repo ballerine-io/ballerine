@@ -3,30 +3,25 @@ import { IsNotEmpty, IsString, IsOptional, IsBoolean, IsEnum } from 'class-valid
 import { AlertType } from '@prisma/client';
 
 export class CreateAlertDefinitionDto {
-  @ApiProperty({ example: 'P-HSUMI' })
-  @IsString()
-  @IsNotEmpty()
-  shortCode: string;
-
   @ApiProperty({ example: '[Payments] - High Cumulative Amount - Inbound' })
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name!: string;
 
   @ApiProperty({
     example: 'Sum of incoming transactions over a set period of time is greater than a limit',
   })
   @IsString()
   @IsNotEmpty()
-  description: string;
+  description!: string;
 
   @ApiProperty({ example: 1 }) // Example value; replace with actual ruleSetId if applicable
   @IsNotEmpty()
-  rulesetId: number;
+  rulesetId!: number;
 
   @ApiProperty({ example: 1 }) // Example value; replace with actual ruleId if applicable
   @IsNotEmpty()
-  ruleId: number;
+  ruleId!: number;
 
   @ApiProperty({
     example:
@@ -38,7 +33,7 @@ export class CreateAlertDefinitionDto {
 
   @ApiProperty({ example: true })
   @IsBoolean()
-  enabled: boolean;
+  enabled!: boolean;
 
   @ApiProperty({ example: 'HighRiskTransaction', enum: AlertType, required: false })
   @IsEnum(AlertType)
@@ -65,10 +60,10 @@ export class CreateAlertDefinitionDto {
   @IsOptional()
   additionalInfo?: Record<string, any>;
 
-  @ApiProperty({ example: 'YOUR_PROJECT_ID' }) // Replace with actual project ID
+  @ApiProperty({ required: true, example: 'YOUR_PROJECT_ID' }) // Replace with actual project ID
   @IsString()
   @IsNotEmpty()
-  projectId: string;
+  projectId!: string;
 
   // Add any other fields as per your requirements
 }

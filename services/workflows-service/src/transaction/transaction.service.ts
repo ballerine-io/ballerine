@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TransactionRepository } from '@/transaction/transaction.repository';
 import { TransactionCreateDto } from './dtos/transaction-create';
 import { TransactionEntityMapper } from './transaction.mapper';
-import { Prisma, Transaction } from '@prisma/client';
+import { Prisma, TransactionRecord } from '@prisma/client';
 import { sleep } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
@@ -13,8 +13,8 @@ export class TransactionService {
     protected readonly logger: AppLoggerService,
   ) {}
 
-  async create(payload: TransactionCreateDto): Promise<Transaction> {
-    const transactionEntity: Prisma.TransactionCreateInput = {
+  async create(payload: TransactionCreateDto): Promise<TransactionRecord> {
+    const transactionEntity: Prisma.TransactionRecordCreateInput = {
       ...TransactionEntityMapper.toEntity(payload),
       project: {
         connect: { id: payload.projectId },
@@ -24,6 +24,10 @@ export class TransactionService {
       auditTrail: payload.auditTrail as any,
       unusualActivityFlags: payload.unusualActivityFlags as any,
       additionalInfo: payload.additionalInfo as any,
+      transactionCorrelationId: '',
+      transactionDate: '',
+      transactionAmount: 0,
+      transactionCurrency: '',
     };
 
     return this.repository.create({ data: transactionEntity });
@@ -49,7 +53,7 @@ export class TransactionService {
     let overallStatus: 'success' | 'partial' = 'success';
 
     for (const transaction of payload) {
-      const transactionEntity: Prisma.TransactionCreateInput = {
+      const transactionEntity: Prisma.TransactionRecordCreateInput = {
         ...TransactionEntityMapper.toEntity(transaction),
         project: {
           connect: { id: transaction.projectId },
@@ -59,6 +63,10 @@ export class TransactionService {
         auditTrail: transaction.auditTrail as any,
         unusualActivityFlags: transaction.unusualActivityFlags as any,
         additionalInfo: transaction.additionalInfo as any,
+        transactionCorrelationId: '',
+        transactionDate: '',
+        transactionAmount: 0,
+        transactionCurrency: '',
       };
 
       await sleep(200);
