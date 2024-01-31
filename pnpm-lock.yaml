@@ -899,7 +899,7 @@ importers:
   examples/report-generation-example:
     dependencies:
       '@ballerine/react-pdf-toolkit':
-        specifier: ^1.0.0
+        specifier: ^1.0.13-11210907c.0
         version: link:../../packages/react-pdf-toolkit
       react:
         specifier: ^18.2.0
@@ -34992,4 +34992,5 @@ packages:
   file:services/workflows-service/plugins/verify-repository-project-scoped:
     resolution: {directory: services/workflows-service/plugins/verify-repository-project-scoped, type: directory}
     name: eslint-plugin-ballerine
+    version: 1.0.0
     dev: true
