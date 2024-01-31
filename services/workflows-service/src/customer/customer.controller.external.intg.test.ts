@@ -189,12 +189,7 @@ describe('#CustomerControllerExternal', () => {
             path: 'subscriptions.0.url',
           },
         ],
-        message: [
-          {
-            message: 'Invalid url',
-            path: 'subscriptions.0.url',
-          },
-        ],
+        message: 'Validation error',
         statusCode: 400,
       });
       const dbCustomer = await customerService.getByProjectId(projectId);
