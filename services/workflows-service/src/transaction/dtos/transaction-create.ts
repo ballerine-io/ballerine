@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TransactionType, VerificationStatus, TransactionStatus } from '@prisma/client';
+import { TransactionRecordType, VerificationStatus, TransactionRecordStatus } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { JsonValue } from 'type-fest';
@@ -68,8 +68,8 @@ export class TransactionCreateDto {
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() correlationId!: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() description?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() category?: string;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() type?: TransactionType;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() status?: TransactionStatus;
+  @ApiProperty({ required: false }) @IsString() @IsOptional() type?: TransactionRecordType;
+  @ApiProperty({ required: false }) @IsString() @IsOptional() status?: TransactionRecordStatus;
   @ApiProperty({ required: false }) @IsString() @IsOptional() statusReason?: string;
 
   @ApiProperty({ type: SenderInfo }) @IsOptional() sender?: SenderInfo;
