@@ -1,5 +1,5 @@
 import { AlertType, Transaction } from '@prisma/client';
-import { AlertCreateDto } from './dtos/alert-check.dto';
+import { AlertCreateDto } from './dtos/create-alert-definition.dto';
 import { cleanUndefinedValues } from '@/common/utils/clean-undefined-values';
 import { JsonValue } from 'type-fest';
 

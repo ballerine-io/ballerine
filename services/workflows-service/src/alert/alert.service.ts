@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { AlertDefinition, AlertExecution } from '@prisma/client';
-import { CreateAlertExecutionDto } from './dto/create-alert-execution.dto'; // Define this DTO as per your need
+import { AlertDefinition } from '@prisma/client';
+import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
+import { TProjectId } from '@/types';
 
 @Injectable()
 export class AlertService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async create(dto: CreateAlertDefinitionDto, projectId: TProjectId): Promise<AlertDefinition> {
+    // #TODO: Add validation logic
+    return await this.prisma.alertDefinition.create({ data: dto as any });
+  }
 
   // Function to retrieve all alert definitions
   async getAllAlertDefinitions(): Promise<AlertDefinition[]> {
@@ -21,7 +27,7 @@ export class AlertService {
     for (const definition of alertDefinitions) {
       const triggered = await this.checkAlert(definition);
       if (triggered) {
-        await this.createAlertExecution({
+        const ids = await this.createAlertExecution({
           /* ... */
         }); // Provide necessary data
       }
@@ -33,12 +39,4 @@ export class AlertService {
     // ...
     return true;
   }
-
-  // Function to create a record of an alert execution
-  async createAlertExecution(dto: CreateAlertExecutionDto): Promise<AlertExecution> {
-    return await this.prisma.alertExecution.create({ data: dto });
-  }
-
-  // Additional utility functions as required for specific alert logic
-  // ...
 }

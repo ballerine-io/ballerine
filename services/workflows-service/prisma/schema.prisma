@@ -535,13 +535,14 @@ enum AlertState {
   Resolved
   Acknowledged
   Dismissed
+  Escalated
+  UnderReview
 }
 
 enum AlertStatus {
+  New
   Pending
   Completed
-  UnderReview
-  Escalated
 }
 
 enum AlertType {
@@ -591,6 +592,7 @@ model AlertExecution {
   dataTimestamp     DateTime
   state             AlertState // Using AlertState enum
   status            AlertStatus // Using AlertStatus enum
+  tags              String[] // Tags for the alert
   alertDefinitionId String
 
   executionDetails Json // Execution details

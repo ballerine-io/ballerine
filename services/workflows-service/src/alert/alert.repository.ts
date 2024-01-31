@@ -15,17 +15,13 @@ const mockDB = {
       ruleId: 201,
       inlineRule: {
         type: 'sql',
-        sql: `
-        SELECT 
-    SUM(amount) AS total_incoming_amount
-FROM 
-    transactions
-WHERE 
-    transactionType = 'incoming'
-    AND timestamp >= CURRENT_DATE - INTERVAL '7 days'  -- Set period of time (e.g., last 7 days)
-HAVING 
-    SUM(amount) > :limit  -- Replace :limit with the specific limit value
-`,
+        args: [],
+        sql: `RETURN QUERY
+        SELECT COALESCE("businessId", "endUserId") AS entity_id, SUM("transactionAmount")
+        FROM public."Transaction"
+        WHERE "transactionDate" >= CURRENT_TIMESTAMP - period_interval
+          AND ("transactionType" = transaction_type OR transaction_type IS NULL)
+        GROUP BY entity_id;`,
       },
       createdAt: '2024-01-29T12:00:00Z',
       updatedAt: '2024-01-29T12:00:00Z',
