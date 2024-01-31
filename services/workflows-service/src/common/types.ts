@@ -4,3 +4,4 @@ export type TDocumentWithoutPageType = Omit<DefaultContextSchema['documents'][nu
   pages: Array<Omit<DefaultContextSchema['documents'][number]['pages'][number], 'type'>>;
 };
 export type TDocumentsWithoutPageType = Array<TDocumentWithoutPageType>;
+
