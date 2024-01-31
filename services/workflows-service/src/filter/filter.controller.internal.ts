@@ -13,7 +13,6 @@ import { FilterService } from '@/filter/filter.service';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import type { TProjectIds } from '@/types';
 
-@swagger.ApiTags('internal/filters')
 @common.Controller('internal/filters')
 export class FilterControllerInternal {
   constructor(

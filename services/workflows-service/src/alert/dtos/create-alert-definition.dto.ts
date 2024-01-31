@@ -64,6 +64,4 @@ export class CreateAlertDefinitionDto {
   @IsString()
   @IsNotEmpty()
   projectId!: string;
-
-  // Add any other fields as per your requirements
 }

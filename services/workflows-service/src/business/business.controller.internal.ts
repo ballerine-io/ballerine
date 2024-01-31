@@ -15,7 +15,6 @@ import type { JsonValue } from 'type-fest';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { ProjectScopeService } from '@/project/project-scope.service';
 
-@swagger.ApiTags('internal/businesses')
 @common.Controller('internal/businesses')
 export class BusinessControllerInternal {
   constructor(

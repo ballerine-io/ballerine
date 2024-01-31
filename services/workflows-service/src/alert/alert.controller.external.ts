@@ -9,7 +9,7 @@ import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { AlertDefinition } from '@prisma/client';
 import { type TProjectId } from '@/types';
 
-@swagger.ApiTags('external/alerts')
+@swagger.ApiTags('Alerts')
 @common.Controller('external/alerts')
 export class AlertControllerExternal {
   constructor(

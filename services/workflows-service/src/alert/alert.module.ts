@@ -12,4 +12,4 @@ import { PrismaModule } from '@/prisma/prisma.module';
   providers: [AlertService, AlertRepository],
   exports: [ACLModule, AlertService],
 })
-export class alertModule {}
+export class AlertModule {}

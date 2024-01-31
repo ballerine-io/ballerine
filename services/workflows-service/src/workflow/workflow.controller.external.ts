@@ -35,7 +35,7 @@ import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-fl
 import { env } from '@/env';
 
 @swagger.ApiBearerAuth()
-@swagger.ApiTags('external/workflows')
+@swagger.ApiTags('Workflows')
 @common.Controller('external/workflows')
 export class WorkflowControllerExternal {
   constructor(

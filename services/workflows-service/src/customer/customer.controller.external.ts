@@ -11,7 +11,7 @@ import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
 import { createDemoMockData } from '../../scripts/workflows/workflow-runtime';
 import { PrismaService } from '@/prisma/prisma.service';
 
-@swagger.ApiTags('external/customers')
+@swagger.ApiTags('Customers')
 @common.Controller('external/customers')
 export class CustomerControllerExternal {
   constructor(
