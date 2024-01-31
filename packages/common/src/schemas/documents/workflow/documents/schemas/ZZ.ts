@@ -203,8 +203,8 @@ export const getUniversalDocuments = (): TDocument[] => {
       }),
     },
     {
-      category: 'financial_information',
-      type: 'proof_of_bank_account_ownership',
+      category: 'proof_of_bank_account_ownership',
+      type: 'general_document',
       issuer: { country: 'ZZ' },
       issuingVersion: 1,
       version: 1,
