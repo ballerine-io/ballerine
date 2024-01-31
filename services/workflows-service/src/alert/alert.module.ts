@@ -12,6 +12,7 @@ import { ClsService } from 'nestjs-cls';
 import axiosRetry from 'axios-retry';
 import { isAxiosError } from 'axios';
 import { getHttpStatusFromAxiosError, interceptAxiosRequests } from '@/common/http-service/utils';
+import { WebhookEventEmitterService } from './webhook-manager/webhook-event-emitter.service';
 
 @Module({
   imports: [
@@ -31,8 +32,8 @@ import { getHttpStatusFromAxiosError, interceptAxiosRequests } from '@/common/ht
     }),
   ],
   controllers: [AlertControllerInternal, AlertControllerExternal],
-  providers: [AlertService, AlertRepository, WebhookManagerService],
-  exports: [ACLModule, AlertService],
+  providers: [AlertService, AlertRepository, WebhookManagerService, WebhookEventEmitterService],
+  exports: [ACLModule, AlertService, WebhookEventEmitterService],
 })
 export class AlertModule {
   constructor(

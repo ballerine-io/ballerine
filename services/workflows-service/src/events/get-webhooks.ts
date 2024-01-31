@@ -28,14 +28,17 @@ export const getWebhooks = (
 };
 
 export const getCustomerWebhooks = (
-  subscriptions: TCustomer,
+  subscriptions: any, // TODO: replace with SubscriptionSchema
   envName: string | undefined,
   event: string,
 ): Webhook[] => {
-  return (config?.subscriptions ?? [])
-    .filter(({ type, events }) => type === 'webhook' && events.includes(event))
+  return (subscriptions ?? [])
+    .filter(
+      ({ type, events }: { type: string; events: string }) =>
+        type === 'webhook' && events.includes(event),
+    )
     .map(
-      ({ url }): Webhook => ({
+      ({ url }: { url: string }): Webhook => ({
         id: randomUUID(),
         url,
         environment: envName,
