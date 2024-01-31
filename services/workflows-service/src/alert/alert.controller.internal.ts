@@ -4,8 +4,9 @@ import { AlertService } from '@/alert/alert.service';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import * as types from '@/types';
+import { AlertCreateDto } from './dtos/alert-check.dto';
 
-import { AlertCheckDto } from './dto/alert-check.dto'; // Path to your DTO
+// Path to your DTO
 
 @common.Controller('internal/alerts')
 export class AlertControllerInternal {
@@ -13,22 +14,28 @@ export class AlertControllerInternal {
 
   @common.Post()
   @common.UseGuards(AdminAuthGuard)
-  @swagger.ApiCreatedResponse({ description: 'Alert check executed', type: String })
+  @swagger.ApiCreatedResponse({
+    description: 'Alert check executed',
+    type: String,
+  })
   @swagger.ApiForbiddenResponse({ description: 'Forbidden' })
   async check(
-    @common.Body() body: AlertCheckDto,
+    @common.Body() body: AlertCreateDto,
     @CurrentProject() currentProjectId: types.TProjectId,
   ): Promise<string> {
-    console.log('check alert', body.alertType, 'for project', currentProjectId);
+    throw new common.NotImplementedException();
 
-    try {
-      const result = await this.service.checkAllAlerts(body.alertType, currentProjectId);
-      return result ? 'Alert triggered' : 'No alert triggered';
-    } catch (error) {
-      throw new common.HttpException(
-        'Error checking alert',
-        common.HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+    return '200';
+    // console.log('check alert', body.alertType, 'for project', currentProjectId);
+
+    // try {
+    //   const result = await this.service.checkAllAlerts(body.alertType, currentProjectId);
+    //   return result ? 'Alert triggered' : 'No alert triggered';
+    // } catch (error) {
+    //   throw new common.HttpException(
+    //     'Error checking alert',
+    //     common.HttpStatus.INTERNAL_SERVER_ERROR,
+    //   );
+    // }
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { AlertDefinition, AlertExecution, Prisma } from '@prisma/client';
+import { AlertDefinition, AlertExecution } from '@prisma/client';
 import { CreateAlertExecutionDto } from './dto/create-alert-execution.dto'; // Define this DTO as per your need
 
 @Injectable()

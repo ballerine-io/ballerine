@@ -1,10 +1,11 @@
-import { alert, alertType } from '@prisma/client';
-import { alertCreateDto } from './dtos/alert-check.dto';
+import { AlertType, Transaction } from '@prisma/client';
+import { AlertCreateDto } from './dtos/alert-check.dto';
 import { cleanUndefinedValues } from '@/common/utils/clean-undefined-values';
 import { JsonValue } from 'type-fest';
 
 export class alertEntityMapper {
-  static toEntity(dto: alertCreateDto): Omit<alert, 'createdAt' | 'updatedAt' | 'id'> {
+  // TODO: alon - fix type for dto
+  static toEntity(dto: any): Omit<Transaction, 'createdAt' | 'updatedAt' | 'id'> {
     return {
       alertCorrelationId: dto.correlationId,
       alertDate: dto.date,
@@ -49,7 +50,8 @@ export class alertEntityMapper {
       cardExpiryYear: null,
       cardHolderName: null,
       cardTokenized: null,
-      tags: (dto.tags as JsonValue) ?? {},
+      // TODO: alon - fix this
+      // tags: (dto.tags as JsonValue) ?? {},
       reviewStatus: dto.reviewStatus ?? null,
       reviewerComments: dto.reviewerComments ?? null,
       auditTrail: dto.auditTrail ?? null,
@@ -67,7 +69,8 @@ export class alertEntityMapper {
     };
   }
 
-  static toDto(entity: alert): alertCreateDto & { id: string } {
+  // TODO: alon - fix type any
+  static toDto(entity: any): AlertCreateDto & { id: string } {
     const dto = {
       id: entity.id,
       correlationId: entity.alertCorrelationId,
@@ -76,7 +79,7 @@ export class alertEntityMapper {
       currency: entity.alertCurrency,
       description: entity.alertDescription ?? undefined,
       category: entity.alertCategory ?? undefined,
-      type: entity.alertType as alertType | undefined,
+      type: entity.alertType as AlertType | undefined,
       status: entity.alertStatus ?? undefined,
       statusReason: entity.alertStatusReason ?? undefined,
       sender: {
@@ -131,6 +134,6 @@ export class alertEntityMapper {
       projectId: entity.projectId ?? undefined,
     };
 
-    return cleanUndefinedValues<alertCreateDto & { id: string }>(dto);
+    return cleanUndefinedValues<AlertCreateDto & { id: string }>(dto);
   }
 }

@@ -1,4 +1,3 @@
-import { AlertCreateDto } from '@/alert/dtos/alert-create.dto';
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { AlertService } from '@/alert/alert.service';
@@ -8,6 +7,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import type { Response } from 'express';
+import { AlertCreateDto } from './dtos/alert-check.dto';
 
 @swagger.ApiTags('external/alerts')
 @common.Controller('external/alerts')
@@ -53,4 +53,3 @@ export class AlertControllerExternal {
     }
   }
 }
-ƒ;
