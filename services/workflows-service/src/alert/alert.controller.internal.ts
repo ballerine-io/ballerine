@@ -22,7 +22,7 @@ export class AlertControllerInternal {
     console.log('check alert', body.alertType, 'for project', currentProjectId);
 
     try {
-      const result = await this.service.checkAlert(body.alertType, currentProjectId);
+      const result = await this.service.checkAllAlerts(body.alertType, currentProjectId);
       return result ? 'Alert triggered' : 'No alert triggered';
     } catch (error) {
       throw new common.HttpException(
