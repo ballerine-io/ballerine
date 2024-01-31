@@ -460,7 +460,7 @@ export class WorkflowService {
     };
 
     const [workflowCount, workflows] = await Promise.all([
-      this.workflowRuntimeDataRepository.count({ where: query.where }, projectIds),
+      this.workflowRuntimeDataRepository.count({ where: workflowsQuery.where }, projectIds),
       this.workflowRuntimeDataRepository.findMany(workflowsQuery, projectIds),
     ]);
 
