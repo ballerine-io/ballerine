@@ -100,40 +100,31 @@ describe('#CustomerControllerExternal', () => {
   });
 
   describe('POST /subscriptions', () => {
-    let customerId: string;
-    let projectId: string;
-
     beforeEach(async () => {
       const prismaClient = app.get(PrismaService);
-      customerId = faker.datatype.uuid();
 
       customer = await createCustomer(
         prismaClient,
-        customerId,
+        faker.datatype.uuid(),
         'secret3',
         '',
         '',
         'webhook-shared-secret',
       );
-      projectId = faker.datatype.uuid();
-      project = await createProject(prismaClient, customer, projectId);
 
-      const { id, ...restCustomerFields } = await customerService.getByProjectId(projectId);
+      project = await createProject(prismaClient, customer, faker.datatype.uuid());
 
-      expect(restCustomerFields).toMatchObject({
+      const dbCustomer = await customerService.getById(customer.id);
+
+      const customerId = customer.id.replace('customer-', '');
+      expect(dbCustomer).toMatchObject({
+        id: customer.id,
         country: 'GB',
         displayName: `Customer ${customerId}`,
         faviconImageUri: '',
         language: 'en',
         logoImageUri: '',
         name: `Customer ${customerId}`,
-        projects: [
-          {
-            customerId: customerId,
-            id: projectId,
-            name: `Project ${projectId}`,
-          },
-        ],
         subscriptions: null,
         websiteUrl: null,
       });
@@ -158,7 +149,7 @@ describe('#CustomerControllerExternal', () => {
 
       expect(response.status).toBe(201);
 
-      const dbCustomer = await customerService.getById(customerId);
+      const dbCustomer = await customerService.getById(customer.id);
       expect(dbCustomer.subscriptions).toMatchObject(payload.subscriptions);
     });
 
@@ -195,7 +186,7 @@ describe('#CustomerControllerExternal', () => {
         ],
         statusCode: 400,
       });
-      const dbCustomer = await customerService.getByProjectId(projectId);
+      const dbCustomer = await customerService.getByProjectId(project.id);
 
       expect(dbCustomer.subscriptions).toBe(null);
     });
