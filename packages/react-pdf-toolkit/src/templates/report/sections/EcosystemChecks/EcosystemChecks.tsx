@@ -3,7 +3,7 @@ import { Link } from '@/components/atoms/Link';
 import { Section } from '@/templates/report/components/Section';
 import { IEcosystemChecks } from '@/templates/report/schema';
 import { tw } from '@/theme';
-import { resolveBadgeStyleToRiskScore } from '@/utils/resolve-badge-style-to-risk-score';
+import { getRiskScoreStyle } from '@/utils';
 import { Text, View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
 
@@ -19,7 +19,7 @@ export const EcosystemChecks: FunctionComponent<EcosystemChecksProps> = ({ data 
       <Section.Blocks>
         <Section.Blocks.Block>
           <Section.Blocks.Block.Label text="General Risk Score" />
-          <Badge text={String(riskScore || 0)} variant={resolveBadgeStyleToRiskScore(riskScore)} />
+          <Badge text={String(riskScore || 0)} variant={getRiskScoreStyle(riskScore)} />
         </Section.Blocks.Block>
         {url && (
           <Section.Blocks.Block>
@@ -61,10 +61,7 @@ export const EcosystemChecks: FunctionComponent<EcosystemChecksProps> = ({ data 
                 <Text style={tw('w-[25%] text-[8px]')}>{relatedNodeType}</Text>
                 <Text style={tw('w-[25%] text-[8px]')}>{relatedNode}</Text>
                 <Text style={tw('w-[25%] text-[8px]')}>
-                  <Badge
-                    variant={resolveBadgeStyleToRiskScore(tlRiskScore)}
-                    text={String(tlRiskScore)}
-                  />
+                  <Badge variant={getRiskScoreStyle(tlRiskScore)} text={String(tlRiskScore)} />
                 </Text>
               </View>
             );

@@ -1,7 +1,7 @@
 import { ITraffic } from '@/build';
 import { Badge } from '@/components/atoms/Badge';
 import { Section } from '@/templates/report/components/Section';
-import { resolveBadgeStyleToRiskScore } from '@/utils/resolve-badge-style-to-risk-score';
+import { getRiskScoreStyle } from '@/utils';
 import { FunctionComponent } from 'react';
 
 export interface TrafficProps {
@@ -21,7 +21,7 @@ export const TrafficSection: FunctionComponent<TrafficProps> = ({ data }) => {
           <Section.Blocks.Block.Label text="Traffic Risk Score" />
           <Badge
             text={String(trafficAnalysisRiskScore || 0)}
-            variant={resolveBadgeStyleToRiskScore(trafficAnalysisRiskScore)}
+            variant={getRiskScoreStyle(trafficAnalysisRiskScore)}
           />
         </Section.Blocks.Block>
       </Section.Blocks>

@@ -1,7 +1,7 @@
 import { IPricing } from '@/build';
 import { Badge } from '@/components/atoms/Badge';
 import { Section } from '@/templates/report/components/Section';
-import { resolveBadgeStyleToRiskScore } from '@/utils/resolve-badge-style-to-risk-score';
+import { getRiskScoreStyle } from '@/utils';
 import { FunctionComponent } from 'react';
 
 export interface PricingProps {
@@ -25,14 +25,14 @@ export const PricingSection: FunctionComponent<PricingProps> = ({ data }) => {
           <Section.Blocks.Block.Label text="Discrepancy Score" />
           <Badge
             text={String(discrepancyScore || 0)}
-            variant={resolveBadgeStyleToRiskScore(discrepancyScore)}
+            variant={getRiskScoreStyle(discrepancyScore)}
           />
         </Section.Blocks.Block>
         <Section.Blocks.Block>
           <Section.Blocks.Block.Label text="Pricing Patterns Score" />
           <Badge
             text={String(pricingPatternsScore || 0)}
-            variant={resolveBadgeStyleToRiskScore(pricingPatternsScore)}
+            variant={getRiskScoreStyle(pricingPatternsScore)}
           />
         </Section.Blocks.Block>
       </Section.Blocks>
