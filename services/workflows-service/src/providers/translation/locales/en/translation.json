@@ -327,6 +327,12 @@
     "pictureOfCompanySeal": {
       "label": "Picture of the company seal"
     },
+    "proofOfBankAccount": {
+      "label": "Proof of bank account"
+    },
+    "otherSupplementaryInformation": {
+      "label": "Other supplementary information (Supplement according to the onboarding document checklist)"
+    },
     "domainCertificate": {
       "label": "Domain purchase record / certificate"
     },
@@ -476,7 +482,7 @@
     },
     "required": {
       "phone": "A valid phone number is required.",
-      "dateOfBirth": "Date of birth is required.",
+      "dateOfBirth": "Date of Birth is required.",
       "firstName": "First name is required.",
       "postalCode": "Postal code is required.",
       "lastName": "Last name is required.",
@@ -507,7 +513,10 @@
       "holderFullAddress": "Holder full address is required.",
       "accountNumber": "Account number is required.",
       "swiftCode": "SWIFT code is required.",
+      "routeNumber": "Route Number is required.",
       "bankName": "Bank name is required.",
+      "bankCode": "Bank code is required.",
+      "subBranch": "Sub-branch number is required.",
       "bankAddress": "Bank address is required.",
       "currency": "Account currency is required",
       "mobileAppName": "Mobile App Name should not be empty.",
@@ -534,8 +543,7 @@
       "companyWebsite": "Company Website is required.",
       "bankCountry": "Bank Country is required.",
       "companyRegistrationNumber": "Company registration number is required.",
-      "role": "Title is required.",
-      "dateOfBirth": "Date of Birth is required."
+      "role": "Title is required."
     },
     "minLength": {
       "firstName": "First name must be at least 2 characters long.",
