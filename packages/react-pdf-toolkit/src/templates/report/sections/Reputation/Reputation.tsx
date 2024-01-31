@@ -1,7 +1,7 @@
 import { IReputation } from '@/build';
 import { Badge } from '@/components/atoms/Badge';
 import { Section } from '@/templates/report/components/Section';
-import { resolveBadgeStyleToRiskScore } from '@/utils/resolve-badge-style-to-risk-score';
+import { getRiskScoreStyle } from '@/utils';
 import { FunctionComponent } from 'react';
 
 export interface ReputationProps {
@@ -26,7 +26,7 @@ export const ReputationSection: FunctionComponent<ReputationProps> = ({ data }) 
           <Section.Blocks.Block.Label text="Reputation Risk Score" />
           <Badge
             text={String(reputationRiskScore || 0)}
-            variant={resolveBadgeStyleToRiskScore(reputationRiskScore)}
+            variant={getRiskScoreStyle(reputationRiskScore)}
           />
         </Section.Blocks.Block>
       </Section.Blocks>

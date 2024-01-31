@@ -1,7 +1,7 @@
 import { IStructure } from '@/build';
 import { Badge } from '@/components/atoms/Badge';
 import { Section } from '@/templates/report/components/Section';
-import { resolveBadgeStyleToRiskScore } from '@/utils/resolve-badge-style-to-risk-score';
+import { getRiskScoreStyle } from '@/utils';
 import { FunctionComponent } from 'react';
 
 export interface StructureProps {
@@ -16,7 +16,7 @@ export const StructureSection: FunctionComponent<StructureProps> = ({ data }) =>
       <Section.Blocks>
         <Section.Blocks.Block>
           <Section.Blocks.Block.Label text="Structure Risk Score" />
-          <Badge text={String(score || 0)} variant={resolveBadgeStyleToRiskScore(score)} />
+          <Badge text={String(score || 0)} variant={getRiskScoreStyle(score)} />
         </Section.Blocks.Block>
       </Section.Blocks>
       {analysisSummary && (

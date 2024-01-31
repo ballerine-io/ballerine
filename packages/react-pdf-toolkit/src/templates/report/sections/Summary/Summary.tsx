@@ -1,7 +1,7 @@
 import { Badge } from '@/components/atoms/Badge';
 import { Section } from '@/templates/report/components/Section';
 import { ISummary } from '@/templates/report/schema';
-import { resolveBadgeStyleToRiskScore } from '@/utils/resolve-badge-style-to-risk-score';
+import { getRiskScoreStyle } from '@/utils';
 import { FunctionComponent } from 'react';
 
 export interface SummaryProps {
@@ -24,7 +24,7 @@ export const SummarySection: FunctionComponent<SummaryProps> = ({ data }) => {
           <Section.Blocks.Block.Label text="Transaction Laundering Risk Score" />
           <Badge
             text={String(transactionLaunderingRiskScore || 0)}
-            variant={resolveBadgeStyleToRiskScore(transactionLaunderingRiskScore)}
+            variant={getRiskScoreStyle(transactionLaunderingRiskScore)}
           />
         </Section.Blocks.Block>
       </Section.Blocks>
