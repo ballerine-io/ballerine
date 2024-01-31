@@ -1,5 +1,11 @@
 # @ballerine/backoffice-v2
 
+## 0.5.45-11210907c.0
+
+### Patch Changes
+
+- bump alpha
+
 ## 0.5.44
 
 ### Patch Changes

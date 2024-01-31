@@ -1,5 +1,11 @@
 # @ballerine/workflows-service
 
+## 0.5.40-11210907c.0
+
+### Patch Changes
+
+- bump alpha
+
 ## 0.5.39
 
 ### Patch Changes
