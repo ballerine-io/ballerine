@@ -8,7 +8,7 @@ module.exports = {
       recommended: true,
     },
   },
-  create: function (context) {
+  create: context => {
     const isRepository =
       /^(?!.*\/(customer|data-migration)\.repository\.(ts|js)$).*\.repository\.(ts|js)$/.test(
         // Using deprecated .getFilename here because relevant context.filename returns undefined
@@ -17,7 +17,7 @@ module.exports = {
 
     const UNSCOPED_METHOD_NAMES = ['unscoped', 'create', 'update'];
     return {
-      MethodDefinition: function (node) {
+      MethodDefinition: node => {
         if (!isRepository || node.key.name === 'constructor') return;
         const isUnscoped = UNSCOPED_METHOD_NAMES.some(name =>
           node.key.name.toLowerCase().includes(name),

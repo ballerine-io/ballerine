@@ -2,6 +2,9 @@ module.exports = {
   env: {
     node: true,
   },
+  parserOptions: {
+    project: './tsconfig.json',
+  },
   extends: ['plugin:import/recommended', 'plugin:import/typescript', '@ballerine/eslint-config'],
   settings: {
     'import/parsers': {

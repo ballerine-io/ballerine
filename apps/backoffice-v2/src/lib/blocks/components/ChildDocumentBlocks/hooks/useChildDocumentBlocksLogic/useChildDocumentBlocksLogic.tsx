@@ -4,7 +4,7 @@ import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDec
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { UnknownRecord } from '@/common/types';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 import { checkIsKybExampleVariant } from '@/lib/blocks/variants/variant-checkers';
 
@@ -30,7 +30,7 @@ export const useChildDocumentBlocksLogic = ({
   isLoadingReuploadNeeded: boolean;
 }) => {
   const filterId = useFilterId();
-  const { data: parentWorkflow } = useWorkflowQuery({
+  const { data: parentWorkflow } = useWorkflowByIdQuery({
     workflowId: parentWorkflowId,
     filterId,
   });

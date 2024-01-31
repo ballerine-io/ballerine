@@ -14,6 +14,8 @@ import { type ITokenScope, TokenScope } from '@/common/decorators/token-scope.de
 import { WorkflowService } from '@/workflow/workflow.service';
 import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
 import { GetFlowConfigurationInputDto } from '@/collection-flow/dto/get-flow-configuration-input.dto';
+import { UpdateContextInputDto } from '@/collection-flow/dto/update-context-input.dto';
+import { result } from 'lodash';
 
 @Public()
 @UseTokenAuthGuard()
@@ -116,6 +118,16 @@ export class ColectionFlowController {
   @common.Put('/sync')
   async syncWorkflow(@common.Body() payload: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
     return await this.service.syncWorkflow(payload, tokenScope);
+  }
+
+  @common.Patch('/sync/context')
+  async updateContextById(
+    @common.Body() { context }: UpdateContextInputDto,
+    @TokenScope() tokenScope: ITokenScope,
+  ) {
+    return await this.workflowService.updateContextById(tokenScope.workflowRuntimeDataId, context, [
+      tokenScope.projectId,
+    ]);
   }
 
   @common.Post('/send-event')

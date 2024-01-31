@@ -31,6 +31,8 @@ import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.re
 import { WorkflowControllerInternal } from '@/workflow/workflow.controller.internal';
 import { Request } from 'express';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 
 describe('/api/v1/internal/workflows #api #integration', () => {
   let app: INestApplication;
@@ -71,6 +73,8 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       WorkflowTokenRepository,
       WorkflowRuntimeDataRepository,
       EndUserService,
+      UiDefinitionRepository,
+      UiDefinitionService,
     ];
     workflowService = (await fetchServiceFromModule(WorkflowService, servicesProviders, [
       PrismaModule,

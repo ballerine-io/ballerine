@@ -47,7 +47,8 @@ export interface IDocumentInfo {
   orderIndex: number;
 }
 
-export type IPageSide = 'front' | 'back';
+export type IPageSide = 'front' | 'back' | 'selfie';
+
 export interface IDocumentPage {
   base64?: string;
   uri?: string;

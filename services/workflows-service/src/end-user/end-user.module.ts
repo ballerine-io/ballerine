@@ -24,6 +24,8 @@ import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integra
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { HttpModule } from '@nestjs/axios';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 
 @Module({
   imports: [ProjectModule, CustomerModule, HttpModule],
@@ -49,6 +51,8 @@ import { HttpModule } from '@nestjs/axios';
     SalesforceIntegrationRepository,
     WorkflowTokenService,
     WorkflowTokenRepository,
+    UiDefinitionRepository,
+    UiDefinitionService,
   ],
 })
 export class EndUserModule {}

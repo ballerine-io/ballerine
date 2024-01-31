@@ -1,5 +1,5 @@
 /**
- * @description Gets config specific query params as an object - see -docs url here-
+ * @description Gets config-specific query params as an object
  */
 export const getConfigFromQueryParams = () => {
   // Make sure non-unrelated query params are passed to the config
@@ -32,9 +32,11 @@ export const getConfigFromQueryParams = () => {
 
   // Make sure no empty strings are passed to the config
   return Object.entries(queryParamsConfig).reduce((acc, [key, value]) => {
-    if (!value) return acc;
+    if (!value) {
+      return acc;
+    }
 
-    // TODO: Remove casting and fix the type
+    // @TODO: Remove casting and fix the type
     acc[key as keyof typeof queryParamsConfig] = value;
 
     return acc;

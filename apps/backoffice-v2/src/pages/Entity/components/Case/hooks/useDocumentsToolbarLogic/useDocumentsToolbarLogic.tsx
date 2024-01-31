@@ -1,8 +1,8 @@
 import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
 
 import { BroadcastChannel } from 'broadcast-channel';
-import { CommunicationChannelEvent, CommunicationChannel } from '@/common/enums';
-import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { CommunicationChannel, CommunicationChannelEvent } from '@/common/enums';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useParams } from 'react-router-dom';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 
@@ -19,7 +19,7 @@ export const useDocumentsToolbarLogic = ({
 }: IUseDocumentsToolbarProps) => {
   const { entityId: workflowId } = useParams();
   const filterId = useFilterId();
-  const { data: workflow } = useWorkflowQuery({ workflowId: workflowId, filterId });
+  const { data: workflow } = useWorkflowByIdQuery({ workflowId: workflowId, filterId });
 
   const broadcastChannel = useMemo(
     () =>

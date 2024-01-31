@@ -52,6 +52,7 @@ import {
   Business,
   EndUser,
   Prisma,
+  UiDefinitionContext,
   WorkflowDefinition,
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
@@ -79,6 +80,7 @@ import {
 import mime from 'mime';
 import { env } from '@/env';
 import { AjvValidationError } from '@/errors';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { ajv } from '@/common/ajv/ajv.validator';
 
 type TEntityId = string;
@@ -131,6 +133,7 @@ export class WorkflowService {
     private readonly userService: UserService,
     private readonly salesforceService: SalesforceService,
     private readonly workflowTokenService: WorkflowTokenService,
+    private readonly uiDefinitionService: UiDefinitionService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
@@ -398,7 +401,7 @@ export class WorkflowService {
         size: number;
       };
       filters?: {
-        assigneeId?: (string | null)[];
+        assigneeId?: Array<string | null>;
         status?: WorkflowRuntimeDataStatus[];
         caseStatus?: string[];
       };
@@ -435,6 +438,7 @@ export class WorkflowService {
 
       return [];
     };
+
     const workflowIds = await this.workflowRuntimeDataRepository.search(
       {
         query: {
@@ -450,22 +454,25 @@ export class WorkflowService {
       projectIds,
     );
 
-    if (page.number > 1 && workflowIds.length < (page.number - 1) * page.size + 1) {
-      throw new NotFoundException('Page not found');
-    }
-
     const workflowsQuery = {
       ...query,
-      where: { id: { in: workflowIds.map(workflowId => workflowId.id) } },
+      where: { ...query.where, id: { in: workflowIds.map(workflowId => workflowId.id) } },
     };
 
-    const workflows = await this.workflowRuntimeDataRepository.findMany(workflowsQuery, projectIds);
+    const [workflowCount, workflows] = await Promise.all([
+      this.workflowRuntimeDataRepository.count({ where: workflowsQuery.where }, projectIds),
+      this.workflowRuntimeDataRepository.findMany(workflowsQuery, projectIds),
+    ]);
+
+    if (page.number > 1 && workflowCount < (page.number - 1) * page.size + 1) {
+      throw new NotFoundException('Page not found');
+    }
 
     return {
       data: this.formatWorkflowsRuntimeData(workflows as unknown as TWorkflowWithRelations[]),
       meta: {
-        totalItems: workflowIds.length,
-        totalPages: Math.max(Math.ceil(workflowIds.length / page.size), 1),
+        totalItems: workflowCount,
+        totalPages: Math.max(Math.ceil(workflowCount / page.size), 1),
       },
     };
   }
@@ -1496,6 +1503,7 @@ export class WorkflowService {
       {},
       projectIds,
     );
+
     config = merge(workflowDefinition.config, config);
     let validatedConfig: WorkflowConfig;
     try {
@@ -1539,11 +1547,11 @@ export class WorkflowService {
       validatedConfig || {},
     ) as InputJsonValue;
 
-    const entities: {
+    const entities: Array<{
       id: string;
       type: 'individual' | 'business';
-      tags?: ('mainRepresentative' | 'UBO')[];
-    }[] = [];
+      tags?: Array<'mainRepresentative' | 'UBO'>;
+    }> = [];
 
     // Creating new workflow
     if (!existingWorkflowRuntimeData || mergedConfig?.allowMultipleActiveWorkflows) {
@@ -1558,6 +1566,45 @@ export class WorkflowService {
         currentProjectId,
         customer.name,
       );
+      let uiDefinition;
+
+      try {
+        uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
+          workflowDefinitionId,
+          UiDefinitionContext.collection_flow,
+          projectIds,
+          {},
+        );
+      } catch (err) {
+        if (isErrorWithMessage(err)) {
+          this.logger.error(err.message);
+        }
+      }
+
+      const uiSchema = (uiDefinition as Record<string, any>)?.uiSchema;
+
+      const createFlowConfig = (uiSchema: Record<string, any>) => {
+        return {
+          stepsProgress: (
+            uiSchema?.elements as Array<{
+              type: string;
+              number: number;
+              stateName: string;
+            }>
+          )?.reduce((acc, curr) => {
+            if (curr?.type !== 'page') {
+              return acc;
+            }
+
+            acc[curr?.stateName] = {
+              number: curr?.number,
+              isCompleted: false,
+            };
+
+            return acc;
+          }, {} as { [key: string]: { number: number; isCompleted: boolean } }),
+        };
+      };
 
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
         data: {
@@ -1566,6 +1613,7 @@ export class WorkflowService {
           context: {
             ...contextToInsert,
             documents: documentsWithPersistedImages,
+            flowConfig: (contextToInsert as any)?.flowConfig ?? createFlowConfig(uiSchema),
           } as InputJsonValue,
           config: mergedConfig as InputJsonValue,
           // @ts-expect-error - error from Prisma types fix
@@ -2093,7 +2141,7 @@ export class WorkflowService {
           workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
 
         const childrenOfSameDefinition = // @ts-ignore - error from Prisma types fix
-          (parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>)?.filter(
+          (parentWorkflowRuntime.childWorkflowsRuntimeData as WorkflowRuntimeData[])?.filter(
             childWorkflow =>
               childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
           );
