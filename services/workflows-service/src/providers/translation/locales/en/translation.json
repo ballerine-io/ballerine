@@ -327,6 +327,12 @@
     "pictureOfCompanySeal": {
       "label": "Picture of the company seal"
     },
+    "proofOfBankAccount": {
+      "label": "Proof of bank account"
+    },
+    "otherSupplementaryInformation": {
+      "label": "Other supplementary information (Supplement according to the onboarding document checklist)"
+    },
     "domainCertificate": {
       "label": "Domain purchase record / certificate"
     },
@@ -509,6 +515,8 @@
       "swiftCode": "SWIFT code is required.",
       "routeNumber": "Route Number is required.",
       "bankName": "Bank name is required.",
+      "bankCode": "Bank code is required.",
+      "subBranch": "Sub-branch number is required.",
       "bankAddress": "Bank address is required.",
       "currency": "Account currency is required",
       "mobileAppName": "Mobile App Name should not be empty.",

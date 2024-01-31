@@ -312,6 +312,12 @@
     "pictureOfCompanySeal": {
       "label": "公司印章照片"
     },
+    "proofOfBankAccount": {
+      "label": "银行账户证明"
+    },
+    "otherSupplementaryInformation": {
+      "label": "其他补充资料（根据入网资料清单补充）"
+    },
     "domainCertificate": {
       "label": "域名购买记录/证书"
     },
@@ -441,6 +447,8 @@
       "swiftCode": "需要SWIFT代码。",
       "routeNumber": "路线号码为必填项。",
       "bankName": "需要银行名称。",
+      "bankCode": "需要银行代码。",
+      "subBranch": "支行号码为必填项。",
       "bankAddress": "需要银行地址。",
       "currency": "需要帐户货币。",
       "mobileAppName": "移动应用程序名称不能为空。",
