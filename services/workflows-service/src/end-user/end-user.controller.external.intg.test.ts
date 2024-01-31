@@ -45,7 +45,6 @@ describe('#EndUserControllerExternal', () => {
 
   beforeAll(async () => {
     await cleanupDatabase();
-
     const servicesProviders = [
       EndUserRepository,
       EntityRepository,
@@ -101,7 +100,7 @@ describe('#EndUserControllerExternal', () => {
   });
 
   describe('POST /end-user', () => {
-    it('creates an end-user', async () => {
+    it.only('creates an end-user', async () => {
       expect(await endUserService.list({}, [project.id])).toHaveLength(0);
 
       const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
@@ -109,7 +108,7 @@ describe('#EndUserControllerExternal', () => {
         .post('/external/end-users')
         .send({
           correlationId: faker.datatype.uuid(),
-          endUserType: faker.random.word(),
+          endUserType: 'userType1',
           approvalState: 'APPROVED',
           firstName: 'test',
           lastName: 'lastName',
@@ -124,8 +123,24 @@ describe('#EndUserControllerExternal', () => {
 
       const createdUser = await endUserService.getById(response.body.id, {}, [project.id]);
       expect(createdUser).toMatchObject({
+        additionalInfo: null,
+        approvalState: 'APPROVED',
+        avatarUrl: expect.any(String),
+        correlationId: expect.any(String),
+        country: null,
+        createdAt: expect.any(Date),
+        dateOfBirth: expect.any(Date),
+        email: expect.any(String),
+        endUserType: 'userType1',
         firstName: 'test',
+        id: expect.any(String),
+        isContactPerson: false,
         lastName: 'lastName',
+        nationalId: null,
+        phone: expect.any(String),
+        projectId: '1',
+        stateReason: null,
+        updatedAt: expect.any(Date),
       });
     });
   });
