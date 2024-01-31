@@ -9,7 +9,7 @@ export type EventConfig = {
 
 const DEFAULT_CONFIG = { forceEmit: false };
 @Injectable()
-export class WebhookNotifierService {
+export class WebhookEventEmitterService {
   constructor(private eventEmitter: EventEmitter2) {}
 
   emit<TEvent extends TEventName>(
