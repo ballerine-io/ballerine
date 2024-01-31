@@ -122,6 +122,7 @@ describe('#EndUserControllerExternal', () => {
       expect(response.status).toBe(201);
 
       const createdUser = await endUserService.getById(response.body.id, {}, [project.id]);
+
       expect(createdUser).toMatchObject({
         additionalInfo: null,
         approvalState: 'APPROVED',
