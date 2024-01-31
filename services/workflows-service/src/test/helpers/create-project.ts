@@ -3,11 +3,11 @@ import { Customer, PrismaClient } from '@prisma/client';
 export const createProject = async (client: PrismaClient, customer: Customer, id: string) =>
   client.project.upsert({
     where: {
-      id: id,
+      id: `project-${id}`,
     },
     update: {},
     create: {
-      id: `${id}`,
+      id: `project-${id}`,
       name: `Project ${id}`,
       customerId: customer.id,
     },
