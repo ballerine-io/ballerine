@@ -1,7 +1,7 @@
-import { TWorkflowDefinition } from '@/domains/workflows/fetchers';
 import { useMemo } from 'react';
+import { TWorkflowDefinitionById } from '@/domains/workflow-definitions/fetchers';
 
-export const useFormSchema = (workflowDefinition: TWorkflowDefinition) => {
+export const useFormSchema = (workflowDefinition: TWorkflowDefinitionById) => {
   const inputSchema = useMemo(
     () =>
       workflowDefinition?.definition?.states[workflowDefinition?.definition?.initial]?.meta

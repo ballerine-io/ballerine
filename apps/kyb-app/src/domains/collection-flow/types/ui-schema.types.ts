@@ -2,7 +2,6 @@ import { AnyObject } from '@ballerine/ui';
 
 export type UIElementType = string;
 
-export type BaseRuleValue = string;
 export type EventRuleValue = {
   event: 'onClick' | 'onChange';
   uiElementName: string;
@@ -59,6 +58,7 @@ export interface UIElement<TElementParams = AnyObject> {
   type: UIElementType;
   availableOn?: Rule[];
   visibleOn?: Rule[];
+  requiredOn?: Rule[];
   required?: boolean;
   options: TElementParams;
   valueDestination?: UIElementDestination;

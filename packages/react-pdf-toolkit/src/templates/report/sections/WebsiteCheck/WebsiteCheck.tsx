@@ -1,4 +1,4 @@
-import { Badge } from '@/components/Badge';
+import { Badge } from '@/components/atoms/Badge';
 import { Section } from '@/templates/report/components/Section';
 import { IWebsiteCheck } from '@/templates/report/schema';
 import { tw } from '@/theme';
