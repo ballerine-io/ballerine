@@ -71,6 +71,7 @@
     "ajv-keywords": "^5.1.0",
     "aws-cloudfront-sign": "3.0.2",
     "axios": "^1.6.2",
+    "axios-retry": "^4.0.0",
     "bcrypt": "5.1.0",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",
