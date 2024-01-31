@@ -222,7 +222,7 @@ export class WorkflowRuntimeDataRepository {
       };
       filters?: {
         caseStatus?: string[];
-        assigneeId?: (string | null)[];
+        assigneeId?: Array<string | null>;
         status?: WorkflowRuntimeDataStatus[];
       };
     },
