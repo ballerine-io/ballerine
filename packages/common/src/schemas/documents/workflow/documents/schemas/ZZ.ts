@@ -202,5 +202,21 @@ export const getUniversalDocuments = (): TDocument[] => {
         lastName: Type.Optional(Type.String()),
       }),
     },
+    {
+      category: 'proof_of_bank_account_ownership',
+      type: 'general_document',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {},
+    },
+    {
+      category: 'general_documents',
+      type: 'supplementary_document',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {},
+    },
   ];
 };
