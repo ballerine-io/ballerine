@@ -25,6 +25,8 @@
   - @ballerine/common@0.7.38
   - @ballerine/workflow-browser-sdk@0.5.38
   - @ballerine/workflow-node-sdk@0.5.38
+- Updated dependencies
+  - @ballerine/ui@0.3.27
 
 ## 0.5.42
 

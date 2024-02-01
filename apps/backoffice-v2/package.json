@@ -52,9 +52,9 @@
   "dependencies": {
     "@ballerine/blocks": "0.1.24",
     "@ballerine/common": "0.7.39",
-    "@ballerine/ui": "^0.3.26",
     "@ballerine/workflow-browser-sdk": "0.5.39",
     "@ballerine/workflow-node-sdk": "0.5.39",
+    "@ballerine/ui": "0.3.27",
     "@fontsource/inter": "^4.5.15",
     "@formkit/auto-animate": "1.0.0-beta.5",
     "@hookform/resolvers": "^3.1.0",
