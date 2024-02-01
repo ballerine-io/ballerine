@@ -12,13 +12,16 @@ import { sign } from '@/common/utils/sign/sign';
 import { HttpService } from '@nestjs/axios';
 
 @common.Injectable()
+export abstract class WebhookHttpService extends HttpService {}
+
+@common.Injectable()
 @common.UseInterceptors(SentryInterceptor)
 export class WebhookManagerService {
   constructor(
     private readonly cls: ClsService,
     protected readonly logger: AppLoggerService,
     protected readonly configService: ConfigService,
-    protected readonly httpService: HttpService,
+    protected readonly httpService: WebhookHttpService,
     protected readonly webhookEventEmitter: WebhookEventEmitterService,
   ) {
     webhookEventEmitter.on('*', async (eventData: any) => {
