@@ -32,6 +32,12 @@ const corsOrigins = [
   ...(env.ENVIRONMENT_NAME !== 'production' ? devOrigins : []),
 ];
 
+let exposedSwaggerDoc: any;
+
+export const getSwaggerDocument = () => {
+  return exposedSwaggerDoc;
+};
+
 const main = async () => {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true, //will be buffered until a custom logger is attached
@@ -138,6 +144,31 @@ const main = async () => {
       }
     });
   });
+  document.openapi = '3.1.0';
+  // @ts-ignore
+  document.webhooks = {
+    changed: {
+      post: {
+        requestBody: {
+          description: 'Information about a new pet in the system',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/UserModel',
+              },
+            },
+          },
+        },
+        responses: {
+          '200': {
+            description: 'Return a 200 status to indicate that the data was received successfully',
+          },
+        },
+      },
+    },
+  };
+
+  exposedSwaggerDoc = document;
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 

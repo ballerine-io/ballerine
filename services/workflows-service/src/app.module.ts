@@ -39,9 +39,10 @@ import { CaseManagementModule } from '@/case-management/case-management.module';
 import { WorkflowModule } from '@/workflow/workflow.module';
 import { TransactionModule } from '@/transaction/transaction.module';
 import { AlertModule } from '@/alert/alert.module';
+import { SwaggerController } from './swagger/swagger.controller';
 
 @Module({
-  controllers: [MetricsController],
+  controllers: [SwaggerController],
   imports: [
     SentryModule,
     MulterModule.registerAsync({

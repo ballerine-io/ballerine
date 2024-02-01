@@ -5,7 +5,10 @@ import { AlertRepository } from '@/alert/alert.repository';
 import { AlertService } from '@/alert/alert.service';
 import { AlertControllerExternal } from '@/alert/alert.controller.external';
 import { PrismaModule } from '@/prisma/prisma.module';
-import { WebhookManagerService } from '@/alert/webhook-manager/webhook-manager.service';
+import {
+  WebhookHttpService,
+  WebhookManagerService,
+} from '@/alert/webhook-manager/webhook-manager.service';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { ClsService } from 'nestjs-cls';
@@ -32,7 +35,16 @@ import { WebhookEventEmitterService } from './webhook-manager/webhook-event-emit
     }),
   ],
   controllers: [AlertControllerInternal, AlertControllerExternal],
-  providers: [AlertService, AlertRepository, WebhookManagerService, WebhookEventEmitterService],
+  providers: [
+    {
+      provide: WebhookHttpService,
+      useExisting: HttpService,
+    },
+    AlertService,
+    AlertRepository,
+    WebhookManagerService,
+    WebhookEventEmitterService,
+  ],
   exports: [ACLModule, AlertService, WebhookEventEmitterService],
 })
 export class AlertModule {
