@@ -9,8 +9,6 @@ https://api.github.com/repos/ballerine-io/wf-data-migration/zipball -o /tmp/wf-d
 rm -rf ./prisma/data-migrations &&
 mkdir -p ./prisma/data-migrations &&
 unzip -q /tmp/wf-data-migration.zip '*wf-data-migration*.ts' -d /tmp/ &&
-<<<<<<< Updated upstream
-=======
 if [[ "$ENVIRONMENT_NAME" == "staging" || "$ENVIRONMENT_NAME" == "sandbox" || "$ENVIRONMENT_NAME" == "sb" ]]; then
     rm -rf /tmp/*wf-data-migration*/prod && rm -rf /tmp/*wf-data-migration*/dev && rm -rf /tmp/*wf-data-migration*/local
 elif [[ "$ENVIRONMENT_NAME" == "prod" || "$ENVIRONMENT_NAME" == "production" ]]; then
@@ -20,5 +18,4 @@ elif [[ "$ENVIRONMENT_NAME" == "dev" || "$ENVIRONMENT_NAME" == "development" ]];
 else
     echo "Unknown environment: $ENVIRONMENT_NAME. No data migrations moved."
 fi &&
->>>>>>> Stashed changes
 mv /tmp/*wf-data-migration*/* ./prisma/data-migrations/
