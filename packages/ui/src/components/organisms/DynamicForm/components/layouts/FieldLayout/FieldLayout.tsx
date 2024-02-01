@@ -14,17 +14,19 @@ export const FieldLayout = ({
   description,
   uiSchema,
   required,
+  schema,
   optionalLabel = ' (optional) ',
 }: FieldTemplateProps & { optionalLabel?: string }) => {
   const { fieldWarnings } = useWarnings(id);
 
   const isLabelEnabled = displayLabel || (uiSchema && uiSchema['ui:label']);
+  const { useRawDescription = false } = uiSchema || {};
 
   // Removing error duplicates for oneOf validation
   const errors = useMemo(() => Array.from(new Set(rawErrors)), [rawErrors]);
 
   return (
-    <div className="flex flex-col gap-1 py-3">
+    <div className="flex flex-col gap-2 py-3">
       {isLabelEnabled ? (
         <Label htmlFor={id}>
           {label}
@@ -44,7 +46,14 @@ export const FieldLayout = ({
         />
       ) : null}
       {description && description?.props?.description ? (
-        <span className="font-inter text-muted-foreground pl-1 text-xs">{description}</span>
+        useRawDescription && schema.description ? (
+          <span
+            className="font-inter text-muted-foreground text-sm"
+            dangerouslySetInnerHTML={{ __html: schema.description }}
+          />
+        ) : (
+          <span className="font-inter text-muted-foreground text-sm">{description}</span>
+        )
       ) : null}
     </div>
   );
