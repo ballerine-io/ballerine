@@ -1,6 +1,6 @@
-import { Case } from './components/Case/Case';
-import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
 import { BlocksVariant } from '@/lib/blocks/variants/BlocksVariant/BlocksVariant';
+import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
+import { Case } from './components/Case/Case';
 
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
 
@@ -35,6 +35,7 @@ export const Entity = () => {
               version: workflow?.workflowDefinition?.version,
               variant: workflow?.workflowDefinition?.variant,
               config: workflow?.workflowDefinition?.config,
+              name: workflow?.workflowDefinition?.name,
             }}
           />
         )}

@@ -1,18 +1,28 @@
-import { ManualReviewBlocks } from '@/lib/blocks/variants/ManualReviewBlocks/ManualReviewBlocks';
-import { KybExampleBlocks } from '@/lib/blocks/variants/KybExampleBlocks/KybExampleBlocks';
-import { DefaultBlocks } from '@/lib/blocks/variants/DefaultBlocks/DefaultBlocks';
-import { FunctionComponent } from 'react';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { DefaultBlocks } from '@/lib/blocks/variants/DefaultBlocks/DefaultBlocks';
+import { KybExampleBlocks } from '@/lib/blocks/variants/KybExampleBlocks/KybExampleBlocks';
+import { ManualReviewBlocks } from '@/lib/blocks/variants/ManualReviewBlocks/ManualReviewBlocks';
+import { PDFRevisionBlocks } from '@/lib/blocks/variants/PDFRevisionBlocks';
 import {
+  checkIfPDFReviewVariant,
   checkIsKybExampleVariant,
   checkIsManualReviewVariant,
 } from '@/lib/blocks/variants/variant-checkers';
+import { FunctionComponent } from 'react';
 
 export const BlocksVariant: FunctionComponent<{
-  workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'variant' | 'config' | 'version'>;
+  workflowDefinition: Pick<
+    TWorkflowById['workflowDefinition'],
+    'variant' | 'config' | 'version' | 'name'
+  >;
 }> = ({ workflowDefinition }) => {
   const isKybExampleVariant = checkIsKybExampleVariant(workflowDefinition);
   const isManualReviewVariant = checkIsManualReviewVariant(workflowDefinition);
+  const isPDFReviewVariant = checkIfPDFReviewVariant(workflowDefinition);
+
+  if (isPDFReviewVariant) {
+    return <PDFRevisionBlocks />;
+  }
 
   if (isKybExampleVariant) {
     return <KybExampleBlocks />;
