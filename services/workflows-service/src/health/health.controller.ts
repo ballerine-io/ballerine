@@ -3,8 +3,10 @@ import { HealthService } from './health.service';
 import type { Response } from 'express';
 import { Public } from '@/common/decorators/public.decorator';
 import { CONTROLLER_NAME, ROUTES } from './consts';
+import { ApiExcludeController } from '@nestjs/swagger';
 
 @Public()
+@ApiExcludeController()
 @Controller(CONTROLLER_NAME)
 export class HealthController {
   constructor(protected readonly healthService: HealthService) {}

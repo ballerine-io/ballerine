@@ -24,7 +24,7 @@ import type { TProjectId, TProjectIds } from '@/types';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
-@swagger.ApiTags('End-users')
+@swagger.ApiTags('End Users')
 @common.Controller('external/end-users')
 export class EndUserControllerExternal {
   constructor(

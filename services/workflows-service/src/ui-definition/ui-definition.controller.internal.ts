@@ -10,6 +10,7 @@ import { WhereIdInput } from '@/common/where-id-input';
 import { UiDefinitionByRuntimeIdDto } from '@/ui-definition/dtos/ui-definition-by-runtime-id.dto';
 import { UiDefinitionByWorkflowDefinitionIdDto } from '@/ui-definition/dtos/ui-definition-by-workflow-definition-id.dto';
 
+@swagger.ApiExcludeController()
 @common.Controller('internal/ui-definition')
 @Injectable()
 export class UiDefinitionController {

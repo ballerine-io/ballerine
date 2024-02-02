@@ -8,6 +8,7 @@ import type { Response } from 'express';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 @common.Controller('internal/alerts')
+@swagger.ApiExcludeController()
 export class AlertControllerInternal {
   constructor(
     protected readonly service: AlertService,

@@ -14,7 +14,7 @@ import type { InputJsonValue, TProjectIds } from '@/types';
 import type { JsonValue } from 'type-fest';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { ProjectScopeService } from '@/project/project-scope.service';
-
+@swagger.ApiExcludeController()
 @common.Controller('internal/businesses')
 export class BusinessControllerInternal {
   constructor(

@@ -14,6 +14,7 @@ import type { InputJsonValue, TProjectIds } from '@/types';
 import type { JsonValue } from 'type-fest';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 
+@swagger.ApiExcludeController()
 @common.Controller('internal/end-users')
 export class EndUserControllerInternal {
   constructor(
