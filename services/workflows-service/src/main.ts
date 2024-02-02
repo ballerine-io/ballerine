@@ -147,21 +147,43 @@ const main = async () => {
   document.openapi = '3.1.0';
   // @ts-ignore
   document.webhooks = {
-    changed: {
+    workflows: {
       post: {
         requestBody: {
-          description: 'Information about a new pet in the system',
+          description:
+            'Notification for workflow-related events such as completion or state changes. Contains details about the specific workflow event.',
           content: {
             'application/json': {
               schema: {
-                $ref: '#/components/schemas/UserModel',
+                $ref: '#/components/schemas/WorkflowEventModel',
               },
             },
           },
         },
         responses: {
           '200': {
-            description: 'Return a 200 status to indicate that the data was received successfully',
+            description:
+              'A 200 status indicates successful receipt of the workflow event notification.',
+          },
+        },
+      },
+    },
+    alerts: {
+      post: {
+        requestBody: {
+          description:
+            'Alert notification containing details about specific alert incidents, including the alert ID and relevant information.',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/AlertModel',
+              },
+            },
+          },
+        },
+        responses: {
+          '200': {
+            description: 'A 200 status confirms successful receipt of the alert notification.',
           },
         },
       },

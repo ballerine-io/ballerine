@@ -29,6 +29,7 @@ import mime from 'mime';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 
 // Temporarily identical to StorageControllerExternal
+@swagger.ApiExcludeController()
 @swagger.ApiTags('Storage')
 @common.Controller('internal/storage')
 export class StorageControllerInternal {

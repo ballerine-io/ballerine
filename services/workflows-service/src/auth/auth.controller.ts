@@ -13,8 +13,9 @@ import type { AuthenticatedEntity } from '@/types';
 import { User } from '@prisma/client';
 
 @Public()
-@ApiTags('auth')
+@ApiTags('Auth')
 @Controller('internal/auth')
+@swagger.ApiExcludeController()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @common.UseGuards(LocalAuthGuard)

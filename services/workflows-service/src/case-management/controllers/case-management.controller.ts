@@ -8,9 +8,10 @@ import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definit
 import { WorkflowRunDto } from '@/workflow/dtos/workflow-run';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { Body, Controller, ForbiddenException, Get, HttpCode, Param, Post } from '@nestjs/common';
-import { ApiForbiddenResponse, ApiOkResponse } from '@nestjs/swagger';
+import { ApiExcludeController, ApiForbiddenResponse, ApiOkResponse } from '@nestjs/swagger';
 
 @Controller('case-management')
+@ApiExcludeController()
 export class CaseManagementController {
   constructor(
     protected readonly workflowDefinitionService: WorkflowDefinitionService,

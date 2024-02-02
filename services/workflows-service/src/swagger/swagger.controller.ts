@@ -4,8 +4,10 @@ import * as common from '@nestjs/common';
 import { Controller, Res } from '@nestjs/common';
 import * as YAML from 'yaml';
 import express from 'express';
+import { ApiExcludeController } from '@nestjs/swagger';
 
 @Controller('/external/swagger')
+@ApiExcludeController()
 export class SwaggerController {
   constructor() {}
 
