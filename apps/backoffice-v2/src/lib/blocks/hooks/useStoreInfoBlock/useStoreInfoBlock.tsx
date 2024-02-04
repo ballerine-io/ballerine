@@ -20,7 +20,7 @@ export const useStoreInfoBlock = ({ storeInfo, workflow }) => {
           })
           .addCell({
             type: 'subheading',
-            value: 'User-provided data',
+            value: 'User-Provided Data',
           })
           .addCell({
             type: 'container',

@@ -2,9 +2,9 @@ import { useMemo } from 'react';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
-export const useDirectorsUserProvidedBlock = directorsUserProvided => {
+export const useUbosUserProvidedBlock = ubosUserProvided => {
   return useMemo(() => {
-    if (Object.keys(directorsUserProvided ?? {}).length === 0) {
+    if (Object.keys(ubosUserProvided ?? {}).length === 0) {
       return [];
     }
 
@@ -16,7 +16,7 @@ export const useDirectorsUserProvidedBlock = directorsUserProvided => {
           .addBlock()
           .addCell({
             type: 'heading',
-            value: 'Directors',
+            value: 'UBOs',
           })
           .addCell({
             type: 'subheading',
@@ -50,7 +50,7 @@ export const useDirectorsUserProvidedBlock = directorsUserProvided => {
                   header: 'Address',
                 },
               ],
-              data: directorsUserProvided?.map(
+              data: ubosUserProvided?.map(
                 ({ firstName, lastName, nationalId: identityNumber, additionalInfo, ...rest }) => ({
                   ...rest,
                   name: `${firstName} ${lastName}`,
@@ -66,5 +66,5 @@ export const useDirectorsUserProvidedBlock = directorsUserProvided => {
           .flat(1),
       })
       .build();
-  }, [directorsUserProvided]);
+  }, [ubosUserProvided]);
 };

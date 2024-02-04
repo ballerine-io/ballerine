@@ -30,7 +30,8 @@ import { useProcessingDetailsBlock } from '@/lib/blocks/hooks/useProcessingDetai
 import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
 import { useMainContactBlock } from '@/lib/blocks/hooks/useMainContactBlock/useMainContactBlock';
 import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
-import { useUbosBlock } from '@/lib/blocks/hooks/useUbosBlock/useUbosBlock';
+import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/useUbosRegistryProvidedBlock';
+import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvidedBlock/useUbosUserProvidedBlock';
 import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
 import { useDirectorsBlocks } from '@/lib/blocks/hooks/useDirectorsBlocks';
 import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
@@ -118,6 +119,7 @@ export const useDefaultBlocksLogic = () => {
   const {
     store,
     bank: bankDetails,
+    ubos: ubosUserProvided = [],
     directors: directorsUserProvided = [],
     mainRepresentative,
     mainContact,
@@ -148,7 +150,7 @@ export const useDefaultBlocksLogic = () => {
   );
 
   const directorsStorageFilesQueryResult = useStorageFilesQuery(directorDocumentPages);
-  const directorsDocumentPagesResults: Array<Array<string>> = useDocumentPageImages(
+  const directorsDocumentPagesResults: string[][] = useDocumentPageImages(
     directorsDocuments,
     directorsStorageFilesQueryResult,
   );
@@ -169,7 +171,7 @@ export const useDefaultBlocksLogic = () => {
     }),
   );
 
-  const ubos = workflow?.context?.pluginsOutput?.ubo?.data?.uboGraph?.map(ubo => ({
+  const ubosRegistryProvided = workflow?.context?.pluginsOutput?.ubo?.data?.uboGraph?.map(ubo => ({
     name: ubo?.name,
     percentage: ubo?.shareHolders?.[0]?.sharePercentage,
     type: ubo?.type,
@@ -232,7 +234,7 @@ export const useDefaultBlocksLogic = () => {
   });
 
   const entityInfoBlock = useEntityInfoBlock({
-    entity: workflow?.context?.entity,
+    entity: workflow?.context?.entity ?? {},
     entityDataAdditionalInfo,
     workflow,
   });
@@ -275,7 +277,12 @@ export const useDefaultBlocksLogic = () => {
 
   const companySanctionsBlock = useCompanySanctionsBlock(companySanctions);
 
-  const ubosBlock = useUbosBlock(ubos, workflow?.context?.pluginsOutput?.ubo?.message);
+  const ubosUserProvidedBlock = useUbosUserProvidedBlock(ubosUserProvided);
+
+  const ubosRegistryProvidedBlock = useUbosRegistryProvidedBlock(
+    ubosRegistryProvided,
+    workflow?.context?.pluginsOutput?.ubo?.message,
+  );
 
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 
@@ -361,7 +368,8 @@ export const useDefaultBlocksLogic = () => {
       ...directorsUserProvidedBlock,
       ...directorsRegistryProvidedBlock,
       ...directorsDocumentsBlocks,
-      ...ubosBlock,
+      ...ubosUserProvidedBlock,
+      ...ubosRegistryProvidedBlock,
       ...storeInfoBlock,
       ...websiteBasicRequirementBlock,
       ...bankingDetailsBlock,
@@ -390,7 +398,8 @@ export const useDefaultBlocksLogic = () => {
     processingDetailsBlock,
     registryInfoBlock,
     storeInfoBlock,
-    ubosBlock,
+    ubosUserProvidedBlock,
+    ubosRegistryProvidedBlock,
     websiteBasicRequirementBlock,
     websiteMonitoringBlock,
     workflow?.context?.entity,
