@@ -1,127 +1,61 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  pluginsWhiteList,
-  processStatusToIcon,
-  tagToAccordionCardItem,
-  tagToIcon,
-} from '@/common/components/molecules/ProcessTracker/constants';
-import { titleCase } from 'string-ts';
-import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
-import { ProcessStatus } from '@ballerine/common';
+import { tagToAccordionCardItem } from '@/common/components/molecules/ProcessTracker/constants';
 import { IUseProcessTrackerLogicParams } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/interfaces';
+import { processTrackersMap } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/process-tracker-adapters';
+import { IProcessTracker } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/process-tracker-adapters/process-tracker.abstract';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+const defaultProcesses = ['collection-flow', 'third-party', 'ubos'];
 
 export const useProcessTrackerLogic = ({
-  tags,
   plugins,
-  context,
-  childWorkflows,
+  workflow,
+  processes = defaultProcesses,
 }: IUseProcessTrackerLogicParams) => {
+  const tags = useMemo(() => workflow?.tags || [], [workflow]);
+  const tag = useMemo(
+    () => tags?.find(tag => tagToAccordionCardItem[tag as keyof typeof tagToAccordionCardItem]),
+    [tags],
+  );
+
   const [uncollapsedItemValue, setUncollapsedItemValue] = useState<string>();
   const onValueChange = useCallback((value: string) => {
     setUncollapsedItemValue(value);
   }, []);
 
-  const kycChildWorkflows = useMemo(() => {
-    return childWorkflows?.filter(
-      childWorkflow => childWorkflow?.context?.entity?.type === 'individual',
-    );
-  }, [childWorkflows]);
+  const processTrackers = useMemo(
+    () =>
+      processes.reduce((list, processName) => {
+        const ProcessTracker = processTrackersMap[processName as keyof typeof processTrackersMap];
 
-  const tag = useMemo(
-    () => tags?.find(tag => tagToAccordionCardItem[tag as keyof typeof tagToAccordionCardItem]),
-    [tags],
-  );
-  const steps = useMemo(() => {
-    return Object.keys(context?.flowConfig?.stepsProgress ?? {})?.sort((a, b) => {
-      return (
-        (context?.flowConfig?.stepsProgress?.[a]?.number ?? 0) -
-        (context?.flowConfig?.stepsProgress?.[b]?.number ?? 0)
-      );
-    });
-  }, [context?.flowConfig?.stepsProgress]);
-
-  const getCollectionFlowStatus = useCallback(
-    (step: string) => {
-      if (context?.flowConfig?.stepsProgress?.[step]?.isCompleted) {
-        return processStatusToIcon[ProcessStatus.SUCCESS];
-      }
-
-      return processStatusToIcon[ProcessStatus.IDLE];
-    },
-    [context?.flowConfig?.stepsProgress],
-  );
-  const getPluginByName = useCallback(
-    (name: string) => {
-      let plugin: NonNullable<TWorkflowById['context']['pluginsOutput']>[string];
-
-      Object.keys(context?.pluginsOutput ?? {})?.forEach(key => {
-        if (context?.pluginsOutput?.[key]?.name !== name) {
-          return;
+        if (!ProcessTracker) {
+          console.warn(`${processName} is unsupported.`);
+          return list;
         }
 
-        plugin = context?.pluginsOutput?.[key];
-      });
+        list.push(new ProcessTracker(workflow, plugins));
 
-      return plugin;
-    },
-    [context?.pluginsOutput],
+        return list;
+      }, [] as IProcessTracker[]),
+    [workflow, plugins, processes],
   );
-  const getUboFlowStatus = useCallback((tags: TWorkflowById['tags']) => {
-    const tag = tags?.find(tag => tagToIcon[tag as keyof typeof tagToIcon]);
 
-    if (!tag) {
-      return tagToIcon.DEFAULT;
-    }
-
-    return tagToIcon[tag as keyof typeof tagToIcon];
-  }, []);
-
-  const collectionFlowSubitems = useMemo(() => {
-    return steps?.map(step => {
+  const trackedProcesses = useMemo(() => {
+    return processTrackers.map(processTracker => {
       return {
-        text: titleCase(step),
-        leftIcon: getCollectionFlowStatus(step),
+        title: processTracker.getReadableName(),
+        name: processTracker.PROCESS_NAME,
+        subitems: processTracker.buildItems(),
       };
     });
-  }, [getCollectionFlowStatus, steps]);
-  const thirdPartyProcessesSubitems = useMemo(() => {
-    return plugins
-      ?.filter(({ name }) => pluginsWhiteList.includes(name as (typeof pluginsWhiteList)[number]))
-      ?.map(({ displayName, name }) => {
-        const pluginStatus = getPluginByName(name)?.status ?? ProcessStatus.DEFAULT;
-
-        return {
-          text:
-            pluginStatus === ProcessStatus.CANCELED ? (
-              <span className={`text-slate-400/40 line-through`}>{displayName}</span>
-            ) : (
-              displayName
-            ),
-          leftIcon: processStatusToIcon[pluginStatus as keyof typeof processStatusToIcon],
-        };
-      });
-  }, [getPluginByName, plugins]);
-  const uboFlowsSubitems = useMemo(() => {
-    return kycChildWorkflows?.map(({ context, tags }) => {
-      return {
-        text: `${valueOrNA(context?.entity?.data?.firstName)} ${valueOrNA(
-          context?.entity?.data?.lastName,
-        )}`,
-        leftIcon: getUboFlowStatus(tags),
-      };
-    });
-  }, [getUboFlowStatus, kycChildWorkflows]);
+  }, [processTrackers]);
 
   useEffect(() => {
     onValueChange(tagToAccordionCardItem[tag as keyof typeof tagToAccordionCardItem]);
   }, [tag]);
 
   return {
+    trackedProcesses,
     uncollapsedItemValue,
     onValueChange,
-    thirdPartyProcessesSubitems,
-    collectionFlowSubitems,
-    uboFlowsSubitems,
   };
 };
