@@ -442,7 +442,7 @@ export class WorkflowService {
     const workflowIds = await this.workflowRuntimeDataRepository.search(
       {
         query: {
-          search,
+          search: search ?? '',
           entityType,
           statuses:
             ((query.where.status as Prisma.EnumWorkflowRuntimeDataStatusFilter)?.in as string[]) ||
