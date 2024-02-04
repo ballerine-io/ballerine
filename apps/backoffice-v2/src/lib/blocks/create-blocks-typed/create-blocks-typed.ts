@@ -12,11 +12,11 @@ import { Heading } from '@/lib/blocks/components/Heading/Heading';
 import { MapCell } from '@/lib/blocks/components/MapCell/MapCell';
 import { MultiDocuments } from '@/lib/blocks/components/MultiDocuments/MultiDocuments';
 import { NestedDetails } from '@/lib/blocks/components/NestedDetails/NestedDetails';
+import { PDFViewerCell } from '@/lib/blocks/components/PDFViewerCell/PDFViewer';
 import { Paragraph } from '@/lib/blocks/components/Paragraph/Paragraph';
 import { Subheading } from '@/lib/blocks/components/Subheading/Subheading';
 import { TableCell } from '@/lib/blocks/components/TableCell/TableCell';
 import { TCell } from '@/lib/blocks/create-blocks-typed/types';
-import { PDFReportCell } from '@/lib/blocks/variants/PDFRevisionBlocks/cells/PDFReportCell';
 import { CellsMap, createBlocks } from '@ballerine/blocks';
 
 export const createBlocksTyped = () => createBlocks<TCell>();
@@ -47,5 +47,5 @@ export const cells: CellsMap = {
   paragraph: Paragraph,
   dialog: DialogCell,
   block: BlockCell,
-  pdfReport: PDFReportCell,
+  pdfViewer: PDFViewerCell,
 };
