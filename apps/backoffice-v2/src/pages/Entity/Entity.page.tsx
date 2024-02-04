@@ -6,9 +6,7 @@ import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/Pro
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 
 export const Entity = () => {
-  const { workflow, selectedEntity, plugins } = useEntityLogic();
-
-  console.log('workflow', workflow);
+  const { workflow, selectedEntity, plugins, processTrackerProcesses } = useEntityLogic();
 
   // Selected entity
   return (
@@ -27,10 +25,9 @@ export const Entity = () => {
       <Case.Content key={selectedEntity?.id}>
         {workflow?.workflowDefinition?.config?.isCaseOverviewEnabled && (
           <ProcessTracker
-            tags={workflow?.tags ?? []}
             plugins={plugins}
-            context={workflow?.context}
-            childWorkflows={workflow?.childWorkflows ?? []}
+            workflow={workflow}
+            processes={processTrackerProcesses}
           />
         )}
         {workflow?.workflowDefinition && (

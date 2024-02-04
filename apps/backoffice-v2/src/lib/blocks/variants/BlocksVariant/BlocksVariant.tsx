@@ -4,7 +4,7 @@ import { KybExampleBlocks } from '@/lib/blocks/variants/KybExampleBlocks/KybExam
 import { ManualReviewBlocks } from '@/lib/blocks/variants/ManualReviewBlocks/ManualReviewBlocks';
 import { PDFRevisionBlocks } from '@/lib/blocks/variants/PDFRevisionBlocks';
 import {
-  checkIfPDFReviewVariant,
+  checkIfWebsiteMonitoringVariant,
   checkIsKybExampleVariant,
   checkIsManualReviewVariant,
 } from '@/lib/blocks/variants/variant-checkers';
@@ -18,7 +18,7 @@ export const BlocksVariant: FunctionComponent<{
 }> = ({ workflowDefinition }) => {
   const isKybExampleVariant = checkIsKybExampleVariant(workflowDefinition);
   const isManualReviewVariant = checkIsManualReviewVariant(workflowDefinition);
-  const isPDFReviewVariant = checkIfPDFReviewVariant(workflowDefinition);
+  const isPDFReviewVariant = checkIfWebsiteMonitoringVariant(workflowDefinition);
 
   if (isPDFReviewVariant) {
     return <PDFRevisionBlocks />;
