@@ -16,5 +16,5 @@ export const checkIsManualReviewVariant = (
   workflowDefinition?.config?.isLegacyReject;
 
 export const checkIfPDFReviewVariant = (
-  workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'name'>,
-) => workflowDefinition.name === 'tld_check';
+  workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'variant'>,
+) => workflowDefinition?.variant === WorkflowDefinitionVariant.WEBSITE_MONITORING;

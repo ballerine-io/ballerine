@@ -8,6 +8,8 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 export const Entity = () => {
   const { workflow, selectedEntity, plugins } = useEntityLogic();
 
+  console.log('workflow', workflow);
+
   // Selected entity
   return (
     <Case key={workflow?.id}>

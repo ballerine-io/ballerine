@@ -1,8 +1,21 @@
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { createBlocks } from '@ballerine/blocks';
+import {
+  Ecosystem,
+  LineOfBusiness,
+  PaymentEnvironment,
+  Summary,
+  TransactionLaundering,
+  WebsiteCompanyAnalysis,
+  registerFont,
+} from '@ballerine/react-pdf-toolkit';
+import { Document, Font } from '@react-pdf/renderer';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
+
+registerFont(Font);
 
 export const usePDFRevisionBlocks = () => {
   const { entityId: workflowId } = useParams();
@@ -13,15 +26,29 @@ export const usePDFRevisionBlocks = () => {
   });
 
   const blocks = useMemo(() => {
-    return createBlocks()
+    return createBlocksTyped()
       .addBlock()
       .addCell({
         type: 'container',
         value: createBlocks()
           .addBlock()
           .addCell({
-            type: 'pdfReport',
-            reportData: workflow?.context?.entity?.report || {},
+            type: 'pdfViewer',
+            props: {
+              width: '100%',
+              height: '800px',
+            },
+            value: (
+              <Document>
+                <Summary />
+                <LineOfBusiness />
+                <Ecosystem />
+                <TransactionLaundering />
+                <WebsiteCompanyAnalysis />
+                {/* <SocialMedia data={reportData?.socialMedia || {}} /> */}
+                <PaymentEnvironment />
+              </Document>
+            ),
           })
           .build()
           .flat(1),

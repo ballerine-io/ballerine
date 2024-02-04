@@ -1,4 +1,5 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { WorkflowDefinitionVariant } from '@ballerine/common';
 
 export const checkIfPdfResivisionCaseActions = (workflow: TWorkflowById) =>
-  workflow?.workflowDefinition?.name === 'tld_check';
+  workflow?.workflowDefinition?.variant === WorkflowDefinitionVariant.WEBSITE_MONITORING;
