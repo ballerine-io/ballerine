@@ -9,7 +9,10 @@ type Ubo = {
   percentage?: number;
 };
 
-export const useUbosBlock = (ubos: Ubo[] | undefined, message: string | undefined) => {
+export const useUbosRegistryProvidedBlock = (
+  ubos: Ubo[] | undefined,
+  message: string | undefined,
+) => {
   const getCell = useCallback(() => {
     if (Array.isArray(ubos) && ubos?.length) {
       return {
@@ -63,7 +66,7 @@ export const useUbosBlock = (ubos: Ubo[] | undefined, message: string | undefine
         }
       >;
     }
-  }, [ubos]);
+  }, [message, ubos]);
 
   return useMemo(() => {
     const cell = getCell();
@@ -84,7 +87,7 @@ export const useUbosBlock = (ubos: Ubo[] | undefined, message: string | undefine
           })
           .addCell({
             type: 'subheading',
-            value: 'Registry-provided Data',
+            value: 'Registry-Provided Data',
             props: {
               className: 'mb-4',
             },
