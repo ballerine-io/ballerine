@@ -3,6 +3,7 @@ import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLog
 import { Case } from './components/Case/Case';
 
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 
 export const Entity = () => {
   const { workflow, selectedEntity, plugins } = useEntityLogic();
@@ -19,6 +20,7 @@ export const Entity = () => {
           workflow?.workflowDefinition?.config?.workflowLevelResolution ??
           workflow?.context?.entity?.type === 'business'
         }
+        workflow={workflow as TWorkflowById}
       />
       <Case.Content key={selectedEntity?.id}>
         {workflow?.workflowDefinition?.config?.isCaseOverviewEnabled && (

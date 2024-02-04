@@ -1,12 +1,13 @@
 import { ComponentProps } from 'react';
 
-import { Actions } from './Case.Actions';
-import { Documents } from './Case.Documents';
-import { Info } from './Case.Info';
-import { Content } from './Case.Content';
-import { FaceMatch } from './Case.FaceMatch';
-import { Assignee } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { TStateTags } from '@ballerine/common';
+import { Assignee } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
+import { Actions } from './Case.Actions';
+import { Content } from './Case.Content';
+import { Documents } from './Case.Documents';
+import { FaceMatch } from './Case.FaceMatch';
+import { Info } from './Case.Info';
 
 export interface IItemProps {
   id: string;
@@ -19,7 +20,7 @@ export interface IItemProps {
 
 export interface IInfoProps {
   info: Record<PropertyKey, unknown>;
-  whitelist: Array<string>;
+  whitelist: string[];
   isLoading?: boolean;
 }
 
@@ -28,6 +29,7 @@ export interface IActionsProps {
   fullName: string;
   avatarUrl: string;
   showResolutionButtons?: boolean;
+  workflow: TWorkflowById;
 }
 
 export interface ICaseChildren {
