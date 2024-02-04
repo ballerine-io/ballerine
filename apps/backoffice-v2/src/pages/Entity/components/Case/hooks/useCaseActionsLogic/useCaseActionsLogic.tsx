@@ -1,21 +1,21 @@
-import { useCallback, useMemo } from 'react';
-import { useApproveCaseMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveCaseMutation/useApproveCaseMutation';
-import { useDebounce } from '../../../../../../common/hooks/useDebounce/useDebounce';
-import { createInitials } from '../../../../../../common/utils/create-initials/create-initials';
-import { IUseActions } from './interfaces';
-import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useCaseState } from '../useCaseState/useCaseState';
-import { useUsersQuery } from '../../../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
-import { useAssignWorkflowMutation } from '../../../../../../domains/workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
-import { useRejectEntityMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectEntityMutation/useRejectEntityMutation';
-import { useSelectNextEntity } from '../../../../../../domains/entities/hooks/useSelectNextEntity/useSelectNextEntity';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
-import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
-import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
-import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
-import { tagToBadgeData } from '../../consts';
 import { usePendingRevisionEvents } from '@/pages/Entity/components/Case/hooks/usePendingRevisionEvents/usePendingRevisionEvents';
 import { CommonWorkflowEvent } from '@ballerine/common';
+import { useCallback, useMemo } from 'react';
+import { useDebounce } from '../../../../../../common/hooks/useDebounce/useDebounce';
+import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
+import { createInitials } from '../../../../../../common/utils/create-initials/create-initials';
+import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useApproveCaseMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveCaseMutation/useApproveCaseMutation';
+import { useRejectEntityMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectEntityMutation/useRejectEntityMutation';
+import { useSelectNextEntity } from '../../../../../../domains/entities/hooks/useSelectNextEntity/useSelectNextEntity';
+import { useUsersQuery } from '../../../../../../domains/users/hooks/queries/useUsersQuery/useUsersQuery';
+import { useAssignWorkflowMutation } from '../../../../../../domains/workflows/hooks/mutations/useAssignWorkflowMutation/useAssignWorkflowMutation';
+import { useRevisionCaseMutation } from '../../../../../../domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
+import { tagToBadgeData } from '../../consts';
+import { useCaseDecision } from '../useCaseDecision/useCaseDecision';
+import { useCaseState } from '../useCaseState/useCaseState';
+import { IUseActions } from './interfaces';
 
 export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
   const onSelectNextEntity = useSelectNextEntity();
@@ -117,5 +117,6 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     isLoadingCase,
     documentsToReviseCount,
     tag,
+    workflow,
   };
 };
