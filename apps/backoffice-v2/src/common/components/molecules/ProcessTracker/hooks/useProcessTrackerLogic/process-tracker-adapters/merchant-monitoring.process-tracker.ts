@@ -1,9 +1,10 @@
-import { Icon } from '@/common/components/molecules/ProcessTracker/constants';
+import { Icon, tagToIcon } from '@/common/components/molecules/ProcessTracker/constants';
 import {
   IProcessTracker,
   ProcessTrackerItem,
 } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/process-tracker-adapters/process-tracker.abstract';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { StateTag } from '@ballerine/common';
 
 export class MerchantMonitoringProcessTracker implements IProcessTracker {
   PROCESS_NAME = 'merchant-monitoring';
@@ -11,59 +12,33 @@ export class MerchantMonitoringProcessTracker implements IProcessTracker {
   constructor(readonly workflow: TWorkflowById) {}
 
   buildItems(): ProcessTrackerItem[] {
-    const items: ProcessTrackerItem[] = this.resolveStatusHistoryToState(
-      this.workflow?.state as string,
-    ).map(state => {
-      return {
-        text: this.resolveTitleToState(state),
-        leftIcon: this.getIconKeyByState(state),
-      };
-    });
-    return items;
+    return [
+      {
+        text: this.resolveTitleToTags(this.workflow?.tags || []),
+        leftIcon: this.getIconKeyByState(this.workflow?.tags || []),
+      },
+    ];
   }
 
   getReadableName(): string {
     return 'Merchant Monitoring';
   }
 
-  private resolveTitleToState(state?: string) {
-    if (!state || state === 'idle') return 'Idle';
+  private resolveTitleToTags(tags?: string[]) {
+    if (tags?.includes(StateTag.PENDING_PROCESS)) return 'Risk Analysis';
 
-    if (state === 'report_generation' || state === 'awaiting_report') return 'Risk Analysis';
+    if (tags?.includes(StateTag.FAILURE)) return 'Process failed.';
 
-    if (state === 'failed') return 'Process failed.';
+    if (tags?.includes(StateTag.MANUAL_REVIEW)) return 'Manual Review';
 
-    if (state === 'finish') return 'Process finished.';
+    if (tags?.includes(StateTag.REJECTED)) return 'Rejected';
+
+    if (tags?.includes(StateTag.APPROVED)) return 'Approved';
   }
 
-  private resolveStatusHistoryToState(state?: string): string[] {
-    const statusHistory: string[] = ['idle'];
-    if (state === 'report_generation' || state === 'awaiting_report') {
-      statusHistory.push(state);
-    }
-
-    if (state === 'finish' || state === 'failed') {
-      statusHistory.push('awaiting_report');
-      statusHistory.push(state);
-    }
-
-    return statusHistory;
-  }
-
-  private getIconKeyByState(state: string): JSX.Element {
-    switch (state) {
-      case 'idle':
-        return Icon.INDICATOR;
-      case 'report_generation':
-        return Icon.CLOCK;
-      case 'awaiting_report':
-        return Icon.CLOCK;
-      case 'finish':
-        return Icon.CHECK;
-      case 'failed':
-        return Icon.X;
-    }
-
-    return Icon.INDICATOR;
+  private getIconKeyByState(tags: string[]): JSX.Element {
+    return tagToIcon[tags[0] as keyof typeof tagToIcon]
+      ? tagToIcon[tags[0] as keyof typeof tagToIcon]
+      : Icon.INDICATOR;
   }
 }

@@ -30,13 +30,16 @@ export const usePDFRevisionBlocks = () => {
       .addBlock()
       .addCell({
         type: 'container',
+        props: {
+          className: 'rounded-md overflow-hidden h-full',
+        },
         value: createBlocks()
           .addBlock()
           .addCell({
             type: 'pdfViewer',
             props: {
               width: '100%',
-              height: '800px',
+              height: '100%',
             },
             value: (
               <Document>
