@@ -42,6 +42,10 @@ export const useUbosUserProvidedBlock = ubosUserProvided => {
                   header: 'Identity number',
                 },
                 {
+                  accessorKey: 'percentageOfOwnership',
+                  header: '% of Ownership',
+                },
+                {
                   accessorKey: 'email',
                   header: 'Email',
                 },
@@ -51,11 +55,19 @@ export const useUbosUserProvidedBlock = ubosUserProvided => {
                 },
               ],
               data: ubosUserProvided?.map(
-                ({ firstName, lastName, nationalId: identityNumber, additionalInfo, ...rest }) => ({
+                ({
+                  firstName,
+                  lastName,
+                  nationalId: identityNumber,
+                  additionalInfo,
+                  percentageOfOwnership,
+                  ...rest
+                }) => ({
                   ...rest,
                   name: `${firstName} ${lastName}`,
                   address: additionalInfo?.fullAddress,
                   nationality: additionalInfo?.nationality,
+                  percentageOfOwnership: additionalInfo?.percentageOfOwnership,
                   identityNumber,
                   ...omitPropsFromObject(additionalInfo, 'fullAddress', 'nationality'),
                 }),

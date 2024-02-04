@@ -234,7 +234,7 @@ export const useDefaultBlocksLogic = () => {
   });
 
   const entityInfoBlock = useEntityInfoBlock({
-    entity: workflow?.context?.entity ?? {},
+    entity: workflow?.context?.entity,
     entityDataAdditionalInfo,
     workflow,
   });
@@ -365,11 +365,11 @@ export const useDefaultBlocksLogic = () => {
       ...registryInfoBlock,
       ...kybRegistryInfoBlock,
       ...companySanctionsBlock,
+      ...ubosUserProvidedBlock,
+      ...ubosRegistryProvidedBlock,
       ...directorsUserProvidedBlock,
       ...directorsRegistryProvidedBlock,
       ...directorsDocumentsBlocks,
-      ...ubosUserProvidedBlock,
-      ...ubosRegistryProvidedBlock,
       ...storeInfoBlock,
       ...websiteBasicRequirementBlock,
       ...bankingDetailsBlock,
