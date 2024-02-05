@@ -10,6 +10,7 @@ import { useUIElementHandlers } from '@/components/organisms/UIRenderer/hooks/us
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { UIElementComponent } from '@/components/organisms/UIRenderer/types';
 import { UIPage } from '@/domains/collection-flow';
+import { useFlowTracking } from '@/hooks/useFlowTracking';
 import { Button } from '@ballerine/ui';
 import { useCallback } from 'react';
 
@@ -54,6 +55,8 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
     [helpers, errors],
   );
 
+  const { trackFinish } = useFlowTracking();
+
   const handleClick = useCallback(() => {
     setPageElementsTouched(
       // @ts-ignore
@@ -61,7 +64,8 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
       state,
     );
     onClickHandler();
-  }, [currentPage, state, setPageElementsTouched, onClickHandler]);
+    trackFinish();
+  }, [currentPage, state, setPageElementsTouched, onClickHandler, trackFinish]);
 
   return (
     <Button
