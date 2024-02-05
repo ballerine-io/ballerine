@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
 import DOMPurify from 'dompurify';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { StepperProgress } from '@/common/components/atoms/StepperProgress';
@@ -7,6 +7,7 @@ import { ProgressBar } from '@/common/components/molecules/ProgressBar';
 import { AppShell } from '@/components/layouts/AppShell';
 import { DynamicUI, State } from '@/components/organisms/DynamicUI';
 import { usePageErrors } from '@/components/organisms/DynamicUI/Page/hooks/usePageErrors';
+import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { UIRenderer } from '@/components/organisms/UIRenderer';
 import { Cell } from '@/components/organisms/UIRenderer/elements/Cell';
 import { Divider } from '@/components/organisms/UIRenderer/elements/Divider';
@@ -18,15 +19,14 @@ import { useCustomer } from '@/components/providers/CustomerProvider';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { prepareInitialUIState } from '@/helpers/prepareInitialUIState';
 import { useFlowContextQuery } from '@/hooks/useFlowContextQuery';
+import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { useUISchemasQuery } from '@/hooks/useUISchemasQuery';
 import { Approved } from '@/pages/CollectionFlow/components/pages/Approved';
 import { Rejected } from '@/pages/CollectionFlow/components/pages/Rejected';
 import { Success } from '@/pages/CollectionFlow/components/pages/Success';
 import { AnyObject } from '@ballerine/ui';
-import { useLanguageParam } from '@/hooks/useLanguageParam/useLanguageParam';
 import set from 'lodash/set';
-import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 
 const elems = {
   h1: Title,
@@ -167,9 +167,9 @@ export const CollectionFlow = withSessionProtected(() => {
                           <AppShell.Sidebar>
                             <div className="flex h-full flex-col">
                               <div className="flex h-full flex-1 flex-col">
-                                <div className="flex flex-row justify-between pb-10">
+                                <div className="flex flex-row justify-between whitespace-nowrap gap-2 pb-10">
                                   <AppShell.Navigation />
-                                  <div className="w-[105px]">
+                                  <div>
                                     <AppShell.LanguagePicker />
                                   </div>
                                 </div>
