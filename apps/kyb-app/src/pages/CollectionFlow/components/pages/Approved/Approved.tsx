@@ -1,13 +1,15 @@
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
+import { useCustomer } from '@/components/providers/CustomerProvider';
+import { useFlowTracking } from '@/hooks/useFlowTracking';
 import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Button, Card } from '@ballerine/ui';
-import { useCustomer } from '@/components/providers/CustomerProvider';
 
 export const Approved = withSessionProtected(() => {
   const { t } = useTranslation();
   const { customer } = useCustomer();
+  const { trackExit } = useFlowTracking();
 
   return (
     <div className="flex h-full items-center justify-center">
@@ -32,6 +34,7 @@ export const Approved = withSessionProtected(() => {
             <Button
               variant="secondary"
               onClick={() => {
+                trackExit();
                 location.href = customer.websiteUrl;
               }}
             >
