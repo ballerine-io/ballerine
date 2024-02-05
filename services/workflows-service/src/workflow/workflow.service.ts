@@ -408,13 +408,15 @@ export class WorkflowService {
     },
     projectIds: TProjectIds,
   ) {
+    const skip = (page.number - 1) * page.size;
+
     const query = this.projectScopeService.scopeFindMany(
       merge(
         args,
         {
           orderBy: toPrismaOrderBy(orderBy, entityType),
           where: filters ? toPrismaWhere(filters) : {},
-          skip: (page.number - 1) * page.size,
+          skip,
           take: page.size,
         },
         {
@@ -442,12 +444,15 @@ export class WorkflowService {
     const workflowIds = await this.workflowRuntimeDataRepository.search(
       {
         query: {
+          skip,
+          take: page.size,
           search: search ?? '',
           entityType,
           statuses:
             ((query.where.status as Prisma.EnumWorkflowRuntimeDataStatusFilter)?.in as string[]) ||
             [],
           workflowDefinitionIds: getWorkflowDefinitionIds(),
+          orderBy,
         },
         filters,
       },
@@ -456,15 +461,22 @@ export class WorkflowService {
 
     const workflowsQuery = {
       ...query,
-      where: { ...query.where, id: { in: workflowIds.map(workflowId => workflowId.id) } },
+      where: { id: { in: workflowIds.map(workflowId => workflowId.id) } },
     };
 
     const [workflowCount, workflows] = await Promise.all([
-      this.workflowRuntimeDataRepository.count({ where: workflowsQuery.where }, projectIds),
-      this.workflowRuntimeDataRepository.findMany(workflowsQuery, projectIds),
+      this.workflowRuntimeDataRepository.count({ where: query.where }, projectIds),
+      this.workflowRuntimeDataRepository.findMany(
+        {
+          where: workflowsQuery.where,
+          select: workflowsQuery.select,
+          orderBy: workflowsQuery.orderBy,
+        },
+        projectIds,
+      ),
     ]);
 
-    if (page.number > 1 && workflowCount < (page.number - 1) * page.size + 1) {
+    if (page.number > 1 && workflowCount < skip + 1) {
       throw new NotFoundException('Page not found');
     }
 
