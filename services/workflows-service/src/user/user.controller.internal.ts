@@ -19,9 +19,9 @@ export class UserControllerInternal {
   @swagger.ApiOkResponse({ type: [UserModel] })
   @swagger.ApiForbiddenResponse()
   async list(@ProjectIds() projectIds: TProjectIds): Promise<UserModel[]> {
-    return this.service.list(
+    const userList = await this.service.list(
       {
-        where: { status: UserStatus.Active },
+        where: { status: { in: [UserStatus.Active, UserStatus.Blocked] } },
         select: {
           id: true,
           firstName: true,
@@ -35,6 +35,13 @@ export class UserControllerInternal {
       },
       projectIds,
     );
+
+    return userList.sort((a, b) => {
+      if (a.status === UserStatus.Active && b.status === UserStatus.Blocked) return -1;
+      if (a.status === UserStatus.Blocked && b.status === UserStatus.Active) return 1;
+
+      return a.firstName.localeCompare(b.firstName);
+    });
   }
 
   @common.Post()
