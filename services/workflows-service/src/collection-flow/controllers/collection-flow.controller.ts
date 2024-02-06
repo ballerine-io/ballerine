@@ -15,7 +15,6 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
 import { GetFlowConfigurationInputDto } from '@/collection-flow/dto/get-flow-configuration-input.dto';
 import { UpdateContextInputDto } from '@/collection-flow/dto/update-context-input.dto';
-import { result } from 'lodash';
 
 @Public()
 @UseTokenAuthGuard()
@@ -82,9 +81,12 @@ export class ColectionFlowController {
       throw new common.InternalServerErrorException('Workflow not found.');
     }
 
-    return this.service.getFlowConfiguration(workflow.workflowDefinitionId, params.language, [
-      tokenScope.projectId,
-    ]);
+    return this.service.getFlowConfiguration(
+      workflow.workflowDefinitionId,
+      workflow.context,
+      params.language,
+      [tokenScope.projectId],
+    );
   }
 
   @common.Put('/configuration/:configurationId')

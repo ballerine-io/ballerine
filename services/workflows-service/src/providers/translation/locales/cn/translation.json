@@ -255,12 +255,12 @@
       "label": "每月交易数量",
       "hint": "500"
     },
-    "estimatedMonthlySalesClipsPay": {
-      "label": "通过ClipsPay估计的每月销售额（美元）",
+    "estimatedMonthlySales": {
+      "label": "通过{{customerName}}估计的每月销售额（美元）",
       "hint": "400,000"
     },
-    "estimatedMonthlyTransactionsClipsPay": {
-      "label": "通过ClipsPay估计的每月交易数量",
+    "estimatedMonthlyTransactions": {
+      "label": "通过{{customerName}}估计的每月交易数量",
       "hint": "150"
     },
     "averageTicketAmount": {
