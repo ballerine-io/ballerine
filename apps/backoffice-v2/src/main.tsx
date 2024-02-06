@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client';
 import '@ballerine/ui/dist/style.css';
 import '@fontsource/inter';
 
-import { Router } from './Router/Router';
+import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
 import { env } from './common/env/env';
 import './i18n';
 import './index.css';
@@ -28,7 +28,8 @@ void prepare().then(() => {
 
     root.render(
       <StrictMode>
-        <Router />
+        {/* <Router /> */}
+        <TransactionMonitoringAlerts />
       </StrictMode>,
     );
   }
