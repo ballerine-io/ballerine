@@ -1,61 +1,61 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import type { TProjectIds } from '@/types';
-import { Prisma, AlertExecution } from '@prisma/client';
+import { Prisma, Alert } from '@prisma/client';
 
 @Injectable()
 export class AlertRepository {
   constructor(protected readonly prisma: PrismaService) {}
 
   // Method to create an alert
-  async create<T extends Prisma.AlertExecutionCreateArgs>(
-    args: Prisma.SelectSubset<T, Prisma.AlertExecutionCreateArgs>,
-  ): Promise<AlertExecution> {
-    return await this.prisma.alertExecution.create<T>(args);
+  async create<T extends Prisma.AlertCreateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.AlertCreateArgs>,
+  ): Promise<Alert> {
+    return await this.prisma.alert.create<T>(args);
   }
 
   // // Method to find many alerts
-  // async findMany<T extends Prisma.AlertExecutionFindManyArgs>(
-  //   args: Prisma.SelectSubset<T, Prisma.AlertExecutionFindManyArgs>,
+  // async findMany<T extends Prisma.AlertFindManyArgs>(
+  //   args: Prisma.SelectSubset<T, Prisma.AlertFindManyArgs>,
   //   projectIds: TProjectIds,
-  // ): Promise<AlertExecution[]> {
+  // ): Promise<Alert[]> {
   //   // const queryArgs = this.scopeService.scopeFindMany(args, projectIds);
-  //   // return await this.prisma.alertExecution.findMany(queryArgs);
+  //   // return await this.prisma.alert.findMany(queryArgs);
   // }
 
   // Method to find a single alert by ID
-  async findById<T extends Omit<Prisma.AlertExecutionFindFirstOrThrowArgs, 'where'>>(
+  async findById<T extends Omit<Prisma.AlertFindFirstOrThrowArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.AlertExecutionFindFirstOrThrowArgs, 'where'>>,
+    args: Prisma.SelectSubset<T, Omit<Prisma.AlertFindFirstOrThrowArgs, 'where'>>,
     projectIds: TProjectIds,
-  ): Promise<AlertExecution> {
-    const queryArgs = args as Prisma.AlertExecutionFindFirstOrThrowArgs;
+  ): Promise<Alert> {
+    const queryArgs = args as Prisma.AlertFindFirstOrThrowArgs;
     queryArgs.where = {
       ...queryArgs.where,
       id,
       projectId: { in: projectIds! },
     };
-    return await this.prisma.alertExecution.findFirstOrThrow(queryArgs);
+    return await this.prisma.alert.findFirstOrThrow(queryArgs);
   }
 
   // Method to update an alert by ID
-  async updateById<T extends Omit<Prisma.AlertExecutionUpdateArgs, 'where'>>(
+  async updateById<T extends Omit<Prisma.AlertUpdateArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.AlertExecutionUpdateArgs, 'where'>>,
-  ): Promise<AlertExecution> {
-    return await this.prisma.alertExecution.update({
+    args: Prisma.SelectSubset<T, Omit<Prisma.AlertUpdateArgs, 'where'>>,
+  ): Promise<Alert> {
+    return await this.prisma.alert.update({
       where: { id },
       ...args,
     });
   }
 
   // // Method to delete an alert by ID
-  // async deleteById<T extends Omit<Prisma.AlertExecutionDeleteArgs, 'where'>>(
+  // async deleteById<T extends Omit<Prisma.AlertDeleteArgs, 'where'>>(
   //   id: string,
-  //   args: Prisma.SelectSubset<T, Omit<Prisma.AlertExecutionDeleteArgs, 'where'>>,
+  //   args: Prisma.SelectSubset<T, Omit<Prisma.AlertDeleteArgs, 'where'>>,
   //   projectIds: TProjectIds,
-  // ): Promise<AlertExecution> {
-  //   return await this.prisma.alertExecution.delete(
+  // ): Promise<Alert> {
+  //   return await this.prisma.alert.delete(
   //     this.scopeService.scopeDelete(
   //       {
   //         where: { id },

@@ -17,7 +17,7 @@ export const generateTransactions = async (
 ) => {
   const transactions = [] as any;
 
-  for (let i = 0; i < 10000; i++) {
+  for (let i = 0; i < 1000; i++) {
     const transaction: Prisma.TransactionRecordCreateManyInput = {
       transactionCorrelationId: faker.datatype.uuid(),
       transactionDate: faker.date.recent(30),

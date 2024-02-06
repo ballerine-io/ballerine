@@ -99,9 +99,9 @@ export class TransactionService {
   //   return this.repository.findMany(args);
   // }
 
-  // async getById(id: string, args?: Parameters<TransactionRepository['findById']>[1]) {
-  //   return this.repository.findById(id, args);
-  // }
+  async getAll(args: Parameters<TransactionRepository['findMany']>[0], projectId: string) {
+    return this.repository.findMany(args, projectId);
+  }
 
   // async getByApiKey(apiKey: string) {
   //   return this.repository.findByApiKey(apiKey);
