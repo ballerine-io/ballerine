@@ -270,12 +270,12 @@
       "label": "Monthly Number of Transactions",
       "hint": "500"
     },
-    "estimatedMonthlySalesClipsPay": {
-      "label": "Est. Monthly Sales Volume through ClipsPay (USD)",
+    "estimatedMonthlySales": {
+      "label": "Est. Monthly Sales Volume through {{customerName}} (USD)",
       "hint": "400,000"
     },
-    "estimatedMonthlyTransactionsClipsPay": {
-      "label": "Est. Monthly Number of Transactions through ClipsPay",
+    "estimatedMonthlyTransactions": {
+      "label": "Est. Monthly Number of Transactions through {{customerName}}",
       "hint": "150"
     },
     "averageTicketAmount": {
