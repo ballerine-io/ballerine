@@ -49,7 +49,11 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
   } = useCases();
 
   return (
-    <div id={`cases-list`} className="flex min-w-[300px] flex-col justify-between pb-4" {...props}>
+    <div
+      id={`cases-list`}
+      className="flex min-h-0 min-w-[300px] flex-col justify-between pb-4"
+      {...props}
+    >
       <div className={`border-neutral/10 p-4 theme-dark:border-neutral/60`}>
         <div className="form-control mb-2 rounded-md border border-neutral/10 focus-within:shadow-[0_1px_1px_0_rgba(0,0,0,0.15)] theme-dark:border-neutral/60">
           <div className="input-group">

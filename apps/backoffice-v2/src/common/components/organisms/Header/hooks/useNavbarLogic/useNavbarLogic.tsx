@@ -18,7 +18,7 @@ export const useNavbarLogic = () => {
   const navItems = [
     {
       text: 'Businesses',
-      icon: <Building size={21} />,
+      icon: <Building size={20} />,
       children:
         businessesFilters?.map(({ id, name }) => ({
           filterId: id,
@@ -30,7 +30,7 @@ export const useNavbarLogic = () => {
     },
     {
       text: 'Individuals',
-      icon: <Users size={21} />,
+      icon: <Users size={20} />,
       children:
         individualsFilters?.map(({ id, name }) => ({
           filterId: id,
@@ -42,7 +42,7 @@ export const useNavbarLogic = () => {
     },
     {
       text: 'Transaction Monitoring',
-      icon: <Goal size={21} />,
+      icon: <Goal size={20} />,
       children: [
         {
           text: 'Alerts',

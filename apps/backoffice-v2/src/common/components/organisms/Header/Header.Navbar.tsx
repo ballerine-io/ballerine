@@ -32,32 +32,39 @@ export const Navbar: FunctionComponent = () => {
               >
                 <CollapsibleTrigger
                   className={ctw(
-                    `flex items-center gap-x-2 rounded-lg px-1.5 py-1 text-sm font-bold [&[data-state=open]>svg]:rotate-0`,
+                    `flex w-full items-center gap-x-2 rounded-lg p-2 text-sm font-semibold text-[#8D93A5] [&[data-state=open]>svg]:rotate-0`,
                     {
-                      'bg-white': isActiveFilterGroup,
+                      'bg-white text-foreground': isActiveFilterGroup,
                     },
                   )}
                 >
-                  <div className={`flex items-center gap-x-1.5`}>
+                  <div
+                    className={ctw(`flex items-center gap-x-3 text-left`, {
+                      '[&>svg]:stroke-[#B7BDCD]': !isActiveFilterGroup,
+                    })}
+                  >
                     {navItem.icon}
                     {navItem.text}
                   </div>
                   <ChevronDown
-                    size={16}
+                    size={10}
                     className={`rotate-[-90deg] transition-transform duration-200 ease-in-out`}
                   />
                   <span className="sr-only">Toggle</span>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <ul className={`w-full space-y-2`}>
+                  <ul className={`w-full space-y-4 ps-[1.9rem]`}>
                     {navItem.children?.map(childNavItem => (
                       <NavItem
                         href={childNavItem.href}
                         key={childNavItem.key}
-                        className={ctw(`gap-x-1 px-1.5 text-xs capitalize active:border`, {
-                          'font-bold': childNavItem.filterId === filterId,
-                          'aria-[current=page]:font-normal': childNavItem.filterId !== filterId,
-                        })}
+                        className={ctw(
+                          `gap-x-1 px-1.5 text-xs capitalize text-[#8D93A5] active:border`,
+                          {
+                            'font-semibold text-foreground': childNavItem.filterId === filterId,
+                            'aria-[current=page]:font-normal': childNavItem.filterId !== filterId,
+                          },
+                        )}
                       >
                         <span>{childNavItem.icon}</span>
                         {childNavItem.text}
@@ -73,9 +80,9 @@ export const Navbar: FunctionComponent = () => {
                   href={navItem.href}
                   key={navItem.key}
                   className={ctw(
-                    `flex items-center gap-x-1 px-1.5 py-1 text-sm font-bold capitalize active:border`,
+                    `flex items-center gap-x-1 px-1.5 py-1 text-sm font-semibold capitalize text-[#8D93A5] active:border`,
                     {
-                      'bg-white': navItem.filterId === filterId,
+                      'bg-white text-foreground': navItem.filterId === filterId,
                     },
                   )}
                 >
