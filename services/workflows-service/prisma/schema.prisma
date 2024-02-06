@@ -84,7 +84,7 @@ model EndUser {
   project                  Project                    @relation(fields: [projectId], references: [id])
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   TransactionRecord        TransactionRecord[]
-  AlertExecution           AlertExecution[]
+  Alert           Alert[]
 
   @@index([endUserType])
   @@index([approvalState])
@@ -139,7 +139,7 @@ model Business {
   projectId         String
   project           Project             @relation(fields: [projectId], references: [id])
   TransactionRecord TransactionRecord[]
-  AlertExecution    AlertExecution[]
+  Alert    Alert[]
 
   @@index([companyName])
   @@index([approvalState])
@@ -322,7 +322,7 @@ model Project {
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   TransactionRecord        TransactionRecord[]
   AlertDefinition          AlertDefinition[]
-  AlertExecution           AlertExecution[]
+  Alert           Alert[]
 
   @@unique([name, customerId])
   @@index(name)
@@ -579,13 +579,13 @@ model AlertDefinition {
 
   workflowDefinitionId String? // Reference to a workflow definition
 
-  project         Project          @relation(fields: [projectId], references: [id])
-  alertExecutions AlertExecution[]
+  project Project @relation(fields: [projectId], references: [id])
+  alert   Alert[]
 
   @@index([projectId])
 }
 
-model AlertExecution {
+model Alert {
   id                String      @id @default(cuid())
   businessId        String? // Reference to a Business
   endUserId         String? // Reference to an EndUser
@@ -613,3 +613,4 @@ model AlertExecution {
   @@index([projectId])
   @@index([alertDefinitionId])
 }
+
