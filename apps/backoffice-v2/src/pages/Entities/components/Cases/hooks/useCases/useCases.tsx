@@ -63,6 +63,7 @@ export const useCases = () => {
 
   const { data: users } = useUsersQuery();
 
+  // Not using for now, will return to use it in the future
   const sortByOptions = useMemo(
     () => (entity === 'individuals' ? individualsSortByOptions : businessesSortByOptions),
     [entity],
@@ -175,7 +176,7 @@ export const useCases = () => {
 
   return {
     entity,
-    sortByOptions,
+    sortByOptions: sharedSortByOptions,
     filterByOptions,
     filter,
     sortBy,
