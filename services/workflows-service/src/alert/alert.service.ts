@@ -27,7 +27,7 @@ export class AlertService {
     for (const definition of alertDefinitions) {
       const triggered = await this.checkAlert(definition);
       if (triggered) {
-        // const ids = await this.createAlertExecution({
+        // const ids = await this.createAlert({
         //   /* ... */
         // }); // Provide necessary data
       }

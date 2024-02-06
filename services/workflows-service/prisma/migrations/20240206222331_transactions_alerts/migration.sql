@@ -111,7 +111,7 @@ CREATE TABLE "AlertDefinition" (
 );
 
 -- CreateTable
-CREATE TABLE "AlertExecution" (
+CREATE TABLE "Alert" (
     "id" TEXT NOT NULL,
     "businessId" TEXT,
     "endUserId" TEXT,
@@ -127,7 +127,7 @@ CREATE TABLE "AlertExecution" (
     "handledBy" TEXT,
     "workflowRuntimeDataId" TEXT,
 
-    CONSTRAINT "AlertExecution_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Alert_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -158,16 +158,16 @@ CREATE INDEX "TransactionRecord_transactionCorrelationId_idx" ON "TransactionRec
 CREATE INDEX "AlertDefinition_projectId_idx" ON "AlertDefinition"("projectId");
 
 -- CreateIndex
-CREATE INDEX "AlertExecution_businessId_idx" ON "AlertExecution"("businessId");
+CREATE INDEX "Alert_businessId_idx" ON "Alert"("businessId");
 
 -- CreateIndex
-CREATE INDEX "AlertExecution_endUserId_idx" ON "AlertExecution"("endUserId");
+CREATE INDEX "Alert_endUserId_idx" ON "Alert"("endUserId");
 
 -- CreateIndex
-CREATE INDEX "AlertExecution_projectId_idx" ON "AlertExecution"("projectId");
+CREATE INDEX "Alert_projectId_idx" ON "Alert"("projectId");
 
 -- CreateIndex
-CREATE INDEX "AlertExecution_alertDefinitionId_idx" ON "AlertExecution"("alertDefinitionId");
+CREATE INDEX "Alert_alertDefinitionId_idx" ON "Alert"("alertDefinitionId");
 
 -- AddForeignKey
 ALTER TABLE "TransactionRecord" ADD CONSTRAINT "TransactionRecord_businessId_fkey" FOREIGN KEY ("businessId") REFERENCES "Business"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -182,13 +182,13 @@ ALTER TABLE "TransactionRecord" ADD CONSTRAINT "TransactionRecord_projectId_fkey
 ALTER TABLE "AlertDefinition" ADD CONSTRAINT "AlertDefinition_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AlertExecution" ADD CONSTRAINT "AlertExecution_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Alert" ADD CONSTRAINT "Alert_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AlertExecution" ADD CONSTRAINT "AlertExecution_businessId_fkey" FOREIGN KEY ("businessId") REFERENCES "Business"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Alert" ADD CONSTRAINT "Alert_businessId_fkey" FOREIGN KEY ("businessId") REFERENCES "Business"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AlertExecution" ADD CONSTRAINT "AlertExecution_endUserId_fkey" FOREIGN KEY ("endUserId") REFERENCES "EndUser"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Alert" ADD CONSTRAINT "Alert_endUserId_fkey" FOREIGN KEY ("endUserId") REFERENCES "EndUser"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AlertExecution" ADD CONSTRAINT "AlertExecution_alertDefinitionId_fkey" FOREIGN KEY ("alertDefinitionId") REFERENCES "AlertDefinition"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Alert" ADD CONSTRAINT "Alert_alertDefinitionId_fkey" FOREIGN KEY ("alertDefinitionId") REFERENCES "AlertDefinition"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

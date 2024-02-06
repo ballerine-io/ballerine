@@ -1,10 +1,15 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { TransactionRecord, Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { TProjectId } from '@/types';
 
 @Injectable()
 export class TransactionRepository {
-  constructor(protected readonly prisma: PrismaService) {}
+  constructor(
+    protected readonly prisma: PrismaService,
+    protected readonly scopeService: ProjectScopeService,
+  ) {}
 
   async create<T extends Prisma.TransactionRecordCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.TransactionRecordCreateArgs>,
@@ -36,5 +41,14 @@ export class TransactionRepository {
     const res = await this.prisma.transactionRecord.create<T>(args);
 
     return res;
+  }
+
+  async findMany<T extends Prisma.TransactionRecordFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.TransactionRecordFindManyArgs>,
+    projectId: TProjectId,
+  ) {
+    return await this.prisma.transactionRecord.findMany(
+      this.scopeService.scopeFindMany(args, [projectId]),
+    );
   }
 }
