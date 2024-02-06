@@ -1,70 +1,11 @@
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponent } from 'react';
 import { NavItem } from './Header.NavItem';
-import { useFiltersQuery } from '../../../../domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { ctw } from '../../../utils/ctw/ctw';
-import { TRoutes, TRouteWithChildren } from '../../../../Router/types';
-import { Building, ChevronDown, Users } from 'lucide-react';
-import { useSearchParamsByEntity } from '../../../hooks/useSearchParamsByEntity/useSearchParamsByEntity';
-import { useSelectEntityFilterOnMount } from '../../../../domains/entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
+import { ChevronDown } from 'lucide-react';
 import { Collapsible } from '@/common/components/molecules/Collapsible/Collapsible';
 import { CollapsibleTrigger } from '@/common/components/molecules/Collapsible/Collapsible.Trigger';
 import { CollapsibleContent } from '@/common/components/molecules/Collapsible/Collapsible.Content';
-
-export const useNavbarLogic = () => {
-  const { data: filters } = useFiltersQuery();
-  const [searchParams] = useSearchParamsByEntity();
-  const individualsFilters = useMemo(
-    () => filters?.filter(({ entity }) => entity === 'individuals'),
-    [filters],
-  );
-  const businessesFilters = useMemo(
-    () => filters?.filter(({ entity }) => entity === 'businesses'),
-    [filters],
-  );
-  const navItems = [
-    {
-      text: 'Businesses',
-      icon: <Building size={21} />,
-      children:
-        businessesFilters?.map(({ id, name }) => ({
-          filterId: id,
-          text: name,
-          href: `/en/case-management/entities?filterId=${id}`,
-          key: `nav-item-${id}`,
-        })) ?? [],
-      key: 'nav-item-businesses',
-    },
-    {
-      text: 'Individuals',
-      icon: <Users size={21} />,
-      children:
-        individualsFilters?.map(({ id, name }) => ({
-          filterId: id,
-          text: name,
-          href: `/en/case-management/entities?filterId=${id}`,
-          key: `nav-item-${id}`,
-        })) ?? [],
-      key: 'nav-item-individuals',
-    },
-  ] satisfies TRoutes;
-  const checkIsActiveFilterGroup = useCallback(
-    (navItem: TRouteWithChildren) => {
-      return navItem.children?.some(
-        childNavItem => childNavItem.filterId === searchParams?.filterId,
-      );
-    },
-    [searchParams?.filterId],
-  );
-
-  useSelectEntityFilterOnMount();
-
-  return {
-    navItems,
-    filters,
-    searchParams,
-    checkIsActiveFilterGroup,
-  };
-};
+import { useNavbarLogic } from '@/common/components/organisms/Header/hooks/useNavbarLogic/useNavbarLogic';
 
 /**
  * @description A nav element which wraps {@link NavItem} components of the app's routes. Supports nested routes.
@@ -74,7 +15,7 @@ export const useNavbarLogic = () => {
  * @constructor
  */
 export const Navbar: FunctionComponent = () => {
-  const { navItems, searchParams, checkIsActiveFilterGroup } = useNavbarLogic();
+  const { navItems, filterId, checkIsActiveFilterGroup } = useNavbarLogic();
 
   return (
     <nav className={`space-y-3`}>
@@ -85,7 +26,7 @@ export const Navbar: FunctionComponent = () => {
           <>
             {!!navItem.children?.length && (
               <Collapsible
-                key={navItem.key}
+                key={`${navItem.key}-${isActiveFilterGroup}`}
                 defaultOpen={isActiveFilterGroup}
                 className={`space-y-2`}
               >
@@ -114,7 +55,8 @@ export const Navbar: FunctionComponent = () => {
                         href={childNavItem.href}
                         key={childNavItem.key}
                         className={ctw(`gap-x-1 px-1.5 text-xs capitalize active:border`, {
-                          'font-bold': childNavItem.filterId === searchParams?.filterId,
+                          'font-bold': childNavItem.filterId === filterId,
+                          'aria-[current=page]:font-normal': childNavItem.filterId !== filterId,
                         })}
                       >
                         <span>{childNavItem.icon}</span>
@@ -133,7 +75,7 @@ export const Navbar: FunctionComponent = () => {
                   className={ctw(
                     `flex items-center gap-x-1 px-1.5 py-1 text-sm font-bold capitalize active:border`,
                     {
-                      'bg-white': navItem.filterId === searchParams?.filterId,
+                      'bg-white': navItem.filterId === filterId,
                     },
                   )}
                 >
