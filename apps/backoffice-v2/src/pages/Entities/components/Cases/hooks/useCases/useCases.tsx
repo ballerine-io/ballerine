@@ -54,7 +54,7 @@ export const useCases = () => {
     () => [
       ...new Set(
         Object.keys(states || {})
-          .filter(key => states?.[key]?.tags)
+          .filter(key => states?.[key]?.tags?.length)
           .flatMap(key => states?.[key]?.tags),
       ),
     ],
