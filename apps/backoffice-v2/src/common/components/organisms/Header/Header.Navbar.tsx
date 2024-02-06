@@ -24,7 +24,7 @@ export const useNavbarLogic = () => {
   const navItems = [
     {
       text: 'Businesses',
-      icon: <Building />,
+      icon: <Building size={21} />,
       children:
         businessesFilters?.map(({ id, name }) => ({
           filterId: id,
@@ -36,7 +36,7 @@ export const useNavbarLogic = () => {
     },
     {
       text: 'Individuals',
-      icon: <Users />,
+      icon: <Users size={21} />,
       children:
         individualsFilters?.map(({ id, name }) => ({
           filterId: id,
@@ -91,19 +91,19 @@ export const Navbar: FunctionComponent = () => {
               >
                 <CollapsibleTrigger
                   className={ctw(
-                    `flex items-center gap-x-2 rounded-lg px-2 py-1.5 text-sm font-bold [&[data-state=open]>svg]:rotate-180`,
+                    `flex items-center gap-x-2 rounded-lg px-1.5 py-1 text-sm font-bold [&[data-state=open]>svg]:rotate-0`,
                     {
                       'bg-white': isActiveFilterGroup,
                     },
                   )}
                 >
-                  <div className={`flex items-center gap-x-2`}>
+                  <div className={`flex items-center gap-x-1.5`}>
                     {navItem.icon}
                     {navItem.text}
                   </div>
                   <ChevronDown
-                    size={18}
-                    className={ctw(`transition-transform duration-200 ease-in-out`)}
+                    size={16}
+                    className={`rotate-[-90deg] transition-transform duration-200 ease-in-out`}
                   />
                   <span className="sr-only">Toggle</span>
                 </CollapsibleTrigger>
@@ -113,7 +113,7 @@ export const Navbar: FunctionComponent = () => {
                       <NavItem
                         href={childNavItem.href}
                         key={childNavItem.key}
-                        className={ctw(`gap-x-[10px] px-2 text-xs capitalize active:border`, {
+                        className={ctw(`gap-x-1 px-1.5 text-xs capitalize active:border`, {
                           'font-bold': childNavItem.filterId === searchParams?.filterId,
                         })}
                       >
@@ -131,7 +131,7 @@ export const Navbar: FunctionComponent = () => {
                   href={navItem.href}
                   key={navItem.key}
                   className={ctw(
-                    `flex items-center gap-x-[10px] px-2 py-1.5 text-sm font-bold capitalize active:border`,
+                    `flex items-center gap-x-1 px-1.5 py-1 text-sm font-bold capitalize active:border`,
                     {
                       'bg-white': navItem.filterId === searchParams?.filterId,
                     },
