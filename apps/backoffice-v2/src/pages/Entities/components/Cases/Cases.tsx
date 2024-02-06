@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
-import { Checkbox } from '../../../../common/components/atoms/Checkbox/Checkbox';
-import { FilterSvg, MagnifyingGlassSvg, SortSvg } from '../../../../common/components/atoms/icons';
-import { TIndividual } from '../../../../domains/individuals/types';
+import { Checkbox } from '@/common/components/atoms/Checkbox/Checkbox';
+import { FilterSvg, MagnifyingGlassSvg, SortSvg } from '@/common/components/atoms/icons';
+import { TIndividual } from '@/domains/individuals/types';
 import { Item } from './Cases.Item';
 import { List } from './Cases.List';
 import { SkeletonItem } from './Cases.SkeletonItem';
@@ -140,7 +140,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
           </div>
         </div>
         <div className="mt-4 text-sm font-semibold text-[#999999]">
-          {count} {count === 1 ? 'case' : 'cases'}
+          {Intl.NumberFormat().format(count)} {count === 1 ? 'case' : 'cases'}
         </div>
       </div>
       {children}

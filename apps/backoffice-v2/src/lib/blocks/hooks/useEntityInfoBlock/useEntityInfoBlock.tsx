@@ -35,7 +35,7 @@ export const useEntityInfoBlock = ({
               })
               .addCell({
                 type: 'subheading',
-                value: 'User-provided data',
+                value: 'User-Provided Data',
               })
               .build()
               .flat(1),
@@ -45,6 +45,7 @@ export const useEntityInfoBlock = ({
             type: 'details',
             hideSeparator: true,
             value: {
+              id: 'entity-details-value',
               title: `${valueOrNA(toTitleCase(entity?.type ?? ''))} Information`,
               data: [
                 ...Object.entries(

@@ -54,7 +54,7 @@ const persistImageFile = async (client: PrismaClient, uri: string, projectId: st
 
 function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number, pdf = false) {
   if (pdf) {
-    return `https://www.africau.edu/images/default/sample.pdf`;
+    return `https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/mock-pdf.pdf`;
   }
 
   if (countOfBusiness < 4) {

@@ -79,7 +79,7 @@ import {
 } from './workflow-runtime-data.repository';
 import mime from 'mime';
 import { env } from '@/env';
-import { AjvValidationError } from '@/errors';
+import { ValidationError } from '@/errors';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { ajv } from '@/common/ajv/ajv.validator';
 
@@ -408,13 +408,15 @@ export class WorkflowService {
     },
     projectIds: TProjectIds,
   ) {
+    const skip = (page.number - 1) * page.size;
+
     const query = this.projectScopeService.scopeFindMany(
       merge(
         args,
         {
           orderBy: toPrismaOrderBy(orderBy, entityType),
           where: filters ? toPrismaWhere(filters) : {},
-          skip: (page.number - 1) * page.size,
+          skip,
           take: page.size,
         },
         {
@@ -442,12 +444,15 @@ export class WorkflowService {
     const workflowIds = await this.workflowRuntimeDataRepository.search(
       {
         query: {
-          search,
+          skip,
+          take: page.size,
+          search: search ?? '',
           entityType,
           statuses:
             ((query.where.status as Prisma.EnumWorkflowRuntimeDataStatusFilter)?.in as string[]) ||
             [],
           workflowDefinitionIds: getWorkflowDefinitionIds(),
+          orderBy,
         },
         filters,
       },
@@ -456,15 +461,22 @@ export class WorkflowService {
 
     const workflowsQuery = {
       ...query,
-      where: { ...query.where, id: { in: workflowIds.map(workflowId => workflowId.id) } },
+      where: { id: { in: workflowIds.map(workflowId => workflowId.id) } },
     };
 
     const [workflowCount, workflows] = await Promise.all([
-      this.workflowRuntimeDataRepository.count({ where: workflowsQuery.where }, projectIds),
-      this.workflowRuntimeDataRepository.findMany(workflowsQuery, projectIds),
+      this.workflowRuntimeDataRepository.count({ where: query.where }, projectIds),
+      this.workflowRuntimeDataRepository.findMany(
+        {
+          where: workflowsQuery.where,
+          select: workflowsQuery.select,
+          orderBy: workflowsQuery.orderBy,
+        },
+        projectIds,
+      ),
     ]);
 
-    if (page.number > 1 && workflowCount < (page.number - 1) * page.size + 1) {
+    if (page.number > 1 && workflowCount < skip + 1) {
       throw new NotFoundException('Page not found');
     }
 
@@ -880,7 +892,7 @@ export class WorkflowService {
       const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
 
       if (!isValidPropertiesSchema && document.type === documentToUpdate.type) {
-        throw new AjvValidationError(validatePropertiesSchema.errors);
+        throw ValidationError.fromAjvError(validatePropertiesSchema.errors!);
       }
     }
 
@@ -1095,7 +1107,7 @@ export class WorkflowService {
         const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
         if (!isValidPropertiesSchema) {
-          throw new AjvValidationError(validatePropertiesSchema.errors);
+          throw ValidationError.fromAjvError(validatePropertiesSchema.errors!);
         }
       });
       data.context = mergedContext;
@@ -1506,11 +1518,12 @@ export class WorkflowService {
 
     config = merge(workflowDefinition.config, config);
     let validatedConfig: WorkflowConfig;
-    try {
-      validatedConfig = ConfigSchema.parse(config);
-    } catch (error) {
-      throw new BadRequestException(error);
+    const result = ConfigSchema.safeParse(config);
+
+    if (!result.success) {
+      throw ValidationError.fromZodError(result.error);
     }
+
     const customer = await this.customerService.getByProjectId(projectIds![0]!);
     // @ts-ignore
     context.customerName = customer.displayName;
@@ -1969,7 +1982,7 @@ export class WorkflowService {
 
     if (isValid) return;
 
-    throw new AjvValidationError(validate.errors);
+    throw ValidationError.fromAjvError(validate.errors!);
   }
 
   async event(

@@ -125,7 +125,6 @@ export class StorageControllerInternal {
       persistedFile.mimeType ||
       mime.getType(persistedFile.fileName || persistedFile.uri || '') ||
       undefined;
-    const root = path.parse(os.homedir()).root;
 
     if (persistedFile.fileNameInBucket && format === 'signed-url') {
       const signedUrl = await createPresignedUrlWithClient({
@@ -150,10 +149,17 @@ export class StorageControllerInternal {
     if (!isBase64(persistedFile.uri) && this._isUri(persistedFile)) {
       const downloadFilePath = await this.__downloadFileFromRemote(persistedFile);
 
-      return res.sendFile(downloadFilePath, { root: root });
+      return res.sendFile(this.__getAbsoluteFilePAth(downloadFilePath));
     }
 
-    return res.sendFile(persistedFile.fileNameOnDisk, { root: root });
+    return res.sendFile(this.__getAbsoluteFilePAth(persistedFile.fileNameOnDisk));
+  }
+
+  private __getAbsoluteFilePAth(filePath: string) {
+    if (!path.isAbsolute(filePath)) return filePath;
+
+    const rootDir = path.parse(os.homedir()).root;
+    return path.join(rootDir, filePath);
   }
 
   private async __downloadFileFromRemote(persistedFile: File) {
