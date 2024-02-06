@@ -41,7 +41,6 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
             : serverError.message,
         statusCode: serverError.getStatus(),
         timestamp: new Date().toISOString(),
-        path: request.url,
         ...errors,
       });
   }
@@ -77,6 +76,10 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       error: errorRes,
       message: error.message,
       responseTime: Date.now() - request.startTime,
+      request: {
+        path: request.url,
+        headers: request.headers,
+      },
     });
   }
 
