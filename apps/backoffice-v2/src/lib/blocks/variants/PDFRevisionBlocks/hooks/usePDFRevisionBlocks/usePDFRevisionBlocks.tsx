@@ -41,17 +41,19 @@ export const usePDFRevisionBlocks = () => {
               width: '100%',
               height: '100%',
             },
-            value: (
+            value: workflow?.context?.entity?.report ? (
               <Document>
                 <Summary />
                 <LineOfBusiness />
                 <Ecosystem />
                 <TransactionLaundering />
-                <WebsiteCompanyAnalysis />
-                {/* <SocialMedia data={reportData?.socialMedia || {}} /> */}
+                <WebsiteCompanyAnalysis
+                  data={workflow?.context?.entity?.report?.websiteCompanyAnalysis}
+                />
+                <SocialMedia data={workflow?.context?.entity?.report?.socialMedia} />
                 <PaymentEnvironment />
               </Document>
-            ),
+            ) : null,
           })
           .build()
           .flat(1),
