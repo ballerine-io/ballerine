@@ -11,7 +11,9 @@ import { AlertDefinition, Alert } from '@prisma/client';
 import { type TProjectId } from '@/types';
 import * as errors from '../errors';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 
+@swagger.ApiBearerAuth()
 @swagger.ApiTags('Alerts')
 @common.Controller('external/alerts')
 export class AlertControllerExternal {
@@ -41,8 +43,9 @@ export class AlertControllerExternal {
   @swagger.ApiOkResponse({ type: Object }) // TODO: Set type
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @common.UsePipes(new ZodValidationPipe(FindAlertsSchema, 'query'))
   async getAll(
-    @common.Body() findAlertsDto: FindAlertsDto,
+    @common.Query() findAlertsDto: FindAlertsDto,
     @ProjectIds() projectIds: TProjectId[],
   ) {
     return await this.service.getAlerts(findAlertsDto, projectIds);
