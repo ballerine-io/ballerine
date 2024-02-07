@@ -237,7 +237,7 @@ importers:
     devDependencies:
       '@ballerine/config':
         specifier: ^1.0.3
-        version: link:../../packages/config
+        version: 1.0.5
       '@ballerine/eslint-config-react':
         specifier: ^1.0.4
         version: link:../../packages/eslint-config-react
@@ -505,7 +505,7 @@ importers:
     devDependencies:
       '@ballerine/config':
         specifier: ^1.0.3
-        version: link:../../packages/config
+        version: 1.0.5
       '@ballerine/eslint-config-react':
         specifier: ^1.0.4
         version: link:../../packages/eslint-config-react
@@ -719,7 +719,7 @@ importers:
     devDependencies:
       '@ballerine/config':
         specifier: ^1.0.3
-        version: link:../../packages/config
+        version: 1.0.5
       '@ballerine/eslint-config-react':
         specifier: ^1.0.4
         version: link:../../packages/eslint-config-react
@@ -965,7 +965,7 @@ importers:
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
         specifier: ^1.0.3
-        version: link:../config
+        version: 1.0.5
       '@ballerine/eslint-config':
         specifier: ^1.0.3
         version: link:../eslint-config
@@ -1125,7 +1125,7 @@ importers:
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
         specifier: ^1.0.3
-        version: link:../config
+        version: 1.0.5
       '@ballerine/eslint-config':
         specifier: ^1.0.3
         version: link:../eslint-config
@@ -1277,7 +1277,7 @@ importers:
     dependencies:
       '@ballerine/config':
         specifier: ^1.0.4
-        version: link:../config
+        version: 1.0.5
       '@ballerine/ui':
         specifier: 0.3.26
         version: 0.3.26(@mui/system@5.15.6)(@types/react-dom@18.2.17)(@types/react@18.2.43)
@@ -1287,6 +1287,12 @@ importers:
       '@sinclair/typebox':
         specifier: ^0.31.7
         version: 0.31.26
+      ajv:
+        specifier: ^8.12.0
+        version: 8.12.0
+      ajv-formats:
+        specifier: ^2.1.1
+        version: 2.1.1(ajv@8.12.0)
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1387,7 +1393,7 @@ importers:
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
         specifier: ^1.0.3
-        version: link:../config
+        version: 1.0.5
       '@ballerine/eslint-config':
         specifier: ^1.0.3
         version: link:../eslint-config
@@ -1589,7 +1595,7 @@ importers:
     devDependencies:
       '@ballerine/config':
         specifier: ^1.0.3
-        version: link:../config
+        version: 1.0.5
       '@ballerine/eslint-config-react':
         specifier: ^1.0.4
         version: link:../eslint-config-react
@@ -1725,7 +1731,7 @@ importers:
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
         specifier: ^1.0.3
-        version: link:../config
+        version: 1.0.5
       '@ballerine/eslint-config':
         specifier: ^1.0.3
         version: link:../eslint-config
@@ -2006,7 +2012,7 @@ importers:
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
         specifier: ^1.0.3
-        version: link:../../packages/config
+        version: 1.0.5
       '@ballerine/eslint-config':
         specifier: ^1.0.3
         version: link:../../packages/eslint-config
@@ -2148,7 +2154,7 @@ importers:
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
         specifier: ^1.0.3
-        version: link:../../packages/config
+        version: 1.0.5
       '@ballerine/eslint-config':
         specifier: ^1.0.3
         version: link:../../packages/eslint-config
@@ -2543,7 +2549,7 @@ importers:
     devDependencies:
       '@ballerine/config':
         specifier: ^1.0.3
-        version: link:../../packages/config
+        version: 1.0.5
       '@ballerine/eslint-config':
         specifier: ^1.0.3
         version: link:../../packages/eslint-config
@@ -2700,7 +2706,7 @@ importers:
     devDependencies:
       '@ballerine/config':
         specifier: ^1.0.4
-        version: link:../../packages/config
+        version: 1.0.5
       '@ballerine/eslint-config':
         specifier: ^1.0.4
         version: link:../../packages/eslint-config
@@ -6451,6 +6457,9 @@ packages:
       json-schema-to-zod: 0.6.3
     dev: false
 
+  /@ballerine/config@1.0.5:
+    resolution: {integrity: sha512-r2FjQVmB11rgarC7ywCXo8Rhudvg+d/JvVBWwHyQ7YR5CMudEr7KU3JhOHdgEP5iKfHKsicELyPgS+eyuDSLVA==}
+
   /@ballerine/ui@0.3.26(@mui/system@5.15.6)(@types/react-dom@18.2.15)(@types/react@18.2.37):
     resolution: {integrity: sha512-vNVtxD43iakwNO1XDOU0MVEj92EfRx93yucuugw3eUxkfKcWZKBz+/YUDwUlIbPEnPwwtTpU4VaBDd2udj92LQ==}
     dependencies:
@@ -7413,7 +7422,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.8
+      '@babel/runtime': 7.23.4
       '@emotion/babel-plugin': 11.11.0
       '@emotion/cache': 11.11.0
       '@emotion/serialize': 1.1.2
@@ -7470,7 +7479,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.8
+      '@babel/runtime': 7.23.4
       '@emotion/babel-plugin': 11.11.0
       '@emotion/is-prop-valid': 1.2.1
       '@emotion/react': 11.11.1(@types/react@18.2.43)(react@18.2.0)
@@ -8672,7 +8681,7 @@ packages:
       magic-string: 0.27.0
       react-docgen-typescript: 2.2.2(typescript@4.9.5)
       typescript: 4.9.5
-      vite: 4.5.0(@types/node@20.9.2)
+      vite: 4.5.0(@types/node@18.17.19)
     dev: true
 
   /@joshwooding/vite-plugin-react-docgen-typescript@0.3.0(typescript@5.1.6)(vite@4.5.0):
@@ -9029,11 +9038,11 @@ packages:
     dependencies:
       '@babel/runtime': 7.23.8
       '@floating-ui/react-dom': 2.0.4(react-dom@18.2.0)(react@18.2.0)
-      '@mui/types': 7.2.13(@types/react@18.2.43)
-      '@mui/utils': 5.15.6(@types/react@18.2.43)(react@18.2.0)
+      '@mui/types': 7.2.9(@types/react@18.2.43)
+      '@mui/utils': 5.14.18(@types/react@18.2.43)(react@18.2.0)
       '@popperjs/core': 2.11.8
       '@types/react': 18.2.43
-      clsx: 2.1.0
+      clsx: 2.0.0
       prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -9136,7 +9145,7 @@ packages:
       '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
       '@mui/base': 5.0.0-beta.24(@types/react@18.2.37)(react-dom@18.2.0)(react@18.2.0)
       '@mui/core-downloads-tracker': 5.14.18
-      '@mui/system': 5.15.6(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.37)(react@18.2.0)
+      '@mui/system': 5.15.6(@emotion/react@11.11.1)(@types/react@18.2.37)(react@18.2.0)
       '@mui/types': 7.2.13(@types/react@18.2.37)
       '@mui/utils': 5.15.6(@types/react@18.2.37)(react@18.2.0)
       '@types/react': 18.2.37
@@ -9245,6 +9254,27 @@ packages:
       react: 18.2.0
     dev: false
 
+  /@mui/styled-engine@5.15.6(@emotion/react@11.11.1)(react@18.2.0):
+    resolution: {integrity: sha512-KAn8P8xP/WigFKMlEYUpU9z2o7jJnv0BG28Qu1dhNQVutsLVIFdRf5Nb+0ijp2qgtcmygQ0FtfRuXv5LYetZTg==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      '@emotion/react': ^11.4.1
+      '@emotion/styled': ^11.3.0
+      react: ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@emotion/react':
+        optional: true
+      '@emotion/styled':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.23.8
+      '@emotion/cache': 11.11.0
+      '@emotion/react': 11.11.1(@types/react@18.2.43)(react@18.2.0)
+      csstype: 3.1.3
+      prop-types: 15.8.1
+      react: 18.2.0
+    dev: false
+
   /@mui/system@5.14.18(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.37)(react@18.2.0):
     resolution: {integrity: sha512-hSQQdb3KF72X4EN2hMEiv8EYJZSflfdd1TRaGPoR7CIAG347OxCslpBUwWngYobaxgKvq6xTrlIl+diaactVww==}
     engines: {node: '>=12.0.0'}
@@ -9325,10 +9355,39 @@ packages:
       '@emotion/react': 11.11.1(@types/react@18.2.43)(react@18.2.0)
       '@emotion/styled': 11.11.0(@emotion/react@11.11.1)(@types/react@18.2.43)(react@18.2.0)
       '@mui/private-theming': 5.15.6(@types/react@18.2.43)(react@18.2.0)
-      '@mui/styled-engine': 5.15.6(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(react@18.2.0)
+      '@mui/styled-engine': 5.15.6(@emotion/react@11.11.1)(react@18.2.0)
       '@mui/types': 7.2.13(@types/react@18.2.43)
       '@mui/utils': 5.15.6(@types/react@18.2.43)(react@18.2.0)
       '@types/react': 18.2.43
+      clsx: 2.1.0
+      csstype: 3.1.3
+      prop-types: 15.8.1
+      react: 18.2.0
+    dev: false
+
+  /@mui/system@5.15.6(@emotion/react@11.11.1)(@types/react@18.2.37)(react@18.2.0):
+    resolution: {integrity: sha512-J01D//u8IfXvaEHMBQX5aO2l7Q+P15nt96c4NskX7yp5/+UuZP8XCQJhtBtLuj+M2LLyXHYGmCPeblsmmscP2Q==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      '@emotion/react': ^11.5.0
+      '@emotion/styled': ^11.3.0
+      '@types/react': ^17.0.0 || ^18.0.0
+      react: ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@emotion/react':
+        optional: true
+      '@emotion/styled':
+        optional: true
+      '@types/react':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.23.8
+      '@emotion/react': 11.11.1(@types/react@18.2.37)(react@18.2.0)
+      '@mui/private-theming': 5.15.6(@types/react@18.2.37)(react@18.2.0)
+      '@mui/styled-engine': 5.15.6(@emotion/react@11.11.1)(react@18.2.0)
+      '@mui/types': 7.2.13(@types/react@18.2.37)
+      '@mui/utils': 5.15.6(@types/react@18.2.37)(react@18.2.0)
+      '@types/react': 18.2.37
       clsx: 2.1.0
       csstype: 3.1.3
       prop-types: 15.8.1
@@ -9366,6 +9425,17 @@ packages:
         optional: true
     dependencies:
       '@types/react': 18.2.37
+    dev: false
+
+  /@mui/types@7.2.9(@types/react@18.2.43):
+    resolution: {integrity: sha512-k1lN/PolaRZfNsRdAqXtcR71sTnv3z/VCCGPxU8HfdftDkzi335MdJ6scZxvofMAd/K/9EbzCZTFBmlNpQVdCg==}
+    peerDependencies:
+      '@types/react': ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+    dependencies:
+      '@types/react': 18.2.43
     dev: false
 
   /@mui/utils@5.14.18(@types/react@18.2.37)(react@18.2.0):
@@ -10430,7 +10500,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.8
+      '@babel/runtime': 7.23.2
       '@radix-ui/primitive': 1.0.1
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.43)(react@18.2.0)
       '@radix-ui/react-context': 1.0.1(@types/react@18.2.43)(react@18.2.0)
@@ -11248,7 +11318,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.8
+      '@babel/runtime': 7.23.2
       '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.17)(@types/react@18.2.43)(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.43
       '@types/react-dom': 18.2.17
@@ -11898,7 +11968,7 @@ packages:
       '@types/react-dom':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.8
+      '@babel/runtime': 7.23.2
       '@radix-ui/number': 1.0.1
       '@radix-ui/primitive': 1.0.1
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.43)(react@18.2.0)
@@ -15212,7 +15282,7 @@ packages:
       react: 18.2.0
       react-docgen: 6.0.4
       react-dom: 18.2.0(react@18.2.0)
-      vite: 4.5.0(@types/node@20.9.2)
+      vite: 4.5.0(@types/node@18.17.19)
     transitivePeerDependencies:
       - '@preact/preset-vite'
       - encoding
@@ -17551,7 +17621,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.23.3(@babel/core@7.23.3)
       '@types/babel__core': 7.20.4
       react-refresh: 0.14.0
-      vite: 4.5.0(@types/node@20.9.2)
+      vite: 4.5.0(@types/node@18.17.19)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -33802,7 +33872,7 @@ packages:
       strip-ansi: 6.0.1
       tiny-invariant: 1.3.1
       typescript: 5.1.6
-      vite: 4.5.0(@types/node@20.9.2)
+      vite: 4.5.0(@types/node@18.17.19)
       vscode-languageclient: 7.0.0
       vscode-languageserver: 7.0.0
       vscode-languageserver-textdocument: 1.0.11
@@ -33919,7 +33989,7 @@ packages:
       kolorist: 1.8.0
       sirv: 2.0.3
       ufo: 1.3.2
-      vite: 4.5.0(@types/node@20.9.2)
+      vite: 4.5.0(@types/node@18.17.19)
     transitivePeerDependencies:
       - rollup
       - supports-color
@@ -33936,7 +34006,7 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
       globrex: 0.1.2
       tsconfck: 2.1.2(typescript@4.9.5)
-      vite: 4.5.0(@types/node@20.9.2)
+      vite: 4.5.0(@types/node@18.17.19)
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -33952,7 +34022,7 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
       globrex: 0.1.2
       tsconfck: 2.1.2(typescript@5.1.6)
-      vite: 4.5.0(@types/node@20.9.2)
+      vite: 4.5.0(@types/node@18.17.19)
     transitivePeerDependencies:
       - supports-color
       - typescript
