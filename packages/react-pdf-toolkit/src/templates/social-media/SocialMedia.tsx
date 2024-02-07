@@ -16,8 +16,9 @@ import {
   Wrapper,
 } from '@/components';
 import { Page, View } from '@react-pdf/renderer';
-import type { FunctionComponent } from 'react';
 
+import { withDataValidation } from '@/hocs/withDataValidation/withDataValidation';
+import { SocialMediaReportSchema } from '@/templates/social-media/schemas/social-media-report-schema';
 import { SocialMediaReportData } from '@/templates/social-media/types/social-media-report-data.type.js';
 import { getPageInfoEntries } from '@/templates/social-media/utils/get-page-info-entries';
 import { tw } from '@/theme';
@@ -27,7 +28,7 @@ export type SocialMediaReportProps = {
   data: SocialMediaReportData;
 };
 
-export const SocialMedia: FunctionComponent<SocialMediaReportProps> = ({ data }) => {
+export const SocialMedia = withDataValidation<SocialMediaReportProps>(({ data }) => {
   const { riskRank, riskIndicators, summary, website, ads } = data;
   const { facebook, instagram } = ads || {};
 
@@ -260,4 +261,4 @@ export const SocialMedia: FunctionComponent<SocialMediaReportProps> = ({ data })
       </Wrapper>
     </Page>
   );
-};
+}, SocialMediaReportSchema);

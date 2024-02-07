@@ -1,3 +1,4 @@
+import { withDataValidation } from '@/build';
 import {
   AlertIcon,
   BallerineLogo,
@@ -13,155 +14,132 @@ import {
   Typography,
   Wrapper,
 } from '@/components';
+import { WebsiteCompanyAnalysisSchema } from '@/templates/website-company-analysis/schemas/website-company-analysis.schema';
+import { WebsiteCompanyAnalysisData } from '@/templates/website-company-analysis/types/website-company-analysis-data.type';
 import { tw } from '@/theme';
+import { getRiskScoreStyle } from '@/utils';
 import { Page, View } from '@react-pdf/renderer';
 
-export const WebsiteCompanyAnalysis = () => {
-  return (
-    <Page wrap={false}>
-      <Wrapper>
-        <Grid>
-          <Header
-            logoElement={<BallerineLogo />}
-            titleElement={
-              <Link
-                styles={[tw('text-[11px]')]}
-                href={'https://example.com'}
-                url={new URL('https://example.com').hostname}
-              />
-            }
-            createdAtTimestamp={Date.now()}
-          />
-          <Section>
-            <View style={tw('flex flex-col')}>
-              <View style={tw('flex flex-row justify-between mb-8')}>
-                <View>
-                  <Typography size="title" weight="bold">
-                    Website’s Company Analysis - {'\n'}
-                    [name of company]
+export type WebsiteCompanyAnalysisProps = {
+  data: WebsiteCompanyAnalysisData;
+};
+
+export const WebsiteCompanyAnalysis = withDataValidation<WebsiteCompanyAnalysisProps>(
+  ({ data }) => {
+    const { website, companyName, riskScore, companyAnalysis, businessConsistency, scamOrFraud } =
+      data;
+
+    return (
+      <Page wrap={false}>
+        <Wrapper>
+          <Grid>
+            <Header
+              logoElement={<BallerineLogo />}
+              titleElement={
+                <Link
+                  styles={[tw('text-[11px]')]}
+                  href={website.url}
+                  url={new URL(website.url).hostname}
+                />
+              }
+              createdAtTimestamp={Date.now()}
+            />
+            <Section>
+              <View style={tw('flex flex-col')}>
+                <View style={tw('flex flex-row justify-between mb-8')}>
+                  <View>
+                    <Typography size="title" weight="bold">
+                      Website’s Company Analysis - {'\n'}
+                      {companyName}
+                    </Typography>
+                  </View>
+                  <View style={tw('flex flex-col gap-3')}>
+                    <Typography weight="bold">Website’s Company Risk Score</Typography>
+                    <View style={tw('flex flex-row justify-end')}>
+                      <Typography weight="bold" size="large" color={getRiskScoreStyle(riskScore)}>
+                        {riskScore}
+                      </Typography>
+                    </View>
+                  </View>
+                </View>
+                <View style={tw('flex flex-col gap-4')}>
+                  <Typography weight="bold" size="heading">
+                    Risk Indicators
+                  </Typography>
+                  <View style={tw('flex flex-row flex-wrap gap-8')}>
+                    <View style={tw('flex w-[230px] gap-2 pr-3')}>
+                      <List>
+                        {companyAnalysis?.indicators.map(indicator => (
+                          <ListItem prependIcon={<AlertIcon />} key={indicator}>
+                            <Typography>{indicator}</Typography>
+                          </ListItem>
+                        ))}
+                      </List>
+                    </View>
+                  </View>
+                </View>
+                <Divider styles={[tw('my-6')]} />
+                <View style={tw('flex flex-col gap-4')}>
+                  <Typography weight="bold" size="heading">
+                    Risk Summary
+                  </Typography>
+                  <Typography styles={[tw('text-justify leading-6')]}>
+                    {companyAnalysis?.summary}
                   </Typography>
                 </View>
-                <View style={tw('flex flex-col gap-3')}>
-                  <Typography weight="bold">Website’s Company Risk Score</Typography>
-                  <View style={tw('flex flex-row justify-end')}>
-                    <Typography weight="bold" size="large" color={'error'}>
-                      90
-                    </Typography>
-                  </View>
-                </View>
               </View>
-              <View style={tw('flex flex-col gap-4')}>
-                <Typography weight="bold" size="heading">
-                  Risk Indicators
-                </Typography>
-                <View style={tw('flex flex-row flex-wrap gap-8')}>
-                  <View style={tw('flex w-[230px] gap-2 pr-3')}>
-                    <List>
-                      <ListItem prependIcon={<AlertIcon />}>
-                        <Typography>Lorem ipsum dolor sit.</Typography>
-                      </ListItem>
-                      <ListItem prependIcon={<AlertIcon />}>
-                        <Typography>Illegal Substances</Typography>
-                      </ListItem>
-                    </List>
-                  </View>
-                </View>
-              </View>
-              <Divider styles={[tw('my-6')]} />
-              <View style={tw('flex flex-col gap-4')}>
-                <Typography weight="bold" size="heading">
-                  Risk Summary
-                </Typography>
-                <Typography styles={[tw('text-justify leading-6')]}>
-                  Multiple sources indicate that ‘Umall Technology S.A.R.L’ is a shell company
-                  involved in operating a network of fake shopping sites, which is a common sign of
-                  transaction laundering.
-                </Typography>
-              </View>
-            </View>
-          </Section>
+            </Section>
 
-          <Section>
-            <View style={tw('flex flex-col gap-6')}>
-              <Typography size="large" weight="bold">
-                Business Consistency
-              </Typography>
-              <Typography styles={[tw('leading-6')]}>
-                Multiple sources indicate that ‘Umall Technology S.A.R.L’ is a shell company
-                involved in operating a network of fake shopping sites, which is a common sign of
-                transaction laundering.
-              </Typography>
-              <View style={tw('flex flex-col gap-4')}>
-                <Typography weight="bold">Business Inconsistencies Findings</Typography>
-                <List>
-                  <ListItem>
-                    <Typography>
-                      1. “Adolescentm.com is a fraudulent website that lures victims through
-                      deceptive promotions."
-                    </Typography>
-                  </ListItem>
-                  <ListItem>
-                    <Typography>
-                      2. "Adolescentm.com has a safety score of 0 out of 100."
-                    </Typography>
-                  </ListItem>
-                  <ListItem>
-                    <Typography>
-                      3. "Highly unusual and suspicious lack of accounts on Adolescentm.com."
-                    </Typography>
-                  </ListItem>
-                </List>
+            <Section>
+              <View style={tw('flex flex-col gap-6')}>
+                <Typography size="large" weight="bold">
+                  Business Consistency
+                </Typography>
+                <Typography styles={[tw('leading-6')]}>{businessConsistency?.summary}</Typography>
+                <View style={tw('flex flex-col gap-4')}>
+                  <Typography weight="bold">Business Inconsistencies Findings</Typography>
+                  <List>
+                    {businessConsistency?.indicators?.map((indicator, index) => (
+                      <ListItem key={index}>
+                        <Typography>
+                          {index + 1}. {indicator}
+                        </Typography>
+                      </ListItem>
+                    ))}
+                  </List>
+                </View>
               </View>
-            </View>
-          </Section>
-          <Section>
-            <View style={tw('flex flex-col gap-6')}>
-              <Typography size="large" weight="bold">
-                Scam or Fraud Indications Assessment
-              </Typography>
-              <Typography styles={[tw('leading-6')]}>
-                Multiple sources indicate that ‘Umall Technology S.A.R.L’ is a shell company
-                involved in operating a network of fake shopping sites, which is a common sign of
-                transaction laundering.
-              </Typography>
-              <Typography size="large" weight="bold">
-                Appearance in Blacklists / Warnings
-              </Typography>
-              <Typography styles={[tw('leading-6')]}>
-                No indications from the website or external sources suggest that the website has
-                appeared in warnings or blacklists.
-              </Typography>
-              <View style={tw('flex flex-col gap-4')}>
-                <Typography weight="bold">Scam or Fraud Findings</Typography>
-                <List>
-                  <ListItem>
-                    <Typography>
-                      1. “Adolescentm.com is a fraudulent website that lures victims through
-                      deceptive promotions."
-                    </Typography>
-                  </ListItem>
-                  <ListItem>
-                    <Typography>
-                      2. "Adolescentm.com has a safety score of 0 out of 100."
-                    </Typography>
-                  </ListItem>
-                  <ListItem>
-                    <Typography>
-                      3. "Highly unusual and suspicious lack of accounts on Adolescentm.com."
-                    </Typography>
-                  </ListItem>
-                </List>
+            </Section>
+            <Section>
+              <View style={tw('flex flex-col gap-6')}>
+                <Typography size="large" weight="bold">
+                  Scam or Fraud Indications Assessment
+                </Typography>
+                <Typography styles={[tw('leading-6')]}>{scamOrFraud?.summary}</Typography>
+                <View style={tw('flex flex-col gap-4')}>
+                  <Typography weight="bold">Scam or Fraud Findings</Typography>
+                  <List>
+                    {scamOrFraud?.indicators?.map((indicator, index) => (
+                      <ListItem key={index}>
+                        <Typography>
+                          {index + 1}. {indicator}
+                        </Typography>
+                      </ListItem>
+                    ))}
+                  </List>
+                </View>
               </View>
-            </View>
-          </Section>
-          <Footer
-            domain="www.ballerine.com"
-            contactEmail="support@ballerine.com"
-            companyName="Ballerine"
-          />
-          <Disclaimer />
-        </Grid>
-      </Wrapper>
-    </Page>
-  );
-};
+            </Section>
+            <Footer
+              domain="www.ballerine.com"
+              contactEmail="support@ballerine.com"
+              companyName="Ballerine"
+            />
+            <Disclaimer />
+          </Grid>
+        </Wrapper>
+      </Page>
+    );
+  },
+  WebsiteCompanyAnalysisSchema,
+);

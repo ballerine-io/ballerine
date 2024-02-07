@@ -1,12 +1,12 @@
 import { sanitizeString } from '@/utils';
 
 export const getPageInfoEntries = (
-  pageInfo: Record<string, unknown>,
+  pageInfo: Record<string, unknown> = {},
 ): { key: string; value: string }[] => {
   let values: { key: string; value: string }[] = [];
 
   for (const [key, value] of Object.entries(pageInfo)) {
-    if (typeof value === 'object') {
+    if (typeof value === 'object' && value !== null) {
       values = Array.isArray(value)
         ? values.concat({ key, value: String(value) })
         : values.concat(getPageInfoEntries(value as Record<string, unknown>));
