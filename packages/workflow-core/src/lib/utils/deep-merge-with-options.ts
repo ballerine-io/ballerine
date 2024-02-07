@@ -48,10 +48,12 @@ const mergeArraysByIndex = (arr1: unknown[], arr2: unknown[]) => {
   return result;
 };
 
+type ArrayMergeOption = 'concat' | 'replace' | 'by_id' | 'by_index';
+
 export const deepMergeWithOptions = (
   val1: UnknownRecord | unknown[],
   val2: UnknownRecord | unknown[],
-  arrayMergeOption = 'concat',
+  arrayMergeOption: ArrayMergeOption = 'concat',
 ) => {
   // Handle array inputs
   if (Array.isArray(val1) && Array.isArray(val2)) {
