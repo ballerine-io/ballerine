@@ -10,7 +10,7 @@ export default {
   component: WebsiteCompanyAnalysis,
 };
 
-const socialMediaReportData: WebsiteCompanyAnalysisData = {
+const websiteCompanyAnalysisData: WebsiteCompanyAnalysisData = {
   website: {
     url: 'https://example.com',
   },
@@ -45,10 +45,37 @@ const socialMediaReportData: WebsiteCompanyAnalysisData = {
   },
 };
 
-export const TransactionLaunderingTemplate = {
+export const Default = {
   render: () => (
     <_PDFTemplateBase>
-      <WebsiteCompanyAnalysis data={socialMediaReportData} />
+      <WebsiteCompanyAnalysis data={websiteCompanyAnalysisData} />
+    </_PDFTemplateBase>
+  ),
+};
+
+const websiteCompanyAnalysisEmptyData: WebsiteCompanyAnalysisData = {
+  website: {
+    url: 'https://example.com',
+  },
+  riskScore: 90,
+  companyName: 'Ballerine',
+  companyAnalysis: {
+    summary:
+      'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Inventore nostrum eum consectetur aspernatur! Iste commodi veniam esse consequuntur quas cum dolore, reiciendis officiis sint dignissimos.',
+    indicators: [
+      'Suspicious Website Company',
+      'Suspicious Website Company',
+      'Suspicious Website Company',
+    ],
+  },
+  scamOrFraud: null,
+  businessConsistency: null,
+};
+
+export const EmptyState = {
+  render: () => (
+    <_PDFTemplateBase>
+      <WebsiteCompanyAnalysis data={websiteCompanyAnalysisEmptyData} />
     </_PDFTemplateBase>
   ),
 };

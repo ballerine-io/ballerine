@@ -10,12 +10,18 @@ export const WebsiteCompanyAnalysisSchema = Type.Object({
     summary: Type.String({ default: '' }),
     indicators: Type.Array(Type.String()),
   }),
-  businessConsistency: Type.Object({
-    summary: Type.String({ default: '' }),
-    indicators: Type.Array(Type.String()),
-  }),
-  scamOrFraud: Type.Object({
-    summary: Type.String({ default: '' }),
-    indicators: Type.Array(Type.String()),
-  }),
+  businessConsistency: Type.Union([
+    Type.Object({
+      summary: Type.String({ default: '' }),
+      indicators: Type.Array(Type.String()),
+    }),
+    Type.Null(),
+  ]),
+  scamOrFraud: Type.Union([
+    Type.Object({
+      summary: Type.String({ default: '' }),
+      indicators: Type.Array(Type.String()),
+    }),
+    Type.Null(),
+  ]),
 });

@@ -95,19 +95,30 @@ export const WebsiteCompanyAnalysis = withDataValidation<WebsiteCompanyAnalysisP
                 <Typography size="large" weight="bold">
                   Business Consistency
                 </Typography>
-                <Typography styles={[tw('leading-6')]}>{businessConsistency?.summary}</Typography>
-                <View style={tw('flex flex-col gap-4')}>
-                  <Typography weight="bold">Business Inconsistencies Findings</Typography>
-                  <List>
-                    {businessConsistency?.indicators?.map((indicator, index) => (
-                      <ListItem key={index}>
-                        <Typography>
-                          {index + 1}. {indicator}
-                        </Typography>
-                      </ListItem>
-                    ))}
-                  </List>
-                </View>
+                {businessConsistency ? (
+                  <>
+                    <Typography styles={[tw('leading-6')]}>
+                      {businessConsistency?.summary}
+                    </Typography>
+                    <View style={tw('flex flex-col gap-4')}>
+                      <Typography weight="bold">Business Inconsistencies Findings</Typography>
+                      <List>
+                        {businessConsistency?.indicators?.map((indicator, index) => (
+                          <ListItem key={index}>
+                            <Typography>
+                              {index + 1}. {indicator}
+                            </Typography>
+                          </ListItem>
+                        ))}
+                      </List>
+                    </View>
+                  </>
+                ) : (
+                  <Typography styles={[tw('leading-6')]}>
+                    The company's name and associated business activities are consistent across
+                    various sources.
+                  </Typography>
+                )}
               </View>
             </Section>
             <Section>
@@ -115,19 +126,27 @@ export const WebsiteCompanyAnalysis = withDataValidation<WebsiteCompanyAnalysisP
                 <Typography size="large" weight="bold">
                   Scam or Fraud Indications Assessment
                 </Typography>
-                <Typography styles={[tw('leading-6')]}>{scamOrFraud?.summary}</Typography>
-                <View style={tw('flex flex-col gap-4')}>
-                  <Typography weight="bold">Scam or Fraud Findings</Typography>
-                  <List>
-                    {scamOrFraud?.indicators?.map((indicator, index) => (
-                      <ListItem key={index}>
-                        <Typography>
-                          {index + 1}. {indicator}
-                        </Typography>
-                      </ListItem>
-                    ))}
-                  </List>
-                </View>
+                {scamOrFraud ? (
+                  <>
+                    <Typography styles={[tw('leading-6')]}>{scamOrFraud?.summary}</Typography>
+                    <View style={tw('flex flex-col gap-4')}>
+                      <Typography weight="bold">Scam or Fraud Findings</Typography>
+                      <List>
+                        {scamOrFraud?.indicators?.map((indicator, index) => (
+                          <ListItem key={index}>
+                            <Typography>
+                              {index + 1}. {indicator}
+                            </Typography>
+                          </ListItem>
+                        ))}
+                      </List>
+                    </View>
+                  </>
+                ) : (
+                  <Typography styles={[tw('leading-6')]}>
+                    No reviews or complaints indicating scam or fraud found.
+                  </Typography>
+                )}
               </View>
             </Section>
             <Footer
