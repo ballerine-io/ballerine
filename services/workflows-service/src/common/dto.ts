@@ -24,9 +24,9 @@ export const validateOrderBy = (value: unknown, validColumns: readonly string[])
 };
 
 export class PageDto {
-  @ApiProperty()
+  @ApiProperty({ name: 'page[number]', example: 1 })
   number!: number;
 
-  @ApiProperty()
+  @ApiProperty({ name: 'page[size]', example: 20 })
   size!: number;
 }
