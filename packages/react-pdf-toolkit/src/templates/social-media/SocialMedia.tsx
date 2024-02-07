@@ -32,6 +32,9 @@ export const SocialMedia = withDataValidation<SocialMediaReportProps>(({ data })
   const { riskRank, riskIndicators, summary, website, ads } = data;
   const { facebook, instagram } = ads || {};
 
+  const facebookPageEntries = getPageInfoEntries(facebook?.pageInformation);
+  const instagramPageEntries = getPageInfoEntries(instagram?.pageInformation);
+
   return (
     <Page wrap={false}>
       <Wrapper>
@@ -68,13 +71,22 @@ export const SocialMedia = withDataValidation<SocialMediaReportProps>(({ data })
                 <Typography size="medium" weight="bold">
                   Risk Indicators
                 </Typography>
-                {Array.isArray(riskIndicators) && riskIndicators.length > 0 && (
+                {Array.isArray(riskIndicators) && riskIndicators.length > 0 ? (
                   <List>
                     {riskIndicators.map(violation => (
                       <ListItem prependIcon={<AlertIcon />} key={violation as string}>
                         <Typography>{violation}</Typography>
                       </ListItem>
                     ))}
+                  </List>
+                ) : (
+                  <List>
+                    <ListItem prependIcon={<AlertIcon />}>
+                      <Typography>No Social Media Presence</Typography>
+                    </ListItem>
+                    <ListItem prependIcon={<AlertIcon />}>
+                      <Typography>No Related Ads Detected</Typography>
+                    </ListItem>
                   </List>
                 )}
               </View>
@@ -93,67 +105,63 @@ export const SocialMedia = withDataValidation<SocialMediaReportProps>(({ data })
             <View style={tw('flex flex-col')}>
               <View style={tw('pb-6')}>
                 <Typography size="heading" weight="bold">
-                  Social Media Presence
+                  Social Media URLs
                 </Typography>
               </View>
               <View style={tw('flex flex-row justify-between pb-10')}>
                 <View style={tw('w-[230px] pr-2 flex flex-col gap-3 break-all overflow-hidden')}>
                   <Typography weight="bold">Facebook</Typography>
-                  <List>
-                    {getPageInfoEntries(facebook?.pageInformation).map(({ key, value }) => (
-                      <ListItem
-                        iconPosition="middle"
-                        prependIcon={<DotIcon size={2} />}
-                        key={value}
-                      >
-                        <View style={tw('flex flex-row gap-1')}>
-                          <Typography>{toTitleCase(key)}</Typography>
-                          <Typography>{':'}</Typography>
-                          <Typography>
-                            {isLink(value) ? (
-                              <Link href={value} url={new URL(value).hostname} />
-                            ) : (
-                              <Typography>{value}</Typography>
-                            )}
-                          </Typography>
-                        </View>
-                      </ListItem>
-                    ))}
-                  </List>
+                  {facebookPageEntries.length ? (
+                    <List>
+                      {facebookPageEntries.map(({ key, value }) => (
+                        <ListItem
+                          iconPosition="middle"
+                          prependIcon={<DotIcon size={2} />}
+                          key={value}
+                        >
+                          <View style={tw('flex flex-row gap-1')}>
+                            <Typography>{toTitleCase(key)}</Typography>
+                            <Typography>{':'}</Typography>
+                            <Typography>
+                              {isLink(value) ? (
+                                <Link href={value} url={new URL(value).hostname} />
+                              ) : (
+                                <Typography>{value}</Typography>
+                              )}
+                            </Typography>
+                          </View>
+                        </ListItem>
+                      ))}
+                    </List>
+                  ) : (
+                    <Typography>Not detected</Typography>
+                  )}
                 </View>
                 <View style={tw('w-[230px] pr-2 flex flex-col gap-3 break-all overflow-hidden')}>
                   <Typography weight="bold">Instagram</Typography>
-                  <List>
-                    {getPageInfoEntries(instagram?.pageInformation).map(({ key, value }) => (
-                      <ListItem prependIcon={<DotIcon size={2} />} key={value}>
-                        <View style={tw('flex flex-row gap-1')}>
-                          <Typography>{toTitleCase(key)}</Typography>
-                          <Typography>{':'}</Typography>
-                          <Typography>
-                            {isLink(value) ? (
-                              <Link href={value} url={new URL(value).hostname} />
-                            ) : (
-                              <Typography>{value}</Typography>
-                            )}
-                          </Typography>
-                        </View>
-                      </ListItem>
-                    ))}
-                  </List>
+                  {instagramPageEntries.length ? (
+                    <List>
+                      {instagramPageEntries.map(({ key, value }) => (
+                        <ListItem prependIcon={<DotIcon size={2} />} key={value}>
+                          <View style={tw('flex flex-row gap-1')}>
+                            <Typography>{toTitleCase(key)}</Typography>
+                            <Typography>{':'}</Typography>
+                            <Typography>
+                              {isLink(value) ? (
+                                <Link href={value} url={new URL(value).hostname} />
+                              ) : (
+                                <Typography>{value}</Typography>
+                              )}
+                            </Typography>
+                          </View>
+                        </ListItem>
+                      ))}
+                    </List>
+                  ) : (
+                    <Typography>Not detected</Typography>
+                  )}
                 </View>
               </View>
-              {/*Violations should be here*/}
-              {/* <View style={tw('flex flex-col gap-3 pb-10')}>
-              <Typography weight="bold">Violations Detected</Typography>
-              <List>
-                <ListItem prependIcon={<AlertIcon />}>
-                  <Typography>Illegal Substances</Typography>
-                </ListItem>
-                <ListItem prependIcon={<AlertIcon />}>
-                  <Typography>Potential Pharmaceuticals</Typography>
-                </ListItem>
-              </List>
-            </View> */}
               <View style={tw('flex flex-row justify-between')}>
                 {facebook?.imageUrl && (
                   <View style={tw('flex flex-col gap-3')}>
@@ -175,7 +183,6 @@ export const SocialMedia = withDataValidation<SocialMediaReportProps>(({ data })
                 {/* INSTAGRAM */}
                 {instagram?.imageUrl && (
                   <View style={tw('flex flex-col gap-3')}>
-                    {/* FACEBOOK */}
                     <Typography weight="bold">Image</Typography>
                     <View style={tw('pl-2')}>
                       <View style={tw('rounded-[6px] overflow-hidden')}>
@@ -198,58 +205,42 @@ export const SocialMedia = withDataValidation<SocialMediaReportProps>(({ data })
                 Related Ads
               </Typography>
             </View>
-            {/*Violations should be here*/}
-            {/* <View style={tw('flex flex-col gap-3 pb-6')}>
-            <Typography weight="bold">Violations Detected</Typography>
-            <List>
-              <ListItem prependIcon={<AlertIcon />}>
-                <Typography>Illegal Substances</Typography>
-              </ListItem>
-              <ListItem prependIcon={<AlertIcon />}>
-                <Typography>Potential Pharmaceuticals</Typography>
-              </ListItem>
-            </List>
-          </View> */}
-            {/* Ads summary */}
-            {/* <View style={tw('flex flex-col gap-3 pb-6')}>
-            <Typography weight="bold" size="medium">
-              Ads Summary
-            </Typography>
-            <Typography size="regular" styles={[tw('leading-6')]}>
-              Ballerine detected {'<number>'} ads that are operated by {'<website>'}. The analysis
-              of the ads reveals no immediate red flags or inconsistencies that would suggest
-              transaction laundering activities.
-            </Typography>
-          </View> */}
-            <View style={tw('flex flex-row justify-between')}>
-              {facebook?.pickedAd?.imageUrl && (
-                <View style={tw('flex flex-col gap-3')}>
-                  <Typography weight="bold">Facebook</Typography>
-                  <View style={tw('pl-2')}>
-                    <View style={tw('rounded-[6px] overflow-hidden')}>
-                      <Image width={260} height={260} src={facebook.pickedAd.imageUrl} />
+            {ads ? (
+              <View style={tw('flex flex-row justify-between')}>
+                {facebook?.pickedAd?.imageUrl && (
+                  <View style={tw('flex flex-col gap-3')}>
+                    <Typography weight="bold">Facebook</Typography>
+                    <View style={tw('pl-2')}>
+                      <View style={tw('rounded-[6px] overflow-hidden')}>
+                        <Image width={260} height={260} src={facebook.pickedAd.imageUrl} />
+                      </View>
+                    </View>
+                    <View style={tw('pt-2')}>
+                      <Link href={facebook?.pickedAd?.link} />
                     </View>
                   </View>
-                  <View style={tw('pt-2')}>
-                    <Link href={facebook?.pickedAd?.link} />
-                  </View>
-                </View>
-              )}
-              {instagram?.pickedAd?.imageUrl && (
-                <View style={tw('flex flex-col gap-3')}>
-                  <Typography weight="bold">Instagram</Typography>
-                  <View style={tw('pl-2')}>
-                    <View style={tw('rounded-[6px] overflow-hidden')}>
-                      <Image width={260} height={260} src={instagram?.pickedAd?.imageUrl} />
+                )}
+                {instagram?.pickedAd?.imageUrl && (
+                  <View style={tw('flex flex-col gap-3')}>
+                    <Typography weight="bold">Instagram</Typography>
+                    <View style={tw('pl-2')}>
+                      <View style={tw('rounded-[6px] overflow-hidden')}>
+                        <Image width={260} height={260} src={instagram?.pickedAd?.imageUrl} />
+                      </View>
                     </View>
-                  </View>
 
-                  <View style={tw('pt-2')}>
-                    <Link href={instagram?.pickedAd?.link} />
+                    <View style={tw('pt-2')}>
+                      <Link href={instagram?.pickedAd?.link} />
+                    </View>
                   </View>
-                </View>
-              )}
-            </View>
+                )}
+              </View>
+            ) : (
+              <View style={tw('flex flex-col gap-4')}>
+                <Typography weight="bold">Summary</Typography>
+                <Typography styles={[tw('text-justify leading-6')]}>No ads detected</Typography>
+              </View>
+            )}
           </Section>
           <Footer
             domain="www.ballerine.com"
