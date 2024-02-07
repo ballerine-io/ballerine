@@ -1,27 +1,43 @@
+import { sortDirections } from './../../common/dto';
 import { PageDto, validateOrderBy } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { AlertStatus, Alert, Prisma } from '@prisma/client';
+import { AlertStatus, Alert, Prisma, AlertState } from '@prisma/client';
 import { z } from 'zod';
 
 export class FilterDto {
-  @ApiProperty({ type: [String] })
+  @ApiProperty({ type: [String], required: false })
   assigneeId?: Array<string>;
 
-  @ApiProperty({ enum: AlertStatus, type: [String] })
+  @ApiProperty({ enum: AlertStatus, type: [String], required: false })
   status?: AlertStatus[];
+
+  @ApiProperty({ enum: AlertState, type: [String], required: false })
+  state?: AlertState[];
 }
 
 export class FindAlertsDto {
-  @ApiProperty()
+  @ApiProperty({ required: false })
   search?: string;
 
   @ApiProperty({ type: PageDto })
   page!: PageDto;
 
-  @ApiProperty({ type: FilterDto })
+  @ApiProperty({
+    required: false,
+    type: FilterDto,
+  })
   filter?: FilterDto;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: String,
+    required: false,
+    description: 'Column to sort by and direction separated by a colon',
+    examples: [
+      { value: 'createdAt:asc' },
+      { value: 'dataTimestamp:desc' },
+      { value: 'status:asc' },
+    ],
+  })
   orderBy?: string;
 }
 
@@ -34,13 +50,12 @@ type SortableByModel<T> = Exclude<SortableProperties<T>, undefined>[];
 
 const sortableColumnsAlerts: SortableByModel<Prisma.AlertOrderByWithRelationInput> = [
   'createdAt',
+  'dataTimestamp',
   'status',
 ];
 
-const sortDirections: (keyof typeof Prisma.SortOrder)[] = ['asc', 'desc'];
-
 export const FindAlertsSchema = z.object({
-  search: z.string().length(150).optional(),
+  search: z.string().min(1, 'Please enter a valid value').optional().or(z.literal('')),
   page: z.object({
     number: z.coerce.number().int().positive(),
     size: z.coerce.number().int().positive().max(100),
@@ -49,6 +64,15 @@ export const FindAlertsSchema = z.object({
     .custom<`${(typeof sortableColumnsAlerts)[number]}:${(typeof sortDirections)[number]}`>(value =>
       validateOrderBy(value, sortableColumnsAlerts),
     )
+    .transform(value => {
+      const [column = '', direction = ''] = value.split(':');
+
+      if (!column || !direction) throw new Error('Invalid orderBy');
+
+      return {
+        [column]: direction,
+      };
+    })
     .optional(),
   filter: z
     .object({
@@ -56,6 +80,7 @@ export const FindAlertsSchema = z.object({
         .array(z.union([z.literal('').transform(() => null), z.string().min(1)]))
         .optional(),
       status: z.array(z.nativeEnum(AlertStatus)).optional(),
+      state: z.array(z.nativeEnum(AlertState)).optional(),
     })
     .optional(),
 });
