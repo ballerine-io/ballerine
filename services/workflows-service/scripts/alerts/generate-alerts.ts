@@ -85,13 +85,15 @@ export const generateFakeAlertDefinition = async (
   const alertDefinitionId = faker.datatype.uuid();
 
   const createdRows = await prisma.alertDefinition.create({
+    include: {
+      alert: true, // Include all posts in the returned object
+    },
     data: {
       id: faker.datatype.uuid(),
       type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
       name: faker.lorem.words(3),
       enabled: faker.datatype.boolean(),
       description: faker.lorem.sentence(),
-      projectId: faker.datatype.uuid(),
       rulesetId: faker.datatype.number({
         min: 1,
         max: 10,
@@ -106,22 +108,24 @@ export const generateFakeAlertDefinition = async (
       config: { config: {} },
       tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
       additionalInfo: {},
-      project: {
-        connect: {
-          id: project.id,
-        },
-      },
-      customer: {
-        connect: {
-          id: customer.id,
-        },
-      },
       alert: {
         createMany: {
           data: Array.from({ length: 10 }, () => generateFakeAlert(alertDefinitionId)),
           skipDuplicates: true,
         },
       },
+      projectId: project.id,
+      // project: {
+      //   connect: {
+      //     id: project.id,
+      //   },
+      // },
+      // customer: {
+      //   connect: {
+      //     id: customer.id,
+      //   },
+      // },
+
       // project: {
       //     connectOrCreate: {
       //         where: {
