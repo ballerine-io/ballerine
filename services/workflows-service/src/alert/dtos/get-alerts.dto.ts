@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 export class FilterDto {
   @ApiProperty({ type: [String] })
-  assigneeId?: Array<string | null>;
+  assigneeId?: Array<string>;
 
   @ApiProperty({ enum: AlertStatus, type: [String] })
   status?: AlertStatus[];
