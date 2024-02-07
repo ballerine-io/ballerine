@@ -293,14 +293,23 @@
     },
     "certificateOfIncorporation": {
       "label": "公司成立证书",
-      "description": "不超过6个月以前的文件。"
+      "description": {
+        "3months": "不超过3个月以前的文件。",
+        "6months": "不超过6个月以前的文件。"
+      }
     },
     "businessRegistrationCertificate": {
       "label": "工商注册证书",
-      "description": "公证文件"
+      "description": {
+        "regular": "公证文件",
+        "3months": "公证文件（不超过3个月）"
+      }
     },
     "corporateTaxCertificate": {
       "label": "企业税务证书"
+    },
+    "proofOfAddress": {
+      "label": "地址证明"
     },
     "certificateOfGoodStanding": {
       "label": "良好信用证明书",
