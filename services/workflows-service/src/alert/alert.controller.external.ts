@@ -1,3 +1,4 @@
+import { FindAlertsDto, FindAlertsSchema } from './dtos/get-alerts.dto';
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { AlertService } from '@/alert/alert.service';
@@ -6,8 +7,10 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
-import { AlertDefinition } from '@prisma/client';
+import { AlertDefinition, Alert } from '@prisma/client';
 import { type TProjectId } from '@/types';
+import * as errors from '../errors';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 
 @swagger.ApiTags('Alerts')
 @common.Controller('external/alerts')
@@ -29,5 +32,19 @@ export class AlertControllerExternal {
   ): Promise<AlertDefinition> {
     // Assuming create method in AlertService accepts CreateAlertDto and returns AlertDefinition
     return await this.service.create(createAlertDto, currentProjectId);
+  }
+
+  @common.Get('/')
+  @swagger.ApiCreatedResponse({
+    type: Object, // TODO: Set type
+  })
+  @swagger.ApiOkResponse({ type: Object }) // TODO: Set type
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async getAll(
+    @common.Body() findAlertsDto: FindAlertsDto,
+    @ProjectIds() projectIds: TProjectId[],
+  ) {
+    return await this.service.getAlerts(findAlertsDto, projectIds);
   }
 }

@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Business, Customer, EndUser, Prisma, PrismaClient } from '@prisma/client';
+import { Business, Customer, EndUser, Prisma, PrismaClient, Project } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import {
@@ -30,9 +30,10 @@ import {
   baseFilterDefinitionSelect,
   baseFilterEndUserSelect,
 } from './filters';
-import { generateTransactions } from './workflows/generate-transactions';
+import { generateTransactions } from './alerts/generate-transactions';
 import { generateKycManualReviewRuntimeAndToken } from './workflows/runtime/geneate-kyc-manual-review-runtime-and-token';
 import { Type } from '@sinclair/typebox';
+import { generateFakeAlertDefinition } from './alerts/generate-alerts';
 
 seed(10).catch(error => {
   console.error(error);
@@ -113,25 +114,31 @@ async function seed(bcryptSalt: string | number) {
   console.info('Seeding database...');
   const client = new PrismaClient();
   await generateDynamicDefinitionForE2eTest(client);
-  const customer = await createCustomer(
+  const customer = (await createCustomer(
     client,
     '1',
     env.API_KEY,
     'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/img/ballerine_logo.svg',
     '',
     `webhook-shared-secret-${env.API_KEY}`,
-  );
-  const customer2 = await createCustomer(
+  )) as Customer;
+
+  const customer2 = (await createCustomer(
     client,
     '2',
     `${env.API_KEY}2`,
     'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/img/ballerine_logo.svg',
     '',
     `webhook-shared-secret-${env.API_KEY}2`,
-  );
-  const project1 = await createProject(client, customer, '1');
+  )) as Customer;
+  const project1 = (await createProject(client, customer, '1')) as Project;
 
   await generateTransactions(client, { projectId: project1.id });
+
+  await generateFakeAlertDefinition(client, {
+    project: project1,
+    customer: customer,
+  });
 
   const project2 = await createProject(client, customer2, '2');
   const users = [
