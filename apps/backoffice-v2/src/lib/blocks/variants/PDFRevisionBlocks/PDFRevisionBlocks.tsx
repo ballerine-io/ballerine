@@ -6,7 +6,7 @@ export const PDFRevisionBlocks = () => {
   const { blocks } = usePDFRevisionBlocks();
 
   return (
-    <div data-attr="123" className="h-full">
+    <div className="h-full">
       <BlocksComponent blocks={blocks} cells={cells}>
         {(Cell, cell) => <Cell {...cell} />}
       </BlocksComponent>
