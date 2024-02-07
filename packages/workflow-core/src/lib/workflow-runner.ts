@@ -125,7 +125,6 @@ export class WorkflowRunner {
       ...(workflowContext && Object.keys(workflowContext.machineContext ?? {})?.length
         ? workflowContext.machineContext
         : definition.context ?? {}),
-      workflowRuntimeId: runtimeId,
     };
 
     // use initial state or provided state
@@ -240,7 +239,12 @@ export class WorkflowRunner {
       stateNames: iterarivePluginParams.stateNames,
       //@ts-ignore
       iterateOn: this.fetchTransformers(iterarivePluginParams.iterateOn),
-      action: (context: TContext) => actionPlugin!.invoke(context, this.#__config),
+      action: (context: TContext) =>
+        actionPlugin!.invoke({
+          ...context,
+          workflowRuntimeConfig: this.#__config,
+          workflowRuntimeId: this.#__runtimeId,
+        }),
       successAction: iterarivePluginParams.successAction,
       errorAction: iterarivePluginParams.errorAction,
     };
@@ -582,7 +586,11 @@ export class WorkflowRunner {
 
   private async __invokeCommonPlugin(commonPlugin: CommonPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const { callbackAction, error } = await commonPlugin.invoke?.(this.#__context, this.#__config);
+    const { callbackAction, error } = await commonPlugin.invoke?.({
+      ...this.#__context,
+      workflowRuntimeConfig: this.#__config,
+      workflowRuntimeId: this.#__runtimeId,
+    });
 
     if (!!error) {
       this.#__context.pluginsOutput = {
@@ -598,10 +606,11 @@ export class WorkflowRunner {
 
   private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(
-      this.#__context,
-      this.#__config,
-    );
+    const { callbackAction, responseBody, error } = await apiPlugin.invoke?.({
+      ...this.#__context,
+      workflowRuntimeConfig: this.#__config,
+      workflowRuntimeId: this.#__runtimeId,
+    });
 
     if (error) {
       console.error('Error invoking plugin: ', apiPlugin.name, this.#__context, error);
