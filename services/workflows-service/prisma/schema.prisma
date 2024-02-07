@@ -30,6 +30,7 @@ model User {
   updatedAt           DateTime              @updatedAt
   lastActiveAt        DateTime?
   workflowRuntimeData WorkflowRuntimeData[]
+  alerts              Alert[]
 }
 
 model Entities {
@@ -216,7 +217,8 @@ model WorkflowRuntimeData {
   parentWorkflowRuntimeData WorkflowRuntimeData?       @relation("ParentChild", fields: [parentRuntimeDataId], references: [id])
   childWorkflowsRuntimeData WorkflowRuntimeData[]      @relation("ParentChild")
   WorkflowRuntimeDataToken  WorkflowRuntimeDataToken[]
-
+  alerts                    Alert[]
+  
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 
@@ -532,18 +534,21 @@ model TransactionRecord {
 }
 
 enum AlertState {
-  Triggered
-  Resolved
-  Acknowledged
-  Dismissed
-  Escalated
-  UnderReview
+  // New
+  Triggered     @map("101")
+  // Pending
+  UnderReview   @map("201")
+  Escalated     @map("202")
+  // Completed
+  Resolved      @map("301")
+  Acknowledged  @map("302")
+  Dismissed     @map("303")
 }
 
 enum AlertStatus {
-  New
-  Pending
-  Completed
+  New       @map("100")
+  Pending   @map("200")
+  Completed @map("300")
 }
 
 enum AlertType {
@@ -557,57 +562,67 @@ enum AlertType {
 
 model AlertDefinition {
   id          String @id @default(cuid())
-  projectId   String
+  type        AlertType?
   name        String
-  description String
+  enabled     Boolean    @default(true)
+  description String?
+
+  projectId   String
+  project Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+
   rulesetId   Int // Set of rules reference
   ruleId      Int // Specific rule within the ruleset
 
   inlineRule Json? // JSON format for rule definitions
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  createdBy  String
+  createdBy  String   @default("SYSTEM")
   modifiedBy String
-  enabled    Boolean    @default(true)
-  type       AlertType? // Type of the alert
 
-  dedupeStrategies Json // Deduplication strategies
-  config           Json // Additional configurations
+  dedupeStrategies Json 
+  config           Json 
 
   tags           String[] // Tags for the alert
   additionalInfo Json // Additional information
 
-  workflowDefinitionId String? // Reference to a workflow definition
-
-  project Project @relation(fields: [projectId], references: [id])
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  
   alert   Alert[]
 
   @@index([projectId])
 }
 
 model Alert {
-  id                String      @id @default(cuid())
-  businessId        String? // Reference to a Business
-  endUserId         String? // Reference to an EndUser
-  projectId         String
-  dataTimestamp     DateTime
-  state             AlertState // Using AlertState enum
-  status            AlertStatus // Using AlertStatus enum
-  tags              String[] // Tags for the alert
-  alertDefinitionId String
+  id                     String      @id @default(cuid())
 
-  executionDetails Json // Execution details
+  alertDefinitionId      String
+  alertDefinition        AlertDefinition @relation(fields: [alertDefinitionId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+
+  projectId              String
+  project                Project         @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+
+  businessId             String?
+  business               Business?       @relation(fields: [businessId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  
+  endUserId              String? 
+  endUser                EndUser?        @relation(fields: [endUserId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  
+  dataTimestamp          DateTime
+  state                  AlertState 
+  status                 AlertStatus 
+  tags                   String[]
+
+  executionDetails      Json // Execution details
+
+  assignee              User?       @relation(fields: [assigneeId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  assigneeId            String?
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
-  handledBy             String? // User who handled the alert
+
   workflowRuntimeDataId String?
+  workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  project         Project         @relation(fields: [projectId], references: [id])
-  business        Business?       @relation(fields: [businessId], references: [id])
-  endUser         EndUser?        @relation(fields: [endUserId], references: [id])
-  alertDefinition AlertDefinition @relation(fields: [alertDefinitionId], references: [id])
-
+  @@index([assigneeId])
   @@index([businessId])
   @@index([endUserId])
   @@index([projectId])
