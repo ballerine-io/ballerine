@@ -51,6 +51,7 @@ import {
   TransformerPlugin,
   TransformerPluginParams,
 } from './plugins/common-plugin/transformer-plugin';
+import { deepMergeWithOptions } from './utils';
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
@@ -450,12 +451,29 @@ export class WorkflowRunner {
       },
     );
 
+    const deepMergeContext = assign(
+      (
+        context,
+        {
+          payload,
+        }: {
+          payload: {
+            arrayMergeOption: 'replace' | 'by_id' | 'by_index' | 'concat';
+            newContext: Record<PropertyKey, unknown>;
+          };
+        },
+      ) => deepMergeWithOptions(context, payload.newContext, payload.arrayMergeOption),
+    );
+
     return createMachine(
       {
         predictableActionArguments: true,
         on: {
           UPDATE_CONTEXT: {
             actions: updateContext,
+          },
+          DEEP_MERGE_CONTEXT: {
+            actions: deepMergeContext,
           },
         },
         ...definition,

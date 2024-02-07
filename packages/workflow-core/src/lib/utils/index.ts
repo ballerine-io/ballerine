@@ -5,3 +5,4 @@ export { JmespathTransformer } from './context-transformers';
 export { HelpersTransformer } from './context-transformers';
 export { JsonSchemaValidator } from './context-validator';
 export { validateDefinitionLogic } from './definition-validator';
+export { deepMergeWithOptions } from './deep-merge-with-options';
