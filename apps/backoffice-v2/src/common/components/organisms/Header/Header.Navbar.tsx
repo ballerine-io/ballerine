@@ -24,7 +24,7 @@ export const Navbar: FunctionComponent = () => {
 
         return (
           <>
-            {!!navItem.children?.length && (
+            {!!navItem.children && (
               <Collapsible
                 key={`${navItem.key}-${isActiveFilterGroup}`}
                 defaultOpen={isActiveFilterGroup}
@@ -34,7 +34,7 @@ export const Navbar: FunctionComponent = () => {
                   className={ctw(
                     `flex w-full items-center gap-x-2 rounded-lg p-2 text-sm font-semibold text-[#8D93A5] [&[data-state=open]>svg]:rotate-0`,
                     {
-                      'bg-white text-foreground': isActiveFilterGroup,
+                      'bg-white text-[#20232E]': isActiveFilterGroup,
                     },
                   )}
                 >
@@ -54,27 +54,31 @@ export const Navbar: FunctionComponent = () => {
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <ul className={`w-full space-y-4 ps-[1.9rem]`}>
-                    {navItem.children?.map(childNavItem => (
-                      <NavItem
-                        href={childNavItem.href}
-                        key={childNavItem.key}
-                        className={ctw(
-                          `gap-x-1 px-1.5 text-xs capitalize text-[#8D93A5] active:border`,
-                          {
-                            'font-semibold text-foreground': childNavItem.filterId === filterId,
-                            'aria-[current=page]:font-normal': childNavItem.filterId !== filterId,
-                          },
-                        )}
-                      >
-                        <span>{childNavItem.icon}</span>
-                        {childNavItem.text}
-                      </NavItem>
-                    ))}
+                    {!!navItem.children?.length &&
+                      navItem.children?.map(childNavItem => (
+                        <NavItem
+                          href={childNavItem.href}
+                          key={childNavItem.key}
+                          className={ctw(
+                            `gap-x-1 px-1.5 text-xs capitalize text-[#8D93A5] active:border`,
+                            {
+                              'font-semibold text-[#20232E]': childNavItem.filterId === filterId,
+                              'aria-[current=page]:font-normal': childNavItem.filterId !== filterId,
+                            },
+                          )}
+                        >
+                          <span>{childNavItem.icon}</span>
+                          {childNavItem.text}
+                        </NavItem>
+                      ))}
+                    {!navItem.children?.length && (
+                      <li className={`pe-1.5 ps-2.5 text-xs text-[#8D93A5]`}>No items found</li>
+                    )}
                   </ul>
                 </CollapsibleContent>
               </Collapsible>
             )}
-            {!navItem.children?.length && (
+            {!navItem.children && (
               <ul className={`w-full space-y-2`} key={navItem.key}>
                 <NavItem
                   href={navItem.href}
@@ -82,7 +86,7 @@ export const Navbar: FunctionComponent = () => {
                   className={ctw(
                     `flex items-center gap-x-1 px-1.5 py-1 text-sm font-semibold capitalize text-[#8D93A5] active:border`,
                     {
-                      'bg-white text-foreground': navItem.filterId === filterId,
+                      'bg-white text-[#20232E]': navItem.filterId === filterId,
                     },
                   )}
                 >
