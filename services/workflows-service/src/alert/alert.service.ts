@@ -34,9 +34,18 @@ export class AlertService {
       },
     };
 
+    findAlertsDto.filter?.status;
     return this.alertRepository.findMany(
       {
         select,
+        where: {
+          status: {
+            in: findAlertsDto.filter?.status,
+          },
+          assigneeId: {
+            in: findAlertsDto.filter?.assigneeId,
+          },
+        },
         take: findAlertsDto.page.size,
         skip: (findAlertsDto.page.number - 1) * findAlertsDto.page.size,
       },
