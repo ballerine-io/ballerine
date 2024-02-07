@@ -440,16 +440,7 @@ export class WorkflowRunner {
       },
     };
 
-    const updateContext = assign<Record<PropertyKey, any>, IUpdateContextEvent>(
-      (context, event) => {
-        context = {
-          ...context,
-          ...event.payload,
-        };
-
-        return context;
-      },
-    );
+    const updateContext = assign((_, event: IUpdateContextEvent) => event.payload);
 
     const deepMergeContext = assign(
       (
