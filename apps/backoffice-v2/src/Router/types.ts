@@ -1,16 +1,19 @@
+import { ReactNode } from 'react';
+
 export type TRouteWithoutChildren = {
-  text: string;
+  filterId?: string;
+  text: ReactNode | ReactNode[];
   href: string;
   key: string;
   icon: JSX.Element;
 };
 
 export type TRouteWithChildren = {
-  text: string;
+  text: ReactNode | ReactNode[];
   children: Array<Omit<TRouteWithoutChildren, 'icon'>>;
   key: string;
 };
 
 export type TRoute = TRouteWithChildren | TRouteWithoutChildren;
 
-export type TRoutes = Array<TRoute>;
+export type TRoutes = TRoute[];

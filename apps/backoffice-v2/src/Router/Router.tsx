@@ -17,8 +17,14 @@ import { UnauthenticatedLayout } from '@/domains/auth/components/Unauthenticated
 import { Locale } from '@/pages/Locale/Locale.page';
 import { unauthenticatedLayoutLoader } from '@/domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
 import { Document } from '@/pages/Document/Document.page';
+import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
 
 const router = createBrowserRouter([
+  {
+    path: '/*',
+    element: <NotFoundRedirect />,
+    errorElement: <RouteError />,
+  },
   {
     path: '/',
     element: <Root />,
