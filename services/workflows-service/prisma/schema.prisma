@@ -30,6 +30,7 @@ model User {
   updatedAt           DateTime              @updatedAt
   lastActiveAt        DateTime?
   workflowRuntimeData WorkflowRuntimeData[]
+  Alert               Alert[]
 }
 
 model Entities {
@@ -84,7 +85,7 @@ model EndUser {
   project                  Project                    @relation(fields: [projectId], references: [id])
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   TransactionRecord        TransactionRecord[]
-  Alert           Alert[]
+  Alert                    Alert[]
 
   @@index([endUserType])
   @@index([approvalState])
@@ -139,7 +140,7 @@ model Business {
   projectId         String
   project           Project             @relation(fields: [projectId], references: [id])
   TransactionRecord TransactionRecord[]
-  Alert    Alert[]
+  Alert             Alert[]
 
   @@index([companyName])
   @@index([approvalState])
@@ -322,7 +323,7 @@ model Project {
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   TransactionRecord        TransactionRecord[]
   AlertDefinition          AlertDefinition[]
-  Alert           Alert[]
+  Alert                    Alert[]
 
   @@unique([name, customerId])
   @@index(name)
@@ -473,13 +474,13 @@ model TransactionRecord {
   recipientSanctionListMatchStatus String? // Indicator if the transaction involves an entity on the sanction list
   recipientPEPStatus               String? // Indicator if the transaction involves a politically exposed person
 
-  paymentMethod    String? // Payment method used for the transaction
-  paymentType      String? // Payment type used for the transaction
-  paymentChannel   String? // Payment channel used for the transaction
-  paymentIssuer    String? // Payment issuer used for the transaction
-  paymentGateway   String? // Payment gateway used for the transaction
-  paymentAcquirer  String? // Payment acquirer used for the transaction
-  paymentProcessor String? // Payment processor used for the transaction
+  paymentMethod    String? // Payment method used for the transaction (e.g., credit card, bank transfer)
+  paymentType      String? // Payment type used for the transaction (e.g., one-time, recurring)
+  paymentChannel   String? // Payment channel used for the transaction (e.g., online, in-person)
+  paymentIssuer    String? // Payment issuer used for the transaction (e.g., Visa, Mastercard)
+  paymentGateway   String? // Payment gateway used for the transaction (e.g., Stripe, PayPal)
+  paymentAcquirer  String? // Payment acquirer used for the transaction   (e.g., Adyen, Worldpay)
+  paymentProcessor String? // Payment processor used for the transaction (e.g., Braintree, Authorize.Net)
 
   cardFingerprint   String?
   cardIssuedCountry String?
@@ -553,8 +554,6 @@ enum AlertType {
   // Add other alert types as needed
 }
 
-// ... (Other models and enums)
-
 model AlertDefinition {
   id          String @id @default(cuid())
   projectId   String
@@ -600,7 +599,8 @@ model Alert {
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
-  handledBy             String? // User who handled the alert
+  assignee              User?    @relation(fields: [assigneeId], references: [id], onDelete: SetNull)
+  assigneeId            String?
   workflowRuntimeDataId String?
 
   project         Project         @relation(fields: [projectId], references: [id])
@@ -613,4 +613,3 @@ model Alert {
   @@index([projectId])
   @@index([alertDefinitionId])
 }
-
