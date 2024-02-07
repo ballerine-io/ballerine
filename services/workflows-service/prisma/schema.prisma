@@ -85,7 +85,7 @@ model EndUser {
   project                  Project                    @relation(fields: [projectId], references: [id])
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   TransactionRecord        TransactionRecord[]
-  Alert           Alert[]
+  Alert                    Alert[]
 
   @@index([endUserType])
   @@index([approvalState])
@@ -140,7 +140,7 @@ model Business {
   projectId         String
   project           Project             @relation(fields: [projectId], references: [id])
   TransactionRecord TransactionRecord[]
-  Alert    Alert[]
+  Alert             Alert[]
 
   @@index([companyName])
   @@index([approvalState])
@@ -218,7 +218,7 @@ model WorkflowRuntimeData {
   childWorkflowsRuntimeData WorkflowRuntimeData[]      @relation("ParentChild")
   WorkflowRuntimeDataToken  WorkflowRuntimeDataToken[]
   alerts                    Alert[]
-  
+
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 
@@ -324,7 +324,7 @@ model Project {
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   TransactionRecord        TransactionRecord[]
   AlertDefinition          AlertDefinition[]
-  Alert           Alert[]
+  Alert                    Alert[]
 
   @@unique([name, customerId])
   @@index(name)
@@ -444,6 +444,58 @@ enum TransactionRecordStatus {
   Failed
 }
 
+enum PaymentMethod {
+  CreditCard
+  DebitCard
+  BankTransfer
+  PayPal
+  ApplePay
+  GooglePay
+}
+
+enum PaymentType {
+  Instant
+  Scheduled
+  Recurring
+  Refund
+}
+
+enum PaymentChannel {
+  Online
+  MobileApp
+  InStore
+  Telephone
+  MailOrder
+}
+
+enum PaymentIssuer {
+  Chase
+  BankOfAmerica
+  Citibank
+  AmericanExpress
+}
+
+enum PaymentGateway {
+  Stripe
+  PayPal
+  Square
+  Adyen
+}
+
+enum PaymentAcquirer {
+  WellsFargo
+  FirstData
+  Elavon
+  WorldPay
+}
+
+enum PaymentProcessor {
+  Visa
+  MasterCard
+  Discover
+  AmericanExpress
+}
+
 model TransactionRecord {
   id                       String                  @id @default(cuid())
   transactionCorrelationId String                  @unique @db.VarChar
@@ -475,13 +527,13 @@ model TransactionRecord {
   recipientSanctionListMatchStatus String? // Indicator if the transaction involves an entity on the sanction list
   recipientPEPStatus               String? // Indicator if the transaction involves a politically exposed person
 
-  paymentMethod    String? // Payment method used for the transaction
-  paymentType      String? // Payment type used for the transaction
-  paymentChannel   String? // Payment channel used for the transaction
-  paymentIssuer    String? // Payment issuer used for the transaction
-  paymentGateway   String? // Payment gateway used for the transaction
-  paymentAcquirer  String? // Payment acquirer used for the transaction
-  paymentProcessor String? // Payment processor used for the transaction
+  paymentMethod    PaymentMethod?
+  paymentType      PaymentType?
+  paymentChannel   PaymentChannel?
+  paymentIssuer    PaymentIssuer?
+  paymentGateway   PaymentGateway?
+  paymentAcquirer  PaymentAcquirer?
+  paymentProcessor PaymentProcessor?
 
   cardFingerprint   String?
   cardIssuedCountry String?
@@ -535,14 +587,14 @@ model TransactionRecord {
 
 enum AlertState {
   // New
-  Triggered     @map("101")
+  Triggered    @map("101")
   // Pending
-  UnderReview   @map("201")
-  Escalated     @map("202")
+  UnderReview  @map("201")
+  Escalated    @map("202")
   // Completed
-  Resolved      @map("301")
-  Acknowledged  @map("302")
-  Dismissed     @map("303")
+  Resolved     @map("301")
+  Acknowledged @map("302")
+  Dismissed    @map("303")
 }
 
 enum AlertStatus {
@@ -561,63 +613,63 @@ enum AlertType {
 // ... (Other models and enums)
 
 model AlertDefinition {
-  id          String @id @default(cuid())
+  id          String     @id @default(cuid())
   type        AlertType?
   name        String
   enabled     Boolean    @default(true)
   description String?
 
-  projectId   String
-  project Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  rulesetId   Int // Set of rules reference
-  ruleId      Int // Specific rule within the ruleset
+  rulesetId Int // Set of rules reference
+  ruleId    Int // Specific rule within the ruleset
 
   inlineRule Json? // JSON format for rule definitions
-  createdBy  String   @default("SYSTEM")
+  createdBy  String @default("SYSTEM")
   modifiedBy String
 
-  dedupeStrategies Json 
-  config           Json 
+  dedupeStrategies Json
+  config           Json
 
   tags           String[] // Tags for the alert
   additionalInfo Json // Additional information
 
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  
-  alert   Alert[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  alert Alert[]
 
   @@index([projectId])
 }
 
 model Alert {
-  id                     String      @id @default(cuid())
+  id String @id @default(cuid())
 
-  alertDefinitionId      String
-  alertDefinition        AlertDefinition @relation(fields: [alertDefinitionId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  alertDefinitionId String
+  alertDefinition   AlertDefinition @relation(fields: [alertDefinitionId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  projectId              String
-  project                Project         @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  businessId             String?
-  business               Business?       @relation(fields: [businessId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-  
-  endUserId              String? 
-  endUser                EndUser?        @relation(fields: [endUserId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-  
-  dataTimestamp          DateTime
-  state                  AlertState 
-  status                 AlertStatus 
-  tags                   String[]
+  businessId String?
+  business   Business? @relation(fields: [businessId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  executionDetails      Json // Execution details
+  endUserId String?
+  endUser   EndUser? @relation(fields: [endUserId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  assignee              User?       @relation(fields: [assigneeId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-  assigneeId            String?
+  dataTimestamp DateTime
+  state         AlertState
+  status        AlertStatus
+  tags          String[]
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  executionDetails Json // Execution details
+
+  assignee   User?   @relation(fields: [assigneeId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  assigneeId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   workflowRuntimeDataId String?
   workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onUpdate: Cascade, onDelete: NoAction)
@@ -628,4 +680,3 @@ model Alert {
   @@index([projectId])
   @@index([alertDefinitionId])
 }
-
