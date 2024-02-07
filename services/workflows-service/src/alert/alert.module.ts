@@ -16,11 +16,13 @@ import axiosRetry from 'axios-retry';
 import { isAxiosError } from 'axios';
 import { getHttpStatusFromAxiosError, interceptAxiosRequests } from '@/common/http-service/utils';
 import { WebhookEventEmitterService } from './webhook-manager/webhook-event-emitter.service';
+import { ProjectModule } from '@/project/project.module';
 
 @Module({
   imports: [
     ACLModule,
     PrismaModule,
+    ProjectModule,
     HttpModule.register({
       timeout: 5000,
       maxRedirects: 10,

@@ -1,16 +1,45 @@
+import { AlertRepository } from '@/alert/alert.repository';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { AlertDefinition } from '@prisma/client';
+import { Alert, AlertDefinition } from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { TProjectId } from '@/types';
+import { FindAlertsDto } from './dtos/get-alerts.dto';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 @Injectable()
 export class AlertService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly logger: AppLoggerService,
+    private readonly alertRepository: AlertRepository,
+  ) {}
 
   async create(dto: CreateAlertDefinitionDto, projectId: TProjectId): Promise<AlertDefinition> {
     // #TODO: Add validation logic
     return await this.prisma.alertDefinition.create({ data: dto as any });
+  }
+
+  async getAlerts(findAlertsDto: FindAlertsDto, projectIds: TProjectId[]) {
+    const select = {
+      status: true,
+      state: true,
+      dataTimestamp: true,
+      assigneeId: true,
+      assignee: {
+        select: {
+          firstName: true,
+          lastName: true,
+        },
+      },
+    };
+
+    return this.alertRepository.findMany(
+      {
+        select,
+      },
+      projectIds,
+    );
   }
 
   // Function to retrieve all alert definitions

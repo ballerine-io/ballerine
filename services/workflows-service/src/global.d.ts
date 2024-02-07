@@ -3,6 +3,7 @@ declare module '@prisma/client' {
     WorkflowRuntimeData as _WorkflowRuntimeData,
     WorkflowDefinition as _WorkflowDefinition,
     Customer as Customer_,
+    Alert as _Alert,
   } from '@prisma/client/index';
   export * from '@prisma/client/index';
 
@@ -14,7 +15,7 @@ declare module '@prisma/client' {
     config: WorkflowConfig | any;
   };
 
-  export type Customer = Omit<_Customer, 'subscriptions'> & {
-    subscriptions: TCustomerSubscription | any;
+  export type Alert = Omit<_Alert, 'executionDetails'> & {
+    executionDetails: TCustomerSubscription | any;
   };
 }
