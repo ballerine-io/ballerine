@@ -60,6 +60,7 @@
     "@hookform/resolvers": "^3.1.0",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-aspect-ratio": "^1.0.3",
+    "@radix-ui/react-avatar": "^1.0.3",
     "@radix-ui/react-checkbox": "^1.0.1",
     "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-dialog": "1.0.4",

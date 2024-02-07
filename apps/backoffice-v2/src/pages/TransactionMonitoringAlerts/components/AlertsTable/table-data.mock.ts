@@ -19,6 +19,15 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
+    date: '2024-02-01',
+    merchant: 'SuperMart',
+    severity: 'Critical',
+    alertDetails: 'Unauthorized transaction',
+    amountOfTxs: '5',
+    assignee: 'Unassigned',
+    status: 'Pending',
+  },
+  {
     date: '2024-02-02',
     merchant: 'ElectroTech',
     severity: 'Medium',
@@ -33,7 +42,7 @@ export const tableData: TableDataMock[] = [
     severity: 'Low',
     alertDetails: 'Possible duplicate transaction',
     amountOfTxs: '3',
-    assignee: 'Bob Johnson',
+    assignee: 'Unassigned',
     status: 'Pending',
   },
   {
