@@ -1,4 +1,8 @@
+import { Prisma } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
+import { ZodError, ZodIssueCode } from 'zod';
+
+export const sortDirections: (keyof typeof Prisma.SortOrder)[] = ['asc', 'desc'];
 
 export const validateOrderBy = (value: unknown, validColumns: readonly string[]) => {
   if (typeof value !== 'string') {
