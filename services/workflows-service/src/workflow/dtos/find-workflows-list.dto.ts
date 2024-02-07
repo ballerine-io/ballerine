@@ -1,4 +1,4 @@
-import { PageDto, validateOrderBy } from '@/common/dto';
+import { PageDto, sortDirections, validateOrderBy } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { WorkflowRuntimeDataStatus } from '@prisma/client';
 import { z } from 'zod';
@@ -53,7 +53,6 @@ export const FindWorkflowsListSchema = z.object({
     .optional(),
 });
 
-const sortDirections = ['asc', 'desc'] as const;
 const sortableColumnsIndividuals = ['createdAt', 'firstName', 'lastName', 'email'] as const;
 const sortableColumnsBusinesses = ['createdAt', 'companyName'] as const;
 
