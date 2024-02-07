@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import type { TProjectIds } from '@/types';
 import { Prisma, Alert } from '@prisma/client';
+import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
 export class AlertRepository {
-  constructor(protected readonly prisma: PrismaService) {}
+  constructor(
+    protected readonly prisma: PrismaService,
+    protected readonly scopeService: ProjectScopeService,
+  ) {}
 
   // Method to create an alert
   async create<T extends Prisma.AlertCreateArgs>(
@@ -14,14 +18,14 @@ export class AlertRepository {
     return await this.prisma.alert.create<T>(args);
   }
 
-  // // Method to find many alerts
-  // async findMany<T extends Prisma.AlertFindManyArgs>(
-  //   args: Prisma.SelectSubset<T, Prisma.AlertFindManyArgs>,
-  //   projectIds: TProjectIds,
-  // ): Promise<Alert[]> {
-  //   // const queryArgs = this.scopeService.scopeFindMany(args, projectIds);
-  //   // return await this.prisma.alert.findMany(queryArgs);
-  // }
+  // Method to find many alerts
+  async findMany<T extends Prisma.AlertFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.AlertFindManyArgs>,
+    projectIds: TProjectIds,
+  ): Promise<Alert[]> {
+    const queryArgs = this.scopeService.scopeFindMany(args, projectIds);
+    return await this.prisma.alert.findMany(queryArgs);
+  }
 
   // Method to find a single alert by ID
   async findById<T extends Omit<Prisma.AlertFindFirstOrThrowArgs, 'where'>>(
