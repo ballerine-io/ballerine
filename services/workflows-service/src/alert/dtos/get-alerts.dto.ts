@@ -5,14 +5,29 @@ import { AlertStatus, Alert, Prisma, AlertState } from '@prisma/client';
 import { z } from 'zod';
 
 export class FilterDto {
-  @ApiProperty({ type: [String], required: false })
+  @ApiProperty({
+    type: [String],
+    required: false,
+    name: 'filter[assigneeId][0]',
+  })
   assigneeId?: Array<string>;
 
-  @ApiProperty({ enum: AlertStatus, type: [String], required: false })
-  status?: AlertStatus[];
+  @ApiProperty({
+    enum: AlertStatus,
+    type: [String],
+    required: false,
+    name: 'filter[status][0]',
+  })
+  status?: Array<AlertStatus>;
 
-  @ApiProperty({ enum: AlertState, type: [String], required: false })
-  state?: AlertState[];
+  @ApiProperty({
+    enum: AlertState,
+    type: [String],
+    required: false,
+    name: 'filter[state][0]',
+    isArray: true,
+  })
+  state?: Array<AlertState>;
 }
 
 export class FindAlertsDto {
