@@ -508,24 +508,9 @@ model TransactionRecord {
   transactionStatus        TransactionRecordStatus @default(Completed)
   transactionStatusReason  String? // Reason for the transaction status
 
-  senderAccountId               String? // Account ID of the sender
-  senderName                    String? // Name of the sender
-  senderCorrelationId           String?
-  senderCountry                 String? // Country of the sender
-  senderIpAddress               String? // IP address of the transaction initiator
-  senderGeoLocation             String? // Geolocation of the transaction initiator
-  senderUserAgent               String? // User agent of the device used for the transaction
-  senderPEPStatus               String? // Indicator if the transaction involves a politically exposed person
-  senderSanctionListMatchStatus String? // Indicator if the transaction involves an entity on the sanction list
-  senderVerificationStatus      VerificationStatus? // Enum for verification status
-
-  recipientAccountId               String? // Account ID of the recipient
-  recipientName                    String? // Name of the recipient
-  recipientCorrelationId           String? // Name of the recipient
-  recipientCountry                 String? // Country of the recipient
-  recipientVerificationStatus      VerificationStatus? // Enum for verification status
-  recipientSanctionListMatchStatus String? // Indicator if the transaction involves an entity on the sanction list
-  recipientPEPStatus               String? // Indicator if the transaction involves a politically exposed person
+  originatorIpAddress   String? // IP address of the transaction initiator
+  originatorGeoLocation String? // Geolocation of the transaction initiator
+  originatorUserAgent   String? // User agent of the device used for the transaction
 
   paymentMethod    PaymentMethod?
   paymentType      PaymentType?
@@ -575,6 +560,12 @@ model TransactionRecord {
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
+
+  originatorId String?
+  originator   Counterparty? @relation("OriginatingCounterparty", fields: [originatorId], references: [id])
+
+  beneficiaryId String?
+  beneficiary   Counterparty? @relation("BenefitingCounterparty", fields: [beneficiaryId], references: [id])
 
   @@index([businessId])
   @@index([endUserId])
@@ -674,9 +665,78 @@ model Alert {
   workflowRuntimeDataId String?
   workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
+  counterpartyId String?
+  counterparty   Counterparty? @relation(fields: [counterpartyId], references: [id])
+
   @@index([assigneeId])
   @@index([businessId])
   @@index([endUserId])
   @@index([projectId])
   @@index([alertDefinitionId])
+  @@index([counterpartyId])
+}
+
+enum CounterpartyType {
+  Individual
+  Company
+  Government
+  NonProfit
+}
+
+enum RiskCategory {
+  Low
+  Medium
+  High
+}
+
+enum ComplianceStatus {
+  Compliant
+  NonCompliant
+  UnderReview
+}
+
+enum PEPStatus {
+  NotApplicable // The counterparty is not a politically exposed person.
+  PendingReview // The status of the counterparty being a politically exposed person is pending review.
+  Confirmed // The counterparty has been confirmed as a politically exposed person.
+}
+
+enum SanctionListMatchStatus {
+  NotListed // The counterparty is not found on any sanction list.
+  PendingReview // The counterparty's status against sanction lists is pending review.
+  Listed // The counterparty is listed on a sanction list.
+}
+
+model Counterparty {
+  id                      String                   @id @default(cuid())
+  firstName               String?                  @db.VarChar
+  lastName                String?                  @db.VarChar
+  email                   String?                  @db.Text
+  phone                   String?                  @db.VarChar
+  correlationId           String? // Unifies senderCorrelationId and recipientCorrelationId
+  type                    String // Individual, Company, etc.
+  country                 String // Unifies senderCountry and recipientCountry
+  PEPStatus               PEPStatus? // Enum for PEP status
+  sanctionListMatchStatus SanctionListMatchStatus? // Enum for sanction list match status
+  verificationStatus      VerificationStatus? // Unifies senderVerificationStatus and recipientVerificationStatus
+  sortCode                String?
+  dateOfBirth             DateTime?
+  bankCountry             String?
+  state                   String?
+  address                 String?
+  city                    String?
+  postcode                String?
+  riskScore               Float? // Risk score associated with the counterparty
+  monitoringStatus        Boolean                  @default(true) // Whether the counterparty is under active monitoring
+  lastRiskScoreUpdate     DateTime? // Last time the risk score was updated
+  complianceStatus        ComplianceStatus? // Compliant, Non-Compliant, Under Review
+
+  // Relations
+  originatingTransactions TransactionRecord[] @relation("OriginatingCounterparty")
+  benefitingTransactions  TransactionRecord[] @relation("BenefitingCounterparty")
+  alerts                  Alert[]
+
+  @@index([country])
+  @@index([correlationId])
+  @@index([email])
 }
