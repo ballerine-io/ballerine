@@ -37,6 +37,8 @@ export class AlertService {
     return this.alertRepository.findMany(
       {
         select,
+        take: findAlertsDto.page.size,
+        skip: (findAlertsDto.page.number - 1) * findAlertsDto.page.size,
       },
       projectIds,
     );
