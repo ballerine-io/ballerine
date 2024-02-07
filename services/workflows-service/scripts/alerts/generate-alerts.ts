@@ -35,40 +35,8 @@ export const generateFakeAlertDefinition = async (
     customer: Customer;
   },
 ) => {
-  // const customerId = `${faker.datatype.number({min: 10000})}`
-
-  // const customer = {
-  //     id: customerId,
-  //     displayName: faker.company.name(),
-  //     name: faker.company.name(),
-  //     authenticationConfiguration: {
-  //       apiType: 'API_KEY',
-  //       authValue: '11111', // Assuming apiKey is a string of 20 alphanumeric characters
-  //       validUntil: '', // You can generate a random date for validUntil if needed
-  //       isValid: '', // You can generate a random boolean for isValid if needed
-  //     },
-  //     logoImageUri: faker.image.imageUrl(),
-  //   };
-
-  //   const projectId = `${faker.datatype.number({min: 10000})}`
-
-  //   prisma.project.upsert({
-  //     where: {
-  //       id: `project-${projectId}`,
-  //     },
-  //     update: {},
-  //     create: {
-  //       id: `project-${projectId}`,
-  //       name: `Project ${projectId}`,
-  //       customerId: customer.id,
-  //     },
-  //   });
-
-  // const project = await createProject(prisma, customer, '1');
-
-  const generateFakeAlert = (alertDefinitionId: string) => {
+  const generateFakeAlert = () => {
     return {
-      alertDefinitionId,
       dataTimestamp: faker.date.past(),
       state: faker.helpers.arrayElement(Object.values(AlertState)),
       status: faker.helpers.arrayElement(Object.values(AlertStatus)),
@@ -82,74 +50,51 @@ export const generateFakeAlertDefinition = async (
     };
   };
 
-  const alertDefinitionId = faker.datatype.uuid();
-
-  const createdRows = await prisma.alertDefinition.create({
-    include: {
-      alert: true, // Include all posts in the returned object
-    },
-    data: {
-      id: faker.datatype.uuid(),
-      type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
-      name: faker.lorem.words(3),
-      enabled: faker.datatype.boolean(),
-      description: faker.lorem.sentence(),
-      rulesetId: faker.datatype.number({
-        min: 1,
-        max: 10,
-      }),
-      ruleId: faker.datatype.number({
-        min: 1,
-        max: 10,
-      }),
-      createdBy: faker.internet.userName(),
-      modifiedBy: faker.internet.userName(),
-      dedupeStrategies: { strategy: {} },
-      config: { config: {} },
-      tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
-      additionalInfo: {},
-      alert: {
-        createMany: {
-          data: Array.from({ length: 10 }, () => generateFakeAlert(alertDefinitionId)),
-          skipDuplicates: true,
-        },
+  return Array.from({
+    length: faker.datatype.number({
+      min: 5,
+      max: 10,
+    }),
+  }).forEach(async () => {
+    return await prisma.alertDefinition.create({
+      include: {
+        alert: true, // Include all posts in the returned object
       },
-      projectId: project.id,
-      // project: {
-      //   connect: {
-      //     id: project.id,
-      //   },
-      // },
-      // customer: {
-      //   connect: {
-      //     id: customer.id,
-      //   },
-      // },
-
-      // project: {
-      //     connectOrCreate: {
-      //         where: {
-      //             id: project.id,
-      //             name_customerId: {
-      //                 name: project.name,
-      //                 customerId: project.customerId,
-      //             },
-      //         },
-      //         create: {
-      //             id: project.id,
-      //             name: project.name,
-      //             customerId: project.customerId,
-      //             customer: {
-      //                 connectOrCreate: {
-      //                     where: {
-      //                         id: customer.id,
-      //                     },
-      //                     create: customer
-      //                 }
-      //             }
-      //         }
-      //     }
-      // },
-    },
+      data: {
+        type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
+        name: faker.lorem.words(3),
+        enabled: faker.datatype.boolean(),
+        description: faker.lorem.sentence(),
+        rulesetId: faker.datatype.number({
+          min: 1,
+          max: 10,
+        }),
+        ruleId: faker.datatype.number({
+          min: 1,
+          max: 10,
+        }),
+        createdBy: faker.internet.userName(),
+        modifiedBy: faker.internet.userName(),
+        dedupeStrategies: { strategy: {} },
+        config: { config: {} },
+        tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
+        additionalInfo: {},
+        alert: {
+          createMany: {
+            data: Array.from(
+              {
+                length: faker.datatype.number({
+                  min: 5,
+                  max: 10,
+                }),
+              },
+              () => generateFakeAlert(),
+            ),
+            skipDuplicates: true,
+          },
+        },
+        projectId: project.id,
+      },
+    });
   });
 };
