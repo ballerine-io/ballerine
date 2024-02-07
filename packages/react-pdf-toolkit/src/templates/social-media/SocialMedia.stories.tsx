@@ -62,10 +62,71 @@ const socialMediaReportData: SocialMediaReportData = {
   },
 };
 
-export const SocialMediaTemplate = {
+export const Default = {
   render: () => (
     <_PDFTemplateBase>
       <SocialMedia data={socialMediaReportData} />
+    </_PDFTemplateBase>
+  ),
+};
+
+const socialMediaReportSingleAdData: SocialMediaReportData = {
+  website: {
+    url: 'https://example.com',
+  },
+  riskRank: 90,
+  riskIndicators: [],
+  summary:
+    "An absence of social media presence and a lack of online advertising associated with the website were detected. Such absence is atypical for established e-commerce sites and raises concerns about the website's legitimacy. Typically, social media engagement and online advertising serve as key indicators of active business operations and customer outreach. The absence of these elements may suggest potential operational issues or a deliberate attempt to avoid public scrutiny, both of which warrant further investigation when assessing the website's credibility and legitimacy",
+  ads: {
+    facebook: {
+      pageInformation: {
+        facebookPage: 'Height Increasing Elevator Shoes',
+        facebookID: '203247813140137',
+        creationDate: '23 Dec, 2048',
+        categories: 'Page, Business & Economy Website',
+        address: '238 Duoxi, lunjiao shunde',
+        phoneNumber: '+86 186 6452 0856',
+        email: 'service@topoutshoes.com',
+        likes: '3.5K',
+        followers: '3.3K',
+      },
+      imageUrl:
+        'https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*',
+      link: 'https://facebook.com',
+      pickedAd: {
+        imageUrl:
+          'https://hips.hearstapps.com/hmg-prod/images/dog-puppy-on-garden-royalty-free-image-1586966191.jpg?crop=0.752xw:1.00xh;0.175xw,0&resize=1200:*',
+        link: 'https://facebook.com',
+      },
+    },
+    instagram: null,
+  },
+};
+
+export const SingleAd = {
+  render: () => (
+    <_PDFTemplateBase>
+      <SocialMedia data={socialMediaReportSingleAdData} />
+    </_PDFTemplateBase>
+  ),
+};
+
+const socialMediaReportEmptyData: SocialMediaReportData = {
+  website: {
+    url: 'https://example.com',
+  },
+  riskRank: 90,
+  riskIndicators: [],
+  summary:
+    "An absence of social media presence and a lack of online advertising associated with the website were detected. Such absence is atypical for established e-commerce sites and raises concerns about the website's legitimacy. Typically, social media engagement and online advertising serve as key indicators of active business operations and customer outreach. The absence of these elements may suggest potential operational issues or a deliberate attempt to avoid public scrutiny, both of which warrant further investigation when assessing the website's credibility and legitimacy",
+  ads: null,
+};
+
+export const Empty = {
+  render: () => (
+    <_PDFTemplateBase>
+      <SocialMedia data={socialMediaReportEmptyData} />
     </_PDFTemplateBase>
   ),
 };
