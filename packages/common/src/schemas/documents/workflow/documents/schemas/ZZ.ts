@@ -211,6 +211,14 @@ export const getUniversalDocuments = (): TDocument[] => {
       propertiesSchema: {},
     },
     {
+      category: 'proof_of_address',
+      type: 'general_document',
+      issuer: { country: 'ZZ' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: {},
+    },
+    {
       category: 'general_documents',
       type: 'supplementary_document',
       issuer: { country: 'ZZ' },

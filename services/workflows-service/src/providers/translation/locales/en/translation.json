@@ -71,6 +71,8 @@
     "associatedCompanies": "Associated companies",
     "associatedCompaniesDescription": "Add all companies that own more than 25% of the company.",
     "noCompaniesWithMoreThan": "There are no companies with more than 25%",
+    "policiesAndComplianceDocuments": "Policies and Compliance Documents",
+    "additionalRequirements": "Additional Requirements",
     "email": {
       "label": "Email",
       "hint": "name@companyhk.com"
@@ -308,14 +310,60 @@
     },
     "certificateOfIncorporation": {
       "label": "Certificate of Incorporation",
-      "description": "Not older than 6 months."
+      "description": {
+        "3months": "Not older than 3 months.",
+        "6months": "Not older than 6 months."
+      }
     },
     "businessRegistrationCertificate": {
       "label": "Business Registration Certificate",
-      "description": "Notarized document"
+      "description": {
+        "regular": "Notarized document",
+        "3months": "Notarized document (Not older than 3 months.)"
+      }
     },
     "corporateTaxCertificate": {
       "label": "Corporate Tax Certificate"
+    },
+    "proofOfAddress": {
+      "label": "Proof of Address"
+    },
+    "copyOfBusinessLicense": {
+      "label": "Copy of Business License"
+    },
+    "memorandumOfArticle": {
+      "label": "Memorandum of Article (M&A)"
+    },
+    "businessOwnershipStructureChart": {
+      "label": "Business Ownership Structure Chart"
+    },
+    "tenancyAgreement": {
+      "label": "Tenancy Agreement"
+    },
+    "taxReturn": {
+      "label": "Tax Return",
+      "description": "IRAS notice of assessment"
+    },
+    "settlementBankAccountStatement": {
+      "label": "Settlement bank account statement"
+    },
+    "financialStatements": {
+      "label": "Financial Statements"
+    },
+    "latest3MonthsCardProcessingStatements": {
+      "label": "Latest 3 months card processing statements",
+      "description": "Including credit card charge back and refund information"
+    },
+    "transactionInformation": {
+      "label": "Transaction Information",
+      "description": "e.g. daily summary report"
+    },
+    "psiDssDocuments": {
+      "label": "PSI DSS Documents"
+    },
+    "mailingAcknowledgementOrFormSample": {
+      "label": "Mailing, acknowledgement or form sample",
+      "description": "Applicable for Mail / Order / Form Application"
     },
     "certificateOfGoodStanding": {
       "label": "Certificate of Good Standing",
