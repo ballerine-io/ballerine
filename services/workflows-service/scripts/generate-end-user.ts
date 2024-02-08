@@ -48,7 +48,7 @@ export const businessIds = [
 ];
 
 export const generateBusiness = ({
-  id,
+  id: id = faker.datatype.uuid(),
   companyName = faker.company.name(),
   registrationNumber = faker.datatype.uuid(),
   legalForm = faker.company.companySuffix(),
@@ -76,7 +76,7 @@ export const generateBusiness = ({
   workflow,
   projectId,
 }: {
-  id: string;
+  id?: string;
   companyName?: string;
   registrationNumber?: string;
   legalForm?: string;
@@ -99,7 +99,7 @@ export const generateBusiness = ({
     registrationDocument: string;
     financialStatement: string;
   };
-  workflow: {
+  workflow?: {
     runtimeId?: string;
     workflowDefinitionId: string;
     workflowDefinitionVersion: number;
@@ -108,9 +108,7 @@ export const generateBusiness = ({
   };
   projectId: string;
 }): Prisma.BusinessCreateInput => {
-  const { runtimeId, workflowDefinitionId, workflowDefinitionVersion, context, state } = workflow;
-
-  return {
+  const data: Prisma.BusinessCreateInput = {
     id,
     companyName,
     registrationNumber,
@@ -130,7 +128,11 @@ export const generateBusiness = ({
     shareholderStructure: JSON.stringify(shareholderStructure),
     project: { connect: { id: projectId } },
     approvalState: 'PROCESSING',
-    workflowRuntimeData: {
+  };
+
+  if (workflow) {
+    const { runtimeId, workflowDefinitionId, workflowDefinitionVersion, context, state } = workflow;
+    data.workflowRuntimeData = {
       create: {
         id: runtimeId,
         workflowDefinitionVersion,
@@ -141,8 +143,10 @@ export const generateBusiness = ({
         state: state,
         tags: [StateTag.MANUAL_REVIEW],
       },
-    },
-  };
+    };
+  }
+
+  return data;
 };
 
 export const generateEndUser = ({
