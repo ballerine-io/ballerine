@@ -9,7 +9,7 @@ interface Props {
 
 export const ErrorsList = ({ errors, type = 'error', className }: Props) => {
   return (
-    <ul className={clsx('pl-2', className)}>
+    <ul className={clsx('pl-1', className)}>
       {errors.map((error, index) => (
         <li key={`error-list-item-${index}`}>
           <ErrorMessage
