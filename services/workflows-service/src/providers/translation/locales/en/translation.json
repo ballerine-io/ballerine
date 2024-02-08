@@ -16,7 +16,7 @@
     "mainContact": "Main Contact",
     "bankingDetails": "Banking Details",
     "storeInfo": "Store Info",
-    "directorsDescription": "Add all of the directors of the company.",
+    "directorsDescription": "<p>Add all the directors of the company.</p>",
     "imShareholder": "I own 25% or more of the company",
     "imDirector": "I am a director in the company",
     "shareholder": "Shareholder",
