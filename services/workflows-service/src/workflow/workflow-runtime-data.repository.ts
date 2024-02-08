@@ -16,6 +16,8 @@ import type { PrismaTransaction, TProjectIds } from '@/types';
 
 export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 
+type StateRelatedColumns = 'state' | 'status' | 'context' | 'tags';
+
 @Injectable()
 export class WorkflowRuntimeDataRepository {
   constructor(
@@ -51,7 +53,18 @@ export class WorkflowRuntimeDataRepository {
   async findOne<T extends Prisma.WorkflowRuntimeDataFindFirstArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindFirstArgs>,
     projectIds: TProjectIds,
+    lockForUpdate = false,
   ): Promise<WorkflowRuntimeData | null> {
+    if (lockForUpdate) {
+      await this.prisma.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "id" = ${
+        args.where?.id
+      } ${
+        projectIds?.length
+          ? Prisma.sql`AND "projectId" in (${projectIds?.join(',')})`
+          : Prisma.sql``
+      } FOR UPDATE`; // @TODO: Ignore the rest of the args?
+    }
+
     return await this.prisma.workflowRuntimeData.findFirst(
       this.scopeService.scopeFindOne(args, projectIds),
     );
@@ -72,13 +85,29 @@ export class WorkflowRuntimeDataRepository {
     return await this.prisma.workflowRuntimeData.findFirstOrThrow({ where: { id } });
   }
 
-  async updateById<T extends Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>(
+  async updateById(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>,
+    args: {
+      data: Omit<Prisma.WorkflowRuntimeDataUncheckedUpdateInput, StateRelatedColumns>;
+    },
   ): Promise<WorkflowRuntimeData> {
     return await this.prisma.workflowRuntimeData.update({
       where: { id },
       ...args,
+    });
+  }
+
+  async updateStateById(
+    id: string,
+    {
+      data,
+    }: {
+      data: Pick<Prisma.WorkflowRuntimeDataUncheckedUpdateInput, StateRelatedColumns>;
+    },
+  ): Promise<WorkflowRuntimeData> {
+    return await this.prisma.workflowRuntimeData.update({
+      where: { id },
+      data: data,
     });
   }
 
