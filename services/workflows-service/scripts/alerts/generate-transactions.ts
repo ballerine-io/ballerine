@@ -15,6 +15,7 @@ export const generateTransactions = async (
     projectId: string;
   },
 ) => {
+  const counterparties = [] as any;
   const transactions = [] as any;
 
   for (let i = 0; i < 1000; i++) {
