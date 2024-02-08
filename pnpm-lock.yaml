@@ -2423,6 +2423,9 @@ importers:
       axios:
         specifier: ^1.6.2
         version: 1.6.2(debug@4.3.4)
+      axios-retry:
+        specifier: ^4.0.0
+        version: 4.0.0(axios@1.6.2)
       bcrypt:
         specifier: 5.1.0
         version: 5.1.0
@@ -2507,6 +2510,9 @@ importers:
       winston:
         specifier: ^3.9.0
         version: 3.11.0
+      yaml:
+        specifier: ^2.3.4
+        version: 2.3.4
       zod:
         specifier: ^3.22.3
         version: 3.22.4
@@ -16647,6 +16653,15 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
+  /axios-retry@4.0.0(axios@1.6.2):
+    resolution: {integrity: sha512-F6P4HVGITD/v4z9Lw2mIA24IabTajvpDZmKa6zq/gGwn57wN5j1P3uWrAV0+diqnW6kTM2fTqmWNfgYWGmMuiA==}
+    peerDependencies:
+      axios: 0.x || 1.x
+    dependencies:
+      axios: 1.6.2(debug@4.3.4)
+      is-retry-allowed: 2.2.0
+    dev: false
+
   /axios@0.19.2:
     resolution: {integrity: sha512-fjgm5MvRHLhx+osE2xoekY70AhARk3a6hkN+3Io1jc00jtquGvxYlKlsFUhmUET0V5te6CcZI7lcv2Ym61mjHA==}
     deprecated: Critical security vulnerability fixed in v0.21.1. For more information, see https://github.com/axios/axios/pull/3410
@@ -23154,6 +23169,11 @@ packages:
     dependencies:
       is-unc-path: 1.0.0
     dev: true
+
+  /is-retry-allowed@2.2.0:
+    resolution: {integrity: sha512-XVm7LOeLpTW4jV19QSH38vkswxoLud8sQ57YwJVTPWdiaI9I8keEhGFpBlslyVsgdQy4Opg8QOLb8YRgsyZiQg==}
+    engines: {node: '>=10'}
+    dev: false
 
   /is-set@2.0.2:
     resolution: {integrity: sha512-+2cnTEZeY5z/iXGbLhPrOAaK/Mau5k5eXq9j14CpRTftq0pAJu2MwVRSZhyZWBzx3o6X795Lz6Bpb6R0GKf37g==}
@@ -32909,4 +32929,5 @@ packages:
   file:services/workflows-service/plugins/verify-repository-project-scoped:
     resolution: {directory: services/workflows-service/plugins/verify-repository-project-scoped, type: directory}
     name: eslint-plugin-ballerine
+    version: 1.0.0
     dev: true

@@ -83,6 +83,8 @@ model EndUser {
   projectId                String
   project                  Project                    @relation(fields: [projectId], references: [id])
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
+  TransactionRecord        TransactionRecord[]
+  Alert           Alert[]
 
   @@index([endUserType])
   @@index([approvalState])
@@ -134,8 +136,10 @@ model Business {
   endUsers             EndUser[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id])
+  projectId         String
+  project           Project             @relation(fields: [projectId], references: [id])
+  TransactionRecord TransactionRecord[]
+  Alert    Alert[]
 
   @@index([companyName])
   @@index([approvalState])
@@ -316,6 +320,9 @@ model Project {
   workflowDefinitions      WorkflowDefinition[]
   uiDefinitions            UiDefinition[]
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
+  TransactionRecord        TransactionRecord[]
+  AlertDefinition          AlertDefinition[]
+  Alert           Alert[]
 
   @@unique([name, customerId])
   @@index(name)
@@ -402,3 +409,208 @@ model DataMigrationVersion {
   @@index([migratedAt])
   @@index([status, version])
 }
+
+enum TransactionRecordType {
+  Deposit
+  Withdrawal
+  Transfer
+  Payment
+  Refund
+  Chargeback
+}
+
+enum ReviewStatus {
+  Pending
+  Reviewed
+  Flagged
+  Cleared
+}
+
+enum VerificationStatus {
+  Unverified
+  Verified
+  Pending
+}
+
+enum TransactionRecordStatus {
+  New
+  Pending
+  Active
+  Completed
+  Rejected
+  Cancelled
+  Failed
+}
+
+model TransactionRecord {
+  id                       String                  @id @default(cuid())
+  transactionCorrelationId String                  @unique @db.VarChar
+  transactionDate          DateTime
+  transactionAmount        Float // Amount of the transaction
+  transactionCurrency      String // Currency of the transaction
+  transactionDescription   String? // Description of the transaction
+  transactionCategory      String? // Category of the transaction
+  transactionType          TransactionRecordType? // Enum for transaction type
+  transactionStatus        TransactionRecordStatus @default(Completed)
+  transactionStatusReason  String? // Reason for the transaction status
+
+  senderAccountId               String? // Account ID of the sender
+  senderName                    String? // Name of the sender
+  senderCorrelationId           String?
+  senderCountry                 String? // Country of the sender
+  senderIpAddress               String? // IP address of the transaction initiator
+  senderGeoLocation             String? // Geolocation of the transaction initiator
+  senderUserAgent               String? // User agent of the device used for the transaction
+  senderPEPStatus               String? // Indicator if the transaction involves a politically exposed person
+  senderSanctionListMatchStatus String? // Indicator if the transaction involves an entity on the sanction list
+  senderVerificationStatus      VerificationStatus? // Enum for verification status
+
+  recipientAccountId               String? // Account ID of the recipient
+  recipientName                    String? // Name of the recipient
+  recipientCorrelationId           String? // Name of the recipient
+  recipientCountry                 String? // Country of the recipient
+  recipientVerificationStatus      VerificationStatus? // Enum for verification status
+  recipientSanctionListMatchStatus String? // Indicator if the transaction involves an entity on the sanction list
+  recipientPEPStatus               String? // Indicator if the transaction involves a politically exposed person
+
+  paymentMethod    String? // Payment method used for the transaction
+  paymentType      String? // Payment type used for the transaction
+  paymentChannel   String? // Payment channel used for the transaction
+  paymentIssuer    String? // Payment issuer used for the transaction
+  paymentGateway   String? // Payment gateway used for the transaction
+  paymentAcquirer  String? // Payment acquirer used for the transaction
+  paymentProcessor String? // Payment processor used for the transaction
+
+  cardFingerprint   String?
+  cardIssuedCountry String?
+  completed3ds      Boolean?
+  cardType          String?
+  cardIssuer        String?
+  cardBrand         String?
+
+  cardExpiryMonth String?
+  cardExpiryYear  String?
+  cardHolderName  String?
+  cardTokenized   String?
+
+  tags             Json?
+  reviewStatus     String?
+  reviewerComments String?
+  auditTrail       Json?
+
+  unusualActivityFlags Json? // Flags indicating unusual activity in the transaction
+  riskScore            Float? // Risk score assigned to the transaction
+  regulatoryAuthority  String? // Regulatory authority overseeing the business involved
+
+  additionalInfo Json? // Additional information related to the transaction
+
+  // Fields for merchant transactions
+  productName        String?
+  productDescription String?
+  productPrice       Float?
+  productId          String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Nullable relations to allow association with either, both, or none
+  businessId String?
+  business   Business? @relation(fields: [businessId], references: [id])
+  endUserId  String?
+  endUser    EndUser?  @relation(fields: [endUserId], references: [id])
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  @@index([businessId])
+  @@index([endUserId])
+  @@index([transactionType])
+  @@index([transactionDate])
+  @@index([reviewStatus])
+  @@index([projectId])
+  @@index([transactionCorrelationId])
+}
+
+enum AlertState {
+  Triggered
+  Resolved
+  Acknowledged
+  Dismissed
+  Escalated
+  UnderReview
+}
+
+enum AlertStatus {
+  New
+  Pending
+  Completed
+}
+
+enum AlertType {
+  HighRiskTransaction
+  DormantAccountActivity
+  UnusualPattern
+  // Add other alert types as needed
+}
+
+// ... (Other models and enums)
+
+model AlertDefinition {
+  id          String @id @default(cuid())
+  projectId   String
+  name        String
+  description String
+  rulesetId   Int // Set of rules reference
+  ruleId      Int // Specific rule within the ruleset
+
+  inlineRule Json? // JSON format for rule definitions
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  createdBy  String
+  modifiedBy String
+  enabled    Boolean    @default(true)
+  type       AlertType? // Type of the alert
+
+  dedupeStrategies Json // Deduplication strategies
+  config           Json // Additional configurations
+
+  tags           String[] // Tags for the alert
+  additionalInfo Json // Additional information
+
+  workflowDefinitionId String? // Reference to a workflow definition
+
+  project Project @relation(fields: [projectId], references: [id])
+  alert   Alert[]
+
+  @@index([projectId])
+}
+
+model Alert {
+  id                String      @id @default(cuid())
+  businessId        String? // Reference to a Business
+  endUserId         String? // Reference to an EndUser
+  projectId         String
+  dataTimestamp     DateTime
+  state             AlertState // Using AlertState enum
+  status            AlertStatus // Using AlertStatus enum
+  tags              String[] // Tags for the alert
+  alertDefinitionId String
+
+  executionDetails Json // Execution details
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  handledBy             String? // User who handled the alert
+  workflowRuntimeDataId String?
+
+  project         Project         @relation(fields: [projectId], references: [id])
+  business        Business?       @relation(fields: [businessId], references: [id])
+  endUser         EndUser?        @relation(fields: [endUserId], references: [id])
+  alertDefinition AlertDefinition @relation(fields: [alertDefinitionId], references: [id])
+
+  @@index([businessId])
+  @@index([endUserId])
+  @@index([projectId])
+  @@index([alertDefinitionId])
+}
+

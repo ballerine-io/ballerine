@@ -30,6 +30,7 @@ import {
   baseFilterDefinitionSelect,
   baseFilterEndUserSelect,
 } from './filters';
+import { generateTransactions } from './workflows/generate-transactions';
 import { generateKycManualReviewRuntimeAndToken } from './workflows/runtime/geneate-kyc-manual-review-runtime-and-token';
 import { Type } from '@sinclair/typebox';
 
@@ -129,6 +130,9 @@ async function seed(bcryptSalt: string | number) {
     `webhook-shared-secret-${env.API_KEY}2`,
   );
   const project1 = await createProject(client, customer, '1');
+
+  await generateTransactions(client, { projectId: project1.id });
+
   const project2 = await createProject(client, customer2, '2');
   const users = [
     {

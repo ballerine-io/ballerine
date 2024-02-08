@@ -10,8 +10,9 @@ import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { UserStatus } from '@prisma/client';
 
-@swagger.ApiTags('internal/users')
+@swagger.ApiExcludeController()
 @common.Controller('internal/users')
+@swagger.ApiExcludeController()
 export class UserControllerInternal {
   constructor(protected readonly service: UserService) {}
 

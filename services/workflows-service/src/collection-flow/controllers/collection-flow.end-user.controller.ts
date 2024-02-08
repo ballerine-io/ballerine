@@ -11,6 +11,7 @@ import { EndUserService } from '@/end-user/end-user.service';
 
 @Public()
 @UseTokenAuthGuard()
+@swagger.ApiExcludeController()
 @Controller('collection-flow/end-user')
 export class CollectionFlowEndUserController {
   constructor(
