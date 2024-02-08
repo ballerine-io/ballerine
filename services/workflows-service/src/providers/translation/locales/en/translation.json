@@ -311,15 +311,15 @@
     "certificateOfIncorporation": {
       "label": "Certificate of Incorporation",
       "description": {
-        "3months": "Not older than 3 months.",
-        "6months": "Not older than 6 months."
+        "3months": "Not older than 3 months",
+        "6months": "Not older than 6 months"
       }
     },
     "businessRegistrationCertificate": {
       "label": "Business Registration Certificate",
       "description": {
         "regular": "Notarized document",
-        "3months": "Notarized document (Not older than 3 months.)"
+        "3months": "Notarized document (Not older than 3 months)"
       }
     },
     "corporateTaxCertificate": {
@@ -448,7 +448,7 @@
     "documents": {
       "bankStatement": {
         "label": "Bank Statement",
-        "description": "Not older than 6 months.",
+        "description": "Not older than 6 months",
         "error": "Bank Statement is Required"
       },
       "companyStructure": {
@@ -462,11 +462,11 @@
       },
       "utilityBill": {
         "label": "Company Utility Bill as Proof of Address",
-        "description": "Not older than 6 months."
+        "description": "Not older than 6 months"
       },
       "certificateOfIncorporation": {
         "label": "Certificate of Incorporation",
-        "description": "Not older than 6 months."
+        "description": "Not older than 6 months"
       },
       "businessUtilityBill": {
         "label": "Utility Bill",
@@ -474,7 +474,7 @@
       },
       "proofOfAddress": {
         "label": "Company Utility Bill as Proof of Address",
-        "description": "Not older than 6 months.",
+        "description": "Not older than 6 months",
         "error": "Proof of Address is Required"
       }
     },
