@@ -19,7 +19,7 @@ export const useDirectorsRegistryProvidedBlock = directorsRegistryProvided => {
           })
           .addCell({
             type: 'subheading',
-            value: 'Registry-provided Data',
+            value: 'Registry-Provided Data',
             props: {
               className: 'mb-4',
             },

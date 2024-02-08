@@ -8,7 +8,7 @@ const __httpStatusFromAxiosMap = {
   ERR_NETWORK: HttpStatus.INTERNAL_SERVER_ERROR, // connection problems
 } as const;
 
-export function getLightweightAxiosError(error: AxiosError) {
+export const getLightweightAxiosError = (error: AxiosError) => {
   const { config } = error; // request + response can be extraced from error
 
   return {
@@ -22,7 +22,7 @@ export function getLightweightAxiosError(error: AxiosError) {
       timeout: config?.timeout,
     },
   };
-}
+};
 
 export const getHttpStatusFromAxiosError = (
   code?: keyof typeof __httpStatusFromAxiosMap | string,
@@ -35,7 +35,7 @@ export const getHttpStatusFromAxiosError = (
   return __httpStatusFromAxiosMap[code];
 };
 
-export function handleAxiosError(error: AxiosError) {
+export const handleAxiosError = (error: AxiosError) => {
   if (!isAxiosError(error)) {
     throw error;
   }
@@ -45,4 +45,4 @@ export function handleAxiosError(error: AxiosError) {
   throw new HttpException(lightweightError, getHttpStatusFromAxiosError(lightweightError.code), {
     cause: error.cause,
   });
-}
+};

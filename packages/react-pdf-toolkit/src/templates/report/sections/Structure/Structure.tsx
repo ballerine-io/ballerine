@@ -1,5 +1,5 @@
 import { IStructure } from '@/build';
-import { Badge } from '@/components/Badge';
+import { Badge } from '@/components/atoms/Badge';
 import { Section } from '@/templates/report/components/Section';
 import { resolveBadgeStyleToRiskScore } from '@/utils/resolve-badge-style-to-risk-score';
 import { FunctionComponent } from 'react';

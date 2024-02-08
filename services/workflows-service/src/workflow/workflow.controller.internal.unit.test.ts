@@ -44,7 +44,7 @@ class FakeUiDefinitionService extends BaseFakeRepository {
   }
 }
 
-export function buildWorkflowDefinition(sequenceNum: number, projectId?: string) {
+export const buildWorkflowDefinition = (sequenceNum: number, projectId?: string) => {
   return {
     id: sequenceNum.toString(),
     name: `name ${sequenceNum}`,
@@ -72,7 +72,7 @@ export function buildWorkflowDefinition(sequenceNum: number, projectId?: string)
     projectId: projectId,
     isPublic: false,
   };
-}
+};
 
 describe('WorkflowControllerInternal', () => {
   let controller;

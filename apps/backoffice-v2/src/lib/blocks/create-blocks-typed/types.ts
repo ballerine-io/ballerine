@@ -1,5 +1,5 @@
 import { Block } from '@ballerine/blocks';
-import { ComponentProps } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 import { MotionBadge } from '@/common/components/molecules/MotionBadge/MotionBadge';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { GenericAsyncFunction, GenericFunction } from '@/common/types';
@@ -204,7 +204,7 @@ export type TTableCell = {
 
 export type TParagraphCell = {
   type: 'paragraph';
-  value: string;
+  value: ReactNode | ReactNode[];
   props?: ComponentProps<'p'>;
 };
 

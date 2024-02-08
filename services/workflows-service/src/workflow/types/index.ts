@@ -27,7 +27,7 @@ export type TWorkflowWithRelations = WorkflowRuntimeData & {
   workflowDefinition: WorkflowDefinition;
   assignee: User;
   parentRuntimeId?: string;
-  childWorkflowsRuntimeData?: Array<TWorkflowWithRelations>;
+  childWorkflowsRuntimeData?: TWorkflowWithRelations[];
 } & ({ endUser: EndUser } | { business: Business });
 
 export interface ListWorkflowsRuntimeParams {
@@ -120,7 +120,7 @@ export interface KYBParentKYCSessionExampleContext {
           email: string;
           title: string;
         };
-        ubos: {
+        ubos: Array<{
           entity: {
             id: string;
             type: string;
@@ -132,7 +132,7 @@ export interface KYBParentKYCSessionExampleContext {
               title: string;
             };
           };
-        }[];
+        }>;
       };
       dynamicInfo: Record<string, any>;
       __stateKey: string;

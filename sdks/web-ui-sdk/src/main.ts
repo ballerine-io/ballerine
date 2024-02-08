@@ -1,16 +1,16 @@
+import { configuration } from './lib/contexts/configuration';
+import { resetAppState } from './lib/contexts/app-state/utils';
 import ConfigurationProvider from './ConfigurationProvider.svelte';
 import type { BallerineSDKFlows, FlowsInitOptions } from './types/BallerineSDK';
+import { getConfigFromQueryParams } from './lib/utils/get-config-from-query-params';
+import { configuration as defaultConfiguration } from './lib/configuration/configuration';
 import {
   setAuthorizationHeaderJwt,
   setFlowCallbacks,
   appInit,
   mergeTranslationsOverrides,
 } from './lib/services/configuration-manager';
-import { getConfigFromQueryParams } from './lib/utils/get-config-from-query-params';
-import { configuration } from './lib/contexts/configuration';
-import { configuration as defaultConfiguration } from './lib/configuration/configuration';
-import { resetAppState } from './lib/contexts/app-state/utils';
-//
+
 export const flows: BallerineSDKFlows = {
   init: config => {
     return new Promise((resolve, reject) => {
@@ -22,18 +22,13 @@ export const flows: BallerineSDKFlows = {
 
       // Always init with no state. This ensures using init to reset the flow returns to the first step with no data.
       void resetAppState();
-      // Always init with no configuration. This handles multiple calls to init, i.e React re-renders.
-      // Otherwise, the steps array could keep growing.
+
       configuration.set(defaultConfiguration);
 
       const { translations: _translations, ...configWithoutTranslations } = config;
 
       // Extract config from query params
-      const {
-        clientId: _clientId,
-        flowName: _flowName,
-        ...endUserInfoFromQueryParams
-      } = getConfigFromQueryParams();
+      const { clientId, flowName, ...endUserInfoFromQueryParams } = getConfigFromQueryParams();
 
       // Merge the two config objects
       const mergedConfig: FlowsInitOptions = {
@@ -43,15 +38,16 @@ export const flows: BallerineSDKFlows = {
           ...endUserInfoFromQueryParams,
         },
       };
+
       const configPromise = appInit(mergedConfig);
-      const translationsPromise = mergeTranslationsOverrides(config.translations);
+      const translationsPromise = mergeTranslationsOverrides(_translations);
+
       Promise.all([configPromise, translationsPromise])
         .then(() => resolve())
         .catch(reject);
     });
   },
-  // Use the b_fid query param as the default flowName, fallback to the passed flowName arg.
-  // Optional args/args with default values should probably be last.
+
   mount({
     flowName = getConfigFromQueryParams().flowName,
     callbacks,
@@ -64,10 +60,11 @@ export const flows: BallerineSDKFlows = {
       : document.getElementById(elementId);
 
     if (hostElement) {
-      hostElement.innerHTML = `<div class="loader-container" id="blrn-loader">
-      <div class="loader"></div>
-    </div>
-    `;
+      hostElement.innerHTML = `
+        <div class="loader-container" id="blrn-loader">
+            <div class="loader"></div>
+        </div>
+      `;
     } else {
       const message = useModal ? 'body' : `with id ${elementId}`;
 
@@ -78,7 +75,6 @@ export const flows: BallerineSDKFlows = {
     // Calling setFlowCallbacks below ConfigurationProvider results in stale state for instances of get(configuration).
     setFlowCallbacks(flowName, callbacks);
 
-    // Skipped if not using JWT auth.
     if (jwt) {
       setAuthorizationHeaderJwt(jwt);
     }

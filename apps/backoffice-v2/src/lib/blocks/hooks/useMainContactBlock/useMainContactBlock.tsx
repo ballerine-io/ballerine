@@ -20,7 +20,7 @@ export const useMainContactBlock = ({ mainContact, workflow }) => {
           })
           .addCell({
             type: 'subheading',
-            value: 'User-provided Data',
+            value: 'User-Provided Data',
           })
           .addCell({
             type: 'details',

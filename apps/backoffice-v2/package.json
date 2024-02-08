@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/backoffice-v2",
-  "version": "0.5.44",
+  "version": "0.5.46",
   "description": "Ballerine - Backoffice",
   "homepage": "https://github.com/ballerine-io/ballerine",
   "repository": {
@@ -50,17 +50,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ballerine/blocks": "0.1.24",
-    "@ballerine/common": "0.7.39",
-    "@ballerine/ui": "^0.3.26",
-    "@ballerine/workflow-browser-sdk": "0.5.39",
-    "@ballerine/workflow-node-sdk": "0.5.39",
+    "@ballerine/blocks": "0.1.25",
+    "@ballerine/common": "0.7.41",
+    "@ballerine/ui": "^0.3.28",
+    "@ballerine/workflow-browser-sdk": "0.5.41",
+    "@ballerine/workflow-node-sdk": "0.5.41",
     "@fontsource/inter": "^4.5.15",
     "@formkit/auto-animate": "1.0.0-beta.5",
     "@hookform/resolvers": "^3.1.0",
     "@lukemorales/query-key-factory": "^1.0.3",
     "@radix-ui/react-aspect-ratio": "^1.0.3",
     "@radix-ui/react-checkbox": "^1.0.1",
+    "@radix-ui/react-collapsible": "^1.0.3",
     "@radix-ui/react-dialog": "1.0.4",
     "@radix-ui/react-dropdown-menu": "^2.0.5",
     "@radix-ui/react-hover-card": "^1.0.2",
@@ -86,7 +87,7 @@
     "i18next-http-backend": "^2.1.1",
     "leaflet": "^1.9.4",
     "libphonenumber-js": "^1.10.49",
-    "lucide-react": "^0.144.0",
+    "lucide-react": "^0.239.0",
     "match-sorter": "^6.3.1",
     "msw": "^1.0.0",
     "qs": "^6.11.2",
@@ -108,8 +109,8 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.0.3",
-    "@ballerine/eslint-config-react": "^1.0.4",
+    "@ballerine/config": "^1.0.5",
+    "@ballerine/eslint-config-react": "^1.0.6",
     "@cspell/cspell-types": "^6.31.1",
     "@faker-js/faker": "^7.6.0",
     "@playwright/test": "^1.32.1",

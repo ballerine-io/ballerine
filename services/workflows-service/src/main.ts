@@ -27,11 +27,12 @@ const corsOrigins = [
   ...env.BACKOFFICE_CORS_ORIGIN,
   ...env.WORKFLOW_DASHBOARD_CORS_ORIGIN,
   ...env.KYB_EXAMPLE_CORS_ORIGIN,
+  ...(env.KYC_EXAMPLE_CORS_ORIGIN ?? []),
   /\.ballerine\.app$/,
   ...(env.ENVIRONMENT_NAME !== 'production' ? devOrigins : []),
 ];
 
-async function main() {
+const main = async () => {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true, //will be buffered until a custom logger is attached
     snapshot: true,
@@ -148,6 +149,6 @@ async function main() {
   logger.log(`Listening on port ${port}`);
 
   return app;
-}
+};
 
 module.exports = main();

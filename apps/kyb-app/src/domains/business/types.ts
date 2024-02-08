@@ -1,9 +1,3 @@
-import { BusinessData } from '@/domains/collection-flow';
-
-export interface UpdateBusinessDto extends BusinessData {
-  businessId: string;
-}
-
 export interface TBusinessInformation {
   name: string;
   companyNumber: string;

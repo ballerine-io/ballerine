@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-dashboard",
   "private": false,
-  "version": "0.1.11",
+  "version": "0.1.12",
   "type": "module",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -53,8 +53,8 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.0.3",
-    "@ballerine/eslint-config-react": "^1.0.4",
+    "@ballerine/config": "^1.0.5",
+    "@ballerine/eslint-config-react": "^1.0.6",
     "@cspell/cspell-types": "^6.31.1",
     "@types/axios": "^0.14.0",
     "@types/classnames": "^2.3.1",
