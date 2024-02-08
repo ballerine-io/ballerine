@@ -15,12 +15,13 @@ import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { DefaultContextSchema } from '@ballerine/common';
+import { AnyRecord, DefaultContextSchema } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
-import { Customer, EndUser, UiDefinitionContext } from '@prisma/client';
+import { Customer, EndUser, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { randomUUID } from 'crypto';
 import keyBy from 'lodash/keyBy';
+import get from 'lodash/get';
 
 @Injectable()
 export class CollectionFlowService {
@@ -45,14 +46,30 @@ export class CollectionFlowService {
     return await this.endUserService.getById(endUserId, {}, [projectId]);
   }
 
-  traverseUiSchema(uiSchema: Record<string, unknown>, language: string) {
+  traverseUiSchema(
+    uiSchema: Record<string, unknown>,
+    context: WorkflowRuntimeData['context'],
+    language: string,
+  ) {
     for (const key in uiSchema) {
       if (typeof uiSchema[key] === 'object' && uiSchema[key] !== null) {
         // If the property is an object (including arrays), recursively traverse it
         // @ts-expect-error - error from Prisma types fix
-        this.traverseUiSchema(uiSchema[key], language);
+        this.traverseUiSchema(uiSchema[key], context, language);
       } else if (typeof uiSchema[key] === 'string') {
-        uiSchema[key] = this.translationService.translate(uiSchema[key] as string, language);
+        const options: AnyRecord = {};
+
+        if (uiSchema.labelVariables) {
+          Object.entries(uiSchema.labelVariables).forEach(([key, value]) => {
+            options[key] = get(context, value);
+          });
+        }
+
+        uiSchema[key] = this.translationService.translate(
+          uiSchema[key] as string,
+          language,
+          options,
+        );
       }
     }
 
@@ -61,6 +78,7 @@ export class CollectionFlowService {
 
   async getFlowConfiguration(
     configurationId: string,
+    context: WorkflowRuntimeData['context'],
     language: string,
     projectIds: TProjectIds,
   ): Promise<FlowConfigurationModel> {
@@ -82,7 +100,12 @@ export class CollectionFlowService {
       config: workflowDefinition.config,
       uiSchema: {
         // @ts-expect-error - error from Prisma types fix
-        elements: this.traverseUiSchema(uiDefintion.uiSchema.elements, language) as UiSchemaStep[],
+        elements: this.traverseUiSchema(
+          // @ts-expect-error - error from Prisma types fix
+          uiDefintion.uiSchema.elements,
+          context,
+          language,
+        ) as UiSchemaStep[],
       },
       definition: uiDefintion.definition
         ? (uiDefintion.definition as unknown as UiDefDefinition)
