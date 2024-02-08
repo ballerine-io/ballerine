@@ -5,6 +5,7 @@ import { TransactionEntityMapper } from './transaction.mapper';
 import { Prisma, TransactionRecord } from '@prisma/client';
 import { sleep } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { TransactionFilters } from './dtos/transaction.filters';
 
 @Injectable()
 export class TransactionService {
@@ -95,30 +96,11 @@ export class TransactionService {
     return { txCreationResponse, overallStatus };
   }
 
-  // async list(args?: Parameters<TransactionRepository['findMany']>[0]) {
-  //   return this.repository.findMany(args);
-  // }
-
   async getAll(args: Parameters<TransactionRepository['findMany']>[0], projectId: string) {
     return this.repository.findMany(args, projectId);
   }
 
-  // async getByApiKey(apiKey: string) {
-  //   return this.repository.findByApiKey(apiKey);
-  // }
-
-  // async getByProjectId(
-  //   projectId: string,
-  //   args?: Omit<Prisma.TransactionFindFirstArgsBase, 'where'>,
-  // ) {
-  //   return this.repository.findByProjectId(projectId, args);
-  // }
-
-  // async updateById(id: string, args: Parameters<TransactionRepository['updateById']>[1]) {
-  //   return this.repository.updateById(id, args);
-  // }
-
-  // async deleteById(id: string, args?: Parameters<TransactionRepository['deleteById']>[1]) {
-  //   return this.repository.deleteById(id, args);
-  // }
+  async getTransactions(filters: TransactionFilters, projectId: string) {
+    return this.repository.findManyWithFilters(filters, projectId);
+  }
 }
