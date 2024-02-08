@@ -17,10 +17,10 @@ export const Select_: FunctionComponent<ISelect_Props> = ({ options }) => {
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        {options?.map(({ label, value }) => {
+        {options?.map(option => {
           return (
-            <SelectItem key={value} value={value}>
-              {label}
+            <SelectItem key={option?.value} value={option?.value}>
+              {option?.label}
             </SelectItem>
           );
         })}

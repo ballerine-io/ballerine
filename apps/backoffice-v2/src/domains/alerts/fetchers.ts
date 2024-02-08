@@ -36,7 +36,7 @@ export const AlertStatuses = [
 
 export const AlertsListSchema = z.array(
   ObjectWithIdSchema.extend({
-    createdAt: z.string().datetime(),
+    dataTimestamp: z.string().datetime(),
     // merchant: z.string(),
     // severity: z.enum(AlertSeverities),
     // alertDetails: z.string(),
