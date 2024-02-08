@@ -6,6 +6,7 @@ import {
   Ecosystem,
   LineOfBusiness,
   PaymentEnvironment,
+  SocialMedia,
   Summary,
   TransactionLaundering,
   WebsiteCompanyAnalysis,
