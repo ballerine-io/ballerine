@@ -27,17 +27,17 @@ export class TransactionRepository {
       },
     } as any;
 
-    if (businessId) {
-      args.data.business = {
-        connect: { id: businessId },
-      } as any;
-    }
+    // if (businessId) {
+    //   args.data.business = {
+    //     connect: { id: businessId },
+    //   } as any;
+    // }
 
-    if (endUserId) {
-      args.data.endUser = {
-        connect: { id: endUserId },
-      } as any;
-    }
+    // if (endUserId) {
+    //   args.data.endUser = {
+    //     connect: { id: endUserId },
+    //   } as any;
+    // }
     const res = await this.prisma.transactionRecord.create<T>(args);
 
     return res;

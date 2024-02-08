@@ -86,6 +86,7 @@ model EndUser {
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
   TransactionRecord        TransactionRecord[]
   Alert                    Alert[]
+  Counterparty             Counterparty[]
 
   @@index([endUserType])
   @@index([approvalState])
@@ -141,6 +142,7 @@ model Business {
   project           Project             @relation(fields: [projectId], references: [id])
   TransactionRecord TransactionRecord[]
   Alert             Alert[]
+  Counterparty      Counterparty[]
 
   @@index([companyName])
   @@index([approvalState])
@@ -426,6 +428,7 @@ enum ReviewStatus {
   Reviewed
   Flagged
   Cleared
+  Rejected
 }
 
 enum VerificationStatus {
@@ -497,15 +500,17 @@ enum PaymentProcessor {
 }
 
 model TransactionRecord {
-  id                       String                  @id @default(cuid())
-  transactionCorrelationId String                  @unique @db.VarChar
+  id                       String                   @id @default(cuid())
+  transactionCorrelationId String                   @unique @db.VarChar
   transactionDate          DateTime
   transactionAmount        Float // Amount of the transaction
   transactionCurrency      String // Currency of the transaction
+  transactionBaseAmount    Float // Amount of the transaction
+  transactionBaseCurrency  String // Currency of the transaction
   transactionDescription   String? // Description of the transaction
   transactionCategory      String? // Category of the transaction
   transactionType          TransactionRecordType? // Enum for transaction type
-  transactionStatus        TransactionRecordStatus @default(Completed)
+  transactionStatus        TransactionRecordStatus? @default(Completed)
   transactionStatusReason  String? // Reason for the transaction status
 
   originatorIpAddress   String? // IP address of the transaction initiator
@@ -533,7 +538,7 @@ model TransactionRecord {
   cardTokenized   String?
 
   tags             Json?
-  reviewStatus     String?
+  reviewStatus     ReviewStatus?
   reviewerComments String?
   auditTrail       Json?
 
@@ -548,6 +553,7 @@ model TransactionRecord {
   productDescription String?
   productPrice       Float?
   productId          String?
+  productSku         String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -562,9 +568,11 @@ model TransactionRecord {
 
   counterpartyBeneficiaryId String?
   counterpartyBeneficiary   Counterparty? @relation("BenefitingCounterparty", fields: [counterpartyBeneficiaryId], references: [id])
+  EndUser                   EndUser?      @relation(fields: [endUserId], references: [id])
+  endUserId                 String?
+  Business                  Business?     @relation(fields: [businessId], references: [id])
+  businessId                String?
 
-  @@index([businessId])
-  @@index([endUserId])
   @@index([transactionType])
   @@index([transactionDate])
   @@index([reviewStatus])
