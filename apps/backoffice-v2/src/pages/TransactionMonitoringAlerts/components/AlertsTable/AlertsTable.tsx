@@ -91,12 +91,14 @@ const columns: Array<ColumnDef<TableDataMock, string>> = [
       return (
         <div className={`flex items-center gap-x-3`}>
           {value.toLowerCase() === 'unassigned' && (
-            <UserCircle2 className={'stroke-[#E4E4E7]'} size={28} />
+            <UserCircle2 className={'stroke-[#E4E4E7]'} size={22} />
           )}
           {value.toLowerCase() !== 'unassigned' && (
-            <Avatar className={`d-7`}>
+            <Avatar className={`d-[1.375em]`}>
               <AvatarImage />
-              <AvatarFallback className={'bg-[#DCE1E8]'}>{createInitials(value)}</AvatarFallback>
+              <AvatarFallback className={'bg-[#DCE1E8] text-xs'}>
+                {createInitials(value)}
+              </AvatarFallback>
             </Avatar>
           )}
           {value}
@@ -108,6 +110,10 @@ const columns: Array<ColumnDef<TableDataMock, string>> = [
   columnHelper.accessor('status', {
     cell: info => <span className={`font-semibold`}>{info.getValue()}</span>,
     header: 'Status',
+  }),
+  columnHelper.accessor('decision', {
+    cell: info => <strong>{info.getValue()}</strong>,
+    header: 'Decision',
   }),
   columnHelper.display({
     id: 'select',
@@ -132,7 +138,7 @@ export const AlertsTable = () => {
     <div className="d-full relative overflow-auto rounded-md border bg-white shadow">
       <ScrollArea orientation="both" className="h-full">
         <Table>
-          <TableHeader className="border-0">
+          <TableHeader className="z-[99999px] border-0 bg-background">
             {table.getHeaderGroups().map(({ id, headers }) => {
               return (
                 <TableRow key={id} className={`border-b-none`}>
