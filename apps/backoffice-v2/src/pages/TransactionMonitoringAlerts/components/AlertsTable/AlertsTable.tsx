@@ -23,9 +23,7 @@ import { Avatar } from '@/common/components/atoms/Avatar_/Avatar_';
 import { AvatarImage } from '@/common/components/atoms/Avatar_/Avatar.Image';
 import { createInitials } from '@/common/utils/create-initials/create-initials';
 import { TAlertsList } from '@/domains/alerts/fetchers';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
-import { FunctionComponentWithChildren } from '@/common/types';
-import IntrinsicElements = React.JSX.IntrinsicElements;
+import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 
 const severityToClassName = {
   HIGH: 'bg-destructive/20 text-destructive',
@@ -39,11 +37,6 @@ const severityToClassName = {
 >;
 
 const columnHelper = createColumnHelper<TAlertsList[number]>();
-const NotAvailable: FunctionComponentWithChildren<{
-  Component?: IntrinsicElements;
-}> = ({ children, Component = 'span' }) => {
-  return <Component className={'text-slate-400'}>{children}</Component>;
-};
 
 const columns = [
   columnHelper.accessor('createdAt', {
@@ -51,7 +44,7 @@ const columns = [
       const value = info.getValue();
 
       if (!value) {
-        return <span className={'text-slate-400'}>{value}</span>;
+        return <TextWithNAFallback>{value}</TextWithNAFallback>;
       }
 
       const date = dayjs(value).format('MMM DD, YYYY');
@@ -70,15 +63,7 @@ const columns = [
     cell: info => {
       const value = info.getValue();
 
-      return (
-        <span
-          className={ctw({
-            'text-slate-400': !value,
-          })}
-        >
-          {valueOrNA(value)}
-        </span>
-      );
+      return <TextWithNAFallback>{value}</TextWithNAFallback>;
     },
     header: 'Merchant',
   }),
@@ -87,7 +72,8 @@ const columns = [
       const value = info.getValue();
 
       return (
-        <Badge
+        <TextWithNAFallback
+          as={Badge}
           className={ctw(
             severityToClassName[
               (value?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
@@ -95,8 +81,8 @@ const columns = [
             'w-20 py-0.5 font-bold',
           )}
         >
-          {valueOrNA(value)}
-        </Badge>
+          {value}
+        </TextWithNAFallback>
       );
     },
     header: 'Severity',
@@ -105,20 +91,16 @@ const columns = [
     cell: info => {
       const value = info.getValue();
 
-      return (
-        <span
-          className={ctw({
-            'text-slate-400': !value,
-          })}
-        >
-          {valueOrNA(value)}
-        </span>
-      );
+      return <TextWithNAFallback>{value}</TextWithNAFallback>;
     },
     header: 'Alert Details',
   }),
   columnHelper.accessor('amountOfTxs', {
-    cell: info => valueOrNA(info.getValue()),
+    cell: info => {
+      const value = info.getValue();
+
+      return <TextWithNAFallback>{value}</TextWithNAFallback>;
+    },
     header: '# of TXs',
   }),
   columnHelper.accessor('assignee', {
@@ -138,24 +120,34 @@ const columns = [
               </AvatarFallback>
             </Avatar>
           )}
-          <span
-            className={ctw({
-              'text-slate-400': !value,
-            })}
-          >
-            {valueOrNA(value)}
-          </span>
+          <TextWithNAFallback>{value}</TextWithNAFallback>
         </div>
       );
     },
     header: 'Assignee',
   }),
   columnHelper.accessor('status', {
-    cell: info => <span className={`font-semibold`}>{valueOrNA(info.getValue())}</span>,
+    cell: info => {
+      const value = info.getValue();
+
+      return <TextWithNAFallback className={`font-semibold`}>{value}</TextWithNAFallback>;
+    },
     header: 'Status',
   }),
   columnHelper.accessor('decision', {
-    cell: info => <strong>{valueOrNA(info.getValue())}</strong>,
+    cell: info => {
+      const value = info.getValue();
+
+      return (
+        <TextWithNAFallback
+          className={ctw({
+            'font-bold': !!value,
+          })}
+        >
+          {value}
+        </TextWithNAFallback>
+      );
+    },
     header: 'Decision',
   }),
   columnHelper.display({
