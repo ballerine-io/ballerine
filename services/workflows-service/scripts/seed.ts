@@ -122,7 +122,7 @@ async function seed(bcryptSalt: string | number) {
   );
   const customer2 = await createCustomer(
     client,
-    '2',g
+    '2',
     `${env.API_KEY}2`,
     'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/images/ballerine_logo.svg',
     '',
