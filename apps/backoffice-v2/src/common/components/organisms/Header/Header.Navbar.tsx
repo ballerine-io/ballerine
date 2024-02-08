@@ -1,11 +1,11 @@
 import { FunctionComponent } from 'react';
 import { NavItem } from './Header.NavItem';
-import { useFiltersQuery } from '../../../../domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { ctw } from '../../../utils/ctw/ctw';
-import { TRoutes } from '../../../../Router/types';
-import { ClipboardCheck } from 'lucide-react';
-import { useSearchParamsByEntity } from '../../../hooks/useSearchParamsByEntity/useSearchParamsByEntity';
-import { useSelectEntityFilterOnMount } from '../../../../domains/entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
+import { ChevronDown } from 'lucide-react';
+import { Collapsible } from '@/common/components/molecules/Collapsible/Collapsible';
+import { CollapsibleTrigger } from '@/common/components/molecules/Collapsible/Collapsible.Trigger';
+import { CollapsibleContent } from '@/common/components/molecules/Collapsible/Collapsible.Content';
+import { useNavbarLogic } from '@/common/components/organisms/Header/hooks/useNavbarLogic/useNavbarLogic';
 
 /**
  * @description A nav element which wraps {@link NavItem} components of the app's routes. Supports nested routes.
@@ -15,60 +15,89 @@ import { useSelectEntityFilterOnMount } from '../../../../domains/entities/hooks
  * @constructor
  */
 export const Navbar: FunctionComponent = () => {
-  const { data: filters } = useFiltersQuery();
-  const [searchParams] = useSearchParamsByEntity();
-  const navItems = [
-    // {
-    //   text: 'Home',
-    //   href: '/',
-    //   icon: <Home />,
-    //   key: 'nav-item-home',
-    // },
-  ] satisfies TRoutes;
-
-  useSelectEntityFilterOnMount();
+  const { navItems, filterId, checkIsActiveFilterGroup } = useNavbarLogic();
 
   return (
-    <nav>
-      {navItems.map(({ text, key, icon, children }) => (
-        <ul className={`menu menu-compact w-full space-y-2`} key={key}>
-          {children?.length > 0 ? (
-            <>
-              <li className={`menu-title`}>
-                <span className={`gap-x-2`}>{text}</span>
-              </li>
-              {children?.map(({ text, href, key }) => (
-                <NavItem href={href} key={key}>
-                  {icon} {text}
-                </NavItem>
-              ))}
-            </>
-          ) : (
-            <NavItem href={''} key={key}>
-              {icon} {text}
-            </NavItem>
-          )}
-        </ul>
-      ))}
-      <ul className={`menu menu-compact w-full space-y-2`}>
-        {filters?.map(({ id, name }) => (
-          <NavItem
-            key={id}
-            href={`/en/case-management/entities?filterId=${id}`}
-            className={ctw(
-              `gap-x-[10px] px-2 capitalize active:bg-muted-foreground/30 active:text-foreground`,
-              {
-                'rounded-lg bg-[#EEEEEE] font-bold': id === searchParams?.filterId,
-              },
+    <nav className={`space-y-3`}>
+      {navItems.map(navItem => {
+        const isActiveFilterGroup = checkIsActiveFilterGroup(navItem);
+
+        return (
+          <>
+            {!!navItem.children && (
+              <Collapsible
+                key={`${navItem.key}-${isActiveFilterGroup}`}
+                defaultOpen={isActiveFilterGroup}
+                className={`space-y-2`}
+              >
+                <CollapsibleTrigger
+                  className={ctw(
+                    `flex w-full items-center gap-x-2 rounded-lg p-2 text-sm font-semibold text-[#8D93A5] [&[data-state=open]>svg]:rotate-0`,
+                    {
+                      'bg-white text-[#20232E]': isActiveFilterGroup,
+                    },
+                  )}
+                >
+                  <div
+                    className={ctw(`flex items-center gap-x-3 text-left`, {
+                      '[&>svg]:stroke-[#B7BDCD]': !isActiveFilterGroup,
+                    })}
+                  >
+                    {navItem.icon}
+                    {navItem.text}
+                  </div>
+                  <ChevronDown
+                    size={10}
+                    className={`rotate-[-90deg] transition-transform duration-200 ease-in-out`}
+                  />
+                  <span className="sr-only">Toggle</span>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <ul className={`w-full space-y-4 ps-[1.9rem]`}>
+                    {!!navItem.children?.length &&
+                      navItem.children?.map(childNavItem => (
+                        <NavItem
+                          href={childNavItem.href}
+                          key={childNavItem.key}
+                          className={ctw(
+                            `gap-x-1 px-1.5 text-xs capitalize text-[#8D93A5] active:border`,
+                            {
+                              'font-semibold text-[#20232E]': childNavItem.filterId === filterId,
+                              'aria-[current=page]:font-normal': childNavItem.filterId !== filterId,
+                            },
+                          )}
+                        >
+                          <span>{childNavItem.icon}</span>
+                          {childNavItem.text}
+                        </NavItem>
+                      ))}
+                    {!navItem.children?.length && (
+                      <li className={`pe-1.5 ps-2.5 text-xs text-[#8D93A5]`}>No items found</li>
+                    )}
+                  </ul>
+                </CollapsibleContent>
+              </Collapsible>
             )}
-          >
-            <div className="flex items-center">
-              <ClipboardCheck size={15} />
-            </div>
-            <div>{name}</div>
-          </NavItem>
-        ))}
-      </ul>
+            {!navItem.children && (
+              <ul className={`w-full space-y-2`} key={navItem.key}>
+                <NavItem
+                  href={navItem.href}
+                  key={navItem.key}
+                  className={ctw(
+                    `flex items-center gap-x-1 px-1.5 py-1 text-sm font-semibold capitalize text-[#8D93A5] active:border`,
+                    {
+                      'bg-white text-[#20232E]': navItem.filterId === filterId,
+                    },
+                  )}
+                >
+                  <span>{navItem.icon}</span>
+                  {navItem.text}
+                </NavItem>
+              </ul>
+            )}
+          </>
+        );
+      })}
     </nav>
   );
 };
