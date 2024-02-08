@@ -1,4 +1,8 @@
+import { Prisma } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
+import { ZodError, ZodIssueCode } from 'zod';
+
+export const sortDirections: (keyof typeof Prisma.SortOrder)[] = ['asc', 'desc'];
 
 export const validateOrderBy = (value: unknown, validColumns: readonly string[]) => {
   if (typeof value !== 'string') {
@@ -20,9 +24,9 @@ export const validateOrderBy = (value: unknown, validColumns: readonly string[])
 };
 
 export class PageDto {
-  @ApiProperty()
+  @ApiProperty({ name: 'page[number]', example: 1 })
   number!: number;
 
-  @ApiProperty()
+  @ApiProperty({ name: 'page[size]', example: 20 })
   size!: number;
 }

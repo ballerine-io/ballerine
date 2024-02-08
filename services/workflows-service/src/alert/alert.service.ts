@@ -21,22 +21,20 @@ export class AlertService {
   }
 
   async getAlerts(findAlertsDto: FindAlertsDto, projectIds: TProjectId[]) {
-    const select = {
-      status: true,
-      state: true,
-      dataTimestamp: true,
-      assigneeId: true,
-      assignee: {
-        select: {
-          firstName: true,
-          lastName: true,
-        },
-      },
-    };
-
     return this.alertRepository.findMany(
       {
-        select,
+        where: {
+          state: {
+            in: findAlertsDto.filter?.state,
+          },
+          status: {
+            in: findAlertsDto.filter?.status,
+          },
+          assigneeId: {
+            in: findAlertsDto.filter?.assigneeId,
+          },
+        },
+        orderBy: findAlertsDto.orderBy as any,
         take: findAlertsDto.page.size,
         skip: (findAlertsDto.page.number - 1) * findAlertsDto.page.size,
       },
