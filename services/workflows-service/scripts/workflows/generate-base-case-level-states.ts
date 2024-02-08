@@ -1,10 +1,7 @@
 import { CommonWorkflowEvent, CommonWorkflowStates, StateTag } from '@ballerine/common';
 
-export const generateBaseCaseLevelStates = (
-  defaultState: string = CommonWorkflowStates.MANUAL_REVIEW,
-  defaultResubmitEvent: string = CommonWorkflowEvent.RETURN_TO_REVIEW,
-) => ({
-  [defaultState]: {
+export const generateBaseCaseLevelStates = () => ({
+  [CommonWorkflowStates.MANUAL_REVIEW]: {
     tags: [StateTag.MANUAL_REVIEW],
     on: {
       [CommonWorkflowEvent.REJECT]: { target: CommonWorkflowStates.REJECTED },
@@ -12,22 +9,31 @@ export const generateBaseCaseLevelStates = (
       [CommonWorkflowEvent.REVISION]: { target: CommonWorkflowStates.REVISION },
     },
   },
-  rejected: {
+  [CommonWorkflowStates.REJECTED]: {
     tags: [StateTag.REJECTED],
     type: 'final',
   },
-  approved: {
+  [CommonWorkflowStates.APPROVED]: {
     tags: [StateTag.APPROVED],
     type: 'final',
   },
-  resolved: {
+  [CommonWorkflowStates.RESOLVED]: {
     tags: [StateTag.RESOLVED],
     type: 'final',
   },
-  revision: {
+  [CommonWorkflowStates.REVISION]: {
     tags: [StateTag.REVISION],
     on: {
-      [defaultResubmitEvent]: defaultState,
+      [CommonWorkflowEvent.RETURN_TO_REVIEW]: CommonWorkflowStates.MANUAL_REVIEW,
+      '*': {
+        target: CommonWorkflowStates.MANUAL_REVIEW,
+        cond: {
+          type: 'jmespath',
+          options: {
+            rule: 'length(documents[?decision.status]) < length(documents)',
+          },
+        },
+      },
     },
   },
 });
