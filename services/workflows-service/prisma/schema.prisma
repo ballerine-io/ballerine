@@ -327,6 +327,7 @@ model Project {
   TransactionRecord        TransactionRecord[]
   AlertDefinition          AlertDefinition[]
   Alert                    Alert[]
+  Counterparty             Counterparty[]
 
   @@unique([name, customerId])
   @@index(name)
@@ -744,6 +745,9 @@ model Counterparty {
   originatingTransactions TransactionRecord[] @relation("OriginatingCounterparty")
   benefitingTransactions  TransactionRecord[] @relation("BenefitingCounterparty")
   alerts                  Alert[]
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
 
   @@index([country])
   @@index([correlationId])

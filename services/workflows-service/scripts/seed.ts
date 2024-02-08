@@ -132,8 +132,20 @@ async function seed(bcryptSalt: string | number) {
     `webhook-shared-secret-${env.API_KEY}2`,
   )) as Customer;
   const project1 = (await createProject(client, customer, '1')) as Project;
+  const business1 = await client.business.create({
+    data: generateBusiness({
+      projectId: project1.id,
+    }),
+  });
 
-  await generateTransactions(client, { projectId: project1.id });
+  const business2 = await client.business.create({
+    data: generateBusiness({
+      projectId: project1.id,
+    }),
+  });
+
+  await generateTransactions(client, { projectId: project1.id, businessId: business1.id });
+  await generateTransactions(client, { projectId: project1.id, businessId: business2.id });
 
   await generateFakeAlertDefinition(client, {
     project: project1,
