@@ -6,7 +6,7 @@ import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import { Action } from '../../../../../common/enums';
 
-export const useRevisionTaskByIdMutation = (postUpdateEventName?: string) => {
+export const useRevisionTaskByIdMutation = () => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
 
@@ -29,7 +29,6 @@ export const useRevisionTaskByIdMutation = (postUpdateEventName?: string) => {
         body: {
           decision: Action.REVISION,
           reason,
-          postUpdateEventName,
         },
       }),
     onMutate: async ({ workflowId, documentId, reason }) => {

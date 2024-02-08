@@ -826,14 +826,6 @@ export class WorkflowService {
       workflowRuntimeData: updatedWorkflow,
     });
 
-    if (postUpdateEventName) {
-      return await this.event(
-        { id: workflowId, name: postUpdateEventName },
-        projectIds,
-        currentProjectId,
-      );
-    }
-
     return updatedWorkflow;
   }
 
@@ -1210,14 +1202,6 @@ export class WorkflowService {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       await this.handleRuntimeFinalState(runtimeData, data.context, workflowDef);
-    }
-
-    if (data.postUpdateEventName) {
-      return await this.event(
-        { name: data.postUpdateEventName, id: workflowRuntimeId },
-        projectIds,
-        projectId,
-      );
     }
 
     return updatedResult;
