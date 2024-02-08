@@ -163,7 +163,8 @@ const columns = [
 
 export const AlertsTable: FunctionComponent<{
   data: TAlertsList;
-}> = ({ data }) => {
+  toggleOnIsAlertAnalysisSheetOpen: () => void;
+}> = ({ data, toggleOnIsAlertAnalysisSheetOpen }) => {
   const table = useReactTable({
     columns,
     data: data ?? [],
@@ -175,14 +176,14 @@ export const AlertsTable: FunctionComponent<{
     <div className="d-full relative overflow-auto rounded-md border bg-white shadow">
       <ScrollArea orientation="both" className="h-full">
         <Table>
-          <TableHeader className="z-[99999px] border-0 bg-background">
+          <TableHeader className="border-0">
             {table.getHeaderGroups().map(({ id, headers }) => {
               return (
                 <TableRow key={id} className={`border-b-none`}>
                   {headers.map(header => (
                     <TableHead
                       key={header.id}
-                      className={`sticky top-0 h-[34px] bg-white p-0 text-[14px] font-bold text-[#787981]`}
+                      className={`sticky top-0 z-10 h-[34px] bg-white p-0 text-[14px] font-bold text-[#787981]`}
                     >
                       {header.column.id === 'select' && (
                         <span className={'ps-4'}>
@@ -219,7 +220,15 @@ export const AlertsTable: FunctionComponent<{
                 >
                   {row.getVisibleCells().map(cell => {
                     return (
-                      <TableCell key={cell.id}>
+                      <TableCell
+                        key={cell.id}
+                        onClick={
+                          cell.column.id !== 'select' ? toggleOnIsAlertAnalysisSheetOpen : undefined
+                        }
+                        className={ctw({
+                          'cursor-pointer': cell.column.id !== 'select',
+                        })}
+                      >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     );

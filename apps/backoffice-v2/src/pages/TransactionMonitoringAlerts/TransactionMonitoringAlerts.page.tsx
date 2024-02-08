@@ -10,11 +10,11 @@ import { PaginationPrevious } from '@/common/components/molecules/Pagination/Pag
 import { useAlertsQuery } from '@/domains/alerts/hooks/queries/useAlertsQuery/useAlertsQuery';
 import { AlertAnalysisSheet } from '@/pages/TransactionMonitoringAlerts/components/AlertAnalysisSheet';
 import { AlertsTable } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable';
-import { useState } from 'react';
 import { Header } from 'src/pages/TransactionMonitoringAlerts/components/Header';
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
 
-export const TransactionMonitoringAlerts = () => {
-  const { data } = useAlertsQuery({
+export const useTransactionMonitoringAlertsLogic = () => {
+  const { data: alerts } = useAlertsQuery({
     filter: {},
     page: 1,
     pageSize: 10,
@@ -22,17 +22,30 @@ export const TransactionMonitoringAlerts = () => {
     sortDir: 'asc',
     sortBy: 'createdAt',
   });
-  console.log({ data });
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isSheetOpen, toggleIsAlertAnalysisSheetOpen, toggleOnIsAlertAnalysisSheetOpen] =
+    useToggle();
+
+  return {
+    alerts,
+    isSheetOpen,
+    toggleOnIsAlertAnalysisSheetOpen,
+    toggleIsAlertAnalysisSheetOpen,
+  };
+};
+
+export const TransactionMonitoringAlerts = () => {
+  const { alerts, isSheetOpen, toggleOnIsAlertAnalysisSheetOpen, toggleIsAlertAnalysisSheetOpen } =
+    useTransactionMonitoringAlertsLogic();
 
   return (
     <div className="flex h-full flex-col px-6 pb-6 pt-10">
       <h1 className="pb-5 text-2xl font-bold">Transaction Monitoring Alerts</h1>
-      <button onClick={() => setIsSheetOpen(true)}>Open sheet</button>
       <div className="flex flex-1 flex-col gap-6 overflow-auto">
         <Header />
-        <AlertsTable data={data} />
-        {/* <AlertsTable data={data?.data} /> */}
+        <AlertsTable
+          data={alerts}
+          toggleOnIsAlertAnalysisSheetOpen={toggleOnIsAlertAnalysisSheetOpen}
+        />
         <div className={`flex items-center gap-x-2`}>
           <span className={`min-w-fit text-sm font-semibold`}>
             Page {1} of {10}
@@ -69,7 +82,7 @@ export const TransactionMonitoringAlerts = () => {
           </Pagination>
         </div>
       </div>
-      <AlertAnalysisSheet isOpen={isSheetOpen} onOpenStateChange={setIsSheetOpen} />
+      <AlertAnalysisSheet isOpen={isSheetOpen} onOpenStateChange={toggleIsAlertAnalysisSheetOpen} />
     </div>
   );
 };

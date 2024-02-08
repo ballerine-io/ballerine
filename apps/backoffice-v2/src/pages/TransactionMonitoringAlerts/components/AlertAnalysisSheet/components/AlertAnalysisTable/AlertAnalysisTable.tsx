@@ -12,8 +12,11 @@ import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-tabl
 import { ChevronDown } from 'lucide-react';
 import { columns } from './columns';
 import { data } from './table-data.mock';
+import React, { FunctionComponent } from 'react';
 
-export const AlertAnalysisTable = () => {
+export const AlertAnalysisTable: FunctionComponent<{
+  data: typeof data;
+}> = ({ data }) => {
   const table = useReactTable({
     columns: columns,
     data: data ?? [],
@@ -23,16 +26,16 @@ export const AlertAnalysisTable = () => {
 
   return (
     <div className="d-full relative overflow-auto rounded-md border bg-white shadow">
-      <ScrollArea orientation="both" className="h-[620px]">
+      <ScrollArea orientation="both" className="h-[295px]">
         <Table>
-          <TableHeader className="z-[99999px] border-0 bg-background">
+          <TableHeader className="border-0">
             {table.getHeaderGroups().map(({ id, headers }) => {
               return (
                 <TableRow key={id} className={`border-b-none`}>
                   {headers.map(header => (
                     <TableHead
                       key={header.id}
-                      className={`sticky top-0 h-[34px] bg-white p-0 text-[14px] font-bold text-[#787981]`}
+                      className={`sticky top-0 z-10 h-[34px] bg-white p-0 text-[14px] font-bold text-[#787981]`}
                     >
                       {header.column.id === 'select' && (
                         <span className={'ps-4'}>

@@ -1,5 +1,6 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import dayjs from 'dayjs';
+import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 
 export type AlertAnalysisItem = {
   date: string;
@@ -31,35 +32,67 @@ export const columns = [
     header: 'Date & Time',
   }),
   columnHelper.accessor('transactionId', {
-    cell: info => <span className="text-sm">{info.getValue()}</span>,
+    cell: info => {
+      const value = info.getValue();
+
+      return <TextWithNAFallback className="text-sm">{value}</TextWithNAFallback>;
+    },
     header: 'Transaction',
   }),
   columnHelper.accessor('direction', {
-    cell: info => <span className="text-sm">{info.getValue()}</span>,
+    cell: info => {
+      const value = info.getValue();
+
+      return <TextWithNAFallback className="text-sm">{value}</TextWithNAFallback>;
+    },
     header: 'Direction',
   }),
   columnHelper.accessor('amount', {
-    cell: info => <span className="text-sm">{info.getValue()}</span>,
+    cell: info => {
+      const value = info.getValue();
+
+      return <TextWithNAFallback className="text-sm">{value}</TextWithNAFallback>;
+    },
     header: 'Amount',
   }),
   columnHelper.accessor('business', {
-    cell: info => <strong className="text-sm">{info.getValue()}</strong>,
+    cell: info => {
+      const value = info.getValue();
+
+      return <TextWithNAFallback className="text-sm font-semibold">{value}</TextWithNAFallback>;
+    },
     header: 'Business',
   }),
   columnHelper.accessor('businessId', {
-    cell: info => <strong className="text-sm">{info.getValue()}</strong>,
+    cell: info => {
+      const value = info.getValue();
+
+      return <TextWithNAFallback className="text-sm font-semibold">{value}</TextWithNAFallback>;
+    },
     header: 'Business ID',
   }),
   columnHelper.accessor('counterPartyName', {
-    cell: info => <strong className="text-sm">{info.getValue()}</strong>,
+    cell: info => {
+      const value = info.getValue();
+
+      return <TextWithNAFallback className="text-sm font-semibold">{value}</TextWithNAFallback>;
+    },
     header: 'Counterparty Name',
   }),
   columnHelper.accessor('counterPartyId', {
-    cell: info => <strong className="text-sm">{info.getValue()}</strong>,
+    cell: info => {
+      const value = info.getValue();
+
+      return <TextWithNAFallback className="text-sm font-semibold">{value}</TextWithNAFallback>;
+    },
     header: 'Counterparty ID',
   }),
   columnHelper.accessor('counterPartyName', {
-    cell: info => <strong className="text-sm">{info.getValue()}</strong>,
+    cell: info => {
+      const value = info.getValue();
+
+      return <TextWithNAFallback className="text-sm font-semibold">{value}</TextWithNAFallback>;
+    },
     header: 'Counterparty Institution',
   }),
 ];
