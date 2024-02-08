@@ -9,14 +9,25 @@ import { PaginationEllipsis } from '@/common/components/molecules/Pagination/Pag
 import { PaginationNext } from '@/common/components/molecules/Pagination/Pagination.Next';
 import { PaginationLast } from '@/common/components/molecules/Pagination/Pagination.Last';
 import { PaginationFirst } from '@/common/components/molecules/Pagination/Pagination.First';
+import { useAlertsQuery } from '@/domains/alerts/hooks/queries/useAlertsQuery/useAlertsQuery';
 
 export const TransactionMonitoringAlerts = () => {
+  const { data } = useAlertsQuery({
+    filter: {},
+    page: 1,
+    pageSize: 10,
+    search: '',
+    sortDir: 'asc',
+    sortBy: 'date',
+  });
+  console.log(data);
+
   return (
     <div className="flex h-full flex-col px-6 pb-6 pt-10">
       <h1 className="pb-5 text-2xl font-bold">Transaction Monitoring Alerts</h1>
       <div className="flex flex-1 flex-col gap-6 overflow-auto">
         <Header />
-        <AlertsTable />
+        <AlertsTable data={data?.data} />
         <div className={`flex items-center gap-x-2`}>
           <span className={`min-w-fit text-sm font-semibold`}>
             Page {1} of {10}

@@ -1,16 +1,9 @@
-export type TableDataMock = {
-  date: string;
-  merchant: string;
-  severity: string;
-  alertDetails: string;
-  amountOfTxs: string;
-  assignee: string;
-  status: string;
-};
+import { AlertsListSchema } from '@/domains/alerts/fetchers';
+import { z } from 'zod';
 
-export const tableData: TableDataMock[] = [
+export const tableData: z.input<typeof AlertsListSchema> = [
   {
-    date: '2024-02-01',
+    createdAt: '2024-02-01',
     merchant: 'SuperMart',
     severity: 'High',
     alertDetails: 'Unauthorized transaction',
@@ -19,7 +12,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-01',
+    createdAt: '2024-02-01',
     merchant: 'SuperMart',
     severity: 'Critical',
     alertDetails: 'Unauthorized transaction',
@@ -28,7 +21,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-02',
+    createdAt: '2024-02-02',
     merchant: 'ElectroTech',
     severity: 'Medium',
     alertDetails: 'Unusual purchase pattern',
@@ -37,7 +30,7 @@ export const tableData: TableDataMock[] = [
     status: 'Resolved',
   },
   {
-    date: '2024-02-03',
+    createdAt: '2024-02-03',
     merchant: 'FashionEmporium',
     severity: 'Low',
     alertDetails: 'Possible duplicate transaction',
@@ -46,7 +39,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-04',
+    createdAt: '2024-02-04',
     merchant: 'GadgetZone',
     severity: 'High',
     alertDetails: 'Card not present transaction',
@@ -55,7 +48,7 @@ export const tableData: TableDataMock[] = [
     status: 'Resolved',
   },
   {
-    date: '2024-02-05',
+    createdAt: '2024-02-05',
     merchant: 'HomeSupplies',
     severity: 'Medium',
     alertDetails: 'Large transaction amount',
@@ -64,7 +57,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-06',
+    createdAt: '2024-02-06',
     merchant: 'TechSuperstore',
     severity: 'Low',
     alertDetails: 'Potential fraud alert',
@@ -73,7 +66,7 @@ export const tableData: TableDataMock[] = [
     status: 'Resolved',
   },
   {
-    date: '2024-02-07',
+    createdAt: '2024-02-07',
     merchant: 'GroceryHaven',
     severity: 'High',
     alertDetails: 'Multiple failed login attempts',
@@ -82,7 +75,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-08',
+    createdAt: '2024-02-08',
     merchant: 'BookEmpire',
     severity: 'Medium',
     alertDetails: 'Unrecognized device used',
@@ -91,7 +84,7 @@ export const tableData: TableDataMock[] = [
     status: 'Resolved',
   },
   {
-    date: '2024-02-09',
+    createdAt: '2024-02-09',
     merchant: 'SportsGear',
     severity: 'Low',
     alertDetails: 'Account login from new location',
@@ -100,7 +93,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-10',
+    createdAt: '2024-02-10',
     merchant: 'FurnitureWorld',
     severity: 'High',
     alertDetails: 'Large transaction at odd hours',
@@ -109,7 +102,7 @@ export const tableData: TableDataMock[] = [
     status: 'Resolved',
   },
   {
-    date: '2024-02-11',
+    createdAt: '2024-02-11',
     merchant: 'JewelryPalace',
     severity: 'Medium',
     alertDetails: 'Unusual spending pattern',
@@ -118,7 +111,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-12',
+    createdAt: '2024-02-12',
     merchant: 'PetParadise',
     severity: 'Low',
     alertDetails: 'Possible account compromise',
@@ -127,7 +120,7 @@ export const tableData: TableDataMock[] = [
     status: 'Resolved',
   },
   {
-    date: '2024-02-13',
+    createdAt: '2024-02-13',
     merchant: 'ToolDepot',
     severity: 'High',
     alertDetails: 'Repeated declined transactions',
@@ -136,7 +129,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-14',
+    createdAt: '2024-02-14',
     merchant: 'MusicMansion',
     severity: 'Medium',
     alertDetails: 'Unrecognized charge on account',
@@ -145,7 +138,7 @@ export const tableData: TableDataMock[] = [
     status: 'Resolved',
   },
   {
-    date: '2024-02-15',
+    createdAt: '2024-02-15',
     merchant: 'HealthHub',
     severity: 'Low',
     alertDetails: 'Small transaction from foreign location',
@@ -154,7 +147,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-16',
+    createdAt: '2024-02-16',
     merchant: 'AutoZone',
     severity: 'High',
     alertDetails: 'Card used in high-risk location',
@@ -163,7 +156,7 @@ export const tableData: TableDataMock[] = [
     status: 'Resolved',
   },
   {
-    date: '2024-02-17',
+    createdAt: '2024-02-17',
     merchant: 'HomeDecor',
     severity: 'Medium',
     alertDetails: 'Unusual frequency of transactions',
@@ -172,7 +165,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-18',
+    createdAt: '2024-02-18',
     merchant: 'OutdoorAdventure',
     severity: 'Low',
     alertDetails: 'Possible subscription fraud',
@@ -181,7 +174,7 @@ export const tableData: TableDataMock[] = [
     status: 'Resolved',
   },
   {
-    date: '2024-02-19',
+    createdAt: '2024-02-19',
     merchant: 'TravelWonders',
     severity: 'High',
     alertDetails: 'Large transaction at travel destination',
@@ -190,7 +183,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-20',
+    createdAt: '2024-02-20',
     merchant: 'CafeDelight',
     severity: 'Medium',
     alertDetails: 'Unrecognized charge at restaurant',
@@ -199,7 +192,7 @@ export const tableData: TableDataMock[] = [
     status: 'Resolved',
   },
   {
-    date: '2024-02-21',
+    createdAt: '2024-02-21',
     merchant: 'ArtGallery',
     severity: 'Low',
     alertDetails: 'Possible identity theft',
@@ -208,7 +201,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-22',
+    createdAt: '2024-02-22',
     merchant: 'FitnessFocus',
     severity: 'High',
     alertDetails: 'Large transaction at fitness center',
@@ -217,7 +210,7 @@ export const tableData: TableDataMock[] = [
     status: 'Resolved',
   },
   {
-    date: '2024-02-23',
+    createdAt: '2024-02-23',
     merchant: 'TechGizmos',
     severity: 'Medium',
     alertDetails: 'Unrecognized online purchase',
@@ -226,7 +219,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-24',
+    createdAt: '2024-02-24',
     merchant: 'BabyBliss',
     severity: 'Low',
     alertDetails: 'Unusual baby product purchase',
@@ -235,7 +228,7 @@ export const tableData: TableDataMock[] = [
     status: 'Resolved',
   },
   {
-    date: '2024-02-25',
+    createdAt: '2024-02-25',
     merchant: 'GardenGroove',
     severity: 'High',
     alertDetails: 'Large transaction at garden supply store',
@@ -244,7 +237,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-26',
+    createdAt: '2024-02-26',
     merchant: 'FashionFiesta',
     severity: 'Medium',
     alertDetails: 'Unusual fashion-related purchase',
@@ -253,7 +246,7 @@ export const tableData: TableDataMock[] = [
     status: 'Resolved',
   },
   {
-    date: '2024-02-27',
+    createdAt: '2024-02-27',
     merchant: 'OfficeEssentials',
     severity: 'Low',
     alertDetails: 'Small transaction from office supply store',
@@ -262,7 +255,7 @@ export const tableData: TableDataMock[] = [
     status: 'Pending',
   },
   {
-    date: '2024-02-28',
+    createdAt: '2024-02-28',
     merchant: 'PetParadise',
     severity: 'High',
     alertDetails: 'Multiple transactions at pet store',

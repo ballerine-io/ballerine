@@ -6,13 +6,8 @@ import {
   TableRow,
 } from '@/common/components/atoms/Table';
 import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
-import {
-  tableData,
-  TableDataMock,
-} from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/table-data.mock';
 import { Badge, TableBody } from '@ballerine/ui';
 import {
-  ColumnDef,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -21,12 +16,13 @@ import {
 import { ChevronDown, UserCircle2 } from 'lucide-react';
 import { ctw } from '@/common/utils/ctw/ctw';
 import dayjs from 'dayjs';
-import { ComponentProps } from 'react';
+import { ComponentProps, FunctionComponent } from 'react';
 import { Checkbox_ } from '@/common/components/atoms/Checkbox_/Checkbox_';
 import { AvatarFallback } from '@/common/components/atoms/Avatar_/Avatar.Fallback';
 import { Avatar } from '@/common/components/atoms/Avatar_/Avatar_';
 import { AvatarImage } from '@/common/components/atoms/Avatar_/Avatar.Image';
 import { createInitials } from '@/common/utils/create-initials/create-initials';
+import { TAlertsList } from '@/domains/alerts/fetchers';
 
 const severityToClassName = {
   HIGH: 'bg-destructive/20 text-destructive',
@@ -38,9 +34,9 @@ const severityToClassName = {
   ComponentProps<typeof Badge>['className']
 >;
 
-const columnHelper = createColumnHelper<TableDataMock>();
+const columnHelper = createColumnHelper<TAlertsList[number]>();
 
-const columns: Array<ColumnDef<TableDataMock, string>> = [
+const columns = [
   columnHelper.accessor('date', {
     cell: info => {
       const date = dayjs(info.getValue()).format('MMM DD, YYYY');
@@ -126,10 +122,12 @@ const columns: Array<ColumnDef<TableDataMock, string>> = [
   }),
 ];
 
-export const AlertsTable = () => {
+export const AlertsTable: FunctionComponent<{
+  data: TAlertsList;
+}> = ({ data }) => {
   const table = useReactTable({
     columns,
-    data: tableData,
+    data: data ?? [],
     getCoreRowModel: getCoreRowModel(),
     enableSortingRemoval: false,
   });
