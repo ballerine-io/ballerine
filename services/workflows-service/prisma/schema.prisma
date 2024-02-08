@@ -553,19 +553,15 @@ model TransactionRecord {
   updatedAt DateTime @updatedAt
 
   // Nullable relations to allow association with either, both, or none
-  businessId String?
-  business   Business? @relation(fields: [businessId], references: [id])
-  endUserId  String?
-  endUser    EndUser?  @relation(fields: [endUserId], references: [id])
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 
-  originatorId String?
-  originator   Counterparty? @relation("OriginatingCounterparty", fields: [originatorId], references: [id])
+  counterpartyOriginatorId String?
+  counterpartyOriginator   Counterparty? @relation("OriginatingCounterparty", fields: [counterpartyOriginatorId], references: [id])
 
-  beneficiaryId String?
-  beneficiary   Counterparty? @relation("BenefitingCounterparty", fields: [beneficiaryId], references: [id])
+  counterpartyBeneficiaryId String?
+  counterpartyBeneficiary   Counterparty? @relation("BenefitingCounterparty", fields: [counterpartyBeneficiaryId], references: [id])
 
   @@index([businessId])
   @@index([endUserId])
@@ -714,7 +710,7 @@ model Counterparty {
   email                   String?                  @db.Text
   phone                   String?                  @db.VarChar
   correlationId           String? // Unifies senderCorrelationId and recipientCorrelationId
-  type                    String // Individual, Company, etc.
+  type                    CounterpartyType
   country                 String // Unifies senderCountry and recipientCountry
   PEPStatus               PEPStatus? // Enum for PEP status
   sanctionListMatchStatus SanctionListMatchStatus? // Enum for sanction list match status
@@ -731,6 +727,11 @@ model Counterparty {
   lastRiskScoreUpdate     DateTime? // Last time the risk score was updated
   complianceStatus        ComplianceStatus? // Compliant, Non-Compliant, Under Review
 
+  businessId String?
+  business   Business? @relation(fields: [businessId], references: [id])
+
+  endUserId               String? // individual
+  endUser                 EndUser?            @relation(fields: [endUserId], references: [id])
   // Relations
   originatingTransactions TransactionRecord[] @relation("OriginatingCounterparty")
   benefitingTransactions  TransactionRecord[] @relation("BenefitingCounterparty")
