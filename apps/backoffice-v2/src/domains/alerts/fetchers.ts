@@ -5,6 +5,8 @@ import { z } from 'zod';
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { TObjectValues } from '@/common/types';
+import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
+import { env } from '@/common/env/env';
 
 export const AlertSeverity = {
   CRITICAL: 'critical',
@@ -21,29 +23,28 @@ export const AlertSeverities = [
 ] as const satisfies ReadonlyArray<TObjectValues<typeof AlertSeverity>>;
 
 export const AlertStatus = {
-  PENDING: 'pending',
-  RESOLVED: 'resolved',
+  NEW: 'New',
+  PENDING: 'Pending',
+  COMPLETED: 'Completed',
 } as const;
 
 export const AlertStatuses = [
+  AlertStatus.NEW,
   AlertStatus.PENDING,
-  AlertStatus.RESOLVED,
+  AlertStatus.COMPLETED,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof AlertStatus>>;
 
 export const AlertsListSchema = z.array(
   ObjectWithIdSchema.extend({
     createdAt: z.string().datetime(),
-    merchant: z.string(),
-    severity: z.enum(AlertSeverities),
-    alertDetails: z.string(),
-    amountOfTxs: z.number(),
-    assignee: z.string(),
+    // merchant: z.string(),
+    // severity: z.enum(AlertSeverities),
+    // alertDetails: z.string(),
+    // amountOfTxs: z.number(),
+    // assignee: z.string(),
     status: z.enum(AlertStatuses),
-    decision: z.string(),
-  }).transform(({ createdAt, ...data }) => ({
-    ...data,
-    date: createdAt,
-  })),
+    // decision: z.string(),
+  }),
 );
 
 export type TAlertsList = z.output<typeof AlertsListSchema>;
@@ -59,15 +60,9 @@ export const fetchAlerts = async (params: {
   const queryParams = qs.stringify(params, { encode: false });
 
   const [alerts, error] = await apiClient({
-    endpoint: `alerts?${queryParams}`,
+    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts?${queryParams}`,
     method: Method.GET,
-    schema: z.object({
-      data: AlertsListSchema,
-      meta: z.object({
-        totalItems: z.number().nonnegative(),
-        totalPages: z.number().nonnegative(),
-      }),
-    }),
+    schema: AlertsListSchema,
   });
 
   return handleZodError(error, alerts);

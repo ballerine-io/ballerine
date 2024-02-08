@@ -16,31 +16,46 @@ import {
 import { ChevronDown, UserCircle2 } from 'lucide-react';
 import { ctw } from '@/common/utils/ctw/ctw';
 import dayjs from 'dayjs';
-import { ComponentProps, FunctionComponent } from 'react';
+import React, { ComponentProps, FunctionComponent } from 'react';
 import { Checkbox_ } from '@/common/components/atoms/Checkbox_/Checkbox_';
 import { AvatarFallback } from '@/common/components/atoms/Avatar_/Avatar.Fallback';
 import { Avatar } from '@/common/components/atoms/Avatar_/Avatar_';
 import { AvatarImage } from '@/common/components/atoms/Avatar_/Avatar.Image';
 import { createInitials } from '@/common/utils/create-initials/create-initials';
 import { TAlertsList } from '@/domains/alerts/fetchers';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { FunctionComponentWithChildren } from '@/common/types';
+import IntrinsicElements = React.JSX.IntrinsicElements;
 
 const severityToClassName = {
   HIGH: 'bg-destructive/20 text-destructive',
   MEDIUM: 'bg-orange-100 text-orange-300',
   LOW: 'bg-success/20 text-success',
   CRITICAL: 'bg-destructive text-background',
+  DEFAULT: 'bg-foreground text-background',
 } as const satisfies Record<
-  'HIGH' | 'MEDIUM' | 'LOW' | 'CRITICAL',
+  'HIGH' | 'MEDIUM' | 'LOW' | 'CRITICAL' | 'DEFAULT',
   ComponentProps<typeof Badge>['className']
 >;
 
 const columnHelper = createColumnHelper<TAlertsList[number]>();
+const NotAvailable: FunctionComponentWithChildren<{
+  Component?: IntrinsicElements;
+}> = ({ children, Component = 'span' }) => {
+  return <Component className={'text-slate-400'}>{children}</Component>;
+};
 
 const columns = [
-  columnHelper.accessor('date', {
+  columnHelper.accessor('createdAt', {
     cell: info => {
-      const date = dayjs(info.getValue()).format('MMM DD, YYYY');
-      const time = dayjs(info.getValue()).format('hh:mm');
+      const value = info.getValue();
+
+      if (!value) {
+        return <span className={'text-slate-400'}>{value}</span>;
+      }
+
+      const date = dayjs(value).format('MMM DD, YYYY');
+      const time = dayjs(value).format('hh:mm');
 
       return (
         <div className={`flex flex-col space-y-0.5`}>
@@ -52,7 +67,19 @@ const columns = [
     header: 'Date & Time',
   }),
   columnHelper.accessor('merchant', {
-    cell: info => <strong>{info.getValue()}</strong>,
+    cell: info => {
+      const value = info.getValue();
+
+      return (
+        <span
+          className={ctw({
+            'text-slate-400': !value,
+          })}
+        >
+          {valueOrNA(value)}
+        </span>
+      );
+    },
     header: 'Merchant',
   }),
   columnHelper.accessor('severity', {
@@ -62,22 +89,36 @@ const columns = [
       return (
         <Badge
           className={ctw(
-            severityToClassName[value.toUpperCase() as keyof typeof severityToClassName],
+            severityToClassName[
+              (value?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
+            ],
             'w-20 py-0.5 font-bold',
           )}
         >
-          {value}
+          {valueOrNA(value)}
         </Badge>
       );
     },
     header: 'Severity',
   }),
   columnHelper.accessor('alertDetails', {
-    cell: info => info.getValue(),
+    cell: info => {
+      const value = info.getValue();
+
+      return (
+        <span
+          className={ctw({
+            'text-slate-400': !value,
+          })}
+        >
+          {valueOrNA(value)}
+        </span>
+      );
+    },
     header: 'Alert Details',
   }),
   columnHelper.accessor('amountOfTxs', {
-    cell: info => info.getValue(),
+    cell: info => valueOrNA(info.getValue()),
     header: '# of TXs',
   }),
   columnHelper.accessor('assignee', {
@@ -86,10 +127,10 @@ const columns = [
 
       return (
         <div className={`flex items-center gap-x-3`}>
-          {value.toLowerCase() === 'unassigned' && (
+          {(value?.toLowerCase() === 'unassigned' || !value) && (
             <UserCircle2 className={'stroke-[#E4E4E7]'} size={22} />
           )}
-          {value.toLowerCase() !== 'unassigned' && (
+          {value && value?.toLowerCase() !== 'unassigned' && (
             <Avatar className={`d-[1.375em]`}>
               <AvatarImage />
               <AvatarFallback className={'bg-[#DCE1E8] text-xs'}>
@@ -97,18 +138,24 @@ const columns = [
               </AvatarFallback>
             </Avatar>
           )}
-          {value}
+          <span
+            className={ctw({
+              'text-slate-400': !value,
+            })}
+          >
+            {valueOrNA(value)}
+          </span>
         </div>
       );
     },
     header: 'Assignee',
   }),
   columnHelper.accessor('status', {
-    cell: info => <span className={`font-semibold`}>{info.getValue()}</span>,
+    cell: info => <span className={`font-semibold`}>{valueOrNA(info.getValue())}</span>,
     header: 'Status',
   }),
   columnHelper.accessor('decision', {
-    cell: info => <strong>{info.getValue()}</strong>,
+    cell: info => <strong>{valueOrNA(info.getValue())}</strong>,
     header: 'Decision',
   }),
   columnHelper.display({

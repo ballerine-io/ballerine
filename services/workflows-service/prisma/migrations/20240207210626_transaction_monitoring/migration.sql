@@ -11,10 +11,10 @@ CREATE TYPE "VerificationStatus" AS ENUM ('Unverified', 'Verified', 'Pending');
 CREATE TYPE "TransactionRecordStatus" AS ENUM ('New', 'Pending', 'Active', 'Completed', 'Rejected', 'Cancelled', 'Failed');
 
 -- CreateEnum
-CREATE TYPE "AlertState" AS ENUM ('Triggered', 'Resolved', 'Acknowledged', 'Dismissed', 'Escalated', 'UnderReview');
+CREATE TYPE "AlertState" AS ENUM ('101', '201', '202', '301', '302', '303');
 
 -- CreateEnum
-CREATE TYPE "AlertStatus" AS ENUM ('New', 'Pending', 'Completed');
+CREATE TYPE "AlertStatus" AS ENUM ('100', '200', '300');
 
 -- CreateEnum
 CREATE TYPE "AlertType" AS ENUM ('HighRiskTransaction', 'DormantAccountActivity', 'UnusualPattern');
@@ -89,23 +89,22 @@ CREATE TABLE "TransactionRecord" (
 -- CreateTable
 CREATE TABLE "AlertDefinition" (
     "id" TEXT NOT NULL,
-    "projectId" TEXT NOT NULL,
+    "type" "AlertType",
     "name" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
+    "enabled" BOOLEAN NOT NULL DEFAULT true,
+    "description" TEXT,
+    "projectId" TEXT NOT NULL,
     "rulesetId" INTEGER NOT NULL,
     "ruleId" INTEGER NOT NULL,
     "inlineRule" JSONB,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "createdBy" TEXT NOT NULL,
+    "createdBy" TEXT NOT NULL DEFAULT 'SYSTEM',
     "modifiedBy" TEXT NOT NULL,
-    "enabled" BOOLEAN NOT NULL DEFAULT true,
-    "type" "AlertType",
     "dedupeStrategies" JSONB NOT NULL,
     "config" JSONB NOT NULL,
     "tags" TEXT[],
     "additionalInfo" JSONB NOT NULL,
-    "workflowDefinitionId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "AlertDefinition_pkey" PRIMARY KEY ("id")
 );
@@ -113,18 +112,18 @@ CREATE TABLE "AlertDefinition" (
 -- CreateTable
 CREATE TABLE "Alert" (
     "id" TEXT NOT NULL,
+    "alertDefinitionId" TEXT NOT NULL,
+    "projectId" TEXT NOT NULL,
     "businessId" TEXT,
     "endUserId" TEXT,
-    "projectId" TEXT NOT NULL,
     "dataTimestamp" TIMESTAMP(3) NOT NULL,
     "state" "AlertState" NOT NULL,
     "status" "AlertStatus" NOT NULL,
     "tags" TEXT[],
-    "alertDefinitionId" TEXT NOT NULL,
     "executionDetails" JSONB NOT NULL,
+    "assigneeId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "handledBy" TEXT,
     "workflowRuntimeDataId" TEXT,
 
     CONSTRAINT "Alert_pkey" PRIMARY KEY ("id")
@@ -158,6 +157,9 @@ CREATE INDEX "TransactionRecord_transactionCorrelationId_idx" ON "TransactionRec
 CREATE INDEX "AlertDefinition_projectId_idx" ON "AlertDefinition"("projectId");
 
 -- CreateIndex
+CREATE INDEX "Alert_assigneeId_idx" ON "Alert"("assigneeId");
+
+-- CreateIndex
 CREATE INDEX "Alert_businessId_idx" ON "Alert"("businessId");
 
 -- CreateIndex
@@ -179,16 +181,22 @@ ALTER TABLE "TransactionRecord" ADD CONSTRAINT "TransactionRecord_endUserId_fkey
 ALTER TABLE "TransactionRecord" ADD CONSTRAINT "TransactionRecord_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AlertDefinition" ADD CONSTRAINT "AlertDefinition_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "AlertDefinition" ADD CONSTRAINT "AlertDefinition_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Alert" ADD CONSTRAINT "Alert_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Alert" ADD CONSTRAINT "Alert_alertDefinitionId_fkey" FOREIGN KEY ("alertDefinitionId") REFERENCES "AlertDefinition"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Alert" ADD CONSTRAINT "Alert_businessId_fkey" FOREIGN KEY ("businessId") REFERENCES "Business"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Alert" ADD CONSTRAINT "Alert_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Alert" ADD CONSTRAINT "Alert_endUserId_fkey" FOREIGN KEY ("endUserId") REFERENCES "EndUser"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Alert" ADD CONSTRAINT "Alert_businessId_fkey" FOREIGN KEY ("businessId") REFERENCES "Business"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Alert" ADD CONSTRAINT "Alert_alertDefinitionId_fkey" FOREIGN KEY ("alertDefinitionId") REFERENCES "AlertDefinition"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Alert" ADD CONSTRAINT "Alert_endUserId_fkey" FOREIGN KEY ("endUserId") REFERENCES "EndUser"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Alert" ADD CONSTRAINT "Alert_assigneeId_fkey" FOREIGN KEY ("assigneeId") REFERENCES "User"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Alert" ADD CONSTRAINT "Alert_workflowRuntimeDataId_fkey" FOREIGN KEY ("workflowRuntimeDataId") REFERENCES "WorkflowRuntimeData"("id") ON DELETE NO ACTION ON UPDATE CASCADE;
