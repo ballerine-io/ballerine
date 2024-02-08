@@ -1,13 +1,18 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { Prisma, WorkflowRuntimeData, WorkflowRuntimeDataStatus } from '@prisma/client';
+import {
+  Prisma,
+  PrismaClient,
+  WorkflowRuntimeData,
+  WorkflowRuntimeDataStatus,
+} from '@prisma/client';
 import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { FindLastActiveFlowParams } from '@/workflow/types/params';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { SortOrder } from '@/common/query-filters/sort-order';
-import type { TProjectIds } from '@/types';
+import type { PrismaTransaction, TProjectIds } from '@/types';
 
 export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 
@@ -56,8 +61,9 @@ export class WorkflowRuntimeDataRepository {
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataFindFirstOrThrowArgs, 'where'>>,
     projectIds: TProjectIds,
+    transaction: PrismaTransaction | PrismaClient = this.prisma,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.findFirstOrThrow(
+    return await transaction.workflowRuntimeData.findFirstOrThrow(
       this.scopeService.scopeFindOne(merge(args, { where: { id } }), projectIds),
     );
   }
