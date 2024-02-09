@@ -1,5 +1,5 @@
-import { TransactionRecord, TransactionRecordType } from '@prisma/client';
-import { TransactionCreateDto } from './dtos/transaction-create';
+import { TransactionRecord } from '@prisma/client';
+import { CounterpartyInfo, TransactionCreateDto } from './dtos/transaction-create';
 import { cleanUndefinedValues } from '@/common/utils/clean-undefined-values';
 
 export class TransactionEntityMapper {
@@ -71,10 +71,20 @@ export class TransactionEntityMapper {
     };
   }
 
-  static toDto(
-    record: TransactionRecord,
-  ): TransactionCreateDto & { id: string; createdAt: Date; updatedAt: Date } {
-    const dto: TransactionCreateDto & { id: string; createdAt: Date; updatedAt: Date } = {
+  static toDto(record: TransactionRecord): TransactionCreateDto & {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    originator: Partial<CounterpartyInfo | undefined>;
+    beneficiary: Partial<CounterpartyInfo | undefined>;
+  } {
+    const dto: TransactionCreateDto & {
+      id: string;
+      createdAt: Date;
+      updatedAt: Date;
+      originator: Partial<CounterpartyInfo> | undefined;
+      beneficiary: Partial<CounterpartyInfo> | undefined;
+    } = {
       id: record.id,
       correlationId: record.transactionCorrelationId,
       date: record.transactionDate,
@@ -91,12 +101,14 @@ export class TransactionEntityMapper {
       originator: record.counterpartyOriginatorId
         ? {
             id: record.counterpartyOriginatorId,
+            correlationId: '', // Add the required correlationId property here
           }
         : undefined,
 
       beneficiary: record.counterpartyBeneficiaryId
         ? {
             id: record.counterpartyBeneficiaryId,
+            correlationId: '', // Add the required correlationId property here
           }
         : undefined,
 
@@ -130,7 +142,13 @@ export class TransactionEntityMapper {
     };
 
     return cleanUndefinedValues<
-      TransactionCreateDto & { id: string; createdAt: Date; updatedAt: Date }
+      TransactionCreateDto & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        originator: Partial<CounterpartyInfo | undefined>;
+        beneficiary: Partial<CounterpartyInfo | undefined>;
+      }
     >(dto);
   }
 }

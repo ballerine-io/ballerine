@@ -9,16 +9,12 @@ import {
   PaymentGateway,
   PaymentAcquirer,
   PaymentProcessor,
-  VerificationStatus,
-  PEPStatus,
-  SanctionListMatchStatus,
-  ComplianceStatus,
   ReviewStatus,
+  CounterpartyType,
 } from '@prisma/client';
 import {
   IsBoolean,
   IsDate,
-  IsDateString,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -28,28 +24,18 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { JsonValue } from 'type-fest';
+import { BusinessCreateDto } from '@/business/dtos/business-create';
+import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
 
-class CounterpartyInfo {
+export  class CounterpartyInfo {
+  @ApiProperty({ required: true }) @IsString() correlationId!: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() id?: string;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() firstName?: string;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() lastName?: string;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() email?: string;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() phone?: string;
-  @ApiProperty({ required: false }) @IsEnum(PEPStatus) @IsOptional() PEPStatus?: PEPStatus;
-  @ApiProperty({ required: false })
-  @IsEnum(SanctionListMatchStatus)
+  @ApiProperty({ required: true }) @IsString() @IsOptional() type?: CounterpartyType;
+  @ApiProperty({ required: true })
+  @IsString()
+  @Type(() => EndUserCreateDto)
   @IsOptional()
-  sanctionListMatchStatus?: SanctionListMatchStatus;
-  @ApiProperty({ required: false })
-  @IsEnum(VerificationStatus)
-  @IsOptional()
-  verificationStatus?: VerificationStatus;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() country?: string;
-  @ApiProperty({ required: false }) @IsDateString() @IsOptional() dateOfBirth?: string;
-  @ApiProperty({ required: false })
-  @IsEnum(ComplianceStatus)
-  @IsOptional()
-  complianceStatus?: ComplianceStatus;
+  entityData?: BusinessCreateDto | EndUserCreateDto;
 }
 
 class PaymentInfo {
@@ -150,8 +136,4 @@ export class TransactionCreateDto {
   @ApiProperty({ required: false }) @IsNumber() @IsOptional() riskScore?: number;
   @ApiProperty({ required: false }) @IsString() @IsOptional() regulatoryAuthority?: string;
   @ApiProperty({ required: false, type: 'object' }) @IsOptional() additionalInfo?: JsonValue | null;
-
-  // Fields for nullable relations - If your business logic requires these to be populated.
-  @ApiProperty({ required: false }) @IsString() @IsOptional() businessId?: string;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() endUserId?: string;
 }
