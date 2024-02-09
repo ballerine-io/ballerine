@@ -6,7 +6,7 @@ import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthe
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { useCallback, useMemo } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { getPostDecisionEventName } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';

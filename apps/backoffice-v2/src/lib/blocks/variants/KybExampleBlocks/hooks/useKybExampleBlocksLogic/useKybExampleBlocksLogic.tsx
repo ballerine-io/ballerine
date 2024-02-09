@@ -9,7 +9,7 @@ import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirecto
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { Button } from '@/common/components/atoms/Button/Button';
 import { ctw } from '@/common/utils/ctw/ctw';
@@ -63,7 +63,7 @@ export const useKybExampleBlocksLogic = () => {
     [directorsDocuments],
   );
   const directorsStorageFilesQueryResult = useStorageFilesQuery(directorDocumentPages);
-  const directorsDocumentPagesResults: Array<Array<string>> = useDocumentPageImages(
+  const directorsDocumentPagesResults: string[][] = useDocumentPageImages(
     directorsDocuments,
     directorsStorageFilesQueryResult,
   );

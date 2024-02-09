@@ -8,6 +8,9 @@ import { Router } from './Router/Router';
 import { env } from './common/env/env';
 import './i18n';
 import './index.css';
+import { Toaster } from '@/common/components/organisms/Toaster/Toaster';
+
+export const TOAST_DURATION_IN_MS = 1000 * 3;
 
 const rootElement = document.getElementById('root');
 
@@ -29,6 +32,7 @@ void prepare().then(() => {
     root.render(
       <StrictMode>
         <Router />
+        <Toaster position={'top-center'} duration={TOAST_DURATION_IN_MS} visibleToasts={1} />
       </StrictMode>,
     );
   }
