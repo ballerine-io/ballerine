@@ -576,9 +576,13 @@ model TransactionRecord {
 
   @@index([transactionType])
   @@index([transactionDate])
+  @@index([transactionStatus])
   @@index([reviewStatus])
   @@index([projectId])
   @@index([transactionCorrelationId])
+  @@index([counterpartyOriginatorId])
+  @@index([counterpartyBeneficiaryId])
+  @@index([paymentMethod])
 }
 
 enum AlertState {
@@ -713,28 +717,13 @@ enum SanctionListMatchStatus {
 }
 
 model Counterparty {
-  id                      String                   @id @default(cuid())
-  firstName               String?                  @db.VarChar
-  lastName                String?                  @db.VarChar
-  email                   String?                  @db.Text
-  phone                   String?                  @db.VarChar
-  correlationId           String? // Unifies senderCorrelationId and recipientCorrelationId
-  type                    CounterpartyType
-  country                 String // Unifies senderCountry and recipientCountry
-  PEPStatus               PEPStatus? // Enum for PEP status
-  sanctionListMatchStatus SanctionListMatchStatus? // Enum for sanction list match status
-  verificationStatus      VerificationStatus? // Unifies senderVerificationStatus and recipientVerificationStatus
-  sortCode                String?
-  dateOfBirth             DateTime?
-  bankCountry             String?
-  state                   String?
-  address                 String?
-  city                    String?
-  postcode                String?
-  riskScore               Float? // Risk score associated with the counterparty
-  monitoringStatus        Boolean                  @default(true) // Whether the counterparty is under active monitoring
-  lastRiskScoreUpdate     DateTime? // Last time the risk score was updated
-  complianceStatus        ComplianceStatus? // Compliant, Non-Compliant, Under Review
+  id String @id @default(cuid())
+
+  correlationId  String?
+  type           CounterpartyType
+  sortCode       String?
+  bankCountry    String?
+  additionalInfo Json? // Additional information about the counterparty
 
   businessId String?
   business   Business? @relation(fields: [businessId], references: [id])
@@ -749,7 +738,5 @@ model Counterparty {
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 
-  @@index([country])
   @@index([correlationId])
-  @@index([email])
 }
