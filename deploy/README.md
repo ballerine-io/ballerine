@@ -43,37 +43,34 @@ To start the Docker services defined in the `docker-compose.yml` file, follow th
     cd deploy
     ```
 
-    or download the docker-compose file directly like below
+3. Update env file with all the required values
 
-    ```shell
-    mkdir ballerine; cd ballerine
-    curl https://raw.githubusercontent.com/ballerine-io/ballerine/dev/deploy/docker-compose.yml -o docker-compose.yml
-    docker-compose up -d  --force-recreate;
+    ``` shell
+    BACKOFFICE_PORT=5137
+    HEADLESS_SVC_PORT=5173
+    WORKFLOW_SVC_PORT=3000
+    BCRYPT_SALT=10
+    API_KEY="secret"
+    NODE_ENV="development"
+    COMPOSE_PROJECT_NAME=ballerine-x
+    DB_PORT=5432
+    DB_USER=admin
+    DB_PASSWORD=admin
+    SESSION_SECRET=secret
+    SESSION_EXPIRATION_IN_MINUTES=60
+    BACKOFFICE_CORS_ORIGIN=
+    HEADLESS_EXAMPLE_CORS_ORIGIN=
+    WORKFLOW_DASHBOARD_CORS_ORIGIN=
+    WORKFLOW_DASHBOARD_PORT=5200
+    WEBSOCKET_SVC_PORT=3500
+    KYB_APP_PORT=5201
+    DOMAIN_NAME="<domain on which Ballerine should be up>"
     ```
 
-3. Run the following command to start the containers:
+4. Bring up the containers
 
     ```shell
-    docker-compose up
-    ```
-
-    Docker Compose will read the `docker-compose.yml` file and initiate the containers accordingly. The container logs will be displayed in the terminal.
-
-    If you prefer to run the containers in the background, use the detached mode with the `-d` flag:
-
-    ```shell
-    docker-compose up -d
-    ```
-
-4. Once the containers are running, you can access the services as specified in the repository's documentation or the `docker-compose.yml` file.
-
-## Running DEV Containers with Docker Compose
-
-To start the containers in Dev mode for easy debugging do the following.
-
-    ```shell
-    cd deploy/
-    docker-compose up -f docker-compose-dev.yml
+    docker-compose -f docker-compose-build.yml up -d
     ```
 
 ## Additional Docker Compose Commands
