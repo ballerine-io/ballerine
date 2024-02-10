@@ -1,5 +1,5 @@
 import { TransactionRecord } from '@prisma/client';
-import { CounterpartyInfo, TransactionCreateDto } from './dtos/transaction-create';
+import { CounterpartyInfo, TransactionCreateDto } from './dtos/transaction-create.dto';
 import { cleanUndefinedValues } from '@/common/utils/clean-undefined-values';
 
 export class TransactionEntityMapper {
@@ -101,14 +101,14 @@ export class TransactionEntityMapper {
       originator: record.counterpartyOriginatorId
         ? {
             id: record.counterpartyOriginatorId,
-            correlationId: '', // Add the required correlationId property here
+            correlationId: '', // TODO: Add the required correlationId property here (should come from the countryparty table)
           }
         : undefined,
 
       beneficiary: record.counterpartyBeneficiaryId
         ? {
             id: record.counterpartyBeneficiaryId,
-            correlationId: '', // Add the required correlationId property here
+            correlationId: '', // TODO: Add the required correlationId property here
           }
         : undefined,
 

@@ -27,7 +27,7 @@ import { JsonValue } from 'type-fest';
 import { BusinessCreateDto } from '@/business/dtos/business-create';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
 
-export  class CounterpartyInfo {
+export class CounterpartyInfo {
   @ApiProperty({ required: true }) @IsString() correlationId!: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() id?: string;
   @ApiProperty({ required: true }) @IsString() @IsOptional() type?: CounterpartyType;

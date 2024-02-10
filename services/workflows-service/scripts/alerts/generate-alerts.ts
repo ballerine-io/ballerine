@@ -1,16 +1,10 @@
 import {
   PrismaClient,
-  TransactionRecordType,
-  TransactionRecordStatus,
-  Prisma,
-  VerificationStatus,
-  AlertDefinition,
   AlertType,
   AlertState,
   AlertStatus,
   Project,
   Customer,
-  Alert,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
@@ -29,7 +23,6 @@ export const generateFakeAlertDefinition = async (
   prisma: PrismaClient,
   {
     project,
-    customer,
   }: {
     project: Project;
     customer: Customer;
