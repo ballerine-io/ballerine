@@ -12,10 +12,6 @@ import {
   Prisma,
   ReviewStatus,
   CounterpartyType,
-  PEPStatus,
-  SanctionListMatchStatus,
-  VerificationStatus,
-  ComplianceStatus,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
@@ -35,29 +31,10 @@ export const generateTransactions = async (
     for (let i = 0; i < 200; i++) {
       const counterparty = await prisma.counterparty.create({
         data: {
-          firstName: faker.name.firstName(),
-          lastName: faker.name.lastName(),
-          email: faker.internet.email(),
-          phone: faker.phone.number(),
           correlationId: faker.datatype.uuid(),
           type: faker.helpers.arrayElement(Object.values(CounterpartyType)),
-          country: faker.address.country(),
-          PEPStatus: faker.helpers.arrayElement(Object.values(PEPStatus)),
-          sanctionListMatchStatus: faker.helpers.arrayElement(
-            Object.values(SanctionListMatchStatus),
-          ),
-          verificationStatus: faker.helpers.arrayElement(Object.values(VerificationStatus)),
           sortCode: faker.finance.routingNumber(),
-          dateOfBirth: faker.date.past(50),
           bankCountry: faker.address.countryCode(),
-          state: faker.address.state(),
-          address: faker.address.streetAddress(),
-          city: faker.address.city(),
-          postcode: faker.address.zipCode(),
-          riskScore: faker.datatype.number({ min: 0, max: 100 }),
-          monitoringStatus: faker.datatype.boolean(),
-          lastRiskScoreUpdate: faker.date.recent(90),
-          complianceStatus: faker.helpers.arrayElement(Object.values(ComplianceStatus)),
           businessId: businessId,
           projectId: projectId,
         },

@@ -1,6 +1,6 @@
 import * as swagger from '@nestjs/swagger';
 import { TransactionService } from '@/transaction/transaction.service';
-import { TransactionCreateDto } from '@/transaction/dtos/transaction-create';
+import { TransactionCreateDto } from '@/transaction/dtos/transaction-create.dto';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 
 import * as types from '@/types';
@@ -10,7 +10,7 @@ import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import express from 'express';
 import { Get, Param, Query, Post, Controller, Body, Res } from '@nestjs/common';
-import { TransactionFilters } from '@/transaction/dtos/transaction.filters';
+import { GetTransactionsDto } from '@/transaction/dtos/get-transactions.dto';
 import { PaymentMethod } from '@prisma/client';
 
 @swagger.ApiTags('Transactions')
@@ -99,9 +99,9 @@ export class TransactionControllerExternal {
     required: false,
   })
   async getTransactions(
-    @Query() filters: TransactionFilters,
+    @Query() getTransactionsParameters: GetTransactionsDto,
     @CurrentProject() projectId: types.TProjectId,
   ) {
-    return this.service.getTransactions(filters, projectId);
+    return this.service.getTransactions(getTransactionsParameters, projectId);
   }
 }

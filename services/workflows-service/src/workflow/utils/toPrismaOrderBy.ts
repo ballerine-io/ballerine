@@ -41,3 +41,13 @@ export const toPrismaOrderBy = <
     },
   };
 };
+
+export const toPrismaOrderByGeneric = <TColumn extends string, TDirection extends Direction>(
+  orderBy: `${TColumn}:${TDirection}`,
+): { [x: string]: TDirection } => {
+  const [column, direction] = orderBy.split(':') as [TColumn, TDirection];
+
+  return {
+    [column]: direction,
+  };
+};

@@ -3,8 +3,10 @@ import { TransactionRecord, Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { TProjectId } from '@/types';
-import { TransactionFilters } from './dtos/transaction.filters';
+import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
+import { toPrismaOrderBy, toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
+import { parse } from 'path';
 
 @Injectable()
 export class TransactionRepository {
@@ -55,68 +57,85 @@ export class TransactionRepository {
   }
 
   async findManyWithFilters(
-    filters: TransactionFilters,
+    getTransactionsParameters: GetTransactionsDto,
     projectId: string,
   ): Promise<TransactionRecord[]> {
+    const args: Prisma.TransactionRecordFindManyArgs = {};
+    if (getTransactionsParameters.page?.number && getTransactionsParameters.page?.size) {
+      // Temporary fix for pagination (class transfomer issue)
+      const size = parseInt(getTransactionsParameters.page.size as unknown as string, 10);
+      const number = parseInt(getTransactionsParameters.page.number as unknown as string, 10);
+
+      args.take = number;
+      args.skip = (size - 1) * number;
+    }
+
+    if (getTransactionsParameters.orderBy) {
+      args.orderBy = toPrismaOrderByGeneric(getTransactionsParameters.orderBy);
+    }
+
     return this.prisma.transactionRecord.findMany({
       where: {
         projectId, //  Always restrict to project
-        ...this.buildFilters(filters),
+        ...this.buildFilters(getTransactionsParameters),
       },
+      ...args,
     });
   }
 
-  private buildFilters(filters: TransactionFilters): Prisma.TransactionRecordWhereInput {
+  private buildFilters(
+    getTransactionsParameters: GetTransactionsDto,
+  ): Prisma.TransactionRecordWhereInput {
     const whereClause: Prisma.TransactionRecordWhereInput = {};
 
-    if (filters.businessId) {
-      whereClause.businessId = filters.businessId;
+    if (getTransactionsParameters.businessId) {
+      whereClause.businessId = getTransactionsParameters.businessId;
     }
 
-    if (filters.counterpartyId) {
+    if (getTransactionsParameters.counterpartyId) {
       whereClause.OR = [
-        { counterpartyOriginatorId: filters.counterpartyId },
-        { counterpartyBeneficiaryId: filters.counterpartyId },
+        { counterpartyOriginatorId: getTransactionsParameters.counterpartyId },
+        { counterpartyBeneficiaryId: getTransactionsParameters.counterpartyId },
       ];
     }
 
-    if (filters.startDate) {
+    if (getTransactionsParameters.startDate) {
       whereClause.transactionDate = {
         ...(whereClause.transactionDate as DateTimeFilter),
-        gte: filters.startDate,
+        gte: getTransactionsParameters.startDate,
       };
     }
-    if (filters.endDate) {
+    if (getTransactionsParameters.endDate) {
       whereClause.transactionDate = {
         ...(whereClause.transactionDate as DateTimeFilter),
-        lte: filters.endDate,
+        lte: getTransactionsParameters.endDate,
       };
     }
 
-    if (filters.paymentMethod) {
-      whereClause.paymentMethod = filters.paymentMethod;
+    if (getTransactionsParameters.paymentMethod) {
+      whereClause.paymentMethod = getTransactionsParameters.paymentMethod;
     }
 
     // Time filtering with client-provided UTC timestamps
-    if (filters.timeValue && filters.timeUnit) {
+    if (getTransactionsParameters.timeValue && getTransactionsParameters.timeUnit) {
       const now = new Date(); // UTC time by default
       let subtractValue = 0;
 
-      switch (filters.timeUnit) {
+      switch (getTransactionsParameters.timeUnit) {
         case 'minutes':
-          subtractValue = filters.timeValue * 60 * 1000;
+          subtractValue = getTransactionsParameters.timeValue * 60 * 1000;
           break;
         case 'hours':
-          subtractValue = filters.timeValue * 60 * 60 * 1000;
+          subtractValue = getTransactionsParameters.timeValue * 60 * 60 * 1000;
           break;
         case 'days':
-          subtractValue = filters.timeValue * 24 * 60 * 60 * 1000;
+          subtractValue = getTransactionsParameters.timeValue * 24 * 60 * 60 * 1000;
           break;
         case 'months':
-          now.setMonth(now.getMonth() - filters.timeValue);
+          now.setMonth(now.getMonth() - getTransactionsParameters.timeValue);
           break;
         case 'years':
-          now.setFullYear(now.getFullYear() - filters.timeValue);
+          now.setFullYear(now.getFullYear() - getTransactionsParameters.timeValue);
           break;
       }
 

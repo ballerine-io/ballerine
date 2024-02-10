@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { TransactionRepository } from '@/transaction/transaction.repository';
-import { TransactionCreateDto } from './dtos/transaction-create';
+import { TransactionCreateDto } from './dtos/transaction-create.dto';
 import { TransactionEntityMapper } from './transaction.mapper';
 import { Prisma, TransactionRecord } from '@prisma/client';
 import { sleep } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { TransactionFilters } from './dtos/transaction.filters';
+import { GetTransactionsDto } from './dtos/get-transactions.dto';
 
 @Injectable()
 export class TransactionService {
@@ -100,7 +100,7 @@ export class TransactionService {
     return this.repository.findMany(args, projectId);
   }
 
-  async getTransactions(filters: TransactionFilters, projectId: string) {
-    return this.repository.findManyWithFilters(filters, projectId);
+  async getTransactions(getTransactionsParameters: GetTransactionsDto, projectId: string) {
+    return this.repository.findManyWithFilters(getTransactionsParameters, projectId);
   }
 }
