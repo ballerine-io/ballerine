@@ -6,6 +6,7 @@ import {
   Project,
   Customer,
   AlertSeverity,
+  Prisma,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
@@ -37,6 +38,8 @@ export const generateFakeAlertDefinition = async (
       tags: [faker.random.word(), faker.random.word(), faker.random.word()],
       executionDetails: JSON.parse(faker.datatype.json()),
       severity: defaultSeverity,
+      // TODO: Assign assigneeId value to a valid user id
+      // TODO: Assign counterpart value to a valid user id
       // businessId: faker.datatype.uuid(),
       // endUserId: faker.datatype.uuid(),
       // assigneeId: faker.datatype.uuid(),
@@ -52,6 +55,23 @@ export const generateFakeAlertDefinition = async (
   }).forEach(async () => {
     const defaultSeverity = faker.helpers.arrayElement(Object.values(AlertSeverity));
 
+    // Create alerts
+    const alerts = Array.from(
+      {
+        length: faker.datatype.number({
+          min: 5,
+          max: 10,
+        }),
+      },
+      () => {
+        return {
+          projectId: project.id,
+          ...generateFakeAlert(defaultSeverity),
+        };
+      },
+    );
+
+    // Create Alert Definition
     return await prisma.alertDefinition.create({
       include: {
         alert: true, // Include all posts in the returned object
@@ -79,20 +99,7 @@ export const generateFakeAlertDefinition = async (
         additionalInfo: {},
         alert: {
           createMany: {
-            data: Array.from(
-              {
-                length: faker.datatype.number({
-                  min: 5,
-                  max: 10,
-                }),
-              },
-              () => {
-                return {
-                  projectId: project.id,
-                  ...generateFakeAlert(defaultSeverity),
-                };
-              },
-            ),
+            data: alerts,
             skipDuplicates: true,
           },
         },
