@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { ForwardedRef, forwardRef, Fragment } from 'react';
+import { type ForwardedRef, forwardRef, Fragment } from 'react';
 
-import { BlocksProps, Cells } from '@/blocks';
+import type { BlocksProps, Cells } from '@/blocks';
 
 export const BlocksComponent = forwardRef(
   <TCell extends Cells>(
