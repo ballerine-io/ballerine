@@ -37,7 +37,7 @@ export class AlertControllerExternal {
   }
 
   @common.Get('/')
-  @swagger.ApiOkResponse({ type: Array<Object> }) // TODO: Set type
+  @swagger.ApiOkResponse({ type: Array<Object> }) // TODO: Set Response
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.UsePipes(new ZodValidationPipe(FindAlertsSchema, 'query'))

@@ -533,6 +533,13 @@ model TransactionRecord {
   @@index([transactionCorrelationId])
 }
 
+enum AlertSeverity {
+  Low          @map("100")
+  Medium       @map("200")
+  High         @map("300")
+  Critical     @map("400")
+}
+
 enum AlertState {
   // New
   Triggered     @map("101")
@@ -579,6 +586,7 @@ model AlertDefinition {
 
   dedupeStrategies Json 
   config           Json 
+  defaultSeverity  AlertSeverity 
 
   tags           String[] // Tags for the alert
   additionalInfo Json // Additional information
@@ -610,6 +618,7 @@ model Alert {
   state                  AlertState 
   status                 AlertStatus 
   tags                   String[]
+  severity               AlertSeverity? 
 
   executionDetails      Json // Execution details
 

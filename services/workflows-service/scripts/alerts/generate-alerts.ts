@@ -11,6 +11,7 @@ import {
   Project,
   Customer,
   Alert,
+  AlertSeverity,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
@@ -35,14 +36,14 @@ export const generateFakeAlertDefinition = async (
     customer: Customer;
   },
 ) => {
-  const generateFakeAlert = () => {
+  const generateFakeAlert = (defaultSeverity: AlertSeverity) => {
     return {
       dataTimestamp: faker.date.past(),
       state: faker.helpers.arrayElement(Object.values(AlertState)),
       status: faker.helpers.arrayElement(Object.values(AlertStatus)),
       tags: [faker.random.word(), faker.random.word(), faker.random.word()],
       executionDetails: JSON.parse(faker.datatype.json()),
-      projectId: project.id,
+      severity: defaultSeverity,
       // businessId: faker.datatype.uuid(),
       // endUserId: faker.datatype.uuid(),
       // assigneeId: faker.datatype.uuid(),
@@ -56,6 +57,8 @@ export const generateFakeAlertDefinition = async (
       max: 10,
     }),
   }).forEach(async () => {
+    const defaultSeverity = faker.helpers.arrayElement(Object.values(AlertSeverity));
+
     return await prisma.alertDefinition.create({
       include: {
         alert: true, // Include all posts in the returned object
@@ -65,10 +68,12 @@ export const generateFakeAlertDefinition = async (
         name: faker.lorem.words(3),
         enabled: faker.datatype.boolean(),
         description: faker.lorem.sentence(),
+        projectId: project.id,
         rulesetId: faker.datatype.number({
           min: 1,
           max: 10,
         }),
+        defaultSeverity,
         ruleId: faker.datatype.number({
           min: 1,
           max: 10,
@@ -88,12 +93,16 @@ export const generateFakeAlertDefinition = async (
                   max: 10,
                 }),
               },
-              () => generateFakeAlert(),
+              () => {
+                return {
+                  projectId: project.id,
+                  ...generateFakeAlert(defaultSeverity),
+                };
+              },
             ),
             skipDuplicates: true,
           },
         },
-        projectId: project.id,
       },
     });
   });

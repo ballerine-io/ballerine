@@ -11,6 +11,9 @@ CREATE TYPE "VerificationStatus" AS ENUM ('Unverified', 'Verified', 'Pending');
 CREATE TYPE "TransactionRecordStatus" AS ENUM ('New', 'Pending', 'Active', 'Completed', 'Rejected', 'Cancelled', 'Failed');
 
 -- CreateEnum
+CREATE TYPE "AlertSeverity" AS ENUM ('100', '200', '300', '400');
+
+-- CreateEnum
 CREATE TYPE "AlertState" AS ENUM ('101', '201', '202', '301', '302', '303');
 
 -- CreateEnum
@@ -101,6 +104,7 @@ CREATE TABLE "AlertDefinition" (
     "modifiedBy" TEXT NOT NULL,
     "dedupeStrategies" JSONB NOT NULL,
     "config" JSONB NOT NULL,
+    "defaultSeverity" "AlertSeverity" NOT NULL,
     "tags" TEXT[],
     "additionalInfo" JSONB NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -120,6 +124,7 @@ CREATE TABLE "Alert" (
     "state" "AlertState" NOT NULL,
     "status" "AlertStatus" NOT NULL,
     "tags" TEXT[],
+    "severity" "AlertSeverity",
     "executionDetails" JSONB NOT NULL,
     "assigneeId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
