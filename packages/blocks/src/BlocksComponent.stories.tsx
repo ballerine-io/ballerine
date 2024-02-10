@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { createBlocks } from '@/blocks';
 import { BlocksComponent } from '@/BlocksComponent';
 import type { BlocksProps, CellsMap, ExtractCellProps } from '@/blocks';
-import { ComponentProps, FunctionComponent } from 'react';
+import type { ComponentProps, FunctionComponent } from 'react';
 
 const meta = {
   component: args => (

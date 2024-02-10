@@ -1,5 +1,5 @@
 import { dump, log, raise } from '@ballerine/common';
-import { ComponentProps, FunctionComponent, ReactNode } from 'react';
+import type { ComponentProps, FunctionComponent, ReactNode } from 'react';
 
 /**
  * A cell may have any property as long as it has a `type` property to discriminate a union by.
