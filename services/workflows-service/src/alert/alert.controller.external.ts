@@ -6,7 +6,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
-import { AlertDefinition, Alert } from '@prisma/client';
+import { AlertDefinition, Alert, Prisma } from '@prisma/client';
 import type { TProjectId, TProjectIds } from '@/types';
 import * as errors from '../errors';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
@@ -18,6 +18,7 @@ import {
   BulkAssignAlertsResponse,
 } from './dtos/assign-alert.dto';
 import { BulkStatus, TBulkAssignAlertsResponse } from './types';
+import { ProjectAssigneeGuard } from '@/alert/guards/project-assignee.guard';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Alerts')
@@ -55,6 +56,7 @@ export class AlertControllerExternal {
   }
 
   @common.Patch('assign/:assigneeId')
+  @common.UseGuards(ProjectAssigneeGuard)
   @swagger.ApiParam({
     name: 'assigneeId',
     type: 'string',
@@ -69,16 +71,28 @@ export class AlertControllerExternal {
     @common.Body() { alertIds }: AlertsIdsByProjectDto,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<TBulkAssignAlertsResponse> {
-    // TODO: Add validation logic
+    // TODO: Add assignee validation logic from UserService
     // if (UserService.findById(params.assigneeId, currentProjectId)) {
     //   throw
     // }
 
-    const updatedAlerts = await this.service.updateAlertsAssignee(
-      alertIds,
-      currentProjectId,
-      params,
-    );
+    let updatedAlerts = [];
+
+    try {
+      updatedAlerts = await this.service.updateAlertsAssignee(alertIds, currentProjectId, params);
+    } catch (error: unknown) {
+      // Should be handled by ProjectAssigneeGuard
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (
+          error.code === 'P2003' &&
+          (error.meta as { field_name: string }).field_name.includes('assigneeId_fk')
+        ) {
+          throw new errors.NotFoundException('Assignee not found');
+        }
+      }
+
+      throw error;
+    }
 
     const updatedAlertsIds = new Set(updatedAlerts.map(alert => alert.id));
 
