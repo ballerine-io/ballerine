@@ -33,6 +33,7 @@ import { Public } from '@/common/decorators/public.decorator';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
 import { env } from '@/env';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -45,6 +46,7 @@ export class WorkflowControllerExternal {
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly workflowDefinitionService: WorkflowDefinitionService,
+    private readonly prismaService: PrismaService,
   ) {}
 
   // GET /workflows
@@ -318,24 +320,45 @@ export class WorkflowControllerExternal {
     @common.Body() hookResponse: any,
   ): Promise<void> {
     try {
-      const workflowRuntime = await this.service.getWorkflowRuntimeDataByIdUnscoped(params.id);
-      await this.normalizeService.handleHookResponse({
-        workflowRuntime: workflowRuntime,
-        data: hookResponse,
-        resultDestinationPath: query.resultDestination || 'hookResponse',
-        processName: query.processName,
-        projectIds: [workflowRuntime.projectId],
-        currentProjectId: workflowRuntime.projectId,
-      });
-
-      await this.service.event(
-        {
+      await this.prismaService.$transaction(async transaction => {
+        const workflowRuntime = await this.service.getWorkflowRuntimeDataByIdAndLockUnscoped({
           id: params.id,
-          name: params.event,
-        },
-        [workflowRuntime.projectId],
-        workflowRuntime.projectId,
-      );
+          transaction,
+        });
+
+        const context = await this.normalizeService.handleHookResponse({
+          workflowRuntime: workflowRuntime,
+          data: hookResponse,
+          resultDestinationPath: query.resultDestination || 'hookResponse',
+          processName: query.processName,
+          projectIds: [workflowRuntime.projectId],
+          currentProjectId: workflowRuntime.projectId,
+        });
+
+        await this.service.event(
+          {
+            id: params.id,
+            name: 'DEEP_MERGE_CONTEXT',
+            payload: {
+              newContext: context,
+              arrayMergeOption: 'replace',
+            },
+          },
+          [workflowRuntime.projectId],
+          workflowRuntime.projectId,
+          transaction,
+        );
+
+        await this.service.event(
+          {
+            id: params.id,
+            name: params.event,
+          },
+          [workflowRuntime.projectId],
+          workflowRuntime.projectId,
+          transaction,
+        );
+      });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
