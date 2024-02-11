@@ -1,6 +1,10 @@
 import { Search as LucideSearch } from 'lucide-react';
+import { FunctionComponent } from 'react';
 
-export const Search = () => {
+export const Search: FunctionComponent<{
+  value: string;
+  onChange: (search: string) => void;
+}> = ({ value, onChange }) => {
   return (
     <div className="relative flex flex-col gap-1">
       <h4 className={'leading-0 min-h-[16px] pb-[1.6rem] text-xs font-bold'}>Search by name</h4>
@@ -12,6 +16,8 @@ export const Search = () => {
           type={'search'}
           className="input input-xs -ml-3 h-[18px] w-full !border-0 pl-0 text-xs !outline-none !ring-0 placeholder:text-base-content"
           placeholder={`Search by user name`}
+          value={value}
+          onChange={e => onChange(e.target.value)}
         />
       </div>
     </div>

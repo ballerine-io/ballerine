@@ -10,17 +10,18 @@ import { useMemo } from 'react';
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
 import { getAlertsSearchSchema } from '@/pages/TransactionMonitoringAlerts/get-alerts-search-schema';
 import { AlertsPagination } from '@/pages/TransactionMonitoringAlerts/AlertsPagination/AlertsPagination';
+import { useSearch } from '@/common/hooks/useSearch/useSearch';
 
 export const useTransactionMonitoringAlertsLogic = () => {
   const { data: session } = useAuthenticatedUserQuery();
   const AlertsSearchSchema = getAlertsSearchSchema(session?.user?.id);
-  const [{ filter, sortBy, sortDir, page, pageSize, search }, setSearchParams] =
+  const [{ filter, sortBy, sortDir, page, pageSize, search: searchValue }] =
     useZodSearchParams(AlertsSearchSchema);
   const { data: alerts } = useAlertsQuery({
     filter,
     page,
     pageSize,
-    search,
+    search: searchValue,
     sortDir,
     sortBy,
   });
@@ -36,7 +37,10 @@ export const useTransactionMonitoringAlertsLogic = () => {
   const [isSheetOpen, toggleIsAlertAnalysisSheetOpen, toggleOnIsAlertAnalysisSheetOpen] =
     useToggle();
   const { onPaginate, onPrevPage, onNextPage } = usePagination();
-  const isLastPage = false;
+  const isLastPage = (alerts?.length ?? 0 < pageSize) || alerts?.length === 0;
+  const { search, onSearch } = useSearch({
+    initialSearch: searchValue,
+  });
 
   return {
     alerts,
@@ -51,6 +55,8 @@ export const useTransactionMonitoringAlertsLogic = () => {
     onNextPage,
     onPaginate,
     isLastPage,
+    search,
+    onSearch,
   };
 };
 
@@ -67,13 +73,20 @@ export const TransactionMonitoringAlerts = () => {
     onNextPage,
     onPaginate,
     isLastPage,
+    search,
+    onSearch,
   } = useTransactionMonitoringAlertsLogic();
 
   return (
     <div className="flex h-full flex-col px-6 pb-6 pt-10">
       <h1 className="pb-5 text-2xl font-bold">Transaction Monitoring Alerts</h1>
       <div className="flex flex-1 flex-col gap-6 overflow-auto">
-        <AlertsHeader assignees={assignees ?? []} authenticatedUserId={authenticatedUserId} />
+        <AlertsHeader
+          assignees={assignees ?? []}
+          authenticatedUserId={authenticatedUserId}
+          search={search}
+          onSearch={onSearch}
+        />
         <AlertsTable
           data={alerts ?? []}
           toggleOnIsAlertAnalysisSheetOpen={toggleOnIsAlertAnalysisSheetOpen}
