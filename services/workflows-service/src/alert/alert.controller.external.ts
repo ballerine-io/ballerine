@@ -71,11 +71,6 @@ export class AlertControllerExternal {
     @common.Body() { alertIds }: AlertsIdsByProjectDto,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<TBulkAssignAlertsResponse> {
-    // TODO: Add assignee validation logic from UserService
-    // if (UserService.findById(params.assigneeId, currentProjectId)) {
-    //   throw
-    // }
-
     let updatedAlerts = [];
 
     updatedAlerts = await this.service.updateAlertsAssignee(alertIds, currentProjectId, params);
