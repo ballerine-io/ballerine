@@ -78,21 +78,7 @@ export class AlertControllerExternal {
 
     let updatedAlerts = [];
 
-    try {
-      updatedAlerts = await this.service.updateAlertsAssignee(alertIds, currentProjectId, params);
-    } catch (error: unknown) {
-      // Should be handled by ProjectAssigneeGuard
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (
-          error.code === 'P2003' &&
-          (error.meta as { field_name: string }).field_name.includes('assigneeId_fk')
-        ) {
-          throw new errors.NotFoundException('Assignee not found');
-        }
-      }
-
-      throw error;
-    }
+    updatedAlerts = await this.service.updateAlertsAssignee(alertIds, currentProjectId, params);
 
     const updatedAlertsIds = new Set(updatedAlerts.map(alert => alert.id));
 

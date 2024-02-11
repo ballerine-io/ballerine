@@ -3,10 +3,11 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { TProjectId } from '@/types';
 import { Injectable } from '@nestjs/common';
-import { Alert, AlertDefinition } from '@prisma/client';
+import { Alert, AlertDefinition, Prisma } from '@prisma/client';
 import { AlertAssigneeUniqueDto } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
+import { NotFoundException } from '@/errors';
 
 @Injectable()
 export class AlertService {
@@ -26,11 +27,25 @@ export class AlertService {
     projectId: string,
     assigneeDto: AlertAssigneeUniqueDto,
   ): Promise<Alert[]> {
-    return await this.alertRepository.updateMany(alertIds, projectId, {
-      data: {
-        assigneeId: assigneeDto.assigneeId,
-      },
-    });
+    try {
+      return await this.alertRepository.updateMany(alertIds, projectId, {
+        data: {
+          assigneeId: assigneeDto.assigneeId,
+        },
+      });
+    } catch (error: unknown) {
+      // Should be handled by ProjectAssigneeGuard on controller level
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (
+          error.code === 'P2003' &&
+          (error.meta as { field_name: string }).field_name.includes('assigneeId_fkey')
+        ) {
+          throw new NotFoundException('Assignee not found');
+        }
+      }
+
+      throw error;
+    }
   }
 
   async getAlerts(findAlertsDto: FindAlertsDto, projectIds: TProjectId[]) {
