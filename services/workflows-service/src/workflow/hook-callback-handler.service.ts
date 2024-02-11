@@ -43,17 +43,7 @@ export class HookCallbackHandlerService {
       );
     }
 
-    set(workflowRuntime.context, resultDestinationPath, data);
-
-    await this.workflowService.updateWorkflowRuntimeData(
-      workflowRuntime.id,
-      {
-        context: workflowRuntime.context,
-      },
-      currentProjectId,
-    );
-
-    return data;
+    return set({}, resultDestinationPath, data);
   }
   async mapCallbackDataToIndividual(
     data: AnyRecord,
@@ -62,7 +52,7 @@ export class HookCallbackHandlerService {
     currentProjectId: TProjectId,
   ) {
     const attributePath = resultDestinationPath.split('.');
-    const context = workflowRuntime.context;
+    const context = JSON.parse(JSON.stringify(workflowRuntime.context));
     const kycDocument = data.document as AnyRecord;
     const entity = this.formatEntityData(data);
     const issuer = this.formatIssuerData(kycDocument);
@@ -93,11 +83,8 @@ export class HookCallbackHandlerService {
 
     this.setNestedProperty(context, attributePath, result);
     context.documents = persistedDocuments;
-    await this.workflowService.updateWorkflowRuntimeData(
-      workflowRuntime.id,
-      { context: context },
-      currentProjectId,
-    );
+
+    return context;
   }
 
   private formatDocuments(
