@@ -3,7 +3,7 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { TProjectId } from '@/types';
 import { Injectable } from '@nestjs/common';
-import { Alert, AlertDefinition, Prisma } from '@prisma/client';
+import { Alert, AlertDefinition, AlertState, AlertStatus, Prisma } from '@prisma/client';
 import { AlertAssigneeUniqueDto, AlertsIdsByProjectDto } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
@@ -57,6 +57,7 @@ export class AlertService {
     return await this.alertRepository.updateMany(alertIds, projectId, {
       data: {
         state: decisionDto.decision,
+        status: this.getStatusFromState(decisionDto.decision),
       },
     });
   }
@@ -108,5 +109,24 @@ export class AlertService {
   private async checkAlert(definition: AlertDefinition): Promise<boolean> {
     // ...
     return true;
+  }
+
+  private getStatusFromState(newState: AlertState): AlertStatus {
+    switch (newState) {
+      case AlertState.Triggered:
+        return AlertStatus.New;
+
+      case AlertState.UnderReview:
+      case AlertState.Escalated:
+        return AlertStatus.Pending;
+
+      case AlertState.Resolved:
+      case AlertState.Acknowledged:
+      case AlertState.Dismissed:
+        return AlertStatus.Completed;
+
+      default:
+        throw new Error('Invalid state');
+    }
   }
 }
