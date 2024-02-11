@@ -1,5 +1,5 @@
 import { DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
-import { env } from './env';
+// import { env } from './env';
 
 export const swaggerPath = 'api';
 
@@ -18,9 +18,9 @@ const swaggerDocBuilder = new DocumentBuilder()
   .setExternalDoc('Ballerine Github Page', 'https://github.com/ballerine-io/ballerine')
   .addBearerAuth();
 
-if (env.ENVIRONMENT_NAME === 'local') {
-  swaggerDocBuilder.addServer(`http://localhost:${env.PORT}`, 'Local Server');
-}
+// if (env.ENVIRONMENT_NAME === 'local') {
+//   swaggerDocBuilder.addServer(`http://localhost:${env.PORT}`, 'Local Server');
+// }
 
 export const swaggerDocumentOptions = swaggerDocBuilder.build();
 
