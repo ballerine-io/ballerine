@@ -1,31 +1,41 @@
 import { useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { searchParamsToObject } from '@/common/hooks/useZodSearchParams/utils/search-params-to-object';
+import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchParams/useSerializedSearchParams';
 
 export const useSort = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const { sortDir, sortBy } = searchParamsToObject(searchParams);
-  const onSortDirToggle = useCallback(
-    (next?: 'asc' | 'desc') => {
-      searchParams.set('sortDir', next ? next : sortDir === 'asc' ? 'desc' : 'asc');
+  const [{ sortBy, sortDir }, setSearchParams] = useSerializedSearchParams();
 
-      setSearchParams(searchParams);
+  const onSortDir = useCallback(
+    (next?: 'asc' | 'desc') => {
+      setSearchParams({
+        sortDir: next ? next : sortDir === 'asc' ? 'desc' : 'asc',
+      });
     },
-    [searchParams, sortDir, setSearchParams],
+    [setSearchParams, sortDir],
   );
 
   const onSortBy = useCallback(
     (sortBy: string) => {
-      searchParams.set('sortBy', sortBy);
-
-      setSearchParams(searchParams);
+      setSearchParams({
+        sortBy,
+      });
     },
-    [searchParams, setSearchParams],
+    [setSearchParams],
+  );
+
+  const onSort = useCallback(
+    ({ sortBy, sortDir }: { sortBy: string; sortDir: 'asc' | 'desc' }) => {
+      setSearchParams({
+        sortBy,
+        sortDir,
+      });
+    },
+    [setSearchParams],
   );
 
   return {
-    onSortDirToggle,
+    onSortDir,
     onSortBy,
+    onSort,
     sortDir,
     sortBy,
   };

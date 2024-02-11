@@ -34,6 +34,18 @@ export const AlertStatuses = [
   AlertStatus.COMPLETED,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof AlertStatus>>;
 
+export const AlertType = {
+  HIGH_RISK_TRANSACTION: 'HighRiskTransaction',
+  DORMANT_ACCOUNT_ACTIVITY: 'DormantAccountActivity',
+  UNUSUAL_PATTERN: 'UnusualPattern',
+} as const;
+
+export const AlertTypes = [
+  AlertType.HIGH_RISK_TRANSACTION,
+  AlertType.DORMANT_ACCOUNT_ACTIVITY,
+  AlertType.UNUSUAL_PATTERN,
+] as const satisfies ReadonlyArray<TObjectValues<typeof AlertType>>;
+
 export const AlertsListSchema = z.array(
   ObjectWithIdSchema.extend({
     dataTimestamp: z.string().datetime(),

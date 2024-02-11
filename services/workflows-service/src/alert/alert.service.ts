@@ -1,7 +1,7 @@
 import { AlertRepository } from '@/alert/alert.repository';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Alert, AlertDefinition } from '@prisma/client';
+import { AlertDefinition } from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { TProjectId } from '@/types';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
@@ -30,9 +30,18 @@ export class AlertService {
           status: {
             in: findAlertsDto.filter?.status,
           },
-          assigneeId: {
-            in: findAlertsDto.filter?.assigneeId,
-          },
+          ...(findAlertsDto.filter?.assigneeId && {
+            OR: [
+              {
+                assigneeId: {
+                  in: findAlertsDto.filter?.assigneeId?.filter((id): id is string => id !== null),
+                },
+              },
+              {
+                assigneeId: findAlertsDto.filter?.assigneeId?.includes(null) ? null : undefined,
+              },
+            ],
+          }),
         },
         orderBy: findAlertsDto.orderBy as any,
         take: findAlertsDto.page.size,

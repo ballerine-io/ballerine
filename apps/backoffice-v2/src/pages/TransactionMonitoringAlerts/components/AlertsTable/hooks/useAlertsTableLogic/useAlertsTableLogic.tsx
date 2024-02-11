@@ -12,7 +12,7 @@ import { isInstanceOfFunction } from '@/common/utils/is-instance-of-function/is-
 import { columns } from '../../columns';
 
 export const useAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
-  const { onSortDirToggle, onSortBy, sortBy, sortDir } = useSort();
+  const { onSort, sortBy, sortDir } = useSort();
   const [sorting, setSorting] = useState<SortingState>([
     {
       id: sortBy || 'dataTimestamp',
@@ -29,10 +29,12 @@ export const useAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
 
       if (!currentSorting) return;
 
-      onSortBy(currentSorting?.id);
-      onSortDirToggle(currentSorting?.desc ? 'asc' : 'desc');
+      onSort({
+        sortBy: currentSorting.id,
+        sortDir: currentSorting.desc ? 'desc' : 'asc',
+      });
     },
-    [onSortBy, onSortDirToggle],
+    [onSort],
   );
   const table = useReactTable({
     columns,

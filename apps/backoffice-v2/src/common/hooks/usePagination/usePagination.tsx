@@ -1,42 +1,41 @@
-import { createSearchParams, useSearchParams } from 'react-router-dom';
-import { searchParamsToObject } from '@/common/hooks/useZodSearchParams/utils/search-params-to-object';
+import { createSearchParams } from 'react-router-dom';
 import { useCallback } from 'react';
+import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchParams/useSerializedSearchParams';
 
 export const usePagination = () => {
-  const [searchParams] = useSearchParams();
-  const searchParamsAsObject = searchParamsToObject(searchParams);
+  const [searchParams] = useSerializedSearchParams();
 
   const onPaginate = useCallback(
     (page: number) => {
       return createSearchParams({
-        ...searchParamsAsObject,
+        ...searchParams,
         page: page.toString(),
       }).toString();
     },
-    [searchParamsAsObject],
+    [searchParams],
   );
   const onNextPage = useCallback(() => {
-    const pageNumber = Number(searchParamsAsObject.page);
+    const pageNumber = Number(searchParams.page);
     const nextPage = pageNumber + 1;
 
     return createSearchParams({
-      ...searchParamsAsObject,
+      ...searchParams,
       page: nextPage.toString(),
     }).toString();
-  }, [searchParamsAsObject]);
+  }, [searchParams]);
   const onPrevPage = useCallback(() => {
-    const pageNumber = Number(searchParamsAsObject.page);
+    const pageNumber = Number(searchParams.page);
     const nextPage = pageNumber - 1;
 
     return createSearchParams({
-      ...searchParamsAsObject,
+      ...searchParams,
       page: nextPage.toString(),
     }).toString();
-  }, [searchParamsAsObject]);
+  }, [searchParams]);
 
   return {
-    page: searchParamsAsObject.page,
-    pageSize: searchParamsAsObject.pageSize,
+    page: searchParams.page,
+    pageSize: searchParams.pageSize,
     onPaginate,
     onNextPage,
     onPrevPage,

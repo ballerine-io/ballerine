@@ -9,7 +9,7 @@ export class FilterDto {
     required: false,
     name: 'filter[assigneeId][0]',
   })
-  assigneeId?: string[];
+  assigneeId?: Array<string | null>;
 
   @ApiProperty({
     enum: AlertStatus,

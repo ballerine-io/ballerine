@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { AnyZodObject } from 'zod';
 
 import { TEntityType, useEntityType } from '../useEntityType/useEntityType';
-import { IUseZodSearchParams } from '../useZodSearchParams/interfaces';
+import { ISerializedSearchParams } from '../useZodSearchParams/interfaces';
 import { useZodSearchParams } from '../useZodSearchParams/useZodSearchParams';
 import { BusinessesSearchSchema, IndividualsSearchSchema } from './validation-schemas';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
@@ -29,7 +29,7 @@ export const useEntitySearchSchema = <TSchema extends AnyZodObject>({
 
 export const useSearchParamsByEntity = <TSchema extends AnyZodObject>(
   schema?: TSchema,
-  options: IUseZodSearchParams = {},
+  options: ISerializedSearchParams = {},
 ) => {
   const entity = useEntityType();
   const { data: session } = useAuthenticatedUserQuery();
