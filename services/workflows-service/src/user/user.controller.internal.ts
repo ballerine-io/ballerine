@@ -38,6 +38,13 @@ export class UserControllerInternal {
     );
   }
 
+  @common.Get(':projectId')
+  @swagger.ApiOkResponse({ type: [UserModel] })
+  @swagger.ApiForbiddenResponse()
+  async listByProjectId(@CurrentProject() projectId: TProjectId): Promise<UserModel[]> {
+    return this.list([projectId]);
+  }
+
   @common.Post()
   @swagger.ApiCreatedResponse({ type: [UserModel] })
   @UseGuards(AdminAuthGuard)

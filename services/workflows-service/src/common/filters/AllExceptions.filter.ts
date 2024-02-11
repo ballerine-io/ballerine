@@ -53,7 +53,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     }
 
     return new InternalServerErrorException({
-      cause: inspect(exception),
+      cause: exception,
     });
   }
 

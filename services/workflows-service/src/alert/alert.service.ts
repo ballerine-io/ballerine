@@ -1,11 +1,12 @@
 import { AlertRepository } from '@/alert/alert.repository';
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { Alert, AlertDefinition } from '@prisma/client';
-import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
-import { TProjectId } from '@/types';
-import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { PrismaService } from '@/prisma/prisma.service';
+import { TProjectId } from '@/types';
+import { Injectable } from '@nestjs/common';
+import { Alert, AlertDefinition } from '@prisma/client';
+import { AlertAssigneeUniqueDto } from './dtos/assign-alert.dto';
+import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
+import { FindAlertsDto } from './dtos/get-alerts.dto';
 
 @Injectable()
 export class AlertService {
@@ -18,6 +19,18 @@ export class AlertService {
   async create(dto: CreateAlertDefinitionDto, projectId: TProjectId): Promise<AlertDefinition> {
     // #TODO: Add validation logic
     return await this.prisma.alertDefinition.create({ data: dto as any });
+  }
+
+  async updateAlertsAssignee(
+    alertIds: string[],
+    projectId: string,
+    assigneeDto: AlertAssigneeUniqueDto,
+  ): Promise<Alert[]> {
+    return await this.alertRepository.updateMany(alertIds, projectId, {
+      data: {
+        assigneeId: assigneeDto.assigneeId,
+      },
+    });
   }
 
   async getAlerts(findAlertsDto: FindAlertsDto, projectIds: TProjectId[]) {
