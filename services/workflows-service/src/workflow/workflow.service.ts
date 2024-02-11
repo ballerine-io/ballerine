@@ -12,7 +12,13 @@ import { EndUserService } from '@/end-user/end-user.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { FileService } from '@/providers/file/file.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
-import type { InputJsonValue, IObjectWithId, TProjectId, TProjectIds } from '@/types';
+import type {
+  InputJsonValue,
+  IObjectWithId,
+  PrismaTransaction,
+  TProjectId,
+  TProjectIds,
+} from '@/types';
 import { UserService } from '@/user/user.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
@@ -52,6 +58,7 @@ import {
   Business,
   EndUser,
   Prisma,
+  PrismaClient,
   UiDefinitionContext,
   WorkflowDefinition,
   WorkflowRuntimeData,
@@ -82,6 +89,8 @@ import { env } from '@/env';
 import { ValidationError } from '@/errors';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { ajv } from '@/common/ajv/ajv.validator';
+import { PrismaService } from '@/prisma/prisma.service';
+import { beginTransactionIfNotExistCurry } from '@/prisma/prisma.util';
 
 type TEntityId = string;
 
@@ -134,6 +143,7 @@ export class WorkflowService {
     private readonly salesforceService: SalesforceService,
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly uiDefinitionService: UiDefinitionService,
+    private readonly prismaService: PrismaService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
@@ -193,8 +203,17 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.findById(id, args, projectIds);
   }
 
-  async getWorkflowRuntimeDataByIdUnscoped(workflowRuntimeDataId: string) {
-    return await this.workflowRuntimeDataRepository.findByIdUnscoped(workflowRuntimeDataId);
+  async getWorkflowRuntimeDataByIdAndLockUnscoped({
+    id,
+    transaction,
+  }: {
+    id: string;
+    transaction: PrismaTransaction | PrismaClient;
+  }) {
+    return await this.workflowRuntimeDataRepository.findByIdAndLockUnscoped({
+      id,
+      transaction,
+    });
   }
 
   async getWorkflowRuntimeWithChildrenDataById(
@@ -308,6 +327,7 @@ export class WorkflowService {
     childPluginConfig: ChildPluginCallbackOutput,
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
+    transaction: PrismaTransaction,
   ) {
     const childWorkflow = (
       await this.createOrUpdateWorkflowRuntime({
@@ -320,30 +340,31 @@ export class WorkflowService {
       })
     )[0];
 
-    const parentWorkflowRuntime = await this.getWorkflowRuntimeDataById(
-      childPluginConfig.parentWorkflowRuntimeId,
-      {},
-      projectIds,
-    );
-
     if (childWorkflow) {
-      const contextToPersist = {
-        [childWorkflow.workflowRuntimeData.id]: {
-          entityId: childWorkflow.workflowRuntimeData.context.entity.id,
-          status: childWorkflow.workflowRuntimeData.status || 'active',
-          state: childWorkflow.workflowRuntimeData.state,
+      const newContext = {
+        childWorkflows: {
+          [childWorkflow.workflowRuntimeData.id]: {
+            [childWorkflow.workflowRuntimeData.id]: {
+              entityId: childWorkflow.workflowRuntimeData.context.entity.id,
+              status: childWorkflow.workflowRuntimeData.status || 'active',
+              state: childWorkflow.workflowRuntimeData.state,
+            },
+          },
         },
       };
-      const parentContext = this.composeContextWithChildResponse(
-        parentWorkflowRuntime.context,
-        childWorkflow.workflowDefinition.id,
-        contextToPersist,
-      );
 
-      await this.updateWorkflowRuntimeData(
-        parentWorkflowRuntime.id,
-        { context: parentContext },
+      await this.event(
+        {
+          id: childPluginConfig.parentWorkflowRuntimeId,
+          name: 'DEEP_MERGE_CONTEXT',
+          payload: {
+            newContext,
+            arrayMergeOption: 'replace',
+          },
+        },
+        projectIds,
         currentProjectId,
+        transaction,
       );
     }
 
@@ -1004,15 +1025,21 @@ export class WorkflowService {
     id: string,
     context: WorkflowRuntimeData['context'],
     projectIds: TProjectIds,
-    mergeBy: ArrayMergeOption = 'by_id',
+    arrayMergeOption: ArrayMergeOption = 'by_id',
   ) {
     const runtimeData = await this.workflowRuntimeDataRepository.findById(id, {}, projectIds);
     const correlationId = await this.getCorrelationIdFromWorkflow(runtimeData, projectIds);
-    const updatedRuntimeData = await this.workflowRuntimeDataRepository.updateContextById(
-      id,
-      context,
-      mergeBy,
+    const updatedRuntimeData = await this.event(
+      {
+        id,
+        name: 'DEEP_MERGE_CONTEXT',
+        payload: {
+          newContext: context,
+          arrayMergeOption,
+        },
+      },
       projectIds,
+      projectIds![0]!,
     );
 
     this.workflowEventEmitter.emit('workflow.context.changed', {
@@ -1958,44 +1985,57 @@ export class WorkflowService {
   }
 
   async event(
-    { name: type, id }: WorkflowEventInput & IObjectWithId,
+    { name: type, id, payload }: WorkflowEventInput & IObjectWithId,
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
+    transaction?: PrismaTransaction,
   ) {
-    this.logger.log('Workflow event received', { id, type });
-    const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
-      id,
-      {},
-      projectIds,
-    );
-    const workflowDefinition = await this.workflowDefinitionRepository.findById(
-      workflowRuntimeData.workflowDefinitionId,
-      {} as any,
-      projectIds,
-    );
+    const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
+      transaction,
+      prismaService: this.prismaService,
+    });
 
-    const service = createWorkflow({
-      runtimeId: workflowRuntimeData.id,
-      // @ts-expect-error - error from Prisma types fix
-      definition: workflowDefinition.definition,
-      // @ts-expect-error - error from Prisma types fix
-      definitionType: workflowDefinition.definitionType,
-      config: workflowRuntimeData.config,
-      workflowContext: {
-        machineContext: workflowRuntimeData.context,
-        state: workflowRuntimeData.state,
-      },
-      // @ts-expect-error - error from Prisma types fix
-      extensions: workflowDefinition.extensions,
-      invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
-        const runnableChildWorkflow = await this.persistChildEvent(
-          childPluginConfiguration,
-          projectIds,
-          currentProjectId,
-        );
+    // @TODO: Check - Researched
+    return await beginTransactionIfNotExist(async transaction => {
+      this.logger.log('Workflow event received', { id, type });
+      const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+        id,
+        {},
+        projectIds,
+        transaction,
+      );
+      const workflowDefinition = await this.workflowDefinitionRepository.findById(
+        workflowRuntimeData.workflowDefinitionId,
+        {},
+        projectIds,
+        transaction,
+      );
 
-        if (runnableChildWorkflow && childPluginConfiguration.initOptions.event) {
-          // TODO: Review the issue if return child workflow id for parent and not "send event"
+      const service = createWorkflow({
+        runtimeId: workflowRuntimeData.id,
+        // @ts-expect-error - error from Prisma types fix
+        definition: workflowDefinition.definition,
+        // @ts-expect-error - error from Prisma types fix
+        definitionType: workflowDefinition.definitionType,
+        config: workflowRuntimeData.config,
+        workflowContext: {
+          machineContext: workflowRuntimeData.context,
+          state: workflowRuntimeData.state,
+        },
+        // @ts-expect-error - error from Prisma types fix
+        extensions: workflowDefinition.extensions,
+        invokeChildWorkflowAction: async (childPluginConfiguration: ChildPluginCallbackOutput) => {
+          const runnableChildWorkflow = await this.persistChildEvent(
+            childPluginConfiguration,
+            projectIds,
+            currentProjectId,
+            transaction,
+          );
+
+          if (!runnableChildWorkflow || !childPluginConfiguration.initOptions.event) {
+            return;
+          }
+
           await this.event(
             {
               id: runnableChildWorkflow.workflowRuntimeData.id,
@@ -2004,27 +2044,27 @@ export class WorkflowService {
             projectIds,
             currentProjectId,
           );
-        }
-      },
-    });
+        },
+      });
 
-    if (!service.getSnapshot().nextEvents.includes(type)) {
-      throw new BadRequestException(
-        `Event ${type} does not exist for workflow ${workflowDefinition.id}'s state: ${workflowRuntimeData.state}`,
-      );
-    }
+      if (!service.getSnapshot().nextEvents.includes(type)) {
+        throw new BadRequestException(
+          `Event ${type} does not exist for workflow ${workflowDefinition.id}'s state: ${workflowRuntimeData.state}`,
+        );
+      }
 
-    await service.sendEvent({
-      type,
-    });
+      await service.sendEvent({
+        type,
+        ...(payload ? { payload } : {}),
+      });
 
-    const snapshot = service.getSnapshot();
-    const currentState = snapshot.value;
-    const context = snapshot.machine.context;
-    // TODO: Refactor to use snapshot.done instead
-    const isFinal = snapshot.machine.states[currentState].type === 'final';
-    const entityType = aliasIndividualAsEndUser(context?.entity?.type);
-    const entityId = workflowRuntimeData[`${entityType}Id`];
+      const snapshot = service.getSnapshot();
+      const currentState = snapshot.value;
+      const context = snapshot.machine.context;
+      // TODO: Refactor to use snapshot.done instead
+      const isFinal = snapshot.machine.states[currentState].type === 'final';
+      const entityType = aliasIndividualAsEndUser(context?.entity?.type);
+      const entityId = workflowRuntimeData[`${entityType}Id`];
 
     this.logger.log('Workflow state transition', {
       id: id,
@@ -2041,57 +2081,84 @@ export class WorkflowService {
       },
       currentProjectId,
     );
+      this.logger.log('Workflow state transition', {
+        id: id,
+        from: workflowRuntimeData.state,
+        to: currentState,
+      });
 
-    if (workflowRuntimeData.parentRuntimeDataId) {
-      await this.persistChildWorkflowToParent(
+      const updatedRuntimeData = await this.updateWorkflowRuntimeData(
         workflowRuntimeData,
         workflowDefinition,
-        isFinal,
-        projectIds,
+        {
+          context,
+          state: currentState,
+          tags: Array.from(snapshot.tags) as unknown as WorkflowDefinitionUpdateInput['tags'],
+          status: isFinal ? 'completed' : workflowRuntimeData.status,
+        },
         currentProjectId,
-        currentState,
+        transaction,
       );
-    }
 
-    this.workflowEventEmitter.emit('workflow.state.changed', {
-      //@ts-expect-error
-      entityId,
-      state: updatedRuntimeData.state,
-      correlationId: updatedRuntimeData.context.ballerineEntityId,
-      runtimeData: updatedRuntimeData,
-    });
+      if (workflowRuntimeData.parentRuntimeDataId) {
+        await this.persistChildWorkflowToParent(
+          workflowRuntimeData,
+          workflowDefinition,
+          isFinal,
+          projectIds,
+          currentProjectId,
+          currentState,
+        );
+      }
 
-    if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
+      this.workflowEventEmitter.emit('workflow.state.changed', {
+        //@ts-expect-error
+        entityId,
+        state: updatedRuntimeData.state,
+        correlationId: updatedRuntimeData.context.ballerineEntityId,
+        runtimeData: updatedRuntimeData,
+      });
+
+      if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
+        return updatedRuntimeData;
+      }
+
+      const approvalState = ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState];
+
+      if (!entityType) {
+        throw new BadRequestException(`entity.type is required`);
+      }
+
+      if (!entityId) {
+        throw new BadRequestException(`entity.${entityType}Id is required`);
+      }
+
+      if (entityType === 'endUser') {
+        await this.entityRepository[entityType].updateById(
+          entityId,
+          {
+            data: {
+              approvalState,
+            },
+          },
+          transaction,
+        );
+      }
+
+      if (entityType === 'business') {
+        await this.entityRepository[entityType].updateById(
+          entityId,
+          {
+            data: {
+              approvalState,
+            },
+          },
+          transaction,
+        );
+      }
+
       return updatedRuntimeData;
-    }
-
-    const approvalState = ApprovalState[currentState.toUpperCase() as keyof typeof ApprovalState];
-
-    if (!entityType) {
-      throw new BadRequestException(`entity.type is required`);
-    }
-
-    if (!entityId) {
-      throw new BadRequestException(`entity.${entityType}Id is required`);
-    }
-
-    if (entityType === 'endUser') {
-      await this.entityRepository[entityType].updateById(entityId, {
-        data: {
-          approvalState,
-        },
-      });
-    }
-
-    if (entityType === 'business') {
-      await this.entityRepository[entityType].updateById(entityId, {
-        data: {
-          approvalState,
-        },
-      });
-    }
-
-    return updatedRuntimeData;
+    });
   }
 
   async persistChildWorkflowToParent(
@@ -2103,6 +2170,7 @@ export class WorkflowService {
     childRuntimeState?: string,
   ) {
     const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
+    let parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
       // @ts-expect-error - error from Prisma types fix
       workflowRuntimeData.parentRuntimeDataId,
       { include: { childWorkflowsRuntimeData: true } },
@@ -2147,9 +2215,13 @@ export class WorkflowService {
           workflowDefinition,
         );
 
-        await this.updateWorkflowRuntimeData(
-          parentWorkflowRuntime.id,
-          { context: parentContext },
+        parentWorkflowRuntime = await this.event(
+          {
+            id: parentWorkflowRuntime.id,
+            name: 'DEEP_MERGE_CONTEXT',
+            payload: parentContext,
+          },
+          projectIds,
           currentProjectId,
         );
 

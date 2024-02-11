@@ -53,19 +53,24 @@ export class WorkflowRuntimeDataRepository {
   async findOne<T extends Prisma.WorkflowRuntimeDataFindFirstArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindFirstArgs>,
     projectIds: TProjectIds,
-    lockForUpdate = false,
   ): Promise<WorkflowRuntimeData | null> {
-    if (lockForUpdate) {
-      await this.prisma.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "id" = ${
-        args.where?.id
-      } ${
-        projectIds?.length
-          ? Prisma.sql`AND "projectId" in (${projectIds?.join(',')})`
-          : Prisma.sql``
-      } FOR UPDATE`; // @TODO: Ignore the rest of the args?
-    }
-
     return await this.prisma.workflowRuntimeData.findFirst(
+      this.scopeService.scopeFindOne(args, projectIds),
+    );
+  }
+
+  async findByIdAndLock<T extends Prisma.WorkflowRuntimeDataFindFirstArgs>(
+    args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindFirstArgs>,
+    projectIds: TProjectIds,
+    transaction: PrismaTransaction | PrismaClient = this.prisma,
+  ): Promise<WorkflowRuntimeData | null> {
+    await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "id" = ${
+      args.where?.id
+    } ${
+      projectIds?.length ? Prisma.sql`AND "projectId" in (${projectIds?.join(',')})` : Prisma.sql``
+    } FOR UPDATE`; // @TODO: Ignore the rest of the args?
+
+    return await transaction.workflowRuntimeData.findFirst(
       this.scopeService.scopeFindOne(args, projectIds),
     );
   }
@@ -81,8 +86,16 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
-  async findByIdUnscoped(id: string): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.findFirstOrThrow({ where: { id } });
+  async findByIdAndLockUnscoped({
+    id,
+    transaction = this.prisma,
+  }: {
+    id: string;
+    transaction: PrismaTransaction | PrismaClient;
+  }): Promise<WorkflowRuntimeData> {
+    await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "id" = ${id}  FOR UPDATE`; // @TODO: Ignore the rest of the args?
+
+    return await transaction.workflowRuntimeData.findFirstOrThrow({ where: { id } });
   }
 
   async updateById(
