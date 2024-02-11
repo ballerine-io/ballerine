@@ -4,10 +4,11 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { TProjectId } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { Alert, AlertDefinition, Prisma } from '@prisma/client';
-import { AlertAssigneeUniqueDto } from './dtos/assign-alert.dto';
+import { AlertAssigneeUniqueDto, AlertsIdsByProjectDto } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { NotFoundException } from '@/errors';
+import { AlertDecisionDto } from './dtos/decision-alert.dto';
 
 @Injectable()
 export class AlertService {
@@ -46,6 +47,18 @@ export class AlertService {
 
       throw error;
     }
+  }
+
+  async updateAlertsDecision(
+    alertIds: string[],
+    projectId: string,
+    decisionDto: AlertDecisionDto,
+  ): Promise<Alert[]> {
+    return await this.alertRepository.updateMany(alertIds, projectId, {
+      data: {
+        state: decisionDto.decision,
+      },
+    });
   }
 
   async getAlerts(findAlertsDto: FindAlertsDto, projectIds: TProjectId[]) {

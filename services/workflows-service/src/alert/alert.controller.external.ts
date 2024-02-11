@@ -15,10 +15,11 @@ import * as common from '@nestjs/common';
 import {
   AlertAssigneeUniqueDto,
   AlertsIdsByProjectDto,
-  BulkAssignAlertsResponse,
+  BulkAlertsResponse,
 } from './dtos/assign-alert.dto';
 import { BulkStatus, TBulkAssignAlertsResponse } from './types';
 import { ProjectAssigneeGuard } from '@/alert/guards/project-assignee.guard';
+import { AlertDecisionDto } from './dtos/decision-alert.dto';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Alerts')
@@ -63,21 +64,52 @@ export class AlertControllerExternal {
     description: 'Assignee Id',
     required: true,
   })
-  @swagger.ApiOkResponse({ type: BulkAssignAlertsResponse })
+  @swagger.ApiOkResponse({ type: BulkAlertsResponse })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async assignWorkflowById(
+  async assignBulkAlerts(
     @common.Param() params: AlertAssigneeUniqueDto,
     @common.Body() { alertIds }: AlertsIdsByProjectDto,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<TBulkAssignAlertsResponse> {
-    let updatedAlerts = [];
+    const updatedAlerts = await this.service.updateAlertsAssignee(
+      alertIds,
+      currentProjectId,
+      params,
+    );
 
-    updatedAlerts = await this.service.updateAlertsAssignee(alertIds, currentProjectId, params);
+    const response: TBulkAssignAlertsResponse = this.createBulkResponse(alertIds, updatedAlerts);
 
+    return response;
+  }
+
+  @common.Patch('decision/:decision')
+  @swagger.ApiOkResponse({ type: BulkAlertsResponse })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async decision(
+    @common.Param() decisionDto: AlertDecisionDto,
+    @common.Body() { alertIds }: AlertsIdsByProjectDto,
+    @CurrentProject() currentProjectId: TProjectId,
+  ): Promise<TBulkAssignAlertsResponse> {
+    const updatedAlerts = await this.service.updateAlertsDecision(
+      alertIds,
+      currentProjectId,
+      decisionDto,
+    );
+
+    const response: TBulkAssignAlertsResponse = this.createBulkResponse(alertIds, updatedAlerts);
+
+    return response;
+  }
+
+  private createBulkResponse(
+    alertIds: string[],
+    updatedAlerts: Alert[],
+  ): TBulkAssignAlertsResponse {
     const updatedAlertsIds = new Set(updatedAlerts.map(alert => alert.id));
 
-    const response: TBulkAssignAlertsResponse = {
+    return {
       overallStatus:
         alertIds.length === updatedAlertsIds.size
           ? BulkStatus.success
@@ -101,7 +133,5 @@ export class AlertControllerExternal {
         };
       }),
     };
-
-    return response;
   }
 }

@@ -54,7 +54,7 @@ export class AlertUpdateResponse {
   status!: string;
 }
 
-export class BulkAssignAlertsResponse {
+export class BulkAlertsResponse {
   @ApiProperty({
     required: true,
     enum: BulkStatus,
