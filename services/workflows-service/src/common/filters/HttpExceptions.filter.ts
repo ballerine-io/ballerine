@@ -47,10 +47,6 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
         // Handling Unique Key Constraint Violation Error
         const fields = (exception.meta as { target: string[] }).target;
         message = `Another record with the requested (${fields.join(', ')}) already exists`;
-      } else if (exception.code === 'P2003') {
-        // Handling Unique Key Constraint Violation Error
-        const fields = (exception.meta as { target: string[] }).target;
-        message = `Another record with the requested (${fields.join(', ')}) already exists`;
       } else {
         message = `[${exception.code}]: ` + this.exceptionShortMessage(exception.message);
       }
