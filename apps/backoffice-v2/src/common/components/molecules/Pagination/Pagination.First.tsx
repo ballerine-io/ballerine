@@ -12,7 +12,10 @@ export const PaginationFirst: FunctionComponent<
   <PaginationLink
     aria-label="Go to first page"
     size="default"
-    className={ctw('gap-1 pr-2.5', className)}
+    className={ctw(
+      'gap-1 pr-2.5 aria-disabled:pointer-events-none aria-disabled:opacity-50',
+      className,
+    )}
     {...props}
   >
     <ChevronFirst className="h-4 w-4" />

@@ -4,7 +4,7 @@ import { Filters } from '@/pages/TransactionMonitoringAlerts/components/Filters'
 import { FunctionComponent } from 'react';
 import { TUsers } from '@/domains/users/types';
 
-export const Header: FunctionComponent<{
+export const AlertsHeader: FunctionComponent<{
   assignees: TUsers;
   authenticatedUserId: string | null;
 }> = ({ assignees, authenticatedUserId }) => {

@@ -12,7 +12,10 @@ export const PaginationPrevious: FunctionComponent<
   <PaginationLink
     aria-label="Go to previous page"
     size="default"
-    className={ctw('gap-1 pl-2.5', className)}
+    className={ctw(
+      'gap-1 pl-2.5 aria-disabled:pointer-events-none aria-disabled:opacity-50',
+      className,
+    )}
     {...props}
   >
     <ChevronLeftIcon className="h-4 w-4" />

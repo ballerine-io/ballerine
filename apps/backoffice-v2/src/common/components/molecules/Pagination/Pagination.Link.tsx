@@ -18,6 +18,9 @@ export const PaginationLink = ({
         variant: isActive ? 'outline' : 'ghost',
         size,
       }),
+      {
+        'pointer-events-none opacity-50': isActive,
+      },
       className,
     )}
     {...props}
