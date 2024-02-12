@@ -64,6 +64,92 @@
     "differentFromPhysicalAddress": "与实际地址不同",
     "hasActiveWebsite": "我声明网站的业务活动不需要许可证",
     "storeInfoDescription": "不勾选最后一个复选框将需要提供额外的许可证文件",
+    "shareholderTitleTemplate": "股东 {{INDEX}}",
+    "shareholdersDescriptionUbo": "<p>添加所有直接或间接拥有公司超过25%股权的自然人。</p>",
+    "associatedCompanyIndex": "关联公司 {{INDEX}}",
+    "personalDetails": "个人详情",
+    "associatedCompanies": "关联公司",
+    "associatedCompaniesDescription": "添加所有拥有公司超过25%股权的公司。",
+    "noCompaniesWithMoreThan": "没有任何公司拥有超过25%的股份",
+    "policiesAndComplianceDocuments": "政策与合规文件",
+    "additionalRequirements": "额外要求",
+    "iHaveAuthority": {
+      "label": "我有该公司的签字权"
+    },
+    "annualSalesVolume": {
+      "label": "年销售额（美元）",
+      "hint": "5,000,000"
+    },
+    "copyOfBusinessLicense": {
+      "label": "营业执照副本"
+    },
+    "memorandumOfArticle": {
+      "label": "公司章程备忘录（M&A）"
+    },
+    "businessOwnershipStructureChart": {
+      "label": "企业所有权结构图"
+    },
+    "tenancyAgreement": {
+      "label": "租赁协议"
+    },
+    "taxReturn": {
+      "label": "纳税申报单",
+      "description": "IRAS评估通知"
+    },
+    "settlementBankAccountStatement": {
+      "label": "结算银行账户对账单"
+    },
+    "financialStatements": {
+      "label": "财务报表"
+    },
+    "latest3MonthsCardProcessingStatements": {
+      "label": "最近3个月的卡处理对账单",
+      "description": "包括信用卡退款和退货信息"
+    },
+    "transactionInformation": {
+      "label": "交易信息",
+      "description": "例如，每日汇总报告"
+    },
+    "psiDssDocuments": {
+      "label": "PSI DSS文件"
+    },
+    "mailingAcknowledgementOrFormSample": {
+      "label": "邮寄、确认或表格样本",
+      "description": "适用于邮件/订单/表格申请"
+    },
+    "companyRegistrationNumber": {
+      "label": "公司注册号",
+      "hint": "CRN12345678"
+    },
+    "companyLegalName": {
+      "label": "公司法定名称",
+      "hint": "OpenAI科技有限公司"
+    },
+    "relationship": {
+      "label": "关系",
+      "hint": "母公司/子公司/姊妹公司"
+    },
+    "representativeFirstName": {
+      "label": "代表名",
+      "hint": "John"
+    },
+    "representativeLastName": {
+      "label": "代表姓",
+      "hint": "Deo"
+    },
+    "representativeEmail": {
+      "label": "代表电子邮件",
+      "hint": "example@example.com"
+    },
+    "dateOfEstablishment": {
+      "label": "成立日期",
+      "hint": "日/月/年"
+    },
+    "hint": {
+      "firstName": "伟",
+      "lastName": "李",
+      "email": "email@gmail.com"
+    },
     "email": {
       "label": "电子邮件",
       "hint": "name@companyhk.com"
@@ -93,7 +179,8 @@
       "hint": "首席执行官 / 经理 / 合伙人"
     },
     "dateOfBirth": {
-      "label": "出生日期"
+      "label": "出生日期",
+      "hint": "日/月/年"
     },
     "registrationNumber": {
       "label": "注册号码",
@@ -255,12 +342,12 @@
       "label": "每月交易数量",
       "hint": "500"
     },
-    "estimatedMonthlySalesClipsPay": {
-      "label": "通过ClipsPay估计的每月销售额（美元）",
+    "estimatedMonthlySales": {
+      "label": "通过{{customerName}}估计的每月销售额（美元）",
       "hint": "400,000"
     },
-    "estimatedMonthlyTransactionsClipsPay": {
-      "label": "通过ClipsPay估计的每月交易数量",
+    "estimatedMonthlyTransactions": {
+      "label": "通过{{customerName}}估计的每月交易数量",
       "hint": "150"
     },
     "averageTicketAmount": {
@@ -293,14 +380,23 @@
     },
     "certificateOfIncorporation": {
       "label": "公司成立证书",
-      "description": "不超过6个月以前的文件。"
+      "description": {
+        "3months": "不超过3个月以前的文件。",
+        "6months": "不超过6个月以前的文件。"
+      }
     },
     "businessRegistrationCertificate": {
       "label": "工商注册证书",
-      "description": "公证文件"
+      "description": {
+        "regular": "公证文件",
+        "3months": "公证文件（不超过3个月）"
+      }
     },
     "corporateTaxCertificate": {
       "label": "企业税务证书"
+    },
+    "proofOfAddress": {
+      "label": "地址证明"
     },
     "certificateOfGoodStanding": {
       "label": "良好信用证明书",
@@ -385,18 +481,34 @@
     "documents": {
       "bankStatement": {
         "label": "银行对账单",
-        "description": "不超过6个月。"
+        "description": "不超过6个月。",
+        "error": "需要银行对账单"
       },
       "companyStructure": {
         "label": "公司结构（董事和法定代表人）",
-        "description": "公证文件"
+        "description": "公证文件",
+        "error": "需要公司结构"
       },
       "certificateOfRegistration": {
-        "label": "注册证书"
+        "label": "注册证书",
+        "error": "需要注册证书"
       },
       "utilityBill": {
         "label": "公司水电费账单作为地址证明",
         "description": "不超过6个月。"
+      },
+      "certificateOfIncorporation": {
+        "label": "公司注册证书",
+        "description": "不超过6个月"
+      },
+      "businessUtilityBill": {
+        "label": "公用事业账单",
+        "description": "公证文件"
+      },
+      "proofOfAddress": {
+        "label": "公司公用事业账单作为地址证明",
+        "description": "不超过6个月",
+        "error": "需要地址证明"
       }
     }
   },
@@ -413,7 +525,8 @@
       "businessModel": "业务模型是必需的。",
       "spikeSalesAverageVolume": "销售高峰期销售额必须为正数。",
       "spikeTransactionNumber": "销售高峰期交易数量必须为正数。",
-      "requiredField": "此字段为必填项。"
+      "requiredField": "此字段为必填项。",
+      "annualSalesVolume": "年销售额必须为正数。"
     },
     "required": {
       "phone": "需要有效的电话号码。",
@@ -471,7 +584,14 @@
       "spikeTransactionNumber": "需要销售高峰期交易数量。",
       "volumeInRegion": "需要按地区划分的销售额百分比。",
       "contactDetails": "联系方式是必需的。",
-      "companyWebsite": "公司网站为必填项。"
+      "companyWebsite": "公司网站为必填项。",
+      "postalCode": "邮政编码是必需的。",
+      "iHaveSigningAuthority": "您必须获得代表公司签字的授权。",
+      "dateOfEstablishment": "成立日期是必需的。",
+      "annualSalesVolume": "月销售额是必需的。",
+      "bankCountry": "银行国家是必需的。",
+      "companyRegistrationNumber": "公司注册号是必需的。",
+      "role": "职务是必需的。"
     },
     "minLength": {
       "firstName": "名字必须至少为2个字符。",
