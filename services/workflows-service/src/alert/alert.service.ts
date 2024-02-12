@@ -1,15 +1,13 @@
 import { AlertRepository } from '@/alert/alert.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import * as errors from '@/errors';
 import { PrismaService } from '@/prisma/prisma.service';
+import { isFkConstraintError } from '@/prisma/prisma.util';
 import { TProjectId } from '@/types';
 import { Injectable } from '@nestjs/common';
-import { Alert, AlertDefinition, AlertState, AlertStatus, Prisma } from '@prisma/client';
-import { AlertAssigneeUniqueDto, AlertsIdsByProjectDto } from './dtos/assign-alert.dto';
+import { Alert, AlertDefinition, AlertState, AlertStatus } from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
-import { AlertDecisionDto } from './dtos/decision-alert.dto';
-import * as errors from '@/errors';
-import { isFkConstraintError } from '@/prisma/prisma.util';
 
 @Injectable()
 export class AlertService {
@@ -22,27 +20,6 @@ export class AlertService {
   async create(dto: CreateAlertDefinitionDto, projectId: TProjectId): Promise<AlertDefinition> {
     // #TODO: Add validation logic
     return await this.prisma.alertDefinition.create({ data: dto as any });
-  }
-
-  async updateAlertsAssignee(
-    alertIds: string[],
-    projectId: string,
-    assigneeDto: AlertAssigneeUniqueDto,
-  ): Promise<Alert[]> {
-    try {
-      return await this.alertRepository.updateMany(alertIds, projectId, {
-        data: {
-          assigneeId: assigneeDto.assigneeId,
-        },
-      });
-    } catch (error) {
-      // Should be handled by ProjectAssigneeGuard on controller level
-      if (isFkConstraintError(error, 'assigneeId_fkey')) {
-        throw new errors.NotFoundException('Assignee not found');
-      }
-
-      throw error;
-    }
   }
 
   async updateAlertsDecision(
@@ -58,9 +35,38 @@ export class AlertService {
     });
   }
 
-  async getAlerts(findAlertsDto: FindAlertsDto, projectIds: TProjectId[]) {
+  async updateAlertsAssignee(
+    alertIds: string[],
+    projectId: string,
+    assigneeId: string,
+  ): Promise<Alert[]> {
+    try {
+      return await this.alertRepository.updateMany(alertIds, projectId, {
+        data: {
+          assigneeId: assigneeId,
+        },
+      });
+    } catch (error) {
+      // Should be handled by ProjectAssigneeGuard on controller level
+      if (isFkConstraintError(error, 'assigneeId_fkey')) {
+        throw new errors.NotFoundException('Assignee not found');
+      }
+
+      throw error;
+    }
+  }
+
+  async getAlerts(
+    findAlertsDto: FindAlertsDto,
+    projectIds: TProjectId[],
+    args?: Omit<
+      Parameters<typeof this.alertRepository.findMany>[0],
+      'where' | 'orderBy' | 'take' | 'skip'
+    >,
+  ) {
     return this.alertRepository.findMany(
       {
+        ...args,
         where: {
           state: {
             in: findAlertsDto.filter?.state,
@@ -68,9 +74,18 @@ export class AlertService {
           status: {
             in: findAlertsDto.filter?.status,
           },
-          assigneeId: {
-            in: findAlertsDto.filter?.assigneeId,
-          },
+          ...(findAlertsDto.filter?.assigneeId && {
+            OR: [
+              {
+                assigneeId: {
+                  in: findAlertsDto.filter?.assigneeId?.filter((id): id is string => id !== null),
+                },
+              },
+              {
+                assigneeId: findAlertsDto.filter?.assigneeId?.includes(null) ? null : undefined,
+              },
+            ],
+          }),
         },
         orderBy: findAlertsDto.orderBy as any,
         take: findAlertsDto.page.size,

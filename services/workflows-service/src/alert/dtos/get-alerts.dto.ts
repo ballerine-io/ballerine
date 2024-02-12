@@ -1,6 +1,6 @@
-import { PageDto, validateOrderBy, sortDirections } from '@/common/dto';
+import { PageDto, sortDirections, validateOrderBy } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { AlertStatus, Alert, Prisma, AlertState } from '@prisma/client';
+import { AlertState, AlertStatus, Prisma } from '@prisma/client';
 import { z } from 'zod';
 
 type SortableProperties<T> = {
@@ -8,7 +8,7 @@ type SortableProperties<T> = {
 }[keyof T];
 
 // Test type
-type SortableByModel<T> = Exclude<SortableProperties<T>, undefined>[];
+type SortableByModel<T> = Array<Exclude<SortableProperties<T>, undefined>>;
 
 export class FilterDto {
   @ApiProperty({
@@ -16,7 +16,7 @@ export class FilterDto {
     required: false,
     name: 'filter[assigneeId][0]',
   })
-  assigneeId?: Array<string>;
+  assigneeId?: Array<string | null>;
 
   @ApiProperty({
     enum: AlertStatus,
@@ -24,7 +24,7 @@ export class FilterDto {
     required: false,
     name: 'filter[status][0]',
   })
-  status?: Array<AlertStatus>;
+  status?: AlertStatus[];
 
   @ApiProperty({
     enum: AlertState,
@@ -33,7 +33,7 @@ export class FilterDto {
     name: 'filter[state][0]',
     isArray: true,
   })
-  state?: Array<AlertState>;
+  state?: AlertState[];
 }
 
 export class FindAlertsDto {
