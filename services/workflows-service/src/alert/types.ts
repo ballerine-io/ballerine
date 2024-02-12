@@ -27,9 +27,10 @@ type SuccessResponse = {
 type FailedResponse = {
   alertId: string;
   status: 'failed';
-  error: {
+  errors: {
+    path?: string;
     message: string;
-  };
+  }[];
 };
 export type TBulkAssignAlertsResponse = {
   response: (SuccessResponse | FailedResponse)[];

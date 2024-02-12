@@ -47,6 +47,7 @@ export class AlertControllerExternal {
   @swagger.ApiOkResponse({ type: Array<Object> }) // TODO: Set type
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.UsePipes(new ZodValidationPipe(FindAlertsSchema, 'query'))
   async list(
     @common.Query() findAlertsDto: FindAlertsDto,
@@ -80,24 +81,26 @@ export class AlertControllerExternal {
     const response: TBulkAssignAlertsResponse = {
       overallStatus:
         alertIds.length === updatedAlertsIds.size
-          ? BulkStatus.success
+          ? BulkStatus.SUCCESS
           : updatedAlertsIds.size === 0
-          ? BulkStatus.failed
-          : BulkStatus.partial,
+          ? BulkStatus.FAILED
+          : BulkStatus.PARTIAL,
 
       response: alertIds.map(alertId => {
         if (updatedAlertsIds.has(alertId)) {
           return {
             alertId,
-            status: BulkStatus.success,
+            status: BulkStatus.SUCCESS,
           };
         }
         return {
           alertId,
-          status: BulkStatus.failed,
-          error: {
-            message: 'Alert not found or not updated.',
-          },
+          status: BulkStatus.FAILED,
+          errors: [
+            {
+              message: 'Alert not found or not updated.',
+            },
+          ],
         };
       }),
     };
