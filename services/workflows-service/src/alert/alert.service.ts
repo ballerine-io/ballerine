@@ -48,12 +48,12 @@ export class AlertService {
   async updateAlertsDecision(
     alertIds: string[],
     projectId: string,
-    decisionDto: AlertDecisionDto,
+    decision: AlertState,
   ): Promise<Alert[]> {
     return await this.alertRepository.updateMany(alertIds, projectId, {
       data: {
-        state: decisionDto.decision,
-        status: this.getStatusFromState(decisionDto.decision),
+        state: decision,
+        status: this.getStatusFromState(decision),
       },
     });
   }

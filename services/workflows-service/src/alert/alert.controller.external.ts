@@ -84,19 +84,18 @@ export class AlertControllerExternal {
     return response;
   }
 
-  @common.Patch('decision/:decision')
+  @common.Patch('decision')
   @swagger.ApiOkResponse({ type: BulkAlertsResponse })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async decision(
-    @common.Param() decisionDto: AlertDecisionDto,
-    @common.Body() { alertIds }: AlertsIdsByProjectDto,
+    @common.Body() { alertIds, decision }: AlertDecisionDto,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<TBulkAssignAlertsResponse> {
     const updatedAlerts = await this.service.updateAlertsDecision(
       alertIds,
       currentProjectId,
-      decisionDto,
+      decision,
     );
 
     const response: TBulkAssignAlertsResponse = this.createBulkResponse(alertIds, updatedAlerts);

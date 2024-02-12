@@ -3,7 +3,7 @@ import { AlertState } from '@prisma/client';
 import { IsEnum } from 'class-validator';
 import { AlertsIdsByProjectDto } from './assign-alert.dto';
 
-export class AlertDecisionDto {
+export class AlertDecisionDto extends AlertsIdsByProjectDto {
   @ApiProperty({
     required: true,
     type: String,
