@@ -33,9 +33,6 @@
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
     "class-variance-authority": "^0.7.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-pdf-tailwind": "^2.2.1",
     "tailwindcss": "^3.4.0",
     "vite-plugin-dts": "^1.6.6"
   },
@@ -58,6 +55,14 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "storybook": "^7.0.26",
     "typescript": "^5.2.2",
-    "vite": "^5.0.8"
+    "vite": "^5.0.8",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-pdf-tailwind": "^2.2.1"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-pdf-tailwind": "^2.2.1"
   }
 }
