@@ -4,12 +4,15 @@ import { AlertAnalysisTable } from '@/pages/TransactionMonitoringAlerts/componen
 import { FunctionComponent } from 'react';
 import { data } from '@/pages/TransactionMonitoringAlerts/components/AlertAnalysisSheet/components/AlertAnalysisTable/table-data.mock';
 
-export interface Props {
+export interface IAlertAnalysisProps {
   isOpen: boolean;
   onOpenStateChange: (isOpen: boolean) => void;
 }
 
-export const AlertAnalysisSheet: FunctionComponent<Props> = ({ isOpen, onOpenStateChange }) => {
+export const AlertAnalysisSheet: FunctionComponent<IAlertAnalysisProps> = ({
+  isOpen,
+  onOpenStateChange,
+}) => {
   return (
     <Sheet open={isOpen} onOpenChange={onOpenStateChange}>
       <SheetContent side="bottom" className={`w-full`}>
