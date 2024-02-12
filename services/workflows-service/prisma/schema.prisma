@@ -581,6 +581,7 @@ model TransactionRecord {
   Business                  Business?     @relation(fields: [businessId], references: [id])
   businessId                String?
 
+  @@unique([projectId, transactionCorrelationId])
   @@index([transactionType])
   @@index([transactionDate])
   @@index([transactionStatus])

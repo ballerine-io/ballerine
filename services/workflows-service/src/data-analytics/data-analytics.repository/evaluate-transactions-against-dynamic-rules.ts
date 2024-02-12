@@ -41,9 +41,9 @@ export async function evaluateTransactionsAgainstDynamicRules({
 
   const whereClause = Prisma.join(conditions, ' ');
 
-  let query = Prisma.sql`SELECT * FROM "TransactionRecord" WHERE ${whereClause}`;
+  let query;
   if (amountThreshold !== undefined) {
-    query = Prisma.sql`${query} GROUP BY "TransactionRecord".id HAVING SUM("transactionAmount") > ${amountThreshold}`;
+    query = Prisma.sql`SELECT * FROM "TransactionRecord" WHERE ${whereClause} GROUP BY "TransactionRecord".id HAVING SUM("transactionAmount") > ${amountThreshold}`;
   }
 
   console.log(query);
