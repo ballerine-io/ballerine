@@ -44,9 +44,17 @@ export class AlertService {
     }
   }
 
-  async getAlerts(findAlertsDto: FindAlertsDto, projectIds: TProjectId[]) {
+  async getAlerts(
+    findAlertsDto: FindAlertsDto,
+    projectIds: TProjectId[],
+    args?: Omit<
+      Parameters<typeof this.alertRepository.findMany>[0],
+      'where' | 'orderBy' | 'take' | 'skip'
+    >,
+  ) {
     return this.alertRepository.findMany(
       {
+        ...args,
         where: {
           state: {
             in: findAlertsDto.filter?.state,
@@ -54,9 +62,18 @@ export class AlertService {
           status: {
             in: findAlertsDto.filter?.status,
           },
-          assigneeId: {
-            in: findAlertsDto.filter?.assigneeId,
-          },
+          ...(findAlertsDto.filter?.assigneeId && {
+            OR: [
+              {
+                assigneeId: {
+                  in: findAlertsDto.filter?.assigneeId?.filter((id): id is string => id !== null),
+                },
+              },
+              {
+                assigneeId: findAlertsDto.filter?.assigneeId?.includes(null) ? null : undefined,
+              },
+            ],
+          }),
         },
         orderBy: findAlertsDto.orderBy as any,
         take: findAlertsDto.page.size,

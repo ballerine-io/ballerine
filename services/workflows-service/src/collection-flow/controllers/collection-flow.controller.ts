@@ -15,7 +15,6 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
 import { GetFlowConfigurationInputDto } from '@/collection-flow/dto/get-flow-configuration-input.dto';
 import { UpdateContextInputDto } from '@/collection-flow/dto/update-context-input.dto';
-import { result } from 'lodash';
 import { ApiExcludeController } from '@nestjs/swagger';
 
 @Public()

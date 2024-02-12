@@ -1,48 +1,18 @@
 import { AnyZodObject, z } from 'zod';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useCallback, useEffect, useMemo } from 'react';
-import { IUseZodSearchParams } from './interfaces';
-import { defaultDeserializer } from './utils/default-deserializer';
-import { defaultSerializer } from './utils/default-serializer';
+import { useEffect, useMemo } from 'react';
+import { ISerializedSearchParams } from './interfaces';
+import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchParams/useSerializedSearchParams';
 
 export const useZodSearchParams = <TSchema extends AnyZodObject>(
   schema: TSchema,
-  options: IUseZodSearchParams = {},
+  options: ISerializedSearchParams = {},
 ) => {
-  const { state } = useLocation();
-  const navigate = useNavigate();
-  const { search, pathname } = useLocation();
-
-  const serializer = options.serializer ?? defaultSerializer;
-  const deserializer = options.deserializer ?? defaultDeserializer;
-
-  const searchParamsAsObject = useMemo(() => deserializer(search), [deserializer, search]);
-
-  const parsedSearchParams = useMemo(
-    () => schema.parse(searchParamsAsObject),
-    [schema, searchParamsAsObject],
-  );
-
-  const onSetSearchParams = useCallback(
-    (searchParams: Record<string, unknown>) => {
-      navigate(
-        `${pathname}${serializer({
-          ...parsedSearchParams,
-          ...searchParams,
-        })}`,
-        {
-          state: {
-            from: state?.from,
-          },
-        },
-      );
-    },
-    [navigate, pathname, serializer, parsedSearchParams, state?.from],
-  );
+  const [searchParams, setSearchParams] = useSerializedSearchParams(options);
+  const parsedSearchParams = useMemo(() => schema.parse(searchParams), [schema, searchParams]);
 
   useEffect(() => {
-    onSetSearchParams(parsedSearchParams);
+    setSearchParams(parsedSearchParams);
   }, []);
 
-  return [parsedSearchParams as z.output<TSchema>, onSetSearchParams] as const;
+  return [parsedSearchParams as z.output<TSchema>, setSearchParams] as const;
 };
