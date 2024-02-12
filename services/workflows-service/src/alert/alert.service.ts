@@ -36,10 +36,8 @@ export class AlertService {
       });
     } catch (error) {
       // Should be handled by ProjectAssigneeGuard on controller level
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (isFkConstraintError(error, 'assigneeId_fkey')) {
-          throw new errors.NotFoundException('Assignee not found');
-        }
+      if (isFkConstraintError(error, 'assigneeId_fkey')) {
+        throw new errors.NotFoundException('Assignee not found');
       }
 
       throw error;
