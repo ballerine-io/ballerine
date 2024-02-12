@@ -9,9 +9,9 @@ import { Avatar } from '@/common/components/atoms/Avatar_/Avatar_';
 import { AvatarImage } from '@/common/components/atoms/Avatar_/Avatar.Image';
 import { AvatarFallback } from '@/common/components/atoms/Avatar_/Avatar.Fallback';
 import { createInitials } from '@/common/utils/create-initials/create-initials';
-import { Checkbox_ } from '@/common/components/atoms/Checkbox_/Checkbox_';
-import React from 'react';
+import React, { ComponentProps } from 'react';
 import { severityToClassName } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/severity-to-class-name';
+import { IndeterminateCheckbox } from '@/common/components/atoms/IndeterminateCheckbox/IndeterminateCheckbox';
 
 const columnHelper = createColumnHelper<TAlertsList[number]>();
 
@@ -129,11 +129,33 @@ export const columns = [
   }),
   columnHelper.display({
     id: 'select',
-    cell: info => {
-      return <Checkbox_ className={'border-[#E5E7EB]'} />;
+    cell: ({ row }) => {
+      return (
+        <IndeterminateCheckbox
+          {...({
+            checked: row.getIsSelected(),
+            indeterminate: row.getIsSomeSelected(),
+            onCheckedChange: row.getToggleSelectedHandler(),
+            disabled: !row.getCanSelect(),
+          } satisfies ComponentProps<typeof IndeterminateCheckbox>)}
+          className={'border-[#E5E7EB]'}
+        />
+      );
     },
-    header: () => {
-      return <Checkbox_ className={'border-[#E5E7EB]'} />;
+    header: ({ table }) => {
+      return (
+        <IndeterminateCheckbox
+          {...({
+            checked: table.getIsAllRowsSelected(),
+            indeterminate: table.getIsSomeRowsSelected(),
+            onCheckedChange: checked =>
+              table.getToggleAllRowsSelectedHandler()({
+                target: { checked },
+              }),
+          } satisfies ComponentProps<typeof IndeterminateCheckbox>)}
+          className={'border-[#E5E7EB]'}
+        />
+      );
     },
   }),
 ];
