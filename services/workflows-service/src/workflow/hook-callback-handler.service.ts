@@ -1,16 +1,16 @@
-import { set } from 'lodash';
-import { Injectable } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { AnyRecord } from '@ballerine/common';
-import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
-import { WorkflowService } from '@/workflow/workflow.service';
-import { WorkflowRuntimeData } from '@prisma/client';
-import * as tmp from 'tmp';
-import fs from 'fs';
+import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
+import { TDocumentsWithoutPageType } from '@/common/types';
 import { CustomerService } from '@/customer/customer.service';
 import type { TProjectId, TProjectIds } from '@/types';
-import { TDocumentsWithoutPageType } from '@/common/types';
-import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
+import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
+import { WorkflowService } from '@/workflow/workflow.service';
+import { AnyRecord } from '@ballerine/common';
+import { Injectable } from '@nestjs/common';
+import { WorkflowRuntimeData } from '@prisma/client';
+import fs from 'fs';
+import { set } from 'lodash';
+import * as tmp from 'tmp';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -43,6 +43,15 @@ export class HookCallbackHandlerService {
       );
     }
 
+    if (processName === 'website-monitoring') {
+      return await this.prepareWebsiteMonitoringContext(
+        data,
+        workflowRuntime,
+        resultDestinationPath,
+        currentProjectId,
+      );
+    }
+
     set(workflowRuntime.context, resultDestinationPath, data);
 
     await this.workflowService.updateWorkflowRuntimeData(
@@ -55,6 +64,48 @@ export class HookCallbackHandlerService {
 
     return data;
   }
+
+  async prepareWebsiteMonitoringContext(
+    data: AnyRecord,
+    workflowRuntime: WorkflowRuntimeData,
+    resultDestinationPath: string,
+    currentProjectId: TProjectId,
+  ) {
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+
+    const { context } = workflowRuntime;
+    const { reportData, base64Pdf } = data;
+
+    const pdfDocument = {
+      category: 'website-monitoring',
+      type: 'pdf-report',
+      pages: [
+        {
+          provider: 'base64',
+          data: base64Pdf,
+          type: 'application/pdf',
+        },
+      ],
+      propertiesSchema: {},
+    };
+
+    const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
+      [pdfDocument] as unknown as TDocumentsWithoutPageType,
+      context.entity.id || context.entity.ballerineEntityId,
+      currentProjectId,
+      customer.name,
+    );
+
+    set(workflowRuntime.context, resultDestinationPath, { reportData });
+    workflowRuntime.context.documents = persistedDocuments;
+
+    await this.workflowService.updateWorkflowRuntimeData(
+      workflowRuntime.id,
+      { context: context },
+      currentProjectId,
+    );
+  }
+
   async mapCallbackDataToIndividual(
     data: AnyRecord,
     workflowRuntime: WorkflowRuntimeData,
