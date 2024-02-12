@@ -1,12 +1,12 @@
 import {
-  PrismaClient,
-  AlertType,
+  AlertSeverity,
   AlertState,
   AlertStatus,
-  Project,
+  AlertType,
   Customer,
-  AlertSeverity,
   Prisma,
+  PrismaClient,
+  Project,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
@@ -44,7 +44,7 @@ export const generateFakeAlertDefinition = async (
       // endUserId: faker.datatype.uuid(),
       // assigneeId: faker.datatype.uuid(),
       // workflowRuntimeDataId: faker.datatype.uuid()
-    };
+    } satisfies Omit<Prisma.AlertCreateManyAlertDefinitionInput, 'projectId'>;
   };
 
   return Array.from({

@@ -18,6 +18,8 @@ import { Locale } from '@/pages/Locale/Locale.page';
 import { unauthenticatedLayoutLoader } from '@/domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
 import { Document } from '@/pages/Document/Document.page';
 import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
+import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
+import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
 
 const router = createBrowserRouter([
   {
@@ -82,6 +84,18 @@ const router = createBrowserRouter([
                         errorElement: <RouteError />,
                       },
                     ],
+                  },
+                ],
+              },
+              {
+                path: '/:locale/transaction-monitoring',
+                element: <TransactionMonitoring />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/transaction-monitoring/alerts',
+                    element: <TransactionMonitoringAlerts />,
+                    errorElement: <RouteError />,
                   },
                 ],
               },

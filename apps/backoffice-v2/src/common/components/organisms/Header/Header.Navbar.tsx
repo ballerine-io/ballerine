@@ -60,11 +60,15 @@ export const Navbar: FunctionComponent = () => {
                           href={childNavItem.href}
                           key={childNavItem.key}
                           className={ctw(
-                            `gap-x-1 px-1.5 text-xs capitalize text-[#8D93A5] active:border`,
-                            {
-                              'font-semibold text-[#20232E]': childNavItem.filterId === filterId,
-                              'aria-[current=page]:font-normal': childNavItem.filterId !== filterId,
-                            },
+                            `gap-x-1 px-1.5 text-xs capitalize active:border`,
+                            childNavItem.filterId
+                              ? {
+                                  'font-semibold text-[#20232E]':
+                                    childNavItem.filterId === filterId,
+                                  'text-[#8D93A5] aria-[current=page]:font-normal':
+                                    childNavItem.filterId !== filterId,
+                                }
+                              : {},
                           )}
                         >
                           <span>{childNavItem.icon}</span>

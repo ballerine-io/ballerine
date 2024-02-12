@@ -61,7 +61,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
               <MagnifyingGlassSvg className={`!d-5`} />
             </div>
             <input
-              type="text"
+              type="search"
               className="input input-md w-full !border-0 text-base !outline-none !ring-0 placeholder:text-base-content"
               placeholder={`Search by user info`}
               onChange={onSearch}
