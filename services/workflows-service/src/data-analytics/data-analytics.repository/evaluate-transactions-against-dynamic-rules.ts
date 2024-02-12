@@ -1,4 +1,5 @@
 import { PrismaClient, Prisma, TransactionDirection } from '@prisma/client';
+import { Sql } from '@prisma/client/runtime';
 
 const prisma = new PrismaClient();
 
@@ -41,12 +42,14 @@ export async function evaluateTransactionsAgainstDynamicRules({
 
   const whereClause = Prisma.join(conditions, ' ');
 
-  let query;
-  if (amountThreshold !== undefined) {
-    query = Prisma.sql`SELECT * FROM "TransactionRecord" WHERE ${whereClause} GROUP BY "TransactionRecord".id HAVING SUM("transactionAmount") > ${amountThreshold}`;
-  }
+  let query: Sql;
+  // if (amountThreshold !== undefined) {
+  query = Prisma.sql`SELECT "counterpartyOriginatorId" , SUM("transactionAmount") AS "totalAmount" FROM "TransactionRecord" tr
+WHERE ${whereClause} GROUP BY "counterpartyOriginatorId" HAVING SUM(tr."transactionBaseAmount") > ${amountThreshold}`;
+  // }
 
   console.log(query);
+  console.log('Executing query...', query.text);
   const results = await prisma.$queryRaw(query);
 
   console.log(results);
