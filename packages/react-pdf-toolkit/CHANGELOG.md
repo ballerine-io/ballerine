@@ -1,5 +1,13 @@
 # @ballerine/react-pdf-toolkit
 
+## 1.0.13-11210907c.1
+
+### Patch Changes
+
+- 5c94e75f7: Updated exports & bump
+- 70c13d456: bump
+  - @ballerine/ui@0.3.28-11210907c.0
+
 ## 1.0.13-11210907c.0
 
 ### Patch Changes
