@@ -3,15 +3,15 @@ import Ajv from 'ajv';
 import ajvFormats from 'ajv-formats';
 import React from 'react';
 
-export function withDataValidation<TComponentProps extends { data: unknown }>(
-  Component: React.FunctionComponent<TComponentProps>,
-  schema: TSchema,
-): React.FunctionComponent<TComponentProps> {
+export function withDataValidation<
+  TComponentProps extends { data: unknown },
+  TValidationSchema = any,
+>(Component: React.FunctionComponent<TComponentProps>, schema: TValidationSchema) {
   function ValidationWrapper(props: TComponentProps) {
     const ajv = new Ajv();
     ajvFormats(ajv);
 
-    const isValid = ajv.validate(schema, props.data);
+    const isValid = ajv.validate(schema as TSchema, props.data);
 
     if (!isValid) {
       throw new Error(
