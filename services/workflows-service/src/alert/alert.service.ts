@@ -26,12 +26,12 @@ export class AlertService {
   async updateAlertsAssignee(
     alertIds: string[],
     projectId: string,
-    assigneeDto: AlertAssigneeUniqueDto,
+    assigneeId: string,
   ): Promise<Alert[]> {
     try {
       return await this.alertRepository.updateMany(alertIds, projectId, {
         data: {
-          assigneeId: assigneeDto.assigneeId,
+          assigneeId: assigneeId,
         },
       });
     } catch (error) {

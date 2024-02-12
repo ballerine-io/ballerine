@@ -56,25 +56,18 @@ export class AlertControllerExternal {
     return await this.service.getAlerts(findAlertsDto, projectIds);
   }
 
-  @common.Patch('assign/:assigneeId')
+  @common.Patch('assign')
   @common.UseGuards(ProjectAssigneeGuard)
-  @swagger.ApiParam({
-    name: 'assigneeId',
-    type: 'string',
-    description: 'Assignee Id',
-    required: true,
-  })
   @swagger.ApiOkResponse({ type: BulkAssignAlertsResponse })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async assignWorkflowById(
-    @common.Param() params: AlertAssigneeUniqueDto,
-    @common.Body() { alertIds }: AlertsIdsByProjectDto,
+    @common.Body() { alertIds, assigneeId }: AlertAssigneeUniqueDto,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<TBulkAssignAlertsResponse> {
     let updatedAlerts = [];
 
-    updatedAlerts = await this.service.updateAlertsAssignee(alertIds, currentProjectId, params);
+    updatedAlerts = await this.service.updateAlertsAssignee(alertIds, currentProjectId, assigneeId);
 
     const updatedAlertsIds = new Set(updatedAlerts.map(alert => alert.id));
 

@@ -31,7 +31,7 @@ export class AlertsIdsByProjectDto {
   projectId!: string;
 }
 
-export class AlertAssigneeUniqueDto {
+export class AlertAssigneeUniqueDto extends AlertsIdsByProjectDto {
   @ApiProperty({
     required: true,
     type: String,
