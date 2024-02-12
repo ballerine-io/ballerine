@@ -17,9 +17,13 @@ export class UserControllerInternal {
   constructor(protected readonly service: UserService) {}
 
   @common.Get()
+  @swagger.ApiQuery({ name: 'projectId', type: String })
   @swagger.ApiOkResponse({ type: [UserModel] })
   @swagger.ApiForbiddenResponse()
-  async list(@ProjectIds() projectIds: TProjectIds): Promise<UserModel[]> {
+  async list(
+    @ProjectIds() projectIds: TProjectIds,
+    @common.Query('projectId') projectId: string,
+  ): Promise<UserModel[]> {
     return this.service.list(
       {
         where: { status: UserStatus.Active },
@@ -34,7 +38,7 @@ export class UserControllerInternal {
           createdAt: true,
         },
       },
-      projectIds,
+      Array.isArray(projectIds) ? [projectId] : projectIds,
     );
   }
 

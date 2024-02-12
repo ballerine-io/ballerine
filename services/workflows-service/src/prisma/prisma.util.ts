@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 
 export const PRISMA_RECORD_NOT_FOUND_ERROR = 'P2025';
+export const PRISMA_FOREIGN_KEY_CONSTRAINT_ERROR = 'P2003';
 
 export const isRecordNotFoundError = (
   error: unknown,
@@ -9,6 +10,16 @@ export const isRecordNotFoundError = (
 } =>
   error instanceof Prisma.PrismaClientKnownRequestError &&
   error.code === PRISMA_RECORD_NOT_FOUND_ERROR;
+
+export const isFkConstraintError = (
+  error: unknown,
+  fkName: string,
+): error is Prisma.PrismaClientKnownRequestError & {
+  code: typeof PRISMA_FOREIGN_KEY_CONSTRAINT_ERROR;
+} =>
+  error instanceof Prisma.PrismaClientKnownRequestError &&
+  error.code === PRISMA_FOREIGN_KEY_CONSTRAINT_ERROR &&
+  (error.meta as { field_name: string }).field_name.includes(fkName);
 
 export const transformStringFieldUpdateInput = async <
   T extends undefined | string | { set?: string },

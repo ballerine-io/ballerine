@@ -80,7 +80,7 @@ export class TransactionService {
           txCorrelationId: transaction.correlationId,
           status: 'success',
         });
-      } catch (error: unknown) {
+      } catch (error) {
         overallStatus = 'partial';
 
         txCreationResponse.push({
