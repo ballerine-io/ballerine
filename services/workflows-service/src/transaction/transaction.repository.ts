@@ -18,6 +18,7 @@ export class TransactionRepository {
   async create<T extends Prisma.TransactionRecordCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.TransactionRecordCreateArgs>,
   ): Promise<TransactionRecord> {
+    
     // #TODO: Fix this
     const { projectId, businessId, endUserId, ...rest } = args.data;
 
