@@ -72,14 +72,14 @@ export const columns = [
     },
     header: 'Alert Details',
   }),
-  columnHelper.accessor('amountOfTxs', {
-    cell: info => {
-      const value = info.getValue();
-
-      return <TextWithNAFallback>{value}</TextWithNAFallback>;
-    },
-    header: '# of TXs',
-  }),
+  // columnHelper.accessor('amountOfTxs', {
+  //   cell: info => {
+  //     const value = info.getValue();
+  //
+  //     return <TextWithNAFallback>{value}</TextWithNAFallback>;
+  //   },
+  //   header: '# of TXs',
+  // }),
   columnHelper.accessor('assignee', {
     cell: info => {
       const value = info.getValue();

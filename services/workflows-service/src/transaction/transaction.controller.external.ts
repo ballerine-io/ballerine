@@ -1,8 +1,6 @@
-import * as common from '@nestjs/common';
-
 import * as swagger from '@nestjs/swagger';
 import { TransactionService } from '@/transaction/transaction.service';
-import { TransactionCreateDto } from '@/transaction/dtos/transaction-create';
+import { TransactionCreateDto } from '@/transaction/dtos/transaction-create.dto';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 
 import * as types from '@/types';
@@ -11,9 +9,12 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import express from 'express';
+import { Get, Param, Query, Post, Controller, Body, Res } from '@nestjs/common';
+import { GetTransactionsDto } from '@/transaction/dtos/get-transactions.dto';
+import { PaymentMethod } from '@prisma/client';
 
 @swagger.ApiTags('Transactions')
-@common.Controller('external/transactions')
+@Controller('external/transactions')
 export class TransactionControllerExternal {
   constructor(
     protected readonly service: TransactionService,
@@ -21,12 +22,12 @@ export class TransactionControllerExternal {
     protected readonly logger: AppLoggerService,
   ) {}
 
-  @common.Post()
+  @Post()
   @UseCustomerAuthGuard()
   @swagger.ApiCreatedResponse({ type: TransactionCreateDto })
   @swagger.ApiForbiddenResponse()
   async create(
-    @common.Body() body: TransactionCreateDto,
+    @Body() body: TransactionCreateDto,
     @CurrentProject() currentProjectId: types.TProjectId,
   ) {
     this.logger.log('create transaction');
@@ -40,13 +41,13 @@ export class TransactionControllerExternal {
     return createdTransaction;
   }
 
-  @common.Post('/batch')
+  @Post('/batch')
   @UseCustomerAuthGuard()
   @swagger.ApiCreatedResponse({ type: [TransactionCreateDto] })
   @swagger.ApiForbiddenResponse()
   async createBatch(
-    @common.Body() body: TransactionCreateDto[],
-    @common.Res() response: express.Response,
+    @Body() body: TransactionCreateDto[],
+    @Res() response: express.Response,
     @CurrentProject() currentProjectId: types.TProjectId,
   ) {
     const batchCreateResponse = await this.service.createBatch(body);
@@ -55,5 +56,52 @@ export class TransactionControllerExternal {
     }
 
     response.json(batchCreateResponse.txCreationResponse);
+  }
+
+  @Get()
+  @UseCustomerAuthGuard()
+  @swagger.ApiOkResponse({ description: 'Returns an array of transactions.' })
+  @swagger.ApiQuery({ name: 'businessId', description: 'Filter by business ID.', required: false })
+  @swagger.ApiQuery({
+    name: 'counterpartyId',
+    description: 'Filter by counterparty ID.',
+    required: false,
+  })
+  @swagger.ApiQuery({
+    name: 'startDate',
+    type: Date,
+    description: 'Filter by transactions after or on this date.',
+    required: false,
+  })
+  @swagger.ApiQuery({
+    name: 'endDate',
+    type: Date,
+    description: 'Filter by transactions before or on this date.',
+    required: false,
+  })
+  @swagger.ApiQuery({
+    name: 'paymentMethod',
+    description: 'Filter by payment method.',
+    required: false,
+    enum: PaymentMethod,
+  })
+  @swagger.ApiQuery({
+    name: 'timeValue',
+    type: 'number',
+    description: 'Number of time units to filter on',
+    required: false,
+  })
+  @swagger.ApiQuery({
+    name: 'timeUnit',
+    type: 'enum',
+    enum: ['minutes', 'hours', 'days', 'months', 'years'],
+    description: 'The time unit used in conjunction with timeValue',
+    required: false,
+  })
+  async getTransactions(
+    @Query() getTransactionsParameters: GetTransactionsDto,
+    @CurrentProject() projectId: types.TProjectId,
+  ) {
+    return this.service.getTransactions(getTransactionsParameters, projectId);
   }
 }

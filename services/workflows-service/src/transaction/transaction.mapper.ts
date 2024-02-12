@@ -1,12 +1,23 @@
-import { TransactionRecord, TransactionRecordType } from '@prisma/client';
-import { TransactionCreateDto } from './dtos/transaction-create';
+import { TransactionRecord } from '@prisma/client';
+import { CounterpartyInfo, TransactionCreateDto } from './dtos/transaction-create.dto';
 import { cleanUndefinedValues } from '@/common/utils/clean-undefined-values';
-import { JsonValue } from 'type-fest';
 
 export class TransactionEntityMapper {
   static toEntity(
     dto: TransactionCreateDto,
-  ): Omit<TransactionRecord, 'createdAt' | 'updatedAt' | 'id'> {
+  ): Omit<
+    TransactionRecord,
+    | 'createdAt'
+    | 'updatedAt'
+    | 'id'
+    | 'originatorIpAddress'
+    | 'originatorGeoLocation'
+    | 'originatorUserAgent'
+    | 'auditTrail'
+    | 'riskScore'
+    | 'endUserId'
+    | 'businessId'
+  > {
     return {
       transactionCorrelationId: dto.correlationId,
       transactionDate: dto.date,
@@ -15,25 +26,11 @@ export class TransactionEntityMapper {
       transactionDescription: dto.description ?? null,
       transactionCategory: dto.category ?? null,
       transactionType: dto.type ?? null,
-      transactionStatus: dto.status!,
+      transactionStatus: dto.status ?? null,
       transactionStatusReason: dto.statusReason ?? null,
-      senderAccountId: dto.sender?.accountId ?? null,
-      senderName: dto.sender?.name ?? null,
-      senderCorrelationId: dto.sender?.correlationId ?? null,
-      senderCountry: dto.sender?.country ?? null,
-      senderIpAddress: dto.sender?.ipAddress ?? null,
-      senderGeoLocation: dto.sender?.geoLocation ?? null,
-      senderUserAgent: dto.sender?.userAgent ?? null,
-      senderPEPStatus: dto.sender?.PEPStatus?.toString() ?? null,
-      senderSanctionListMatchStatus: dto.sender?.sanctionListMatchStatus?.toString() ?? null,
-      senderVerificationStatus: dto.sender?.verificationStatus ?? null,
-      recipientAccountId: dto.recipient?.accountId ?? null,
-      recipientName: dto.recipient?.name ?? null,
-      recipientCorrelationId: dto.recipient?.correlationId ?? null,
-      recipientCountry: dto.recipient?.country ?? null,
-      recipientVerificationStatus: dto.recipient?.verificationStatus ?? null,
-      recipientSanctionListMatchStatus: dto.recipient?.sanctionListMatchStatus?.toString() ?? null,
-      recipientPEPStatus: dto.recipient?.PEPStatus?.toString() ?? null,
+      transactionBaseAmount: dto.baseAmount,
+      transactionBaseCurrency: dto.baseCurrency,
+
       paymentMethod: dto.payment?.method ?? null,
       paymentType: dto.payment?.type ?? null,
       paymentChannel: dto.payment?.channel ?? null,
@@ -41,98 +38,117 @@ export class TransactionEntityMapper {
       paymentGateway: dto.payment?.gateway ?? null,
       paymentAcquirer: dto.payment?.acquirer ?? null,
       paymentProcessor: dto.payment?.processor ?? null,
-      cardFingerprint: null,
-      cardIssuedCountry: null,
-      completed3ds: null,
-      cardType: null,
-      cardIssuer: null,
-      cardBrand: null,
-      cardExpiryMonth: null,
-      cardExpiryYear: null,
-      cardHolderName: null,
-      cardTokenized: null,
-      tags: (dto.tags as JsonValue) ?? {},
+
+      // Assuming card details and tags are part of the DTO
+      cardFingerprint: dto.cardDetails?.fingerprint ?? null,
+      cardIssuedCountry: dto.cardDetails?.issuedCountry ?? null,
+      completed3ds: dto.cardDetails?.completed3ds ?? null,
+      cardType: dto.cardDetails?.type ?? null,
+      cardIssuer: dto.cardDetails?.issuer ?? null,
+      cardBrand: dto.cardDetails?.brand ?? null,
+      cardExpiryMonth: dto.cardDetails?.expiryMonth ?? null,
+      cardExpiryYear: dto.cardDetails?.expiryYear ?? null,
+      cardHolderName: dto.cardDetails?.holderName ?? null,
+      cardTokenized: dto.cardDetails?.tokenized ?? null,
+
+      tags: dto.tags ?? {},
       reviewStatus: dto.reviewStatus ?? null,
       reviewerComments: dto.reviewerComments ?? null,
-      auditTrail: dto.auditTrail ?? null,
-      unusualActivityFlags: dto.unusualActivityFlags ?? null,
-      riskScore: dto.riskScore ?? null,
+
       regulatoryAuthority: dto.regulatoryAuthority ?? null,
       additionalInfo: dto.additionalInfo ?? null,
+
       productName: dto.product?.name ?? null,
       productDescription: dto.product?.description ?? null,
       productPrice: dto.product?.price ?? null,
       productId: dto.product?.id ?? null,
-      businessId: dto.businessId ?? null,
-      endUserId: dto.endUserId ?? null,
+      productSku: dto.product?.sku ?? null,
+
       projectId: dto.projectId,
+      counterpartyOriginatorId: dto.originator?.id ?? null,
+      counterpartyBeneficiaryId: dto.beneficiary?.id ?? null,
+      unusualActivityFlags: dto.unusualActivityFlags ?? {},
     };
   }
 
-  static toDto(record: TransactionRecord): TransactionCreateDto & { id: string } {
-    const dto = {
+  static toDto(record: TransactionRecord): TransactionCreateDto & {
+    id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    originator: Partial<CounterpartyInfo | undefined>;
+    beneficiary: Partial<CounterpartyInfo | undefined>;
+  } {
+    const dto: TransactionCreateDto & {
+      id: string;
+      createdAt: Date;
+      updatedAt: Date;
+      originator: Partial<CounterpartyInfo> | undefined;
+      beneficiary: Partial<CounterpartyInfo> | undefined;
+    } = {
       id: record.id,
       correlationId: record.transactionCorrelationId,
       date: record.transactionDate,
       amount: record.transactionAmount,
       currency: record.transactionCurrency,
-      description: record.transactionDescription ?? undefined,
-      category: record.transactionCategory ?? undefined,
-      type: record.transactionType as TransactionRecordType | undefined,
-      status: record.transactionStatus ?? undefined,
-      statusReason: record.transactionStatusReason ?? undefined,
-      sender: {
-        accountId: record.senderAccountId ?? undefined,
-        correlationId: record.senderCorrelationId ?? undefined,
-        name: record.senderName ?? undefined,
-        country: record.senderCountry ?? undefined,
-        ipAddress: record.senderIpAddress ?? undefined,
-        geoLocation: record.senderGeoLocation ?? undefined,
-        userAgent: record.senderUserAgent ?? undefined,
-        PEPStatus: record.senderPEPStatus ?? undefined,
-        sanctionListMatchStatus: record.senderSanctionListMatchStatus ?? undefined,
-        verificationStatus: record.senderVerificationStatus ?? undefined,
-      },
-      recipient: {
-        accountId: record.recipientAccountId ?? undefined,
-        correlationId: record.recipientCorrelationId ?? undefined,
-        enduserId: null ?? undefined,
-        name: record.recipientName ?? undefined,
-        country: record.recipientCountry ?? undefined,
-        verificationStatus: record.recipientVerificationStatus ?? undefined,
-        sanctionListMatchStatus: record.recipientSanctionListMatchStatus ?? undefined,
-        PEPStatus: record.recipientPEPStatus ?? undefined,
-      },
+      description: record.transactionDescription || undefined,
+      category: record.transactionCategory || undefined,
+      type: record.transactionType || undefined,
+      status: record.transactionStatus || undefined,
+      statusReason: record.transactionStatusReason || undefined,
+      baseAmount: record.transactionBaseAmount,
+      baseCurrency: record.transactionBaseCurrency,
+      projectId: record.projectId,
+      originator: record.counterpartyOriginatorId
+        ? {
+            id: record.counterpartyOriginatorId,
+            correlationId: '', // TODO: Add the required correlationId property here (should come from the countryparty table)
+          }
+        : undefined,
+
+      beneficiary: record.counterpartyBeneficiaryId
+        ? {
+            id: record.counterpartyBeneficiaryId,
+            correlationId: '', // TODO: Add the required correlationId property here
+          }
+        : undefined,
+
       payment: {
-        method: record.paymentMethod ?? undefined,
-        type: record.paymentType ?? undefined,
-        channel: record.paymentChannel ?? undefined,
-        issuer: record.paymentIssuer ?? undefined,
-        gateway: record.paymentGateway ?? undefined,
-        acquirer: record.paymentAcquirer ?? undefined,
-        processor: record.paymentProcessor ?? undefined,
+        method: record.paymentMethod || undefined,
+        type: record.paymentType || undefined,
+        channel: record.paymentChannel || undefined,
+        issuer: record.paymentIssuer || undefined,
+        gateway: record.paymentGateway || undefined,
+        acquirer: record.paymentAcquirer || undefined,
+        processor: record.paymentProcessor || undefined,
       },
       product: {
-        name: record.productName ?? undefined,
-        description: record.productDescription ?? undefined,
-        price: record.productPrice ?? undefined,
-        id: record.productId ?? undefined,
+        name: record.productName || undefined,
+        description: record.productDescription || undefined,
+        price: record.productPrice || undefined,
+        sku: record.productSku || undefined,
+        id: record.productId || undefined,
       },
-      tags: record.tags ?? undefined,
-      reviewStatus: record.reviewStatus ?? undefined,
-      reviewerComments: record.reviewerComments ?? undefined,
-      auditTrail: record.auditTrail ?? undefined,
-      unusualActivityFlags: record.unusualActivityFlags ?? undefined,
-      riskScore: record.riskScore ?? undefined,
-      regulatoryAuthority: record.regulatoryAuthority ?? undefined,
-      additionalInfo: record.additionalInfo ?? undefined,
+
+      tags: record.tags,
+      reviewStatus: record.reviewStatus || undefined,
+      reviewerComments: record.reviewerComments || undefined,
+      riskScore: record.riskScore || undefined,
+      regulatoryAuthority: record.regulatoryAuthority || undefined,
+      additionalInfo: record.additionalInfo,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
-      businessId: record.businessId ?? undefined,
-      endUserId: record.endUserId ?? undefined,
-      projectId: record.projectId ?? undefined,
+      auditTrail: record.auditTrail,
+      unusualActivityFlags: record.unusualActivityFlags,
     };
 
-    return cleanUndefinedValues<TransactionCreateDto & { id: string }>(dto);
+    return cleanUndefinedValues<
+      TransactionCreateDto & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        originator: Partial<CounterpartyInfo | undefined>;
+        beneficiary: Partial<CounterpartyInfo | undefined>;
+      }
+    >(dto);
   }
 }

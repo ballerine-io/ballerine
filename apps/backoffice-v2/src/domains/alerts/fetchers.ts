@@ -9,10 +9,10 @@ import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { env } from '@/common/env/env';
 
 export const AlertSeverity = {
-  CRITICAL: 'critical',
-  HIGH: 'high',
-  MEDIUM: 'medium',
-  LOW: 'low',
+  CRITICAL: 'Critical',
+  HIGH: 'High',
+  MEDIUM: 'Medium',
+  LOW: 'Low',
 } as const;
 
 export const AlertSeverities = [
@@ -50,8 +50,8 @@ export const AlertsListSchema = z.array(
   ObjectWithIdSchema.extend({
     dataTimestamp: z.string().datetime(),
     // merchant: z.string(),
-    // severity: z.enum(AlertSeverities),
-    // alertDetails: z.string(),
+    severity: z.enum(AlertSeverities),
+    alertDetails: z.string(),
     // amountOfTxs: z.number(),
     // assignee: z.string(),
     status: z.enum(AlertStatuses),

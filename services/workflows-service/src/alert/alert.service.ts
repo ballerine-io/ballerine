@@ -20,9 +20,17 @@ export class AlertService {
     return await this.prisma.alertDefinition.create({ data: dto as any });
   }
 
-  async getAlerts(findAlertsDto: FindAlertsDto, projectIds: TProjectId[]) {
+  async getAlerts(
+    findAlertsDto: FindAlertsDto,
+    projectIds: TProjectId[],
+    args?: Omit<
+      Parameters<typeof this.alertRepository.findMany>[0],
+      'where' | 'orderBy' | 'take' | 'skip'
+    >,
+  ) {
     return this.alertRepository.findMany(
       {
+        ...args,
         where: {
           state: {
             in: findAlertsDto.filter?.state,

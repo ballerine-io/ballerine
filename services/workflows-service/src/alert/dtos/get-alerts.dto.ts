@@ -1,7 +1,14 @@
-import { PageDto, sortDirections, validateOrderBy } from './../../common/dto';
+import { PageDto, sortDirections, validateOrderBy } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { AlertState, AlertStatus, Prisma } from '@prisma/client';
 import { z } from 'zod';
+
+type SortableProperties<T> = {
+  [K in keyof T]: T[K] extends Prisma.SortOrder | undefined ? K : never;
+}[keyof T];
+
+// Test type
+type SortableByModel<T> = Array<Exclude<SortableProperties<T>, undefined>>;
 
 export class FilterDto {
   @ApiProperty({
@@ -54,13 +61,6 @@ export class FindAlertsDto {
   })
   orderBy?: string;
 }
-
-type SortableProperties<T> = {
-  [K in keyof T]: T[K] extends Prisma.SortOrder | undefined ? K : never;
-}[keyof T];
-
-// Test type
-type SortableByModel<T> = Array<Exclude<SortableProperties<T>, undefined>>;
 
 const sortableColumnsAlerts: SortableByModel<Prisma.AlertOrderByWithRelationInput> = [
   'createdAt',
