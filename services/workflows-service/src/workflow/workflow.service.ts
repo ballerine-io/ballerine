@@ -1,5 +1,6 @@
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { BusinessRepository } from '@/business/business.repository';
+import { ajv } from '@/common/ajv/ajv.validator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { SortOrder } from '@/common/query-filters/sort-order';
@@ -9,11 +10,15 @@ import { logDocumentWithoutId } from '@/common/utils/log-document-without-id/log
 import { CustomerService } from '@/customer/customer.service';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { EndUserService } from '@/end-user/end-user.service';
+import { env } from '@/env';
+import { AjvValidationError } from '@/errors';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { FileService } from '@/providers/file/file.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import type { InputJsonValue, IObjectWithId, TProjectId, TProjectIds } from '@/types';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UserService } from '@/user/user.service';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
@@ -29,6 +34,7 @@ import {
   DefaultContextSchema,
   getDocumentId,
   isErrorWithMessage,
+  TDefaultSchemaDocumentPage,
 } from '@ballerine/common';
 import {
   ChildPluginCallbackOutput,
@@ -59,6 +65,7 @@ import {
 } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { isEqual, merge } from 'lodash';
+import mime from 'mime';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
@@ -71,17 +78,11 @@ import {
   WorkflowRuntimeListQueryResult,
 } from './types';
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
-import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import {
   ArrayMergeOption,
   WorkflowRuntimeDataRepository,
 } from './workflow-runtime-data.repository';
-import mime from 'mime';
-import { env } from '@/env';
-import { AjvValidationError } from '@/errors';
-import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { ajv } from '@/common/ajv/ajv.validator';
 
 type TEntityId = string;
 
@@ -1543,11 +1544,11 @@ export class WorkflowService {
       validatedConfig || {},
     ) as InputJsonValue;
 
-    const entities: {
+    const entities: Array<{
       id: string;
       type: 'individual' | 'business';
-      tags?: ('mainRepresentative' | 'UBO')[];
-    }[] = [];
+      tags?: Array<'mainRepresentative' | 'UBO'>;
+    }> = [];
 
     // Creating new workflow
     if (!existingWorkflowRuntimeData || mergedConfig?.allowMultipleActiveWorkflows) {
@@ -1837,6 +1838,9 @@ export class WorkflowService {
                 fileName: string;
               }
             ).fileName,
+            data: (
+              documentPage as Extract<TDefaultSchemaDocumentPage, { data?: string | undefined }>
+            ).data,
           },
           entityId,
           projectId,
