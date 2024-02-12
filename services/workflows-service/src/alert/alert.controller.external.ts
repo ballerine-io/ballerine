@@ -1,47 +1,50 @@
-import { FindAlertsDto, FindAlertsSchema } from './dtos/get-alerts.dto';
-import * as swagger from '@nestjs/swagger';
 import { AlertService } from '@/alert/alert.service';
-import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
-import { PrismaService } from '@/prisma/prisma.service';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { ProjectAssigneeGuard } from '@/alert/guards/project-assignee.guard';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
-import { Alert, AlertDefinition } from '@prisma/client';
-import { type TProjectId } from '@/types';
-import * as errors from '../errors';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
-import { Body, Controller, Get, Post, Query, UsePipes } from '@nestjs/common';
+import { PrismaService } from '@/prisma/prisma.service';
+import type { TProjectId } from '@/types';
+import * as common from '@nestjs/common';
+import * as swagger from '@nestjs/swagger';
+import { Alert, AlertDefinition } from '@prisma/client';
+import * as errors from '../errors';
+import { AlertAssigneeUniqueDto, BulkAssignAlertsResponse } from './dtos/assign-alert.dto';
+import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
+import { FindAlertsDto, FindAlertsSchema } from './dtos/get-alerts.dto';
+import { BulkStatus, TBulkAssignAlertsResponse } from './types';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Alerts')
-@Controller('external/alerts')
+@common.Controller('external/alerts')
 export class AlertControllerExternal {
   constructor(
     protected readonly service: AlertService,
     protected readonly prisma: PrismaService,
     protected readonly logger: AppLoggerService,
   ) {}
-  @Post()
+  @common.Post()
   @swagger.ApiCreatedResponse({
     type: 'string',
   })
   @UseCustomerAuthGuard()
   @swagger.ApiForbiddenResponse()
   async create(
-    @Body() createAlertDto: CreateAlertDefinitionDto,
+    @common.Body() createAlertDto: CreateAlertDefinitionDto,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<AlertDefinition> {
     // Assuming create method in AlertService accepts CreateAlertDto and returns AlertDefinition
     return await this.service.create(createAlertDto, currentProjectId);
   }
 
-  @Get('/')
+  @common.Get('/')
   @swagger.ApiOkResponse({ type: Array<Object> }) // TODO: Set type
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UsePipes(new ZodValidationPipe(FindAlertsSchema, 'query'))
-  async getAll(@Query() findAlertsDto: FindAlertsDto, @ProjectIds() projectIds: TProjectId[]) {
+  @common.UsePipes(new ZodValidationPipe(FindAlertsSchema, 'query'))
+  async list(@common.Query() findAlertsDto: FindAlertsDto, @ProjectIds() projectIds: TProjectId[]) {
     const alerts = await this.service.getAlerts(findAlertsDto, projectIds, {
       include: {
         alertDefinition: {
@@ -63,5 +66,50 @@ export class AlertControllerExternal {
     });
 
     return alertsWithDescription;
+  }
+
+  @common.Patch('assign')
+  @common.UseGuards(ProjectAssigneeGuard)
+  @swagger.ApiOkResponse({ type: BulkAssignAlertsResponse })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async assignWorkflowById(
+    @common.Body() { alertIds, assigneeId }: AlertAssigneeUniqueDto,
+    @CurrentProject() currentProjectId: TProjectId,
+  ): Promise<TBulkAssignAlertsResponse> {
+    let updatedAlerts = [];
+
+    updatedAlerts = await this.service.updateAlertsAssignee(alertIds, currentProjectId, assigneeId);
+
+    const updatedAlertsIds = new Set(updatedAlerts.map(alert => alert.id));
+
+    const response: TBulkAssignAlertsResponse = {
+      overallStatus:
+        alertIds.length === updatedAlertsIds.size
+          ? BulkStatus.SUCCESS
+          : updatedAlertsIds.size === 0
+          ? BulkStatus.FAILED
+          : BulkStatus.PARTIAL,
+
+      response: alertIds.map(alertId => {
+        if (updatedAlertsIds.has(alertId)) {
+          return {
+            alertId,
+            status: BulkStatus.SUCCESS,
+          };
+        }
+        return {
+          alertId,
+          status: BulkStatus.FAILED,
+          errors: [
+            {
+              message: 'Alert not found or not updated.',
+            },
+          ],
+        };
+      }),
+    };
+
+    return response;
   }
 }

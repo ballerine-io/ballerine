@@ -1,11 +1,14 @@
 import { AlertRepository } from '@/alert/alert.repository';
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { AlertDefinition } from '@prisma/client';
-import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
-import { TProjectId } from '@/types';
-import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { PrismaService } from '@/prisma/prisma.service';
+import { TProjectId } from '@/types';
+import { Injectable } from '@nestjs/common';
+import { Alert, AlertDefinition, Prisma } from '@prisma/client';
+import { AlertAssigneeUniqueDto } from './dtos/assign-alert.dto';
+import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
+import { FindAlertsDto } from './dtos/get-alerts.dto';
+import * as errors from '@/errors';
+import { isFkConstraintError } from '@/prisma/prisma.util';
 
 @Injectable()
 export class AlertService {
@@ -18,6 +21,27 @@ export class AlertService {
   async create(dto: CreateAlertDefinitionDto, projectId: TProjectId): Promise<AlertDefinition> {
     // #TODO: Add validation logic
     return await this.prisma.alertDefinition.create({ data: dto as any });
+  }
+
+  async updateAlertsAssignee(
+    alertIds: string[],
+    projectId: string,
+    assigneeId: string,
+  ): Promise<Alert[]> {
+    try {
+      return await this.alertRepository.updateMany(alertIds, projectId, {
+        data: {
+          assigneeId: assigneeId,
+        },
+      });
+    } catch (error) {
+      // Should be handled by ProjectAssigneeGuard on controller level
+      if (isFkConstraintError(error, 'assigneeId_fkey')) {
+        throw new errors.NotFoundException('Assignee not found');
+      }
+
+      throw error;
+    }
   }
 
   async getAlerts(
