@@ -1,5 +1,13 @@
 import { faker } from '@faker-js/faker';
-import { Business, Customer, EndUser, Prisma, PrismaClient, Project } from '@prisma/client';
+import {
+  Business,
+  Customer,
+  EndUser,
+  Prisma,
+  PrismaClient,
+  Project,
+  TransactionDirection,
+} from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import {
@@ -34,6 +42,7 @@ import { generateTransactions } from './alerts/generate-transactions';
 import { generateKycManualReviewRuntimeAndToken } from './workflows/runtime/geneate-kyc-manual-review-runtime-and-token';
 import { Type } from '@sinclair/typebox';
 import { generateFakeAlertDefinition } from './alerts/generate-alerts';
+import { executeDynamicRule1 } from '../src/data-analytics/data-analytics.repository/data-analytics.helpers';
 
 const BCRYPT_SALT: string | number = 10;
 
@@ -115,970 +124,993 @@ const DEFAULT_TOKENS = {
 async function seed() {
   console.info('Seeding database...');
   const client = new PrismaClient();
-  await generateDynamicDefinitionForE2eTest(client);
-  const customer = (await createCustomer(
-    client,
-    '1',
-    env.API_KEY,
-    'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/images/ballerine_logo.svg',
-    '',
-    `webhook-shared-secret-${env.API_KEY}`,
-  )) as Customer;
+  // await generateDynamicDefinitionForE2eTest(client);
+  // const customer = (await createCustomer(
+  //   client,
+  //   '1',
+  //   env.API_KEY,
+  //   'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/images/ballerine_logo.svg',
+  //   '',
+  //   `webhook-shared-secret-${env.API_KEY}`,
+  // )) as Customer;
 
-  const customer2 = (await createCustomer(
-    client,
-    '2',
-    `${env.API_KEY}2`,
-    'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/images/ballerine_logo.svg',
-    '',
-    `webhook-shared-secret-${env.API_KEY}2`,
-  )) as Customer;
-  const project1 = (await createProject(client, customer, '1')) as Project;
-  const business1 = await client.business.create({
-    data: generateBusiness({
-      projectId: project1.id,
-    }),
-  });
+  // const customer2 = (await createCustomer(
+  //   client,
+  //   '2',
+  //   `${env.API_KEY}2`,
+  //   'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/images/ballerine_logo.svg',
+  //   '',
+  //   `webhook-shared-secret-${env.API_KEY}2`,
+  // )) as Customer;
+  // const project1 = (await createProject(client, customer, '1')) as Project;
+  // const business1 = await client.business.create({
+  //   data: generateBusiness({
+  //     projectId: project1.id,
+  //   }),
+  // });
 
-  const business2 = await client.business.create({
-    data: generateBusiness({
-      projectId: project1.id,
-    }),
-  });
+  // const business2 = await client.business.create({
+  //   data: generateBusiness({
+  //     projectId: project1.id,
+  //   }),
+  // });
 
-  await generateTransactions(client, { projectId: project1.id, businessId: business1.id });
-  await generateTransactions(client, { projectId: project1.id, businessId: business2.id });
+  // await generateTransactions(client, { projectId: project1.id, businessId: business1.id });
+  // await generateTransactions(client, { projectId: project1.id, businessId: business2.id });
 
-  await generateFakeAlertDefinition(client, {
-    project: project1,
-    customer: customer,
-  });
+  // await generateFakeAlertDefinition(client, {
+  //   project: project1,
+  //   customer: customer,
+  // });
 
-  const project2 = await createProject(client, customer2, '2');
-  const adminUser = {
-    email: 'admin@admin.com',
-    firstName: faker.name.firstName(),
-    lastName: faker.name.lastName(),
-    password: await hash('admin', BCRYPT_SALT),
-    roles: ['user'],
-    avatarUrl: faker.image.people(200, 200, true),
-    userToProjects: {
-      create: { projectId: project1.id },
-    },
-  };
+  // const project2 = await createProject(client, customer2, '2');
+  // const adminUser = {
+  //   email: 'admin@admin.com',
+  //   firstName: faker.name.firstName(),
+  //   lastName: faker.name.lastName(),
+  //   password: await hash('admin', BCRYPT_SALT),
+  //   roles: ['user'],
+  //   avatarUrl: faker.image.people(200, 200, true),
+  //   userToProjects: {
+  //     create: { projectId: project1.id },
+  //   },
+  // };
 
-  const [dbAdminUser, ...restDbUsers] = await createUsers({ project1, project2 }, client);
+  // const [dbAdminUser, ...restDbUsers] = await createUsers({ project1, project2 }, client);
 
-  const kycManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
-  const kybManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9bbb';
-  const manualMachineVersion = 1;
+  // const kycManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
+  // const kybManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9bbb';
+  // const manualMachineVersion = 1;
 
-  const kycWorkflowDefinitionId = 'kyc-manual-review';
+  // const kycWorkflowDefinitionId = 'kyc-manual-review';
 
-  const onboardingMachineKycId = 'COLLECT_DOCS_b0002zpeid7bq9aaa';
-  const onboardingMachineKybId = 'COLLECT_DOCS_b0002zpeid7bq9bbb';
-  const riskScoreMachineKybId = 'risk-score-improvement-dev';
+  // const onboardingMachineKycId = 'COLLECT_DOCS_b0002zpeid7bq9aaa';
+  // const onboardingMachineKybId = 'COLLECT_DOCS_b0002zpeid7bq9bbb';
+  // const riskScoreMachineKybId = 'risk-score-improvement-dev';
 
-  // KYB Flows
-  const onboardingMachineId = 'kyb-onboarding';
-  const riskScoreMachineId = 'kyb-risk-score';
+  // // KYB Flows
+  // const onboardingMachineId = 'kyb-onboarding';
+  // const riskScoreMachineId = 'kyb-risk-score';
 
-  const user = await client.endUser.create({
-    data: {
-      id: '43a0a298-0d02-4a2e-a8cc-73c06b465310',
-      firstName: 'Nadia',
-      lastName: 'Comaneci',
-      email: 'nadia@ballerine.com',
-      correlationId: '1',
-      dateOfBirth: '2000-11-04T12:45:51.695Z',
-      projectId: project1.id,
-    },
-  });
-
-  const user2 = await client.endUser.create({
-    data: {
-      id: '43a0a298-0d02-4a2e-a8cc-73c06b465311',
-      firstName: 'Nadin',
-      lastName: 'Mami',
-      email: 'ndain@ballerine.com',
-      correlationId: '2',
-      dateOfBirth: '2000-11-04T12:45:51.695Z',
-      projectId: project1.id,
-    },
-  });
-
-  const createMockBusinessContextData = async (businessId: string, countOfBusiness: number) => {
-    const correlationId = faker.datatype.uuid();
-    const imageUri1 = generateAvatarImageUri(
-      `set_${countOfBusiness}_doc_front.png`,
-      countOfBusiness,
-    );
-    const imageUri2 = generateAvatarImageUri(
-      `set_${countOfBusiness}_doc_face.png`,
-      countOfBusiness,
-    );
-    const imageUri3 = generateAvatarImageUri(
-      `set_${countOfBusiness}_selfie.png`,
-      countOfBusiness,
-      true,
-    );
-
-    return {
-      entity: {
-        type: 'business',
-        data: {
-          companyName: faker.company.name(),
-          registrationNumber: faker.finance.account(9),
-          legalForm: faker.company.bs(),
-          countryOfIncorporation: faker.address.country(),
-          // @ts-expect-error - business type expects a date and not a string.
-          dateOfIncorporation: faker.date.past(20).toISOString(),
-          address: faker.address.streetAddress(),
-          phoneNumber: faker.phone.number(),
-          email: faker.internet.email(),
-          website: faker.internet.url(),
-          industry: faker.company.catchPhrase(),
-          taxIdentificationNumber: faker.finance.account(12),
-          vatNumber: faker.finance.account(9),
-          numberOfEmployees: faker.datatype.number(1000),
-          businessPurpose: faker.company.catchPhraseDescriptor(),
-          approvalState: 'NEW',
-          additionalInfo: { customParam: 'customValue' },
-        } satisfies Partial<Business>,
-        ballerineEntityId: businessId,
-        id: correlationId,
-      },
-      documents: [
-        {
-          id: faker.datatype.uuid(),
-          category: 'proof_of_employment',
-          type: 'payslip',
-          issuer: {
-            type: 'government',
-            name: 'Government',
-            country: 'GH',
-            city: faker.address.city(),
-            additionalInfo: { customParam: 'customValue' },
-          },
-          issuingVersion: 1,
-
-          version: 1,
-          pages: [
-            {
-              provider: 'http',
-              uri: imageUri1,
-              type: 'jpg',
-              data: '',
-              ballerineFileId: await persistImageFile(client, imageUri1, project1.id),
-              metadata: {
-                side: 'front',
-                pageNumber: '1',
-              },
-            },
-            {
-              provider: 'http',
-              uri: imageUri2,
-              type: 'jpg',
-              data: '',
-              ballerineFileId: await persistImageFile(client, imageUri2, project1.id),
-              metadata: {
-                side: 'back',
-                pageNumber: '1',
-              },
-            },
-          ],
-          properties: {
-            nationalIdNumber: generateUserNationalId(),
-            docNumber: faker.random.alphaNumeric(9),
-            employeeName: faker.name.fullName(),
-            position: faker.name.jobTitle(),
-            salaryAmount: faker.finance.amount(1000, 10000),
-            issuingDate: faker.date.past(10).toISOString().split('T')[0],
-          },
-        },
-        {
-          id: faker.datatype.uuid(),
-          category: 'proof_of_address',
-          type: 'mortgage_statement',
-          issuer: {
-            type: 'government',
-            name: 'Government',
-            country: 'GH',
-            city: faker.address.city(),
-            additionalInfo: { customParam: 'customValue' },
-          },
-          issuingVersion: 1,
-
-          version: 1,
-          pages: [
-            {
-              provider: 'http',
-              uri: imageUri3,
-              type: 'image/png',
-              ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
-              data: '',
-              metadata: {},
-            },
-          ],
-          properties: {
-            nationalIdNumber: generateUserNationalId(),
-            docNumber: faker.random.alphaNumeric(9),
-            employeeName: faker.name.fullName(),
-            position: faker.name.jobTitle(),
-            salaryAmount: faker.finance.amount(1000, 10000),
-            issuingDate: faker.date.past(10).toISOString().split('T')[0],
-          },
-        },
-      ],
-    };
-  };
-
-  async function createMockEndUserContextData(endUserId: string, countOfIndividual: number) {
-    const correlationId = faker.datatype.uuid();
-    const imageUri1 = generateAvatarImageUri(
-      `set_${countOfIndividual}_doc_front.png`,
-      countOfIndividual,
-    );
-    const imageUri2 = generateAvatarImageUri(
-      `set_${countOfIndividual}_doc_face.png`,
-      countOfIndividual,
-    );
-    const imageUri3 = generateAvatarImageUri(
-      `set_${countOfIndividual}_selfie.png`,
-      countOfIndividual,
-      true,
-    );
-
-    return {
-      entity: {
-        type: 'individual',
-        data: {
-          firstName: faker.name.firstName(),
-          lastName: faker.name.lastName(),
-          email: faker.internet.email(),
-          approvalState: 'NEW',
-          phone: faker.phone.number(),
-          stateReason: 'Poor quality of documents',
-          // @ts-expect-error - end user type expects a date and not a string.
-          dateOfBirth: faker.date.past(20).toISOString(),
-          additionalInfo: { customParam: 'customValue' },
-        } satisfies Partial<EndUser>,
-        ballerineEntityId: endUserId,
-        id: correlationId,
-      },
-      documents: [
-        {
-          id: faker.datatype.uuid(),
-          category: 'id',
-          type: 'photo',
-          issuer: {
-            type: 'government',
-            name: 'Government',
-            country: 'CA',
-            city: faker.address.city(),
-            additionalInfo: { customParam: 'customValue' },
-          },
-          issuingVersion: 1,
-
-          version: 1,
-          pages: [
-            {
-              provider: 'http',
-              uri: imageUri1,
-              type: 'jpg',
-              data: '',
-              ballerineFileId: await persistImageFile(client, imageUri1, project1.id),
-              metadata: {
-                side: 'front',
-                pageNumber: '1',
-              },
-            },
-            {
-              provider: 'http',
-              uri: imageUri2,
-              type: 'jpg',
-              data: '',
-              ballerineFileId: await persistImageFile(client, imageUri2, project1.id),
-              metadata: {
-                side: 'back',
-                pageNumber: '1',
-              },
-            },
-          ],
-          properties: {
-            firstName: faker.name.firstName(),
-            middleName: faker.name.firstName(),
-            lastName: faker.name.lastName(),
-            authority: faker.company.name(),
-            placeOfIssue: faker.address.city(),
-            issueDate: faker.date.past(10).toISOString().split('T')[0],
-            expires: faker.date.future(10).toISOString().split('T')[0],
-            dateOfBirth: faker.date.past(20).toISOString().split('T')[0],
-            placeOfBirth: faker.address.city(),
-            sex: faker.helpers.arrayElement(['male', 'female', 'other']),
-          },
-        },
-        {
-          id: faker.datatype.uuid(),
-          category: 'selfie',
-          type: 'photo',
-          issuer: {
-            type: 'government',
-            name: 'Government',
-            country: 'CA',
-            city: faker.address.city(),
-            additionalInfo: { customParam: 'customValue' },
-          },
-          issuingVersion: 1,
-
-          version: 1,
-          pages: [
-            {
-              provider: 'http',
-              uri: imageUri3,
-              type: 'image/png',
-              data: '',
-              ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
-              metadata: {},
-            },
-          ],
-          properties: {
-            firstName: faker.name.firstName(),
-            middleName: faker.name.firstName(),
-            lastName: faker.name.lastName(),
-            authority: faker.company.name(),
-            placeOfIssue: faker.address.city(),
-            issueDate: faker.date.past(10).toISOString().split('T')[0],
-            expires: faker.date.future(10).toISOString().split('T')[0],
-            dateOfBirth: faker.date.past(20).toISOString().split('T')[0],
-            placeOfBirth: faker.address.city(),
-            sex: faker.helpers.arrayElement(['male', 'female', 'other']),
-          },
-        },
-      ],
-    };
-  }
-
-  function createFilter(
-    name: string,
-    entity: 'individuals' | 'businesses',
-    query: Prisma.WorkflowRuntimeDataFindManyArgs,
-    projectId: string,
-  ) {
-    return client.filter.create({
-      data: {
-        entity,
-        name,
-        query: query as any,
-        projectId: projectId,
-      },
-    });
-  }
-
-  // Risk score improvement
-  await client.workflowDefinition.create({
-    data: {
-      id: 'risk-score-improvement-dev', // should be auto generated normally
-      name: 'risk-score-improvement',
-      version: 1,
-      definitionType: 'statechart-json',
-      config: {
-        completedWhenTasksResolved: true,
-        workflowLevelResolution: false,
-        allowMultipleActiveWorkflows: true,
-      },
-      contextSchema: {
-        type: 'json-schema',
-        schema: defaultContextSchema,
-      },
-      definition: {
-        id: 'risk-score-improvement',
-        initial: DEFAULT_INITIAL_STATE,
-        states: generateBaseTaskLevelStates(),
-      },
-      projectId: project1.id,
-    },
-  });
-
-  const baseReviewDefinition = (stateDefinition: InputJsonValue) =>
-    ({
-      name: DEFAULT_INITIAL_STATE,
-      version: manualMachineVersion,
-      definitionType: 'statechart-json',
-      config: {
-        isLegacyReject: true,
-        workflowLevelResolution: true,
-      },
-      definition: {
-        id: 'Manual Review',
-        initial: DEFAULT_INITIAL_STATE,
-        states: stateDefinition,
-      },
-      persistStates: [],
-      submitStates: [],
-    } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput);
-
-  // KYC Manual Review (workflowLevelResolution false)
-  await client.workflowDefinition.create({
-    data: {
-      ...baseReviewDefinition(generateBaseTaskLevelStates()),
-      id: kycManualMachineId,
-      config: {
-        workflowLevelResolution: false,
-      },
-      version: 2,
-      projectId: project1.id,
-    },
-  });
-
-  // KYB Manual Review (workflowLevelResolution true)
-  await client.workflowDefinition.create({
-    data: {
-      ...baseReviewDefinition(generateBaseCaseLevelStates()),
-      id: kybManualMachineId,
-      config: {
-        workflowLevelResolution: true,
-      },
-      projectId: project1.id,
-    },
-  });
-
-  // KYC
-  await client.workflowDefinition.create({
-    data: {
-      id: onboardingMachineKycId, // should be auto generated normally
-      reviewMachineId: kycManualMachineId,
-      name: 'kyc',
-      version: 1,
-      definitionType: 'statechart-json',
-      definition: {
-        id: 'kyc',
-        predictableActionArguments: true,
-        initial: 'welcome',
-
-        context: {
-          documents: [],
-        },
-
-        states: {
-          welcome: {
-            on: {
-              USER_NEXT_STEP: 'document_selection',
-            },
-          },
-          document_selection: {
-            on: {
-              USER_PREV_STEP: 'welcome',
-              USER_NEXT_STEP: 'document_photo',
-            },
-          },
-          document_photo: {
-            on: {
-              USER_PREV_STEP: 'document_selection',
-              USER_NEXT_STEP: 'document_review',
-            },
-          },
-          document_review: {
-            on: {
-              USER_PREV_STEP: 'document_photo',
-              USER_NEXT_STEP: 'selfie',
-            },
-          },
-          selfie: {
-            on: {
-              USER_PREV_STEP: 'document_review',
-              USER_NEXT_STEP: 'selfie_review',
-            },
-          },
-          selfie_review: {
-            on: {
-              USER_PREV_STEP: 'selfie',
-              USER_NEXT_STEP: 'final',
-            },
-          },
-          final: {
-            type: 'final',
-          },
-        },
-      },
-      persistStates: [
-        {
-          state: 'document_review',
-          persistence: 'BACKEND',
-        },
-        {
-          state: 'document_selection',
-          persistence: 'BACKEND',
-        },
-        {
-          state: 'final',
-          persistence: 'BACKEND',
-        },
-      ],
-      submitStates: [
-        {
-          state: 'document_photo',
-        },
-      ],
-      projectId: project1.id,
-    },
-  });
-
-  const getDocumentsSchema = () =>
-    ['id_card', 'passport', 'drivers_license', 'voter_id'].map(name => ({
-      category: name,
-      type: name,
-      issuer: { country: 'ZZ' },
-      issuingVersion: 1,
-      version: 1,
-      propertiesSchema: Type.Object({
-        firstName: Type.Optional(Type.String()),
-        lastName: Type.Optional(Type.String()),
-        documentNumber: Type.Optional(Type.String()),
-        dateOfBirth: Type.Optional(Type.String({ format: 'date' })),
-        expirationDate: Type.Optional(Type.String({ format: 'date' })),
-        isFaceMatching: Type.Optional(Type.Boolean()),
-      }),
-    }));
-
-  await client.workflowDefinition.create({
-    data: {
-      ...baseReviewDefinition(generateBaseTaskLevelStates()),
-      id: kycWorkflowDefinitionId,
-      documentsSchema: getDocumentsSchema(),
-      config: {
-        workflowLevelResolution: false,
-        availableDocuments: [
-          {
-            category: 'id_card',
-            type: 'id_card',
-          },
-          {
-            category: 'passport',
-            type: 'passport',
-          },
-          {
-            category: 'drivers_license',
-            type: 'drivers_license',
-          },
-          {
-            category: 'voter_id',
-            type: 'voter_id',
-          },
-        ],
-      },
-      version: 3,
-      projectId: project1.id,
-    },
-  });
-
-  // KYB
-  await client.workflowDefinition.create({
-    data: {
-      id: onboardingMachineKybId, // should be auto generated normally
-      reviewMachineId: kybManualMachineId,
-      name: 'kyb',
-      version: 1,
-      definitionType: 'statechart-json',
-      definition: {
-        id: 'kyb',
-        predictableActionArguments: true,
-        initial: 'welcome',
-
-        context: {
-          documents: [],
-        },
-
-        states: {
-          welcome: {
-            on: {
-              USER_NEXT_STEP: 'document_selection',
-            },
-          },
-          document_selection: {
-            on: {
-              USER_PREV_STEP: 'welcome',
-              USER_NEXT_STEP: 'document_photo',
-            },
-          },
-          document_photo: {
-            on: {
-              USER_PREV_STEP: 'document_selection',
-              USER_NEXT_STEP: 'document_review',
-            },
-          },
-          document_review: {
-            on: {
-              USER_PREV_STEP: 'document_photo',
-              USER_NEXT_STEP: 'certificate_of_incorporation',
-            },
-          },
-          certificate_of_incorporation: {
-            on: {
-              USER_PREV_STEP: 'document_review',
-              USER_NEXT_STEP: 'certificate_of_incorporation_review',
-            },
-          },
-          certificate_of_incorporation_review: {
-            on: {
-              USER_PREV_STEP: 'certificate_of_incorporation',
-              USER_NEXT_STEP: 'selfie',
-            },
-          },
-          selfie: {
-            on: {
-              USER_PREV_STEP: 'certificate_of_incorporation_review',
-              USER_NEXT_STEP: 'selfie_review',
-            },
-          },
-          selfie_review: {
-            on: {
-              USER_PREV_STEP: 'selfie',
-              USER_NEXT_STEP: 'final',
-            },
-          },
-          final: {
-            type: 'final',
-          },
-        },
-      },
-      persistStates: [
-        {
-          state: 'document_review',
-          persistence: 'BACKEND',
-        },
-        {
-          state: 'document_selection',
-          persistence: 'BACKEND',
-        },
-        {
-          state: 'final',
-          persistence: 'BACKEND',
-        },
-      ],
-      submitStates: [
-        {
-          state: 'document_photo',
-        },
-      ],
-      projectId: project1.id,
-    },
-  });
-
-  await createFilter(
-    'Onboarding - Businesses with enriched data',
-    'businesses',
-    {
-      select: {
-        id: true,
-        status: true,
-        assigneeId: true,
-        createdAt: true,
-        context: true,
-        state: true,
-        tags: true,
-        ...baseFilterDefinitionSelect,
-        ...baseFilterBusinessSelect,
-        ...baseFilterAssigneeSelect,
-      },
-      where: {
-        workflowDefinitionId: { in: ['dynamic_external_request_example'] },
-        businessId: { not: null },
-      },
-    },
-    project1.id,
-  );
-
-  await createFilter(
-    'Onboarding - Individuals',
-    'individuals',
-    {
-      select: {
-        id: true,
-        status: true,
-        assigneeId: true,
-        context: true,
-        createdAt: true,
-        state: true,
-        tags: true,
-        ...baseFilterDefinitionSelect,
-        ...baseFilterEndUserSelect,
-        ...baseFilterAssigneeSelect,
-      },
-      where: {
-        workflowDefinitionId: { in: [kycManualMachineId] },
-        endUserId: { not: null },
-      },
-    },
-    project1.id,
-  );
-
-  await createFilter(
-    'KYC - Manual Review',
-    'individuals',
-    {
-      select: {
-        id: true,
-        status: true,
-        assigneeId: true,
-        context: true,
-        createdAt: true,
-        state: true,
-        tags: true,
-        ...baseFilterDefinitionSelect,
-        ...baseFilterEndUserSelect,
-        ...baseFilterAssigneeSelect,
-      },
-      where: {
-        workflowDefinitionId: { in: [kycWorkflowDefinitionId] },
-        endUserId: { not: null },
-      },
-    },
-    project1.id,
-  );
-
-  // KYB Onboarding
-  await client.workflowDefinition.create({
-    data: {
-      id: onboardingMachineId,
-      name: 'kyb_onboarding',
-      version: 1,
-      definitionType: 'statechart-json',
-      config: {
-        workflowLevelResolution: true,
-        completedWhenTasksResolved: false,
-        allowMultipleActiveWorkflows: false,
-      },
-      definition: {
-        id: 'kyb_onboarding',
-        predictableActionArguments: true,
-        initial: DEFAULT_INITIAL_STATE,
-        context: {
-          documents: [],
-        },
-        states: generateBaseCaseLevelStates(),
-      },
-    },
-  });
-
-  // KYB Risk Score Improvement
-  await client.workflowDefinition.create({
-    data: {
-      id: riskScoreMachineId,
-      name: 'kyb_risk_score',
-      version: 1,
-      definitionType: 'statechart-json',
-      config: {
-        workflowLevelResolution: false,
-        completedWhenTasksResolved: true,
-        allowMultipleActiveWorkflows: true,
-      },
-      definition: {
-        id: 'kyb_risk_score',
-        predictableActionArguments: true,
-        initial: DEFAULT_INITIAL_STATE,
-        context: {
-          documents: [],
-        },
-        states: generateBaseTaskLevelStates(),
-      },
-    },
-  });
-
-  await createFilter(
-    'Risk Score Improvement - Individuals',
-    'individuals',
-    {
-      select: {
-        id: true,
-        status: true,
-        assigneeId: true,
-        createdAt: true,
-        context: true,
-        state: true,
-        tags: true,
-        ...baseFilterDefinitionSelect,
-        ...baseFilterEndUserSelect,
-        ...baseFilterAssigneeSelect,
-      },
-      where: {
-        workflowDefinitionId: { in: [riskScoreMachineKybId] },
-        endUserId: { not: null },
-      },
-    },
-    project1.id,
-  );
-
-  await createFilter(
-    'Risk Score Improvement - Businesses',
-    'businesses',
-    {
-      select: {
-        id: true,
-        status: true,
-        assigneeId: true,
-        createdAt: true,
-        context: true,
-        state: true,
-        tags: true,
-        ...baseFilterDefinitionSelect,
-        ...baseFilterBusinessSelect,
-        ...baseFilterAssigneeSelect,
-      },
-      where: {
-        workflowDefinitionId: { in: [riskScoreMachineKybId] },
-        businessId: { not: null },
-      },
-    },
-    project1.id,
-  );
-
-  await createFilter(
-    "KYB with UBO's",
-    'businesses',
-    {
-      select: {
-        id: true,
-        status: true,
-        assigneeId: true,
-        createdAt: true,
-        context: true,
-        state: true,
-        tags: true,
-        ...baseFilterDefinitionSelect,
-        ...baseFilterBusinessSelect,
-        ...baseFilterAssigneeSelect,
-        childWorkflowsRuntimeData: true,
-      },
-      where: {
-        workflowDefinitionId: { in: ['kyb_with_associated_companies_example'] },
-        businessId: { not: null },
-        state: {
-          in: [
-            'manual_review',
-            'approved',
-            'revision',
-            'rejected',
-            'pending_kyc_response',
-            'pending_kyb_response',
-          ],
-        },
-      },
-    },
-    project1.id,
-  );
-
-  await client.$transaction(async () =>
-    endUserIds.map(async (id, index) =>
-      client.endUser.create({
-        /// I tried to fix that so I can run through ajv, currently it doesn't like something in the schema (anyOf  )
-        data: generateEndUser({
-          id,
-          workflow: {
-            workflowDefinitionId: kycManualMachineId,
-            workflowDefinitionVersion: manualMachineVersion,
-            context: await createMockEndUserContextData(id, index + 1),
-            state: DEFAULT_INITIAL_STATE,
-          },
-          projectId: project1.id,
-        }),
-      }),
-    ),
-  );
-
-  await client.$transaction(async tx => {
-    businessRiskIds.map(async (id, index) => {
-      const riskWf = async () => ({
-        runtimeId: `test-workflow-risk-id-${index}`,
-        workflowDefinitionId: riskScoreMachineKybId,
-        workflowDefinitionVersion: 1,
-        context: await createMockBusinessContextData(id, index + 1),
-        createdAt: faker.date.recent(2),
-        state: DEFAULT_INITIAL_STATE,
-        projectId: project1.id,
-      });
-
-      return client.business.create({
-        data: generateBusiness({
-          id,
-          workflow: await riskWf(),
-          projectId: project1.id,
-        }),
-      });
-    });
-
-    businessIds.map(async id => {
-      const exampleWf = {
-        workflowDefinitionId: onboardingMachineKybId,
-        workflowDefinitionVersion: manualMachineVersion,
-        // Would not display data in the backoffice UI
-        context: {},
-        state: DEFAULT_INITIAL_STATE,
-        createdAt: faker.date.recent(2),
-      };
-
-      return client.business.create({
-        data: generateBusiness({
-          id,
-          workflow: exampleWf,
-          projectId: project1.id,
-        }),
-      });
-    });
-  });
-
-  // TODO: create business with enduser attched to them
-  // await client.business.create({
+  // const user = await client.endUser.create({
   //   data: {
-  //     ...generateBusiness({}),
-  //     endUsers: {
-  //       create: [
-  //         {
-  //           assignedBy: 'Bob',
-  //           assignedAt: new Date(),
-  //           endUser: {
-  //             create: {
-  //                 ...generateEndUser({}),
+  //     id: '43a0a298-0d02-4a2e-a8cc-73c06b465310',
+  //     firstName: 'Nadia',
+  //     lastName: 'Comaneci',
+  //     email: 'nadia@ballerine.com',
+  //     correlationId: '1',
+  //     dateOfBirth: '2000-11-04T12:45:51.695Z',
+  //     projectId: project1.id,
+  //   },
+  // });
+
+  // const user2 = await client.endUser.create({
+  //   data: {
+  //     id: '43a0a298-0d02-4a2e-a8cc-73c06b465311',
+  //     firstName: 'Nadin',
+  //     lastName: 'Mami',
+  //     email: 'ndain@ballerine.com',
+  //     correlationId: '2',
+  //     dateOfBirth: '2000-11-04T12:45:51.695Z',
+  //     projectId: project1.id,
+  //   },
+  // });
+
+  // const createMockBusinessContextData = async (businessId: string, countOfBusiness: number) => {
+  //   const correlationId = faker.datatype.uuid();
+  //   const imageUri1 = generateAvatarImageUri(
+  //     `set_${countOfBusiness}_doc_front.png`,
+  //     countOfBusiness,
+  //   );
+  //   const imageUri2 = generateAvatarImageUri(
+  //     `set_${countOfBusiness}_doc_face.png`,
+  //     countOfBusiness,
+  //   );
+  //   const imageUri3 = generateAvatarImageUri(
+  //     `set_${countOfBusiness}_selfie.png`,
+  //     countOfBusiness,
+  //     true,
+  //   );
+
+  //   return {
+  //     entity: {
+  //       type: 'business',
+  //       data: {
+  //         companyName: faker.company.name(),
+  //         registrationNumber: faker.finance.account(9),
+  //         legalForm: faker.company.bs(),
+  //         countryOfIncorporation: faker.address.country(),
+  //         // @ts-expect-error - business type expects a date and not a string.
+  //         dateOfIncorporation: faker.date.past(20).toISOString(),
+  //         address: faker.address.streetAddress(),
+  //         phoneNumber: faker.phone.number(),
+  //         email: faker.internet.email(),
+  //         website: faker.internet.url(),
+  //         industry: faker.company.catchPhrase(),
+  //         taxIdentificationNumber: faker.finance.account(12),
+  //         vatNumber: faker.finance.account(9),
+  //         numberOfEmployees: faker.datatype.number(1000),
+  //         businessPurpose: faker.company.catchPhraseDescriptor(),
+  //         approvalState: 'NEW',
+  //         additionalInfo: { customParam: 'customValue' },
+  //       } satisfies Partial<Business>,
+  //       ballerineEntityId: businessId,
+  //       id: correlationId,
+  //     },
+  //     documents: [
+  //       {
+  //         id: faker.datatype.uuid(),
+  //         category: 'proof_of_employment',
+  //         type: 'payslip',
+  //         issuer: {
+  //           type: 'government',
+  //           name: 'Government',
+  //           country: 'GH',
+  //           city: faker.address.city(),
+  //           additionalInfo: { customParam: 'customValue' },
+  //         },
+  //         issuingVersion: 1,
+
+  //         version: 1,
+  //         pages: [
+  //           {
+  //             provider: 'http',
+  //             uri: imageUri1,
+  //             type: 'jpg',
+  //             data: '',
+  //             ballerineFileId: await persistImageFile(client, imageUri1, project1.id),
+  //             metadata: {
+  //               side: 'front',
+  //               pageNumber: '1',
   //             },
   //           },
+  //           {
+  //             provider: 'http',
+  //             uri: imageUri2,
+  //             type: 'jpg',
+  //             data: '',
+  //             ballerineFileId: await persistImageFile(client, imageUri2, project1.id),
+  //             metadata: {
+  //               side: 'back',
+  //               pageNumber: '1',
+  //             },
+  //           },
+  //         ],
+  //         properties: {
+  //           nationalIdNumber: generateUserNationalId(),
+  //           docNumber: faker.random.alphaNumeric(9),
+  //           employeeName: faker.name.fullName(),
+  //           position: faker.name.jobTitle(),
+  //           salaryAmount: faker.finance.amount(1000, 10000),
+  //           issuingDate: faker.date.past(10).toISOString().split('T')[0],
+  //         },
+  //       },
+  //       {
+  //         id: faker.datatype.uuid(),
+  //         category: 'proof_of_address',
+  //         type: 'mortgage_statement',
+  //         issuer: {
+  //           type: 'government',
+  //           name: 'Government',
+  //           country: 'GH',
+  //           city: faker.address.city(),
+  //           additionalInfo: { customParam: 'customValue' },
+  //         },
+  //         issuingVersion: 1,
+
+  //         version: 1,
+  //         pages: [
+  //           {
+  //             provider: 'http',
+  //             uri: imageUri3,
+  //             type: 'image/png',
+  //             ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
+  //             data: '',
+  //             metadata: {},
+  //           },
+  //         ],
+  //         properties: {
+  //           nationalIdNumber: generateUserNationalId(),
+  //           docNumber: faker.random.alphaNumeric(9),
+  //           employeeName: faker.name.fullName(),
+  //           position: faker.name.jobTitle(),
+  //           salaryAmount: faker.finance.amount(1000, 10000),
+  //           issuingDate: faker.date.past(10).toISOString().split('T')[0],
+  //         },
+  //       },
+  //     ],
+  //   };
+  // };
+
+  // async function createMockEndUserContextData(endUserId: string, countOfIndividual: number) {
+  //   const correlationId = faker.datatype.uuid();
+  //   const imageUri1 = generateAvatarImageUri(
+  //     `set_${countOfIndividual}_doc_front.png`,
+  //     countOfIndividual,
+  //   );
+  //   const imageUri2 = generateAvatarImageUri(
+  //     `set_${countOfIndividual}_doc_face.png`,
+  //     countOfIndividual,
+  //   );
+  //   const imageUri3 = generateAvatarImageUri(
+  //     `set_${countOfIndividual}_selfie.png`,
+  //     countOfIndividual,
+  //     true,
+  //   );
+
+  //   return {
+  //     entity: {
+  //       type: 'individual',
+  //       data: {
+  //         firstName: faker.name.firstName(),
+  //         lastName: faker.name.lastName(),
+  //         email: faker.internet.email(),
+  //         approvalState: 'NEW',
+  //         phone: faker.phone.number(),
+  //         stateReason: 'Poor quality of documents',
+  //         // @ts-expect-error - end user type expects a date and not a string.
+  //         dateOfBirth: faker.date.past(20).toISOString(),
+  //         additionalInfo: { customParam: 'customValue' },
+  //       } satisfies Partial<EndUser>,
+  //       ballerineEntityId: endUserId,
+  //       id: correlationId,
+  //     },
+  //     documents: [
+  //       {
+  //         id: faker.datatype.uuid(),
+  //         category: 'id',
+  //         type: 'photo',
+  //         issuer: {
+  //           type: 'government',
+  //           name: 'Government',
+  //           country: 'CA',
+  //           city: faker.address.city(),
+  //           additionalInfo: { customParam: 'customValue' },
+  //         },
+  //         issuingVersion: 1,
+
+  //         version: 1,
+  //         pages: [
+  //           {
+  //             provider: 'http',
+  //             uri: imageUri1,
+  //             type: 'jpg',
+  //             data: '',
+  //             ballerineFileId: await persistImageFile(client, imageUri1, project1.id),
+  //             metadata: {
+  //               side: 'front',
+  //               pageNumber: '1',
+  //             },
+  //           },
+  //           {
+  //             provider: 'http',
+  //             uri: imageUri2,
+  //             type: 'jpg',
+  //             data: '',
+  //             ballerineFileId: await persistImageFile(client, imageUri2, project1.id),
+  //             metadata: {
+  //               side: 'back',
+  //               pageNumber: '1',
+  //             },
+  //           },
+  //         ],
+  //         properties: {
+  //           firstName: faker.name.firstName(),
+  //           middleName: faker.name.firstName(),
+  //           lastName: faker.name.lastName(),
+  //           authority: faker.company.name(),
+  //           placeOfIssue: faker.address.city(),
+  //           issueDate: faker.date.past(10).toISOString().split('T')[0],
+  //           expires: faker.date.future(10).toISOString().split('T')[0],
+  //           dateOfBirth: faker.date.past(20).toISOString().split('T')[0],
+  //           placeOfBirth: faker.address.city(),
+  //           sex: faker.helpers.arrayElement(['male', 'female', 'other']),
+  //         },
+  //       },
+  //       {
+  //         id: faker.datatype.uuid(),
+  //         category: 'selfie',
+  //         type: 'photo',
+  //         issuer: {
+  //           type: 'government',
+  //           name: 'Government',
+  //           country: 'CA',
+  //           city: faker.address.city(),
+  //           additionalInfo: { customParam: 'customValue' },
+  //         },
+  //         issuingVersion: 1,
+
+  //         version: 1,
+  //         pages: [
+  //           {
+  //             provider: 'http',
+  //             uri: imageUri3,
+  //             type: 'image/png',
+  //             data: '',
+  //             ballerineFileId: await persistImageFile(client, imageUri3, project1.id),
+  //             metadata: {},
+  //           },
+  //         ],
+  //         properties: {
+  //           firstName: faker.name.firstName(),
+  //           middleName: faker.name.firstName(),
+  //           lastName: faker.name.lastName(),
+  //           authority: faker.company.name(),
+  //           placeOfIssue: faker.address.city(),
+  //           issueDate: faker.date.past(10).toISOString().split('T')[0],
+  //           expires: faker.date.future(10).toISOString().split('T')[0],
+  //           dateOfBirth: faker.date.past(20).toISOString().split('T')[0],
+  //           placeOfBirth: faker.address.city(),
+  //           sex: faker.helpers.arrayElement(['male', 'female', 'other']),
+  //         },
+  //       },
+  //     ],
+  //   };
+  // }
+
+  // function createFilter(
+  //   name: string,
+  //   entity: 'individuals' | 'businesses',
+  //   query: Prisma.WorkflowRuntimeDataFindManyArgs,
+  //   projectId: string,
+  // ) {
+  //   return client.filter.create({
+  //     data: {
+  //       entity,
+  //       name,
+  //       query: query as any,
+  //       projectId: projectId,
+  //     },
+  //   });
+  // }
+
+  // // Risk score improvement
+  // await client.workflowDefinition.create({
+  //   data: {
+  //     id: 'risk-score-improvement-dev', // should be auto generated normally
+  //     name: 'risk-score-improvement',
+  //     version: 1,
+  //     definitionType: 'statechart-json',
+  //     config: {
+  //       completedWhenTasksResolved: true,
+  //       workflowLevelResolution: false,
+  //       allowMultipleActiveWorkflows: true,
+  //     },
+  //     contextSchema: {
+  //       type: 'json-schema',
+  //       schema: defaultContextSchema,
+  //     },
+  //     definition: {
+  //       id: 'risk-score-improvement',
+  //       initial: DEFAULT_INITIAL_STATE,
+  //       states: generateBaseTaskLevelStates(),
+  //     },
+  //     projectId: project1.id,
+  //   },
+  // });
+
+  // const baseReviewDefinition = (stateDefinition: InputJsonValue) =>
+  //   ({
+  //     name: DEFAULT_INITIAL_STATE,
+  //     version: manualMachineVersion,
+  //     definitionType: 'statechart-json',
+  //     config: {
+  //       isLegacyReject: true,
+  //       workflowLevelResolution: true,
+  //     },
+  //     definition: {
+  //       id: 'Manual Review',
+  //       initial: DEFAULT_INITIAL_STATE,
+  //       states: stateDefinition,
+  //     },
+  //     persistStates: [],
+  //     submitStates: [],
+  //   } as const satisfies Prisma.WorkflowDefinitionUncheckedCreateInput);
+
+  // // KYC Manual Review (workflowLevelResolution false)
+  // await client.workflowDefinition.create({
+  //   data: {
+  //     ...baseReviewDefinition(generateBaseTaskLevelStates()),
+  //     id: kycManualMachineId,
+  //     config: {
+  //       workflowLevelResolution: false,
+  //     },
+  //     version: 2,
+  //     projectId: project1.id,
+  //   },
+  // });
+
+  // // KYB Manual Review (workflowLevelResolution true)
+  // await client.workflowDefinition.create({
+  //   data: {
+  //     ...baseReviewDefinition(generateBaseCaseLevelStates()),
+  //     id: kybManualMachineId,
+  //     config: {
+  //       workflowLevelResolution: true,
+  //     },
+  //     projectId: project1.id,
+  //   },
+  // });
+
+  // // KYC
+  // await client.workflowDefinition.create({
+  //   data: {
+  //     id: onboardingMachineKycId, // should be auto generated normally
+  //     reviewMachineId: kycManualMachineId,
+  //     name: 'kyc',
+  //     version: 1,
+  //     definitionType: 'statechart-json',
+  //     definition: {
+  //       id: 'kyc',
+  //       predictableActionArguments: true,
+  //       initial: 'welcome',
+
+  //       context: {
+  //         documents: [],
+  //       },
+
+  //       states: {
+  //         welcome: {
+  //           on: {
+  //             USER_NEXT_STEP: 'document_selection',
+  //           },
+  //         },
+  //         document_selection: {
+  //           on: {
+  //             USER_PREV_STEP: 'welcome',
+  //             USER_NEXT_STEP: 'document_photo',
+  //           },
+  //         },
+  //         document_photo: {
+  //           on: {
+  //             USER_PREV_STEP: 'document_selection',
+  //             USER_NEXT_STEP: 'document_review',
+  //           },
+  //         },
+  //         document_review: {
+  //           on: {
+  //             USER_PREV_STEP: 'document_photo',
+  //             USER_NEXT_STEP: 'selfie',
+  //           },
+  //         },
+  //         selfie: {
+  //           on: {
+  //             USER_PREV_STEP: 'document_review',
+  //             USER_NEXT_STEP: 'selfie_review',
+  //           },
+  //         },
+  //         selfie_review: {
+  //           on: {
+  //             USER_PREV_STEP: 'selfie',
+  //             USER_NEXT_STEP: 'final',
+  //           },
+  //         },
+  //         final: {
+  //           type: 'final',
+  //         },
+  //       },
+  //     },
+  //     persistStates: [
+  //       {
+  //         state: 'document_review',
+  //         persistence: 'BACKEND',
+  //       },
+  //       {
+  //         state: 'document_selection',
+  //         persistence: 'BACKEND',
+  //       },
+  //       {
+  //         state: 'final',
+  //         persistence: 'BACKEND',
+  //       },
+  //     ],
+  //     submitStates: [
+  //       {
+  //         state: 'document_photo',
+  //       },
+  //     ],
+  //     projectId: project1.id,
+  //   },
+  // });
+
+  // const getDocumentsSchema = () =>
+  //   ['id_card', 'passport', 'drivers_license', 'voter_id'].map(name => ({
+  //     category: name,
+  //     type: name,
+  //     issuer: { country: 'ZZ' },
+  //     issuingVersion: 1,
+  //     version: 1,
+  //     propertiesSchema: Type.Object({
+  //       firstName: Type.Optional(Type.String()),
+  //       lastName: Type.Optional(Type.String()),
+  //       documentNumber: Type.Optional(Type.String()),
+  //       dateOfBirth: Type.Optional(Type.String({ format: 'date' })),
+  //       expirationDate: Type.Optional(Type.String({ format: 'date' })),
+  //       isFaceMatching: Type.Optional(Type.Boolean()),
+  //     }),
+  //   }));
+
+  // await client.workflowDefinition.create({
+  //   data: {
+  //     ...baseReviewDefinition(generateBaseTaskLevelStates()),
+  //     id: kycWorkflowDefinitionId,
+  //     documentsSchema: getDocumentsSchema(),
+  //     config: {
+  //       workflowLevelResolution: false,
+  //       availableDocuments: [
+  //         {
+  //           category: 'id_card',
+  //           type: 'id_card',
+  //         },
+  //         {
+  //           category: 'passport',
+  //           type: 'passport',
+  //         },
+  //         {
+  //           category: 'drivers_license',
+  //           type: 'drivers_license',
+  //         },
+  //         {
+  //           category: 'voter_id',
+  //           type: 'voter_id',
   //         },
   //       ],
   //     },
+  //     version: 3,
+  //     projectId: project1.id,
   //   },
   // });
-  void client.$disconnect();
 
-  console.info('Seeding database with custom seed...');
+  // // KYB
+  // await client.workflowDefinition.create({
+  //   data: {
+  //     id: onboardingMachineKybId, // should be auto generated normally
+  //     reviewMachineId: kybManualMachineId,
+  //     name: 'kyb',
+  //     version: 1,
+  //     definitionType: 'statechart-json',
+  //     definition: {
+  //       id: 'kyb',
+  //       predictableActionArguments: true,
+  //       initial: 'welcome',
 
-  await customSeed();
+  //       context: {
+  //         documents: [],
+  //       },
 
-  await generateKybDefintion(client);
-  await generateKycSessionDefinition(client);
-  await generateKybKycWorkflowDefinition(client);
-  await generateKycForE2eTest(client);
-  await generateCollectionKybWorkflow(client, project1.id);
+  //       states: {
+  //         welcome: {
+  //           on: {
+  //             USER_NEXT_STEP: 'document_selection',
+  //           },
+  //         },
+  //         document_selection: {
+  //           on: {
+  //             USER_PREV_STEP: 'welcome',
+  //             USER_NEXT_STEP: 'document_photo',
+  //           },
+  //         },
+  //         document_photo: {
+  //           on: {
+  //             USER_PREV_STEP: 'document_selection',
+  //             USER_NEXT_STEP: 'document_review',
+  //           },
+  //         },
+  //         document_review: {
+  //           on: {
+  //             USER_PREV_STEP: 'document_photo',
+  //             USER_NEXT_STEP: 'certificate_of_incorporation',
+  //           },
+  //         },
+  //         certificate_of_incorporation: {
+  //           on: {
+  //             USER_PREV_STEP: 'document_review',
+  //             USER_NEXT_STEP: 'certificate_of_incorporation_review',
+  //           },
+  //         },
+  //         certificate_of_incorporation_review: {
+  //           on: {
+  //             USER_PREV_STEP: 'certificate_of_incorporation',
+  //             USER_NEXT_STEP: 'selfie',
+  //           },
+  //         },
+  //         selfie: {
+  //           on: {
+  //             USER_PREV_STEP: 'certificate_of_incorporation_review',
+  //             USER_NEXT_STEP: 'selfie_review',
+  //           },
+  //         },
+  //         selfie_review: {
+  //           on: {
+  //             USER_PREV_STEP: 'selfie',
+  //             USER_NEXT_STEP: 'final',
+  //           },
+  //         },
+  //         final: {
+  //           type: 'final',
+  //         },
+  //       },
+  //     },
+  //     persistStates: [
+  //       {
+  //         state: 'document_review',
+  //         persistence: 'BACKEND',
+  //       },
+  //       {
+  //         state: 'document_selection',
+  //         persistence: 'BACKEND',
+  //       },
+  //       {
+  //         state: 'final',
+  //         persistence: 'BACKEND',
+  //       },
+  //     ],
+  //     submitStates: [
+  //       {
+  //         state: 'document_photo',
+  //       },
+  //     ],
+  //     projectId: project1.id,
+  //   },
+  // });
 
-  const { parentWorkflow, uiDefinition } = await uiKybParentWithAssociatedCompanies(
-    client,
-    project1.id,
-  );
+  // await createFilter(
+  //   'Onboarding - Businesses with enriched data',
+  //   'businesses',
+  //   {
+  //     select: {
+  //       id: true,
+  //       status: true,
+  //       assigneeId: true,
+  //       createdAt: true,
+  //       context: true,
+  //       state: true,
+  //       tags: true,
+  //       ...baseFilterDefinitionSelect,
+  //       ...baseFilterBusinessSelect,
+  //       ...baseFilterAssigneeSelect,
+  //     },
+  //     where: {
+  //       workflowDefinitionId: { in: ['dynamic_external_request_example'] },
+  //       businessId: { not: null },
+  //     },
+  //   },
+  //   project1.id,
+  // );
 
-  await generateWebsiteMonitoringExample(client, project1.id);
+  // await createFilter(
+  //   'Onboarding - Individuals',
+  //   'individuals',
+  //   {
+  //     select: {
+  //       id: true,
+  //       status: true,
+  //       assigneeId: true,
+  //       context: true,
+  //       createdAt: true,
+  //       state: true,
+  //       tags: true,
+  //       ...baseFilterDefinitionSelect,
+  //       ...baseFilterEndUserSelect,
+  //       ...baseFilterAssigneeSelect,
+  //     },
+  //     where: {
+  //       workflowDefinitionId: { in: [kycManualMachineId] },
+  //       endUserId: { not: null },
+  //     },
+  //   },
+  //   project1.id,
+  // );
 
-  await generateInitialCollectionFlowExample(client, {
-    workflowDefinitionId: parentWorkflow.id,
-    projectId: project1.id,
-    endUserId: endUserIds[0]!,
-    businessId: businessIds[0]!,
-    token: DEFAULT_TOKENS.KYB,
-  });
+  // await createFilter(
+  //   'KYC - Manual Review',
+  //   'individuals',
+  //   {
+  //     select: {
+  //       id: true,
+  //       status: true,
+  //       assigneeId: true,
+  //       context: true,
+  //       createdAt: true,
+  //       state: true,
+  //       tags: true,
+  //       ...baseFilterDefinitionSelect,
+  //       ...baseFilterEndUserSelect,
+  //       ...baseFilterAssigneeSelect,
+  //     },
+  //     where: {
+  //       workflowDefinitionId: { in: [kycWorkflowDefinitionId] },
+  //       endUserId: { not: null },
+  //     },
+  //   },
+  //   project1.id,
+  // );
 
-  await generateKycManualReviewRuntimeAndToken(client, {
-    workflowDefinitionId: kycWorkflowDefinitionId,
-    projectId: project1.id,
-    endUserId: endUserIds[0]!,
-    token: DEFAULT_TOKENS.KYC,
-  });
+  // // KYB Onboarding
+  // await client.workflowDefinition.create({
+  //   data: {
+  //     id: onboardingMachineId,
+  //     name: 'kyb_onboarding',
+  //     version: 1,
+  //     definitionType: 'statechart-json',
+  //     config: {
+  //       workflowLevelResolution: true,
+  //       completedWhenTasksResolved: false,
+  //       allowMultipleActiveWorkflows: false,
+  //     },
+  //     definition: {
+  //       id: 'kyb_onboarding',
+  //       predictableActionArguments: true,
+  //       initial: DEFAULT_INITIAL_STATE,
+  //       context: {
+  //         documents: [],
+  //       },
+  //       states: generateBaseCaseLevelStates(),
+  //     },
+  //   },
+  // });
+
+  // // KYB Risk Score Improvement
+  // await client.workflowDefinition.create({
+  //   data: {
+  //     id: riskScoreMachineId,
+  //     name: 'kyb_risk_score',
+  //     version: 1,
+  //     definitionType: 'statechart-json',
+  //     config: {
+  //       workflowLevelResolution: false,
+  //       completedWhenTasksResolved: true,
+  //       allowMultipleActiveWorkflows: true,
+  //     },
+  //     definition: {
+  //       id: 'kyb_risk_score',
+  //       predictableActionArguments: true,
+  //       initial: DEFAULT_INITIAL_STATE,
+  //       context: {
+  //         documents: [],
+  //       },
+  //       states: generateBaseTaskLevelStates(),
+  //     },
+  //   },
+  // });
+
+  // await createFilter(
+  //   'Risk Score Improvement - Individuals',
+  //   'individuals',
+  //   {
+  //     select: {
+  //       id: true,
+  //       status: true,
+  //       assigneeId: true,
+  //       createdAt: true,
+  //       context: true,
+  //       state: true,
+  //       tags: true,
+  //       ...baseFilterDefinitionSelect,
+  //       ...baseFilterEndUserSelect,
+  //       ...baseFilterAssigneeSelect,
+  //     },
+  //     where: {
+  //       workflowDefinitionId: { in: [riskScoreMachineKybId] },
+  //       endUserId: { not: null },
+  //     },
+  //   },
+  //   project1.id,
+  // );
+
+  // await createFilter(
+  //   'Risk Score Improvement - Businesses',
+  //   'businesses',
+  //   {
+  //     select: {
+  //       id: true,
+  //       status: true,
+  //       assigneeId: true,
+  //       createdAt: true,
+  //       context: true,
+  //       state: true,
+  //       tags: true,
+  //       ...baseFilterDefinitionSelect,
+  //       ...baseFilterBusinessSelect,
+  //       ...baseFilterAssigneeSelect,
+  //     },
+  //     where: {
+  //       workflowDefinitionId: { in: [riskScoreMachineKybId] },
+  //       businessId: { not: null },
+  //     },
+  //   },
+  //   project1.id,
+  // );
+
+  // await createFilter(
+  //   "KYB with UBO's",
+  //   'businesses',
+  //   {
+  //     select: {
+  //       id: true,
+  //       status: true,
+  //       assigneeId: true,
+  //       createdAt: true,
+  //       context: true,
+  //       state: true,
+  //       tags: true,
+  //       ...baseFilterDefinitionSelect,
+  //       ...baseFilterBusinessSelect,
+  //       ...baseFilterAssigneeSelect,
+  //       childWorkflowsRuntimeData: true,
+  //     },
+  //     where: {
+  //       workflowDefinitionId: { in: ['kyb_with_associated_companies_example'] },
+  //       businessId: { not: null },
+  //       state: {
+  //         in: [
+  //           'manual_review',
+  //           'approved',
+  //           'revision',
+  //           'rejected',
+  //           'pending_kyc_response',
+  //           'pending_kyb_response',
+  //         ],
+  //       },
+  //     },
+  //   },
+  //   project1.id,
+  // );
+
+  // await client.$transaction(async () =>
+  //   endUserIds.map(async (id, index) =>
+  //     client.endUser.create({
+  //       /// I tried to fix that so I can run through ajv, currently it doesn't like something in the schema (anyOf  )
+  //       data: generateEndUser({
+  //         id,
+  //         workflow: {
+  //           workflowDefinitionId: kycManualMachineId,
+  //           workflowDefinitionVersion: manualMachineVersion,
+  //           context: await createMockEndUserContextData(id, index + 1),
+  //           state: DEFAULT_INITIAL_STATE,
+  //         },
+  //         projectId: project1.id,
+  //       }),
+  //     }),
+  //   ),
+  // );
+
+  // await client.$transaction(async tx => {
+  //   businessRiskIds.map(async (id, index) => {
+  //     const riskWf = async () => ({
+  //       runtimeId: `test-workflow-risk-id-${index}`,
+  //       workflowDefinitionId: riskScoreMachineKybId,
+  //       workflowDefinitionVersion: 1,
+  //       context: await createMockBusinessContextData(id, index + 1),
+  //       createdAt: faker.date.recent(2),
+  //       state: DEFAULT_INITIAL_STATE,
+  //       projectId: project1.id,
+  //     });
+
+  //     return client.business.create({
+  //       data: generateBusiness({
+  //         id,
+  //         workflow: await riskWf(),
+  //         projectId: project1.id,
+  //       }),
+  //     });
+  //   });
+
+  //   businessIds.map(async id => {
+  //     const exampleWf = {
+  //       workflowDefinitionId: onboardingMachineKybId,
+  //       workflowDefinitionVersion: manualMachineVersion,
+  //       // Would not display data in the backoffice UI
+  //       context: {},
+  //       state: DEFAULT_INITIAL_STATE,
+  //       createdAt: faker.date.recent(2),
+  //     };
+
+  //     return client.business.create({
+  //       data: generateBusiness({
+  //         id,
+  //         workflow: exampleWf,
+  //         projectId: project1.id,
+  //       }),
+  //     });
+  //   });
+  // });
+
+  // // TODO: create business with enduser attched to them
+  // // await client.business.create({
+  // //   data: {
+  // //     ...generateBusiness({}),
+  // //     endUsers: {
+  // //       create: [
+  // //         {
+  // //           assignedBy: 'Bob',
+  // //           assignedAt: new Date(),
+  // //           endUser: {
+  // //             create: {
+  // //                 ...generateEndUser({}),
+  // //             },
+  // //           },
+  // //         },
+  // //       ],
+  // //     },
+  // //   },
+  // // });
+  // void client.$disconnect();
+
+  // console.info('Seeding database with custom seed...');
+
+  // await customSeed();
+
+  // await generateKybDefintion(client);
+  // await generateKycSessionDefinition(client);
+  // await generateKybKycWorkflowDefinition(client);
+  // await generateKycForE2eTest(client);
+  // await generateCollectionKybWorkflow(client, project1.id);
+
+  // const { parentWorkflow, uiDefinition } = await uiKybParentWithAssociatedCompanies(
+  //   client,
+  //   project1.id,
+  // );
+
+  // await generateWebsiteMonitoringExample(client, project1.id);
+
+  // await generateInitialCollectionFlowExample(client, {
+  //   workflowDefinitionId: parentWorkflow.id,
+  //   projectId: project1.id,
+  //   endUserId: endUserIds[0]!,
+  //   businessId: businessIds[0]!,
+  //   token: DEFAULT_TOKENS.KYB,
+  // });
+
+  // await generateKycManualReviewRuntimeAndToken(client, {
+  //   workflowDefinitionId: kycWorkflowDefinitionId,
+  //   projectId: project1.id,
+  //   endUserId: endUserIds[0]!,
+  //   token: DEFAULT_TOKENS.KYC,
+  // });
+
+  // Example usage
+  console.log('Example usage of AnalyticsQueryBuilder');
+  // Example usage
+  executeDynamicRule1({
+    excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+    paymentMethods: ['CreditCard'],
+    direction: TransactionDirection.Inbound,
+    amountThreshold: 5,
+  })
+    .then(results => console.log(results))
+    .catch(error => console.error(error));
+
+  // const queryBuilder = new AnalyticsQueryBuilder('Inbound');
+  // queryBuilder
+  //   .excludeCounterpartyIds(['9999999999999999', '999999******9999'])
+  //   .addDateRange('days', 7)
+  //   .includeExcludePaymentMethods(['credit_card'], ['debit_card'])
+  //   .setAmountThreshold('sum', 1000, 'transactionAmount');
+
+  // const results = await queryBuilder.execute();
+  console.log('Results of AnalyticsQueryBuilder');
+  // console.log(results);
 
   console.info('Seeded database successfully');
 }
@@ -1142,4 +1174,11 @@ async function createUsers({ project1, project2 }: any, client: PrismaClient) {
         }),
     ),
   );
+}
+function executeDynamicRule(arg0: {
+  excludeCounterpartyIds: string[];
+  includePaymentMethods: string[];
+  amountThreshold: number;
+}) {
+  throw new Error('Function not implemented.');
 }
