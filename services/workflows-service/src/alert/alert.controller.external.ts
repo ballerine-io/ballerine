@@ -6,7 +6,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
-import { AlertDefinition, Alert } from '@prisma/client';
+import { Alert, AlertDefinition } from '@prisma/client';
 import { type TProjectId } from '@/types';
 import * as errors from '../errors';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
@@ -42,6 +42,26 @@ export class AlertControllerExternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @UsePipes(new ZodValidationPipe(FindAlertsSchema, 'query'))
   async getAll(@Query() findAlertsDto: FindAlertsDto, @ProjectIds() projectIds: TProjectId[]) {
-    return await this.service.getAlerts(findAlertsDto, projectIds);
+    const alerts = await this.service.getAlerts(findAlertsDto, projectIds, {
+      include: {
+        alertDefinition: {
+          select: {
+            description: true,
+          },
+        },
+      },
+    });
+    const alertsWithDescription = alerts.map(alert => {
+      const { alertDefinition, ...alertWithoutDefinition } = alert as Alert & {
+        alertDefinition: AlertDefinition;
+      };
+
+      return {
+        ...alertWithoutDefinition,
+        alertDetails: alertDefinition?.description,
+      };
+    });
+
+    return alertsWithDescription;
   }
 }
