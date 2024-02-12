@@ -13,7 +13,8 @@ export const AlertsHeader: FunctionComponent<{
   return (
     <div className="flex items-end justify-between pb-2">
       <div className="flex gap-6">
-        <Search value={search} onChange={onSearch} />
+        {/*  Uncomment when search is implemented server-side */}
+        {/*<Search value={search} onChange={onSearch} />*/}
         <AlertsFilters assignees={assignees} authenticatedUserId={authenticatedUserId} />
       </div>
       <div className="flex gap-4">
