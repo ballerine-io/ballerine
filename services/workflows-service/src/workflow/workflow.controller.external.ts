@@ -133,29 +133,6 @@ export class WorkflowControllerExternal {
     }
   }
 
-  // POST /intent
-  @common.Post('/intent')
-  @swagger.ApiOkResponse()
-  @common.HttpCode(200)
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseCustomerAuthGuard()
-  async intent(
-    @common.Body() { intentName, entityId }: IntentDto,
-    @ProjectIds() projectIds: TProjectIds,
-    @CurrentProject() currentProjectId: TProjectId,
-  ) {
-    const entityType = intentName === 'kycSignup' ? 'endUser' : 'business';
-
-    // @TODO: Rename to intent or getRunnableWorkflowDataByIntent?
-    return await this.service.resolveIntent(
-      intentName,
-      entityId,
-      entityType,
-      projectIds,
-      currentProjectId,
-    );
-  }
-
   @common.Post('/run')
   @swagger.ApiOkResponse()
   @UseCustomerAuthGuard()

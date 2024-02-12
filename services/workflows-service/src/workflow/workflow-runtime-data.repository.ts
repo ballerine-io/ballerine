@@ -53,25 +53,24 @@ export class WorkflowRuntimeDataRepository {
   async findOne<T extends Prisma.WorkflowRuntimeDataFindFirstArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindFirstArgs>,
     projectIds: TProjectIds,
+    transaction: PrismaTransaction | PrismaClient = this.prisma,
   ): Promise<WorkflowRuntimeData | null> {
-    return await this.prisma.workflowRuntimeData.findFirst(
+    return await transaction.workflowRuntimeData.findFirst(
       this.scopeService.scopeFindOne(args, projectIds),
     );
   }
 
-  async findByIdAndLock<T extends Prisma.WorkflowRuntimeDataFindFirstArgs>(
-    args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindFirstArgs>,
+  async findByIdAndLock(
+    id: string,
     projectIds: TProjectIds,
     transaction: PrismaTransaction | PrismaClient = this.prisma,
-  ): Promise<WorkflowRuntimeData | null> {
-    await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "id" = ${
-      args.where?.id
-    } ${
-      projectIds?.length ? Prisma.sql`AND "projectId" in (${projectIds?.join(',')})` : Prisma.sql``
-    } FOR UPDATE`; // @TODO: Ignore the rest of the args?
+  ): Promise<WorkflowRuntimeData> {
+    await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "id" = ${id} AND "projectId" in (${projectIds?.join(
+      ',',
+    )}) FOR UPDATE`;
 
-    return await transaction.workflowRuntimeData.findFirst(
-      this.scopeService.scopeFindOne(args, projectIds),
+    return await transaction.workflowRuntimeData.findFirstOrThrow(
+      this.scopeService.scopeFindFirst({ where: { id } }, projectIds),
     );
   }
 
@@ -112,13 +111,10 @@ export class WorkflowRuntimeDataRepository {
 
   async updateStateById(
     id: string,
-    {
-      data,
-    }: {
-      data: Pick<Prisma.WorkflowRuntimeDataUncheckedUpdateInput, StateRelatedColumns>;
-    },
+    { data }: { data: Prisma.WorkflowRuntimeDataUncheckedUpdateInput },
+    transaction: PrismaTransaction | PrismaClient = this.prisma,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.update({
+    return await transaction.workflowRuntimeData.update({
       where: { id },
       data: data,
     });
@@ -133,26 +129,6 @@ export class WorkflowRuntimeDataRepository {
     const stringifiedConfig = JSON.stringify(newConfig);
     const affectedRows = await this.prisma
       .$executeRaw`UPDATE "WorkflowRuntimeData" SET "config" = jsonb_deep_merge_with_options("config", ${stringifiedConfig}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id} AND "projectId" in (${projectIds?.join(
-      ',',
-    )})`;
-
-    // Retrieve and return the updated record
-    if (affectedRows === 0) {
-      throw new Error(`No workflowRuntimeData found with the id "${id}"`);
-    }
-
-    return this.findById(id, {}, projectIds);
-  }
-
-  async updateContextById(
-    id: string,
-    newContext: any,
-    arrayMergeOption: ArrayMergeOption = 'by_id',
-    projectIds: TProjectIds,
-  ): Promise<WorkflowRuntimeData> {
-    const stringifiedContext = JSON.stringify(newContext);
-    const affectedRows = await this.prisma
-      .$executeRaw`UPDATE "WorkflowRuntimeData" SET "context" = jsonb_deep_merge_with_options("context", ${stringifiedContext}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id} AND "projectId" in (${projectIds?.join(
       ',',
     )})`;
 
@@ -180,7 +156,7 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
-  async findActiveWorkflowByEntity(
+  async findActiveWorkflowByEntityAndLock(
     {
       entityId,
       entityType,
@@ -191,7 +167,14 @@ export class WorkflowRuntimeDataRepository {
       workflowDefinitionId: string;
     },
     projectIds: TProjectIds,
+    transaction: PrismaTransaction,
   ) {
+    if (entityType === 'endUser') {
+      await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "workflowDefinitionId" = ${workflowDefinitionId} AND "status" != ${WorkflowRuntimeDataStatus.completed} AND "endUserId" = ${entityId} FOR UPDATE`;
+    } else {
+      await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "workflowDefinitionId" = ${workflowDefinitionId} AND "status" != ${WorkflowRuntimeDataStatus.completed} AND "businessId" = ${entityId} FOR UPDATE`;
+    }
+
     return await this.findOne(
       {
         where: {
@@ -205,21 +188,7 @@ export class WorkflowRuntimeDataRepository {
         },
       },
       projectIds,
-    );
-  }
-
-  async getEntityTypeAndId(workflowRuntimeDataId: string, projectIds: TProjectIds) {
-    return await this.findOne(
-      {
-        where: {
-          id: workflowRuntimeDataId,
-        },
-        select: {
-          businessId: true,
-          endUserId: true,
-        },
-      },
-      projectIds,
+      transaction,
     );
   }
 

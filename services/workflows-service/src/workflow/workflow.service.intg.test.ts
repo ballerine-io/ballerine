@@ -151,7 +151,7 @@ describe('WorkflowService', () => {
 
   describe('event', () => {
     describe('DEEP_MERGE_CONTEXT', () => {
-      it('should merge the existing and new context data when updateContextById is called', async () => {
+      it('should merge the existing and new context data when event is called', async () => {
         const createRes = await workflowRuntimeRepository.create({
           data: {
             workflowDefinitionId: workflowDefinition.id,
@@ -836,7 +836,7 @@ describe('WorkflowService', () => {
         };
         expect(updatedContext).toEqual(expectedContext);
       });
-      it('should merge the nested entity data when updateContextById is called', async () => {
+      it('should merge the nested entity data when event is called', async () => {
         const initialContext = {
           entity: {
             type: 'individual',
@@ -908,7 +908,7 @@ describe('WorkflowService', () => {
         ]);
         expect(updatedContext).toEqual(expectedContext);
       });
-      it('should merge the documents array by id when updateContextById is called', async () => {
+      it('should merge the documents array by id when event is called', async () => {
         const initialContext = {
           entity: {
             type: 'individual',
@@ -974,7 +974,7 @@ describe('WorkflowService', () => {
         ]);
         expect(updatedContext).toEqual(expectedContext);
       });
-      it('should merge nested arrays in additionalInfo when updateContextById is called - concat', async () => {
+      it('should merge nested arrays in additionalInfo when event is called - concat', async () => {
         const initialContext = {
           entity: {
             type: 'individual',
@@ -1076,7 +1076,7 @@ describe('WorkflowService', () => {
         ]);
         expect(updatedContext).toEqual(expectedContext);
       });
-      it('should merge nested arrays in additionalInfo when updateContextById is called - replace', async () => {
+      it('should merge nested arrays in additionalInfo when event is called - replace', async () => {
         const initialContext = {
           entity: {
             type: 'individual',
