@@ -7,8 +7,9 @@ import { Alert, AlertDefinition, AlertState, AlertStatus, Prisma } from '@prisma
 import { AlertAssigneeUniqueDto, AlertsIdsByProjectDto } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
-import { NotFoundException } from '@/errors';
 import { AlertDecisionDto } from './dtos/decision-alert.dto';
+import * as errors from '@/errors';
+import { isFkConstraintError } from '@/prisma/prisma.util';
 
 @Injectable()
 export class AlertService {
@@ -34,15 +35,10 @@ export class AlertService {
           assigneeId: assigneeDto.assigneeId,
         },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       // Should be handled by ProjectAssigneeGuard on controller level
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (
-          error.code === 'P2003' &&
-          (error.meta as { field_name: string }).field_name.includes('assigneeId_fkey')
-        ) {
-          throw new NotFoundException('Assignee not found');
-        }
+      if (isFkConstraintError(error, 'assigneeId_fkey')) {
+        throw new errors.NotFoundException('Assignee not found');
       }
 
       throw error;

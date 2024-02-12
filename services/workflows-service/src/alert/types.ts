@@ -7,9 +7,9 @@ export type TAuthenticationConfiguration = {
 };
 
 export const BulkStatus = {
-  success: 'success',
-  partial: 'partial',
-  failed: 'failed',
+  SUCCESS: 'success',
+  PARTIAL: 'partial',
+  FAILED: 'failed',
 } as const;
 
 export type TBulkStatus = (typeof BulkStatus)[keyof typeof BulkStatus];
@@ -27,9 +27,10 @@ type SuccessResponse = {
 type FailedResponse = {
   alertId: string;
   status: 'failed';
-  error: {
+  errors: {
+    path?: string;
     message: string;
-  };
+  }[];
 };
 export type TBulkAssignAlertsResponse = {
   response: (SuccessResponse | FailedResponse)[];

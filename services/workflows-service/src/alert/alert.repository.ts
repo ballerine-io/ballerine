@@ -48,8 +48,9 @@ export class AlertRepository {
     projectId: TProjectId,
     args: Prisma.SelectSubset<T, Omit<Prisma.AlertUpdateManyArgs, 'where'>>,
   ): Promise<Alert[]> {
-    if (!projectId)
+    if (!projectId) {
       throw new Error('Project ID is required to perform an update opeartion on Alerts');
+    }
 
     const projectIds = [projectId];
 
