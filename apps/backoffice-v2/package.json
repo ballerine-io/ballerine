@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/backoffice-v2",
-  "version": "0.5.45-11210907c.0",
+  "version": "0.5.45-11210907c.1",
   "description": "Ballerine - Backoffice",
   "homepage": "https://github.com/ballerine-io/ballerine",
   "repository": {
@@ -50,12 +50,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ballerine/blocks": "0.1.24",
-    "@ballerine/common": "0.7.39",
+    "@ballerine/blocks": "0.1.25-11210907c.0",
+    "@ballerine/common": "0.7.40-11210907c.0",
     "@ballerine/react-pdf-toolkit": "link:/Users/ilyarudnev/Documents/Backend/ballerine/packages/react-pdf-toolkit",
-    "@ballerine/ui": "0.3.27",
-    "@ballerine/workflow-browser-sdk": "0.5.39",
-    "@ballerine/workflow-node-sdk": "0.5.39",
+    "@ballerine/ui": "0.3.28-11210907c.0",
+    "@ballerine/workflow-browser-sdk": "0.5.40-11210907c.0",
+    "@ballerine/workflow-node-sdk": "0.5.40-11210907c.0",
     "@fontsource/inter": "^4.5.15",
     "@formkit/auto-animate": "1.0.0-beta.5",
     "@hookform/resolvers": "^3.1.0",

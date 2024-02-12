@@ -24,7 +24,10 @@
     "@ballerine/docs-site": "0.0.1"
   },
   "changesets": [
+    "five-wombats-thank",
     "kind-melons-hammer",
-    "loud-hornets-switch"
+    "loud-hornets-switch",
+    "rare-eels-tan",
+    "wicked-ducks-act"
   ]
 }
