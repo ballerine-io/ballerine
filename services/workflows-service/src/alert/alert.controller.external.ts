@@ -11,10 +11,11 @@ import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { Alert, AlertDefinition } from '@prisma/client';
 import * as errors from '../errors';
-import { AlertAssigneeUniqueDto, BulkAssignAlertsResponse } from './dtos/assign-alert.dto';
+import { AlertAssigneeUniqueDto, BulkAlertsResponse } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto, FindAlertsSchema } from './dtos/get-alerts.dto';
 import { BulkStatus, TBulkAssignAlertsResponse } from './types';
+import { AlertDecisionDto } from './dtos/decision-alert.dto';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Alerts')
@@ -70,7 +71,7 @@ export class AlertControllerExternal {
 
   @common.Patch('assign')
   @common.UseGuards(ProjectAssigneeGuard)
-  @swagger.ApiOkResponse({ type: BulkAssignAlertsResponse })
+  @swagger.ApiOkResponse({ type: BulkAlertsResponse })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async assignWorkflowById(
@@ -111,5 +112,58 @@ export class AlertControllerExternal {
     };
 
     return response;
+  }
+
+  @common.Patch('decision')
+  @swagger.ApiOkResponse({ type: BulkAlertsResponse })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async decision(
+    @common.Body() { alertIds, decision }: AlertDecisionDto,
+    @CurrentProject() currentProjectId: TProjectId,
+  ): Promise<TBulkAssignAlertsResponse> {
+    const updatedAlerts = await this.service.updateAlertsDecision(
+      alertIds,
+      currentProjectId,
+      decision,
+    );
+
+    const response: TBulkAssignAlertsResponse = this.createBulkResponse(alertIds, updatedAlerts);
+
+    return response;
+  }
+
+  private createBulkResponse(
+    alertIds: string[],
+    updatedAlerts: Alert[],
+  ): TBulkAssignAlertsResponse {
+    const updatedAlertsIds = new Set(updatedAlerts.map(alert => alert.id));
+
+    return {
+      overallStatus:
+        alertIds.length === updatedAlertsIds.size
+          ? BulkStatus.SUCCESS
+          : updatedAlertsIds.size === 0
+          ? BulkStatus.FAILED
+          : BulkStatus.PARTIAL,
+
+      response: alertIds.map(alertId => {
+        if (updatedAlertsIds.has(alertId)) {
+          return {
+            alertId,
+            status: BulkStatus.SUCCESS,
+          };
+        }
+        return {
+          alertId,
+          status: BulkStatus.FAILED,
+          errors: [
+            {
+              message: 'Alert not found or not updated.',
+            },
+          ],
+        };
+      }),
+    };
   }
 }
