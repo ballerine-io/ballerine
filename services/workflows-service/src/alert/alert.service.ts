@@ -33,7 +33,7 @@ export class AlertService {
           assigneeId: assigneeDto.assigneeId,
         },
       });
-    } catch (error: unknown) {
+    } catch (error) {
       // Should be handled by ProjectAssigneeGuard on controller level
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (

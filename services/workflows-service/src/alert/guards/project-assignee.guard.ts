@@ -1,16 +1,11 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  NotFoundException,
-  UseGuards,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, UseGuards } from '@nestjs/common';
 import type { Request } from 'express';
 import type { TProjectIds } from '@/types';
 import { UserService } from '@/user/user.service';
 import { HttpExceptionFilter } from '@/common/filters/HttpExceptions.filter';
-import { Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import * as errors from '../../errors';
 
 @Injectable()
 @UseGuards(HttpExceptionFilter)
@@ -34,6 +29,7 @@ export class ProjectAssigneeGuard implements CanActivate {
 
     if (!assigneeId) {
       this.logger.warn('Assignee id not found in request');
+
       return false;
     }
 
@@ -45,13 +41,11 @@ export class ProjectAssigneeGuard implements CanActivate {
       );
 
       return Boolean(user);
-    } catch (error: unknown) {
+    } catch (error) {
       this.logger.error('Error while checking assignee using ProjectAssigneeGuard', { error });
 
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2025') {
-          throw new NotFoundException(`User with id ${assigneeId} not found`);
-        }
+      if (isRecordNotFoundError(error)) {
+        throw new errors.NotFoundException(`User with id ${assigneeId} not found`);
       }
     }
 

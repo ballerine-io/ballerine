@@ -48,7 +48,7 @@ export class AlertControllerExternal {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.UsePipes(new ZodValidationPipe(FindAlertsSchema, 'query'))
-  async getAll(
+  async list(
     @common.Query() findAlertsDto: FindAlertsDto,
     @ProjectIds() projectIds: TProjectId[],
   ): Promise<Alert[]> {

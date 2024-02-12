@@ -7,9 +7,9 @@ export type TAuthenticationConfiguration = {
 };
 
 export const BulkStatus = {
-  success: 'success',
-  partial: 'partial',
-  failed: 'failed',
+  SUCCESS: 'success',
+  PARTIAL: 'partial',
+  FAILED: 'failed',
 } as const;
 
 export type TBulkStatus = (typeof BulkStatus)[keyof typeof BulkStatus];
