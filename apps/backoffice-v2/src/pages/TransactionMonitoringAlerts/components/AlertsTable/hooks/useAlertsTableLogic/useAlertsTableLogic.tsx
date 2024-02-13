@@ -24,25 +24,25 @@ export const useAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
     },
   ]);
   const onSortingChange: OnChangeFn<SortingState> = useCallback(
-    updaterOrValue => {
-      setSorting(old => {
-        if (!isInstanceOfFunction(updaterOrValue)) {
+    sortingUpdaterOrValue => {
+      setSorting(prevSortingState => {
+        if (!isInstanceOfFunction(sortingUpdaterOrValue)) {
           onSort({
-            sortBy: updaterOrValue[0]?.id || 'dataTimestamp',
-            sortDir: updaterOrValue[0]?.desc ? 'desc' : 'asc',
+            sortBy: sortingUpdaterOrValue[0]?.id || 'dataTimestamp',
+            sortDir: sortingUpdaterOrValue[0]?.desc ? 'desc' : 'asc',
           });
 
-          return updaterOrValue;
+          return sortingUpdaterOrValue;
         }
 
-        const nextValue = updaterOrValue(old);
+        const newSortingState = sortingUpdaterOrValue(prevSortingState);
 
         onSort({
-          sortBy: nextValue[0]?.id || 'dataTimestamp',
-          sortDir: nextValue[0]?.desc ? 'desc' : 'asc',
+          sortBy: newSortingState[0]?.id || 'dataTimestamp',
+          sortDir: newSortingState[0]?.desc ? 'desc' : 'asc',
         });
 
-        return nextValue;
+        return newSortingState;
       });
     },
     [onSort],
@@ -51,19 +51,19 @@ export const useAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
     checkIsBooleanishRecord(ids) ? ids : {},
   );
   const onRowSelectionChange: OnChangeFn<RowSelectionState> = useCallback(
-    updaterOrValue => {
-      setRowSelection(old => {
-        if (!isInstanceOfFunction(updaterOrValue)) {
-          onSelect(updaterOrValue);
+    selectionUpdaterOrValue => {
+      setRowSelection(prevSelectionState => {
+        if (!isInstanceOfFunction(selectionUpdaterOrValue)) {
+          onSelect(selectionUpdaterOrValue);
 
-          return updaterOrValue;
+          return selectionUpdaterOrValue;
         }
 
-        const nextValue = updaterOrValue(old);
+        const newSelectionState = selectionUpdaterOrValue(prevSelectionState);
 
-        onSelect(nextValue);
+        onSelect(newSelectionState);
 
-        return nextValue;
+        return newSelectionState;
       });
     },
     [onSelect],
