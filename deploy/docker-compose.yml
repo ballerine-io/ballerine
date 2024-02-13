@@ -1,6 +1,7 @@
 version: '3'
 services:
   ballerine-case-managment:
+    container_name: backoffice
     image: ghcr.io/ballerine-io/backoffice:latest
     platform: linux/amd64
     ports:
@@ -10,6 +11,7 @@ services:
     restart: on-failure
   ballerine-kyb-app:
     image: ghcr.io/ballerine-io/kyb-app:latest
+    container_name: kyb-app
     platform: linux/amd64
     ports:
       - 5201:80
@@ -17,9 +19,10 @@ services:
       - ballerine-workflow-service
     restart: on-failure
     environment:
-      VITE_API_URL: 'http://localhost:3000/api/v1/'
+      VITE_API_URL: 'http://workflows-service:3000/api/v1/'
       VITE_KYB_DEFINITION_ID: 'kyb_parent_kyc_session_example'
   ballerine-workflows-dashboard:
+    container_name: workflows-dashboard
     image: ghcr.io/ballerine-io/workflows-dashboard:latest
     platform: linux/amd64
     ports:
@@ -28,6 +31,7 @@ services:
       - ballerine-workflow-service
     restart: on-failure
   ballerine-workflow-service:
+    container_name: workflows-service
     image: ghcr.io/ballerine-io/workflows-service:latest
     platform: linux/amd64
     command:
@@ -42,7 +46,7 @@ services:
     environment:
       API_KEY: secret
       BCRYPT_SALT: 10
-      BACKOFFICE_CORS_ORIGIN: http://localhost:5137
+      BACKOFFICE_CORS_ORIGIN: http://backoffice:5137
       COMPOSE_PROJECT_NAME: ballerine-x
       DB_URL: postgres://admin:password@ballerine-postgres:5432
       DB_PORT: 5432
@@ -52,8 +56,8 @@ services:
       PORT: 3000
       SESSION_EXPIRATION_IN_MINUTES: 60
       SESSION_SECRET: secret
-      WORKFLOW_DASHBOARD_CORS_ORIGIN: http://localhost:5200
-      KYB_EXAMPLE_CORS_ORIGIN: http://localhost:5201
+      WORKFLOW_DASHBOARD_CORS_ORIGIN: http://workflows-dashboard:5200
+      KYB_EXAMPLE_CORS_ORIGIN: http://kyb-app:5201
       IS_DEMO: true
       WEBHOOK_SECRET: webhook_secret
       APP_API_URL: https://alon.ballerine.dev
@@ -68,6 +72,7 @@ services:
         condition: service_healthy
     restart: on-failure
   ballerine-postgres:
+    container_name: postgres
     image: sibedge/postgres-plv8:15.3-3.1.7
     ports:
       - 5432:5432

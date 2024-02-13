@@ -13,6 +13,7 @@ import { FindLastActiveFlowParams } from '@/workflow/types/params';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { SortOrder } from '@/common/query-filters/sort-order';
 import type { PrismaTransaction, TProjectIds } from '@/types';
+import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 
 export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
 
@@ -236,14 +237,17 @@ export class WorkflowRuntimeDataRepository {
 
   async search(
     {
-      query: { search, entityType, workflowDefinitionIds, statuses },
+      query: { search, take, skip, entityType, workflowDefinitionIds, statuses, orderBy },
       filters,
     }: {
       query: {
+        take: number;
+        skip: number;
         search?: string;
         entityType: string;
         statuses: string[];
         workflowDefinitionIds?: string[];
+        orderBy: Parameters<typeof toPrismaOrderBy>[0];
       };
       filters?: {
         caseStatus?: string[];
@@ -253,9 +257,11 @@ export class WorkflowRuntimeDataRepository {
     },
     projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeData[]> {
+    const [orderByColumn, orderByDirection] = orderBy.split(':');
+
     const { assigneeIds, includeUnassigned } = {
       assigneeIds: filters?.assigneeId?.filter((id): id is string => id !== null) ?? [],
-      includeUnassigned: filters?.assigneeId?.includes(null),
+      includeUnassigned: filters?.assigneeId?.includes(null) || false,
     };
 
     const assigneeIdsParam = assigneeIds.length
@@ -281,8 +287,10 @@ export class WorkflowRuntimeDataRepository {
     const sql = Prisma.sql`
         SELECT id
         FROM search_workflow_data(
-            ${search},
-            ${entityType},
+            ${search}::text,
+            ${entityType}::text,
+            ${orderByColumn}::text,
+            ${orderByDirection}::text,
             array[${workflowDefinitionIdsParam}]::text[],
             array[${statusesParam}]::text[],
             array[${projectIdsParam}]::text[],
@@ -290,6 +298,7 @@ export class WorkflowRuntimeDataRepository {
             array[${caseStatusParam}]::text[],
             ${includeUnassigned}::boolean
         )
+        LIMIT ${take} OFFSET ${skip}
     `;
 
     return (await this.prisma.$queryRaw(sql)) as WorkflowRuntimeData[];

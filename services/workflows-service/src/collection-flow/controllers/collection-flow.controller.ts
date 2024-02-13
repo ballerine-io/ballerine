@@ -81,9 +81,12 @@ export class ColectionFlowController {
       throw new common.InternalServerErrorException('Workflow not found.');
     }
 
-    return this.service.getFlowConfiguration(workflow.workflowDefinitionId, params.language, [
-      tokenScope.projectId,
-    ]);
+    return this.service.getFlowConfiguration(
+      workflow.workflowDefinitionId,
+      workflow.context,
+      params.language,
+      [tokenScope.projectId],
+    );
   }
 
   @common.Put('/configuration/:configurationId')
