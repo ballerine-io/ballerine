@@ -1,6 +1,6 @@
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
-import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import { defaultPrismaTransactionOptions, isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
 import { NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
@@ -335,7 +335,7 @@ export class WorkflowControllerExternal {
           workflowRuntime.projectId,
           transaction,
         );
-      });
+      }, defaultPrismaTransactionOptions);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);

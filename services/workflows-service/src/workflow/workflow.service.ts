@@ -90,7 +90,10 @@ import { ValidationError } from '@/errors';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { ajv } from '@/common/ajv/ajv.validator';
 import { PrismaService } from '@/prisma/prisma.service';
-import { beginTransactionIfNotExistCurry } from '@/prisma/prisma.util';
+import {
+  beginTransactionIfNotExistCurry,
+  defaultPrismaTransactionOptions,
+} from '@/prisma/prisma.util';
 
 type TEntityId = string;
 
@@ -748,7 +751,7 @@ export class WorkflowService {
       );
 
       return updatedWorkflow;
-    });
+    }, defaultPrismaTransactionOptions);
   }
 
   async updateDocumentDecisionById(
@@ -869,7 +872,7 @@ export class WorkflowService {
       });
 
       return updatedWorkflow;
-    });
+    }, defaultPrismaTransactionOptions);
   }
 
   async updateDocumentById(
@@ -893,6 +896,7 @@ export class WorkflowService {
     const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
       transaction,
       prismaService: this.prismaService,
+      options: defaultPrismaTransactionOptions,
     });
 
     return await beginTransactionIfNotExist(async transaction => {
@@ -1073,6 +1077,7 @@ export class WorkflowService {
     const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
       transaction,
       prismaService: this.prismaService,
+      options: defaultPrismaTransactionOptions,
     });
 
     return await beginTransactionIfNotExist(async transaction => {
@@ -1587,7 +1592,7 @@ export class WorkflowService {
           entities,
         },
       ] as const;
-    });
+    }, defaultPrismaTransactionOptions);
   }
 
   private async __generateEndUserWithBusiness({
@@ -1793,6 +1798,7 @@ export class WorkflowService {
     const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
       transaction,
       prismaService: this.prismaService,
+      options: defaultPrismaTransactionOptions,
     });
 
     // @TODO: Check - Researched
