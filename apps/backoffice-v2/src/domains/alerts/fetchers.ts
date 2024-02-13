@@ -79,3 +79,23 @@ export const fetchAlerts = async (params: {
 
   return handleZodError(error, alerts);
 };
+
+export const assignAlertsByIds = async ({
+  assigneeId,
+  alertIds,
+}: {
+  assigneeId: string | null;
+  alertIds: string[];
+}) => {
+  const [alerts, error] = await apiClient({
+    endpoint: `alerts/assign`,
+    method: Method.PATCH,
+    body: {
+      assigneeId,
+      alertIds,
+    },
+    schema: z.any(),
+  });
+
+  return handleZodError(error, alerts);
+};

@@ -15,7 +15,7 @@ export const AlertAnalysisSheet: FunctionComponent<IAlertAnalysisProps> = ({
 }) => {
   return (
     <Sheet open={isOpen} onOpenChange={onOpenStateChange}>
-      <SheetContent side="bottom" className={`w-full`}>
+      <SheetContent side="bottom" className={`bottom-0 w-full`}>
         <div className="flex flex-col p-4">
           <div className="flex flex-col gap-4">
             <h2 className="text-2xl font-bold">High Velocity - Inbound - Counterparty</h2>
