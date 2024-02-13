@@ -693,12 +693,6 @@ export class WorkflowService {
         [projectId],
         transaction,
       );
-      const workflowDefinition = await this.workflowDefinitionRepository.findById(
-        runtimeData?.workflowDefinitionId,
-        {},
-        [projectId],
-        transaction,
-      );
       // `name` is always `approve` and not `approved` etc.
       const Status = {
         approve: 'approved',
@@ -741,10 +735,10 @@ export class WorkflowService {
         }),
       );
       const updatedWorkflow = await this.updateWorkflowRuntimeData(
-        runtimeData.id,
+        id,
         {
           context: {
-            ...(runtimeData.context as Record<PropertyKey, unknown>),
+            ...runtimeData.context,
             documents: documentsWithDecision,
           },
         },
@@ -979,7 +973,10 @@ export class WorkflowService {
       this.__validateWorkflowDefinitionContext(workflowDef, updatedWorkflow.context);
       const correlationId = await this.getCorrelationIdFromWorkflow(updatedWorkflow, [projectId]);
 
-      if (updatedWorkflow.status === 'active' && workflowDef.config?.completedWhenTasksResolved) {
+      if (
+        ['active'].includes(updatedWorkflow.status) &&
+        workflowDef.config?.completedWhenTasksResolved
+      ) {
         const allDocumentsResolved =
           updatedDocuments?.length &&
           updatedDocuments?.every((document: DefaultContextSchema['documents'][number]) => {
@@ -1150,7 +1147,7 @@ export class WorkflowService {
       }
 
       this.logger.log('Workflow state transition', {
-        id: runtimeData.id,
+        id: workflowRuntimeId,
         from: runtimeData.state,
         to: data.state,
       });
@@ -1177,7 +1174,7 @@ export class WorkflowService {
       );
 
       if (isResolved) {
-        this.logger.log('Workflow resolved', { id: runtimeData.id });
+        this.logger.log('Workflow resolved', { id: workflowRuntimeId });
 
         this.workflowEventEmitter.emit('workflow.completed', {
           runtimeData: updatedResult,
