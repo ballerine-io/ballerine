@@ -7,6 +7,7 @@ import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
 import { toPrismaOrderBy, toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
 import { parse } from 'path';
+import { createTranscationValidator } from './validations/create-transaction.validator';
 
 @Injectable()
 export class TransactionRepository {
@@ -18,7 +19,7 @@ export class TransactionRepository {
   async create<T extends Prisma.TransactionRecordCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.TransactionRecordCreateArgs>,
   ): Promise<TransactionRecord> {
-    
+    createTranscationValidator.safeParse(args.data);
     // #TODO: Fix this
     const { projectId, businessId, endUserId, ...rest } = args.data;
 
