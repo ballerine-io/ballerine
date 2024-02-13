@@ -11,7 +11,7 @@ export const TransactionMonitoringAlerts = () => {
     toggleOnIsAlertAnalysisSheetOpen,
     toggleIsAlertAnalysisSheetOpen,
     assignees,
-    authenticatedUserId,
+    authenticatedUser,
     page,
     onPrevPage,
     onNextPage,
@@ -27,7 +27,7 @@ export const TransactionMonitoringAlerts = () => {
       <div className="flex flex-1 flex-col gap-6 overflow-auto">
         <AlertsHeader
           assignees={assignees ?? []}
-          authenticatedUserId={authenticatedUserId}
+          authenticatedUser={authenticatedUser}
           search={search}
           onSearch={onSearch}
         />

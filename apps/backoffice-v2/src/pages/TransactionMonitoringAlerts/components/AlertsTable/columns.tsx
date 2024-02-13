@@ -9,9 +9,9 @@ import { Avatar } from '@/common/components/atoms/Avatar_/Avatar_';
 import { AvatarImage } from '@/common/components/atoms/Avatar_/Avatar.Image';
 import { AvatarFallback } from '@/common/components/atoms/Avatar_/Avatar.Fallback';
 import { createInitials } from '@/common/utils/create-initials/create-initials';
-import { Checkbox_ } from '@/common/components/atoms/Checkbox_/Checkbox_';
-import React from 'react';
+import React, { ComponentProps } from 'react';
 import { severityToClassName } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/severity-to-class-name';
+import { IndeterminateCheckbox } from '@/common/components/atoms/IndeterminateCheckbox/IndeterminateCheckbox';
 
 const columnHelper = createColumnHelper<TAlertsList[number]>();
 
@@ -86,18 +86,16 @@ export const columns = [
 
       return (
         <div className={`flex items-center gap-x-3`}>
-          {(value?.toLowerCase() === 'unassigned' || !value) && (
-            <UserCircle2 className={'stroke-[#E4E4E7]'} size={22} />
-          )}
-          {value && value?.toLowerCase() !== 'unassigned' && (
-            <Avatar className={`d-[1.375em]`}>
+          {!value && <UserCircle2 className={'stroke-[#E4E4E7]'} size={22} />}
+          {value && (
+            <Avatar className={`d-[1.375rem]`}>
               <AvatarImage />
               <AvatarFallback className={'bg-[#DCE1E8] text-xs'}>
-                {createInitials(value)}
+                {createInitials(value?.fullName)}
               </AvatarFallback>
             </Avatar>
           )}
-          <TextWithNAFallback>{value}</TextWithNAFallback>
+          <TextWithNAFallback>{value?.fullName}</TextWithNAFallback>
         </div>
       );
     },
@@ -129,11 +127,33 @@ export const columns = [
   }),
   columnHelper.display({
     id: 'select',
-    cell: info => {
-      return <Checkbox_ className={'border-[#E5E7EB]'} />;
+    cell: ({ row }) => {
+      return (
+        <IndeterminateCheckbox
+          {...({
+            checked: row.getIsSelected(),
+            indeterminate: row.getIsSomeSelected(),
+            onCheckedChange: row.getToggleSelectedHandler(),
+            disabled: !row.getCanSelect(),
+          } satisfies ComponentProps<typeof IndeterminateCheckbox>)}
+          className={'border-[#E5E7EB]'}
+        />
+      );
     },
-    header: () => {
-      return <Checkbox_ className={'border-[#E5E7EB]'} />;
+    header: ({ table }) => {
+      return (
+        <IndeterminateCheckbox
+          {...({
+            checked: table.getIsAllRowsSelected(),
+            indeterminate: table.getIsSomeRowsSelected(),
+            onCheckedChange: checked =>
+              table.getToggleAllRowsSelectedHandler()({
+                target: { checked },
+              }),
+          } satisfies ComponentProps<typeof IndeterminateCheckbox>)}
+          className={'border-[#E5E7EB]'}
+        />
+      );
     },
   }),
 ];

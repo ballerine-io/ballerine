@@ -9,7 +9,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import type { TProjectId } from '@/types';
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { Alert, AlertDefinition } from '@prisma/client';
+import { Alert, AlertDefinition, User } from '@prisma/client';
 import * as errors from '../errors';
 import { AlertAssigneeUniqueDto, BulkAlertsResponse } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
@@ -53,20 +53,34 @@ export class AlertControllerExternal {
             description: true,
           },
         },
+        assignee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     });
-    const alertsWithDescription = alerts.map(alert => {
-      const { alertDefinition, ...alertWithoutDefinition } = alert as Alert & {
-        alertDefinition: AlertDefinition;
+    const formattedAlerts = alerts.map(alert => {
+      const { alertDefinition, assignee, ...alertWithoutDefinition } = alert as Alert & {
+        alertDefinition: Pick<AlertDefinition, 'description'>;
+        assignee: Pick<User, 'id' | 'firstName' | 'lastName'>;
       };
 
       return {
         ...alertWithoutDefinition,
+        assignee: assignee
+          ? {
+              id: assignee?.id,
+              fullName: `${assignee?.firstName} ${assignee?.lastName}`,
+            }
+          : null,
         alertDetails: alertDefinition?.description,
       };
     });
 
-    return alertsWithDescription;
+    return formattedAlerts;
   }
 
   @common.Patch('assign')
@@ -74,7 +88,7 @@ export class AlertControllerExternal {
   @swagger.ApiOkResponse({ type: BulkAlertsResponse })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async assignWorkflowById(
+  async assignAlertById(
     @common.Body() { alertIds, assigneeId }: AlertAssigneeUniqueDto,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<TBulkAssignAlertsResponse> {

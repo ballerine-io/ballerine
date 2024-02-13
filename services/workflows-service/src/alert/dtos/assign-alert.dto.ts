@@ -1,20 +1,16 @@
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  ArrayMinSize,
-  IsArray,
-  IsString,
-  MinLength,
-  ValidateNested,
-  minLength,
-} from 'class-validator';
-import { BulkStatus } from '../types';
+import { ArrayMinSize, IsArray, IsString, MinLength } from 'class-validator';
 import type { TAlertUpdateResponse, TBulkStatus } from '../types';
+import { BulkStatus } from '../types';
+import { IsNullable } from '@/common/decorators/is-nullable.decorator';
 
 export class AlertsIdsByProjectDto {
   @ApiProperty({
+    // eslint-disable-next-line @typescript-eslint/ban-types
     type: Array<String>,
   })
+  // eslint-disable-next-line @typescript-eslint/ban-types
   @Type(() => Array<String>)
   @IsArray()
   @IsString({ each: true })
@@ -31,13 +27,25 @@ export class AlertsIdsByProjectDto {
   projectId!: string;
 }
 
-export class AlertAssigneeUniqueDto extends AlertsIdsByProjectDto {
+export class AlertAssigneeUniqueDto {
+  @ApiProperty({
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    type: Array<String>,
+  })
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  @Type(() => Array<String>)
+  @IsArray()
+  @IsString({ each: true })
+  @ArrayMinSize(1)
+  alertIds!: string[];
+
   @ApiProperty({
     required: true,
     type: String,
   })
   @IsString()
-  assigneeId!: string;
+  @IsNullable()
+  assigneeId!: string | null;
 }
 
 export class AlertUpdateResponse {

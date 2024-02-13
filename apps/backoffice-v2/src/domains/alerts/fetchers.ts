@@ -53,7 +53,11 @@ export const AlertsListSchema = z.array(
     severity: z.enum(AlertSeverities),
     alertDetails: z.string(),
     // amountOfTxs: z.number(),
-    // assignee: z.string(),
+    assignee: ObjectWithIdSchema.extend({
+      fullName: z.string(),
+    })
+      .nullable()
+      .default(null),
     status: z.enum(AlertStatuses),
     // decision: z.string(),
   }),
@@ -75,6 +79,26 @@ export const fetchAlerts = async (params: {
     url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts?${queryParams}`,
     method: Method.GET,
     schema: AlertsListSchema,
+  });
+
+  return handleZodError(error, alerts);
+};
+
+export const assignAlertsByIds = async ({
+  assigneeId,
+  alertIds,
+}: {
+  assigneeId: string | null;
+  alertIds: string[];
+}) => {
+  const [alerts, error] = await apiClient({
+    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts/assign`,
+    method: Method.PATCH,
+    body: {
+      assigneeId,
+      alertIds,
+    },
+    schema: z.any(),
   });
 
   return handleZodError(error, alerts);
