@@ -3,6 +3,14 @@ import { Sql } from '@prisma/client/runtime';
 
 const prisma = new PrismaClient();
 
+enum AggregateType {
+  SUM = 'SUM',
+  AVG = 'AVG',
+  COUNT = 'COUNT',
+  MAX = 'MAX',
+  MIN = 'MIN',
+}
+
 export async function evaluateTransactionsAgainstDynamicRules({
   direction = 'Inbound',
   excludedCounterpartyIds = [],
@@ -11,9 +19,13 @@ export async function evaluateTransactionsAgainstDynamicRules({
   timeAmount = 7,
   timeUnit = 'days',
   amountThreshold,
+  amountBetween,
   groupByBusiness = false,
   groupByCounterparty = false,
+  havingAggregate = AggregateType.SUM,
 }: {
+  havingAggregate?: AggregateType;
+  amountBetween?: { min: number; max: number };
   timeAmount?: number;
   timeUnit?: 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years';
   direction?: TransactionDirection;
@@ -39,6 +51,12 @@ export async function evaluateTransactionsAgainstDynamicRules({
       Prisma.sql`AND "paymentMethod"::text ${Prisma.raw(methodCondition)} (${Prisma.join(
         paymentMethods,
       )})`,
+    );
+  }
+
+  if (amountBetween) {
+    conditions.push(
+      Prisma.sql`AND "transactionAmount" BETWEEN ${amountBetween.min} AND ${amountBetween.max}`,
     );
   }
 
@@ -83,9 +101,16 @@ export async function evaluateTransactionsAgainstDynamicRules({
     groupByClause = Prisma.sql`"businessId", "counterpartyOriginatorId"`;
   }
 
+  const aggregateFunction = Prisma.sql`${havingAggregate}(tr."transactionAmount")`;
+
   let query: Sql;
-  query = Prisma.sql`SELECT ${selectClause}, SUM("transactionAmount") AS "totalAmount" FROM "TransactionRecord" tr
+  if (havingAggregate === AggregateType.COUNT) {
+    query = Prisma.sql`SELECT ${selectClause}, COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr 
+WHERE ${whereClause} GROUP BY ${groupByClause} HAVING COUNT(id) > ${amountThreshold}`;
+  } else {
+    query = Prisma.sql`SELECT ${selectClause}, SUM(tr."transactionBaseAmount") AS "totalAmount" FROM "TransactionRecord" tr
 WHERE ${whereClause} GROUP BY ${groupByClause} HAVING SUM(tr."transactionBaseAmount") > ${amountThreshold}`;
+  }
 
   console.log(query);
   console.log('Executing query...', query.text);
