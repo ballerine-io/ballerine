@@ -2,7 +2,7 @@ import { CaseCreation } from '@/pages/Entities/components/CaseCreation';
 import { ctw } from '@ballerine/ui';
 import { FunctionComponent } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Assignee } from '../../common/components/atoms/AssignDropdown/AssignDropdown';
+import { TAssignee } from '../../common/components/atoms/AssignDropdown/AssignDropdown';
 import { NoCasesSvg } from '../../common/components/atoms/icons';
 import { MotionScrollArea } from '../../common/components/molecules/MotionScrollArea/MotionScrollArea';
 import { Pagination } from '../../common/components/organisms/Pagination/Pagination';
@@ -60,7 +60,7 @@ export const Entities: FunctionComponent = () => {
                             id: case_.assignee?.id,
                             fullName: `${case_.assignee?.firstName} ${case_.assignee?.lastName}`,
                             avatarUrl: case_.assignee?.avatarUrl,
-                          } as Assignee)
+                          } as TAssignee)
                         : null
                     }
                     tags={case_.tags}

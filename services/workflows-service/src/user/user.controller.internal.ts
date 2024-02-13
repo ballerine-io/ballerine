@@ -38,7 +38,7 @@ export class UserControllerInternal {
           createdAt: true,
         },
       },
-      Array.isArray(projectIds) ? [projectId] : projectIds,
+      projectId ? [projectId] : projectIds,
     );
   }
 

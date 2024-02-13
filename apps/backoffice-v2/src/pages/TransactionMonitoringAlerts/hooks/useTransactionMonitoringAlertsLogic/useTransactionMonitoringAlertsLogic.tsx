@@ -44,7 +44,7 @@ export const useTransactionMonitoringAlertsLogic = () => {
     toggleOnIsAlertAnalysisSheetOpen,
     toggleIsAlertAnalysisSheetOpen,
     assignees: sortedAssignees,
-    authenticatedUserId: session?.user?.id,
+    authenticatedUser: session?.user,
     page,
     pageSize,
     onPrevPage,
