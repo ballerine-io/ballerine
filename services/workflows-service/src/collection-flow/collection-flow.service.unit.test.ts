@@ -15,6 +15,8 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 
 describe('CollectionFlowService', () => {
   let uiSchema: Record<string, unknown>;
+  let context: Record<string, unknown>;
+
   let collectionFlowService: CollectionFlowService;
   const translationService: TranslationService = {
     // @ts-expect-error - bad type, implemented used methods only
@@ -92,6 +94,8 @@ describe('CollectionFlowService', () => {
       },
       array: ['Item 1', 'Item 2'],
     };
+
+    context = {};
   });
 
   it('should translate leaf nodes of the uiSchema', () => {
@@ -112,7 +116,7 @@ describe('CollectionFlowService', () => {
       lang === 'fr' ? `Translated ${text}` : text,
     );
 
-    const result = collectionFlowService.traverseUiSchema(uiSchema, language);
+    const result = collectionFlowService.traverseUiSchema(uiSchema, context, language);
     expect(result).toEqual(expectedUiSchema);
   });
 });

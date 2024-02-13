@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { BlocksComponent, BlocksProps, CellsMap, createBlocks, ExtractCellProps } from './';
-import { ComponentProps, FunctionComponent } from 'react';
+import { createBlocks } from '@/blocks';
+import { BlocksComponent } from '@/BlocksComponent';
+import type { BlocksProps, CellsMap, ExtractCellProps } from '@/blocks';
+import type { ComponentProps, FunctionComponent } from 'react';
 
 const meta = {
   component: args => (
