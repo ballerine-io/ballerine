@@ -36,50 +36,44 @@ describe('TransactionRulesEvaluationService', () => {
         customer: { connect: { id: 'customer-id' } },
       },
     });
-
-    await prismaService.counterparty.create({
+    await prismaService.business.create({
       data: {
-        id: 'counterparty-1',
-        type: 'Individual',
-        project: { connect: { id: 'project-id' } },
+        id: 'business-id-1',
+        companyName: 'business-name-1',
+        projectId: 'project-id',
+      },
+    });
+    await prismaService.business.create({
+      data: {
+        id: 'business-id-2',
+        companyName: 'business-name-2',
+        projectId: 'project-id',
       },
     });
 
-    await prismaService.counterparty.create({
-      data: {
-        id: 'counterparty-2',
-        type: 'Individual',
-        project: { connect: { id: 'project-id' } },
-      },
-    });
-    await prismaService.counterparty.create({
-      data: {
-        id: '9999999999999999',
-        type: 'Individual',
-        project: { connect: { id: 'project-id' } },
-      },
-    });
-    await prismaService.counterparty.create({
-      data: {
-        id: '999999******9999',
-        type: 'Individual',
-        project: { connect: { id: 'project-id' } },
-      },
-    });
-    await prismaService.counterparty.create({
-      data: {
-        id: 'counterparty-3',
-        type: 'Individual',
-        project: { connect: { id: 'project-id' } },
-      },
-    });
-    await prismaService.counterparty.create({
-      data: {
-        id: 'counterparty-4',
-        type: 'Individual',
-        project: { connect: { id: 'project-id' } },
-      },
-    });
+    async function createCounterParty(
+      prismaService: PrismaService,
+      id: string,
+      projectId: string,
+      businessId?: string,
+    ) {
+      await prismaService.counterparty.create({
+        data: {
+          id,
+          type: 'Individual',
+          project: { connect: { id: projectId } },
+          business: { connect: { id: businessId || 'business-id-1' } },
+        },
+      });
+    }
+
+    await createCounterParty(prismaService, 'counterparty-1', 'project-id');
+    await createCounterParty(prismaService, 'counterparty-2', 'project-id');
+    await createCounterParty(prismaService, '9999999999999999', 'project-id');
+    await createCounterParty(prismaService, '999999******9999', 'project-id');
+    await createCounterParty(prismaService, 'counterparty-3', 'project-id');
+    await createCounterParty(prismaService, 'counterparty-4', 'project-id');
+
     await prismaService.transactionRecord.createMany({
       data: [
         {
@@ -93,6 +87,7 @@ describe('TransactionRulesEvaluationService', () => {
           transactionBaseAmount: 500,
           transactionBaseCurrency: 'USD',
           projectId: 'project-id',
+          businessId: 'business-id-1',
         },
         {
           transactionDirection: 'Inbound',
@@ -105,6 +100,20 @@ describe('TransactionRulesEvaluationService', () => {
           transactionBaseAmount: 500,
           transactionBaseCurrency: 'USD',
           projectId: 'project-id',
+          businessId: 'business-id-1',
+        },
+        {
+          transactionDirection: 'Inbound',
+          counterpartyOriginatorId: 'counterparty-1',
+          paymentMethod: 'CreditCard',
+          transactionDate: new Date(),
+          transactionAmount: 1000,
+          transactionCorrelationId: 'correlation-id-3',
+          transactionCurrency: 'USD',
+          transactionBaseAmount: 1000,
+          transactionBaseCurrency: 'USD',
+          projectId: 'project-id',
+          businessId: 'business-id-2',
         },
         {
           transactionDirection: 'Inbound',
@@ -112,11 +121,12 @@ describe('TransactionRulesEvaluationService', () => {
           paymentMethod: 'CreditCard',
           transactionDate: new Date(),
           transactionAmount: 1500,
-          transactionCorrelationId: 'correlation-id-3',
+          transactionCorrelationId: 'correlation-id-4',
           transactionCurrency: 'USD',
           transactionBaseAmount: 1500,
           transactionBaseCurrency: 'USD',
           projectId: 'project-id',
+          businessId: 'business-id-2',
         },
       ],
     });
