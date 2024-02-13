@@ -92,7 +92,7 @@ export class WorkflowRuntimeDataRepository {
     id: string;
     transaction: PrismaTransaction | PrismaClient;
   }): Promise<WorkflowRuntimeData> {
-    await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "id" = ${id}  FOR UPDATE`; // @TODO: Ignore the rest of the args?
+    await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "id" = ${id} FOR UPDATE`;
 
     return await transaction.workflowRuntimeData.findFirstOrThrow({ where: { id } });
   }
@@ -112,7 +112,7 @@ export class WorkflowRuntimeDataRepository {
   async updateStateById(
     id: string,
     { data }: { data: Prisma.WorkflowRuntimeDataUncheckedUpdateInput },
-    transaction: PrismaTransaction | PrismaClient = this.prisma,
+    transaction: PrismaTransaction,
   ): Promise<WorkflowRuntimeData> {
     return await transaction.workflowRuntimeData.update({
       where: { id },
@@ -170,9 +170,17 @@ export class WorkflowRuntimeDataRepository {
     transaction: PrismaTransaction,
   ) {
     if (entityType === 'endUser') {
-      await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "workflowDefinitionId" = ${workflowDefinitionId} AND "status" != ${WorkflowRuntimeDataStatus.completed} AND "endUserId" = ${entityId} FOR UPDATE`;
+      await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "workflowDefinitionId" = ${workflowDefinitionId} AND "projectId" IN (${projectIds?.join(
+        ',',
+      )}) AND "status" != ${
+        WorkflowRuntimeDataStatus.completed
+      } AND "endUserId" = ${entityId} FOR UPDATE LIMIT 1`;
     } else {
-      await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "workflowDefinitionId" = ${workflowDefinitionId} AND "status" != ${WorkflowRuntimeDataStatus.completed} AND "businessId" = ${entityId} FOR UPDATE`;
+      await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "workflowDefinitionId" = ${workflowDefinitionId} AND "projectId" IN (${projectIds?.join(
+        ',',
+      )}) AND "status" != ${
+        WorkflowRuntimeDataStatus.completed
+      } AND "businessId" = ${entityId} FOR UPDATE LIMIT 1`;
     }
 
     return await this.findOne(

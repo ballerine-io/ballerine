@@ -1,15 +1,13 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { CommonWorkflowEvent } from '@ballerine/common';
+import { CommonWorkflowEvent, CommonWorkflowStates } from '@ballerine/common';
 
 export const calculateWorkflowRevisionableEvent = (
   workflow: TWorkflowById,
   documentStatus: string,
 ) => {
-  const hasTaskReviewedEvent = Boolean(
-    workflow?.nextEvents?.includes(CommonWorkflowEvent.TASK_REVIEWED),
-  );
+  const isStateManualReview = workflow.state === CommonWorkflowStates.MANUAL_REVIEW;
 
-  if (hasTaskReviewedEvent) return hasTaskReviewedEvent;
+  if (isStateManualReview) return true;
 
   if (documentStatus === CommonWorkflowEvent.REVISION) {
     return CommonWorkflowEvent.REVISION;
