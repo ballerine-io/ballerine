@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma, TransactionDirection } from '@prisma/client';
+import { PrismaClient, Prisma, TransactionDirection, PaymentMethod } from '@prisma/client';
 import { Sql } from '@prisma/client/runtime';
 
 const prisma = new PrismaClient();
@@ -18,7 +18,7 @@ export async function evaluateTransactionsAgainstDynamicRules({
   timeUnit?: 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years';
   direction?: TransactionDirection;
   excludedCounterpartyIds?: string[];
-  paymentMethods?: string[];
+  paymentMethods?: PaymentMethod[];
   excludePaymentMethods?: boolean;
   days?: number;
   amountThreshold?: number;
@@ -26,11 +26,8 @@ export async function evaluateTransactionsAgainstDynamicRules({
   groupByCounterparty?: boolean;
 }) {
   let conditions: Prisma.Sql[] = [];
-  if (direction === 'Inbound') {
-    conditions.push(Prisma.sql`"transactionDirection" = 'Inbound'`);
-  } else {
-    conditions.push(Prisma.sql`"transactionDirection" = 'Outbound'`);
-  }
+
+  conditions.push(Prisma.sql`"transactionDirection"::text = ${direction}`);
   if (excludedCounterpartyIds.length) {
     conditions.push(
       Prisma.sql`AND "counterpartyOriginatorId" NOT IN (${Prisma.join(excludedCounterpartyIds)})`,
@@ -39,7 +36,7 @@ export async function evaluateTransactionsAgainstDynamicRules({
   if (paymentMethods.length) {
     const methodCondition = excludePaymentMethods ? `NOT IN` : `IN`;
     conditions.push(
-      Prisma.sql`AND "paymentMethod" ${Prisma.raw(methodCondition)} (${Prisma.join(
+      Prisma.sql`AND "paymentMethod"::text ${Prisma.raw(methodCondition)} (${Prisma.join(
         paymentMethods,
       )})`,
     );

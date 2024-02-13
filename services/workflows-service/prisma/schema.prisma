@@ -527,7 +527,7 @@ model TransactionRecord {
   originatorGeoLocation String? // Geolocation of the transaction initiator
   originatorUserAgent   String? // User agent of the device used for the transaction
 
-  paymentMethod    String?
+  paymentMethod    PaymentMethod?
   paymentType      PaymentType?
   paymentChannel   PaymentChannel?
   paymentIssuer    PaymentIssuer?
@@ -627,7 +627,6 @@ enum AlertType {
   DormantAccountActivity
   UnusualPattern
 }
-
 
 model AlertDefinition {
   id          String     @id @default(cuid())
