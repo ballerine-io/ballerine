@@ -1,13 +1,14 @@
 import { IPDFViewerProps } from '@/lib/blocks/components/PDFViewerCell/interfaces';
-import { PDFViewer } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
 
 export const PDFViewerCell: FunctionComponent<IPDFViewerProps> = ({ props, value }) => {
   const { width, height } = props;
 
-  return (
-    <PDFViewer width={width} height={height}>
-      {value}
-    </PDFViewer>
-  );
+  return value ? (
+    <iframe
+      src={`data:application/pdf;base64, ${value}#navpanes=0`}
+      width={width}
+      height={height}
+    />
+  ) : null;
 };

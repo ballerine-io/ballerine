@@ -2,21 +2,8 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { createBlocks } from '@ballerine/blocks';
-import {
-  Ecosystem,
-  LineOfBusiness,
-  PaymentEnvironment,
-  SocialMedia,
-  Summary,
-  TransactionLaundering,
-  WebsiteCompanyAnalysis,
-  registerFont,
-} from '@ballerine/react-pdf-toolkit';
-import { Document, Font } from '@react-pdf/renderer';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-
-registerFont(Font);
 
 export const usePDFRevisionBlocks = () => {
   const { entityId: workflowId } = useParams();
@@ -42,19 +29,9 @@ export const usePDFRevisionBlocks = () => {
               width: '100%',
               height: '100%',
             },
-            value: workflow?.context?.entity?.report ? (
-              <Document>
-                <Summary />
-                <LineOfBusiness />
-                <Ecosystem />
-                <TransactionLaundering />
-                <WebsiteCompanyAnalysis
-                  data={workflow?.context?.entity?.report?.websiteCompanyAnalysis}
-                />
-                <SocialMedia data={workflow?.context?.entity?.report?.socialMedia} />
-                <PaymentEnvironment />
-              </Document>
-            ) : null,
+            value: workflow?.context?.entity?.report
+              ? (workflow?.context?.entity?.report.base64Pdf as string)
+              : null,
           })
           .build()
           .flat(1),
