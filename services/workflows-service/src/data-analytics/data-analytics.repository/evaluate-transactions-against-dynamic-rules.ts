@@ -8,15 +8,22 @@ export async function evaluateTransactionsAgainstDynamicRules({
   excludedCounterpartyIds = [],
   paymentMethods = [],
   excludePaymentMethods = false,
-  days = 7,
+  timeAmount = 7,
+  timeUnit = 'days',
   amountThreshold,
+  groupByBusiness = false,
+  groupByCounterparty = false,
 }: {
+  timeAmount?: number;
+  timeUnit?: 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years';
   direction?: TransactionDirection;
   excludedCounterpartyIds?: string[];
   paymentMethods?: string[];
   excludePaymentMethods?: boolean;
   days?: number;
   amountThreshold?: number;
+  groupByBusiness?: boolean;
+  groupByCounterparty?: boolean;
 }) {
   let conditions: Prisma.Sql[] = [];
   if (direction === 'Inbound') {
@@ -38,15 +45,50 @@ export async function evaluateTransactionsAgainstDynamicRules({
     );
   }
 
-  conditions.push(Prisma.sql`AND "transactionDate" >= CURRENT_DATE - INTERVAL '${days} days'`);
+  let intervatTime;
+  switch (timeUnit) {
+    case 'minutes':
+      intervatTime = Prisma.sql`${timeAmount} minutes`;
+      break;
+    case 'hours':
+      intervatTime = Prisma.sql`${timeAmount} hours`;
+      break;
+    case 'days':
+      intervatTime = Prisma.sql`${timeAmount} days`;
+      break;
+    case 'weeks':
+      intervatTime = Prisma.sql`${timeAmount} weeks`;
+      break;
+    case 'months':
+      intervatTime = Prisma.sql`${timeAmount} months`;
+      break;
+    case 'years':
+      intervatTime = Prisma.sql`${timeAmount} years`;
+      break;
+    default:
+      intervatTime = Prisma.sql`${timeAmount} days`;
+  }
+
+  conditions.push(Prisma.sql`AND "transactionDate" >= CURRENT_DATE - INTERVAL '${intervatTime}'`);
 
   const whereClause = Prisma.join(conditions, ' ');
+  // build conditional select, businessId alone, counterpartyOriginatorId alone, or both
+  let selectClause: Sql;
+  let groupByClause: Sql;
+  if (groupByBusiness) {
+    selectClause = Prisma.sql`"businessId"`;
+    groupByClause = Prisma.sql`"businessId"`;
+  } else if (groupByCounterparty) {
+    selectClause = Prisma.sql`"counterpartyOriginatorId"`;
+    groupByClause = Prisma.sql`"counterpartyOriginatorId"`;
+  } else {
+    selectClause = Prisma.sql`"businessId", "counterpartyOriginatorId"`;
+    groupByClause = Prisma.sql`"businessId", "counterpartyOriginatorId"`;
+  }
 
   let query: Sql;
-  // if (amountThreshold !== undefined) {
-  query = Prisma.sql`SELECT "counterpartyOriginatorId" , SUM("transactionAmount") AS "totalAmount" FROM "TransactionRecord" tr
-WHERE ${whereClause} GROUP BY "counterpartyOriginatorId" HAVING SUM(tr."transactionBaseAmount") > ${amountThreshold}`;
-  // }
+  query = Prisma.sql`SELECT ${selectClause}, SUM("transactionAmount") AS "totalAmount" FROM "TransactionRecord" tr
+WHERE ${whereClause} GROUP BY ${groupByClause} HAVING SUM(tr."transactionBaseAmount") > ${amountThreshold}`;
 
   console.log(query);
   console.log('Executing query...', query.text);

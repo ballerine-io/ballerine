@@ -30,6 +30,8 @@ export class TransactionEntityMapper {
       transactionStatusReason: dto.statusReason ?? null,
       transactionBaseAmount: dto.baseAmount,
       transactionBaseCurrency: dto.baseCurrency,
+      transactionDirection: dto.direction ?? null,
+      transactionReference: dto.reference ?? null,
 
       paymentMethod: dto.payment?.method ?? null,
       paymentType: dto.payment?.type ?? null,
@@ -98,6 +100,8 @@ export class TransactionEntityMapper {
       baseAmount: record.transactionBaseAmount,
       baseCurrency: record.transactionBaseCurrency,
       projectId: record.projectId,
+      direction: record.transactionDirection || undefined,
+      reference: record.transactionReference || undefined,
       originator: record.counterpartyOriginatorId
         ? {
             id: record.counterpartyOriginatorId,
@@ -128,7 +132,9 @@ export class TransactionEntityMapper {
         sku: record.productSku || undefined,
         id: record.productId || undefined,
       },
-
+      business: {
+        id: record.businessId || undefined,
+      },
       tags: record.tags,
       reviewStatus: record.reviewStatus || undefined,
       reviewerComments: record.reviewerComments || undefined,
