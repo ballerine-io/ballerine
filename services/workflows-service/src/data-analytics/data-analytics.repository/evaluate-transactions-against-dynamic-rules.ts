@@ -190,7 +190,7 @@ export async function evaluateChargeback({
 
   const query: Sql = Prisma.sql`SELECT tr."businessId", ${select},
   FROM "TransactionRecord" as tr
-  GROUP BY tr."businessId", ${groupBy}
+  GROUP BY ${Prisma.join(['tr."businessId"', groupBy], ',')}
   `;
 
   console.log('Executing query...', query.sql);
