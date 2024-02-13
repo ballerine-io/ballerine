@@ -2,7 +2,6 @@ import {
   PrismaClient,
   TransactionRecordType,
   TransactionRecordStatus,
-  PaymentMethod,
   PaymentType,
   PaymentChannel,
   PaymentIssuer,
@@ -63,7 +62,9 @@ export const generateTransactions = async (
         transactionStatus: faker.helpers.arrayElement(Object.values(TransactionRecordStatus)),
         transactionStatusReason: faker.lorem.sentence(),
         transactionDirection: faker.helpers.arrayElement(Object.values(TransactionDirection)),
-        paymentMethod: faker.helpers.arrayElement(Object.values(PaymentMethod)),
+        paymentMethod: faker.helpers.arrayElement(
+          Object.values(['DebitCard', 'BankTransfer', 'PayPal', 'CreditCard']),
+        ),
         paymentType: faker.helpers.arrayElement(Object.values(PaymentType)),
         paymentChannel: faker.helpers.arrayElement(Object.values(PaymentChannel)),
         paymentIssuer: faker.helpers.arrayElement(Object.values(PaymentIssuer)),

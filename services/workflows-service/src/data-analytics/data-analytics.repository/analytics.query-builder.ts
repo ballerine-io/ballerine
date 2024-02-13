@@ -10,10 +10,8 @@ export class AnalyticsQueryBuilder {
 
   excludeCounterpartyIds(ids: string[]) {
     if (ids.length) {
-      const idValues = ids.map(id => Prisma.sql`${id}`).map(sqlFragment => sqlFragment.sql); 
-      this.conditions.push(
-        Prisma.sql`counterpartyOriginatorId NOT IN (${idValues.join(',')})`, 
-      );
+      const idValues = ids.map(id => Prisma.sql`${id}`).map(sqlFragment => sqlFragment.sql);
+      this.conditions.push(Prisma.sql`counterpartyOriginatorId NOT IN (${idValues.join(',')})`);
     }
     return this;
   }
@@ -49,20 +47,23 @@ export class AnalyticsQueryBuilder {
     return this;
   }
 
-async execute() {
+  async execute() {
     let query = Prisma.sql`SELECT * FROM ${'sdds'} WHERE "transactionDirection" = 'Incoming'`;
 
     if (this.conditions.length) {
-        query = Prisma.sql`${query} AND ${Prisma.join(this.conditions, ' AND ')}`;
+      query = Prisma.sql`${query} AND ${Prisma.join(this.conditions, ' AND ')}`;
     }
 
     if (this.havingConditions.length) {
-        query = Prisma.sql`${query} GROUP BY counterpartyOriginatorId HAVING ${Prisma.join(this.havingConditions, ' AND ')}`;
+      query = Prisma.sql`${query} GROUP BY counterpartyOriginatorId HAVING ${Prisma.join(
+        this.havingConditions,
+        ' AND ',
+      )}`;
     }
 
     console.log(query);
     return await prisma.$queryRaw(query);
-}
+  }
 }
 // invokination example
 // const queryBuilder = new AnalyticsQueryBuilder('Inbound');
