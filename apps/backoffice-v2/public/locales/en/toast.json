@@ -49,5 +49,13 @@
   "case_creation": {
     "success": "Case created successfully.",
     "error": "Error occurred while creating a case."
+  },
+  "assign_alerts": {
+    "success": "The alerts have been assigned to {{assignee}} successfully.",
+    "error": "Error occurred while assigning the alerts to {{assignee}}."
+  },
+  "unassign_alerts": {
+    "success": "The alerts have been unassigned successfully.",
+    "error": "Error occurred while unassigning the alerts."
   }
 }

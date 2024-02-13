@@ -2,13 +2,14 @@ import React, { FunctionComponent, useMemo } from 'react';
 import { TUsers } from '@/domains/users/types';
 import { DoubleCaretSvg, UnassignedAvatarSvg } from '@/common/components/atoms/icons';
 import { UserAvatar } from '@/common/components/atoms/UserAvatar/UserAvatar';
-import { Dropdown } from '@/pages/TransactionMonitoringAlerts/components/AlertsHeader';
+import { Dropdown } from '@/common/components/molecules/Dropdown/Dropdown';
 
 export const AlertsAssignDropdown: FunctionComponent<{
   assignees: TUsers;
   authenticatedUserId: string;
   isDisabled: boolean;
-  onAssigneeSelect: (id: string | null) => () => void;
+  isAssignedToMe: boolean;
+  onAssigneeSelect: (id: string | null, isAssignedToMe: boolean) => () => void;
 }> = ({ assignees, authenticatedUserId, isDisabled, onAssigneeSelect }) => {
   const sortedAssignees = useMemo(
     () =>
@@ -59,7 +60,10 @@ export const AlertsAssignDropdown: FunctionComponent<{
         <DropdownItem
           key={item?.id}
           className={'flex items-center gap-x-2'}
-          onClick={onAssigneeSelect(item?.value === null ? null : item?.value?.id)}
+          onClick={onAssigneeSelect(
+            item?.value === null ? null : item?.value?.id,
+            item?.value?.id === authenticatedUserId,
+          )}
         >
           {item?.value === null && (
             <>

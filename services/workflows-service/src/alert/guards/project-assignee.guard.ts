@@ -16,15 +16,19 @@ export class ProjectAssigneeGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest<Request>();
 
-    let assigneeId: string | undefined;
+    let assigneeId: string | undefined | null;
 
     // Check if assigneeId exists in body, then query, then params
-    if (request.body.assigneeId) {
+    if (request.body.assigneeId !== undefined) {
       assigneeId = request.body.assigneeId;
     } else if (request.query.assigneeId && typeof request.query.assigneeId === 'string') {
       assigneeId = request.query.assigneeId;
     } else if (request.params.assigneeId) {
       assigneeId = request.params.assigneeId;
+    }
+
+    if (assigneeId === null) {
+      return true;
     }
 
     if (!assigneeId) {

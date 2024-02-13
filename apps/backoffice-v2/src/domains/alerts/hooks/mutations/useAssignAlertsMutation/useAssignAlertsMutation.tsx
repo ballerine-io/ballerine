@@ -23,17 +23,30 @@ const getToastActionAndContext = ({
   return { action, context } as const;
 };
 
-export const useAssignAlertsByIdsMutation = () => {
+export const useAssignAlertsByIdsMutation = ({
+  onSuccess,
+}: {
+  onSuccess?: <TData>(
+    data: TData,
+    { assigneeId, isAssignedToMe }: { assigneeId: string | null; isAssignedToMe: boolean },
+    { assigneeName }: { assigneeName: string | null },
+  ) => void;
+} = {}) => {
   const queryClient = useQueryClient();
   const { data: users } = useUsersQuery();
 
   return useMutation({
-    mutationFn: ({ assigneeId, alertIds }: { assigneeId: string | null; alertIds: string[] }) =>
+    mutationFn: ({
+      assigneeId,
+      alertIds,
+    }: {
+      assigneeId: string | null;
+      alertIds: string[];
+      isAssignedToMe: boolean;
+    }) =>
       assignAlertsByIds({
-        body: {
-          assigneeId,
-          alertIds,
-        },
+        assigneeId,
+        alertIds,
       }),
     onMutate: ({ assigneeId }) => {
       const assigneeName = assigneeId
@@ -52,6 +65,7 @@ export const useAssignAlertsByIdsMutation = () => {
       });
 
       toast.success(t(`toast:${action}.success`, context));
+      onSuccess?.(data, { assigneeId, isAssignedToMe }, { assigneeName });
     },
     onError: (error, { assigneeId, isAssignedToMe }, { assigneeName }) => {
       const { action, context } = getToastActionAndContext({

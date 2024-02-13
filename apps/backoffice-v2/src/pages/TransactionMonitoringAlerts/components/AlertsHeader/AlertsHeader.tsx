@@ -13,14 +13,17 @@ export const AlertsHeader: FunctionComponent<{
   search: ComponentProps<typeof Search>['value'];
   onSearch: (search: string) => void;
 }> = ({ assignees, authenticatedUser, search, onSearch }) => {
-  const { selected } = useSelect();
+  const { selected, onClearSelect } = useSelect();
   const isNoAlertsSelected = Object.keys(selected ?? {}).length === 0;
-  const { mutate: mutateAssignAlerts } = useAssignAlertsByIdsMutation();
+  const { mutate: mutateAssignAlerts } = useAssignAlertsByIdsMutation({
+    onSuccess: onClearSelect,
+  });
   const onMutateAssignAlerts = useCallback(
-    (assigneeId: string | null) => () => {
+    (assigneeId: string | null, isAssignedToMe: boolean) => () => {
       mutateAssignAlerts({
         assigneeId,
         alertIds: Object.keys(selected ?? {}),
+        isAssignedToMe,
       });
     },
     [mutateAssignAlerts, selected],

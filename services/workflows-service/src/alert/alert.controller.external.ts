@@ -16,6 +16,7 @@ import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto, FindAlertsSchema } from './dtos/get-alerts.dto';
 import { BulkStatus, TBulkAssignAlertsResponse } from './types';
 import { AlertDecisionDto } from './dtos/decision-alert.dto';
+import { User } from '@sentry/node';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Alerts')
@@ -53,20 +54,34 @@ export class AlertControllerExternal {
             description: true,
           },
         },
+        assignee: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+          },
+        },
       },
     });
-    const alertsWithDescription = alerts.map(alert => {
-      const { alertDefinition, ...alertWithoutDefinition } = alert as Alert & {
-        alertDefinition: AlertDefinition;
+    const formattedAlerts = alerts.map(alert => {
+      const { alertDefinition, assignee, ...alertWithoutDefinition } = alert as Alert & {
+        alertDefinition: Pick<AlertDefinition, 'description'>;
+        assignee: Pick<User, 'id' | 'firstName' | 'lastName'>;
       };
 
       return {
         ...alertWithoutDefinition,
+        assignee: assignee
+          ? {
+              id: assignee?.id,
+              fullName: `${assignee?.firstName} ${assignee?.lastName}`,
+            }
+          : null,
         alertDetails: alertDefinition?.description,
       };
     });
 
-    return alertsWithDescription;
+    return formattedAlerts;
   }
 
   @common.Patch('assign')
@@ -74,7 +89,7 @@ export class AlertControllerExternal {
   @swagger.ApiOkResponse({ type: BulkAlertsResponse })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async assignWorkflowById(
+  async assignAlertById(
     @common.Body() { alertIds, assigneeId }: AlertAssigneeUniqueDto,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<TBulkAssignAlertsResponse> {

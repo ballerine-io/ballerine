@@ -25,23 +25,48 @@ export const useAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
   ]);
   const onSortingChange: OnChangeFn<SortingState> = useCallback(
     updaterOrValue => {
-      setSorting(updaterOrValue);
+      setSorting(old => {
+        if (!isInstanceOfFunction(updaterOrValue)) {
+          onSort({
+            sortBy: updaterOrValue[0]?.id || 'dataTimestamp',
+            sortDir: updaterOrValue[0]?.desc ? 'desc' : 'asc',
+          });
 
-      if (!isInstanceOfFunction(updaterOrValue)) return;
+          return updaterOrValue;
+        }
 
-      const [currentSorting] = updaterOrValue();
+        const nextValue = updaterOrValue(old);
 
-      if (!currentSorting) return;
+        onSort({
+          sortBy: nextValue[0]?.id || 'dataTimestamp',
+          sortDir: nextValue[0]?.desc ? 'desc' : 'asc',
+        });
 
-      onSort({
-        sortBy: currentSorting.id,
-        sortDir: currentSorting.desc ? 'desc' : 'asc',
+        return nextValue;
       });
     },
     [onSort],
   );
   const [rowSelection, setRowSelection] = useState<RowSelectionState>(
     checkIsBooleanishRecord(ids) ? ids : {},
+  );
+  const onRowSelectionChange: OnChangeFn<RowSelectionState> = useCallback(
+    updaterOrValue => {
+      setRowSelection(old => {
+        if (!isInstanceOfFunction(updaterOrValue)) {
+          onSelect(updaterOrValue);
+
+          return updaterOrValue;
+        }
+
+        const nextValue = updaterOrValue(old);
+
+        onSelect(nextValue);
+
+        return nextValue;
+      });
+    },
+    [onSelect],
   );
   const table = useReactTable({
     columns,
@@ -57,13 +82,15 @@ export const useAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
     },
     onSortingChange,
     enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
+    onRowSelectionChange,
     getRowId: row => row.id,
   });
 
   useEffect(() => {
-    onSelect(rowSelection);
-  }, [onSelect, rowSelection]);
+    if (Object.keys(ids ?? {}).length > 0) return;
+
+    setRowSelection({});
+  }, [ids]);
 
   return {
     table,

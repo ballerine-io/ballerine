@@ -3,4 +3,4 @@ export const createInitials = (str: string) =>
     ?.split(' ')
     ?.map(word => word?.[0]?.toUpperCase())
     ?.join('')
-    .substring(0, 2);
+    ?.substring(0, 2);

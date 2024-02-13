@@ -53,7 +53,11 @@ export const AlertsListSchema = z.array(
     severity: z.enum(AlertSeverities),
     alertDetails: z.string(),
     // amountOfTxs: z.number(),
-    // assignee: z.string(),
+    assignee: ObjectWithIdSchema.extend({
+      fullName: z.string(),
+    })
+      .nullable()
+      .default(null),
     status: z.enum(AlertStatuses),
     // decision: z.string(),
   }),
@@ -88,7 +92,7 @@ export const assignAlertsByIds = async ({
   alertIds: string[];
 }) => {
   const [alerts, error] = await apiClient({
-    endpoint: `alerts/assign`,
+    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts/assign`,
     method: Method.PATCH,
     body: {
       assigneeId,

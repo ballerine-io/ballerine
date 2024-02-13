@@ -86,18 +86,16 @@ export const columns = [
 
       return (
         <div className={`flex items-center gap-x-3`}>
-          {(value?.toLowerCase() === 'unassigned' || !value) && (
-            <UserCircle2 className={'stroke-[#E4E4E7]'} size={22} />
-          )}
-          {value && value?.toLowerCase() !== 'unassigned' && (
-            <Avatar className={`d-[1.375em]`}>
+          {!value && <UserCircle2 className={'stroke-[#E4E4E7]'} size={22} />}
+          {value && (
+            <Avatar className={`d-[1.375rem]`}>
               <AvatarImage />
               <AvatarFallback className={'bg-[#DCE1E8] text-xs'}>
-                {createInitials(value)}
+                {createInitials(value?.fullName)}
               </AvatarFallback>
             </Avatar>
           )}
-          <TextWithNAFallback>{value}</TextWithNAFallback>
+          <TextWithNAFallback>{value?.fullName}</TextWithNAFallback>
         </div>
       );
     },
