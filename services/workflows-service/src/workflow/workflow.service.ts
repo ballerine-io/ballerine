@@ -670,25 +670,8 @@ export class WorkflowService {
     reason?: string;
     projectId: TProjectId;
   }) {
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(
-      id,
-      {},
-      projectId ? [projectId] : null,
-    );
-    // `name` is always `approve` and not `approved` etc.
-    const Status = {
-      approve: 'approved',
-      reject: 'rejected',
-      revision: 'revision',
-    } as const;
-    const status = Status[name as keyof typeof Status];
-    const decision = (() => {
-      if (status === 'approved') {
-        return {
-          revisionReason: null,
-          rejectionReason: null,
-        };
-      }
+    // @TODO: Check
+
     return await this.prismaService.$transaction(async transaction => {
       const runtimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
         id,
@@ -905,17 +888,8 @@ export class WorkflowService {
     projectId: TProjectId,
     transaction?: PrismaTransaction,
   ) {
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowId, {}, [
-      projectId,
-    ]);
-    const workflowDef = await this.workflowDefinitionRepository.findById(
-      runtimeData.workflowDefinitionId,
-      {},
-      [projectId],
-    );
-    const documentToUpdate = runtimeData?.context?.documents?.find(
-      (document: DefaultContextSchema['documents'][number]) => document.id === documentId,
-    );
+    // @TODO: Check - Remove this method
+
     const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
       transaction,
       prismaService: this.prismaService,
@@ -1094,70 +1068,8 @@ export class WorkflowService {
     projectId: TProjectId,
     transaction?: PrismaTransaction,
   ): Promise<WorkflowRuntimeData> {
-    const projectIds: TProjectIds = projectId ? [projectId] : null;
+    // @TODO: Check
 
-    const correlationId: string = await this.getCorrelationIdFromWorkflow(runtimeData, projectIds);
-
-    let contextHasChanged;
-    if (data.context) {
-      data.context.documents = assignIdToDocuments(data.context.documents);
-      contextHasChanged = !isEqual(data.context, runtimeData.context);
-
-      this.__validateWorkflowDefinitionContext(workflowDef, {
-        ...data.context,
-        documents: data.context?.documents?.map(
-          (document: DefaultContextSchema['documents'][number]) => ({
-            ...document,
-            decision: {
-              ...document?.decision,
-              status: document?.decision?.status === null ? undefined : document?.decision?.status,
-            },
-            type:
-              document?.type === 'unknown' && document?.decision?.status === 'approved'
-                ? undefined
-                : document?.type,
-          }),
-        ),
-      });
-
-      // @ts-ignore
-      data?.context?.documents?.forEach(({ propertiesSchema, ...document }) => {
-        if (document?.decision?.status !== 'approve') return;
-
-        if (!Object.keys(propertiesSchema ?? {})?.length) return;
-
-        const validatePropertiesSchema = ajv.compile(propertiesSchema ?? {}); // we shouldn't rely on schema from the client, add to tech debt
-        const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
-
-        if (!isValidPropertiesSchema) {
-          throw ValidationError.fromAjvError(validatePropertiesSchema.errors!);
-        }
-      });
-    }
-
-    this.logger.log('Workflow state transition', {
-      id: runtimeData.id,
-      from: runtimeData.state,
-      to: data.state,
-    });
-
-    // in case current state is a final state, we want to create another machine, of type manual review.
-    // assign runtime to user, copy the context.
-    const currentState = data.state;
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // TODO: Use snapshot.done instead
-    const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
-    const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
-
-    const updatedResult = await this.workflowRuntimeDataRepository.updateById(runtimeData.id, {
-      data: {
-        ...data,
-        resolvedAt: isResolved ? new Date().toISOString() : null,
-        projectId,
-      },
-      // @ts-ignore
     const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
       transaction,
       prismaService: this.prismaService,
@@ -1242,7 +1154,6 @@ export class WorkflowService {
           data: {
             ...data,
             resolvedAt: isResolved ? new Date().toISOString() : null,
-            projectId,
           },
         },
         transaction,
@@ -1391,11 +1302,8 @@ export class WorkflowService {
     currentProjectId: TProjectId;
     // eslint-disable-next-line @typescript-eslint/ban-types
   } & ({ salesforceObjectName: string; salesforceRecordId: string } | {})) {
-    const workflowDefinition = await this.workflowDefinitionRepository.findById(
-      workflowDefinitionId,
-      {},
-      projectIds,
-    );
+    // @TODO: Check - Research
+
     return await this.prismaService.$transaction(async transaction => {
       const workflowDefinition = await this.workflowDefinitionRepository.findById(
         workflowDefinitionId,
@@ -1502,10 +1410,6 @@ export class WorkflowService {
                 isCompleted: false,
               };
 
-            return acc;
-          }, {} as { [key: string]: { number: number; isCompleted: boolean } }),
-        };
-      };
               return acc;
             }, {} as { [key: string]: { number: number; isCompleted: boolean } }),
           };
@@ -2049,7 +1953,7 @@ export class WorkflowService {
     currentProjectId: TProjectId,
     childRuntimeState?: string,
   ) {
-    const parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
+    // @TODO: Check - Research
 
     let parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
       // @ts-expect-error - error from Prisma types fix

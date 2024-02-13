@@ -29,6 +29,7 @@ import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.re
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
+import { faker } from '@faker-js/faker';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -89,7 +90,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
 
     const customer = await createCustomer(
       prismaService,
-      '1',
+      faker.datatype.uuid(),
       'secret',
       '',
       '',

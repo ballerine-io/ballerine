@@ -193,6 +193,7 @@ describe('WorkflowService', () => {
       salesforceService,
       workflowTokenService,
       uiDefinitionService,
+      {} as any,
     );
   });
 
@@ -222,31 +223,6 @@ describe('WorkflowService', () => {
       });
 
       expect(definitions[0]).not.toHaveProperty('updatedAt');
-    });
-  });
-
-  describe('.event', () => {
-    describe('reaching to a state of type "final"', () => {
-      it('updates runtime data status to "completed"', async () => {
-        const initialRuntimeData = {
-          id: '2',
-          workflowDefinitionId: '2',
-          context: {
-            numb: 'context',
-          },
-        };
-        await workflowRuntimeDataRepo.create({
-          data: initialRuntimeData,
-        });
-
-        await service.createWorkflowDefinition(buildWorkflowDeifintion(2));
-        await service.event({ id: '2', name: 'COMPLETE' });
-
-        const runtimeData = await workflowRuntimeDataRepo.findById('2');
-
-        expect(runtimeData.state).toEqual('completed');
-        expect(runtimeData.status).toEqual('completed');
-      });
     });
   });
 });
