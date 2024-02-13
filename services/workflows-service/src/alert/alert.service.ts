@@ -1,11 +1,13 @@
 import { AlertRepository } from '@/alert/alert.repository';
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { AlertDefinition } from '@prisma/client';
-import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
-import { TProjectId } from '@/types';
-import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import * as errors from '@/errors';
+import { PrismaService } from '@/prisma/prisma.service';
+import { isFkConstraintError } from '@/prisma/prisma.util';
+import { TProjectId } from '@/types';
+import { Injectable } from '@nestjs/common';
+import { Alert, AlertDefinition, AlertState, AlertStatus } from '@prisma/client';
+import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
+import { FindAlertsDto } from './dtos/get-alerts.dto';
 
 @Injectable()
 export class AlertService {
@@ -18,6 +20,40 @@ export class AlertService {
   async create(dto: CreateAlertDefinitionDto, projectId: TProjectId): Promise<AlertDefinition> {
     // #TODO: Add validation logic
     return await this.prisma.alertDefinition.create({ data: dto as any });
+  }
+
+  async updateAlertsDecision(
+    alertIds: string[],
+    projectId: string,
+    decision: AlertState,
+  ): Promise<Alert[]> {
+    return await this.alertRepository.updateMany(alertIds, projectId, {
+      data: {
+        state: decision,
+        status: this.getStatusFromState(decision),
+      },
+    });
+  }
+
+  async updateAlertsAssignee(
+    alertIds: string[],
+    projectId: string,
+    assigneeId: string,
+  ): Promise<Alert[]> {
+    try {
+      return await this.alertRepository.updateMany(alertIds, projectId, {
+        data: {
+          assigneeId: assigneeId,
+        },
+      });
+    } catch (error) {
+      // Should be handled by ProjectAssigneeGuard on controller level
+      if (isFkConstraintError(error, 'assigneeId_fkey')) {
+        throw new errors.NotFoundException('Assignee not found');
+      }
+
+      throw error;
+    }
   }
 
   async getAlerts(
@@ -84,5 +120,24 @@ export class AlertService {
   private async checkAlert(definition: AlertDefinition): Promise<boolean> {
     // ...
     return true;
+  }
+
+  private getStatusFromState(newState: AlertState): AlertStatus {
+    switch (newState) {
+      case AlertState.Triggered:
+        return AlertStatus.New;
+
+      case AlertState.UnderReview:
+      case AlertState.Escalated:
+        return AlertStatus.Pending;
+
+      case AlertState.Resolved:
+      case AlertState.Acknowledged:
+      case AlertState.Dismissed:
+        return AlertStatus.Completed;
+
+      default:
+        throw new Error('Invalid state');
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { ValidationError } from '@/errors';
+import { BadValidationException } from '@/errors';
 import { TProjectId, TProjectIds } from '@/types';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowRunDto } from '@/workflow/dtos/workflow-run';
@@ -66,7 +66,7 @@ export class CaseManagementService {
     const isValid = validate(entity);
 
     if (!isValid) {
-      throw ValidationError.fromAjvError(validate.errors!);
+      throw BadValidationException.fromAjvError(validate.errors!);
     }
   }
 }
