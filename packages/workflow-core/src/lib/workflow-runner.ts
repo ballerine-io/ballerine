@@ -6,7 +6,6 @@ import { assign, createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import type {
   ChildPluginCallbackOutput,
-  IUpdateContextEvent,
   ObjectValues,
   WorkflowEvent,
   WorkflowEventWithoutState,
