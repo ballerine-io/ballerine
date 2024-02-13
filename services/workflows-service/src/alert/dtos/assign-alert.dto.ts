@@ -7,9 +7,11 @@ import { IsNullable } from '@/common/decorators/is-nullable.decorator';
 
 export class AlertsIdsByProjectDto {
   @ApiProperty({
-    type: Array<string>,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    type: Array<String>,
   })
-  @Type(() => Array<string>)
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  @Type(() => Array<String>)
   @IsArray()
   @IsString({ each: true })
   @ArrayMinSize(1)
@@ -27,9 +29,11 @@ export class AlertsIdsByProjectDto {
 
 export class AlertAssigneeUniqueDto {
   @ApiProperty({
-    type: Array<string>,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    type: Array<String>,
   })
-  @Type(() => Array<string>)
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  @Type(() => Array<String>)
   @IsArray()
   @IsString({ each: true })
   @ArrayMinSize(1)
