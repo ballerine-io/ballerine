@@ -2,7 +2,7 @@
   "private": false,
   "name": "@ballerine/common",
   "author": "Ballerine <dev@ballerine.com>",
-  "version": "0.7.40-11210907c.0",
+  "version": "0.7.40-11210907c.1",
   "description": "common",
   "module": "./dist/esm/index.js",
   "main": "./dist/cjs/index.js",
