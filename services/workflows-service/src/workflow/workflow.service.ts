@@ -685,8 +685,6 @@ export class WorkflowService {
     reason?: string;
     projectId: TProjectId;
   }) {
-    // @TODO: Check
-
     return await this.prismaService.$transaction(async transaction => {
       const runtimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
         id,
@@ -897,8 +895,6 @@ export class WorkflowService {
     projectId: TProjectId,
     transaction?: PrismaTransaction,
   ) {
-    // @TODO: Check - Remove this method
-
     const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
       transaction,
       prismaService: this.prismaService,
@@ -1081,8 +1077,6 @@ export class WorkflowService {
     projectId: TProjectId,
     transaction?: PrismaTransaction,
   ): Promise<WorkflowRuntimeData> {
-    // @TODO: Check
-
     const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
       transaction,
       prismaService: this.prismaService,
@@ -1316,8 +1310,6 @@ export class WorkflowService {
     currentProjectId: TProjectId;
     // eslint-disable-next-line @typescript-eslint/ban-types
   } & ({ salesforceObjectName: string; salesforceRecordId: string } | {})) {
-    // @TODO: Check - Research
-
     return await this.prismaService.$transaction(async transaction => {
       const workflowDefinition = await this.workflowDefinitionRepository.findById(
         workflowDefinitionId,
@@ -1521,6 +1513,7 @@ export class WorkflowService {
             },
             projectIds,
             currentProjectId,
+            transaction,
           ));
 
         workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
@@ -1717,10 +1710,16 @@ export class WorkflowService {
     context: DefaultContextSchema,
     projectId: TProjectId,
   ) {
+    const data = context.entity.data as Record<PropertyKey, unknown>;
+
     const { id } = await this.endUserRepository.create({
       data: {
         correlationId: entity.id,
-        ...(context.entity.data as object),
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        nationalId: data.nationalId,
+        additionalInfo: data.additionalInfo,
         project: { connect: { id: projectId } },
       } as Prisma.EndUserCreateInput,
     });
@@ -1810,7 +1809,6 @@ export class WorkflowService {
       options: defaultPrismaTransactionOptions,
     });
 
-    // @TODO: Check - Researched
     return await beginTransactionIfNotExist(async transaction => {
       this.logger.log('Workflow event received', { id, type });
       const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
@@ -1968,8 +1966,6 @@ export class WorkflowService {
     currentProjectId: TProjectId,
     childRuntimeState?: string,
   ) {
-    // @TODO: Check - Research
-
     let parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
       // @ts-expect-error - error from Prisma types fix
       workflowRuntimeData.parentRuntimeDataId,
