@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test';
 
 /**
  * Read environment variables from file.
@@ -14,7 +14,7 @@ export default defineConfig({
     /* Maximum time one test can run for. */
     timeout: 60 * 1000,
     //Global Setup to run before all tests
-    globalSetup: `./global-setup`,
+    globalSetup: './global-setup',
     //Global Teardown to run after all tests
     // globalTeardown: `./global-teardown`,
     expect: {
@@ -37,22 +37,22 @@ export default defineConfig({
         ? [
               ['junit', { outputFile: 'junit-report/junit-report.xml', open: 'never' }],
               ['html', { open: 'never' }],
-              [`allure-playwright`],
+              ['allure-playwright'],
               ['list']
           ]
         : [
               ['list'],
-              [`allure-playwright`],
+              ['allure-playwright'],
               ['html', { open: 'never' }],
               [
-                  `playwright-qase-reporter`,
+                  'playwright-qase-reporter',
                   {
-                      mode: `testops`,
+                      mode: 'testops',
                       apiToken: process.env.QASE_TOKEN,
                       projectCode: 'TODO',
                       runComplete: true,
                       sendScreenshot: true,
-                      basePath: `https://api.qase.io/v1`,
+                      basePath: 'https://api.qase.io/v1',
                       logging: true,
                       uploadAttachments: true
                   }
@@ -78,13 +78,13 @@ export default defineConfig({
     /* Configure projects for major browsers */
     projects: [
         {
-            name: `Chrome`,
+            name: 'Chrome',
             use: {
                 // Configure the browser to use.
-                browserName: `chromium`,
+                browserName: 'chromium',
 
                 //Chrome Browser Config
-                channel: `chrome`,
+                channel: 'chrome',
 
                 //Browser height and width
                 // viewport: { width: 1920, height: 1080 },
@@ -96,14 +96,14 @@ export default defineConfig({
                 //Slows down execution by ms
                 launchOptions: {
                     args: [
-                        `--start-maximized`,
-                        `--disable-web-security`,
-                        `--no-sandbox`,
-                        `--disable-gpu`,
-                        `--disable-dev-shm-usage`,
-                        `--window-size=1900,1000`,
-                        `--allow-insecure-localhost`,
-                        `--ignore-certificate-error`
+                        '--start-maximized',
+                        '--disable-web-security',
+                        '--no-sandbox',
+                        '--disable-gpu',
+                        '--disable-dev-shm-usage',
+                        '--window-size=1900,1000',
+                        '--allow-insecure-localhost',
+                        '--ignore-certificate-error'
                     ]
                     //slowMo: 50
                 }

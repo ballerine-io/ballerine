@@ -169,29 +169,25 @@ automate many common tasks. Scripts that can be run to automate tasks in a proje
 Let's take a closer look at what the test launch command consists of.
 
 ```console
-"test:chrome:headless:ui": "cross-env TESTS_ENV=ui npm run config && ./node_modules/.bin/wdio config/wdio.chrome.headless.conf.js
+"test:headed:one": "npx playwright test --headed tests/example.spec.ts"
 ```
 
--   "test:chrome:headless:ui" - This is the short name of the command (alias) run (npm run + command name)
--   "cross-env TESTS_ENV=ui" - Environment variables are special variables that are defined by the operating system itself. These variables are used by programs during their execution. Such variables can be set both by the system itself and by the user.
--   "npm run config" - Apply environment settings for the current run
--   "./node_modules/.bin/wdio" - the path to the runner of our framework
--   "config/wdio.chrome.headless.conf.js" - relative path to configuration file to run tests
-
-You can also add a specific folder or test file to run by specifying the path to it
-
-```console
---spec test/specs/Login.spec.js
-```
+-   "test:headed" - This is the short name of the command (alias) run (npm run + command name)
+-   "--headed" - this is a flag that indicates that the browser will be visible during the test run
+-   "tests/example.spec.ts" - this is the path to the test file that we want to run
 
 ### Test structure
 
 This description is called a specification (or, as they say in everyday life, "spec") and looks like this:
 
 ```console
-describe("pow", function() {
-  it("raises to the n* power", function() {
-    assert.equal(pow(2, 3), 8);
+test.describe('two tests', () => {
+  test('one', async ({ page }) => {
+    // ...
+  });
+
+  test('two', async ({ page }) => {
+    // ...
   });
 });
 ```
@@ -199,22 +195,24 @@ describe("pow", function() {
 The specification has three main building blocks, which you can see in the example above:
 
 ```console
-describe(description, function() { ... })
+test.describe('two tests', () => {
 ```
 
 Specifies what exactly we are describing, used to group it blocks. In this case, we are describing a function, "describe" can be nested.
 
 ```console
-it(description, function() { ... })
+test('one', async ({ page }) => {
+    // ...
+  });
 ```
 
-The name of the "it" block describes in human language what the function should do, followed by a test that checks this.
+The name of the "test" block describes in human language what the function should do, followed by a test that checks this.
 
 ```console
-assert.equal(value1, value2)
+expect(await page.title()).toBe('Example Domain');
 ```
 
-The code inside "it", if the implementation is correct, should run without errors.
+The code inside "test", if the implementation is correct, should run without errors.
 Various functions like assert.\* are used to check if a function does what it is supposed to do. So far,
 we are only interested in one of them - assert.equal, which compares its first argument with the second
 and throws an error if they are not equal.
@@ -272,148 +270,34 @@ There are certain standard fields that need to be considered while preparing a T
 <details><summary>below test code</summary>
 
 ```javascript
-const helper = require('../../helper/helper');
-const envURLs = helper.parseJsonFile('./environments/env.json');
-const accounts = helper.parseJsonFile('./environments/accounts.json');
-const AllureReporter = require('@wdio/allure-reporter').default;
-const navigateUrl = 'admin.php?e=4&edit=700:price-list';
-const logInPage = require('../pages/LogIn.page');
-const { expect } = require('chai');
-const { it, describe, before } = require('mocha');
-const { it, describe, before } = require('mocha');
-const shortId = require('shortid');
+import { test, expect } from '@playwright/test';
+import { qase } from 'playwright-qase-reporter/dist/playwright';
 
-const randomName = `${shortId.generate()}`;
-const invalidLoginMess = 'Nieznane imię użytkownika';
-const invalidPasswordMess = 'Hasło logowania niepoprawne';
-const invalidWithoutPasswordMes = 'Nie podano hasła użytkownika';
-const leftLinkText = 'Login with CreditOnline';
-const rightLinkText = 'Zapomniałeś hasła?';
-const footerLinkText = 'CREDITONLINE';
-const leftLink = '.leftLink';
-const rightLink = '.restore-link';
-const footerSelector = '.login-footer';
 const mode = process.env.MODE;
 const user = process.env.USER_NAME;
 const password = process.env.USER_PASS;
 
 //#region //Preparation
-before('land to main url', async () => {
-    await browser.url(envURLs.LOG_IN + 'admin.php?e=4');
+test.beforeEach(async ({ page }, testInfo) => {
+    // Extend timeout for all tests running this hook by 30 seconds.
+    testInfo.setTimeout(testInfo.timeout + 30000);
+});
+// or
+test.beforeAll(async () => {
+    // Set timeout for this hook.
+    test.setTimeout(60000);
 });
 //#endregion
-describe('Check login page defaults', () => {
-    async function checkLoginInputs(nameInput, elementAttribute, checkedText) {
-        AllureReporter.addStep(`-  check is input ${nameInput} is displayed`);
-        await expect(await logInPage.isInputDisplayed(nameInput)).true;
-        AllureReporter.addStep(`-  check is input ${nameInput} contains background`);
-        await expect((await logInPage.getInputStyle(nameInput, 'background')).value).contain('icon.png');
-    }
-    async function checkLink(linkSelector, checkedText, linkUrl) {
-        AllureReporter.addStep(`-  verify is link displayed`);
-        await expect(await logInPage.isLinkDisplayed(linkSelector)).true;
-        AllureReporter.addStep(`-  validate link to contains url`);
-        await expect(await logInPage.validateLink(linkSelector)).contain(linkUrl);
-    }
+test.describe('Navigate to the main page', () => {
+    test('has title', async ({ page }) => {
+        await test.step('Open the page', async () => {
+            await page.goto('https://playwright.dev/');
+        });
 
-    it('Check IP info', async () => {
-        await logInPage.addFeatureStoryAllure('01_Login page', 'Login page - verify defaults');
-        AllureReporter.addStep(`-  check is login page contains text "IP:"`);
-        await expect(await logInPage.getIpLocatorText()).contain('IP:');
-    });
-    //#region //Inspect login form
-    it('Check login form logo', async () => {
-        await logInPage.addFeatureStoryAllure('01_Login page', 'Login page - verify defaults');
-        AllureReporter.addStep(`-  check is login form contains logo`);
-        await expect((await logInPage.getFormStyle('background')).value).contain('adm/design/logo.png');
-    });
-    it('Check inputs login and password', async () => {
-        await logInPage.addFeatureStoryAllure('01_Login page', 'Login page - verify defaults');
-        await checkLoginInputs('name', 'placeholder', 'Nazwa użytkownika');
-        await checkLoginInputs('password', 'placeholder', 'Hasło');
-    });
-    it('Check remember me checkbox is visible and not checked', async () => {
-        await logInPage.addFeatureStoryAllure('01_Login page', 'Login page - verify defaults');
-        AllureReporter.addStep(`-  verify is checkbox id displayed`);
-        await expect(await logInPage.verifyCheckboxIsDisplayed()).true;
-        AllureReporter.addStep(`-  verify is checkbox not checked`);
-        await expect(await logInPage.verifyCheckboxIsSelected()).false;
-    });
-    it('Check SignIn button is visible', async () => {
-        await logInPage.addFeatureStoryAllure('01_Login page', 'Login page - verify defaults');
-        AllureReporter.addStep(`-  verify is login button is displayed`);
-        await expect(await logInPage.verifyLoginButtonIsDisplayed()).true;
-        AllureReporter.addStep(`-  verify is login button is clickable`);
-        await expect(await logInPage.verifyLoginButtonIsClickable()).true;
-    });
-    it('Check links in login page', async () => {
-        await logInPage.addFeatureStoryAllure('01_Login page', 'Login page - verify defaults');
-        await checkLink(leftLink, leftLinkText, 'accessControl.getAccess');
-        await checkLink(rightLink, rightLinkText, 'admin?restore=1');
-        await checkLink(footerSelector + ' a', footerLinkText, 'creditonline');
-    });
-    it('Inspect footer text contain actual year', async () => {
-        await logInPage.addFeatureStoryAllure('01_Login page', 'Login page - verify defaults');
-        AllureReporter.addStep(`- validate is year is actual`);
-        let actualYear = new Date().getFullYear()?.toString();
-        await expect(await (await logInPage.getFooterText()).match(/(?<=-)\d{4}/)?.toString()).eq(actualYear);
-    });
-    //#endregion
-});
-describe('Check login with different credentials', () => {
-    async function loginToPortal(userLogin, userPassword) {
-        AllureReporter.addStep(`- set user name ${userLogin} to user input `);
-        await logInPage.setInputValue('name', userLogin);
-        AllureReporter.addStep(`- set password ${userPassword} to password input`);
-        await logInPage.setInputValue('password', userPassword);
-        AllureReporter.addStep(`- click login button`);
-        await logInPage.clickLoginButton();
-    }
-    it('Login without password', async () => {
-        await logInPage.addFeatureStoryAllure('01_Login page', 'Login page - login with credentials');
-        await loginToPortal('testUserWOP', '');
-        if ((await logInPage.getWarnMessageText()) == 'Log in password is not specified') {
-            AllureReporter.addStep(`- login without password check warning message is correct`);
-            await expect(await logInPage.getWarnMessageText()).contain('Log in password is not specified');
-        } else if ((await logInPage.getWarnMessageText()) == 'Nie podano hasła użytkownika') {
-            AllureReporter.addStep(`- login without password check warning message is correct`);
-            await expect(await logInPage.getWarnMessageText()).contain(invalidWithoutPasswordMes);
-        }
-    });
-
-    it('Login with invalid Login', async () => {
-        await loginToPortal(randomName, accounts['invalid_user'].password);
-        if ((await logInPage.getWarnMessageText()) == 'Unknown username') {
-            AllureReporter.addStep(`- login with invalid login check warning message is correct`);
-            await expect(await logInPage.getWarnMessageText()).contain('Unknown username');
-        } else if ((await logInPage.getWarnMessageText()) == 'Nieznane imię użytkownika') {
-            AllureReporter.addStep(`- login with invalid login check warning message is correct`);
-            await expect(await logInPage.getWarnMessageText()).contain(invalidLoginMess);
-        }
-    });
-
-    it('Login with invalid Password', async () => {
-        await loginToPortal(accounts['superuser'].username, accounts['invalid_user'].password);
-        if ((await logInPage.getWarnMessageText()) == 'Incorrect password') {
-            AllureReporter.addStep(`- login with invalid password check warning message is correct`);
-            await expect(await logInPage.getWarnMessageText()).contain('Incorrect password');
-        } else if ((await logInPage.getWarnMessageText()) == 'Hasło logowania niepoprawne') {
-            AllureReporter.addStep(`- login with invalid password check warning message is correct`);
-            await expect(await logInPage.getWarnMessageText()).contain(invalidPasswordMess);
-        }
-    });
-
-    it('Login with valid credential', async () => {
-        if (mode == 'Aught0') {
-            AllureReporter.addStep(`- login with user "${user}" and password "${password}"`);
-            await logInPage.loginWithCreditOnline(user, password);
-            AllureReporter.addStep(`- verify is login success`);
-            await logInPage.waitUntilMenuModulesIsDisplayed();
-        } else {
-            await loginToPortal(accounts['superuser'].username, accounts['superuser'].password);
-            AllureReporter.addStep(`- verify is login success`);
-            await logInPage.waitUntilMenuModulesIsDisplayed();
-        }
+        await test.step('Verify title of the page', async () => {
+            // Expect a title "to contain" a substring.
+            await expect(page).toHaveTitle(/Playwright/);
+        });
     });
 });
 ```
@@ -423,152 +307,99 @@ describe('Check login with different credentials', () => {
 At the beginning of the test file, we have imported dependencies and object pages that help us produce tests.
 
 ```console
-const helper = require('../../helper/helper');
-const envURLs = helper.parseJsonFile('./environments/env.json');
-const accounts = helper.parseJsonFile('./environments/accounts.json');
-const AllureReporter = require('@wdio/allure-reporter').default;
-const navigateUrl = 'admin.php?e=4&edit=700:price-list';
-const logInPage = require('../pages/LogIn.page');
-const {expect} = require('chai');
-const { it, describe, before } = require('mocha');
-const { it, describe, before } = require('mocha');
-const shortId = require('shortid');
+import { test, expect } from '@playwright/test';
+import { qase } from 'playwright-qase-reporter/dist/playwright';
+
+const mode = process.env.MODE;
+const user = process.env.USER_NAME;
+const password = process.env.USER_PASS;
 ```
 
 More about these lines, here we import data from the JASON file, one of them is "env.json" which contains the main settings for launching and they can change on demand, as well as "accounts.json" which contains data for the test, namely for our login test.
 
 ```console
-const envURLs = helper.parseJsonFile('./environments/env.json');
-const accounts = helper.parseJsonFile('./environments/accounts.json');
+import { LoginPage } from '../pageFactory/loginPage';
 ```
 
 After the imported dependencies, there are selector constants (moved to the file header for more convenient test maintenance) and environment variables, for example
 <b>process.env.USER_NAME</b> username it is passed in the command line when running the test <b>export USER_NAME='sample @ email.eu'</b>
 
 ```console
-const randomName = `${shortId.generate()}`;
-const invalidLoginMess = "Nieznane imię użytkownika";
-const invalidPasswordMess = "Hasło logowania niepoprawne";
-const invalidWithoutPasswordMes = "Nie podano hasła użytkownika";
-const leftLinkText = "Login with CreditOnline";
-const rightLinkText = "Zapomniałeś hasła?";
-const footerLinkText = "CREDITONLINE";
-const leftLink = '.leftLink';
-const rightLink = '.restore-link';
-const footerSelector = '.login-footer';
 const mode = process.env.MODE;
 const user = process.env.USER_NAME;
 const password = process.env.USER_PASS;
 ```
 
 Before the test, the name speaks for itself, this code prepares our instance for the test (in our case, it goes to the login page). The block consists of a function named <b>before</b> (executed before all tests, there is also beforeEach , it will be executed
-before each "it") followed by a title that contains a brief description of the action, and inside curly braces the action itself.
+before each "test") followed by a title that contains a brief description of the action, and inside curly braces the action itself.
 
 ```console
 //#region //Preparation
-before('land to main url',async () => {
-    await browser.url(envURLs.LOG_IN + "admin.php?e=4");
+test.beforeEach(async ({ page }, testInfo) => {
+    // Extend timeout for all tests running this hook by 30 seconds.
+    testInfo.setTimeout(testInfo.timeout + 30000);
+});
+// or
+test.beforeAll(async () => {
+    // Set timeout for this hook.
+    test.setTimeout(60000);
 });
 //#endregion
 ```
 
-Next comes the "describe" block, its name sounds like a description, this block combines several tests, the title gives a short description of what unites this block and also these blocks can be nested one into another, these blocks can also have inside themselves blocks of such a type as "before", "after" and the like. Also, at the top of this block, we can place a function that applies only to this block for code refactoring and testing convenience.
+Next comes the "describe" block, its name sounds like a description, this block combines several tests, the title gives a short description of what unites this block and also these blocks can be nested one into another, these blocks can also have inside themselves blocks of such a type as "beforeAll", "afterALL" and the like. Also, at the top of this block, we can place a function that applies only to this block for code refactoring and testing convenience.
 
 The first descriptor block checks the default data from the page - this is either visible input fields, links and buttons, etc.
 
 ```console
-describe('Check login page defaults', () => {
-    async function checkLoginInputs(nameInput, elementAttribute, checkedText) {
-        AllureReporter.addStep(`-  check is input ${nameInput} is displayed`);
-        await expect(await logInPage.isInputDisplayed(nameInput)).true;
-        AllureReporter.addStep(`-  check is input ${nameInput} contains background`);
-        await expect((await logInPage.getInputStyle(nameInput, 'background')).value).contain("icon.png");
-    }
-    async function checkLink(linkSelector,checkedText,linkUrl){
-        AllureReporter.addStep(`-  verify is link displayed`);
-        await expect(await logInPage.isLinkDisplayed(linkSelector)).true;
-        AllureReporter.addStep(`-  validate link to contains url`);
-        await expect(await logInPage.validateLink(linkSelector)).contain(linkUrl);
-    }
+test.describe('Navigate to the main page', () => {
+    test('has title', async ({ page }) => {
+        await page.goto('https://playwright.dev/');
 
-    it('Check IP info', async () => {
-        await logInPage.addFeatureStoryAllure("01_Login page","Login page - verify defaults");
-        AllureReporter.addStep(`-  check is login page contains text "IP:"`);
-        await expect(await logInPage.getIpLocatorText()).contain("IP:");
+        // Expect a title "to contain" a substring.
+        await expect(page).toHaveTitle(/Playwright/);
     });
-    .....
+});
 ```
 
-The following are two "it" blocks, these are our tests. Let's take a look at them.
+The following are two "test" blocks, these are our tests. Let's take a look at them.
 
 The title of the first block contains a description of what this block will test. Steps, stories and futures can also be added to the allure report.
 
 in our first test, we combined the test of two login fields in the login form, this is the username and password field
 since we are using a function that checks the visibility of the field and its content , the function is passed the name of the field , its selector, and the text of the field to be checked
 
-The second "it" block checks the box part for visibility and whether it is checked.
+The second "test" block checks the box part for visibility and whether it is checked.
 In our example the first line checks the checkbox is visible and expects "true" to return the test if returned "true" we had passed the test.
 The second line checks if the checkbox is checked expected "false" respectively the test returns "false" and expected passed the test.
 
 ```console
-    it('Check inputs login and password',async ()=>{
-        await logInPage.addFeatureStoryAllure("01_Login page","Login page - verify defaults");
-        await checkLoginInputs('name','placeholder',"Nazwa użytkownika");
-        await checkLoginInputs('password','placeholder',"Hasło");
-    });
-    it('Check remember me checkbox is visible and not checked', async () => {
-        await logInPage.addFeatureStoryAllure("01_Login page","Login page - verify defaults");
-        AllureReporter.addStep(`-  verify is checkbox id displayed`);
-        await expect(await logInPage.verifyCheckboxIsDisplayed()).true;
-        AllureReporter.addStep(`-  verify is checkbox not checked`);
-        await expect(await logInPage.verifyCheckboxIsSelected()).false;
+    test('has title', async ({ page }) => {
+        await page.goto('https://playwright.dev/');
+
+        // Expect a title "to contain" a substring.
+        await expect(page).toHaveTitle(/Playwright/);
     });
 ```
 
 The second describe block contains functional tests, which we will now also analyze for a better understanding of how they work
 We have a similar structure with the first block in which the describe block itself is located,
-the functions that are necessary for the correct operation of this block and our tests, as well as the tests themselves in "it" blocks
+the functions that are necessary for the correct operation of this block and our tests, as well as the tests themselves in "test" blocks
 We can also observe the function in which Allure or port steps are connected for the correct display of reports in the future.
 
 ```console
-describe('Check login with different credentials', () => {
-    async function loginToPortal(userLogin,userPassword){
-        AllureReporter.addStep(`- set user name ${userLogin} to user input `);
-        await logInPage.setInputValue('name', userLogin);
-        AllureReporter.addStep(`- set password ${userPassword} to password input`);
-        await logInPage.setInputValue('password', userPassword);
-        AllureReporter.addStep(`- click login button`);
-        await logInPage.clickLoginButton();
-    }
-    it('Login without password', async () => {
-        await logInPage.addFeatureStoryAllure("01_Login page","Login page - login with credentials");
-        await loginToPortal("testUserWOP", "");
-        if(await logInPage.getWarnMessageText() == "Log in password is not specified"){
-            AllureReporter.addStep(`- login without password check warning message is correct`);
-            await expect(await logInPage.getWarnMessageText()).contain("Log in password is not specified");
-        }else if(await logInPage.getWarnMessageText() == "Nie podano hasła użytkownika"){
-            AllureReporter.addStep(`- login without password check warning message is correct`);
-            await expect(await logInPage.getWarnMessageText()).contain(invalidWithoutPasswordMes);
-        }
-    });
-    ....
-```
+test.describe('Navigate to the main page', () => {
+    test('has title', async ({ page }) => {
+        await test.step('Open the page', async () => {
+            await page.goto('https://playwright.dev/');
+        });
 
-Let's analyze the functional test for login without a password in our case. We login on the login page and check whether the warning message about the absence of a password matches.
-Шn our case, there are two response options, depending on the site configuration, we check for the text contained in the message and check it accordingly with the site configuration.
-
-```console
-     it('Login without password', async () => {
-        await logInPage.addFeatureStoryAllure("01_Login page","Login page - login with credentials");
-        await loginToPortal("testUserWOP", "");
-        if(await logInPage.getWarnMessageText() == "Log in password is not specified"){
-            AllureReporter.addStep(`- login without password check warning message is correct`);
-            await expect(await logInPage.getWarnMessageText()).contain("Log in password is not specified");
-        }else if(await logInPage.getWarnMessageText() == "Nie podano hasła użytkownika"){
-            AllureReporter.addStep(`- login without password check warning message is correct`);
-            await expect(await logInPage.getWarnMessageText()).contain(invalidWithoutPasswordMes);
-        }
+        await test.step('Verify title of the page', async () => {
+            // Expect a title "to contain" a substring.
+            await expect(page).toHaveTitle(/Playwright/);
+        });
     });
+});
 ```
 
 </details>
@@ -593,9 +424,9 @@ We use the Allure-report, it supports the following formats: JUnit. Extension fo
 Configure the output directory in your wdio.conf.js file:
 
 ```console
-exports.config = {
+export default defineConfig({
     // ...
-    reporters: [['allure', {
+    reporter: [['allure', {
         outputDir: 'allure-results',
         disableWebdriverStepsReporting: true,
         disableWebdriverScreenshotsReporting: true,
@@ -615,31 +446,30 @@ exports.config = {
 
 **Supported Allure API**
 
--   addLabel(name, value) - assign a custom label to test
--   addFeature(featureName) – assign feature to test
--   addStory(storyName) – assign user story to test
--   addStep(title, content, name = 'attachment', status) - add step to test.
-    -   title (String) - name of the step.
-    -   content (String, optional) - step attachment
-    -   name (String, optional) - step attachment name, attachment by default.
-    -   status (String, optional) - step status, passed by default. Must be "failed", "passed" or "broken"
+-   label(name, value) - assign a custom label to test
+-   link(featureName) – assign feature to test
+-   story(storyName) – assign user story to test
+-   epic(epicName) – assign epic to test
+    link to documentation for more information [Allure API](https://www.npmjs.com/package/allure-playwright)
 
 **Usage**
 
 Allure Api can be accessed using:
 
 ```console
-const AllureReporter = require('@wdio/allure-reporter').default;
+import { allure } from "allure-playwright";
 ```
 
 Mocha example
 
 ```console
-describe('Suite', () => {
-    it('Case', () => {
-        allureReporter.addFeature('Feature')
-    })
-})
+import { test, expect } from "@playwright/test";
+import { allure } from "allure-playwright";
+
+test("basic test", async ({ page }, testInfo) => {
+  await allure.link("https://playwright.dev", "playwright-site"); // link with name
+  await allure.issue("Issue Name", "https://github.com/allure-framework/allure-js/issues/352");
+});
 ```
 
 **Displaying the report**
