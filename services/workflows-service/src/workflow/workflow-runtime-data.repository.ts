@@ -171,17 +171,13 @@ export class WorkflowRuntimeDataRepository {
     transaction: PrismaTransaction,
   ) {
     if (entityType === 'endUser') {
-      await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "workflowDefinitionId" = ${workflowDefinitionId} AND "projectId" IN (${projectIds?.join(
-        ',',
-      )}) AND "status" != ${
-        WorkflowRuntimeDataStatus.completed
-      } AND "endUserId" = ${entityId} FOR UPDATE LIMIT 1`;
+      await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "workflowDefinitionId" = ${workflowDefinitionId} AND "projectId" IN (${Prisma.join(
+        projectIds ?? [],
+      )}) AND "status" != 'completed' AND "endUserId" = ${entityId} FOR UPDATE LIMIT 1`;
     } else {
-      await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "workflowDefinitionId" = ${workflowDefinitionId} AND "projectId" IN (${projectIds?.join(
-        ',',
-      )}) AND "status" != ${
-        WorkflowRuntimeDataStatus.completed
-      } AND "businessId" = ${entityId} FOR UPDATE LIMIT 1`;
+      await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "workflowDefinitionId" = ${workflowDefinitionId} AND "projectId" IN (${Prisma.join(
+        projectIds ?? [],
+      )}) AND "status" != 'completed' AND "businessId" = ${entityId} FOR UPDATE LIMIT 1`;
     }
 
     return await this.findOne(
