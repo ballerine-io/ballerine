@@ -46,6 +46,34 @@ export const AlertTypes = [
   AlertType.UNUSUAL_PATTERN,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof AlertType>>;
 
+export const AlertState = {
+  TRIGGERED: 'Triggered',
+  UNDER_REVIEW: 'UnderReview',
+  ESCALATED: 'Escalated',
+  RESOLVED: 'Resolved',
+  ACKNOWLEDGED: 'Acknowledged',
+  DISMISSED: 'Dismissed',
+  REJECTED: 'Rejected',
+  NOT_SUSPICIOUS: 'NotSuspicious',
+} as const;
+
+export const AlertStates = [
+  AlertState.TRIGGERED,
+  AlertState.UNDER_REVIEW,
+  AlertState.ESCALATED,
+  AlertState.RESOLVED,
+  AlertState.ACKNOWLEDGED,
+  AlertState.DISMISSED,
+  AlertState.REJECTED,
+  AlertState.NOT_SUSPICIOUS,
+] as const satisfies ReadonlyArray<TObjectValues<typeof AlertState>>;
+
+export const alertStateToDecision = {
+  REJECTED: 'Reject',
+  NOT_SUSPICIOUS: 'Not Suspicious',
+  REVERT_DECISION: 'Revert Decision',
+} as const satisfies Partial<Record<keyof typeof AlertState | (string & {}), string>>;
+
 export const AlertsListSchema = z.array(
   ObjectWithIdSchema.extend({
     dataTimestamp: z.string().datetime(),
