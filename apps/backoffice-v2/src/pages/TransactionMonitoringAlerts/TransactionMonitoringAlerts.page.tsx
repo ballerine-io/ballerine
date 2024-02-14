@@ -7,6 +7,7 @@ import { useTransactionMonitoringAlertsLogic } from '@/pages/TransactionMonitori
 export const TransactionMonitoringAlerts = () => {
   const {
     alerts,
+    transactions,
     isSheetOpen,
     toggleOnIsAlertAnalysisSheetOpen,
     toggleIsAlertAnalysisSheetOpen,
@@ -45,7 +46,11 @@ export const TransactionMonitoringAlerts = () => {
           />
         </div>
       </div>
-      <AlertAnalysisSheet isOpen={isSheetOpen} onOpenStateChange={toggleIsAlertAnalysisSheetOpen} />
+      <AlertAnalysisSheet
+        transactions={transactions ?? []}
+        isOpen={isSheetOpen}
+        onOpenStateChange={toggleIsAlertAnalysisSheetOpen}
+      />
     </div>
   );
 };

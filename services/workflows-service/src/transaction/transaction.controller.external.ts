@@ -9,7 +9,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import express from 'express';
-import { Get, Param, Query, Post, Controller, Body, Res } from '@nestjs/common';
+import { Get, Query, Post, Controller, Body, Res } from '@nestjs/common';
 import { GetTransactionsDto } from '@/transaction/dtos/get-transactions.dto';
 import { PaymentMethod } from '@prisma/client';
 
@@ -59,7 +59,7 @@ export class TransactionControllerExternal {
   }
 
   @Get()
-  @UseCustomerAuthGuard()
+  // @UseGuards(CustomerAuthGuard)
   @swagger.ApiOkResponse({ description: 'Returns an array of transactions.' })
   @swagger.ApiQuery({ name: 'businessId', description: 'Filter by business ID.', required: false })
   @swagger.ApiQuery({

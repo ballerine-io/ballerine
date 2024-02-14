@@ -7,6 +7,7 @@ import { useMemo } from 'react';
 import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
 import { useSearch } from '@/common/hooks/useSearch/useSearch';
+import { useTransactionsQuery } from '@/domains/transactions/hooks/queries/useTransactionsQuery/useTransactionsQuery';
 
 export const useTransactionMonitoringAlertsLogic = () => {
   const { data: session } = useAuthenticatedUserQuery();
@@ -21,6 +22,7 @@ export const useTransactionMonitoringAlertsLogic = () => {
     sortDir,
     sortBy,
   });
+  const { data: transactions } = useTransactionsQuery();
   const { data: assignees } = useUsersQuery();
   const sortedAssignees = useMemo(
     () =>
@@ -40,6 +42,7 @@ export const useTransactionMonitoringAlertsLogic = () => {
 
   return {
     alerts,
+    transactions,
     isSheetOpen,
     toggleOnIsAlertAnalysisSheetOpen,
     toggleIsAlertAnalysisSheetOpen,
