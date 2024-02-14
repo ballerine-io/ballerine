@@ -1,0 +1,61 @@
+{
+    "name": "autotests",
+    "version": "1.0.0",
+    "description": "Tests automation with playwright and report system",
+    "main": "index.js",
+    "scripts": {
+        "test": "npx playwright test",
+        "test:headed": "npx playwright test --headed",
+        "test:headed:qase": "export QASE_REPORT=1 && npx playwright test --headed",
+        "test:html-report": "npx playwright show-report",
+        "playwright:clean": "rm -rf playwright-report test-results",
+        "test:debug": "npx playwright test --debug",
+        "test:code-gen": "npx playwright codegen --output tests/generated.spec.ts",
+        "lint": "npx eslint ./tests --fix --color",
+        "prettier": "prettier --write --ignore-unknown ./tests",
+        "allure:open": "allure open ./allure-report",
+        "allure:clean": "rm -rf allure-results allure-report",
+        "allure:history": "cp -R allure-report/history allure-results",
+        "allure:serve": "npx allure serve allure-results",
+        "allure:serve:hi": "npm run allure:history && npx allure serve allure-results",
+        "allure:generate:hi": "npm run allure:history && npx allure generate allure-results --clean",
+        "allure:generate": "npx allure generate allure-results --clean"
+    },
+    "keywords": [
+        "playwright",
+        "husky",
+        "pre-commit",
+        "prettier",
+        "lint",
+        "test",
+        "typescript",
+        "qase"
+    ],
+    "author": "Leonid M",
+    "license": "MIT",
+    "devDependencies": {
+        "@playwright/test": "^1.41.2",
+        "@types/node": "^20.11.16",
+        "allure-commandline": "^2.27.0",
+        "dotenv": "^16.4.1"
+    },
+    "dependencies": {
+        "@faker-js/faker": "^8.4.1",
+        "@typescript-eslint/eslint-plugin": "^6.21.0",
+        "@typescript-eslint/parser": "^6.21.0",
+        "adm-zip": "^0.5.10",
+        "allure-playwright": "^2.12.0",
+        "axios": "^1.6.7",
+        "cross-env": "^7.0.3",
+        "eslint": "^8.56.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-import": "^2.29.1",
+        "eslint-plugin-playwright": "^1.0.1",
+        "husky": "^9.0.10",
+        "lint-staged": "^15.2.2",
+        "playwright-qase-reporter": "^1.2.2",
+        "prettier": "^3.2.5",
+        "request": "^2.88.2",
+        "typescript": "^5.3.3"
+    }
+}

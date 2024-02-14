@@ -1,0 +1,115 @@
+name: Playwright Tests
+on:
+  workflow_dispatch:
+    inputs:
+      stage_url:
+        description: 'Select an environment: "dev" , "local"'
+        required: true
+        default: "https://backoffice-dev.eu.ballerine.io"
+      qase_report:
+        description: 'Choose qase report option: on(1) \ off(0)'
+        required: false
+        default: "0"
+      trace:
+        type: choice
+        description: 'Choose trace option: on \ off \ retain-on-failure'
+        required: false
+        default: "retain-on-failure"
+        options:
+          - "retain-on-failure"
+          - "on"
+          - "off"
+          
+      api_token_github:
+        description: 'GitHub token'
+        required: true
+        default: ""
+      where_to_deploy:
+        type: choice
+        description: 'Choose where to deploy:'
+        required: true
+        default: "github_pages"
+        options:
+          - "github_pages"
+          - "github_repo"
+
+
+  # push:
+  #     branches: [master]
+  # schedule:
+  #   - cron: "0 1 * * *" # every day at 1:00 UTC
+
+jobs:
+  Run_tests:
+    timeout-minutes: 300
+    runs-on: ubuntu-20.04
+    env:
+      STAGE_URL: ${{ inputs.stage_url }}
+      QASE_REPORT: ${{ inputs.qase_report }}
+      TRACE: ${{ inputs.trace }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: set work directory
+        run: |
+          npm i -g npm@latest
+          npm i
+          npm install allure-commandline --save-dev
+          npx playwright install --with-deps
+        working-directory: ./test
+      - name: Run tests
+        run: |
+          export BASE_URL="$STAGE_URL"
+          npx playwright test --trace "$TRACE"
+        working-directory: ./test
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: test/playwright-report/
+          retention-days: 5
+
+  download_and_deploy_report:
+    if: always()
+    needs: Run_tests
+    runs-on: ubuntu-latest
+    env:
+      API_TOKEN_GITHUB: ${{ inputs.api_token_github }}
+      WHERE_TO_DEPLOY: ${{ inputs.where_to_deploy }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Wait for Artifacts to be ready
+        run: sleep 60
+
+      - name: Download Artifact Main Scope
+        uses: actions/download-artifact@v3
+        with:
+          name: playwright-report
+          path: reports
+
+      - name: Deploy to GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v4
+        if: env.WHERE_TO_DEPLOY == 'github_pages'
+        with:
+          target_branch: gh-pages
+          build_dir: ./reports
+        env:
+          GITHUB_TOKEN: ${{secrets.ACCES_TOKEN}}
+
+      - name: Pushes playwright-report to another repository
+        uses: cpina/github-action-push-to-another-repository@main
+        if: env.WHERE_TO_DEPLOY == 'github_repo'
+        env:
+          API_TOKEN_GITHUB: ${{ env.API_TOKEN_GITHUB }}
+        with:
+          source-directory: "reports"
+          destination-github-username: "ballerine-io"
+          destination-repository-name: "test_repo"
+          user-email: ${{ env.USER_EMAIL}}
+          target-branch: gh-pages

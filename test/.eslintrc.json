@@ -1,0 +1,43 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:playwright/recommended",
+        "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": ["@typescript-eslint", "playwright"],
+    "rules": {
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/no-unused-vars": "error",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-duplicate-enum-values": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+
+        "playwright/no-page-pause": "error",
+        "playwright/no-networkidle": "off",
+        "playwright/no-conditional-in-test": "warn",
+        "playwright/prefer-web-first-assertions": "off",
+        "playwright/expect-expect": "off",
+        "playwright/valid-expect": "off",
+        "playwright/no-wait-for-timeout": "off",
+        "playwright/valid-title": "off",
+        "playwright/no-force-option": "off",
+
+        "quotes": ["error", "single", { "avoidEscape": true }],
+        "no-mixed-spaces-and-tabs": "off",
+        "no-useless-escape": "off",
+        "no-console": ["warn", { "allow": ["info", "warn", "error"] }]
+    }
+}
