@@ -23,6 +23,9 @@ jobs:
     uses: ./.github/workflows/release.yml
   build-and-push-image:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     needs: [ releases ]
     if: ${{ needs.releases.result=='success' }}
 
