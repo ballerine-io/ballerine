@@ -19,8 +19,12 @@ env:
   IMAGE_NAME: ${{ github.repository_owner }}/headless-example
 
 jobs:
+  releases:
+    uses: ./.github/workflows/release.yml
   build-and-push-image:
     runs-on: ubuntu-latest
+    needs: [ releases ]
+    if: ${{ needs.releases.result=='success' }}
     permissions:
       contents: read
       packages: write
