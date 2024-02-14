@@ -1,0 +1,17 @@
+node_modules/
+/test-results/
+!/*/*/test-results/
+playwright-report/
+test-out/
+videos/
+screenshots/
+.env
+tests-out/
+src/auth/
+**/.DS_Store
+resources/
+.idea/
+/blob-report/
+/playwright/.cache/
+allure-report/
+allure-results/

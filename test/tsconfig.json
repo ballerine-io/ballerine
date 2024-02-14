@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ES2020",
+        "moduleResolution": "Node",
+        "sourceMap": true,
+        "outDir": "test-out",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "resolveJsonModule": true
+    }
+}

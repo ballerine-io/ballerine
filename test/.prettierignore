@@ -1,0 +1,7 @@
+# Ignore artifacts:
+playwright-report
+screenshots
+videos
+**/*.json
+**/*.yml
+README.md
