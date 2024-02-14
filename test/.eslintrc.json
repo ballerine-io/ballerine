@@ -38,6 +38,7 @@
         "quotes": ["error", "single", { "avoidEscape": true }],
         "no-mixed-spaces-and-tabs": "off",
         "no-useless-escape": "off",
-        "no-console": ["warn", { "allow": ["info", "warn", "error"] }]
+        "no-console": ["warn", { "allow": ["info", "warn", "error"] }],
+        "linebreak-style": ["error", "unix"]
     }
 }
