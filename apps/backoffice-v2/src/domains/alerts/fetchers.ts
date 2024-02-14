@@ -77,7 +77,7 @@ export const alertStateToDecision = {
 export const alertDecisionToState = {
   REJECT: 'Rejected',
   NOT_SUSPICIOUS: 'NotSuspicious',
-  REVERT_DECISION: 'UnderReview',
+  REVERT_DECISION: 'Triggered',
 } as const satisfies Partial<Record<keyof typeof AlertState | (string & {}), string>>;
 
 export type TAlertSeverity = (typeof AlertSeverities)[number];
