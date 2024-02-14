@@ -122,14 +122,6 @@ export const columns = [
         Extract<Uppercase<SnakeCase<TAlertState>>, 'NOT_SUSPICIOUS' | 'REJECTED'>,
         ComponentProps<typeof TextWithNAFallback>['className']
       >;
-      const decisionToDisplayDecision = (decision: TAlertState | null) => {
-        if (decision === 'NotSuspicious') {
-          return 'False Positive';
-        }
-
-        return decision;
-      };
-      const displayDecision = decisionToDisplayDecision(decision);
 
       return (
         <TextWithNAFallback
@@ -139,7 +131,7 @@ export const columns = [
               !!screamingSnakeDecision,
           })}
         >
-          {titleCase(displayDecision ?? '')}
+          {titleCase(decision ?? '')}
         </TextWithNAFallback>
       );
     },
