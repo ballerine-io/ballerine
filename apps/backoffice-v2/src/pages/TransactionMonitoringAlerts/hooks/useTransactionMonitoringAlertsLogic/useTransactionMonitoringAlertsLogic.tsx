@@ -33,7 +33,7 @@ export const useTransactionMonitoringAlertsLogic = () => {
   const [isSheetOpen, toggleIsAlertAnalysisSheetOpen, toggleOnIsAlertAnalysisSheetOpen] =
     useToggle();
   const { onPaginate, onPrevPage, onNextPage } = usePagination();
-  const isLastPage = (alerts?.length ?? 0 < pageSize) || alerts?.length === 0;
+  const isLastPage = (alerts?.length ?? 0) < pageSize || alerts?.length === 0;
   const { search, onSearch } = useSearch({
     initialSearch: searchValue,
   });
