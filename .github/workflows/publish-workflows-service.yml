@@ -153,3 +153,9 @@ jobs:
                 "image.tag": "${{ steps.get_version.outputs.version }}-prod"
               }
             }
+                
+      - name: Check the Disk Space and Memory
+        run: df -hT && free -m
+
+      - name: Clear the Workspace
+        uses: AutoModality/action-clean@v1
