@@ -1,59 +1,16 @@
 import { Search } from '@/pages/TransactionMonitoringAlerts/components/Search';
 import { AlertsFilters } from 'src/pages/TransactionMonitoringAlerts/components/AlertsFilters';
-import React, { ComponentProps, FunctionComponent, ReactNode, useCallback } from 'react';
+import React, { ComponentProps, FunctionComponent, useCallback } from 'react';
 import { TUsers } from '@/domains/users/types';
 import { useSelect } from '@/common/hooks/useSelect/useSelect';
 import { useAssignAlertsByIdsMutation } from '@/domains/alerts/hooks/mutations/useAssignAlertsMutation/useAssignAlertsMutation';
 import { AlertsAssignDropdown } from '@/pages/TransactionMonitoringAlerts/components/AlertsAssignDropdown/AlertsAssignDropdown';
-import { Dropdown } from '@/common/components/molecules/Dropdown/Dropdown';
-import { DoubleCaretSvg } from '@/common/components/atoms/icons';
 import { alertDecisionToState, AlertStates, alertStateToDecision } from '@/domains/alerts/fetchers';
 import { lowerCase } from 'string-ts';
-import { TObjectValues } from '@/common/types';
 import { useAlertsDecisionByIdsMutation } from '@/domains/alerts/hooks/mutations/useAlertsDecisionByIdsMutation/useAlertsDecisionByIdsMutation';
 import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
-
-export const AlertsDecisionDropdown: FunctionComponent<{
-  decisions: Array<{
-    id: string;
-    value: ReactNode;
-  }>;
-  isDisabled: boolean;
-  onDecisionSelect: (decision: TObjectValues<typeof alertStateToDecision>) => () => void;
-}> = ({ decisions, isDisabled, onDecisionSelect }) => {
-  return (
-    <Dropdown
-      options={decisions}
-      trigger={
-        <>
-          Decision
-          <DoubleCaretSvg />
-        </>
-      }
-      props={{
-        trigger: {
-          disabled: isDisabled,
-          className:
-            'flex min-w-[11.3ch] items-center justify-between gap-x-4 rounded-lg border border-neutral/10 px-4 py-1.5 text-sm disabled:opacity-50 dark:border-neutral/60',
-        },
-        content: {
-          className: 'min-w-[14rem]',
-          align: 'end',
-        },
-      }}
-    >
-      {({ item, DropdownItem }) => (
-        <DropdownItem
-          key={item?.id}
-          className={'flex items-center gap-x-2'}
-          onClick={onDecisionSelect(item?.id)}
-        >
-          {item?.value}
-        </DropdownItem>
-      )}
-    </Dropdown>
-  );
-};
+import { AlertsDecisionDropdown } from '@/pages/TransactionMonitoringAlerts/components/AlertsDecisionDropdown/AlertsDecisionDropdown';
+import { COMING_SOON_ALERT_DECISIONS } from '@/pages/TransactionMonitoringAlerts/constants';
 
 export const AlertsHeader: FunctionComponent<{
   assignees: TUsers;
@@ -91,12 +48,6 @@ export const AlertsHeader: FunctionComponent<{
       },
       [mutateAlertsDecision, selected],
     );
-  const comingSoonDecisions = [
-    'Escalate',
-    'Ask user for information',
-    'Block or Hold',
-    'Report to Authorities',
-  ] as const;
   const decisions = [
     ...['Revert Decision' as const, ...AlertStates]
       .map(state => {
@@ -123,10 +74,10 @@ export const AlertsHeader: FunctionComponent<{
           </>
         ),
       })),
-    ...comingSoonDecisions.map(decision => ({
+    ...COMING_SOON_ALERT_DECISIONS.map(decision => ({
       id: decision,
       value: (
-        <div className={'flex items-center gap-x-2 text-slate-300/90'}>
+        <div className={'flex items-center gap-x-2 text-slate-400'}>
           {decision} <span className={'text-xs'}>(soon)</span>
         </div>
       ),
