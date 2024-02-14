@@ -12,7 +12,7 @@ const getToastAction = (decision: TAlertState) => {
     return 'not_suspicious_alerts' as const;
   }
 
-  if (decision === AlertState.UNDER_REVIEW) {
+  if (decision === AlertState.TRIGGERED) {
     return 'revert_decision_alerts' as const;
   }
 
