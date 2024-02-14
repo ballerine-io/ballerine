@@ -63,7 +63,7 @@ export class AlertControllerExternal {
       },
     });
     const formattedAlerts = alerts.map(alert => {
-      const { alertDefinition, assignee, ...alertWithoutDefinition } = alert as Alert & {
+      const { alertDefinition, state, assignee, ...alertWithoutDefinition } = alert as Alert & {
         alertDefinition: Pick<AlertDefinition, 'description'>;
         assignee: Pick<User, 'id' | 'firstName' | 'lastName'>;
       };
@@ -77,6 +77,7 @@ export class AlertControllerExternal {
             }
           : null,
         alertDetails: alertDefinition?.description,
+        decision: state,
       };
     });
 

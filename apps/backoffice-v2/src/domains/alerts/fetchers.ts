@@ -74,6 +74,24 @@ export const alertStateToDecision = {
   REVERT_DECISION: 'Revert Decision',
 } as const satisfies Partial<Record<keyof typeof AlertState | (string & {}), string>>;
 
+export const alertDecisionToState = {
+  REJECT: 'Rejected',
+  NOT_SUSPICIOUS: 'NotSuspicious',
+  REVERT_DECISION: 'UnderReview',
+} as const satisfies Partial<Record<keyof typeof AlertState | (string & {}), string>>;
+
+export type TAlertSeverity = (typeof AlertSeverities)[number];
+
+export type TAlertSeverities = typeof AlertSeverities;
+
+export type TAlertType = (typeof AlertTypes)[number];
+
+export type TAlertTypes = typeof AlertTypes;
+
+export type TAlertState = (typeof AlertStates)[number];
+
+export type TAlertStates = typeof AlertStates;
+
 export const AlertsListSchema = z.array(
   ObjectWithIdSchema.extend({
     dataTimestamp: z.string().datetime(),
@@ -87,7 +105,7 @@ export const AlertsListSchema = z.array(
       .nullable()
       .default(null),
     status: z.enum(AlertStatuses),
-    // decision: z.string(),
+    decision: z.enum(AlertStates).nullable().default(null),
   }),
 );
 
@@ -124,6 +142,26 @@ export const assignAlertsByIds = async ({
     method: Method.PATCH,
     body: {
       assigneeId,
+      alertIds,
+    },
+    schema: z.any(),
+  });
+
+  return handleZodError(error, alerts);
+};
+
+export const updateAlertsDecisionByIds = async ({
+  decision,
+  alertIds,
+}: {
+  decision: TAlertState;
+  alertIds: string[];
+}) => {
+  const [alerts, error] = await apiClient({
+    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts/decision`,
+    method: Method.PATCH,
+    body: {
+      decision,
       alertIds,
     },
     schema: z.any(),

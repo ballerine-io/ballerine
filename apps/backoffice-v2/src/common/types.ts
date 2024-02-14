@@ -5,7 +5,7 @@ export type WithRequired<TObject, TKey extends keyof TObject> = TObject & {
   [TProperty in TKey]-?: TObject[TProperty];
 };
 
-export type AnyArray = Array<any>;
+export type AnyArray = any[];
 
 export type AnyRecord = Record<PropertyKey, any>;
 
@@ -45,3 +45,5 @@ export type TypesafeOmit<TObj extends Record<PropertyKey, unknown>, TProps exten
 } & {};
 
 export type UnknownRecord = Record<PropertyKey, unknown>;
+
+export type NoInfer<T> = [T][T extends any ? 0 : never];

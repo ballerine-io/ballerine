@@ -602,6 +602,8 @@ enum AlertState {
   Resolved     @map("301")
   Acknowledged @map("302")
   Dismissed    @map("303")
+  Rejected    @map("304")
+  NotSuspicious    @map("305")
 }
 
 enum AlertStatus {
@@ -636,9 +638,9 @@ model AlertDefinition {
   createdBy  String @default("SYSTEM")
   modifiedBy String
 
-  dedupeStrategies Json 
-  config           Json 
-  defaultSeverity  AlertSeverity 
+  dedupeStrategies Json
+  config           Json
+  defaultSeverity  AlertSeverity
 
   tags           String[] // Tags for the alert
   additionalInfo Json // Additional information
@@ -662,15 +664,15 @@ model Alert {
 
   businessId             String?
   business               Business?       @relation(fields: [businessId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-  
-  endUserId              String? 
+
+  endUserId              String?
   endUser                EndUser?        @relation(fields: [endUserId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-  
+
   dataTimestamp          DateTime
-  state                  AlertState 
-  status                 AlertStatus 
+  state                  AlertState
+  status                 AlertStatus
   tags                   String[]
-  severity               AlertSeverity? 
+  severity               AlertSeverity?
 
   executionDetails Json // Execution details
 

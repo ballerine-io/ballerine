@@ -7,8 +7,11 @@ import { useAssignAlertsByIdsMutation } from '@/domains/alerts/hooks/mutations/u
 import { AlertsAssignDropdown } from '@/pages/TransactionMonitoringAlerts/components/AlertsAssignDropdown/AlertsAssignDropdown';
 import { Dropdown } from '@/common/components/molecules/Dropdown/Dropdown';
 import { DoubleCaretSvg } from '@/common/components/atoms/icons';
-import { AlertStates, alertStateToDecision } from '@/domains/alerts/fetchers';
-import { lowerCase, snakeCase, toUpperCase } from 'string-ts';
+import { alertDecisionToState, AlertStates, alertStateToDecision } from '@/domains/alerts/fetchers';
+import { lowerCase } from 'string-ts';
+import { TObjectValues } from '@/common/types';
+import { useAlertsDecisionByIdsMutation } from '@/domains/alerts/hooks/mutations/useAlertsDecisionByIdsMutation/useAlertsDecisionByIdsMutation';
+import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
 
 export const AlertsDecisionDropdown: FunctionComponent<{
   decisions: Array<{
@@ -16,7 +19,7 @@ export const AlertsDecisionDropdown: FunctionComponent<{
     value: ReactNode;
   }>;
   isDisabled: boolean;
-  onDecisionSelect: (decision: string) => () => void;
+  onDecisionSelect: (decision: TObjectValues<typeof alertStateToDecision>) => () => void;
 }> = ({ decisions, isDisabled, onDecisionSelect }) => {
   return (
     <Dropdown
@@ -43,7 +46,7 @@ export const AlertsDecisionDropdown: FunctionComponent<{
         <DropdownItem
           key={item?.id}
           className={'flex items-center gap-x-2'}
-          onClick={onDecisionSelect(item?.value)}
+          onClick={onDecisionSelect(item?.id)}
         >
           {item?.value}
         </DropdownItem>
@@ -63,6 +66,9 @@ export const AlertsHeader: FunctionComponent<{
   const { mutate: mutateAssignAlerts } = useAssignAlertsByIdsMutation({
     onSuccess: onClearSelect,
   });
+  const { mutate: mutateAlertsDecision } = useAlertsDecisionByIdsMutation({
+    onSuccess: onClearSelect,
+  });
   const onMutateAssignAlerts = useCallback(
     (assigneeId: string | null, isAssignedToMe: boolean) => () => {
       mutateAssignAlerts({
@@ -73,6 +79,18 @@ export const AlertsHeader: FunctionComponent<{
     },
     [mutateAssignAlerts, selected],
   );
+  const onMutateAlertsDecision: ComponentProps<typeof AlertsDecisionDropdown>['onDecisionSelect'] =
+    useCallback(
+      decision => () => {
+        const screamingSnakeDecision = toScreamingSnakeCase(decision);
+
+        mutateAlertsDecision({
+          decision: alertDecisionToState[screamingSnakeDecision],
+          alertIds: Object.keys(selected ?? {}),
+        });
+      },
+      [mutateAlertsDecision, selected],
+    );
   const comingSoonDecisions = [
     'Escalate',
     'Ask user for information',
@@ -80,9 +98,9 @@ export const AlertsHeader: FunctionComponent<{
     'Report to Authorities',
   ] as const;
   const decisions = [
-    ...['Revert Decision', ...AlertStates]
+    ...['Revert Decision' as const, ...AlertStates]
       .map(state => {
-        const screamingSnakeState = toUpperCase(snakeCase(state));
+        const screamingSnakeState = toScreamingSnakeCase(state);
 
         return alertStateToDecision[screamingSnakeState as keyof typeof alertStateToDecision];
       })
@@ -132,7 +150,7 @@ export const AlertsHeader: FunctionComponent<{
         <AlertsDecisionDropdown
           decisions={decisions}
           isDisabled={isNoAlertsSelected}
-          onDecisionSelect={() => () => {}}
+          onDecisionSelect={onMutateAlertsDecision}
         />
       </div>
     </div>
