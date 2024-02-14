@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { t } from 'i18next';
 import { AlertState, TAlertState, updateAlertsDecisionByIds } from '@/domains/alerts/fetchers';
 
-const getToastActionAndContext = (decision: TAlertState) => {
+const getToastAction = (decision: TAlertState) => {
   if (decision === AlertState.REJECTED) {
     return 'reject_alerts' as const;
   }
@@ -35,13 +35,13 @@ export const useAlertsDecisionByIdsMutation = ({
     onSuccess: (data, { decision }) => {
       void queryClient.invalidateQueries();
 
-      const action = getToastActionAndContext(decision);
+      const action = getToastAction(decision);
 
       toast.success(t(`toast:${action}.success`));
       onSuccess?.(data, { decision });
     },
     onError: (error, { decision }) => {
-      const action = getToastActionAndContext(decision);
+      const action = getToastAction(decision);
 
       toast.error(t(`toast:${action}.error`));
     },
