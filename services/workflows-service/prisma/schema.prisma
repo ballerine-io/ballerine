@@ -133,6 +133,7 @@ model Business {
   additionalInfo          Json?
   bankInformation         Json?
   approvalState           ApprovalState @default(NEW) // Current status of the KYB process for the business entity
+  mccCode                 Int?
 
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
@@ -520,13 +521,14 @@ model TransactionRecord {
   transactionStatus        TransactionRecordStatus? @default(Completed)
   transactionStatusReason  String? // Reason for the transaction status
   transactionDirection     TransactionDirection? // Reason for the transaction status
+  transactionReference     String? // Reference number for the transaction
 
   originatorIpAddress   String? // IP address of the transaction initiator
   originatorGeoLocation String? // Geolocation of the transaction initiator
   originatorUserAgent   String? // User agent of the device used for the transaction
 
-  paymentMethod    String?
   paymentBrandName String? // Category of the transaction
+  paymentMethod    PaymentMethod?
   paymentType      PaymentType?
   paymentChannel   PaymentChannel?
   paymentIssuer    PaymentIssuer?
@@ -577,10 +579,12 @@ model TransactionRecord {
 
   counterpartyBeneficiaryId String?
   counterpartyBeneficiary   Counterparty? @relation("BenefitingCounterparty", fields: [counterpartyBeneficiaryId], references: [id])
-  EndUser                   EndUser?      @relation(fields: [endUserId], references: [id])
-  endUserId                 String?
-  Business                  Business?     @relation(fields: [businessId], references: [id])
-  businessId                String?
+
+  EndUser   EndUser? @relation(fields: [endUserId], references: [id])
+  endUserId String?
+
+  Business   Business? @relation(fields: [businessId], references: [id])
+  businessId String?
 
   @@unique([projectId, transactionCorrelationId])
   @@index([transactionType])
@@ -623,10 +627,7 @@ enum AlertType {
   HighRiskTransaction
   DormantAccountActivity
   UnusualPattern
-  // Add other alert types as needed
 }
-
-// ... (Other models and enums)
 
 model AlertDefinition {
   id          String     @id @default(cuid())

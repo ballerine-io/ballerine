@@ -4,6 +4,7 @@ import { evaluateTransactionsAgainstDynamicRules } from './evaluate-transactions
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
 import { ClsService } from 'nestjs-cls';
+import { PaymentMethod, TransactionDirection } from '@prisma/client';
 
 describe('TransactionRulesEvaluationService', () => {
   let prismaService: PrismaService;
@@ -36,56 +37,50 @@ describe('TransactionRulesEvaluationService', () => {
         customer: { connect: { id: 'customer-id' } },
       },
     });
-
-    await prismaService.counterparty.create({
+    await prismaService.business.create({
       data: {
-        id: 'counterparty-1',
-        type: 'Individual',
-        project: { connect: { id: 'project-id' } },
+        id: 'business-id-1',
+        companyName: 'business-name-1',
+        projectId: 'project-id',
+      },
+    });
+    await prismaService.business.create({
+      data: {
+        id: 'business-id-2',
+        companyName: 'business-name-2',
+        projectId: 'project-id',
       },
     });
 
-    await prismaService.counterparty.create({
-      data: {
-        id: 'counterparty-2',
-        type: 'Individual',
-        project: { connect: { id: 'project-id' } },
-      },
-    });
-    await prismaService.counterparty.create({
-      data: {
-        id: '9999999999999999',
-        type: 'Individual',
-        project: { connect: { id: 'project-id' } },
-      },
-    });
-    await prismaService.counterparty.create({
-      data: {
-        id: '999999******9999',
-        type: 'Individual',
-        project: { connect: { id: 'project-id' } },
-      },
-    });
-    await prismaService.counterparty.create({
-      data: {
-        id: 'counterparty-3',
-        type: 'Individual',
-        project: { connect: { id: 'project-id' } },
-      },
-    });
-    await prismaService.counterparty.create({
-      data: {
-        id: 'counterparty-4',
-        type: 'Individual',
-        project: { connect: { id: 'project-id' } },
-      },
-    });
+    async function createCounterParty(
+      prismaService: PrismaService,
+      id: string,
+      projectId: string,
+      businessId?: string,
+    ) {
+      await prismaService.counterparty.create({
+        data: {
+          id,
+          type: 'Individual',
+          project: { connect: { id: projectId } },
+          business: { connect: { id: businessId || 'business-id-1' } },
+        },
+      });
+    }
+
+    await createCounterParty(prismaService, 'counterparty-1', 'project-id');
+    await createCounterParty(prismaService, 'counterparty-2', 'project-id');
+    await createCounterParty(prismaService, '9999999999999999', 'project-id');
+    await createCounterParty(prismaService, '999999******9999', 'project-id');
+    await createCounterParty(prismaService, 'counterparty-3', 'project-id');
+    await createCounterParty(prismaService, 'counterparty-4', 'project-id');
+
     await prismaService.transactionRecord.createMany({
       data: [
         {
           transactionDirection: 'Inbound',
           counterpartyOriginatorId: 'counterparty-1',
-          paymentMethod: 'CreditCard',
+          paymentMethod: PaymentMethod.CreditCard,
           transactionDate: new Date(),
           transactionAmount: 500,
           transactionCorrelationId: 'correlation-id-1',
@@ -93,11 +88,12 @@ describe('TransactionRulesEvaluationService', () => {
           transactionBaseAmount: 500,
           transactionBaseCurrency: 'USD',
           projectId: 'project-id',
+          businessId: 'business-id-1',
         },
         {
           transactionDirection: 'Inbound',
           counterpartyOriginatorId: 'counterparty-1',
-          paymentMethod: 'CreditCard',
+          paymentMethod: PaymentMethod.CreditCard,
           transactionDate: new Date(),
           transactionAmount: 500,
           transactionCorrelationId: 'correlation-id-2',
@@ -105,18 +101,33 @@ describe('TransactionRulesEvaluationService', () => {
           transactionBaseAmount: 500,
           transactionBaseCurrency: 'USD',
           projectId: 'project-id',
+          businessId: 'business-id-1',
+        },
+        {
+          transactionDirection: 'Inbound',
+          counterpartyOriginatorId: 'counterparty-1',
+          paymentMethod: PaymentMethod.CreditCard,
+          transactionDate: new Date(),
+          transactionAmount: 1000,
+          transactionCorrelationId: 'correlation-id-3',
+          transactionCurrency: 'USD',
+          transactionBaseAmount: 1000,
+          transactionBaseCurrency: 'USD',
+          projectId: 'project-id',
+          businessId: 'business-id-2',
         },
         {
           transactionDirection: 'Inbound',
           counterpartyOriginatorId: 'counterparty-2',
-          paymentMethod: 'CreditCard',
+          paymentMethod: PaymentMethod.CreditCard,
           transactionDate: new Date(),
           transactionAmount: 1500,
-          transactionCorrelationId: 'correlation-id-3',
+          transactionCorrelationId: 'correlation-id-4',
           transactionCurrency: 'USD',
           transactionBaseAmount: 1500,
           transactionBaseCurrency: 'USD',
           projectId: 'project-id',
+          businessId: 'business-id-2',
         },
       ],
     });
@@ -135,7 +146,7 @@ describe('TransactionRulesEvaluationService', () => {
     const results = await evaluateTransactionsAgainstDynamicRules({
       direction: 'Inbound',
       excludedCounterpartyIds: ['excluded-counterparty-1'],
-      paymentMethods: ['CreditCard'],
+      paymentMethods: [PaymentMethod.CreditCard],
       excludePaymentMethods: false,
       days: 7,
       amountThreshold: amountThreshold,
@@ -167,7 +178,7 @@ describe('TransactionRulesEvaluationService', () => {
         id,
         transactionDirection: 'Inbound',
         counterpartyOriginatorId,
-        paymentMethod: 'CreditCard',
+        paymentMethod: PaymentMethod.CreditCard,
         transactionDate: new Date(),
         transactionAmount: 1500,
         transactionCorrelationId: `correlation-id-temp-${index}`,
@@ -183,7 +194,7 @@ describe('TransactionRulesEvaluationService', () => {
     const creditCardResults = await evaluateTransactionsAgainstDynamicRules({
       direction: 'Inbound',
       excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
-      paymentMethods: ['CreditCard'],
+      paymentMethods: [PaymentMethod.CreditCard],
       excludePaymentMethods: false,
       days: 7,
       amountThreshold: amountThreshold,
@@ -206,23 +217,23 @@ describe('TransactionRulesEvaluationService', () => {
       {
         id: 'transaction-id-1',
         counterpartyOriginatorId: '9999999999999999',
-        paymentMethod: 'CreditCard',
+        paymentMethod: PaymentMethod.CreditCard,
       },
       {
         id: 'transaction-id-2',
         counterpartyOriginatorId: '999999******9999',
-        paymentMethod: 'BankTransfer',
+        paymentMethod: PaymentMethod.BankTransfer,
       },
       {
         id: 'transaction-id-3',
         counterpartyOriginatorId: 'counterparty-3',
-        paymentMethod: 'BankTransfer',
+        paymentMethod: PaymentMethod.BankTransfer,
         amount: 500,
       },
       {
         id: 'transaction-id-4',
         counterpartyOriginatorId: 'counterparty-4',
-        paymentMethod: 'BankTransfer',
+        paymentMethod: PaymentMethod.BankTransfer,
         amount: 500,
       },
     ];
@@ -230,9 +241,9 @@ describe('TransactionRulesEvaluationService', () => {
       data: transactionsSeeds.map(
         ({ id, counterpartyOriginatorId, paymentMethod, amount }, index) => ({
           id,
-          transactionDirection: 'Inbound',
+          transactionDirection: TransactionDirection.Inbound,
           counterpartyOriginatorId,
-          paymentMethod: paymentMethod || 'DebitCard', // Assume these are non-credit card payment methods. Adjust as necessary.
+          paymentMethod: paymentMethod || PaymentMethod.DebitCard, // Assume these are non-credit card payment methods. Adjust as necessary.
           transactionDate: new Date(),
           transactionAmount: amount || 1500,
           transactionCorrelationId: `correlation-id-temp-${index}`,
@@ -249,7 +260,7 @@ describe('TransactionRulesEvaluationService', () => {
     const nonCreditCardResults = await evaluateTransactionsAgainstDynamicRules({
       direction: 'Inbound',
       excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
-      paymentMethods: ['DebitCard', 'BankTransfer', 'PayPal'], // Assume these are non-credit card payment methods. Adjust as necessary.
+      paymentMethods: ['DebitCard', PaymentMethod.BankTransfer, 'PayPal'], // Assume these are non-credit card payment methods. Adjust as necessary.
       excludePaymentMethods: true, // Set to true if you're excluding these payment methods, otherwise set to false.
       days: 7,
       amountThreshold: amountThreshold,
