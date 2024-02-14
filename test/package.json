@@ -6,6 +6,7 @@
     "scripts": {
         "test": "npx playwright test",
         "test:headed": "npx playwright test --headed",
+        "test:headed:one": "npx playwright test --headed tests/example.spec.ts",
         "test:headed:qase": "export QASE_REPORT=1 && npx playwright test --headed",
         "test:html-report": "npx playwright show-report",
         "playwright:clean": "rm -rf playwright-report test-results",
