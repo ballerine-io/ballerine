@@ -66,6 +66,7 @@ jobs:
             type=raw,value=${{ github.head_ref || github.ref_name }}
             type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
             type=raw,value=${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
+            type=sha
       - name: Extract metadata (tags, labels) for prod Docker images
         if: github.ref == 'refs/heads/prod'
         # This branch will have the tag latest
@@ -78,6 +79,7 @@ jobs:
             type=raw,value=commit-${{ github.sha }}-prod
             type=raw,value=${{ steps.get_version.outputs.version }}-prod
             type=raw,value=latest
+            type=sha
       - name: Build and push Docker image for Prod
         if: github.ref == 'refs/heads/prod'
         uses: docker/build-push-action@v4
@@ -108,6 +110,10 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL'
       
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      
       - name: Checkout cloud-infra-config repository
         uses: actions/checkout@v3
         with:
@@ -123,7 +129,7 @@ jobs:
           repository: ballerine-io/cloud-infra-config
           branch: iamops/blue-green
           commitChange: true
-          message: 'Update wf-service image Version to ${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}'
+          message: 'Update wf-service image Version to sha-${{ steps.vars.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
@@ -139,7 +145,7 @@ jobs:
           repository: ballerine-io/cloud-infra-config
           branch: iamops/blue-green
           commitChange: true
-          message: 'Update wf-service image Version to ${{ steps.get_version.outputs.version }}-prod'
+          message: 'Update wf-service image Version to sha-${{ steps.vars.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
