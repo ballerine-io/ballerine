@@ -526,6 +526,7 @@ model TransactionRecord {
   originatorUserAgent   String? // User agent of the device used for the transaction
 
   paymentMethod    String?
+  paymentBrandName String? // Category of the transaction
   paymentType      PaymentType?
   paymentChannel   PaymentChannel?
   paymentIssuer    PaymentIssuer?

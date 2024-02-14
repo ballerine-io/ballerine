@@ -145,7 +145,11 @@ HAVING
   return results;
 }
 
-export async function evaluateChargeback({
+// NUMCHRG	High Velocity - Chargeback 	Customer	Grouped: Customer	Significant number of chargebacks over a set period of time
+// SUMCHRG	High Cumulative Amount - Chargeback 	Customer	Grouped: Customer	High sum of chargebacks over a set period of time
+// NUMREFCC	High Velocity - Refund	Customer	Grouped: Customer	Significant number of refunds over a set period of time 
+// SUMREFCC	High Cumulative Amount - Refund	Customer	Grouped: Customer	High sum of refunds over a set period of time 
+export async function evaluateCustomersTransactionType({
   projectId,
   transactionType,
   amountThreshold = 5_000,
@@ -155,7 +159,7 @@ export async function evaluateChargeback({
   isPerBrand = false,
 }: {
   projectId: string;
-  transactionType: TransactionRecordType;
+  transactionType: TransactionRecordType[];
   isCumulative: boolean;
   amountThreshold?: number;
   paymentMethods?: string[];
@@ -166,26 +170,27 @@ export async function evaluateChargeback({
     throw new Error('projectId is required');
   }
 
-  if (!transactionType) {
+  if (!Array.isArray(transactionType) || !transactionType.length) {
     throw new Error('transactionType is required');
   }
 
+  
   let conditions: Prisma.Sql[] = [
     Prisma.sql`tr."projectId" = '${projectId}'`,
     Prisma.sql`tr."businessId" IS NOT NULL`,
-    Prisma.sql`tr."transactionType" = '${transactionType}'::"TransactionRecordType"`,
+    // TODO: should we use equation instead of IN clause?
+    Prisma.sql`tr."transactionType" IN (${Prisma.join(transactionType.map((type) => `'${type}'::"TransactionRecordType"`), ',')})`,
     Prisma.sql`SUM(tr."transactionAmount") > ${amountThreshold}`,
     Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${days} days'`,
   ];
 
-  if (paymentMethods.length) {
+  if (Array.isArray(paymentMethods.length)) {
     conditions.push(Prisma.sql`"paymentMethod" IN (${Prisma.join(paymentMethods)})`);
   }
 
-  const select: Prisma.Sql = isCumulative
-    ? Prisma.sql`COUNT(tr."id") as totalTransactions`
-    : Prisma.sql`SUM("transactionAmount") AS "totalAmount"`;
+  const select: Prisma.Sql = isCumulative ? Prisma.sql`SUM("transactionAmount") AS "totalAmount"`: Prisma.sql`COUNT(tr."id") as totalTransactions`
 
+  // High Velocity - Refund
   const groupBy: Prisma.Sql = isPerBrand ? Prisma.sql`productId` : Prisma.empty;
 
   const query: Sql = Prisma.sql`SELECT tr."businessId", ${select},
@@ -194,7 +199,60 @@ export async function evaluateChargeback({
   `;
 
   console.log('Executing query...', query.sql);
-  const results = await prisma.$queryRaw(query);
+  const results = await prisma.$queryRaw`${query}`;
+
+  console.debug(results);
+  return results;
+}
+
+// HANUMICC	High Velocity - Historic Average - Inbound	Customer	Grouped: Customer	Total number of incoming transactions exceeds client’s historical average
+export async function evalHistoricAvgOfIncomingTransaction({
+  brandName,
+  transactionType,
+  direction = TransactionDirection.Inbound,
+  paymentMethods = [],
+  days = 7,
+}: {
+  brandName: string;
+  transactionType: TransactionRecordType[];
+  direction: TransactionDirection,
+  amountThreshold?: number;
+  paymentMethods?: string[];
+  days?: number;
+}) {
+  if (!brandName) {
+    throw new Error('brandName is required');
+  }
+
+  if (!Array.isArray(transactionType) || !transactionType.length) {
+    throw new Error('transactionType is required');
+  }
+
+  let conditions: Prisma.Sql[] = [
+    Prisma.sql`tr."businessId" IS NOT NULL`,
+    Prisma.sql`tr."paymentBrandName" = '${brandName}'`,
+    Prisma.sql`"transactionDirection" = '${direction}'::"TransactionDirection"`,
+    Prisma.sql`COUNT()`,
+    Prisma.sql`COUNT()`,
+    Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${days} days'`,
+  ];
+
+  if (Array.isArray(paymentMethods.length)) {
+    conditions.push(Prisma.sql`"paymentMethod" IN (${Prisma.join(paymentMethods)})`);
+  }
+
+  const select: Prisma.Sql = ;
+
+  // High Velocity - Refund
+  const groupBy: Prisma.Sql = ;
+
+  const query: Sql = Prisma.sql`SELECT tr."businessId", ${select},
+  FROM "TransactionRecord" as tr
+  GROUP BY ${Prisma.join(['tr."paymentBrandName"', groupBy], ',')}
+  `;
+
+  console.log('Executing query...', query.sql);
+  const results = await prisma.$queryRaw`${query}`;
 
   console.debug(results);
   return results;
