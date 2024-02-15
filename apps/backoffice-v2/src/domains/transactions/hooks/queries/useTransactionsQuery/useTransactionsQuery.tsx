@@ -2,12 +2,14 @@ import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/us
 import { useQuery } from '@tanstack/react-query';
 import { transactionsQueryKeys } from '@/domains/transactions/query-keys';
 
-export const useTransactionsQuery = () => {
+export const useTransactionsQuery = ({ businessId }: { businessId: string }) => {
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    ...transactionsQueryKeys.list(),
-    enabled: isAuthenticated,
+    ...transactionsQueryKeys.list({
+      businessId,
+    }),
+    enabled: isAuthenticated && !!businessId,
     staleTime: 100_000,
   });
 };

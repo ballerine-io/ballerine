@@ -6,6 +6,7 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { env } from '@/common/env/env';
 import { TObjectValues } from '@/common/types';
+import { noNullish } from '@ballerine/common';
 
 export const TransactionDirection = {
   INBOUND: 'Inbound',
@@ -47,20 +48,30 @@ export const TransactionsListSchema = z.array(
         companyName: z.string(),
       })
       .nullable(),
-    // counterpartyOriginatorName: z.string(),
+    counterpartyOriginator: z
+      .object({
+        endUser: z
+          .object({
+            firstName: z.string(),
+            lastName: z.string(),
+          })
+          .nullable(),
+      })
+      .nullable(),
     counterpartyOriginatorId: z.string(),
     paymentMethod: z.enum(PaymentMethods),
-  }).transform(({ business, ...data }) => ({
+  }).transform(({ business, counterpartyOriginator, ...data }) => ({
     ...data,
     business: business?.companyName,
+    counterpartyOriginatorName: noNullish`${counterpartyOriginator?.endUser?.firstName} ${counterpartyOriginator?.endUser?.lastName}`,
   })),
 );
 
 export type TTransactionsList = z.output<typeof TransactionsListSchema>;
 
-export const fetchTransactions = async () => {
+export const fetchTransactions = async ({ businessId }: { businessId: string }) => {
   const [alerts, error] = await apiClient({
-    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/transactions`,
+    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/transactions?businessId=${businessId}`,
     method: Method.GET,
     schema: TransactionsListSchema,
   });

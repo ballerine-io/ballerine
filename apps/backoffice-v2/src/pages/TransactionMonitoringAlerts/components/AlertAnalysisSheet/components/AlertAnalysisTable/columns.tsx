@@ -80,7 +80,7 @@ export const columns = [
     },
     header: 'Business ID',
   }),
-  columnHelper.accessor('counterPartyName', {
+  columnHelper.accessor('counterpartyOriginatorName', {
     cell: info => {
       const value = info.getValue();
 

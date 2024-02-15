@@ -109,6 +109,16 @@ export class TransactionControllerExternal {
             companyName: true,
           },
         },
+        counterpartyOriginator: {
+          select: {
+            endUser: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
       },
     });
   }

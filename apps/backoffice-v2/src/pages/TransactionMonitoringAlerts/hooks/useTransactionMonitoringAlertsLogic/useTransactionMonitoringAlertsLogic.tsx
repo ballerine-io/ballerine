@@ -4,10 +4,8 @@ import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSear
 import { useAlertsQuery } from '@/domains/alerts/hooks/queries/useAlertsQuery/useAlertsQuery';
 import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
 import { useMemo } from 'react';
-import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
 import { useSearch } from '@/common/hooks/useSearch/useSearch';
-import { useTransactionsQuery } from '@/domains/transactions/hooks/queries/useTransactionsQuery/useTransactionsQuery';
 
 export const useTransactionMonitoringAlertsLogic = () => {
   const { data: session } = useAuthenticatedUserQuery();
@@ -22,7 +20,6 @@ export const useTransactionMonitoringAlertsLogic = () => {
     sortDir,
     sortBy,
   });
-  const { data: transactions } = useTransactionsQuery();
   const { data: assignees } = useUsersQuery();
   const sortedAssignees = useMemo(
     () =>
@@ -32,8 +29,6 @@ export const useTransactionMonitoringAlertsLogic = () => {
         ?.sort((a, b) => (a?.id === session?.user?.id ? -1 : b?.id === session?.user?.id ? 1 : 0)),
     [assignees, session?.user?.id],
   );
-  const [isSheetOpen, toggleIsAlertAnalysisSheetOpen, toggleOnIsAlertAnalysisSheetOpen] =
-    useToggle();
   const { onPaginate, onPrevPage, onNextPage } = usePagination();
   const isLastPage = (alerts?.length ?? 0) < pageSize || alerts?.length === 0;
   const { search, onSearch } = useSearch({
@@ -42,10 +37,6 @@ export const useTransactionMonitoringAlertsLogic = () => {
 
   return {
     alerts,
-    transactions,
-    isSheetOpen,
-    toggleOnIsAlertAnalysisSheetOpen,
-    toggleIsAlertAnalysisSheetOpen,
     assignees: sortedAssignees,
     authenticatedUser: session?.user,
     page,
