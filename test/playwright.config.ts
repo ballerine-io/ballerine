@@ -10,7 +10,7 @@ require('dotenv').config();
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-    testDir: './tests',
+    testDir: './tests/specs',
     /* Maximum time one test can run for. */
     timeout: 60 * 1000,
     //Global Setup to run before all tests
@@ -31,7 +31,7 @@ export default defineConfig({
     /* Retry on CI only */
     retries: process.env.CI ? 1 : 0,
     /* Opt out of parallel tests on CI. */
-    workers: process.env.CI ? 1 : 2,
+    workers: process.env.CI ? 1 : 1,
     /* Reporter to use. See https://playwright.dev/docs/test-reporters */
     reporter: process.env.CI
         ? [
@@ -77,38 +77,55 @@ export default defineConfig({
 
     /* Configure projects for major browsers */
     projects: [
+        // {
+        //     name: 'setup',
+        //     use: {
+        //         headless: true
+        //     },
+        //     testMatch: 'auth.setup.spec.ts'
+        // },
         {
             name: 'Chrome',
+            // dependencies: ['setup'],
             use: {
-                // Configure the browser to use.
-                browserName: 'chromium',
-
-                //Chrome Browser Config
-                channel: 'chrome',
-
-                //Browser height and width
-                // viewport: { width: 1920, height: 1080 },
-                ignoreHTTPSErrors: true,
-
-                //Enable File Downloads in Chrome
-                acceptDownloads: true,
-
-                //Slows down execution by ms
-                launchOptions: {
-                    args: [
-                        '--start-maximized',
-                        '--disable-web-security',
-                        '--no-sandbox',
-                        '--disable-gpu',
-                        '--disable-dev-shm-usage',
-                        '--window-size=1900,1000',
-                        '--allow-insecure-localhost',
-                        '--ignore-certificate-error'
-                    ]
-                    //slowMo: 50
-                }
+                storageState: './tests/auth/defaultStorageState.json',
+                channel: 'chrome'
             }
         }
+        // {
+        //     name: 'Chrome',
+        //     dependencies: ['setup'],
+        //     use: {
+        //         // Configure the browser to use.
+        //         browserName: 'chromium',
+
+        //         //Chrome Browser Config
+        //         channel: 'chrome',
+
+        //         //Browser height and width
+        //         // viewport: { width: 1920, height: 1080 },
+        //         ignoreHTTPSErrors: true,
+
+        //         //Enable File Downloads in Chrome
+        //         acceptDownloads: true,
+        //         storageState: './tests/auth/defaultStorageState.json',
+
+        //         //Slows down execution by ms
+        //         launchOptions: {
+        //             args: [
+        //                 '--start-maximized',
+        //                 '--disable-web-security',
+        //                 '--no-sandbox',
+        //                 '--disable-gpu',
+        //                 '--disable-dev-shm-usage',
+        //                 '--window-size=1900,1000',
+        //                 '--allow-insecure-localhost',
+        //                 '--ignore-certificate-error'
+        //             ]
+        //             //slowMo: 50
+        //         }
+        //     }
+        // }
     ]
 
     /* Run your local dev server before starting the tests */
