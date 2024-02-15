@@ -47,7 +47,7 @@ export const columns = [
     },
     header: 'Transaction',
   }),
-  columnHelper.accessor('direction', {
+  columnHelper.accessor('transactionDirection', {
     cell: info => {
       const value = info.getValue();
 

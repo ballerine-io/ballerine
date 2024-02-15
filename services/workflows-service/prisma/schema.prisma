@@ -513,6 +513,7 @@ model TransactionRecord {
   transactionType          TransactionRecordType? // Enum for transaction type
   transactionStatus        TransactionRecordStatus? @default(Completed)
   transactionStatusReason  String? // Reason for the transaction status
+  transactionDirection TransactionDirection?
 
   originatorIpAddress   String? // IP address of the transaction initiator
   originatorGeoLocation String? // Geolocation of the transaction initiator
@@ -636,9 +637,9 @@ model AlertDefinition {
   createdBy  String @default("SYSTEM")
   modifiedBy String
 
-  dedupeStrategies Json 
-  config           Json 
-  defaultSeverity  AlertSeverity 
+  dedupeStrategies Json
+  config           Json
+  defaultSeverity  AlertSeverity
 
   tags           String[] // Tags for the alert
   additionalInfo Json // Additional information
@@ -662,15 +663,15 @@ model Alert {
 
   businessId             String?
   business               Business?       @relation(fields: [businessId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-  
-  endUserId              String? 
+
+  endUserId              String?
   endUser                EndUser?        @relation(fields: [endUserId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-  
+
   dataTimestamp          DateTime
-  state                  AlertState 
-  status                 AlertStatus 
+  state                  AlertState
+  status                 AlertStatus
   tags                   String[]
-  severity               AlertSeverity? 
+  severity               AlertSeverity?
 
   executionDetails Json // Execution details
 
@@ -724,6 +725,11 @@ enum SanctionListMatchStatus {
   NotListed // The counterparty is not found on any sanction list.
   PendingReview // The counterparty's status against sanction lists is pending review.
   Listed // The counterparty is listed on a sanction list.
+}
+
+enum TransactionDirection {
+  Inbound
+  Outbound
 }
 
 model Counterparty {

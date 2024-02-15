@@ -6,10 +6,12 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { env } from '@/common/env/env';
 
+export const TransactionDirections = ['Inbound', 'Outbound'] as const;
+
 export const TransactionsListSchema = z.array(
   ObjectWithIdSchema.extend({
     transactionDate: z.string().datetime(),
-    // direction: z.enum(['inbound', 'outbound'] as const),
+    transactionDirection: z.enum(TransactionDirections),
     transactionAmount: z.number(),
     // business: z.string(),
     businessId: z.string().nullable(),
