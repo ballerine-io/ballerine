@@ -9,7 +9,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import express from 'express';
-import { Get, Query, Post, Controller, Body, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
 import { GetTransactionsDto } from '@/transaction/dtos/get-transactions.dto';
 import { PaymentMethod } from '@prisma/client';
 
@@ -102,6 +102,14 @@ export class TransactionControllerExternal {
     @Query() getTransactionsParameters: GetTransactionsDto,
     @CurrentProject() projectId: types.TProjectId,
   ) {
-    return this.service.getTransactions(getTransactionsParameters, projectId);
+    return this.service.getTransactions(getTransactionsParameters, projectId, {
+      include: {
+        business: {
+          select: {
+            companyName: true,
+          },
+        },
+      },
+    });
   }
 }

@@ -570,9 +570,9 @@ model TransactionRecord {
 
   counterpartyBeneficiaryId String?
   counterpartyBeneficiary   Counterparty? @relation("BenefitingCounterparty", fields: [counterpartyBeneficiaryId], references: [id])
-  EndUser                   EndUser?      @relation(fields: [endUserId], references: [id])
+  endUser                   EndUser?      @relation(fields: [endUserId], references: [id])
   endUserId                 String?
-  Business                  Business?     @relation(fields: [businessId], references: [id])
+  business                  Business?     @relation(fields: [businessId], references: [id])
   businessId                String?
 
   @@index([transactionType])

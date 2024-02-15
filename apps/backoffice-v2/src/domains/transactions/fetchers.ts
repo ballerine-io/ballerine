@@ -15,10 +15,18 @@ export const TransactionsListSchema = z.array(
     transactionAmount: z.number(),
     // business: z.string(),
     businessId: z.string().nullable(),
+    business: z
+      .object({
+        companyName: z.string(),
+      })
+      .nullable(),
     // counterPartyName: z.string(),
     // counterPartyId: z.string(),
     // counterPartyInstitution: z.string(),
-  }),
+  }).transform(({ business, ...data }) => ({
+    ...data,
+    business: business?.companyName,
+  })),
 );
 
 export type TTransactionsList = z.output<typeof TransactionsListSchema>;

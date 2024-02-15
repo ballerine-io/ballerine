@@ -96,6 +96,7 @@ export const generateTransactions = async (
           TransactionDirection.Inbound,
           TransactionDirection.Outbound,
         ]),
+        businessId,
       },
     });
   }
