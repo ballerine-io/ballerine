@@ -661,11 +661,12 @@ model Alert {
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  businessId String?
-  business   Business? @relation(fields: [businessId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  // TO ALON: we dont need it anymore its exists on the related counterparty!
+  // businessId String?
+  // business   Business? @relation(fields: [businessId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  endUserId String?
-  endUser   EndUser? @relation(fields: [endUserId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  // endUserId String?
+  // endUser   EndUser? @relation(fields: [endUserId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
   dataTimestamp DateTime
   state         AlertState
