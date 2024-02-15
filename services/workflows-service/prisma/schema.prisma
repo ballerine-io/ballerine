@@ -523,9 +523,11 @@ model TransactionRecord {
   transactionDirection     TransactionDirection? // Reason for the transaction status
   transactionReference     String? // Reference number for the transaction
 
-  originatorIpAddress   String? // IP address of the transaction initiator
-  originatorGeoLocation String? // Geolocation of the transaction initiator
-  originatorUserAgent   String? // User agent of the device used for the transaction
+  originatorIpAddress   String? 
+  originatorGeoLocation String? 
+  originatorUserAgent   String?
+  originatorSortCode    String?
+  originatorBankCountry String?
 
   paymentBrandName String? // Category of the transaction
   paymentMethod    PaymentMethod?
@@ -736,12 +738,11 @@ enum SanctionListMatchStatus {
 }
 
 model Counterparty {
-  id String @id @default(cuid())
+  id String @id
 
   correlationId  String?
   type           CounterpartyType
-  sortCode       String?
-  bankCountry    String?
+
   additionalInfo Json? // Additional information about the counterparty
 
   businessId String?
@@ -749,6 +750,7 @@ model Counterparty {
 
   endUserId               String? // individual
   endUser                 EndUser?            @relation(fields: [endUserId], references: [id])
+
   // Relations
   originatingTransactions TransactionRecord[] @relation("OriginatingCounterparty")
   benefitingTransactions  TransactionRecord[] @relation("BenefitingCounterparty")
@@ -758,4 +760,5 @@ model Counterparty {
   project   Project @relation(fields: [projectId], references: [id])
 
   @@index([correlationId])
+  @@unique([projectId, correlationId])
 }
