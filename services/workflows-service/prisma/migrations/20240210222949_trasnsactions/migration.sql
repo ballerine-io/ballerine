@@ -175,6 +175,13 @@ CREATE TABLE "Counterparty" (
     "projectId" TEXT NOT NULL,
 
     CONSTRAINT "Counterparty_pkey" PRIMARY KEY ("id")
+    CONSTRAINT individual_constraint CHECK (
+        type = 'Individual' AND endUserId IS NOT NULL AND businessId IS NULL
+    ),
+
+    CONSTRAINT organization_constraint CHECK (
+        (type = 'Company' OR type = 'Government' OR type = 'NonProfit') AND businessId IS NOT NULL AND endUserId IS NULL
+    ),
 );
 
 -- CreateIndex
