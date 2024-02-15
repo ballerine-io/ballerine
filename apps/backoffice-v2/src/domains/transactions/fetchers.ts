@@ -5,8 +5,35 @@ import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-i
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { env } from '@/common/env/env';
+import { TObjectValues } from '@/common/types';
 
-export const TransactionDirections = ['Inbound', 'Outbound'] as const;
+export const TransactionDirection = {
+  INBOUND: 'Inbound',
+  OUTBOUND: 'Outbound',
+} as const;
+
+export const TransactionDirections = [
+  TransactionDirection.INBOUND,
+  TransactionDirection.OUTBOUND,
+] as const satisfies ReadonlyArray<TObjectValues<typeof TransactionDirection>>;
+
+export const PaymentMethod = {
+  CREDIT_CARD: 'CreditCard',
+  DEBIT_CARD: 'DebitCard',
+  BANK_TRANSFER: 'BankTransfer',
+  PAYPAL: 'PayPal',
+  APPLE_PAY: 'ApplePay',
+  GOOGLE_PAY: 'GooglePay',
+} as const;
+
+export const PaymentMethods = [
+  PaymentMethod.CREDIT_CARD,
+  PaymentMethod.DEBIT_CARD,
+  PaymentMethod.BANK_TRANSFER,
+  PaymentMethod.PAYPAL,
+  PaymentMethod.APPLE_PAY,
+  PaymentMethod.GOOGLE_PAY,
+] as const satisfies ReadonlyArray<TObjectValues<typeof PaymentMethod>>;
 
 export const TransactionsListSchema = z.array(
   ObjectWithIdSchema.extend({
@@ -20,9 +47,9 @@ export const TransactionsListSchema = z.array(
         companyName: z.string(),
       })
       .nullable(),
-    // counterPartyName: z.string(),
-    // counterPartyId: z.string(),
-    // counterPartyInstitution: z.string(),
+    // counterpartyOriginatorName: z.string(),
+    counterpartyOriginatorId: z.string(),
+    paymentMethod: z.enum(PaymentMethods),
   }).transform(({ business, ...data }) => ({
     ...data,
     business: business?.companyName,

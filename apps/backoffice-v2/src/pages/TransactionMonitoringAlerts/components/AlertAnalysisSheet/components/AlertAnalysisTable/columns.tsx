@@ -4,6 +4,7 @@ import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback
 import { TTransactionsList } from '@/domains/transactions/fetchers';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
+import { titleCase } from 'string-ts';
 
 const columnHelper = createColumnHelper<TTransactionsList[number]>();
 
@@ -87,7 +88,7 @@ export const columns = [
     },
     header: 'Counterparty Name',
   }),
-  columnHelper.accessor('counterPartyId', {
+  columnHelper.accessor('counterpartyOriginatorId', {
     cell: info => {
       const value = info.getValue();
 
@@ -95,12 +96,16 @@ export const columns = [
     },
     header: 'Counterparty ID',
   }),
-  columnHelper.accessor('counterPartyName', {
+  columnHelper.accessor('paymentMethod', {
     cell: info => {
       const value = info.getValue();
 
-      return <TextWithNAFallback className="text-sm font-semibold">{value}</TextWithNAFallback>;
+      return (
+        <TextWithNAFallback className="text-sm font-semibold">
+          {titleCase(value)}
+        </TextWithNAFallback>
+      );
     },
-    header: 'Counterparty Institution',
+    header: 'Payment Method',
   }),
 ];

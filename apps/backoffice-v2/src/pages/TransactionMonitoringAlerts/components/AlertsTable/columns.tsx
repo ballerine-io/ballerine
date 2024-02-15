@@ -13,7 +13,13 @@ import React, { ComponentProps } from 'react';
 import { severityToClassName } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/severity-to-class-name';
 import { IndeterminateCheckbox } from '@/common/components/atoms/IndeterminateCheckbox/IndeterminateCheckbox';
 
-const columnHelper = createColumnHelper<TAlertsList[number]>();
+const columnHelper = createColumnHelper<
+  TAlertsList[number] & {
+    // TODO: Change type once decisions PR is merged
+    // Computed from `alert.state`
+    decision: string;
+  }
+>();
 
 export const columns = [
   columnHelper.accessor('dataTimestamp', {
@@ -36,7 +42,7 @@ export const columns = [
     },
     header: 'Date & Time',
   }),
-  columnHelper.accessor('merchant', {
+  columnHelper.accessor('merchant.name', {
     cell: info => {
       const value = info.getValue();
 
