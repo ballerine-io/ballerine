@@ -1,0 +1,15 @@
+{
+    "cookies": [
+        {
+            "name": "session",
+            "value": "eyJwYXNzcG9ydCI6eyJ1c2VyIjp7InVzZXIiOnsiaWQiOiJjbHB2ZHo3M3YwMDAwMjNpczRucjBjdGhyIiwiZW1haWwiOiJhZG1pbkBhZG1pbi5jb20iLCJmaXJzdE5hbWUiOiJNYXJpYW5lIiwibGFzdE5hbWUiOiJPJ0Nvbm5lbGwifSwiZXhwaXJlcyI6IjIwMjQtMDItMTVUMTQ6NDU6MTIuMzUzWiIsInR5cGUiOiJ1c2VyIn19fQ==",
+            "domain": "api-dev.eu.ballerine.io",
+            "path": "/",
+            "expires": -1,
+            "httpOnly": false,
+            "secure": true,
+            "sameSite": "Lax"
+        }
+    ],
+    "origins": []
+}
