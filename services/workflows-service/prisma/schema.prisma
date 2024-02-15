@@ -689,8 +689,6 @@ model Alert {
   counterparty   Counterparty? @relation(fields: [counterpartyId], references: [id])
 
   @@index([assigneeId])
-  @@index([businessId])
-  @@index([endUserId])
   @@index([projectId])
   @@index([alertDefinitionId])
   @@index([counterpartyId])
