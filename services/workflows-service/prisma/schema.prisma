@@ -521,10 +521,6 @@ model TransactionRecord {
   transactionStatusReason  String? // Reason for the transaction status
   transactionDirection     TransactionDirection? // Reason for the transaction status
 
-  originatorIpAddress   String? // IP address of the transaction initiator
-  originatorGeoLocation String? // Geolocation of the transaction initiator
-  originatorUserAgent   String? // User agent of the device used for the transaction
-
   paymentMethod    String?
   paymentBrandName String? // Category of the transaction
   paymentType      PaymentType?
@@ -577,10 +573,6 @@ model TransactionRecord {
 
   counterpartyBeneficiaryId String?
   counterpartyBeneficiary   Counterparty? @relation("BenefitingCounterparty", fields: [counterpartyBeneficiaryId], references: [id])
-  EndUser                   EndUser?      @relation(fields: [endUserId], references: [id])
-  endUserId                 String?
-  Business                  Business?     @relation(fields: [businessId], references: [id])
-  businessId                String?
 
   @@unique([projectId, transactionCorrelationId])
   @@index([transactionType])
@@ -703,13 +695,6 @@ model Alert {
   @@index([counterpartyId])
 }
 
-enum CounterpartyType {
-  Individual
-  Company
-  Government
-  NonProfit
-}
-
 enum RiskCategory {
   Low
   Medium
@@ -734,6 +719,12 @@ enum SanctionListMatchStatus {
   Listed // The counterparty is listed on a sanction list.
 }
 
+enum CounterpartyType {
+  Individual
+  Company
+  Government
+  NonProfit
+}
 model Counterparty {
   id String @id @default(cuid())
 
@@ -742,6 +733,10 @@ model Counterparty {
   sortCode       String?
   bankCountry    String?
   additionalInfo Json? // Additional information about the counterparty
+
+  ipAddress   String? // IP address of the transaction initiator
+  geoLocation String? // Geolocation of the transaction initiator
+  userAgent   String? // User agent of the device used for the transaction  
 
   businessId String?
   business   Business? @relation(fields: [businessId], references: [id])
