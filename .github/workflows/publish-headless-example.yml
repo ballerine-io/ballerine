@@ -30,8 +30,11 @@ jobs:
     if: ${{ needs.releases.result=='success' }}
 
     steps:
+      - name: Clear the Workspace
+        uses: AutoModality/action-clean@v1
+      
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install jq
         run: sudo apt-get install jq
@@ -113,6 +116,3 @@ jobs:
           exit-code: 1
           vuln-type: 'os,library'
           severity: 'CRITICAL'
-
-      - name: Clear the Workspace
-        uses: AutoModality/action-clean@v1

@@ -30,8 +30,11 @@ jobs:
     if: ${{ needs.releases.result=='success' }}
 
     steps:
+      - name: Clear the Workspace
+        uses: AutoModality/action-clean@v1
+        
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install jq
         run: sudo apt-get install jq
@@ -118,12 +121,15 @@ jobs:
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       
       - name: Checkout cloud-infra-config repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ballerine-io/cloud-infra-config
           token: ${{ secrets.GIT_TOKEN }}
           ref: iamops/blue-green
           fetch-depth: 0
+          sparse-checkout: |
+            kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml
+          sparse-checkout-cone-mode: false
 
       - name: Update workdlow-service image version for non Prod in the HelmChart
         if: github.ref != 'refs/heads/prod'
@@ -156,9 +162,3 @@ jobs:
                 "image.tag": "${{ steps.get_version.outputs.version }}-prod"
               }
             }
-                
-      - name: Check the Disk Space and Memory
-        run: df -hT && free -m
-
-      - name: Clear the Workspace
-        uses: AutoModality/action-clean@v1
