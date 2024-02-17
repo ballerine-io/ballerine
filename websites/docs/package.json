@@ -17,14 +17,14 @@
   "dependencies": {
     "@astrojs/starlight": "0.11.1",
     "@astrojs/tailwind": "^4.0.0",
-    "@ballerine/common": "^0.7.39",
+    "@ballerine/common": "^0.7.41",
     "astro": "3.3.3",
     "sharp": "^0.32.4",
     "shiki": "^0.14.3"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.0.4",
-    "@ballerine/eslint-config": "^1.0.4",
+    "@ballerine/config": "^1.0.5",
+    "@ballerine/eslint-config": "^1.0.5",
     "eslint": "^8.46.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-standard-with-typescript": "^37.0.0",

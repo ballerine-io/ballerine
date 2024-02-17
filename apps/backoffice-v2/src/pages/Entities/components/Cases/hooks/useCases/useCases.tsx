@@ -54,7 +54,7 @@ export const useCases = () => {
     () => [
       ...new Set(
         Object.keys(states || {})
-          .filter(key => Object.keys(states?.[key] || {}).length)
+          .filter(key => states?.[key]?.tags?.length)
           .flatMap(key => states?.[key]?.tags),
       ),
     ],
@@ -63,6 +63,7 @@ export const useCases = () => {
 
   const { data: users } = useUsersQuery();
 
+  // Not using for now, will return to use it in the future
   const sortByOptions = useMemo(
     () => (entity === 'individuals' ? individualsSortByOptions : businessesSortByOptions),
     [entity],
@@ -86,17 +87,21 @@ export const useCases = () => {
             },
           ],
         },
-        {
-          label: 'Status',
-          value: 'caseStatus',
-          options: [
-            ...(statuses?.map(status => ({
-              label: tagToBadgeData[status]?.text,
-              value: status,
-              key: status,
-            })) ?? []),
-          ],
-        },
+        ...(statuses?.length
+          ? [
+              {
+                label: 'Status',
+                value: 'caseStatus',
+                options: [
+                  ...(statuses?.map(status => ({
+                    label: tagToBadgeData[status]?.text,
+                    value: status,
+                    key: status,
+                  })) ?? []),
+                ],
+              },
+            ]
+          : []),
         {
           label: 'State',
           value: 'status',
@@ -171,7 +176,7 @@ export const useCases = () => {
 
   return {
     entity,
-    sortByOptions,
+    sortByOptions: sharedSortByOptions,
     filterByOptions,
     filter,
     sortBy,

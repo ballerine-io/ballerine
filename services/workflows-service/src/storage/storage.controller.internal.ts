@@ -68,7 +68,7 @@ export class StorageControllerInternal {
     @UploadedFile() file: Partial<Express.MulterS3.File>,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const fileInfo = await this.service.createFileLink({
+    return await this.service.createFileLink({
       uri: file.location || String(file.path),
       fileNameOnDisk: String(file.path),
       fileNameInBucket: file.key,
@@ -85,8 +85,6 @@ export class StorageControllerInternal {
           })
         )?.mimeType,
     });
-
-    return fileInfo;
   }
 
   // curl -v http://localhost:3000/api/v1/internal/storage/1679322938093
@@ -126,7 +124,6 @@ export class StorageControllerInternal {
       persistedFile.mimeType ||
       mime.getType(persistedFile.fileName || persistedFile.uri || '') ||
       undefined;
-    const root = path.parse(os.homedir()).root;
 
     if (persistedFile.fileNameInBucket && format === 'signed-url') {
       const signedUrl = await createPresignedUrlWithClient({
@@ -151,10 +148,17 @@ export class StorageControllerInternal {
     if (!isBase64(persistedFile.uri) && this._isUri(persistedFile)) {
       const downloadFilePath = await this.__downloadFileFromRemote(persistedFile);
 
-      return res.sendFile(downloadFilePath, { root: root });
+      return res.sendFile(this.__getAbsoluteFilePAth(downloadFilePath));
     }
 
-    return res.sendFile(persistedFile.fileNameOnDisk, { root: root });
+    return res.sendFile(this.__getAbsoluteFilePAth(persistedFile.fileNameOnDisk));
+  }
+
+  private __getAbsoluteFilePAth(filePath: string) {
+    if (!path.isAbsolute(filePath)) return filePath;
+
+    const rootDir = path.parse(os.homedir()).root;
+    return path.join(rootDir, filePath);
   }
 
   private async __downloadFileFromRemote(persistedFile: File) {
