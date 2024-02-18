@@ -85,11 +85,11 @@ export const columns = [
   }),
   columnHelper.accessor('counterpartyOriginatorName', {
     cell: info => {
-      const counterPartyName = info.getValue();
+      const counterpartyOriginatorName = info.getValue();
 
       return (
         <TextWithNAFallback className="text-sm font-semibold">
-          {counterPartyName}
+          {counterpartyOriginatorName}
         </TextWithNAFallback>
       );
     },
@@ -97,10 +97,12 @@ export const columns = [
   }),
   columnHelper.accessor('counterpartyOriginatorId', {
     cell: info => {
-      const counterPartyId = info.getValue();
+      const counterpartyOriginatorId = info.getValue();
 
       return (
-        <TextWithNAFallback className="text-sm font-semibold">{counterPartyId}</TextWithNAFallback>
+        <TextWithNAFallback className="text-sm font-semibold">
+          {counterpartyOriginatorId}
+        </TextWithNAFallback>
       );
     },
     header: 'Counterparty ID',
