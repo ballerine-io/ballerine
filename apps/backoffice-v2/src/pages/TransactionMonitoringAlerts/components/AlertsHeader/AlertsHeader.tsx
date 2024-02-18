@@ -60,16 +60,16 @@ export const AlertsHeader: FunctionComponent<{
         id: decision,
         value: (
           <>
-            {lowerCase(decision) === 'reject' && (
+            {lowerCase(decision) === lowerCase(alertStateToDecision.REJECTED) && (
               <span className={`text-destructive`}>{decision}</span>
             )}
 
-            {lowerCase(decision) === 'not suspicious' && (
+            {lowerCase(decision) === lowerCase(alertStateToDecision.NOT_SUSPICIOUS) && (
               <span className={`text-success`}>{decision}</span>
             )}
 
-            {lowerCase(decision) !== 'reject' &&
-              lowerCase(decision) !== 'not suspicious' &&
+            {lowerCase(decision) !== lowerCase(alertStateToDecision.REJECTED) &&
+              lowerCase(decision) !== lowerCase(alertStateToDecision.NOT_SUSPICIOUS) &&
               decision}
           </>
         ),
