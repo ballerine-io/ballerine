@@ -63,7 +63,8 @@ export const TransactionsListSchema = z.array(
   }).transform(({ business, counterpartyOriginator, ...data }) => ({
     ...data,
     business: business?.companyName,
-    counterpartyOriginatorName: noNullish`${counterpartyOriginator?.endUser?.firstName} ${counterpartyOriginator?.endUser?.lastName}`,
+    counterpartyOriginatorName:
+      noNullish`${counterpartyOriginator?.endUser?.firstName} ${counterpartyOriginator?.endUser?.lastName}`.trim(),
   })),
 );
 

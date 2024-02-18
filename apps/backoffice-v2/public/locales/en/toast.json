@@ -57,5 +57,17 @@
   "unassign_alerts": {
     "success": "The alerts have been unassigned successfully.",
     "error": "Error occurred while unassigning the alerts."
+  },
+  "reject_alerts": {
+    "success": "The alerts have been rejected successfully.",
+    "error": "Error occurred while rejecting the alerts."
+  },
+  "not_suspicious_alerts": {
+    "success": "The alerts have been marked as not suspicious successfully.",
+    "error": "Error occurred while marking the alerts as not suspicious."
+  },
+  "revert_decision_alerts": {
+    "success": "The alerts decision have been reverted successfully.",
+    "error": "Error occurred while reverting the alerts decision."
   }
 }

@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, useCallback, useState } from 'react';
+import { ReactNode, useCallback, useState } from 'react';
 import {
   Badge,
   Button,
@@ -17,17 +17,37 @@ import {
 import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
 
-export const MultiSelect: FunctionComponent<{
+interface IMultiSelectProps<
+  TOption extends {
+    label: string;
+    value: unknown;
+    icon?: ReactNode;
+  },
+> {
   title: string;
-  selectedValues: string[];
-  onSelect: (value: string) => void;
+  selectedValues: Array<TOption['value']>;
+  onSelect: (value: Array<TOption['value']>) => void;
   onClearSelect: () => void;
-  options: Array<{ label: string; value: string; icon?: ReactNode }>;
-}> = ({ title, selectedValues, onSelect, onClearSelect, options }) => {
+  options: TOption[];
+}
+
+export const MultiSelect = <
+  TOption extends {
+    label: string;
+    value: unknown;
+    icon?: ReactNode;
+  },
+>({
+  title,
+  selectedValues,
+  onSelect,
+  onClearSelect,
+  options,
+}: IMultiSelectProps<TOption>) => {
   const [selected, setSelected] = useState(selectedValues);
 
   const onSelectChange = useCallback(
-    (value: string) => {
+    (value: TOption['value']) => {
       const isSelected = selected.some(selectedValue => selectedValue === value);
       const nextSelected = isSelected
         ? selected.filter(selectedValue => selectedValue !== value)

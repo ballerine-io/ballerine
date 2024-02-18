@@ -587,22 +587,24 @@ model TransactionRecord {
 }
 
 enum AlertSeverity {
-  Low          @map("100")
-  Medium       @map("200")
-  High         @map("300")
-  Critical     @map("400")
+  Low      @map("100")
+  Medium   @map("200")
+  High     @map("300")
+  Critical @map("400")
 }
 
 enum AlertState {
   // New
-  Triggered    @map("101")
+  Triggered     @map("101")
   // Pending
-  UnderReview  @map("201")
-  Escalated    @map("202")
+  UnderReview   @map("201")
+  Escalated     @map("202")
   // Completed
-  Resolved     @map("301")
-  Acknowledged @map("302")
-  Dismissed    @map("303")
+  Resolved      @map("301")
+  Acknowledged  @map("302")
+  Dismissed     @map("303")
+  Rejected      @map("304")
+  NotSuspicious @map("305")
 }
 
 enum AlertStatus {
@@ -661,21 +663,21 @@ model Alert {
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  businessId             String?
-  business               Business?       @relation(fields: [businessId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  businessId String?
+  business   Business? @relation(fields: [businessId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  endUserId              String?
-  endUser                EndUser?        @relation(fields: [endUserId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  endUserId String?
+  endUser   EndUser? @relation(fields: [endUserId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  dataTimestamp          DateTime
-  state                  AlertState
-  status                 AlertStatus
-  tags                   String[]
-  severity               AlertSeverity?
+  dataTimestamp DateTime
+  state         AlertState
+  status        AlertStatus
+  tags          String[]
+  severity      AlertSeverity?
 
   executionDetails Json // Execution details
 
-  assignee   User?   @relation(fields: [assigneeId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  assignee   User?     @relation(fields: [assigneeId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   assigneeId String?
   assignedAt DateTime?
 
