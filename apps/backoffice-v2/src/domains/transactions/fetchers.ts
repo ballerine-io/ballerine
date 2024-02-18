@@ -7,6 +7,7 @@ import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { env } from '@/common/env/env';
 import { TObjectValues } from '@/common/types';
 import { noNullish } from '@ballerine/common';
+import qs from 'qs';
 
 export const TransactionDirection = {
   INBOUND: 'Inbound',
@@ -69,9 +70,16 @@ export const TransactionsListSchema = z.array(
 
 export type TTransactionsList = z.output<typeof TransactionsListSchema>;
 
-export const fetchTransactions = async ({ businessId }: { businessId: string }) => {
+export const fetchTransactions = async (params: {
+  businessId: string;
+  page: {
+    number: number;
+    size: number;
+  };
+}) => {
+  const queryParams = qs.stringify(params, { encode: false });
   const [alerts, error] = await apiClient({
-    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/transactions?businessId=${businessId}`,
+    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/transactions?${queryParams}`,
     method: Method.GET,
     schema: TransactionsListSchema,
   });

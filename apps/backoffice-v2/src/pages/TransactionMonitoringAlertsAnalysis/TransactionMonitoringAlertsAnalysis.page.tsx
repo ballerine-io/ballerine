@@ -8,6 +8,8 @@ export const TransactionMonitoringAlertsAnalysisPage = () => {
   const [{ businessId }] = useSerializedSearchParams();
   const { data: transactions } = useTransactionsQuery({
     businessId: businessId ?? '',
+    page: 1,
+    pageSize: 50,
   });
   const navigateBack = useNavigateBack();
   const navigate = useNavigate();

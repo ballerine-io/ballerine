@@ -66,8 +66,8 @@ export class TransactionRepository {
       const size = parseInt(getTransactionsParameters.page.size as unknown as string, 10);
       const number = parseInt(getTransactionsParameters.page.number as unknown as string, 10);
 
-      args.take = number;
-      args.skip = (size - 1) * number;
+      args.take = size;
+      args.skip = size * (number - 1);
     }
 
     if (getTransactionsParameters.orderBy) {
