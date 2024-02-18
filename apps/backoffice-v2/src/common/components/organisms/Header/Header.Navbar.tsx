@@ -60,7 +60,7 @@ export const Navbar: FunctionComponent = () => {
                           href={childNavItem.href}
                           key={childNavItem.key}
                           className={ctw(
-                            `gap-x-1 border border-transparent px-1.5 py-2 text-xs capitalize text-[#8990AC] hover:bg-[#EBEEF9] hover:text-[#5E688E] active:bg-[#e0e4f6]`,
+                            `gap-x-1 px-1.5 py-2 text-xs capitalize text-[#8990AC] hover:bg-[#EBEEF9] hover:text-[#5E688E] active:bg-[#e0e4f6]`,
                             childNavItem.filterId
                               ? {
                                   'font-semibold text-[#20232E]':
@@ -88,14 +88,16 @@ export const Navbar: FunctionComponent = () => {
                   href={navItem.href}
                   key={navItem.key}
                   className={ctw(
-                    `flex items-center gap-x-1 border border-transparent px-1.5 py-1 text-sm font-semibold capitalize text-[#8990AC] hover:bg-[#EBEEF9] active:border active:border-border`,
+                    `flex items-center gap-x-1 px-1.5 py-1 text-sm font-semibold capitalize text-[#8990AC] hover:bg-[#EBEEF9] hover:text-[#5E688E] active:bg-[#e0e4f6]`,
                     {
                       'bg-white text-[#20232E]': navItem.filterId === filterId,
                     },
                   )}
                 >
-                  <span>{navItem.icon}</span>
-                  {navItem.text}
+                  <div className={`flex items-center gap-x-3 text-left`}>
+                    {navItem.icon}
+                    {navItem.text}
+                  </div>
                 </NavItem>
               </ul>
             )}
