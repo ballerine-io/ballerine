@@ -5,18 +5,16 @@ import { FunctionComponent } from 'react';
 import { TTransactionsList } from '@/domains/transactions/fetchers';
 
 export interface IAlertAnalysisProps {
-  isOpen: boolean;
-  onOpenStateChange: (isOpen: boolean) => void;
+  onOpenStateChange: () => void;
   transactions: TTransactionsList;
 }
 
 export const AlertAnalysisSheet: FunctionComponent<IAlertAnalysisProps> = ({
-  isOpen,
   onOpenStateChange,
   transactions,
 }) => {
   return (
-    <Sheet open={isOpen} onOpenChange={onOpenStateChange}>
+    <Sheet defaultOpen onOpenChange={onOpenStateChange}>
       <SheetContent side="bottom" className={`bottom-0 w-full`}>
         <div className="flex flex-col p-4">
           <div className="flex flex-col gap-4">
