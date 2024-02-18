@@ -26,12 +26,10 @@ export const columns = [
   }),
   columnHelper.accessor('id', {
     cell: info => {
-      const transactionId = info.getValue();
       // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
       const { ref, styles } = useEllipsesWithTitle<HTMLAnchorElement>();
-      const value = info.getValue();
+      const transactionId = info.getValue();
 
-      return <TextWithNAFallback className="text-sm">{transactionId}</TextWithNAFallback>;
       return (
         <div className={`w-[11.8ch]`}>
           <TextWithNAFallback
@@ -44,7 +42,7 @@ export const columns = [
             style={styles}
             ref={ref}
           >
-            {value}
+            {transactionId}
           </TextWithNAFallback>
         </div>
       );
