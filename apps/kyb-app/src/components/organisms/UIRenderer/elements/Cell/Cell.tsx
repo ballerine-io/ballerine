@@ -30,7 +30,10 @@ export const Cell = ({ options = {}, childrens: _childrens = [] }: CellProps) =>
         //@ts-ignore
         cells={elements}
       >
-        {(Cell, cell) => (Cell ? <Cell {...cell} /> : null)}
+        {
+          // @ts-ignore
+          (Cell, cell) => (Cell ? <Cell {...cell} /> : null)
+        }
       </BlocksComponent>
     ));
   }, [columns, _childrens, elements]);

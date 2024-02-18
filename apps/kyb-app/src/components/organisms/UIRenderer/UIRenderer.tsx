@@ -21,7 +21,10 @@ export const UIRenderer = ({ schema, elements = baseElements }: UIRendererProps)
   return (
     <UiRendererContext.Provider value={context}>
       <BlocksComponent Block={Block} cells={elements as any} blocks={blocks}>
-        {(Cell, cell) => (Cell ? <Cell {...cell} /> : <div>not implemented</div>)}
+        {
+          // @ts-ignore
+          (Cell, cell) => (Cell ? <Cell {...cell} /> : <div>not implemented</div>)
+        }
       </BlocksComponent>
     </UiRendererContext.Provider>
   );
