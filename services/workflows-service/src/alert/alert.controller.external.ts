@@ -6,7 +6,7 @@ import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { PrismaService } from '@/prisma/prisma.service';
-import type { TProjectId } from '@/types';
+import type { AuthenticatedEntity, TProjectId } from '@/types';
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { Alert, AlertDefinition, User } from '@prisma/client';
@@ -16,6 +16,7 @@ import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto, FindAlertsSchema } from './dtos/get-alerts.dto';
 import { BulkStatus, TBulkAssignAlertsResponse } from './types';
 import { AlertDecisionDto } from './dtos/decision-alert.dto';
+import { UserData } from '@/user/user-data.decorator';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Alerts')
@@ -63,7 +64,7 @@ export class AlertControllerExternal {
       },
     });
     const formattedAlerts = alerts.map(alert => {
-      const { alertDefinition, assignee, ...alertWithoutDefinition } = alert as Alert & {
+      const { alertDefinition, state, assignee, ...alertWithoutDefinition } = alert as Alert & {
         alertDefinition: Pick<AlertDefinition, 'description'>;
         assignee: Pick<User, 'id' | 'firstName' | 'lastName'>;
       };
@@ -77,6 +78,7 @@ export class AlertControllerExternal {
             }
           : null,
         alertDetails: alertDefinition?.description,
+        decision: state,
       };
     });
 
@@ -135,7 +137,17 @@ export class AlertControllerExternal {
   async decision(
     @common.Body() { alertIds, decision }: AlertDecisionDto,
     @CurrentProject() currentProjectId: TProjectId,
+    @UserData() authenticatedAssignee: AuthenticatedEntity,
   ): Promise<TBulkAssignAlertsResponse> {
+    // Assign alerts to the authenticated assignee
+    if (authenticatedAssignee?.user?.id) {
+      await this.service.updateAlertsAssignee(
+        alertIds,
+        currentProjectId,
+        authenticatedAssignee.user.id,
+      );
+    }
+
     const updatedAlerts = await this.service.updateAlertsDecision(
       alertIds,
       currentProjectId,

@@ -8,7 +8,6 @@ export const AlertsAssignDropdown: FunctionComponent<{
   assignees: TUsers;
   authenticatedUserId: string;
   isDisabled: boolean;
-  isAssignedToMe: boolean;
   onAssigneeSelect: (id: string | null, isAssignedToMe: boolean) => () => void;
 }> = ({ assignees, authenticatedUserId, isDisabled, onAssigneeSelect }) => {
   const sortedAssignees = useMemo(

@@ -1,5 +1,5 @@
 import { createColumnHelper } from '@tanstack/react-table';
-import { TAlertsList } from '@/domains/alerts/fetchers';
+import { TAlertsList, TAlertState } from '@/domains/alerts/fetchers';
 import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import dayjs from 'dayjs';
 import { Badge } from '@ballerine/ui';
@@ -12,20 +12,22 @@ import { createInitials } from '@/common/utils/create-initials/create-initials';
 import React, { ComponentProps } from 'react';
 import { severityToClassName } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/severity-to-class-name';
 import { IndeterminateCheckbox } from '@/common/components/atoms/IndeterminateCheckbox/IndeterminateCheckbox';
+import { SnakeCase, titleCase } from 'string-ts';
+import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
 
 const columnHelper = createColumnHelper<TAlertsList[number]>();
 
 export const columns = [
   columnHelper.accessor('dataTimestamp', {
     cell: info => {
-      const value = info.getValue();
+      const dataTimestamp = info.getValue();
 
-      if (!value) {
-        return <TextWithNAFallback>{value}</TextWithNAFallback>;
+      if (!dataTimestamp) {
+        return <TextWithNAFallback>{dataTimestamp}</TextWithNAFallback>;
       }
 
-      const date = dayjs(value).format('MMM DD, YYYY');
-      const time = dayjs(value).format('hh:mm');
+      const date = dayjs(dataTimestamp).format('MMM DD, YYYY');
+      const time = dayjs(dataTimestamp).format('hh:mm');
 
       return (
         <div className={`flex flex-col space-y-0.5`}>
@@ -38,27 +40,27 @@ export const columns = [
   }),
   columnHelper.accessor('merchant', {
     cell: info => {
-      const value = info.getValue();
+      const merchant = info.getValue();
 
-      return <TextWithNAFallback>{value}</TextWithNAFallback>;
+      return <TextWithNAFallback>{merchant}</TextWithNAFallback>;
     },
     header: 'Merchant',
   }),
   columnHelper.accessor('severity', {
     cell: info => {
-      const value = info.getValue();
+      const severity = info.getValue();
 
       return (
         <TextWithNAFallback
           as={Badge}
           className={ctw(
             severityToClassName[
-              (value?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
+              (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
             ],
             'w-20 py-0.5 font-bold',
           )}
         >
-          {value}
+          {severity}
         </TextWithNAFallback>
       );
     },
@@ -66,9 +68,9 @@ export const columns = [
   }),
   columnHelper.accessor('alertDetails', {
     cell: info => {
-      const value = info.getValue();
+      const alertDetails = info.getValue();
 
-      return <TextWithNAFallback>{value}</TextWithNAFallback>;
+      return <TextWithNAFallback>{alertDetails}</TextWithNAFallback>;
     },
     header: 'Alert Details',
   }),
@@ -82,20 +84,20 @@ export const columns = [
   // }),
   columnHelper.accessor('assignee', {
     cell: info => {
-      const value = info.getValue();
+      const assignee = info.getValue();
 
       return (
         <div className={`flex items-center gap-x-3`}>
-          {!value && <UserCircle2 className={'stroke-[#E4E4E7]'} size={22} />}
-          {value && (
+          {!assignee && <UserCircle2 className={'stroke-[#E4E4E7]'} size={22} />}
+          {assignee && (
             <Avatar className={`d-[1.375rem]`}>
               <AvatarImage />
               <AvatarFallback className={'bg-[#DCE1E8] text-xs'}>
-                {createInitials(value?.fullName)}
+                {createInitials(assignee?.fullName)}
               </AvatarFallback>
             </Avatar>
           )}
-          <TextWithNAFallback>{value?.fullName}</TextWithNAFallback>
+          <TextWithNAFallback>{assignee?.fullName}</TextWithNAFallback>
         </div>
       );
     },
@@ -103,23 +105,33 @@ export const columns = [
   }),
   columnHelper.accessor('status', {
     cell: info => {
-      const value = info.getValue();
+      const status = info.getValue();
 
-      return <TextWithNAFallback className={`font-semibold`}>{value}</TextWithNAFallback>;
+      return <TextWithNAFallback className={`font-semibold`}>{status}</TextWithNAFallback>;
     },
     header: 'Status',
   }),
   columnHelper.accessor('decision', {
     cell: info => {
-      const value = info.getValue();
+      const decision = info.getValue();
+      const screamingSnakeDecision = toScreamingSnakeCase(decision ?? '');
+      const decisionToTextColor = {
+        NOT_SUSPICIOUS: 'text-success',
+        REJECTED: 'text-destructive',
+      } as const satisfies Record<
+        Extract<Uppercase<SnakeCase<TAlertState>>, 'NOT_SUSPICIOUS' | 'REJECTED'>,
+        ComponentProps<typeof TextWithNAFallback>['className']
+      >;
 
       return (
         <TextWithNAFallback
           className={ctw({
-            'font-bold': !!value,
+            'font-bold': !!screamingSnakeDecision,
+            [decisionToTextColor[screamingSnakeDecision as keyof typeof decisionToTextColor]]:
+              !!screamingSnakeDecision,
           })}
         >
-          {value}
+          {titleCase(decision ?? '')}
         </TextWithNAFallback>
       );
     },

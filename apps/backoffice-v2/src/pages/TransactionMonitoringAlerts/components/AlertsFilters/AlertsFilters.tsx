@@ -3,6 +3,7 @@ import { TUsers } from '@/domains/users/types';
 import { MultiSelect } from '@/common/components/atoms/MultiSelect/MultiSelect';
 import { useFilter } from '@/common/hooks/useFilter/useFilter';
 import { AlertStatuses, AlertTypes } from '@/domains/alerts/fetchers';
+import { titleCase } from 'string-ts';
 
 export const AlertsFilters: FunctionComponent<{
   assignees: TUsers;
@@ -19,7 +20,7 @@ export const AlertsFilters: FunctionComponent<{
   const alertTypeOptions = useMemo(
     () =>
       AlertTypes?.map(alertType => ({
-        label: alertType,
+        label: titleCase(alertType),
         value: alertType,
       })) ?? [],
     [],
@@ -27,7 +28,7 @@ export const AlertsFilters: FunctionComponent<{
   const statusOptions = useMemo(
     () =>
       AlertStatuses?.map(status => ({
-        label: status,
+        label: titleCase(status),
         value: status,
       })) ?? [],
     [],
@@ -59,7 +60,7 @@ export const AlertsFilters: FunctionComponent<{
     accessor: string;
     options: Array<{
       label: string;
-      value: string;
+      value: string | null;
     }>;
   }>;
   const { filter, onFilter } = useFilter();
@@ -78,8 +79,6 @@ export const AlertsFilters: FunctionComponent<{
           <MultiSelect
             key={title}
             title={title}
-            accessor={accessor}
-            onFilter={onFilter}
             selectedValues={filter?.[accessor] ?? []}
             onSelect={onFilter(accessor)}
             onClearSelect={onClearSelect(accessor)}

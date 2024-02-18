@@ -134,6 +134,8 @@ export class AlertService {
       case AlertState.Resolved:
       case AlertState.Acknowledged:
       case AlertState.Dismissed:
+      case AlertState.Rejected:
+      case AlertState.NotSuspicious:
         return AlertStatus.Completed;
 
       default:

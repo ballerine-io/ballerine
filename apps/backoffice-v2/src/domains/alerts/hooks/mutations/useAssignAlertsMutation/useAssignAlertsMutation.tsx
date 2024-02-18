@@ -3,6 +3,7 @@ import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUs
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
 import { assignAlertsByIds } from '@/domains/alerts/fetchers';
+import { TToastKeyWithSuccessAndError } from '@/common/types';
 
 const getToastActionAndContext = ({
   assigneeId,
@@ -12,7 +13,10 @@ const getToastActionAndContext = ({
   assigneeId: string | null;
   assigneeName: string | null;
   isAssignedToMe: boolean;
-}) => {
+}): {
+  action: TToastKeyWithSuccessAndError;
+  context: Record<string, string>;
+} => {
   const action = assigneeId ? 'assign_alerts' : 'unassign_alerts';
   const context = assigneeId
     ? {
