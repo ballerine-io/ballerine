@@ -2,8 +2,9 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { t } from 'i18next';
 import { AlertState, TAlertState, updateAlertsDecisionByIds } from '@/domains/alerts/fetchers';
+import { TToastKeyWithSuccessAndError } from '@/common/types';
 
-const getToastAction = (decision: TAlertState) => {
+const getToastAction = (decision: TAlertState): TToastKeyWithSuccessAndError => {
   if (decision === AlertState.REJECTED) {
     return 'reject_alerts' as const;
   }

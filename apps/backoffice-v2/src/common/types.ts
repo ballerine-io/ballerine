@@ -1,5 +1,6 @@
 import { ComponentProps, FunctionComponent, PropsWithChildren } from 'react';
 import { Action, Method, Resource, State } from './enums';
+import translations from '../../public/locales/en/toast.json';
 
 export type WithRequired<TObject, TKey extends keyof TObject> = TObject & {
   [TProperty in TKey]-?: TObject[TProperty];
@@ -47,3 +48,12 @@ export type TypesafeOmit<TObj extends Record<PropertyKey, unknown>, TProps exten
 export type UnknownRecord = Record<PropertyKey, unknown>;
 
 export type NoInfer<T> = [T][T extends any ? 0 : never];
+
+export type TToastKeyWithSuccessAndError = {
+  [TKey in keyof typeof translations]: (typeof translations)[TKey] extends {
+    success: string;
+    error: string;
+  }
+    ? TKey
+    : never;
+}[keyof typeof translations];
