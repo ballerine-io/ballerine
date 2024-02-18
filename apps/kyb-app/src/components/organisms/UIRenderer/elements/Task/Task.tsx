@@ -22,12 +22,18 @@ export const Task = ({ options = {}, childrens, ...rest }: TaskProps) => {
   return (
     <Component className={className} style={styles} data-test-id="task">
       <BlocksComponent
-        Block={({ children }) => <>{children}</>}
+        Block={
+          // @ts-ignore
+          ({ children }) => <>{children}</>
+        }
         blocks={childrens}
         //@ts-ignore
         cells={baseElements}
       >
-        {(Cell, cell) => (Cell ? <Cell {...cell} /> : null)}
+        {
+          // @ts-ignore
+          (Cell, cell) => (Cell ? <Cell {...cell} /> : null)
+        }
       </BlocksComponent>
     </Component>
   );
