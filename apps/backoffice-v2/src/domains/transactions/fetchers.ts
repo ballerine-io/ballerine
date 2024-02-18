@@ -41,7 +41,6 @@ export const TransactionsListSchema = z.array(
     transactionDate: z.string().datetime(),
     transactionDirection: z.enum(TransactionDirections),
     transactionAmount: z.number(),
-    // business: z.string(),
     businessId: z.string().nullable(),
     business: z
       .object({
