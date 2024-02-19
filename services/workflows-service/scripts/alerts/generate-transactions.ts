@@ -1,6 +1,7 @@
 import {
   CounterpartyType,
   PaymentAcquirer,
+  PaymentBrandName,
   PaymentChannel,
   PaymentGateway,
   PaymentIssuer,
@@ -61,7 +62,7 @@ export const generateTransactions = async (
         transactionStatus: faker.helpers.arrayElement(Object.values(TransactionRecordStatus)),
         transactionStatusReason: faker.lorem.sentence(),
         transactionDirection: faker.helpers.arrayElement(Object.values(TransactionDirection)),
-        paymentBrandName: faker.finance.accountName(),
+        paymentBrandName: faker.helpers.arrayElement(Object.values(PaymentBrandName)),
         paymentMethod: faker.helpers.arrayElement(Object.values(PaymentMethod)),
         paymentType: faker.helpers.arrayElement(Object.values(PaymentType)),
         paymentChannel: faker.helpers.arrayElement(Object.values(PaymentChannel)),
