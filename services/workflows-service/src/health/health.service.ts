@@ -6,7 +6,6 @@ export class HealthService {
   constructor(protected readonly prisma: PrismaService) {}
   async isDbReady(): Promise<boolean> {
     try {
-      // eslint-disable-next-line @ts-safeql/check-sql
       await this.prisma.$queryRaw`SELECT 1`;
       return true;
     } catch (error) {

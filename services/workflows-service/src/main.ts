@@ -3,8 +3,8 @@ import dayjs from 'dayjs';
 import cookieSession from 'cookie-session';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from './app.module';
 import { swaggerDocumentOptions, swaggerPath, swaggerSetupOptions } from './swagger';
+import { AppModule } from './app.module';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
