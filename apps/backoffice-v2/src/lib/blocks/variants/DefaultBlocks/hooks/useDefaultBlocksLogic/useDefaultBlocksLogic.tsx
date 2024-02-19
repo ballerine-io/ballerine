@@ -41,7 +41,6 @@ import {
   motionButtonProps,
   useAssociatedCompaniesBlock,
 } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
-import { workflow as _workflow } from '../../../../../../pages/Entity/hooks/useEntityLogic/mock-workflow-with-children';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -128,10 +127,7 @@ export const useDefaultBlocksLogic = () => {
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
   const { website: websiteBasicRequirement, processingDetails, ...storeInfo } = store ?? {};
-  const _kycChildWorkflows = workflow?.childWorkflows?.filter(
-    childWorkflow => childWorkflow?.context?.entity?.type === 'individual',
-  );
-  const kycChildWorkflows = _workflow?.childWorkflows?.filter(
+  const kycChildWorkflows = workflow?.childWorkflows?.filter(
     childWorkflow => childWorkflow?.context?.entity?.type === 'individual',
   );
   const kybChildWorkflows = workflow?.childWorkflows?.filter(
