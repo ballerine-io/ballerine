@@ -108,6 +108,7 @@ export const AlertsListSchema = z.array(
       .default(null),
     status: z.enum(AlertStatuses),
     decision: z.enum(AlertStates).nullable().default(null),
+    counterpartyId: z.string().nullable().default(null),
   }),
 );
 
