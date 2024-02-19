@@ -33,8 +33,6 @@ export const generateTransactions = async (
         data: {
           correlationId: faker.datatype.uuid(),
           type: faker.helpers.arrayElement(Object.values(CounterpartyType)),
-          sortCode: faker.finance.routingNumber(),
-          bankCountry: faker.address.countryCode(),
           businessId: businessId,
           projectId: projectId,
         },
@@ -92,6 +90,8 @@ export const generateTransactions = async (
         productId: faker.datatype.uuid(),
         projectId,
         counterpartyOriginatorId: randomCounterpartyId, // Assign a random counterparty ID
+        originatorSortCode: faker.finance.routingNumber(),
+        originatorBankCountry: faker.address.countryCode(),
         transactionDirection: faker.helpers.arrayElement([
           TransactionDirection.Inbound,
           TransactionDirection.Outbound,

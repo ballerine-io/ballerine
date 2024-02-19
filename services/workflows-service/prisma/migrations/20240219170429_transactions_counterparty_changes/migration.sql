@@ -13,3 +13,7 @@ ALTER COLUMN "modifiedBy" DROP NOT NULL;
 -- AlterTable
 ALTER TABLE "Counterparty" DROP COLUMN "bankCountry",
 DROP COLUMN "sortCode";
+
+-- AlterTable
+ALTER TABLE "TransactionRecord" ADD COLUMN     "originatorBankCountry" TEXT,
+ADD COLUMN     "originatorSortCode" TEXT;
