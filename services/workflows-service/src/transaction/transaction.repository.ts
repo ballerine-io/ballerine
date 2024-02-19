@@ -86,6 +86,7 @@ export class TransactionRepository {
     });
   }
 
+  // eslint-disable-next-line ballerine/verify-repository-project-scoped
   private buildFilters(
     getTransactionsParameters: GetTransactionsDto,
   ): Prisma.TransactionRecordWhereInput {

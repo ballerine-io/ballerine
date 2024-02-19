@@ -1,4 +1,3 @@
-import { Webhook } from '@/events/get-webhooks';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Injectable } from '@nestjs/common';
 import { ExtractWorkflowEventData, TEventName } from '@/workflow/types';

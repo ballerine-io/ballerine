@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-export const sortDirections: (keyof typeof Prisma.SortOrder)[] = ['asc', 'desc'];
+export const sortDirections: Array<keyof typeof Prisma.SortOrder> = ['asc', 'desc'];
 
 export const validateOrderBy = (value: unknown, validColumns: readonly string[]) => {
   if (typeof value !== 'string') {

@@ -8,7 +8,7 @@ import { PaymentMethod, TransactionDirection } from '@prisma/client';
 
 describe('TransactionRulesEvaluationService', () => {
   let prismaService: PrismaService;
-  let transactionIdsForCleanup: string[] = [];
+  const transactionIdsForCleanup: string[] = [];
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({

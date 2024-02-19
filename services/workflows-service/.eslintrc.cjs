@@ -10,12 +10,6 @@ module.exports = {
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts'],
     },
-    'import/resolver': {
-      typescript: {
-        alwaysTryTypes: true,
-        project: ['**/tsconfig.json'],
-      },
-    },
   },
   rules: {
     'import/no-cycle': 'error',

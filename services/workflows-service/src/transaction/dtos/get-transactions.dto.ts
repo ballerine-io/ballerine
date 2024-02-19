@@ -1,7 +1,7 @@
 import { PageDto } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { PaymentMethod } from '@prisma/client';
-import { IsDate, IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class GetTransactionsDto {
   @IsOptional()

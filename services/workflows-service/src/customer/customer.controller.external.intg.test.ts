@@ -36,9 +36,7 @@ import { CustomerService } from './customer.service';
 import { CustomerControllerExternal } from './customer.controller.external';
 import { CustomerRepository } from './customer.repository';
 import { EndUserService } from '@/end-user/end-user.service';
-import { before } from 'lodash';
 import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
-import { string } from 'zod';
 
 describe.skip('#CustomerControllerExternal', () => {
   let app: INestApplication;
