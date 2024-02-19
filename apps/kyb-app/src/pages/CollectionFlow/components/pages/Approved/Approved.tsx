@@ -29,7 +29,7 @@ export const Approved = withSessionProtected(() => {
             {t('approved.content', { companyName: customer?.displayName })}
           </p>
         </div>
-        {customer?.displayName && (
+        {customer && (
           <div className="flex justify-center">
             <Button variant="secondary" onClick={exitFromApp}>
               {t('backToPortal', { companyName: customer.displayName })}

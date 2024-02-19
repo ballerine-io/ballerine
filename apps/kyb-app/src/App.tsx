@@ -12,6 +12,8 @@ import * as Sentry from '@sentry/react';
 import { RouterProvider } from 'react-router-dom';
 
 export const App = () => {
+  // useLanguage uses react-router context
+  // so it cannot be used here because this part is outside of Router context.
   const language = new URLSearchParams(window.location.search).get(APP_LANGUAGE_QUERY_KEY) || 'en';
 
   const dependancyQueries = [
