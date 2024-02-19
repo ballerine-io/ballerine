@@ -515,12 +515,13 @@ model TransactionRecord {
   transactionStatusReason  String? // Reason for the transaction status
   transactionDirection     TransactionDirection?
 
+  originatorIpAddress   String?
+  originatorGeoLocation String?
+  originatorUserAgent   String?
   originatorSortCode    String?
   originatorBankCountry String?
-  originatorIpAddress   String? // IP address of the transaction initiator
-  originatorGeoLocation String? // Geolocation of the transaction initiator
-  originatorUserAgent   String? // User agent of the device used for the transaction
 
+  paymentBrandName String? // Category of the transaction
   paymentMethod    PaymentMethod?
   paymentType      PaymentType?
   paymentChannel   PaymentChannel?
@@ -738,7 +739,7 @@ enum TransactionDirection {
 }
 
 model Counterparty {
-  id String @id @default(cuid())
+  id String @id
 
   correlationId  String?
   type           CounterpartyType
@@ -759,4 +760,5 @@ model Counterparty {
   project   Project @relation(fields: [projectId], references: [id])
 
   @@index([correlationId])
+  @@unique([projectId, correlationId])
 }

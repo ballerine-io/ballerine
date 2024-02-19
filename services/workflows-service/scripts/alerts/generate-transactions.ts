@@ -31,6 +31,7 @@ export const generateTransactions = async (
     for (let i = 0; i < 200; i++) {
       const counterparty = await prisma.counterparty.create({
         data: {
+          id: faker.datatype.uuid(),
           correlationId: faker.datatype.uuid(),
           type: faker.helpers.arrayElement(Object.values(CounterpartyType)),
           businessId: businessId,
@@ -59,6 +60,7 @@ export const generateTransactions = async (
         transactionType: faker.helpers.arrayElement(Object.values(TransactionRecordType)),
         transactionStatus: faker.helpers.arrayElement(Object.values(TransactionRecordStatus)),
         transactionStatusReason: faker.lorem.sentence(),
+        paymentBrandName: faker.finance.accountName(),
         paymentMethod: faker.helpers.arrayElement(Object.values(PaymentMethod)),
         paymentType: faker.helpers.arrayElement(Object.values(PaymentType)),
         paymentChannel: faker.helpers.arrayElement(Object.values(PaymentChannel)),
