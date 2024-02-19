@@ -3,10 +3,13 @@ import { AlertsHeader } from 'src/pages/TransactionMonitoringAlerts/components/A
 import { AlertsPagination } from '@/pages/TransactionMonitoringAlerts/AlertsPagination/AlertsPagination';
 import { useTransactionMonitoringAlertsLogic } from '@/pages/TransactionMonitoringAlerts/hooks/useTransactionMonitoringAlertsLogic/useTransactionMonitoringAlertsLogic';
 import { Outlet } from 'react-router-dom';
+import { isNonEmptyArray } from '@ballerine/common';
+import { NoAlerts } from '@/pages/TransactionMonitoringAlerts/components/NoAlerts/NoAlerts';
 
 export const TransactionMonitoringAlerts = () => {
   const {
     alerts,
+    isLoadingAlerts,
     assignees,
     authenticatedUser,
     page,
@@ -28,7 +31,8 @@ export const TransactionMonitoringAlerts = () => {
           search={search}
           onSearch={onSearch}
         />
-        <AlertsTable data={alerts ?? []} />
+        {isNonEmptyArray(alerts) && <AlertsTable data={alerts ?? []} />}
+        {Array.isArray(alerts) && !alerts.length && !isLoadingAlerts && <NoAlerts />}
         <div className={`flex items-center gap-x-2`}>
           <AlertsPagination
             page={page}

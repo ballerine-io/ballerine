@@ -19,7 +19,7 @@ export const AlertAnalysisTable: FunctionComponent<{
 }> = ({ transactions }) => {
   const table = useReactTable({
     columns,
-    data: transactions ?? [],
+    data: transactions,
     getCoreRowModel: getCoreRowModel(),
     enableSortingRemoval: false,
     enableSorting: false,
@@ -27,7 +27,7 @@ export const AlertAnalysisTable: FunctionComponent<{
 
   return (
     <div className="d-full relative overflow-auto rounded-md border bg-white shadow">
-      <ScrollArea orientation="both" className="h-[295px]">
+      <ScrollArea orientation="both" className="h-[47vh]">
         <Table>
           <TableHeader className="border-0">
             {table.getHeaderGroups().map(({ id, headers }) => {

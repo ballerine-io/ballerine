@@ -1,6 +1,6 @@
 import { SheetContent } from '@/common/components/atoms/Sheet';
 import { Sheet } from '@/common/components/atoms/Sheet/Sheet';
-import { AlertAnalysisTable } from '@/pages/TransactionMonitoringAlerts/components/AlertAnalysisSheet/components/AlertAnalysisTable';
+import { AlertAnalysisTable } from 'src/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisTable';
 import { FunctionComponent } from 'react';
 import { TTransactionsList } from '@/domains/transactions/fetchers';
 
@@ -29,7 +29,7 @@ export const AlertAnalysisSheet: FunctionComponent<IAlertAnalysisProps> = ({
             </div>
           </div>
           <div>
-            <AlertAnalysisTable transactions={transactions} />
+            <AlertAnalysisTable transactions={transactions ?? []} />
           </div>
         </div>
       </SheetContent>
