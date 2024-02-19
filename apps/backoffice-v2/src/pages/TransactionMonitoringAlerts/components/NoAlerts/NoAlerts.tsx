@@ -1,6 +1,7 @@
 import { NoCasesSvg } from '@/common/components/atoms/icons';
+import { FunctionComponent } from 'react';
 
-export const NoAlerts = () => {
+export const NoAlerts: FunctionComponent = () => {
   return (
     <div className="flex items-center justify-center p-4 pb-72">
       <div className="inline-flex flex-col  items-start gap-4 rounded-md border-[1px] border-[#CBD5E1] p-6">
