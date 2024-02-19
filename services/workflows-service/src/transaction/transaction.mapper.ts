@@ -17,6 +17,7 @@ export class TransactionEntityMapper {
     | 'riskScore'
     | 'endUserId'
     | 'businessId'
+    | 'transactionDirection'
   > {
     return {
       transactionCorrelationId: dto.correlationId,

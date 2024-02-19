@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import type { TProjectIds } from '@/types';
+import type { TProjectId, TProjectIds } from '@/types';
 import { Prisma, Alert } from '@prisma/client';
 import { ProjectScopeService } from '@/project/project-scope.service';
 
@@ -40,6 +40,34 @@ export class AlertRepository {
       projectId: { in: projectIds! },
     };
     return await this.prisma.alert.findFirstOrThrow(queryArgs);
+  }
+
+  // Method to update an alerts
+  async updateMany<T extends Omit<Prisma.AlertUpdateManyArgs, 'where'>>(
+    alertIds: string[],
+    projectId: TProjectId,
+    args: Prisma.SelectSubset<T, Omit<Prisma.AlertUpdateManyArgs, 'where'>>,
+  ): Promise<Alert[]> {
+    if (!projectId) {
+      throw new Error('Project ID is required to perform an update opeartion on Alerts');
+    }
+
+    const projectIds = [projectId];
+
+    const queryArgs = this.scopeService.scopeFindMany(args, projectIds);
+
+    const batchResponse = await this.prisma.alert.updateMany({
+      ...queryArgs,
+      where: {
+        // @ts-expect-error - TS is not able to infer the type of where
+        ...queryArgs.where,
+        id: { in: alertIds },
+      },
+    });
+
+    return batchResponse.count > 0
+      ? await this.findMany({ where: { id: { in: alertIds } } }, projectIds)
+      : [];
   }
 
   // Method to update an alert by ID

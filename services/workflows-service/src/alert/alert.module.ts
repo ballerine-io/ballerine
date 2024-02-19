@@ -1,3 +1,5 @@
+import { PasswordService } from '@/auth/password/password.service';
+import { UserService } from '@/user/user.service';
 import { HttpStatus, Module } from '@nestjs/common';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { AlertControllerInternal } from '@/alert/alert.controller.internal';
@@ -17,6 +19,7 @@ import { isAxiosError } from 'axios';
 import { getHttpStatusFromAxiosError, interceptAxiosRequests } from '@/common/http-service/utils';
 import { WebhookEventEmitterService } from './webhook-manager/webhook-event-emitter.service';
 import { ProjectModule } from '@/project/project.module';
+import { UserRepository } from '@/user/user.repository';
 
 @Module({
   imports: [
@@ -46,6 +49,10 @@ import { ProjectModule } from '@/project/project.module';
     AlertRepository,
     WebhookManagerService,
     WebhookEventEmitterService,
+    // TODO: Export to user module
+    UserService,
+    UserRepository,
+    PasswordService,
   ],
   exports: [ACLModule, AlertService, WebhookEventEmitterService],
 })

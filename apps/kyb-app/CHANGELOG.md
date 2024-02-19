@@ -1,5 +1,12 @@
 # kyb-app
 
+## 0.1.42
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/blocks@0.1.26
+
 ## 0.1.41
 
 ### Patch Changes
