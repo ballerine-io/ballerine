@@ -24,6 +24,7 @@
     "@ballerine/docs-site": "0.0.1"
   },
   "changesets": [
+    "early-hairs-itch",
     "five-wombats-thank",
     "kind-melons-hammer",
     "loud-hornets-switch",
