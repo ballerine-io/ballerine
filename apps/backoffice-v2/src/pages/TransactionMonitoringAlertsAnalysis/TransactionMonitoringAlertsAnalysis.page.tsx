@@ -1,4 +1,4 @@
-import { AlertAnalysisSheet } from '@/pages/TransactionMonitoringAlerts/components/AlertAnalysisSheet';
+import { AlertAnalysisSheet } from 'src/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisSheet';
 import { useTransactionsQuery } from '@/domains/transactions/hooks/queries/useTransactionsQuery/useTransactionsQuery';
 import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchParams/useSerializedSearchParams';
 import { useNavigateBack } from '@/common/hooks/useNavigateBack/useNavigateBack';

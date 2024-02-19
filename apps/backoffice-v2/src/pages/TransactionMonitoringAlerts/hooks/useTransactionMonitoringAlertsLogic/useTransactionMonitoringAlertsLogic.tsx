@@ -12,7 +12,7 @@ export const useTransactionMonitoringAlertsLogic = () => {
   const AlertsSearchSchema = getAlertsSearchSchema(session?.user?.id);
   const [{ filter, sortBy, sortDir, page, pageSize, search: searchValue }] =
     useZodSearchParams(AlertsSearchSchema);
-  const { data: alerts } = useAlertsQuery({
+  const { data: alerts, isLoading: isLoadingAlerts } = useAlertsQuery({
     filter,
     page,
     pageSize,
@@ -37,6 +37,7 @@ export const useTransactionMonitoringAlertsLogic = () => {
 
   return {
     alerts,
+    isLoadingAlerts,
     assignees: sortedAssignees,
     authenticatedUser: session?.user,
     page,
