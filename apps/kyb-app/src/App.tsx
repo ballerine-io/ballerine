@@ -1,4 +1,5 @@
 import { LoadingScreen } from '@/common/components/molecules/LoadingScreen';
+import { APP_LANGUAGE_QUERY_KEY } from '@/common/consts/consts';
 import { CustomerProviderFallback } from '@/components/molecules/CustomerProviderFallback';
 import { AppLoadingContainer } from '@/components/organisms/AppLoadingContainer';
 import { CustomerProvider } from '@/components/providers/CustomerProvider';
@@ -11,7 +12,7 @@ import * as Sentry from '@sentry/react';
 import { RouterProvider } from 'react-router-dom';
 
 export const App = () => {
-  const language = new URLSearchParams(window.location.search).get('lng') || 'en';
+  const language = new URLSearchParams(window.location.search).get(APP_LANGUAGE_QUERY_KEY) || 'en';
 
   const dependancyQueries = [
     useCustomerQuery(),
