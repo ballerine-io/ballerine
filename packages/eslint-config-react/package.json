@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@ballerine/eslint-config-react",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "",
   "main": "index.js",
   "scripts": {},
@@ -10,7 +10,7 @@
   "license": "ISC",
   "peerDependencies": {
     "eslint-plugin-react": "^7.33.2",
-    "@ballerine/eslint-config": "^1.0.3",
+    "@ballerine/eslint-config": "^1.0.5",
     "eslint-plugin-react-hooks": "^4.6.0"
   }
 }

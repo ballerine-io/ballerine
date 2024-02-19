@@ -17,7 +17,7 @@ export const useSearchParamsByEntity = <TSchema extends AnyZodObject>(
   const EntitySearchSchema = useMemo(
     () =>
       entity === 'individuals'
-        ? IndividualsSearchSchema(session.user.id)
+        ? IndividualsSearchSchema(session?.user?.id)
         : BusinessesSearchSchema(session?.user?.id),
     [entity, session?.user?.id],
   );

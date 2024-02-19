@@ -48,7 +48,7 @@ export class EmailPlugin extends ApiPlugin {
     payload.adapter ??= 'sendgrid';
 
     if (payload.adapter === 'log') {
-      console.log('Email payload: ', emailPayload);
+      console.log('Skipping email vendor reuqest, Email payload: ', emailPayload);
 
       return {
         ok: true,

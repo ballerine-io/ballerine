@@ -43,7 +43,7 @@ export const useDocumentLogic = () => {
         );
       }
 
-      broadcastChannel.postMessage({
+      void broadcastChannel.postMessage({
         type: CommunicationChannelEvent.OPEN_DOCUMENT_IN_NEW_TAB_ACK,
       });
     },

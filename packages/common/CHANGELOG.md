@@ -1,16 +1,16 @@
 # @ballerine/common
 
-## 0.7.40-11210907c.1
+## 0.7.41
 
 ### Patch Changes
 
-- bump
+- updating versions
 
-## 0.7.40-11210907c.0
+## 0.7.40
 
 ### Patch Changes
 
-- Added base64 provider type
+- version bump
 
 ## 0.7.39
 

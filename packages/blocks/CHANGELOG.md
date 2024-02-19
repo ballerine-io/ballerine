@@ -1,19 +1,18 @@
 # @ballerine/blocks
 
-## 0.1.25-11210907c.1
+## 0.1.26
 
 ### Patch Changes
 
-- bump
-- Updated dependencies
-  - @ballerine/common@0.7.40-11210907c.1
+- Fixed types resolving to any
 
-## 0.1.25-11210907c.0
+## 0.1.25
 
 ### Patch Changes
 
+- version bump
 - Updated dependencies
-  - @ballerine/common@0.7.40-11210907c.0
+  - @ballerine/common@0.7.40
 
 ## 0.1.24
 

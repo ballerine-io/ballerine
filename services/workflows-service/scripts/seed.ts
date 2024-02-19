@@ -53,7 +53,7 @@ const persistImageFile = async (client: PrismaClient, uri: string, projectId: st
 
 function generateAvatarImageUri(imageTemplate: string, countOfBusiness: number, pdf = false) {
   if (pdf) {
-    return `https://www.africau.edu/images/default/sample.pdf`;
+    return `https://blrn-imgs.s3.eu-central-1.amazonaws.com/github/mock-pdf.pdf`;
   }
 
   if (countOfBusiness < 4) {
@@ -116,7 +116,7 @@ async function seed(bcryptSalt: string | number) {
     client,
     '1',
     env.API_KEY,
-    'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/img/ballerine_logo.svg',
+    'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/images/ballerine_logo.svg',
     '',
     `webhook-shared-secret-${env.API_KEY}`,
   );
@@ -124,7 +124,7 @@ async function seed(bcryptSalt: string | number) {
     client,
     '2',
     `${env.API_KEY}2`,
-    'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/img/ballerine_logo.svg',
+    'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/images/ballerine_logo.svg',
     '',
     `webhook-shared-secret-${env.API_KEY}2`,
   );

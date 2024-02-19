@@ -1,34 +1,20 @@
 # @ballerine/react-pdf-toolkit
 
-## 1.0.13-11210907c.2
+## 1.0.13
 
 ### Patch Changes
 
-- bump
-- c889a6566: Cleanup & Bump
 - Updated dependencies
-  - @ballerine/ui@0.3.28-11210907c.1
-
-## 1.0.13-11210907c.1
-
-### Patch Changes
-
-- 5c94e75f7: Updated exports & bump
-- 70c13d456: bump
-  - @ballerine/ui@0.3.28-11210907c.0
-
-## 1.0.13-11210907c.0
-
-### Patch Changes
-
-- 11210907c: Added report templates & storybook stories
-- bump alpha
+  - @ballerine/ui@0.3.28
 
 ## 1.0.12
 
 ### Patch Changes
 
-- Style changed & new icons & bump
+- version bump
+- Updated dependencies
+  - @ballerine/config@1.0.5
+  - @ballerine/ui@0.3.27
 
 ## 1.0.11
 

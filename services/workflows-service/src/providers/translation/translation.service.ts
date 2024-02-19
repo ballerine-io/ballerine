@@ -26,7 +26,7 @@ export class TranslationService {
     });
   }
 
-  translate(key: string, lng: string) {
-    return this.__i18next.t(key, { lng });
+  translate(key: string, lng: string, options: Record<string, unknown> = {}) {
+    return this.__i18next.t(key, { ...options, lng });
   }
 }

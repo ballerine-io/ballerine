@@ -3,7 +3,7 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
-export const useAssociatedCompaniesInformationBlock = (workflows: Array<TWorkflowById>) => {
+export const useAssociatedCompaniesInformationBlock = (workflows: TWorkflowById[]) => {
   return useMemo(() => {
     if (!Array.isArray(workflows) || !workflows.length) return [];
 
@@ -30,7 +30,7 @@ export const useAssociatedCompaniesInformationBlock = (workflows: Array<TWorkflo
                 })
                 .addCell({
                   type: 'subheading',
-                  value: 'User-provided data',
+                  value: 'User-Provided Data',
                 })
                 .build()
                 .flat(1),

@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
-import { Checkbox } from '../../../../common/components/atoms/Checkbox/Checkbox';
-import { FilterSvg, MagnifyingGlassSvg, SortSvg } from '../../../../common/components/atoms/icons';
-import { TIndividual } from '../../../../domains/individuals/types';
+import { Checkbox } from '@/common/components/atoms/Checkbox/Checkbox';
+import { FilterSvg, MagnifyingGlassSvg, SortSvg } from '@/common/components/atoms/icons';
+import { TIndividual } from '@/domains/individuals/types';
 import { Item } from './Cases.Item';
 import { List } from './Cases.List';
 import { SkeletonItem } from './Cases.SkeletonItem';
@@ -49,7 +49,11 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
   } = useCases();
 
   return (
-    <div id={`cases-list`} className="flex min-w-[300px] flex-col justify-between pb-4" {...props}>
+    <div
+      id={`cases-list`}
+      className="flex min-h-0 min-w-[300px] flex-col justify-between pb-4"
+      {...props}
+    >
       <div className={`border-neutral/10 p-4 theme-dark:border-neutral/60`}>
         <div className="form-control mb-2 rounded-md border border-neutral/10 focus-within:shadow-[0_1px_1px_0_rgba(0,0,0,0.15)] theme-dark:border-neutral/60">
           <div className="input-group">
@@ -140,7 +144,7 @@ export const Cases: FunctionComponent<ICasesProps> & ICasesChildren = ({
           </div>
         </div>
         <div className="mt-4 text-sm font-semibold text-[#999999]">
-          {count} {count === 1 ? 'case' : 'cases'}
+          {Intl.NumberFormat().format(count)} {count === 1 ? 'case' : 'cases'}
         </div>
       </div>
       {children}
