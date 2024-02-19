@@ -22,8 +22,6 @@ class SwaggerSingleton {
     return SwaggerSingleton.instance;
   }
 
-  private constructor() {}
-
   private _setup(app: INestApplication) {
     if (this.document) {
       throw new Error('Swagger has already been initialized');
