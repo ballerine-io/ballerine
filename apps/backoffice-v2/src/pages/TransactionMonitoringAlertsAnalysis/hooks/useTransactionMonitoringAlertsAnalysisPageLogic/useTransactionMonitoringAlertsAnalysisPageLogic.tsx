@@ -1,6 +1,6 @@
 import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchParams/useSerializedSearchParams';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAlertDefinitionByAlertIdQuery } from '@/domains/alert-definitions/hooks/queries/useAlertDefinitionByAlertIdQuery/useAlertDefinitionByAlertIdQuery';
+import { useAlertDefinitionByAlertIdQuery } from '@/domains/alerts/hooks/queries/useAlertDefinitionByAlertIdQuery/useAlertDefinitionByAlertIdQuery';
 import { useTransactionsQuery } from '@/domains/transactions/hooks/queries/useTransactionsQuery/useTransactionsQuery';
 import { useNavigateBack } from '@/common/hooks/useNavigateBack/useNavigateBack';
 
