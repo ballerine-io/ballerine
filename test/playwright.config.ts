@@ -84,48 +84,48 @@ export default defineConfig({
         //     },
         //     testMatch: 'auth.setup.spec.ts'
         // },
+        // {
+        //     name: 'Chrome',
+        //     // dependencies: ['setup'],
+        //     use: {
+        //         storageState: './tests/auth/defaultStorageState.json',
+        //         channel: 'chrome'
+        //     }
+        // },
         {
             name: 'Chrome',
             // dependencies: ['setup'],
             use: {
+                // Configure the browser to use.
+                browserName: 'chromium',
+
+                //Chrome Browser Config
+                channel: 'chrome',
+
+                //Browser height and width
+                // viewport: { width: 1920, height: 1080 },
+                ignoreHTTPSErrors: true,
+
+                //Enable File Downloads in Chrome
+                acceptDownloads: true,
                 storageState: './tests/auth/defaultStorageState.json',
-                channel: 'chrome'
+
+                //Slows down execution by ms
+                launchOptions: {
+                    args: [
+                        '--start-maximized',
+                        '--disable-web-security',
+                        '--no-sandbox',
+                        '--disable-gpu',
+                        '--disable-dev-shm-usage',
+                        '--window-size=1900,1000',
+                        '--allow-insecure-localhost',
+                        '--ignore-certificate-error'
+                    ],
+                    slowMo: 50
+                }
             }
         }
-        // {
-        //     name: 'Chrome',
-        //     dependencies: ['setup'],
-        //     use: {
-        //         // Configure the browser to use.
-        //         browserName: 'chromium',
-
-        //         //Chrome Browser Config
-        //         channel: 'chrome',
-
-        //         //Browser height and width
-        //         // viewport: { width: 1920, height: 1080 },
-        //         ignoreHTTPSErrors: true,
-
-        //         //Enable File Downloads in Chrome
-        //         acceptDownloads: true,
-        //         storageState: './tests/auth/defaultStorageState.json',
-
-        //         //Slows down execution by ms
-        //         launchOptions: {
-        //             args: [
-        //                 '--start-maximized',
-        //                 '--disable-web-security',
-        //                 '--no-sandbox',
-        //                 '--disable-gpu',
-        //                 '--disable-dev-shm-usage',
-        //                 '--window-size=1900,1000',
-        //                 '--allow-insecure-localhost',
-        //                 '--ignore-certificate-error'
-        //             ]
-        //             //slowMo: 50
-        //         }
-        //     }
-        // }
     ]
 
     /* Run your local dev server before starting the tests */

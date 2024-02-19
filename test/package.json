@@ -6,9 +6,9 @@
     "scripts": {
         "test": "npx playwright test",
         "test:headed": "npx playwright test --headed",
-        "test:headed:one": "npx playwright test --headed tests/example.spec.ts",
+        "test:headed:one": "npx playwright test --headed tests/specs/bacoffice/bacoffice-002.spec.ts",
         "test:headed:qase": "export QASE_REPORT=1 && npx playwright test --headed",
-        "test:html-report": "npx playwright show-report",
+        "show:report": "npx playwright show-report",
         "playwright:clean": "rm -rf playwright-report test-results",
         "test:debug": "npx playwright test --debug",
         "test:code-gen": "npx playwright codegen --output tests/generated.spec.ts",

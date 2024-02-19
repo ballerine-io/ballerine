@@ -5,7 +5,8 @@ export class LogInPage extends BasePage {
     private inputEmail: Locator;
     private inputPassword: Locator;
     private buttonSignIn: Locator;
-    private inputSearch: Locator;
+    private errorMessage: Locator;
+    private noticeEmailInput: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -13,7 +14,8 @@ export class LogInPage extends BasePage {
         this.inputEmail = this.page.getByLabel('Email');
         this.inputPassword = this.page.getByLabel('Password');
         this.buttonSignIn = this.page.getByRole('button', { name: 'Sign In' });
-        this.inputSearch = this.page.getByPlaceholder('Search by user info');
+        this.errorMessage = this.page.locator('div[role="alert"]');
+        this.noticeEmailInput = this.page.locator('[name="email"] + p[id*="form-item-message"]');
     }
 
     /**
@@ -44,50 +46,20 @@ export class LogInPage extends BasePage {
     }
 
     /**
-     * Clicks the search input field.
-     * @returns A promise that resolves once the input field is clicked.
+     * Checks if the error message is visible.
+     * @returns A promise that resolves to a boolean indicating whether the error message is visible.
      */
-    public async clickSearchInput(): Promise<void> {
-        await this.inputSearch.click();
+    public async isErrorMessageVisible(): Promise<boolean> {
+        await this.errorMessage.waitFor({ state: 'visible' });
+        return this.errorMessage.isVisible();
     }
 
     /**
-     * Checks if the search input is visible.
-     * @returns A promise that resolves to a boolean indicating the visibility of the search input.
+     * Checks if the notice message for the email input is visible.
+     * @returns A promise that resolves to a boolean indicating whether the notice message is visible.
      */
-    public async isSearchInputVisible(): Promise<boolean> {
-        await this.inputSearch.waitFor({ state: 'visible' });
-        return this.inputSearch.isVisible();
-    }
-
-    public async setSearchInputValue(value: string): Promise<void> {
-        await this.inputSearch.fill(value);
-    }
-
-    /**
-     * Clicks on a side menu button.
-     * @param buttonName - The name of the button to click.
-     * @returns A promise that resolves when the button is clicked.
-     */
-    public async clickSideMenuButton(buttonName: string): Promise<void> {
-        await this.page.getByRole('button', { name: buttonName }).click();
-    }
-
-    /**
-     * Clicks on a link menu button with the specified name.
-     *
-     * @param linkName - The name of the link menu button to click.
-     * @returns A promise that resolves once the button is clicked.
-     */
-    public async clickSideMenuLink(linkName: string): Promise<void> {
-        await this.page.getByRole('link', { name: linkName, exact: true }).click();
-    }
-
-    public async isSideMenuLinkActive(linkName: string): Promise<boolean> {
-        return this.page
-            .getByRole('link', { name: linkName, exact: true })
-            .evaluate((el) => !el.classList.contains('aria-[current=page]'));
-        // .getAttribute('class')
-        // .then((classes) => classes.includes('aria-[current=page]'))
+    public async isNoticeEmailInputVisible(): Promise<boolean> {
+        await this.noticeEmailInput.waitFor({ state: 'visible' });
+        return this.noticeEmailInput.isVisible();
     }
 }
