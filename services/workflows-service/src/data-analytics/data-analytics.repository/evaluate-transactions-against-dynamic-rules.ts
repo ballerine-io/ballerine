@@ -101,7 +101,8 @@ export async function evaluateTransactionsAgainstDynamicRules({
     groupByClause = Prisma.sql`"businessId", "counterpartyOriginatorId"`;
   }
 
-  const aggregateFunction = Prisma.sql`${havingAggregate}(tr."transactionAmount")`;
+  // test this to allow more aggregation methods
+  const aggregateFunction = Prisma.sql`${havingAggregate}(tr."transactionBaseAmount")`;
 
   let query: Sql;
   if (havingAggregate === AggregateType.COUNT) {
