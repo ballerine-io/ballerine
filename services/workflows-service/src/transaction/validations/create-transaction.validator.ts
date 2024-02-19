@@ -1,9 +1,9 @@
 import z from 'zod';
-import { PaymentMethodSchema } from '../schemas/zod-schemas';
+import { PaymentMethod } from '@prisma/client';
 
 export const createTranscationValidator = z.object({
   amount: z.number().optional(),
-  paymentMethod: PaymentMethodSchema.optional(),
+  paymentMethod: z.nativeEnum(PaymentMethod).optional(),
   currency: z.string().optional(),
   description: z.string().optional(),
   transactionId: z.string().optional(),

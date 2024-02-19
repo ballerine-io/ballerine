@@ -502,6 +502,19 @@ enum PaymentProcessor {
   AmericanExpress
 }
 
+enum PaymentBrandName {
+  VISA
+  MASTERCARD
+  DCI // Diners Club International
+  SCB_PayNow
+  OCBC_PayNow
+  Atome
+  Dash
+  GrabPay
+  AlipayHost
+  WechatHost
+}
+
 enum TransactionDirection {
   Inbound
   Outbound
@@ -529,7 +542,7 @@ model TransactionRecord {
   originatorSortCode    String?
   originatorBankCountry String?
 
-  paymentBrandName String? // Category of the transaction
+  paymentBrandName PaymentBrandName?
   paymentMethod    PaymentMethod?
   paymentType      PaymentType?
   paymentChannel   PaymentChannel?
@@ -659,7 +672,7 @@ model AlertDefinition {
   createdAt DateTime @default(now())
 
   modifiedBy String?
-  updatedAt DateTime @updatedAt
+  updatedAt  DateTime @updatedAt
 
   alert Alert[]
 
@@ -744,8 +757,8 @@ enum SanctionListMatchStatus {
 model Counterparty {
   id String @id
 
-  correlationId  String?
-  type           CounterpartyType
+  correlationId String?
+  type          CounterpartyType
 
   additionalInfo Json? // Additional information about the counterparty
 
@@ -762,6 +775,6 @@ model Counterparty {
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 
-  @@index([correlationId])
   @@unique([projectId, correlationId])
+  @@index([correlationId])
 }
