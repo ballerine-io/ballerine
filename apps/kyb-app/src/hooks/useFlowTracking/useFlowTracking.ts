@@ -2,10 +2,15 @@ import { useCallback } from 'react';
 
 export const useFlowTracking = () => {
   const trackExit = useCallback(() => {
-    window.parent.postMessage('ballerine.collection-flow.back-button-pressed', '*');
+    const event = 'ballerine.collection-flow.back-button-pressed';
+    console.log(`Sending event: ${event}`);
+    window.parent.postMessage(event, '*');
   }, []);
 
   const trackFinish = useCallback(() => {
+    const event = 'ballerine.collection-flow.finish-button-pressed';
+    console.log(`Sending event: ${event}`);
+
     window.parent.postMessage('ballerine.collection-flow.finish-button-pressed', '*');
   }, []);
 

@@ -131,9 +131,14 @@ export interface UIPage {
   pageValidation?: Rule[];
 }
 
+export interface UISchemaConfig {
+  kybOnExitAction?: 'send-event' | 'redirect-to-customer-portal';
+  supportedLanguages: string[];
+}
+
 export interface UISchema {
   id: string;
-  config: Record<string, unknown>;
+  config: UISchemaConfig;
   uiSchema: {
     elements: UIPage[];
   };
