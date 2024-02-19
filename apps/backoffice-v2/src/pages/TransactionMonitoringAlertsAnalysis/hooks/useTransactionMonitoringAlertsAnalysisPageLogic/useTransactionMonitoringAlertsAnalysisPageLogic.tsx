@@ -5,13 +5,14 @@ import { useTransactionsQuery } from '@/domains/transactions/hooks/queries/useTr
 import { useNavigateBack } from '@/common/hooks/useNavigateBack/useNavigateBack';
 
 export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
-  const [{ businessId }] = useSerializedSearchParams();
+  const [{ businessId, counterpartyId }] = useSerializedSearchParams();
   const { alertId } = useParams();
   const { data: alertDefinition } = useAlertDefinitionByAlertIdQuery({
     alertId: alertId ?? '',
   });
   const { data: transactions } = useTransactionsQuery({
     businessId: businessId ?? '',
+    counterpartyId: counterpartyId ?? '',
     page: 1,
     pageSize: 50,
   });
