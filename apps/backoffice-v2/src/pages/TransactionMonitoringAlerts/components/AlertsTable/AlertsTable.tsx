@@ -16,7 +16,7 @@ import { useAlertsTableLogic } from '@/pages/TransactionMonitoringAlerts/compone
 import { Link } from 'react-router-dom';
 
 export const AlertsTable: FunctionComponent<IAlertsTableProps> = ({ data }) => {
-  const { table } = useAlertsTableLogic({ data });
+  const { table, locale } = useAlertsTableLogic({ data });
 
   return (
     <div className="d-full relative overflow-auto rounded-md border bg-white shadow">
@@ -74,7 +74,7 @@ export const AlertsTable: FunctionComponent<IAlertsTableProps> = ({ data }) => {
                           flexRender(cell.column.columnDef.cell, cell.getContext())}
                         {cell.column.id !== 'select' && (
                           <Link
-                            to={`/en/transaction-monitoring/alerts/${itemId}?businessId=${
+                            to={`/${locale}/transaction-monitoring/alerts/${itemId}?businessId=${
                               item?.merchant?.id ?? ''
                             }`}
                             className={`d-full flex p-4`}

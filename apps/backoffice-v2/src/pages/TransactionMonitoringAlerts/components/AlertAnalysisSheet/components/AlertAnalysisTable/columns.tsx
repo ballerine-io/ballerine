@@ -33,8 +33,6 @@ export const columns = [
       return (
         <div className={`w-[11.8ch]`}>
           <TextWithNAFallback
-            // as={Link}
-            // to={'/en/transaction-monitoring/transactions/:transactionId'}
             className={buttonVariants({
               variant: 'link',
               className: '!block cursor-pointer !p-0 text-sm !text-blue-500',

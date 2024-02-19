@@ -14,7 +14,9 @@ export const TransactionMonitoringAlertsAnalysisPage = () => {
   const navigateBack = useNavigateBack();
   const navigate = useNavigate();
   const onNavigateBack = () => {
-    if (window.history.state.idx <= 1) {
+    const isFirstPageInHistory = window.history.state.idx <= 1;
+
+    if (isFirstPageInHistory) {
       navigate('../');
 
       return;
