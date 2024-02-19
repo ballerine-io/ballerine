@@ -66,7 +66,8 @@ export const TransactionsListSchema = z.array(
     business: business?.companyName,
     counterpartyOriginatorName:
       noNullish`${counterpartyOriginator?.endUser?.firstName} ${counterpartyOriginator?.endUser?.lastName}`.trim(),
-    transactionBaseAmountWithCurrency: `${data.transactionBaseAmount} ${data.transactionBaseCurrency}`,
+    transactionBaseAmountWithCurrency:
+      noNullish`${data.transactionBaseAmount} ${data.transactionBaseCurrency}`.trim(),
   })),
 );
 
