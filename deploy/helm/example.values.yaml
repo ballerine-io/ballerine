@@ -213,22 +213,25 @@ websocketService:
 workflowService:
   enabled: true
   replicas: 1
-  strategyType: RollingUpdate
+  deploymentStrategy:
+    type: RollingUpdate
   updateStrategy:
     maxSurge: 1
     maxUnavailable: '0'
   nameOverride: workflowservice
+  envFrom:
+  - secretRef:
+      name: ""
   migration: true
+  imagePullSecrets: []
   service:
     port: 3000
     type: ClusterIP
-    protocol: TCP
   image:
-    registry: ghcr.io
-    repository: 'ballerine-io/workflows-service'
+    repository: ghcr.io/ballerine-io/workflows-service
     pullPolicy: Always
-    pullSecrets: ""
     tag: "dev"
+  resources: {}
   ingress:
     enabled: true
     className: "nginx"
