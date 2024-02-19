@@ -41,7 +41,8 @@ export const TransactionsListSchema = z.array(
   ObjectWithIdSchema.extend({
     transactionDate: z.string().datetime(),
     transactionDirection: z.enum(TransactionDirections),
-    transactionAmount: z.number(),
+    transactionBaseAmount: z.number(),
+    transactionBaseCurrency: z.string(),
     businessId: z.string().nullable(),
     business: z
       .object({
@@ -65,6 +66,8 @@ export const TransactionsListSchema = z.array(
     business: business?.companyName,
     counterpartyOriginatorName:
       noNullish`${counterpartyOriginator?.endUser?.firstName} ${counterpartyOriginator?.endUser?.lastName}`.trim(),
+    transactionBaseAmountWithCurrency:
+      noNullish`${data.transactionBaseAmount} ${data.transactionBaseCurrency}`.trim(),
   })),
 );
 
