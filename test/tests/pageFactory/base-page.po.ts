@@ -2,17 +2,19 @@
  * BasePage is an abstract class representing the base structure for page objects.
  * It provides common methods and utilities for interacting with pages using Playwright.
  */
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page, Response } from '@playwright/test';
 import { Timeout } from '../enums/timeouts.enum';
 
-export abstract class BasePage {
+export class BasePage {
     page: Page;
     public readonly spinners: Locator;
+    private inputSearch: Locator;
 
     constructor(page: Page) {
         this.page = page;
 
         this.spinners = this.page.locator('app-spinner svg.spinner');
+        this.inputSearch = this.page.getByPlaceholder('Search by user info');
     }
 
     /**
@@ -39,6 +41,27 @@ export abstract class BasePage {
         // if (localStorage === null) {
         //     await this.setLocalStorage();
         // }
+    }
+
+    /**
+     * Clicks the search input field.
+     * @returns A promise that resolves once the input field is clicked.
+     */
+    public async clickSearchInput(): Promise<void> {
+        await this.inputSearch.click();
+    }
+
+    /**
+     * Checks if the search input is visible.
+     * @returns A promise that resolves to a boolean indicating the visibility of the search input.
+     */
+    public async isSearchInputVisible(): Promise<boolean> {
+        await this.inputSearch.waitFor({ state: 'visible' });
+        return this.inputSearch.isVisible();
+    }
+
+    public async setSearchInputValue(value: string): Promise<void> {
+        await this.inputSearch.fill(value);
     }
 
     /**
@@ -180,5 +203,32 @@ export abstract class BasePage {
             }
         }
         return false;
+    }
+
+    /**
+     * Usage: Intercepts the given link after actions on the front-end , example: use full link https://api.example.com/api/...
+     * @param {string} urlValue - put url what need catch
+     * @param {number} codeValue - status code from caught API Response
+     * @returns
+     */
+    async catchResponse(urlValue, codeValue, milliseconds = 40000) {
+        return await this.page.waitForResponse(
+            (response) => response.url() === `${urlValue}` && response.status() === codeValue,
+            { timeout: milliseconds }
+        );
+    }
+
+    /**
+     * Waits for a response that includes a specific URL and has a specific status code.
+     * @param urlValue The URL value to check for inclusion in the response URL.
+     * @param codeValue The status code to check for in the response.
+     * @param milliseconds The maximum number of milliseconds to wait for the response. Default is 40000 milliseconds.
+     * @returns A promise that resolves when the response is received.
+     */
+    async catchIncludesResponse(urlValue: string, codeValue: number, milliseconds: number = 40000): Promise<Response> {
+        return await this.page.waitForResponse(
+            (response) => response.url().includes(`${urlValue}`) && response.status() === codeValue,
+            { timeout: milliseconds }
+        );
     }
 }
