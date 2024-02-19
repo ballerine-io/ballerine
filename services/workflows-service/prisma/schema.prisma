@@ -606,14 +606,16 @@ enum AlertSeverity {
 
 enum AlertState {
   // New
-  Triggered    @map("101")
+  Triggered     @map("101")
   // Pending
-  UnderReview  @map("201")
-  Escalated    @map("202")
+  UnderReview   @map("201")
+  Escalated     @map("202")
   // Completed
-  Resolved     @map("301")
-  Acknowledged @map("302")
-  Dismissed    @map("303")
+  Resolved      @map("301")
+  Acknowledged  @map("302")
+  Dismissed     @map("303")
+  Rejected      @map("304")
+  NotSuspicious @map("305")
 }
 
 enum AlertStatus {
@@ -683,8 +685,9 @@ model Alert {
 
   executionDetails Json // Execution details
 
-  assignee   User?   @relation(fields: [assigneeId], references: [id], onUpdate: Cascade, onDelete: NoAction)
+  assignee   User?     @relation(fields: [assigneeId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   assigneeId String?
+  assignedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -4,6 +4,7 @@ import { ErrorObject } from 'ajv';
 import startCase from 'lodash/startCase';
 import lowerCase from 'lodash/lowerCase';
 import { ZodError } from 'zod';
+import { ValidationError } from 'class-validator';
 
 export class ForbiddenException extends common.ForbiddenException {
   @ApiProperty()
@@ -34,7 +35,7 @@ class DetailedValidationError {
   path!: string;
 }
 
-export class ValidationError extends common.BadRequestException {
+export class BadValidationException extends common.BadRequestException {
   @ApiProperty()
   statusCode!: number;
   @ApiProperty()
@@ -47,7 +48,7 @@ export class ValidationError extends common.BadRequestException {
     super(
       {
         statusCode: common.HttpStatus.BAD_REQUEST,
-        message: ValidationError.message,
+        message: BadValidationException.message,
         errors,
       },
       'Validation error',
@@ -66,7 +67,7 @@ export class ValidationError extends common.BadRequestException {
       path: instancePath,
     }));
 
-    return new ValidationError(errors);
+    return new BadValidationException(errors);
   }
 
   static fromZodError(error: ZodError) {
@@ -75,6 +76,15 @@ export class ValidationError extends common.BadRequestException {
       path: zodIssue.path.join('.'), // Backwards compatibility - Legacy code message excepts array
     }));
 
-    return new ValidationError(errors);
+    return new BadValidationException(errors);
+  }
+
+  static fromClassValidator(error: ValidationError[]) {
+    return new BadValidationException(
+      error.map(({ property, constraints = {} }) => ({
+        message: `${Object.values(constraints).join(', ')}.`,
+        path: property,
+      })),
+    );
   }
 }

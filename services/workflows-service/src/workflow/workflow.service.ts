@@ -79,7 +79,7 @@ import {
 } from './workflow-runtime-data.repository';
 import mime from 'mime';
 import { env } from '@/env';
-import { ValidationError } from '@/errors';
+import { BadValidationException } from '@/errors';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { ajv } from '@/common/ajv/ajv.validator';
 
@@ -892,7 +892,7 @@ export class WorkflowService {
       const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
 
       if (!isValidPropertiesSchema && document.type === documentToUpdate.type) {
-        throw ValidationError.fromAjvError(validatePropertiesSchema.errors!);
+        throw BadValidationException.fromAjvError(validatePropertiesSchema.errors!);
       }
     }
 
@@ -1107,7 +1107,7 @@ export class WorkflowService {
         const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
         if (!isValidPropertiesSchema) {
-          throw ValidationError.fromAjvError(validatePropertiesSchema.errors!);
+          throw BadValidationException.fromAjvError(validatePropertiesSchema.errors!);
         }
       });
       data.context = mergedContext;
@@ -1521,7 +1521,7 @@ export class WorkflowService {
     const result = ConfigSchema.safeParse(config);
 
     if (!result.success) {
-      throw ValidationError.fromZodError(result.error);
+      throw BadValidationException.fromZodError(result.error);
     }
 
     const customer = await this.customerService.getByProjectId(projectIds![0]!);
@@ -1982,7 +1982,7 @@ export class WorkflowService {
 
     if (isValid) return;
 
-    throw ValidationError.fromAjvError(validate.errors!);
+    throw BadValidationException.fromAjvError(validate.errors!);
   }
 
   async event(

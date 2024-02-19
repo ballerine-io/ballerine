@@ -22,8 +22,8 @@ export const NavItem: FunctionComponentWithChildren<TNavItemProps> = ({
   return (
     <li>
       <NavLink
-        to={href}
         {...props}
+        to={href}
         className={({ isActive }) =>
           ctw(
             `flex gap-x-2 rounded-md`,

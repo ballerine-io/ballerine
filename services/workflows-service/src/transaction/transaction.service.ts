@@ -35,22 +35,22 @@ export class TransactionService {
   }
 
   async createBatch(payload: TransactionCreateDto[]): Promise<{
-    txCreationResponse: {
+    txCreationResponse: Array<{
       txid: string;
       status: 'success' | 'failed';
       txCorrelationId: string;
       errorMessage?: string;
-    }[];
+    }>;
     overallStatus: 'success' | 'partial';
   }> {
     // TEMP IMPLEMENTATION - REMOVE WHEN TASK BASED BATCH CREATE IS IMPLEMENTED
 
-    const txCreationResponse: {
+    const txCreationResponse: Array<{
       txid: string;
       status: 'success' | 'failed';
       txCorrelationId: string;
       errorMessage?: string;
-    }[] = [];
+    }> = [];
     let overallStatus: 'success' | 'partial' = 'success';
 
     for (const transaction of payload) {
@@ -80,7 +80,7 @@ export class TransactionService {
           txCorrelationId: transaction.correlationId,
           status: 'success',
         });
-      } catch (error: unknown) {
+      } catch (error) {
         overallStatus = 'partial';
 
         txCreationResponse.push({
@@ -100,7 +100,11 @@ export class TransactionService {
     return this.repository.findMany(args, projectId);
   }
 
-  async getTransactions(getTransactionsParameters: GetTransactionsDto, projectId: string) {
-    return this.repository.findManyWithFilters(getTransactionsParameters, projectId);
+  async getTransactions(
+    getTransactionsParameters: GetTransactionsDto,
+    projectId: string,
+    args?: Parameters<typeof this.repository.findManyWithFilters>[2],
+  ) {
+    return this.repository.findManyWithFilters(getTransactionsParameters, projectId, args);
   }
 }

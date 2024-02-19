@@ -16,6 +16,8 @@ import { ClsMiddleware } from 'nestjs-cls';
 import * as Sentry from '@sentry/node';
 import { ConfigService } from '@nestjs/config';
 import { AppLoggerService } from './common/app-logger/app-logger.service';
+import { ValidationError } from 'class-validator';
+import { BadValidationException } from './errors';
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
@@ -127,6 +129,9 @@ const main = async () => {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      exceptionFactory: (errors: ValidationError[]) => {
+        return BadValidationException.fromClassValidator(errors);
+      },
     }),
   );
   app.enableVersioning({

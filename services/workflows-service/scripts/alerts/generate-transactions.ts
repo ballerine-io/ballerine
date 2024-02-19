@@ -1,18 +1,17 @@
 import {
-  PrismaClient,
-  TransactionRecordType,
-  TransactionRecordStatus,
-  PaymentMethod,
-  PaymentType,
-  PaymentChannel,
-  PaymentIssuer,
-  PaymentGateway,
-  PaymentAcquirer,
-  PaymentProcessor,
-  Prisma,
-  TransactionDirection,
-  ReviewStatus,
   CounterpartyType,
+  PaymentAcquirer,
+  PaymentChannel,
+  PaymentGateway,
+  PaymentIssuer,
+  PaymentMethod,
+  PaymentProcessor,
+  PaymentType,
+  PrismaClient,
+  ReviewStatus,
+  TransactionDirection,
+  TransactionRecordStatus,
+  TransactionRecordType,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
@@ -94,6 +93,7 @@ export const generateTransactions = async (
         productId: faker.datatype.uuid(),
         projectId,
         counterpartyOriginatorId: randomCounterpartyId, // Assign a random counterparty ID
+        businessId,
       },
     });
   }
