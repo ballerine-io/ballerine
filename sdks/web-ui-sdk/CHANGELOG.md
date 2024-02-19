@@ -1,19 +1,19 @@
 # web-ui-sdk
 
-## 1.4.37-11210907c.1
-
-### Patch Changes
-
-- bump
-- Updated dependencies
-  - @ballerine/common@0.7.40-11210907c.1
-
-## 1.4.37-11210907c.0
+## 1.4.38
 
 ### Patch Changes
 
 - Updated dependencies
-  - @ballerine/common@0.7.40-11210907c.0
+  - @ballerine/common@0.7.41
+
+## 1.4.37
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.7.40
 
 ## 1.4.36
 

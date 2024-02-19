@@ -10,8 +10,8 @@ import { useEntityType } from '@/common/hooks/useEntityType/useEntityType';
  */
 export const useSelectEntityOnMount = () => {
   const { entityId: caseId } = useParams();
-  const [{ filterId, filter, sortBy, sortDir, page, pageSize }] = useSearchParamsByEntity();
-  const { data } = useWorkflowsQuery({ filterId, filter, sortBy, sortDir, page, pageSize });
+  const [{ filterId, filter, sortBy, sortDir, page, pageSize, search }] = useSearchParamsByEntity();
+  const { data } = useWorkflowsQuery({ filterId, filter, sortBy, sortDir, page, pageSize, search });
   const { data: workflows } = data || { data: [] };
   const onSelectEntity = useSelectEntity();
   const entity = useEntityType();

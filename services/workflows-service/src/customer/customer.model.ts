@@ -1,5 +1,6 @@
+import { CustomerSubscriptionSchema } from './schemas/zod-schemas';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsString, ValidateNested } from 'class-validator';
 
 export class CustomerModel {
   @ApiProperty({
@@ -53,4 +54,18 @@ export class CustomerModel {
   })
   @IsString()
   country?: string;
+}
+
+export class Subscription {
+  @ApiProperty()
+  url!: string;
+
+  @ApiProperty()
+  events!: string[];
+
+  @ApiProperty({
+    example: 'webhook',
+    default: 'webhook',
+  })
+  type!: string;
 }

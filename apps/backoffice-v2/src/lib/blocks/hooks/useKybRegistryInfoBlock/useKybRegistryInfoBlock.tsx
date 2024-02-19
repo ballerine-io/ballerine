@@ -71,7 +71,7 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
           .addCell({
             id: 'nested-details-subheading',
             type: 'subheading',
-            value: 'Registry-provided data',
+            value: 'Registry-Provided Data',
             props: {
               className: 'mb-4',
             },
