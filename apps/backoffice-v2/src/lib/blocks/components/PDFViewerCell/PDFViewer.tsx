@@ -1,7 +1,7 @@
-import { IPDFViewerProps } from '@/lib/blocks/components/PDFViewerCell/interfaces';
+import { TPDFViewerCell } from '@/lib/blocks/components/PDFViewerCell/interfaces';
 import { FunctionComponent } from 'react';
 
-export const PDFViewerCell: FunctionComponent<IPDFViewerProps> = ({ props, value }) => {
+export const PDFViewerCell: FunctionComponent<TPDFViewerCell> = ({ props, value }) => {
   const { width, height } = props;
 
   return value ? (

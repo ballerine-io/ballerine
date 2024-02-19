@@ -1,16 +1,15 @@
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { createBlocks } from '@ballerine/blocks';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
 export const usePDFRevisionBlocks = () => {
   const { entityId: workflowId } = useParams();
   const filterId = useFilterId();
-  const { data: workflow, isLoading } = useWorkflowByIdQuery({
-    workflowId,
-    filterId,
+  const { data: workflow } = useWorkflowByIdQuery({
+    workflowId: workflowId as string,
+    filterId: filterId as string,
   });
 
   const blocks = useMemo(() => {
@@ -21,7 +20,7 @@ export const usePDFRevisionBlocks = () => {
         props: {
           className: 'rounded-md overflow-hidden h-full',
         },
-        value: createBlocks()
+        value: createBlocksTyped()
           .addBlock()
           .addCell({
             type: 'pdfViewer',
@@ -29,15 +28,13 @@ export const usePDFRevisionBlocks = () => {
               width: '100%',
               height: '100%',
             },
-            value: workflow?.context?.entity?.report
-              ? (workflow?.context?.entity?.report.base64Pdf as string)
-              : null,
+            value: workflow?.context?.entity?.report.base64Pdf || '',
           })
           .build()
           .flat(1),
       })
       .build();
-  }, []);
+  }, [workflow?.context]);
 
   return {
     blocks,
