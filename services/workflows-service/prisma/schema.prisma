@@ -635,9 +635,8 @@ model AlertDefinition {
   rulesetId Int // Set of rules reference
   ruleId    Int // Specific rule within the ruleset
 
-  inlineRule Json? // JSON format for rule definitions
+  inlineRule Json
   createdBy  String @default("SYSTEM")
-  modifiedBy String
 
   dedupeStrategies Json
   config           Json
@@ -647,6 +646,8 @@ model AlertDefinition {
   additionalInfo Json // Additional information
 
   createdAt DateTime @default(now())
+  
+  modifiedBy String?
   updatedAt DateTime @updatedAt
 
   alert Alert[]
@@ -739,8 +740,7 @@ model Counterparty {
 
   correlationId  String?
   type           CounterpartyType
-  sortCode       String?
-  bankCountry    String?
+
   additionalInfo Json? // Additional information about the counterparty
 
   businessId String?
