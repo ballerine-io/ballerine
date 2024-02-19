@@ -17,15 +17,17 @@ import { FindAlertsDto, FindAlertsSchema } from './dtos/get-alerts.dto';
 import { BulkStatus, TBulkAssignAlertsResponse } from './types';
 import { AlertDecisionDto } from './dtos/decision-alert.dto';
 import { UserData } from '@/user/user-data.decorator';
+import { AlertDefinitionService } from '@/alert-definition/alert-definition.service';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Alerts')
 @common.Controller('external/alerts')
 export class AlertControllerExternal {
   constructor(
-    protected readonly service: AlertService,
+    protected readonly alertService: AlertService,
     protected readonly prisma: PrismaService,
     protected readonly logger: AppLoggerService,
+    protected readonly alertDefinitionService: AlertDefinitionService,
   ) {}
   @common.Post()
   @swagger.ApiCreatedResponse({
@@ -38,7 +40,7 @@ export class AlertControllerExternal {
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<AlertDefinition> {
     // Assuming create method in AlertService accepts CreateAlertDto and returns AlertDefinition
-    return await this.service.create(createAlertDto, currentProjectId);
+    return await this.alertService.create(createAlertDto, currentProjectId);
   }
 
   @common.Get('/')
@@ -47,7 +49,7 @@ export class AlertControllerExternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.UsePipes(new ZodValidationPipe(FindAlertsSchema, 'query'))
   async list(@common.Query() findAlertsDto: FindAlertsDto, @ProjectIds() projectIds: TProjectId[]) {
-    const alerts = await this.service.getAlerts(findAlertsDto, projectIds, {
+    const alerts = await this.alertService.getAlerts(findAlertsDto, projectIds, {
       include: {
         alertDefinition: {
           select: {
@@ -105,7 +107,11 @@ export class AlertControllerExternal {
   ): Promise<TBulkAssignAlertsResponse> {
     let updatedAlerts = [];
 
-    updatedAlerts = await this.service.updateAlertsAssignee(alertIds, currentProjectId, assigneeId);
+    updatedAlerts = await this.alertService.updateAlertsAssignee(
+      alertIds,
+      currentProjectId,
+      assigneeId,
+    );
 
     const updatedAlertsIds = new Set(updatedAlerts.map(alert => alert.id));
 
@@ -150,14 +156,14 @@ export class AlertControllerExternal {
   ): Promise<TBulkAssignAlertsResponse> {
     // Assign alerts to the authenticated assignee
     if (authenticatedAssignee?.user?.id) {
-      await this.service.updateAlertsAssignee(
+      await this.alertService.updateAlertsAssignee(
         alertIds,
         currentProjectId,
         authenticatedAssignee.user.id,
       );
     }
 
-    const updatedAlerts = await this.service.updateAlertsDecision(
+    const updatedAlerts = await this.alertService.updateAlertsDecision(
       alertIds,
       currentProjectId,
       decision,
@@ -200,5 +206,16 @@ export class AlertControllerExternal {
         };
       }),
     };
+  }
+
+  @common.Get('/:id/alert-definition')
+  @swagger.ApiOkResponse({ type: Object }) // TODO: Set type
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async getAlertDefinitionByAlertId(
+    @common.Param('id') id: string,
+    @ProjectIds() projectIds: TProjectId[],
+  ) {
+    return this.alertDefinitionService.getByAlertId(id, projectIds);
   }
 }
