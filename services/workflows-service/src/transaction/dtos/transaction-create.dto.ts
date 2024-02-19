@@ -8,9 +8,11 @@ import {
   PaymentGateway,
   PaymentAcquirer,
   PaymentProcessor,
+  PaymentBrandName,
   ReviewStatus,
   CounterpartyType,
   TransactionDirection,
+  PaymentMethod,
 } from '@prisma/client';
 import {
   IsBoolean,
@@ -26,7 +28,6 @@ import { Type } from 'class-transformer';
 import { JsonValue } from 'type-fest';
 import { BusinessCreateDto } from '@/business/dtos/business-create';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
-import * as types from '../types';
 
 export class CounterpartyInfo {
   @ApiProperty({ required: true }) @IsString() correlationId!: string;
@@ -42,8 +43,9 @@ export class CounterpartyInfo {
 
 class PaymentInfo {
   @ApiProperty({ required: false })
+  @IsEnum(PaymentMethod)
   @IsOptional()
-  method?: types.PaymentMethod;
+  method?: PaymentMethod;
   @ApiProperty({ required: false }) @IsEnum(PaymentType) @IsOptional() type?: PaymentType;
   @ApiProperty({ required: false }) @IsEnum(PaymentChannel) @IsOptional() channel?: PaymentChannel;
   @ApiProperty({ required: false }) @IsEnum(PaymentIssuer) @IsOptional() issuer?: PaymentIssuer;
@@ -56,6 +58,10 @@ class PaymentInfo {
   @IsEnum(PaymentProcessor)
   @IsOptional()
   processor?: PaymentProcessor;
+  @ApiProperty({ required: false })
+  @IsEnum(PaymentBrandName)
+  @IsOptional()
+  brandName?: PaymentBrandName;
 }
 class ProductInfo {
   @ApiProperty({ required: false }) @IsString() @IsOptional() name?: string;

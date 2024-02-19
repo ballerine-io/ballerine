@@ -7,6 +7,7 @@ export class GetTransactionsDto {
   @IsOptional()
   @IsString()
   businessId?: string;
+
   @IsOptional()
   @IsString()
   counterpartyId?: string;
