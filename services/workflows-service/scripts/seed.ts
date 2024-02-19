@@ -152,6 +152,7 @@ async function seed() {
   await generateFakeAlertDefinition(client, {
     project: project1,
     customer: customer,
+    businessId: business1.id,
   });
 
   const project2 = await createProject(client, customer2, '2');

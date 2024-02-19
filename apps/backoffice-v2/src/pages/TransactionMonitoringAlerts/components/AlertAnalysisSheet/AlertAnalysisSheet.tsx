@@ -2,19 +2,19 @@ import { SheetContent } from '@/common/components/atoms/Sheet';
 import { Sheet } from '@/common/components/atoms/Sheet/Sheet';
 import { AlertAnalysisTable } from '@/pages/TransactionMonitoringAlerts/components/AlertAnalysisSheet/components/AlertAnalysisTable';
 import { FunctionComponent } from 'react';
-import { data } from '@/pages/TransactionMonitoringAlerts/components/AlertAnalysisSheet/components/AlertAnalysisTable/table-data.mock';
+import { TTransactionsList } from '@/domains/transactions/fetchers';
 
 export interface IAlertAnalysisProps {
-  isOpen: boolean;
-  onOpenStateChange: (isOpen: boolean) => void;
+  onOpenStateChange: () => void;
+  transactions: TTransactionsList;
 }
 
 export const AlertAnalysisSheet: FunctionComponent<IAlertAnalysisProps> = ({
-  isOpen,
   onOpenStateChange,
+  transactions,
 }) => {
   return (
-    <Sheet open={isOpen} onOpenChange={onOpenStateChange}>
+    <Sheet defaultOpen onOpenChange={onOpenStateChange}>
       <SheetContent side="bottom" className={`bottom-0 w-full`}>
         <div className="flex flex-col p-4">
           <div className="flex flex-col gap-4">
@@ -29,7 +29,7 @@ export const AlertAnalysisSheet: FunctionComponent<IAlertAnalysisProps> = ({
             </div>
           </div>
           <div>
-            <AlertAnalysisTable data={data} />
+            <AlertAnalysisTable transactions={transactions} />
           </div>
         </div>
       </SheetContent>

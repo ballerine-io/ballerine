@@ -513,6 +513,7 @@ model TransactionRecord {
   transactionType          TransactionRecordType? // Enum for transaction type
   transactionStatus        TransactionRecordStatus? @default(Completed)
   transactionStatusReason  String? // Reason for the transaction status
+  transactionDirection TransactionDirection?
 
   originatorIpAddress   String? // IP address of the transaction initiator
   originatorGeoLocation String? // Geolocation of the transaction initiator
@@ -569,9 +570,9 @@ model TransactionRecord {
 
   counterpartyBeneficiaryId String?
   counterpartyBeneficiary   Counterparty? @relation("BenefitingCounterparty", fields: [counterpartyBeneficiaryId], references: [id])
-  EndUser                   EndUser?      @relation(fields: [endUserId], references: [id])
+  endUser                   EndUser?      @relation(fields: [endUserId], references: [id])
   endUserId                 String?
-  Business                  Business?     @relation(fields: [businessId], references: [id])
+  business                  Business?     @relation(fields: [businessId], references: [id])
   businessId                String?
 
   @@index([transactionType])
@@ -726,6 +727,11 @@ enum SanctionListMatchStatus {
   NotListed // The counterparty is not found on any sanction list.
   PendingReview // The counterparty's status against sanction lists is pending review.
   Listed // The counterparty is listed on a sanction list.
+}
+
+enum TransactionDirection {
+  Inbound
+  Outbound
 }
 
 model Counterparty {

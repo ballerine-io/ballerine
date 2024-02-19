@@ -1,12 +1,11 @@
 import { PrismaService } from '../prisma/prisma.service';
-import { TransactionRecord, Prisma } from '@prisma/client';
+import { Prisma, TransactionRecord } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { TProjectId } from '@/types';
 import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
-import { toPrismaOrderBy, toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
-import { parse } from 'path';
+import { toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
 
 @Injectable()
 export class TransactionRepository {
@@ -59,15 +58,16 @@ export class TransactionRepository {
   async findManyWithFilters(
     getTransactionsParameters: GetTransactionsDto,
     projectId: string,
+    options?: Prisma.TransactionRecordFindManyArgs,
   ): Promise<TransactionRecord[]> {
     const args: Prisma.TransactionRecordFindManyArgs = {};
     if (getTransactionsParameters.page?.number && getTransactionsParameters.page?.size) {
-      // Temporary fix for pagination (class transfomer issue)
+      // Temporary fix for pagination (class transformer issue)
       const size = parseInt(getTransactionsParameters.page.size as unknown as string, 10);
       const number = parseInt(getTransactionsParameters.page.number as unknown as string, 10);
 
-      args.take = number;
-      args.skip = (size - 1) * number;
+      args.take = size;
+      args.skip = size * (number - 1);
     }
 
     if (getTransactionsParameters.orderBy) {
@@ -75,6 +75,7 @@ export class TransactionRepository {
     }
 
     return this.prisma.transactionRecord.findMany({
+      ...options,
       where: {
         projectId, //  Always restrict to project
         ...this.buildFilters(getTransactionsParameters),

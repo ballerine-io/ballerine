@@ -13,6 +13,7 @@ import { isInstanceOfFunction } from '@/common/utils/is-instance-of-function/is-
 import { columns } from '../../columns';
 import { checkIsBooleanishRecord } from '@/lib/zod/utils/checkers';
 import { useSelect } from '@/common/hooks/useSelect/useSelect';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 export const useAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
   const { onSort, sortBy, sortDir } = useSort();
@@ -85,6 +86,7 @@ export const useAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
     onRowSelectionChange,
     getRowId: row => row.id,
   });
+  const locale = useLocale();
 
   useEffect(() => {
     if (Object.keys(ids ?? {}).length > 0) return;
@@ -94,5 +96,6 @@ export const useAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
 
   return {
     table,
+    locale,
   };
 };

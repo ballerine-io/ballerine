@@ -1,15 +1,12 @@
-import { AlertAnalysisSheet } from '@/pages/TransactionMonitoringAlerts/components/AlertAnalysisSheet';
 import { AlertsTable } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable';
 import { AlertsHeader } from 'src/pages/TransactionMonitoringAlerts/components/AlertsHeader';
 import { AlertsPagination } from '@/pages/TransactionMonitoringAlerts/AlertsPagination/AlertsPagination';
 import { useTransactionMonitoringAlertsLogic } from '@/pages/TransactionMonitoringAlerts/hooks/useTransactionMonitoringAlertsLogic/useTransactionMonitoringAlertsLogic';
+import { Outlet } from 'react-router-dom';
 
 export const TransactionMonitoringAlerts = () => {
   const {
     alerts,
-    isSheetOpen,
-    toggleOnIsAlertAnalysisSheetOpen,
-    toggleIsAlertAnalysisSheetOpen,
     assignees,
     authenticatedUser,
     page,
@@ -31,10 +28,7 @@ export const TransactionMonitoringAlerts = () => {
           search={search}
           onSearch={onSearch}
         />
-        <AlertsTable
-          data={alerts ?? []}
-          toggleOnIsAlertAnalysisSheetOpen={toggleOnIsAlertAnalysisSheetOpen}
-        />
+        <AlertsTable data={alerts ?? []} />
         <div className={`flex items-center gap-x-2`}>
           <AlertsPagination
             page={page}
@@ -45,7 +39,7 @@ export const TransactionMonitoringAlerts = () => {
           />
         </div>
       </div>
-      <AlertAnalysisSheet isOpen={isSheetOpen} onOpenStateChange={toggleIsAlertAnalysisSheetOpen} />
+      <Outlet />
     </div>
   );
 };

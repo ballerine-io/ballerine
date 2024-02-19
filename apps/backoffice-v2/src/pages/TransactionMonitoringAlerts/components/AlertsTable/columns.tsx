@@ -15,7 +15,13 @@ import { IndeterminateCheckbox } from '@/common/components/atoms/IndeterminateCh
 import { SnakeCase, titleCase } from 'string-ts';
 import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
 
-const columnHelper = createColumnHelper<TAlertsList[number]>();
+const columnHelper = createColumnHelper<
+  TAlertsList[number] & {
+    // TODO: Change type once decisions PR is merged
+    // Computed from `alert.state`
+    decision: string;
+  }
+>();
 
 export const columns = [
   columnHelper.accessor('dataTimestamp', {
@@ -38,7 +44,7 @@ export const columns = [
     },
     header: 'Date & Time',
   }),
-  columnHelper.accessor('merchant', {
+  columnHelper.accessor('merchant.name', {
     cell: info => {
       const merchant = info.getValue();
 

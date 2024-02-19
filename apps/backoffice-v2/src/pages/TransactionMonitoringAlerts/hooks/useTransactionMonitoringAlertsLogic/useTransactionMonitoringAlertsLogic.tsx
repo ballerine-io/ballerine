@@ -4,7 +4,6 @@ import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSear
 import { useAlertsQuery } from '@/domains/alerts/hooks/queries/useAlertsQuery/useAlertsQuery';
 import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
 import { useMemo } from 'react';
-import { useToggle } from '@/common/hooks/useToggle/useToggle';
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
 import { useSearch } from '@/common/hooks/useSearch/useSearch';
 
@@ -30,19 +29,14 @@ export const useTransactionMonitoringAlertsLogic = () => {
         ?.sort((a, b) => (a?.id === session?.user?.id ? -1 : b?.id === session?.user?.id ? 1 : 0)),
     [assignees, session?.user?.id],
   );
-  const [isSheetOpen, toggleIsAlertAnalysisSheetOpen, toggleOnIsAlertAnalysisSheetOpen] =
-    useToggle();
   const { onPaginate, onPrevPage, onNextPage } = usePagination();
-  const isLastPage = (alerts?.length ?? 0 < pageSize) || alerts?.length === 0;
+  const isLastPage = (alerts?.length ?? 0) < pageSize || alerts?.length === 0;
   const { search, onSearch } = useSearch({
     initialSearch: searchValue,
   });
 
   return {
     alerts,
-    isSheetOpen,
-    toggleOnIsAlertAnalysisSheetOpen,
-    toggleIsAlertAnalysisSheetOpen,
     assignees: sortedAssignees,
     authenticatedUser: session?.user,
     page,

@@ -20,6 +20,7 @@ import { Document } from '@/pages/Document/Document.page';
 import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
 import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
 import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
+import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
 
 const router = createBrowserRouter([
   {
@@ -96,6 +97,13 @@ const router = createBrowserRouter([
                     path: '/:locale/transaction-monitoring/alerts',
                     element: <TransactionMonitoringAlerts />,
                     errorElement: <RouteError />,
+                    children: [
+                      {
+                        path: '/:locale/transaction-monitoring/alerts/:alertId',
+                        element: <TransactionMonitoringAlertsAnalysisPage />,
+                        errorElement: <RouteError />,
+                      },
+                    ],
                   },
                 ],
               },

@@ -95,7 +95,9 @@ export type TAlertStates = typeof AlertStates;
 export const AlertsListSchema = z.array(
   ObjectWithIdSchema.extend({
     dataTimestamp: z.string().datetime(),
-    // merchant: z.string(),
+    merchant: ObjectWithIdSchema.extend({
+      name: z.string(),
+    }).nullable(),
     severity: z.enum(AlertSeverities),
     alertDetails: z.string(),
     // amountOfTxs: z.number(),

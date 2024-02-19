@@ -25,12 +25,14 @@ export const generateFakeAlertDefinition = async (
   prisma: PrismaClient,
   {
     project,
+    businessId,
   }: {
     project: Project;
     customer: Customer;
+    businessId: string;
   },
 ) => {
-  const generateFakeAlert = (defaultSeverity: AlertSeverity) => {
+  const generateFakeAlert = (defaultSeverity: AlertSeverity, businessId: string) => {
     return {
       dataTimestamp: faker.date.past(),
       state: faker.helpers.arrayElement(Object.values(AlertState)),
@@ -38,6 +40,7 @@ export const generateFakeAlertDefinition = async (
       tags: [faker.random.word(), faker.random.word(), faker.random.word()],
       executionDetails: JSON.parse(faker.datatype.json()),
       severity: defaultSeverity,
+      businessId: businessId,
       // TODO: Assign assigneeId value to a valid user id
       // TODO: Assign counterpart value to a valid user id
       // businessId: faker.datatype.uuid(),
@@ -66,7 +69,7 @@ export const generateFakeAlertDefinition = async (
       () => {
         return {
           projectId: project.id,
-          ...generateFakeAlert(defaultSeverity),
+          ...generateFakeAlert(defaultSeverity, businessId),
         };
       },
     );
