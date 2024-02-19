@@ -52,6 +52,7 @@ describe('TransactionRulesEvaluationService', () => {
       },
     });
 
+    // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
     async function createCounterParty(
       prismaService: PrismaService,
       id: string,
@@ -133,6 +134,7 @@ describe('TransactionRulesEvaluationService', () => {
     });
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   beforeEach(async () => {});
 
   afterEach(async () => {
