@@ -167,7 +167,7 @@ export const CollectionFlow = withSessionProtected(() => {
                           <AppShell.Sidebar>
                             <div className="flex h-full flex-col">
                               <div className="flex h-full flex-1 flex-col">
-                                <div className="flex flex-row justify-between whitespace-nowrap gap-2 pb-10">
+                                <div className="flex flex-row justify-between gap-2 whitespace-nowrap pb-10">
                                   <AppShell.Navigation />
                                   <div>
                                     <AppShell.LanguagePicker />
