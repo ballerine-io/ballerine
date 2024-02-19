@@ -60,11 +60,8 @@ export const generateTransactions = async (
         transactionType: faker.helpers.arrayElement(Object.values(TransactionRecordType)),
         transactionStatus: faker.helpers.arrayElement(Object.values(TransactionRecordStatus)),
         transactionStatusReason: faker.lorem.sentence(),
-<<<<<<< HEAD
         transactionDirection: faker.helpers.arrayElement(Object.values(TransactionDirection)),
-=======
         paymentBrandName: faker.finance.accountName(),
->>>>>>> origin/alonp/feat/tm
         paymentMethod: faker.helpers.arrayElement(Object.values(PaymentMethod)),
         paymentType: faker.helpers.arrayElement(Object.values(PaymentType)),
         paymentChannel: faker.helpers.arrayElement(Object.values(PaymentChannel)),
@@ -98,10 +95,7 @@ export const generateTransactions = async (
         counterpartyOriginatorId: randomCounterpartyId, // Assign a random counterparty ID
         originatorSortCode: faker.finance.routingNumber(),
         originatorBankCountry: faker.address.countryCode(),
-        transactionDirection: faker.helpers.arrayElement([
-          TransactionDirection.Inbound,
-          TransactionDirection.Outbound,
-        ]),
+
         businessId,
       },
     });
