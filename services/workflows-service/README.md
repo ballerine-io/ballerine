@@ -1,6 +1,6 @@
 ### `npm start`
 
-Runs the app in development mode. 
+Runs the app in development mode.
 By default, it is accessible at http://localhost:3000
 
 ### `npm test`
