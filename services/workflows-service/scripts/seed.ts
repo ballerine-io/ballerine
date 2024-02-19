@@ -1144,10 +1144,3 @@ async function createUsers({ project1, project2 }: any, client: PrismaClient) {
     ),
   );
 }
-function executeDynamicRule(arg0: {
-  excludeCounterpartyIds: string[];
-  includePaymentMethods: string[];
-  amountThreshold: number;
-}) {
-  throw new Error('Function not implemented.');
-}
