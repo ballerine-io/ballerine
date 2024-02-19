@@ -523,10 +523,13 @@ model TransactionRecord {
   transactionDirection     TransactionDirection? // Reason for the transaction status
   transactionReference     String? // Reference number for the transaction
 
-  originatorIpAddress   String? // IP address of the transaction initiator
-  originatorGeoLocation String? // Geolocation of the transaction initiator
-  originatorUserAgent   String? // User agent of the device used for the transaction
+  originatorIpAddress   String?
+  originatorGeoLocation String?
+  originatorUserAgent   String?
+  originatorSortCode    String?
+  originatorBankCountry String?
 
+  paymentBrandName String? // Category of the transaction
   paymentMethod    PaymentMethod?
   paymentType      PaymentType?
   paymentChannel   PaymentChannel?
@@ -643,9 +646,8 @@ model AlertDefinition {
   rulesetId Int // Set of rules reference
   ruleId    Int // Specific rule within the ruleset
 
-  inlineRule Json? // JSON format for rule definitions
+  inlineRule Json
   createdBy  String @default("SYSTEM")
-  modifiedBy String
 
   dedupeStrategies Json
   config           Json
@@ -655,6 +657,8 @@ model AlertDefinition {
   additionalInfo Json // Additional information
 
   createdAt DateTime @default(now())
+
+  modifiedBy String?
   updatedAt DateTime @updatedAt
 
   alert Alert[]
@@ -738,12 +742,11 @@ enum SanctionListMatchStatus {
 }
 
 model Counterparty {
-  id String @id @default(cuid())
+  id String @id
 
   correlationId  String?
   type           CounterpartyType
-  sortCode       String?
-  bankCountry    String?
+
   additionalInfo Json? // Additional information about the counterparty
 
   businessId String?
@@ -760,4 +763,5 @@ model Counterparty {
   project   Project @relation(fields: [projectId], references: [id])
 
   @@index([correlationId])
+  @@unique([projectId, correlationId])
 }

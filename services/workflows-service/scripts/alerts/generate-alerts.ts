@@ -74,6 +74,7 @@ export const generateFakeAlertDefinition = async (
       },
     );
 
+    const createdBy = faker.internet.userName();
     // Create Alert Definition
     return await prisma.alertDefinition.create({
       include: {
@@ -94,10 +95,11 @@ export const generateFakeAlertDefinition = async (
           min: 1,
           max: 10,
         }),
-        createdBy: faker.internet.userName(),
-        modifiedBy: faker.internet.userName(),
+        createdBy: createdBy,
+        modifiedBy: createdBy,
         dedupeStrategies: { strategy: {} },
         config: { config: {} },
+        inlineRule: { rule: {} },
         tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
         additionalInfo: {},
         alert: {
