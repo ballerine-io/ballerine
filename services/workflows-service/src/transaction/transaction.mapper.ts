@@ -42,7 +42,6 @@ export class TransactionEntityMapper {
       paymentProcessor: dto.payment?.processor ?? null,
       paymentBrandName: dto.payment?.brandName ?? null,
 
-
       // Assuming card details and tags are part of the DTO
       cardFingerprint: dto.cardDetails?.fingerprint ?? null,
       cardIssuedCountry: dto.cardDetails?.issuedCountry ?? null,

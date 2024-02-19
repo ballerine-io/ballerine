@@ -20,26 +20,26 @@ module.exports = {
   rules: {
     'import/no-cycle': 'error',
     'ballerine/verify-repository-project-scoped': 'error',
-    "@ts-safeql/check-sql": [
-      "error",
+    '@ts-safeql/check-sql': [
+      'error',
       {
-        "connections": [
+        connections: [
           {
             // The migrations path:
-            "migrationsDir": "./prisma/migrations",
-            "targets": [
+            migrationsDir: './prisma/migrations',
+            targets: [
               {
                 // The sql tags that should be checked.
                 // either `db.$queryRaw` or `db.$executeRaw`:
-                "tag": "prisma.+($queryRaw|$executeRaw|sql)",
+                tag: 'prisma.+($queryRaw|$executeRaw|sql)',
                 // Transform the query result to array
-                "transform": "{type}[]"
-              }
-            ]
-          }
-        ]
-      }
-    ]
+                transform: '{type}[]',
+              },
+            ],
+          },
+        ],
+      },
+    ],
   },
   plugins: ['ballerine', '@ts-safeql/eslint-plugin'],
 };
