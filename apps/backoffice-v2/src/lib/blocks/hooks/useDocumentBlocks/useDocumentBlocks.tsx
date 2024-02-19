@@ -27,6 +27,9 @@ import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/us
 import { checkCanRevision } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-revision/check-can-revision';
 import { checkCanReject } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-reject/check-can-reject';
 import { checkCanApprove } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-approve/check-can-approve';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { Button } from '@ballerine/ui';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -252,17 +255,43 @@ export const useDocumentBlocks = ({
               },
             })
             .addCell({
-              type: 'callToAction',
+              type: 'dialog',
               value: {
-                text: 'Approve',
-                onClick: onMutateApproveTaskById({
-                  taskId: id,
-                  contextUpdateMethod: 'base',
-                }),
+                trigger: (
+                  <MotionButton
+                    {...motionButtonProps}
+                    disabled={!canApprove}
+                    size={'wide'}
+                    variant={'success'}
+                  >
+                    Approve
+                  </MotionButton>
+                ),
+                title: `Approval confirmation`,
+                description: <p className={`text-sm`}>Are you sure you want to approve?</p>,
+                close: (
+                  <div className={`space-x-2`}>
+                    <Button type={'button'} variant={`secondary`}>
+                      Cancel
+                    </Button>
+                    <Button
+                      disabled={!canApprove}
+                      onClick={onMutateApproveTaskById({
+                        taskId: id,
+                        contextUpdateMethod: 'base',
+                      })}
+                    >
+                      Approve
+                    </Button>
+                  </div>
+                ),
                 props: {
-                  disabled: !canApprove,
-                  size: 'wide',
-                  variant: 'success',
+                  content: {
+                    className: 'mb-96',
+                  },
+                  title: {
+                    className: `text-2xl`,
+                  },
                 },
               },
             })
