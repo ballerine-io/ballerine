@@ -60,7 +60,7 @@ export const Navbar: FunctionComponent = () => {
                           href={childNavItem.href}
                           key={childNavItem.key}
                           className={ctw(
-                            `gap-x-1 px-1.5 py-2 text-xs capitalize text-[#8990AC] hover:bg-[#EBEEF9] hover:text-[#5E688E] active:bg-[#e0e4f6]`,
+                            `gap-x-1 px-1.5 py-2 text-xs capitalize hover:bg-[#EBEEF9] hover:text-[#5E688E] active:bg-[#e0e4f6] [&:not([aria-current=page])]:text-[#8990AC]`,
                             childNavItem.filterId
                               ? {
                                   'font-semibold text-[#20232E]':
