@@ -13,12 +13,10 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import React, { FunctionComponent } from 'react';
 import { IAlertsTableProps } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/interfaces';
 import { useAlertsTableLogic } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/hooks/useAlertsTableLogic/useAlertsTableLogic';
+import { Link } from 'react-router-dom';
 
-export const AlertsTable: FunctionComponent<IAlertsTableProps> = ({
-  data,
-  toggleOnIsAlertAnalysisSheetOpen,
-}) => {
-  const { table } = useAlertsTableLogic({ data });
+export const AlertsTable: FunctionComponent<IAlertsTableProps> = ({ data }) => {
+  const { table, locale } = useAlertsTableLogic({ data });
 
   return (
     <div className="d-full relative overflow-auto rounded-md border bg-white shadow">
@@ -67,17 +65,23 @@ export const AlertsTable: FunctionComponent<IAlertsTableProps> = ({
                   className="h-[76px] border-b-0 even:bg-[#F4F6FD]/50 hover:bg-[#F4F6FD]/90"
                 >
                   {row.getVisibleCells().map(cell => {
+                    const itemId = cell.id.replace(`_${cell.column.id}`, '');
+                    const item = data.find(item => item.id === itemId);
+
                     return (
-                      <TableCell
-                        key={cell.id}
-                        onClick={
-                          cell.column.id !== 'select' ? toggleOnIsAlertAnalysisSheetOpen : undefined
-                        }
-                        className={ctw({
-                          'cursor-pointer': cell.column.id !== 'select',
-                        })}
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      <TableCell key={cell.id} className={`p-0`}>
+                        {cell.column.id === 'select' &&
+                          flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {cell.column.id !== 'select' && (
+                          <Link
+                            to={`/${locale}/transaction-monitoring/alerts/${itemId}?businessId=${
+                              item?.merchant?.id ?? ''
+                            }`}
+                            className={`d-full flex p-4`}
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </Link>
+                        )}
                       </TableCell>
                     );
                   })}

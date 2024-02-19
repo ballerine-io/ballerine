@@ -9,7 +9,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import type { AuthenticatedEntity, TProjectId } from '@/types';
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { Alert, AlertDefinition, User } from '@prisma/client';
+import { Alert, AlertDefinition, Business, User } from '@prisma/client';
 import * as errors from '../errors';
 import { AlertAssigneeUniqueDto, BulkAlertsResponse } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
@@ -61,13 +61,21 @@ export class AlertControllerExternal {
             lastName: true,
           },
         },
+        business: {
+          select: {
+            id: true,
+            companyName: true,
+          },
+        },
       },
     });
     const formattedAlerts = alerts.map(alert => {
-      const { alertDefinition, state, assignee, ...alertWithoutDefinition } = alert as Alert & {
-        alertDefinition: Pick<AlertDefinition, 'description'>;
-        assignee: Pick<User, 'id' | 'firstName' | 'lastName'>;
-      };
+      const { alertDefinition, assignee, business, state, ...alertWithoutDefinition } =
+        alert as Alert & {
+          alertDefinition: Pick<AlertDefinition, 'description'>;
+          assignee: Pick<User, 'id' | 'firstName' | 'lastName'>;
+          business: Pick<Business, 'id' | 'companyName'>;
+        };
 
       return {
         ...alertWithoutDefinition,
@@ -78,6 +86,7 @@ export class AlertControllerExternal {
             }
           : null,
         alertDetails: alertDefinition?.description,
+        merchant: business ? { id: business.id, name: business.companyName } : null,
         decision: state,
       };
     });

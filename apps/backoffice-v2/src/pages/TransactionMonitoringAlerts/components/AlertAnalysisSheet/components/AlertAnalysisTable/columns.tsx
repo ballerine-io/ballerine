@@ -1,23 +1,15 @@
 import { createColumnHelper } from '@tanstack/react-table';
 import dayjs from 'dayjs';
 import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
+import { TTransactionsList } from '@/domains/transactions/fetchers';
+import { buttonVariants } from '@/common/components/atoms/Button/Button';
+import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
+import { titleCase } from 'string-ts';
 
-export type AlertAnalysisItem = {
-  date: string;
-  transactionId: string;
-  direction: string;
-  amount: string;
-  business: string;
-  businessId: string;
-  counterPartyName: string;
-  counterPartyId: string;
-  counterPartyInstitution: string;
-};
-
-const columnHelper = createColumnHelper<AlertAnalysisItem>();
+const columnHelper = createColumnHelper<TTransactionsList[number]>();
 
 export const columns = [
-  columnHelper.accessor('date', {
+  columnHelper.accessor('transactionDate', {
     cell: info => {
       const dateValue = info.getValue();
       const date = dayjs(dateValue).format('MMM DD, YYYY');
@@ -32,15 +24,30 @@ export const columns = [
     },
     header: 'Date & Time',
   }),
-  columnHelper.accessor('transactionId', {
+  columnHelper.accessor('id', {
     cell: info => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
+      const { ref, styles } = useEllipsesWithTitle<HTMLAnchorElement>();
       const transactionId = info.getValue();
 
-      return <TextWithNAFallback className="text-sm">{transactionId}</TextWithNAFallback>;
+      return (
+        <div className={`w-[11.8ch]`}>
+          <TextWithNAFallback
+            className={buttonVariants({
+              variant: 'link',
+              className: '!block cursor-pointer !p-0 text-sm !text-blue-500',
+            })}
+            style={styles}
+            ref={ref}
+          >
+            {transactionId}
+          </TextWithNAFallback>
+        </div>
+      );
     },
     header: 'Transaction',
   }),
-  columnHelper.accessor('direction', {
+  columnHelper.accessor('transactionDirection', {
     cell: info => {
       const direction = info.getValue();
 
@@ -48,7 +55,7 @@ export const columns = [
     },
     header: 'Direction',
   }),
-  columnHelper.accessor('amount', {
+  columnHelper.accessor('transactionAmount', {
     cell: info => {
       const amount = info.getValue();
 
@@ -74,38 +81,40 @@ export const columns = [
     },
     header: 'Business ID',
   }),
-  columnHelper.accessor('counterPartyName', {
+  columnHelper.accessor('counterpartyOriginatorName', {
     cell: info => {
-      const counterPartyName = info.getValue();
+      const counterpartyOriginatorName = info.getValue();
 
       return (
         <TextWithNAFallback className="text-sm font-semibold">
-          {counterPartyName}
+          {counterpartyOriginatorName}
         </TextWithNAFallback>
       );
     },
     header: 'Counterparty Name',
   }),
-  columnHelper.accessor('counterPartyId', {
+  columnHelper.accessor('counterpartyOriginatorId', {
     cell: info => {
-      const counterPartyId = info.getValue();
+      const counterpartyOriginatorId = info.getValue();
 
       return (
-        <TextWithNAFallback className="text-sm font-semibold">{counterPartyId}</TextWithNAFallback>
+        <TextWithNAFallback className="text-sm font-semibold">
+          {counterpartyOriginatorId}
+        </TextWithNAFallback>
       );
     },
     header: 'Counterparty ID',
   }),
-  columnHelper.accessor('counterPartyName', {
+  columnHelper.accessor('paymentMethod', {
     cell: info => {
-      const counterPartyName = info.getValue();
+      const paymentMethod = info.getValue();
 
       return (
         <TextWithNAFallback className="text-sm font-semibold">
-          {counterPartyName}
+          {titleCase(paymentMethod)}
         </TextWithNAFallback>
       );
     },
-    header: 'Counterparty Institution',
+    header: 'Payment Method',
   }),
 ];

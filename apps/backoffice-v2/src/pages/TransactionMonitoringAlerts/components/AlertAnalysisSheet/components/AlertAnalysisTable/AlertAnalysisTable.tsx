@@ -11,17 +11,18 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
 import { columns } from './columns';
-import { data } from './table-data.mock';
 import React, { FunctionComponent } from 'react';
+import { TTransactionsList } from '@/domains/transactions/fetchers';
 
 export const AlertAnalysisTable: FunctionComponent<{
-  data: typeof data;
-}> = ({ data }) => {
+  transactions: TTransactionsList;
+}> = ({ transactions }) => {
   const table = useReactTable({
     columns: columns,
-    data: data ?? [],
+    data: transactions ?? [],
     getCoreRowModel: getCoreRowModel(),
     enableSortingRemoval: false,
+    enableSorting: false,
   });
 
   return (
