@@ -1,18 +1,15 @@
-{{- if .Values.workflowService.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
-    name: {{ .Values.workflowService.nameOverride }}
-    namespace: {{ .Release.Namespace | quote }}
-    labels:
-      app: {{ .Values.workflowService.nameOverride }}
+  name: {{ include "wf-service.fullname" . }}
+  labels:
+    {{- include "wf-service.labels" . | nindent 4 }}
 spec:
-    ports:
-    - name: {{ .Values.workflowService.nameOverride }}
-      port: {{ .Values.workflowService.service.port }}
-      protocol: {{ .Values.workflowService.service.protocol }}
-      targetPort: {{ .Values.workflowService.service.port }}
-    selector:
-        app: {{ .Values.workflowService.nameOverride }}
-    type: {{ .Values.workflowService.service.type }}
-{{- end }}
+  type: {{ .Values.workflowService.service.type }}
+  ports:
+    - port: {{ .Values.workflowService.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "wf-service.selectorLabels" . | nindent 4 }}

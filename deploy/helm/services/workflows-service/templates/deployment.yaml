@@ -2,61 +2,162 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-    name: {{ .Values.workflowService.nameOverride }}
-    namespace: {{ .Release.Namespace | quote }}
-    labels:
-      app: {{ .Values.workflowService.nameOverride }}
+  name: {{ .Values.workflowService.nameOverride }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ .Values.workflowService.nameOverride }}
 spec:
-    replicas: {{ .Values.workflowService.replicas }}
-    {{- if .Values.workflowService.strategyType }}
-    strategy:
-      type: {{ .Values.workflowService.strategyType }}
-    {{- end }}
-    {{- if .Values.workflowService.updateStrategy }}
-      rollingUpdate:
-        {{- if .Values.workflowService.updateStrategy.maxSurge }}
-        maxSurge: {{ .Values.workflowService.updateStrategy.maxSurge}}
+  {{- if not .Values.workflowService.autoscaling.enabled }}
+  replicas: {{ .Values.workflowService.replicaCount }}
+  {{- end }}
+  # replicas: {{ .Values.workflowService.replicas }}
+  strategy:
+    type: {{ .Values.workflowService.deploymentStrategy.type }}
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  # {{- if .Values.workflowService.deploymentStrategy.type }}
+  # strategy:
+  #   type: {{ .Values.workflowService.deploymentStrategy.type }}
+  # {{- end }}
+  # {{- if .Values.workflowService.deploymentStrategy.type.updateStrategy }}
+  #   rollingUpdate:
+  #     {{- if .Values.workflowService.deploymentStrategy.type.updateStrategy.maxSurge }}
+  #     maxSurge: {{ .Values.workflowService.deploymentStrategy.type.updateStrategy.maxSurge}}
+  #     {{- end }}
+  #     {{- if .Values.workflowService.updateStrategy.maxUnavailable }}
+  #     maxUnavailable: {{ .Values.workflowService.updateStrategy.maxUnavailable }}
+  #     {{- end }}
+  # {{- end }}
+  minReadySeconds: 30
+  selector:
+    matchLabels:
+      {{- include "wf-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.workflowService.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "wf-service.labels" . | nindent 8 }}
+      {{- with .Values.workflowService.podLabels }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.workflowService.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: {{ .Values.workflowService.restartPolicy }}
+      serviceAccountName: {{ include "wf-service.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.workflowService.podSecurityContext | nindent 8 }}
+      terminationGracePeriodSeconds: 90
+      {{- with .Values.workflowService.nodeSelector }}
+      nodeSelector:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+      {{- if .Values.postgresql.enabled }}
+      - name: psql-init-container
+        image: alpine:latest
+        command: ['sh', '-c', "apk add postgresql-client; until pg_isready -h {{ .Release.Name }}-postgresql.{{.Release.Namespace}}.svc.cluster.local; do echo waiting for postgresql; sleep 2; done"]
+      {{- end }}
+      {{- if .Values.workflowService.migration }}
+      - name: migration-init-container
+        image: {{ .Values.workflowService.image.registry }}/{{ .Values.workflowService.image.repository }}:{{ .Values.workflowService.image.tag }}
+        command: ['npm','run','db:init']
+        {{- if .Values.postgresql.enabled }}
+        envFrom:
+          - secretRef:
+              name: {{ .Values.workflowService.nameOverride }}
+        {{- else }}
+        {{- with .Values.workflowService.envFrom }}
+        envFrom:
+          {{- toYaml . | nindent 12 }}
         {{- end }}
-        {{- if .Values.workflowService.updateStrategy.maxUnavailable }}
-        maxUnavailable: {{ .Values.workflowService.updateStrategy.maxUnavailable }}
         {{- end }}
-    {{- end }}
-    selector:
-        matchLabels:
-            app: {{ .Values.workflowService.nameOverride }}
-    template:
-        metadata:
-            labels:
-                app: {{ .Values.workflowService.nameOverride }}
-        spec:
-            {{- with .Values.nodeSelector }}
-            nodeSelector:
-            {{- toYaml . | nindent 8 }}
-            {{- end }}
-            initContainers:
-            {{- if .Values.postgresql.enabled }}
-            - name: psql-init-container
-              image: alpine:latest
-              command: ['sh', '-c', "apk add postgresql-client; until pg_isready -h {{ .Release.Name }}-postgresql.{{.Release.Namespace}}.svc.cluster.local; do echo waiting for postgresql; sleep 2; done"]
-            {{- end }}
-            {{- if .Values.workflowService.migration }}
-            - name: migration-init-container
-              image: {{ .Values.workflowService.image.registry }}/{{ .Values.workflowService.image.repository }}:{{ .Values.workflowService.image.tag }}
-              command: ['npm','run','db:init']
-              envFrom:
-                - configMapRef:
-                    name: {{ .Values.workflowService.nameOverride }}
-            {{- end }}
-            containers:
-            - name: {{ .Values.workflowService.nameOverride }}
-              image: "{{ .Values.workflowService.image.registry }}/{{ .Values.workflowService.image.repository }}:{{ .Values.workflowService.image.tag }}"
-              imagePullPolicy: {{ .Values.workflowService.image.pullPolicy }}
-              command: [ "dumb-init", "npm", "run", "prod" ]
-              envFrom:
-                - configMapRef:
-                    name: {{ .Values.workflowService.nameOverride }}
-            {{- if .Values.workflowService.image.pullSecrets}}
-            imagePullSecrets:
-              - name: {{ .Values.workflowService.image.pullSecrets }}
-            {{- end }}
+      {{- end }}
+      containers:
+      # - name: {{ .Values.workflowService.nameOverride }}
+      #   image: "{{ .Values.workflowService.image.registry }}/{{ .Values.workflowService.image.repository }}:{{ .Values.workflowService.image.tag }}"
+      #   imagePullPolicy: {{ .Values.workflowService.image.pullPolicy }}
+      #   command: [ "dumb-init", "npm", "run", "prod" ]
+      #   envFrom:
+      #     - configMapRef:
+      #         name: {{ .Values.workflowService.nameOverride }}
+      - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.workflowService.securityContext | nindent 12 }}
+          image: "{{ .Values.workflowService.image.repository }}:{{ .Values.workflowService.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.workflowService.image.pullPolicy }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sleep","30"]
+          {{- if .Values.postgresql.enabled }}
+          command: [ "dumb-init", "npm", "run", "prod" ]
+          {{- else }}
+          command: {{ .Values.workflowService.image.command | toYaml | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          args: {{ .Values.workflowService.image.args | toYaml | nindent 12 }}
+          {{- with .Values.workflowService.image.env }}
+          env:
+          {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.postgresql.enabled }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.workflowService.nameOverride }}
+          {{- else }}
+          {{- with .Values.workflowService.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.workflowService.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /api/v1/_health/live
+              port: http
+            periodSeconds: 10
+            initialDelaySeconds: 5
+            successThreshold: 1
+            failureThreshold: 2
+            terminationGracePeriodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/v1/_health/ready
+              port: http
+            periodSeconds: 15
+            initialDelaySeconds: 10
+            successThreshold: 1
+            failureThreshold: 2
+          resources:
+            {{- toYaml .Values.workflowService.resources | nindent 12 }}
+          {{- with .Values.workflowService.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.workflowService.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.workflowService.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.workflowService.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.workflowService.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}
