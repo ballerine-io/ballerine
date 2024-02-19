@@ -11,7 +11,7 @@ enum AggregateType {
   MIN = 'MIN',
 }
 
-export async function evaluateTransactionsAgainstDynamicRules({
+export const evaluateTransactionsAgainstDynamicRules = ({
   direction = 'Inbound',
   excludedCounterpartyIds = [],
   paymentMethods = [],
@@ -36,8 +36,8 @@ export async function evaluateTransactionsAgainstDynamicRules({
   amountThreshold?: number;
   groupByBusiness?: boolean;
   groupByCounterparty?: boolean;
-}) {
-  let conditions: Prisma.Sql[] = [];
+}) => {
+  const conditions: Prisma.Sql[] = [];
 
   conditions.push(Prisma.sql`"transactionDirection"::text = ${direction}`);
   if (excludedCounterpartyIds.length) {
@@ -119,4 +119,4 @@ WHERE ${whereClause} GROUP BY ${groupByClause} HAVING SUM(tr."transactionBaseAmo
 
   console.log(results);
   return results;
-}
+};

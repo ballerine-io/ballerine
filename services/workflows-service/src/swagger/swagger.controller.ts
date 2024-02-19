@@ -9,8 +9,6 @@ import { ApiExcludeController } from '@nestjs/swagger';
 @Controller('/external/swagger')
 @ApiExcludeController()
 export class SwaggerController {
-  constructor() {}
-
   @common.HttpCode(200)
   @common.Get('/yaml')
   @Public()

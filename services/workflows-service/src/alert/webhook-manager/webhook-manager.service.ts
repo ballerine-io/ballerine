@@ -1,5 +1,5 @@
 import { alertWebhookFailure } from '@/events/alert-webhook-failure';
-import { lastValueFrom, tap } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import * as common from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClsService } from 'nestjs-cls';
