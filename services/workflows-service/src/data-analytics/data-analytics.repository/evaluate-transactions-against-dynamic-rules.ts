@@ -11,7 +11,7 @@ enum AggregateType {
   MIN = 'MIN',
 }
 
-export const evaluateTransactionsAgainstDynamicRules = ({
+export const evaluateTransactionsAgainstDynamicRules = async ({
   direction = 'Inbound',
   excludedCounterpartyIds = [],
   paymentMethods = [],
