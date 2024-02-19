@@ -18,7 +18,7 @@ export const AlertAnalysisTable: FunctionComponent<{
   transactions: TTransactionsList;
 }> = ({ transactions }) => {
   const table = useReactTable({
-    columns: columns,
+    columns,
     data: transactions ?? [],
     getCoreRowModel: getCoreRowModel(),
     enableSortingRemoval: false,
