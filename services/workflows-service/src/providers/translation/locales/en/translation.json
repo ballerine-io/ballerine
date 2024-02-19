@@ -16,7 +16,7 @@
     "mainContact": "Main Contact",
     "bankingDetails": "Banking Details",
     "storeInfo": "Store Info",
-    "directorsDescription": "Add all of the directors of the company.",
+    "directorsDescription": "<p>Add all the directors of the company.</p>",
     "imShareholder": "I own 25% or more of the company",
     "imDirector": "I am a director in the company",
     "shareholder": "Shareholder",
@@ -71,6 +71,8 @@
     "associatedCompanies": "Associated companies",
     "associatedCompaniesDescription": "Add all companies that own more than 25% of the company.",
     "noCompaniesWithMoreThan": "There are no companies with more than 25%",
+    "policiesAndComplianceDocuments": "Policies and Compliance Documents",
+    "additionalRequirements": "Additional Requirements",
     "email": {
       "label": "Email",
       "hint": "name@companyhk.com"
@@ -270,12 +272,12 @@
       "label": "Monthly Number of Transactions",
       "hint": "500"
     },
-    "estimatedMonthlySalesClipsPay": {
-      "label": "Est. Monthly Sales Volume through ClipsPay (USD)",
+    "estimatedMonthlySales": {
+      "label": "Est. Monthly Sales Volume through {{customerName}} (USD)",
       "hint": "400,000"
     },
-    "estimatedMonthlyTransactionsClipsPay": {
-      "label": "Est. Monthly Number of Transactions through ClipsPay",
+    "estimatedMonthlyTransactions": {
+      "label": "Est. Monthly Number of Transactions through {{customerName}}",
       "hint": "150"
     },
     "averageTicketAmount": {
@@ -308,14 +310,60 @@
     },
     "certificateOfIncorporation": {
       "label": "Certificate of Incorporation",
-      "description": "Not older than 6 months."
+      "description": {
+        "3months": "Not older than 3 months",
+        "6months": "Not older than 6 months"
+      }
     },
     "businessRegistrationCertificate": {
       "label": "Business Registration Certificate",
-      "description": "Notarized document"
+      "description": {
+        "regular": "Notarized document",
+        "3months": "Notarized document (Not older than 3 months)"
+      }
     },
     "corporateTaxCertificate": {
       "label": "Corporate Tax Certificate"
+    },
+    "proofOfAddress": {
+      "label": "Proof of Address"
+    },
+    "copyOfBusinessLicense": {
+      "label": "Copy of Business License"
+    },
+    "memorandumOfArticle": {
+      "label": "Memorandum of Article (M&A)"
+    },
+    "businessOwnershipStructureChart": {
+      "label": "Business Ownership Structure Chart"
+    },
+    "tenancyAgreement": {
+      "label": "Tenancy Agreement"
+    },
+    "taxReturn": {
+      "label": "Tax Return",
+      "description": "IRAS notice of assessment"
+    },
+    "settlementBankAccountStatement": {
+      "label": "Settlement bank account statement"
+    },
+    "financialStatements": {
+      "label": "Financial Statements"
+    },
+    "latest3MonthsCardProcessingStatements": {
+      "label": "Latest 3 months card processing statements",
+      "description": "Including credit card charge back and refund information"
+    },
+    "transactionInformation": {
+      "label": "Transaction Information",
+      "description": "e.g. daily summary report"
+    },
+    "psiDssDocuments": {
+      "label": "PSI DSS Documents"
+    },
+    "mailingAcknowledgementOrFormSample": {
+      "label": "Mailing, acknowledgement or form sample",
+      "description": "Applicable for Mail / Order / Form Application"
     },
     "certificateOfGoodStanding": {
       "label": "Certificate of Good Standing",
@@ -400,7 +448,7 @@
     "documents": {
       "bankStatement": {
         "label": "Bank Statement",
-        "description": "Not older than 6 months.",
+        "description": "Not older than 6 months",
         "error": "Bank Statement is Required"
       },
       "companyStructure": {
@@ -414,11 +462,11 @@
       },
       "utilityBill": {
         "label": "Company Utility Bill as Proof of Address",
-        "description": "Not older than 6 months."
+        "description": "Not older than 6 months"
       },
       "certificateOfIncorporation": {
         "label": "Certificate of Incorporation",
-        "description": "Not older than 6 months."
+        "description": "Not older than 6 months"
       },
       "businessUtilityBill": {
         "label": "Utility Bill",
@@ -426,7 +474,7 @@
       },
       "proofOfAddress": {
         "label": "Company Utility Bill as Proof of Address",
-        "description": "Not older than 6 months.",
+        "description": "Not older than 6 months",
         "error": "Proof of Address is Required"
       }
     },
