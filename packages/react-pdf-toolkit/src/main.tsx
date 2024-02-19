@@ -1,21 +1,14 @@
-import { ViewerDEV } from '@/components/ViewerDEV';
-import { registerFont } from '@/theme';
-import { Font } from '@react-pdf/renderer';
+import { Document, Page } from '@react-pdf/renderer';
 import ReactDOM from 'react-dom/client';
 import './index.scss';
-import { IReport, ReportTemplate } from './templates/report';
-registerFont(Font);
+import { ViewerDEV } from '@/components/misc/ViewerDEV';
 
-const reportData: Partial<IReport> = {
-  status: 'Published',
-  meta: {
-    companyName: 'Test',
-  } as IReport['meta'],
-};
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <div className="h-screen">
     <ViewerDEV>
-      <ReportTemplate report={reportData as IReport} version={1} />
+      <Document>
+        <Page></Page>
+      </Document>
     </ViewerDEV>
   </div>,
 );

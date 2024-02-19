@@ -38,7 +38,13 @@ class FakeEntityRepo extends BaseFakeRepository {
   }
 }
 
-export function buildWorkflowDefinition(sequenceNum: number, projectId?: string) {
+class FakeUiDefinitionService extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
+export const buildWorkflowDefinition = (sequenceNum: number, projectId?: string) => {
   return {
     id: sequenceNum.toString(),
     name: `name ${sequenceNum}`,
@@ -66,7 +72,7 @@ export function buildWorkflowDefinition(sequenceNum: number, projectId?: string)
     projectId: projectId,
     isPublic: false,
   };
-}
+};
 
 describe('WorkflowControllerInternal', () => {
   let controller;
@@ -80,6 +86,7 @@ describe('WorkflowControllerInternal', () => {
   let userService;
   let salesforceService;
   let workflowTokenService;
+  let uiDefinitionService;
   const numbUserInfo = Symbol();
   let testingModule: TestingModule;
 
@@ -100,6 +107,7 @@ describe('WorkflowControllerInternal', () => {
     userService = new FakeEntityRepo();
     salesforceService = new FakeEntityRepo();
     workflowTokenService = new FakeEntityRepo();
+    uiDefinitionService = new FakeUiDefinitionService();
 
     eventEmitterSpy = {
       emitted: [],
@@ -123,6 +131,7 @@ describe('WorkflowControllerInternal', () => {
       userService,
       salesforceService,
       workflowTokenService,
+      uiDefinitionService,
     );
     const filterService = {} as any;
     const rolesBuilder = {} as any;

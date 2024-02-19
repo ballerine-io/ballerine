@@ -1,5 +1,5 @@
-import { Badge } from '@/components/Badge';
-import { Link } from '@/components/Link';
+import { Badge } from '@/components/atoms/Badge';
+import { Link } from '@/components/atoms/Link';
 import { Section } from '@/templates/report/components/Section';
 import { IEcosystemChecks } from '@/templates/report/schema';
 import { tw } from '@/theme';
@@ -19,7 +19,7 @@ export const EcosystemChecks: FunctionComponent<EcosystemChecksProps> = ({ data 
       <Section.Blocks>
         <Section.Blocks.Block>
           <Section.Blocks.Block.Label text="General Risk Score" />
-          <Badge text={String(riskScore)} variant={resolveBadgeStyleToRiskScore(riskScore)} />
+          <Badge text={String(riskScore || 0)} variant={resolveBadgeStyleToRiskScore(riskScore)} />
         </Section.Blocks.Block>
         {url && (
           <Section.Blocks.Block>

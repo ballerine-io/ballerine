@@ -20,7 +20,7 @@ export const useDirectorsUserProvidedBlock = directorsUserProvided => {
           })
           .addCell({
             type: 'subheading',
-            value: 'User-provided Data',
+            value: 'User-Provided Data',
             props: {
               className: 'mb-4',
             },

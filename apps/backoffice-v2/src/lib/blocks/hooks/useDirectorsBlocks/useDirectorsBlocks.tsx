@@ -28,11 +28,10 @@ export const useDirectorsBlocks = ({
   documentFiles,
   documentImages,
   onReuploadNeeded,
-  isLoadingReuploadNeeded,
 }: {
   workflow: TWorkflowById;
   documentFiles: UseQueryResult[];
-  documentImages: Array<Array<string>>;
+  documentImages: string[][];
   onReuploadNeeded: ({
     workflowId,
     documentId,
@@ -42,7 +41,6 @@ export const useDirectorsBlocks = ({
     documentId: string;
     reason?: string;
   }) => () => void;
-  isLoadingReuploadNeeded: boolean;
 }) => {
   const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(
     workflow?.id,
@@ -293,6 +291,9 @@ export const useDirectorsBlocks = ({
                 .addCell({
                   id: 'header',
                   type: 'container',
+                  props: {
+                    className: 'items-start',
+                  },
                   value: createBlocksTyped()
                     .addBlock()
                     .addCell({

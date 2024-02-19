@@ -1,5 +1,19 @@
 # @ballerine/blocks
 
+## 0.1.26
+
+### Patch Changes
+
+- Fixed types resolving to any
+
+## 0.1.25
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.7.40
+
 ## 0.1.24
 
 ### Patch Changes

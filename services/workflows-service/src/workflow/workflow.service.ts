@@ -52,13 +52,11 @@ import {
   Business,
   EndUser,
   Prisma,
+  UiDefinitionContext,
   WorkflowDefinition,
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
-import addKeywords from 'ajv-keywords';
 import { plainToClass } from 'class-transformer';
 import { isEqual, merge } from 'lodash';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
@@ -81,19 +79,11 @@ import {
 } from './workflow-runtime-data.repository';
 import mime from 'mime';
 import { env } from '@/env';
-import { AjvValidationError } from '@/errors';
+import { ValidationError } from '@/errors';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
+import { ajv } from '@/common/ajv/ajv.validator';
 
 type TEntityId = string;
-
-const ajv = new Ajv({
-  strict: false,
-  coerceTypes: true,
-});
-addFormats(ajv, {
-  formats: ['email', 'uri', 'date', 'date-time'],
-  keywords: true,
-});
-addKeywords(ajv);
 
 export const ResubmissionReason = {
   BLURRY_IMAGE: 'BLURRY_IMAGE',
@@ -143,6 +133,7 @@ export class WorkflowService {
     private readonly userService: UserService,
     private readonly salesforceService: SalesforceService,
     private readonly workflowTokenService: WorkflowTokenService,
+    private readonly uiDefinitionService: UiDefinitionService,
   ) {}
 
   async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
@@ -410,20 +401,22 @@ export class WorkflowService {
         size: number;
       };
       filters?: {
-        assigneeId?: (string | null)[];
+        assigneeId?: Array<string | null>;
         status?: WorkflowRuntimeDataStatus[];
         caseStatus?: string[];
       };
     },
     projectIds: TProjectIds,
   ) {
+    const skip = (page.number - 1) * page.size;
+
     const query = this.projectScopeService.scopeFindMany(
       merge(
         args,
         {
           orderBy: toPrismaOrderBy(orderBy, entityType),
           where: filters ? toPrismaWhere(filters) : {},
-          skip: (page.number - 1) * page.size,
+          skip,
           take: page.size,
         },
         {
@@ -447,37 +440,51 @@ export class WorkflowService {
 
       return [];
     };
+
     const workflowIds = await this.workflowRuntimeDataRepository.search(
       {
         query: {
-          search,
+          skip,
+          take: page.size,
+          search: search ?? '',
           entityType,
           statuses:
             ((query.where.status as Prisma.EnumWorkflowRuntimeDataStatusFilter)?.in as string[]) ||
             [],
           workflowDefinitionIds: getWorkflowDefinitionIds(),
+          orderBy,
         },
         filters,
       },
       projectIds,
     );
 
-    if (page.number > 1 && workflowIds.length < (page.number - 1) * page.size + 1) {
-      throw new NotFoundException('Page not found');
-    }
-
     const workflowsQuery = {
       ...query,
       where: { id: { in: workflowIds.map(workflowId => workflowId.id) } },
     };
 
-    const workflows = await this.workflowRuntimeDataRepository.findMany(workflowsQuery, projectIds);
+    const [workflowCount, workflows] = await Promise.all([
+      this.workflowRuntimeDataRepository.count({ where: query.where }, projectIds),
+      this.workflowRuntimeDataRepository.findMany(
+        {
+          where: workflowsQuery.where,
+          select: workflowsQuery.select,
+          orderBy: workflowsQuery.orderBy,
+        },
+        projectIds,
+      ),
+    ]);
+
+    if (page.number > 1 && workflowCount < skip + 1) {
+      throw new NotFoundException('Page not found');
+    }
 
     return {
       data: this.formatWorkflowsRuntimeData(workflows as unknown as TWorkflowWithRelations[]),
       meta: {
-        totalItems: workflowIds.length,
-        totalPages: Math.max(Math.ceil(workflowIds.length / page.size), 1),
+        totalItems: workflowCount,
+        totalPages: Math.max(Math.ceil(workflowCount / page.size), 1),
       },
     };
   }
@@ -885,7 +892,7 @@ export class WorkflowService {
       const isValidPropertiesSchema = validatePropertiesSchema(documentSchema?.properties);
 
       if (!isValidPropertiesSchema && document.type === documentToUpdate.type) {
-        throw new AjvValidationError(validatePropertiesSchema.errors);
+        throw ValidationError.fromAjvError(validatePropertiesSchema.errors!);
       }
     }
 
@@ -1100,7 +1107,7 @@ export class WorkflowService {
         const isValidPropertiesSchema = validatePropertiesSchema(document?.properties);
 
         if (!isValidPropertiesSchema) {
-          throw new AjvValidationError(validatePropertiesSchema.errors);
+          throw ValidationError.fromAjvError(validatePropertiesSchema.errors!);
         }
       });
       data.context = mergedContext;
@@ -1508,13 +1515,15 @@ export class WorkflowService {
       {},
       projectIds,
     );
+
     config = merge(workflowDefinition.config, config);
     let validatedConfig: WorkflowConfig;
-    try {
-      validatedConfig = ConfigSchema.parse(config);
-    } catch (error) {
-      throw new BadRequestException(error);
+    const result = ConfigSchema.safeParse(config);
+
+    if (!result.success) {
+      throw ValidationError.fromZodError(result.error);
     }
+
     const customer = await this.customerService.getByProjectId(projectIds![0]!);
     // @ts-ignore
     context.customerName = customer.displayName;
@@ -1551,11 +1560,11 @@ export class WorkflowService {
       validatedConfig || {},
     ) as InputJsonValue;
 
-    const entities: {
+    const entities: Array<{
       id: string;
       type: 'individual' | 'business';
-      tags?: ('mainRepresentative' | 'UBO')[];
-    }[] = [];
+      tags?: Array<'mainRepresentative' | 'UBO'>;
+    }> = [];
 
     // Creating new workflow
     if (!existingWorkflowRuntimeData || mergedConfig?.allowMultipleActiveWorkflows) {
@@ -1570,6 +1579,45 @@ export class WorkflowService {
         currentProjectId,
         customer.name,
       );
+      let uiDefinition;
+
+      try {
+        uiDefinition = await this.uiDefinitionService.getByWorkflowDefinitionId(
+          workflowDefinitionId,
+          UiDefinitionContext.collection_flow,
+          projectIds,
+          {},
+        );
+      } catch (err) {
+        if (isErrorWithMessage(err)) {
+          this.logger.error(err.message);
+        }
+      }
+
+      const uiSchema = (uiDefinition as Record<string, any>)?.uiSchema;
+
+      const createFlowConfig = (uiSchema: Record<string, any>) => {
+        return {
+          stepsProgress: (
+            uiSchema?.elements as Array<{
+              type: string;
+              number: number;
+              stateName: string;
+            }>
+          )?.reduce((acc, curr) => {
+            if (curr?.type !== 'page') {
+              return acc;
+            }
+
+            acc[curr?.stateName] = {
+              number: curr?.number,
+              isCompleted: false,
+            };
+
+            return acc;
+          }, {} as { [key: string]: { number: number; isCompleted: boolean } }),
+        };
+      };
 
       workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
         data: {
@@ -1578,6 +1626,7 @@ export class WorkflowService {
           context: {
             ...contextToInsert,
             documents: documentsWithPersistedImages,
+            flowConfig: (contextToInsert as any)?.flowConfig ?? createFlowConfig(uiSchema),
           } as InputJsonValue,
           config: mergedConfig as InputJsonValue,
           // @ts-expect-error - error from Prisma types fix
@@ -1933,7 +1982,7 @@ export class WorkflowService {
 
     if (isValid) return;
 
-    throw new AjvValidationError(validate.errors);
+    throw ValidationError.fromAjvError(validate.errors!);
   }
 
   async event(
@@ -2105,7 +2154,7 @@ export class WorkflowService {
           workflowDefinition.config.callbackResult!) as ChildWorkflowCallback;
 
         const childrenOfSameDefinition = // @ts-ignore - error from Prisma types fix
-          (parentWorkflowRuntime.childWorkflowsRuntimeData as Array<WorkflowRuntimeData>)?.filter(
+          (parentWorkflowRuntime.childWorkflowsRuntimeData as WorkflowRuntimeData[])?.filter(
             childWorkflow =>
               childWorkflow.workflowDefinitionId === workflowRuntimeData.workflowDefinitionId,
           );

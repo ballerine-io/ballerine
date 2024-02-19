@@ -1,4 +1,4 @@
-import { Badge } from '@/components/Badge';
+import { Badge } from '@/components/atoms/Badge';
 import { Section } from '@/templates/report/components/Section';
 import { IWebsiteCheck } from '@/templates/report/schema';
 import { tw } from '@/theme';
@@ -27,7 +27,7 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
               )}
               <Section.Blocks.Block>
                 <Section.Blocks.Block.Label text="General Risk Score" />
-                <Badge text={String(riskScore)} variant="error" />
+                <Badge text={String(riskScore || 0)} variant="error" />
               </Section.Blocks.Block>
             </Section.Blocks>
             {indicators && !!indicators.length && (
@@ -62,7 +62,7 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
                   <View style={tw('w-[140px]')}>
                     <Section.Blocks.Block>
                       <Section.Blocks.Block.Label text="Reputation risk score" />
-                      <Badge text={String(reputation.riskScore)} variant="warning" />
+                      <Badge text={String(reputation.riskScore || 0)} variant="warning" />
                     </Section.Blocks.Block>
                   </View>
                   <Section.Blocks.Block>
@@ -80,7 +80,7 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
                   <View style={tw('w-[140px]')}>
                     <Section.Blocks.Block>
                       <Section.Blocks.Block.Label text="Traffic risk score" />
-                      <Badge text={String(traffic.riskScore)} variant="warning" />
+                      <Badge text={String(traffic.riskScore || 0)} variant="warning" />
                     </Section.Blocks.Block>
                   </View>
                   <Section.Blocks.Block>
@@ -98,7 +98,7 @@ export const WebsiteCheck: FunctionComponent<WebsiteCheckProps> = ({ data }) => 
                   <View style={tw('w-[140px]')}>
                     <Section.Blocks.Block>
                       <Section.Blocks.Block.Label text="Pricing risk score" />
-                      <Badge text={String(pricing.riskScore)} variant="success" />
+                      <Badge text={String(pricing.riskScore || 0)} variant="success" />
                     </Section.Blocks.Block>
                   </View>
                   <Section.Blocks.Block>

@@ -51,7 +51,13 @@ class FakeCustomerRepo extends BaseFakeRepository {
   }
 }
 
-function buildWorkflowDeifintion(sequenceNum) {
+class FakeUiDefinitionService extends BaseFakeRepository {
+  constructor() {
+    super(Object);
+  }
+}
+
+const buildWorkflowDeifintion = (sequenceNum: number) => {
   return {
     id: sequenceNum.toString(),
     name: `name ${sequenceNum}`,
@@ -77,21 +83,19 @@ function buildWorkflowDeifintion(sequenceNum) {
       schema: {},
     },
   };
-}
+};
 
-function buildDocument(category, status, fileType = 'jpg') {
-  return {
-    category: category,
-    decision: {
-      status: status,
+const buildDocument = (category: string, status: string, fileType = 'jpg') => ({
+  category: category,
+  decision: {
+    status: status,
+  },
+  pages: [
+    {
+      type: fileType,
     },
-    pages: [
-      {
-        type: fileType,
-      },
-    ],
-  };
-}
+  ],
+});
 
 describe('WorkflowService', () => {
   let service;
@@ -103,6 +107,7 @@ describe('WorkflowService', () => {
   let entityRepo;
   let userService;
   let workflowTokenService;
+  let uiDefinitionService;
   let salesforceService;
   let fakeHttpService;
   let testingModule: TestingModule;
@@ -133,12 +138,13 @@ describe('WorkflowService', () => {
     userService = new FakeEntityRepo();
     salesforceService = new FakeEntityRepo();
     workflowTokenService = new FakeEntityRepo();
+    uiDefinitionService = new FakeUiDefinitionService();
 
     fakeHttpService = {
       requests: [],
 
       axiosRef: {
-        async post(url, data, config) {
+        post: async (url, data, config) => {
           fakeHttpService.requests.push({ url, data });
           return {
             status: 200,
@@ -186,6 +192,7 @@ describe('WorkflowService', () => {
       userService,
       salesforceService,
       workflowTokenService,
+      uiDefinitionService,
     );
   });
 

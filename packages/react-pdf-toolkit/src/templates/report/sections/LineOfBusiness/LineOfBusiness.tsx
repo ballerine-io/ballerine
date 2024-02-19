@@ -1,5 +1,5 @@
 import { ILOB } from '@/build';
-import { Badge } from '@/components/Badge';
+import { Badge } from '@/components/atoms/Badge';
 import { Section } from '@/templates/report/components/Section';
 import { resolveBadgeStyleToRiskScore } from '@/utils/resolve-badge-style-to-risk-score';
 import { FunctionComponent } from 'react';
@@ -26,7 +26,7 @@ export const LineOfBusinessSection: FunctionComponent<LineOfBusinessProps> = ({ 
         <Section.Blocks.Block>
           <Section.Blocks.Block.Label text="LOB Consistency Risk Score" />
           <Badge
-            text={String(lobConsistencyRiskScore)}
+            text={String(lobConsistencyRiskScore || 0)}
             variant={resolveBadgeStyleToRiskScore(lobConsistencyRiskScore)}
           />
         </Section.Blocks.Block>
@@ -41,12 +41,6 @@ export const LineOfBusinessSection: FunctionComponent<LineOfBusinessProps> = ({ 
         <Section.SummaryBlock>
           <Section.SummaryBlock.Title text="LOB From Website" />
           <Section.SummaryBlock.Description text={lobFromWebsite} />
-        </Section.SummaryBlock>
-      )}
-      {lobFromExternalData && (
-        <Section.SummaryBlock>
-          <Section.SummaryBlock.Title text="LOB From External Data" />
-          <Section.SummaryBlock.Description text={lobFromExternalData} />
         </Section.SummaryBlock>
       )}
       {lobFromExternalData && (

@@ -1,5 +1,29 @@
 # @ballerine/common
 
+## 0.7.41
+
+### Patch Changes
+
+- updating versions
+
+## 0.7.40
+
+### Patch Changes
+
+- version bump
+
+## 0.7.39
+
+### Patch Changes
+
+- version bump
+
+## 0.7.38
+
+### Patch Changes
+
+- Added process tracker changes
+
 ## 0.7.37
 
 ### Patch Changes

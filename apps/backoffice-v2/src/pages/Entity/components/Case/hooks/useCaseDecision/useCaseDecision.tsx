@@ -1,7 +1,7 @@
 import { safeEvery, someDocumentDecisionStatus } from '@ballerine/common';
 import { Action } from '../../../../../../common/enums';
 import { useFilterId } from '../../../../../../common/hooks/useFilterId/useFilterId';
-import { useWorkflowQuery } from '../../../../../../domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useParams } from 'react-router-dom';
 import { useAuthenticatedUserQuery } from '../../../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '../useCaseState/useCaseState';
@@ -11,7 +11,7 @@ import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirecto
 export const useCaseDecision = () => {
   const filterId = useFilterId();
   const { entityId: workflowId } = useParams();
-  const { data: workflow } = useWorkflowQuery({ workflowId, filterId });
+  const { data: workflow } = useWorkflowByIdQuery({ workflowId, filterId });
   const childDocuments = useMemo(() => {
     return (
       workflow?.childWorkflows

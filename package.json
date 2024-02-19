@@ -29,7 +29,7 @@
   "scripts": {
     "spellcheck": "nx run-many --target=spellcheck",
     "monorepo:init": "node ./scripts/init.js",
-    "kyc-manual-review-example": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env ENV_FILE_NAME=.env.example VITE_POLLING_INTERVAL=3 VITE_EXAMPLE_TYPE=kyc VITE_API_KEY=secret concurrently \"nx run @ballerine/workflows-service:dev\" \"wait-on http://localhost:3000/api/v1/_health/ready && nx run-many --target=dev --projects=@ballerine/headless-example,@ballerine/backoffice-v2\"",
+    "kyc-manual-review-example": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env ENV_FILE_NAME=.env.example VITE_POLLING_INTERVAL=3 VITE_EXAMPLE_TYPE=kyc VITE_API_KEY=secret concurrently \"nx run @ballerine/workflows-service:dev\" \"wait-on http://localhost:3000/api/v1/_health/ready && nx run-many --target=dev --projects=@ballerine/web-ui-sdk,@ballerine/backoffice-v2\"",
     "kyc-manual-review-example-no-poll": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env ENV_FILE_NAME=.env.example VITE_POLLING_INTERVAL=false VITE_EXAMPLE_TYPE=kyc VITE_API_KEY=secret concurrently \"nx run @ballerine/workflows-service:dev\" \"wait-on http://localhost:3000/api/v1/_health/ready && nx run-many --target=dev --projects=@ballerine/headless-example,@ballerine/backoffice-v2\"",
     "kyb-manual-review-example": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env ENV_FILE_NAME=.env.example VITE_POLLING_INTERVAL=3 VITE_EXAMPLE_TYPE=kyb VITE_API_KEY=secret concurrently \"nx run @ballerine/workflows-service:dev\" \"wait-on http://localhost:3000/api/v1/_health/ready && nx run-many --target=dev --projects=@ballerine/kyb-app,@ballerine/backoffice-v2\"",
     "api-flow-example": "nx run @ballerine/common:build && nx run @ballerine/workflows-service:setup && cross-env ENV_FILE_NAME=.env.example VITE_POLLING_INTERVAL=false VITE_EXAMPLE_TYPE=kyb VITE_API_KEY=secret concurrently \"nx run @ballerine/workflows-service:dev\" \"wait-on http://localhost:3000/api/v1/_health/ready && nx run-many --target=dev --projects=@ballerine/backoffice-v2,@ballerine/workflows-dashboard\"",
@@ -66,9 +66,9 @@
     "version-packages": "changeset version",
     "update-packages": "pnpm run changeset && pnpm run version-packages && pnpm install",
     "release": "pnpm build && changeset publish",
-    "upload-sourcemaps": "nx run-many --target=upload-sourcemaps --all"
+    "upload-sourcemaps": "nx run-many --target=upload-sourcemaps --all",
+    "docker-compose:up": "docker-compose -f deploy/docker-compose.yml up -d "
   },
-  "license": "ISC",
   "devDependencies": {
     "@branchlint/cli": "^1.0.5",
     "@branchlint/default-config": "^1.0.3",

@@ -281,6 +281,9 @@ export const useDocumentBlocks = ({
           .addCell({
             id: 'header',
             type: 'container',
+            props: {
+              className: 'items-start',
+            },
             value: createBlocksTyped()
               .addBlock()
               .addCell({

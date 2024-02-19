@@ -18,6 +18,7 @@ export {
   someDocumentDecisionStatus,
   uniqueArray,
   zodErrorToReadable,
+  isNonEmptyArray,
 } from './utils';
 
 export type { IErrorWithMessage } from './utils';

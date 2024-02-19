@@ -4,7 +4,7 @@ import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUs
 import { useEntityType } from '@/common/hooks/useEntityType/useEntityType';
 import { useSearchParamsByEntity } from '@/common/hooks/useSearchParamsByEntity/useSearchParamsByEntity';
 import { tagToBadgeData } from '@/pages/Entity/components/Case/consts';
-import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useParams } from 'react-router-dom';
 
 const sharedSortByOptions = [
@@ -43,7 +43,7 @@ export const useCases = () => {
   const [{ filterId, filter, sortBy }] = useSearchParamsByEntity();
   const entity = useEntityType();
 
-  const { data: workflow } = useWorkflowQuery({ workflowId, filterId });
+  const { data: workflow } = useWorkflowByIdQuery({ workflowId, filterId });
 
   const states = useMemo(
     () => workflow?.workflowDefinition.definition.states,
@@ -54,8 +54,8 @@ export const useCases = () => {
     () => [
       ...new Set(
         Object.keys(states || {})
-          .map(key => states?.[key]?.tags)
-          .flat(),
+          .filter(key => states?.[key]?.tags?.length)
+          .flatMap(key => states?.[key]?.tags),
       ),
     ],
     [states],
@@ -63,6 +63,7 @@ export const useCases = () => {
 
   const { data: users } = useUsersQuery();
 
+  // Not using for now, will return to use it in the future
   const sortByOptions = useMemo(
     () => (entity === 'individuals' ? individualsSortByOptions : businessesSortByOptions),
     [entity],
@@ -86,17 +87,21 @@ export const useCases = () => {
             },
           ],
         },
-        {
-          label: 'Status',
-          value: 'caseStatus',
-          options: [
-            ...(statuses?.map(status => ({
-              label: tagToBadgeData[status]?.text,
-              value: status,
-              key: status,
-            })) ?? []),
-          ],
-        },
+        ...(statuses?.length
+          ? [
+              {
+                label: 'Status',
+                value: 'caseStatus',
+                options: [
+                  ...(statuses?.map(status => ({
+                    label: tagToBadgeData[status]?.text,
+                    value: status,
+                    key: status,
+                  })) ?? []),
+                ],
+              },
+            ]
+          : []),
         {
           label: 'State',
           value: 'status',
@@ -171,7 +176,7 @@ export const useCases = () => {
 
   return {
     entity,
-    sortByOptions,
+    sortByOptions: sharedSortByOptions,
     filterByOptions,
     filter,
     sortBy,

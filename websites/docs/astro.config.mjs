@@ -60,6 +60,10 @@ export default defineConfig({
                   label: `KYB Manual Review Example`,
                   link: `/en/learn/kyb_manual_review_example`,
                 },
+                {
+                  label: `KYC Manual Review Example`,
+                  link: `/en/learn/kyc_manual_review_example`,
+                },
                 // {
                 //   label: `KYB Workflow with External Integrations`,
                 //   link: `/en/learn/simple_kyb_guide`,

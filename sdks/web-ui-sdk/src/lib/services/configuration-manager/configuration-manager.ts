@@ -161,7 +161,9 @@ export const setAuthorizationHeaderJwt = (jwt: string) => {
   const { backendConfig } = get(configurationStore);
   const { method } = backendConfig?.auth ?? {};
 
-  if (method !== 'jwt') return;
+  if (method !== 'jwt') {
+    return;
+  }
 
   return configurationStore.update(config => ({
     ...config,

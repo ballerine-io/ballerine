@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useWorkflowQuery } from '@/domains/workflows/hooks/queries/useWorkflowQuery/useWorkflowQuery';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
@@ -30,7 +30,8 @@ import { useProcessingDetailsBlock } from '@/lib/blocks/hooks/useProcessingDetai
 import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
 import { useMainContactBlock } from '@/lib/blocks/hooks/useMainContactBlock/useMainContactBlock';
 import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
-import { useUbosBlock } from '@/lib/blocks/hooks/useUbosBlock/useUbosBlock';
+import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/useUbosRegistryProvidedBlock';
+import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvidedBlock/useUbosUserProvidedBlock';
 import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
 import { useDirectorsBlocks } from '@/lib/blocks/hooks/useDirectorsBlocks';
 import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
@@ -41,10 +42,18 @@ import {
   useAssociatedCompaniesBlock,
 } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 
+const pluginsOutputBlacklist = [
+  'companySanctions',
+  'directors',
+  'ubo',
+  'businessInformation',
+  'website_monitoring',
+] as const;
+
 export const useDefaultBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
   const filterId = useFilterId();
-  const { data: workflow, isLoading } = useWorkflowQuery({
+  const { data: workflow, isLoading } = useWorkflowByIdQuery({
     workflowId,
     filterId,
   });
@@ -110,6 +119,7 @@ export const useDefaultBlocksLogic = () => {
   const {
     store,
     bank: bankDetails,
+    ubos: ubosUserProvided = [],
     directors: directorsUserProvided = [],
     mainRepresentative,
     mainContact,
@@ -123,17 +133,12 @@ export const useDefaultBlocksLogic = () => {
   const kybChildWorkflows = workflow?.childWorkflows?.filter(
     childWorkflow => childWorkflow?.context?.entity?.type === 'business',
   );
-  const pluginsOutputBlacklist = [
-    'companySanctions',
-    'directors',
-    'ubo',
-    'businessInformation',
-    'website_monitoring',
-  ] as const;
+
   const filteredPluginsOutput = useMemo(
     () => omitPropsFromObject(workflow?.context?.pluginsOutput, ...pluginsOutputBlacklist),
     [pluginsOutputBlacklist, workflow?.context?.pluginsOutput],
   );
+
   const pluginsOutputKeys = Object.keys(filteredPluginsOutput ?? {});
   const directorsDocuments = useMemo(() => selectDirectorsDocuments(workflow), [workflow]);
   const directorDocumentPages = useMemo(
@@ -143,8 +148,9 @@ export const useDefaultBlocksLogic = () => {
       ),
     [directorsDocuments],
   );
+
   const directorsStorageFilesQueryResult = useStorageFilesQuery(directorDocumentPages);
-  const directorsDocumentPagesResults: Array<Array<string>> = useDocumentPageImages(
+  const directorsDocumentPagesResults: string[][] = useDocumentPageImages(
     directorsDocuments,
     directorsStorageFilesQueryResult,
   );
@@ -164,12 +170,14 @@ export const useDefaultBlocksLogic = () => {
       places: sanction?.entity?.places,
     }),
   );
-  const ubos = workflow?.context?.pluginsOutput?.ubo?.data?.uboGraph?.map(ubo => ({
+
+  const ubosRegistryProvided = workflow?.context?.pluginsOutput?.ubo?.data?.uboGraph?.map(ubo => ({
     name: ubo?.name,
     percentage: ubo?.shareHolders?.[0]?.sharePercentage,
     type: ubo?.type,
     level: ubo?.level,
   }));
+
   const directorsRegistryProvided = workflow?.context?.pluginsOutput?.directors?.data?.map(
     ({ name, position }) => ({
       name,
@@ -269,7 +277,12 @@ export const useDefaultBlocksLogic = () => {
 
   const companySanctionsBlock = useCompanySanctionsBlock(companySanctions);
 
-  const ubosBlock = useUbosBlock(ubos);
+  const ubosUserProvidedBlock = useUbosUserProvidedBlock(ubosUserProvided);
+
+  const ubosRegistryProvidedBlock = useUbosRegistryProvidedBlock(
+    ubosRegistryProvided,
+    workflow?.context?.pluginsOutput?.ubo?.message,
+  );
 
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 
@@ -352,10 +365,11 @@ export const useDefaultBlocksLogic = () => {
       ...registryInfoBlock,
       ...kybRegistryInfoBlock,
       ...companySanctionsBlock,
+      ...ubosUserProvidedBlock,
+      ...ubosRegistryProvidedBlock,
       ...directorsUserProvidedBlock,
       ...directorsRegistryProvidedBlock,
       ...directorsDocumentsBlocks,
-      ...ubosBlock,
       ...storeInfoBlock,
       ...websiteBasicRequirementBlock,
       ...bankingDetailsBlock,
@@ -384,7 +398,8 @@ export const useDefaultBlocksLogic = () => {
     processingDetailsBlock,
     registryInfoBlock,
     storeInfoBlock,
-    ubosBlock,
+    ubosUserProvidedBlock,
+    ubosRegistryProvidedBlock,
     websiteBasicRequirementBlock,
     websiteMonitoringBlock,
     workflow?.context?.entity,
