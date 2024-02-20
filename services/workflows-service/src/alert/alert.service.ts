@@ -13,6 +13,13 @@ import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { InlineRule } from '@/data-analytics/types';
 
+// TODO: move to utils
+const isRejected = (input: PromiseSettledResult<unknown>): input is PromiseRejectedResult =>
+  input.status === 'rejected';
+
+const isFulfilled = <T>(input: PromiseSettledResult<T>): input is PromiseFulfilledResult<T> =>
+  input.status === 'fulfilled';
+
 @Injectable()
 export class AlertService {
   constructor(
@@ -132,14 +139,24 @@ export class AlertService {
       return false;
     }
 
-    await Promise.allSettled(
-      results.map(async (result: any) => {
-        // TODO: dedupe strategy
-        const ids = await this.createAlert(alertDefinition, result);
+    const releavntAlerts = await this.getDeduplicatedAlerts(
+      alertDefinition.projectId,
+      alertDefinition,
+      results,
+    );
+
+    const setteledAlerts = await Promise.allSettled<
+      { alert: Alert; alertDefinition: AlertDefinition }[]
+    >(
+      releavntAlerts.map(async (result: any) => {
+        return {
+          alertDefinition,
+          alert: await this.createAlert(alertDefinition, result),
+        };
       }),
     );
 
-    return true;
+    return setteledAlerts.filter(isFulfilled).length > 0;
   }
 
   private createAlert(alertDef: AlertDefinition, data: any): Promise<Alert> {
@@ -159,6 +176,41 @@ export class AlertService {
         // counterparty?: CounterpartyCreateNestedOneWithoutAlertsInput
       },
     });
+  }
+
+  private async getDeduplicatedAlerts(
+    projectId: string,
+    alertDef: AlertDefinition,
+    data: any,
+  ): Promise<any> {
+    const cooldownTimeframe = (alertDef.dedupeStrategies as any).cooldownTimeframe;
+
+    const potentialDuplicates = await this.alertRepository.findMany(
+      {
+        where: {
+          AND: [
+            { projectId: projectId },
+            { alertDefinitionId: alertDef.id },
+            { dataTimestamp: { gte: new Date(data.dataTimestamp - cooldownTimeframe) } },
+            // Adjust the cooldown timeframe as needed
+          ],
+        },
+      },
+      [projectId],
+    );
+
+    const groupedDuplicates = potentialDuplicates.reduce((acc: any, alert) => {
+      const key = `${alert.projectId}_${alert.alertDefinitionId}_${Math.floor(
+        alert.dataTimestamp.getTime() / cooldownTimeframe,
+      )}`;
+      acc[key] = acc[key] || [];
+      acc[key].push(alert);
+      return acc;
+    }, {});
+
+    return Object.values(groupedDuplicates)
+      .filter(group => (group as Alert[]).length > 1)
+      .flat() as Alert[];
   }
 
   private getStatusFromState(newState: AlertState): AlertStatus {
