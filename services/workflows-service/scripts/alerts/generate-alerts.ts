@@ -29,13 +29,11 @@ const tags = [
 ];
 const generateRule = (ruleName: string, options: InlineRule, groupedBy: string[] = []) => {
   return {
-    [ruleName]: {
-      rule: {
-        name: ruleName,
-      },
-      options,
-      groupedBy,
+    rule: {
+      name: ruleName,
     },
+    options,
+    groupedBy,
   };
 };
 
@@ -209,7 +207,8 @@ export const generateFakeAlertDefinition = async (
     } satisfies Omit<Prisma.AlertCreateManyAlertDefinitionInput, 'projectId'>;
   };
 
-  const rules = getRuleDefinitions();
+  const rules = Object.values(getRuleDefinitions());
+  const rulesIds = Object.keys(getRuleDefinitions());
 
   return Array.from({
     length: faker.datatype.number({
@@ -236,33 +235,33 @@ export const generateFakeAlertDefinition = async (
     );
 
     const createdBy = faker.internet.userName();
+    
+    const ruleIdIdx = faker.datatype.number({
+      min: 0,
+      max: rules.length - 1,
+    });
+
     // Create Alert Definition
     return await prisma.alertDefinition.create({
       include: {
-        alert: true, // Include all posts in the returned object
+        alert: true,
       },
       data: {
         type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
         name: faker.lorem.words(3),
         enabled: faker.datatype.boolean(),
         description: faker.lorem.sentence(),
-        projectId: project.id,
-        rulesetId: faker.datatype.number({
-          min: 1,
-          max: 10,
-        }),
+        rulesetId: ruleIdIdx.toString(),
         defaultSeverity,
-        ruleId: faker.datatype.number({
-          min: 1,
-          max: 10,
-        }),
+        ruleId: rulesIds[ruleIdIdx],
         createdBy: createdBy,
         modifiedBy: createdBy,
         dedupeStrategies: { strategy: {} },
         config: { config: {} },
-        inlineRule: faker.helpers.arrayElement(Object.values(rules)),
+        inlineRule: rules[ruleIdIdx],
         tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
         additionalInfo: {},
+        projectId: project.id,
         alert: {
           createMany: {
             data: alerts,
