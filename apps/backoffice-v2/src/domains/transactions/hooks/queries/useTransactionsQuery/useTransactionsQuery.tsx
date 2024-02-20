@@ -4,12 +4,12 @@ import { transactionsQueryKeys } from '@/domains/transactions/query-keys';
 
 export const useTransactionsQuery = ({
   businessId,
-  counterpartyId,
+  counterpartyOriginatorId,
   page,
   pageSize,
 }: {
   businessId: string;
-  counterpartyId: string;
+  counterpartyOriginatorId: string;
   page: number;
   pageSize: number;
 }) => {
@@ -18,11 +18,11 @@ export const useTransactionsQuery = ({
   return useQuery({
     ...transactionsQueryKeys.list({
       businessId,
-      counterpartyId,
+      counterpartyOriginatorId,
       page,
       pageSize,
     }),
-    enabled: isAuthenticated && (!!businessId || !!counterpartyId),
+    enabled: isAuthenticated && (!!businessId || !!counterpartyOriginatorId),
     staleTime: 100_000,
   });
 };

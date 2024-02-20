@@ -61,6 +61,7 @@ export class TransactionRepository {
     options?: Prisma.TransactionRecordFindManyArgs,
   ): Promise<TransactionRecord[]> {
     const args: Prisma.TransactionRecordFindManyArgs = {};
+
     if (getTransactionsParameters.page?.number && getTransactionsParameters.page?.size) {
       // Temporary fix for pagination (class transformer issue)
       const size = parseInt(getTransactionsParameters.page.size as unknown as string, 10);
@@ -93,10 +94,10 @@ export class TransactionRepository {
       whereClause.businessId = getTransactionsParameters.businessId;
     }
 
-    if (getTransactionsParameters.counterpartyId) {
+    if (getTransactionsParameters.counterpartyOriginatorId) {
       whereClause.OR = [
-        { counterpartyOriginatorId: getTransactionsParameters.counterpartyId },
-        { counterpartyBeneficiaryId: getTransactionsParameters.counterpartyId },
+        { counterpartyOriginatorId: getTransactionsParameters.counterpartyOriginatorId },
+        { counterpartyBeneficiaryId: getTransactionsParameters.counterpartyOriginatorId },
       ];
     }
 
@@ -141,6 +142,7 @@ export class TransactionRepository {
       }
 
       const pastDate = new Date(now.getTime() - subtractValue);
+
       whereClause.transactionDate = { gte: pastDate };
     }
 
