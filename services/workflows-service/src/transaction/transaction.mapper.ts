@@ -72,8 +72,12 @@ export class TransactionEntityMapper {
       counterpartyBeneficiaryId: dto.beneficiary?.id ?? null,
       unusualActivityFlags: dto.unusualActivityFlags ?? {},
 
-      originatorSortCode: null, // Add missing property
-      originatorBankCountry: null, // Add missing property
+      originatorSortCode: dto.originator?.sortCode ?? null,
+
+      originatorBankCountry: dto.originator?.bankCountry ?? null,
+
+      cardBIN: dto.cardDetails?.cardBIN ?? null,
+      productPriceCurrency: dto.product?.currency ?? null,
     };
   }
 

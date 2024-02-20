@@ -556,6 +556,7 @@ model TransactionRecord {
   completed3ds      Boolean?
   cardType          String?
   cardIssuer        String?
+  cardBIN           Int?
   cardBrand         String?
 
   cardExpiryMonth String?
@@ -575,11 +576,12 @@ model TransactionRecord {
   additionalInfo Json? // Additional information related to the transaction
 
   // Fields for merchant transactions
-  productName        String?
-  productDescription String?
-  productPrice       Float?
-  productId          String?
-  productSku         String?
+  productName          String?
+  productDescription   String?
+  productPrice         Float?
+  productPriceCurrency String?
+  productId            String?
+  productSku           String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -656,8 +658,8 @@ model AlertDefinition {
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  rulesetId Int // Set of rules reference
-  ruleId    Int // Specific rule within the ruleset
+  rulesetId String?
+  ruleId    String?
 
   inlineRule Json
   createdBy  String @default("SYSTEM")
