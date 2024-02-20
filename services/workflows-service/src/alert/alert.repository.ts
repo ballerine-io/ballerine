@@ -37,7 +37,7 @@ export class AlertRepository {
       {
         ...args,
         where: {
-          ...(args as Prisma.AlertFindFirstOrThrowArgs).where,
+          ...(args as Prisma.AlertFindFirstOrThrowArgs)?.where,
           id,
         },
       },
