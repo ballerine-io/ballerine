@@ -89,6 +89,7 @@ export async function evaluateTransactionsAgainstDynamicRules({
   }
 
   let havingClause: string = '';
+  
   switch (havingAggregate) {
     case AggregateType.COUNT:
       havingClause = `${AggregateType}(id)`;
