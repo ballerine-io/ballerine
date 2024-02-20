@@ -1,17 +1,11 @@
-import { PrismaClient, Prisma, TransactionDirection, PaymentMethod } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { Sql } from '@prisma/client/runtime';
 import { AggregateType } from '../consts';
 import type { InlineRule, TransactionsAgainstDynamicRulesType } from '../evaluate-types';
 
 const prisma = new PrismaClient();
 
-const ruleToEvaluateFunction = {
-  [evaluateTransactionsAgainstDynamicRules.name]: (options: InlineRule) => {
-    evaluateTransactionsAgainstDynamicRules(options);
-  },
-};
-
-export async function evaluateTransactionsAgainstDynamicRules({
+export const evaluateTransactionsAgainstDynamicRules = async ({
   amountThreshold,
   amountBetween,
   direction = 'Inbound',
@@ -23,7 +17,7 @@ export async function evaluateTransactionsAgainstDynamicRules({
   groupByBusiness = false,
   groupByCounterparty = false,
   havingAggregate = AggregateType.SUM,
-}: TransactionsAgainstDynamicRulesType) {
+}: TransactionsAgainstDynamicRulesType) => {
   const conditions: Prisma.Sql[] = [];
 
   conditions.push(Prisma.sql`"transactionDirection"::text = ${direction}`);
@@ -89,7 +83,6 @@ export async function evaluateTransactionsAgainstDynamicRules({
   }
 
   let havingClause: string = '';
-  
   switch (havingAggregate) {
     case AggregateType.COUNT:
       havingClause = `${AggregateType}(id)`;
@@ -118,4 +111,10 @@ WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
 
   console.log(results);
   return results;
-}
+};
+
+export const RuleToEvaluateFunction = {
+  [evaluateTransactionsAgainstDynamicRules.name]: (options: InlineRule) => {
+    evaluateTransactionsAgainstDynamicRules(options);
+  },
+};
