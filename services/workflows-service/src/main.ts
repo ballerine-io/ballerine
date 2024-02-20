@@ -2,11 +2,8 @@ import passport from 'passport';
 import dayjs from 'dayjs';
 import cookieSession from 'cookie-session';
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { swaggerDocumentOptions, swaggerPath, swaggerSetupOptions } from './swagger';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
-import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - there is an issue with helmet types
 import helmet from 'helmet';
@@ -18,6 +15,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppLoggerService } from './common/app-logger/app-logger.service';
 import { ValidationError } from 'class-validator';
 import { BadValidationException } from './errors';
+import swagger from '@/swagger/swagger';
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
@@ -33,12 +31,6 @@ const corsOrigins = [
   /\.ballerine\.app$/,
   ...(env.ENVIRONMENT_NAME !== 'production' ? devOrigins : []),
 ];
-
-let exposedSwaggerDoc: any;
-
-export const getSwaggerDocument = () => {
-  return exposedSwaggerDoc;
-};
 
 const main = async () => {
   const app = await NestFactory.create(AppModule, {
@@ -139,65 +131,7 @@ const main = async () => {
     defaultVersion: '1',
   });
 
-  const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
-
-  /** check if there is Public decorator for each path (action) and its method (findMany / findOne) on each controller */
-  Object.values(document.paths).forEach((path: PathItemObject) => {
-    Object.values(path).forEach((method: { security: string[] | unknown }) => {
-      if (Array.isArray(method.security) && method.security.includes('isPublic')) {
-        method.security = [];
-      }
-    });
-  });
-  document.openapi = '3.1.0';
-  // @ts-ignore
-  document.webhooks = {
-    workflows: {
-      post: {
-        requestBody: {
-          description:
-            'Notification for workflow-related events such as completion or state changes. Contains details about the specific workflow event.',
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/WorkflowEventModel',
-              },
-            },
-          },
-        },
-        responses: {
-          '200': {
-            description:
-              'A 200 status indicates successful receipt of the workflow event notification.',
-          },
-        },
-      },
-    },
-    alerts: {
-      post: {
-        requestBody: {
-          description:
-            'Alert notification containing details about specific alert incidents, including the alert ID and relevant information.',
-          content: {
-            'application/json': {
-              schema: {
-                $ref: '#/components/schemas/AlertModel',
-              },
-            },
-          },
-        },
-        responses: {
-          '200': {
-            description: 'A 200 status confirms successful receipt of the alert notification.',
-          },
-        },
-      },
-    },
-  };
-
-  exposedSwaggerDoc = document;
-
-  SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
+  swagger.initialize(app);
 
   app.enableShutdownHooks();
 

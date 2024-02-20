@@ -1,6 +1,7 @@
 import {
   CounterpartyType,
   PaymentAcquirer,
+  PaymentBrandName,
   PaymentChannel,
   PaymentGateway,
   PaymentIssuer,
@@ -32,10 +33,9 @@ export const generateTransactions = async (
     for (let i = 0; i < 200; i++) {
       const counterparty = await prisma.counterparty.create({
         data: {
+          id: faker.datatype.uuid(),
           correlationId: faker.datatype.uuid(),
           type: faker.helpers.arrayElement(Object.values(CounterpartyType)),
-          sortCode: faker.finance.routingNumber(),
-          bankCountry: faker.address.countryCode(),
           businessId: businessId,
           projectId: projectId,
         },
@@ -91,6 +91,8 @@ export const generateTransactions = async (
         transactionType: faker.helpers.arrayElement(Object.values(TransactionRecordType)),
         transactionStatus: faker.helpers.arrayElement(Object.values(TransactionRecordStatus)),
         transactionStatusReason: faker.lorem.sentence(),
+        transactionDirection: faker.helpers.arrayElement(Object.values(TransactionDirection)),
+        paymentBrandName: faker.helpers.arrayElement(Object.values(PaymentBrandName)),
         paymentMethod: faker.helpers.arrayElement(Object.values(PaymentMethod)),
         paymentType: faker.helpers.arrayElement(Object.values(PaymentType)),
         paymentChannel: faker.helpers.arrayElement(Object.values(PaymentChannel)),
@@ -121,10 +123,8 @@ export const generateTransactions = async (
         productPrice: parseFloat(faker.commerce.price()),
         productId: faker.datatype.uuid(),
         projectId,
-        transactionDirection: faker.helpers.arrayElement([
-          TransactionDirection.Inbound,
-          TransactionDirection.Outbound,
-        ]),
+        originatorSortCode: faker.finance.routingNumber(),
+        originatorBankCountry: faker.address.countryCode(),
         ...businessIdCounterpartyIdOrBoth,
       },
     });

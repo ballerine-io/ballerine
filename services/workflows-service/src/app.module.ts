@@ -22,7 +22,6 @@ import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { ClsModule } from 'nestjs-cls';
 import { FiltersModule } from '@/common/filters/filters.module';
 import { UserSessionAuditMiddleware } from '@/common/middlewares/user-session-audit.middleware';
-import { MetricsController } from '@/metrics/metrics.controller';
 import { MetricsModule } from '@/metrics/metrics.module';
 import { CustomerModule } from '@/customer/customer.module';
 import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';

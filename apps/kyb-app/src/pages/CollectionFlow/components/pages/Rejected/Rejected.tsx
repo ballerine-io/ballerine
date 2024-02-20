@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 
+import { useCustomer } from '@/components/providers/CustomerProvider';
 import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Card } from '@ballerine/ui';
-import { useCustomer } from '@/components/providers/CustomerProvider';
 
 export const Rejected = withSessionProtected(() => {
   const { t } = useTranslation();
@@ -20,7 +20,7 @@ export const Rejected = withSessionProtected(() => {
           <p className="text-muted-foreground text-center text-sm leading-5 opacity-50">
             {t('rejected.content')}
             <br />
-            {customer?.displayName && t('contact', { companyName: customer.displayName })}
+            {customer && t('contact', { companyName: customer.displayName })}
           </p>
         </div>
       </Card>

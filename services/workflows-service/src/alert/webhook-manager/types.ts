@@ -10,7 +10,7 @@ export interface IWebhookEntityEventData<T> extends IWebhookEventData<T> {
 
 export type TWebhookEventData<T> = IWebhookEventData<T> | IWebhookEntityEventData<T>;
 
-export type TEventName<T> = TWebhookEventData<T>['eventName'] | (string & {});
+export type TEventName<T> = TWebhookEventData<T>['eventName'] | (string & object);
 
 export type ExtractWebhookEventData<T, TEvent extends TEventName<T>> = Omit<
   Extract<
