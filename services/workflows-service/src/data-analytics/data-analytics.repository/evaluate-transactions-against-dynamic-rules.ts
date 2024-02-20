@@ -114,7 +114,7 @@ WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
 };
 
 export const RuleToEvaluateFunction = {
-  [evaluateTransactionsAgainstDynamicRules.name]: (options: InlineRule) => {
-    evaluateTransactionsAgainstDynamicRules(options);
+  [evaluateTransactionsAgainstDynamicRules.name]: async (options: InlineRule) => {
+    await evaluateTransactionsAgainstDynamicRules(options);
   },
 };
