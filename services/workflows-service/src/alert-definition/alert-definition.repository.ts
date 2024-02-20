@@ -16,17 +16,19 @@ export class AlertDefinitionRepository {
     projectIds: TProjectIds,
     args?: Prisma.SelectSubset<T, Omit<Prisma.AlertDefinitionFindFirstOrThrowArgs, 'where'>>,
   ) {
-    const queryArgs = (args as Prisma.AlertDefinitionFindFirstOrThrowArgs) ?? {};
-
-    queryArgs.where = {
-      ...queryArgs.where,
-      alert: {
-        some: {
-          id: alertId,
+    const queryArgs = this.scopeService.scopeFindOne(
+      {
+        ...args,
+        where: {
+          alert: {
+            some: {
+              id: alertId,
+            },
+          },
         },
       },
-      projectId: { in: projectIds! },
-    };
+      projectIds,
+    );
 
     return await this.prisma.alertDefinition.findFirstOrThrow(queryArgs);
   }
