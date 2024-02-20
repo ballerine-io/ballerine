@@ -20,6 +20,7 @@ import { getHttpStatusFromAxiosError, interceptAxiosRequests } from '@/common/ht
 import { WebhookEventEmitterService } from './webhook-manager/webhook-event-emitter.service';
 import { ProjectModule } from '@/project/project.module';
 import { UserRepository } from '@/user/user.repository';
+import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { UserRepository } from '@/user/user.repository';
         return status < 400; // Resolve only if the status code is less than 500
       },
     }),
+    AlertDefinitionModule,
   ],
   controllers: [AlertControllerInternal, AlertControllerExternal],
   providers: [

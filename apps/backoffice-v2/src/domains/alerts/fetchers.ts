@@ -108,6 +108,7 @@ export const AlertsListSchema = z.array(
       .default(null),
     status: z.enum(AlertStatuses),
     decision: z.enum(AlertStates).nullable().default(null),
+    counterpartyId: z.string().nullable().default(null),
   }),
 );
 
@@ -170,4 +171,19 @@ export const updateAlertsDecisionByIds = async ({
   });
 
   return handleZodError(error, alerts);
+};
+
+export const AlertDefinitionByAlertIdSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+});
+
+export const fetchAlertDefinitionByAlertId = async ({ alertId }: { alertId: string }) => {
+  const [alertDefinition, error] = await apiClient({
+    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts/${alertId}/alert-definition`,
+    method: Method.GET,
+    schema: AlertDefinitionByAlertIdSchema,
+  });
+
+  return handleZodError(error, alertDefinition);
 };

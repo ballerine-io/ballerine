@@ -146,13 +146,19 @@ async function seed() {
     }),
   });
 
-  await generateTransactions(client, { projectId: project1.id, businessId: business1.id });
-  await generateTransactions(client, { projectId: project1.id, businessId: business2.id });
+  const ids1 = await generateTransactions(client, {
+    projectId: project1.id,
+    businessId: business1.id,
+  });
+  const ids2 = await generateTransactions(client, {
+    projectId: project1.id,
+    businessId: business2.id,
+  });
 
   await generateFakeAlertDefinition(client, {
     project: project1,
     customer: customer,
-    businessId: business1.id,
+    ids: [...ids1, ...ids2],
   });
 
   const project2 = await createProject(client, customer2, '2');

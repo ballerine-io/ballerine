@@ -1,5 +1,5 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
-import { fetchAlerts } from '@/domains/alerts/fetchers';
+import { fetchAlertDefinitionByAlertId, fetchAlerts } from '@/domains/alerts/fetchers';
 
 export const alertsQueryKeys = createQueryKeys('alerts', {
   list: ({ sortBy, sortDir, page, pageSize, ...params }) => {
@@ -23,6 +23,16 @@ export const alertsQueryKeys = createQueryKeys('alerts', {
         },
       ],
       queryFn: () => fetchAlerts(data),
+    };
+  },
+  alertDefinitionByAlertId: ({ alertId }: { alertId: string }) => {
+    return {
+      queryKey: [
+        {
+          alertId,
+        },
+      ],
+      queryFn: () => fetchAlertDefinitionByAlertId({ alertId }),
     };
   },
 });

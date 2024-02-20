@@ -1,31 +1,38 @@
 import { AlertAnalysisSheet } from '@/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisSheet';
-import { useTransactionsQuery } from '@/domains/transactions/hooks/queries/useTransactionsQuery/useTransactionsQuery';
-import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchParams/useSerializedSearchParams';
-import { useNavigateBack } from '@/common/hooks/useNavigateBack/useNavigateBack';
-import { useNavigate } from 'react-router-dom';
+import { useTransactionMonitoringAlertsAnalysisPageLogic } from '@/pages/TransactionMonitoringAlertsAnalysis/hooks/useTransactionMonitoringAlertsAnalysisPageLogic/useTransactionMonitoringAlertsAnalysisPageLogic';
+import { titleCase } from 'string-ts';
+import { Skeleton } from '@/common/components/atoms/Skeleton/Skeleton';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { ctw } from '@/common/utils/ctw/ctw';
 
 export const TransactionMonitoringAlertsAnalysisPage = () => {
-  const [{ businessId }] = useSerializedSearchParams();
-  const { data: transactions } = useTransactionsQuery({
-    businessId: businessId ?? '',
-    page: 1,
-    pageSize: 50,
-  });
-  const navigateBack = useNavigateBack();
-  const navigate = useNavigate();
-  const onNavigateBack = () => {
-    const isFirstPageInHistory = window.history.state.idx <= 1;
-
-    if (isFirstPageInHistory) {
-      navigate('../');
-
-      return;
-    }
-
-    navigateBack();
-  };
+  const { transactions, onNavigateBack, alertDefinition, isLoadingAlertDefinition } =
+    useTransactionMonitoringAlertsAnalysisPageLogic();
 
   return (
-    <AlertAnalysisSheet transactions={transactions ?? []} onOpenStateChange={onNavigateBack} />
+    <AlertAnalysisSheet
+      transactions={transactions ?? []}
+      onOpenStateChange={onNavigateBack}
+      heading={
+        <span
+          className={ctw({
+            'text-slate-400': !alertDefinition?.name,
+          })}
+        >
+          {isLoadingAlertDefinition && <Skeleton className={`h-8 w-[20ch]`} />}
+          {!isLoadingAlertDefinition && valueOrNA(titleCase(alertDefinition?.name ?? ''))}
+        </span>
+      }
+      summary={
+        <span
+          className={ctw({
+            'text-slate-400': !alertDefinition?.description,
+          })}
+        >
+          {isLoadingAlertDefinition && <Skeleton className={`h-5 w-[50ch]`} />}
+          {!isLoadingAlertDefinition && valueOrNA(titleCase(alertDefinition?.description ?? ''))}
+        </span>
+      }
+    />
   );
 };

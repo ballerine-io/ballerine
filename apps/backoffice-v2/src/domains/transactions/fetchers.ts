@@ -61,7 +61,7 @@ export const TransactionsListSchema = z.array(
           .nullable(),
       })
       .nullable(),
-    counterpartyOriginatorId: z.string(),
+    counterpartyOriginatorId: z.string().nullable(),
     paymentMethod: z.enum(PaymentMethods),
   }).transform(({ business, counterpartyOriginator, ...data }) => ({
     ...data,
@@ -77,6 +77,7 @@ export type TTransactionsList = z.output<typeof TransactionsListSchema>;
 
 export const fetchTransactions = async (params: {
   businessId: string;
+  counterpartyId: string;
   page: {
     number: number;
     size: number;

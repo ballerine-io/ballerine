@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import type { TProjectId, TProjectIds } from '@/types';
-import { Prisma, Alert } from '@prisma/client';
+import { Alert, Prisma } from '@prisma/client';
 import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
@@ -33,12 +33,17 @@ export class AlertRepository {
     args: Prisma.SelectSubset<T, Omit<Prisma.AlertFindFirstOrThrowArgs, 'where'>>,
     projectIds: TProjectIds,
   ): Promise<Alert> {
-    const queryArgs = args as Prisma.AlertFindFirstOrThrowArgs;
-    queryArgs.where = {
-      ...queryArgs.where,
-      id,
-      projectId: { in: projectIds! },
-    };
+    const queryArgs = this.scopeService.scopeFindOne(
+      {
+        ...args,
+        where: {
+          ...(args as Prisma.AlertFindFirstOrThrowArgs)?.where,
+          id,
+        },
+      },
+      projectIds,
+    );
+
     return await this.prisma.alert.findFirstOrThrow(queryArgs);
   }
 
