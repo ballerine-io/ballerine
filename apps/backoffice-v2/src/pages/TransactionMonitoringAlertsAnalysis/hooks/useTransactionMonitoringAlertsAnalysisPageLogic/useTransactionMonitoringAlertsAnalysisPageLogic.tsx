@@ -3,9 +3,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAlertDefinitionByAlertIdQuery } from '@/domains/alerts/hooks/queries/useAlertDefinitionByAlertIdQuery/useAlertDefinitionByAlertIdQuery';
 import { useTransactionsQuery } from '@/domains/transactions/hooks/queries/useTransactionsQuery/useTransactionsQuery';
 import { useNavigateBack } from '@/common/hooks/useNavigateBack/useNavigateBack';
+import { useCallback } from 'react';
 
 export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
-  const [{ businessId, counterpartyId }] = useSerializedSearchParams();
+  const [{ businessId, counterpartyOriginatorId }] = useSerializedSearchParams();
   const { alertId } = useParams();
   const { data: alertDefinition, isLoading: isLoadingAlertDefinition } =
     useAlertDefinitionByAlertIdQuery({
@@ -13,13 +14,13 @@ export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
     });
   const { data: transactions } = useTransactionsQuery({
     businessId: businessId ?? '',
-    counterpartyId: counterpartyId ?? '',
+    counterpartyOriginatorId: counterpartyOriginatorId ?? '',
     page: 1,
     pageSize: 50,
   });
   const navigateBack = useNavigateBack();
   const navigate = useNavigate();
-  const onNavigateBack = () => {
+  const onNavigateBack = useCallback(() => {
     const isFirstPageInHistory = window.history.state.idx <= 1;
 
     if (isFirstPageInHistory) {
@@ -29,7 +30,7 @@ export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
     }
 
     navigateBack();
-  };
+  }, [navigate, navigateBack]);
 
   return {
     transactions,

@@ -27,7 +27,8 @@ export const generateTransactions = async (
 ) => {
   // Create counterparties and collect their IDs
   const counterpartyIds = await prismaClient.$transaction(async prisma => {
-    const ids = [] as string[];
+    const ids: string[] = [];
+
     for (let i = 0; i < 200; i++) {
       const counterparty = await prisma.counterparty.create({
         data: {
@@ -39,14 +40,43 @@ export const generateTransactions = async (
           projectId: projectId,
         },
       });
+
       ids.push(counterparty.id);
     }
+
     return ids;
   });
+
+  const ids: Array<
+    | {
+        businessId: string;
+      }
+    | {
+        counterpartyOriginatorId: string;
+      }
+    | {
+        businessId: string;
+        counterpartyOriginatorId: string;
+      }
+  > = [];
 
   // Create transactions with a random counterparty ID for each
   for (let i = 0; i < 1000; i++) {
     const randomCounterpartyId = faker.helpers.arrayElement(counterpartyIds);
+    const businessIdCounterpartyIdOrBoth = faker.helpers.arrayElement([
+      {
+        businessId,
+        counterpartyOriginatorId: randomCounterpartyId,
+      },
+      {
+        businessId,
+      },
+      {
+        counterpartyOriginatorId: randomCounterpartyId,
+      },
+    ]);
+
+    ids.push(businessIdCounterpartyIdOrBoth);
 
     await prismaClient.transactionRecord.create({
       data: {
@@ -91,13 +121,14 @@ export const generateTransactions = async (
         productPrice: parseFloat(faker.commerce.price()),
         productId: faker.datatype.uuid(),
         projectId,
-        counterpartyOriginatorId: randomCounterpartyId, // Assign a random counterparty ID
         transactionDirection: faker.helpers.arrayElement([
           TransactionDirection.Inbound,
           TransactionDirection.Outbound,
         ]),
-        businessId,
+        ...businessIdCounterpartyIdOrBoth,
       },
     });
   }
+
+  return ids;
 };
