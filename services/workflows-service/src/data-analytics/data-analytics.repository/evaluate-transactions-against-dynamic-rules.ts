@@ -1,7 +1,7 @@
 import { PrismaClient, Prisma } from '@prisma/client';
 import { Sql } from '@prisma/client/runtime';
 import { AggregateType } from '../consts';
-import type { InlineRule, TransactionsAgainstDynamicRulesType } from '../evaluate-types';
+import type { InlineRule, TransactionsAgainstDynamicRulesType } from '../types';
 
 const prisma = new PrismaClient();
 
@@ -111,10 +111,4 @@ WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
 
   console.log(results);
   return results;
-};
-
-export const RuleToEvaluateFunction = {
-  [evaluateTransactionsAgainstDynamicRules.name]: async (options: InlineRule) => {
-    await evaluateTransactionsAgainstDynamicRules(options);
-  },
 };
