@@ -1,42 +1,29 @@
 import { PrismaClient, Prisma, TransactionDirection, PaymentMethod } from '@prisma/client';
 import { Sql } from '@prisma/client/runtime';
+import { AggregateType } from '../consts';
+import type { InlineRule, TransactionsAgainstDynamicRulesType } from '../evaluate-types';
 
 const prisma = new PrismaClient();
 
-enum AggregateType {
-  SUM = 'SUM',
-  AVG = 'AVG',
-  COUNT = 'COUNT',
-  MAX = 'MAX',
-  MIN = 'MIN',
-}
+const ruleToEvaluateFunction = {
+  [evaluateTransactionsAgainstDynamicRules.name]: (options: InlineRule) => {
+    evaluateTransactionsAgainstDynamicRules(options);
+  },
+};
 
-export const evaluateTransactionsAgainstDynamicRules = async ({
+export async function evaluateTransactionsAgainstDynamicRules({
+  amountThreshold,
+  amountBetween,
   direction = 'Inbound',
   excludedCounterpartyIds = [],
   paymentMethods = [],
   excludePaymentMethods = false,
   timeAmount = 7,
   timeUnit = 'days',
-  amountThreshold,
-  amountBetween,
   groupByBusiness = false,
   groupByCounterparty = false,
   havingAggregate = AggregateType.SUM,
-}: {
-  havingAggregate?: AggregateType;
-  amountBetween?: { min: number; max: number };
-  timeAmount?: number;
-  timeUnit?: 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years';
-  direction?: TransactionDirection;
-  excludedCounterpartyIds?: string[];
-  paymentMethods?: PaymentMethod[];
-  excludePaymentMethods?: boolean;
-  days?: number;
-  amountThreshold?: number;
-  groupByBusiness?: boolean;
-  groupByCounterparty?: boolean;
-}) => {
+}: TransactionsAgainstDynamicRulesType) {
   const conditions: Prisma.Sql[] = [];
 
   conditions.push(Prisma.sql`"transactionDirection"::text = ${direction}`);
@@ -101,16 +88,27 @@ export const evaluateTransactionsAgainstDynamicRules = async ({
     groupByClause = Prisma.sql`"businessId", "counterpartyOriginatorId"`;
   }
 
-  // test this to allow more aggregation methods
-  const aggregateFunction = Prisma.sql`${havingAggregate}(tr."transactionBaseAmount")`;
+  let havingClause: string = '';
+  switch (havingAggregate) {
+    case AggregateType.COUNT:
+      havingClause = `${AggregateType}(id)`;
+      break;
+    case AggregateType.SUM:
+      havingClause = `SUM(tr."transactionBaseAmount")`;
+      break;
+    default:
+      throw new Error(`Invalid aggregate type: ${havingAggregate}`);
+  }
 
   let query: Sql;
   if (havingAggregate === AggregateType.COUNT) {
     query = Prisma.sql`SELECT ${selectClause}, COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr 
-WHERE ${whereClause} GROUP BY ${groupByClause} HAVING COUNT(id) > ${amountThreshold}`;
+WHERE ${whereClause} GROUP BY ${groupByClause} $ > ${amountThreshold}`;
   } else {
     query = Prisma.sql`SELECT ${selectClause}, SUM(tr."transactionBaseAmount") AS "totalAmount" FROM "TransactionRecord" tr
-WHERE ${whereClause} GROUP BY ${groupByClause} HAVING SUM(tr."transactionBaseAmount") > ${amountThreshold}`;
+WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
+      havingClause,
+    )} > ${amountThreshold}`;
   }
 
   console.log(query);
@@ -119,4 +117,4 @@ WHERE ${whereClause} GROUP BY ${groupByClause} HAVING SUM(tr."transactionBaseAmo
 
   console.log(results);
   return results;
-};
+}
