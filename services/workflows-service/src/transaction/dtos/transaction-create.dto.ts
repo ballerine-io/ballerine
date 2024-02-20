@@ -33,6 +33,8 @@ export class CounterpartyInfo {
   @ApiProperty({ required: true }) @IsString() correlationId!: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() id?: string;
   @ApiProperty({ required: true }) @IsString() @IsOptional() type?: CounterpartyType;
+  @ApiProperty({ required: false }) @IsString() @IsOptional() sortCode?: string;
+  @ApiProperty({ required: false }) @IsString() @IsOptional() bankCountry?: string;
 
   @ApiProperty({ required: false })
   @IsString()
@@ -69,6 +71,7 @@ class ProductInfo {
   @ApiProperty({ required: false }) @IsNumber() @IsOptional() price?: number;
   @ApiProperty({ required: false }) @IsString() @IsOptional() id?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() sku?: string;
+  @ApiProperty({ required: false }) @IsString() @IsOptional() currency?: string;
 }
 
 class CardInfo {
@@ -82,6 +85,7 @@ class CardInfo {
   @ApiProperty({ required: false }) @IsString() @IsOptional() expiryYear?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() holderName?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() tokenized?: string;
+  @ApiProperty({ required: false }) @IsString() @IsOptional() cardBIN?: number;
   // Add other card-related fields as necessary
 }
 export class TransactionCreateDto {
