@@ -25,14 +25,51 @@ export const generateFakeAlertDefinition = async (
   prisma: PrismaClient,
   {
     project,
-    businessId,
+    ids,
   }: {
     project: Project;
     customer: Customer;
-    businessId: string;
+    ids: Array<
+      | {
+          businessId: string;
+        }
+      | {
+          counterpartyOriginatorId: string;
+        }
+      | {
+          businessId: string;
+          counterpartyOriginatorId: string;
+        }
+    >;
   },
 ) => {
-  const generateFakeAlert = (defaultSeverity: AlertSeverity, businessId: string) => {
+  const generateFakeAlert = ({
+    defaultSeverity,
+    ids,
+  }: {
+    defaultSeverity: AlertSeverity;
+    ids: Array<
+      | {
+          businessId: string;
+        }
+      | {
+          counterpartyOriginatorId: string;
+        }
+      | {
+          businessId: string;
+          counterpartyOriginatorId: string;
+        }
+    >;
+  }) => {
+    const businessIdCounterpartyOriginatorIdOrBoth = faker.helpers.arrayElement(
+      ids.map(id => ({
+        // @ts-expect-error
+        businessId: id.businessId,
+        // @ts-expect-error
+        counterpartyId: id.counterpartyOriginatorId,
+      })),
+    );
+
     return {
       dataTimestamp: faker.date.past(),
       state: faker.helpers.arrayElement(Object.values(AlertState)),
@@ -40,7 +77,7 @@ export const generateFakeAlertDefinition = async (
       tags: [faker.random.word(), faker.random.word(), faker.random.word()],
       executionDetails: JSON.parse(faker.datatype.json()),
       severity: defaultSeverity,
-      businessId: businessId,
+      ...businessIdCounterpartyOriginatorIdOrBoth,
       // TODO: Assign assigneeId value to a valid user id
       // TODO: Assign counterpart value to a valid user id
       // businessId: faker.datatype.uuid(),
@@ -69,7 +106,10 @@ export const generateFakeAlertDefinition = async (
       () => {
         return {
           projectId: project.id,
-          ...generateFakeAlert(defaultSeverity, businessId),
+          ...generateFakeAlert({
+            defaultSeverity,
+            ids,
+          }),
         };
       },
     );

@@ -2,7 +2,16 @@ import { createQueryKeys } from '@lukemorales/query-key-factory';
 import { fetchTransactions } from '@/domains/transactions/fetchers';
 
 export const transactionsQueryKeys = createQueryKeys('transactions', {
-  list: ({ page, pageSize, ...params }: { businessId: string; page: number; pageSize: number }) => {
+  list: ({
+    page,
+    pageSize,
+    ...params
+  }: {
+    businessId: string;
+    counterpartyId: string;
+    page: number;
+    pageSize: number;
+  }) => {
     const data = {
       ...params,
       page: {

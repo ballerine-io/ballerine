@@ -26,6 +26,7 @@ export const PaymentMethod = {
   PAYPAL: 'PayPal',
   APPLE_PAY: 'ApplePay',
   GOOGLE_PAY: 'GooglePay',
+  APN: 'APN',
 } as const;
 
 export const PaymentMethods = [
@@ -35,6 +36,7 @@ export const PaymentMethods = [
   PaymentMethod.PAYPAL,
   PaymentMethod.APPLE_PAY,
   PaymentMethod.GOOGLE_PAY,
+  PaymentMethod.APN,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof PaymentMethod>>;
 
 export const TransactionsListSchema = z.array(
@@ -59,7 +61,7 @@ export const TransactionsListSchema = z.array(
           .nullable(),
       })
       .nullable(),
-    counterpartyOriginatorId: z.string(),
+    counterpartyOriginatorId: z.string().nullable(),
     paymentMethod: z.enum(PaymentMethods),
   }).transform(({ business, counterpartyOriginator, ...data }) => ({
     ...data,
@@ -75,6 +77,7 @@ export type TTransactionsList = z.output<typeof TransactionsListSchema>;
 
 export const fetchTransactions = async (params: {
   businessId: string;
+  counterpartyId: string;
   page: {
     number: number;
     size: number;

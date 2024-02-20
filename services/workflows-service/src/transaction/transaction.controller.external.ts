@@ -104,7 +104,7 @@ export class TransactionControllerExternal {
   ) {
     return this.service.getTransactions(getTransactionsParameters, projectId, {
       include: {
-        Business: {
+        business: {
           select: {
             companyName: true,
           },
