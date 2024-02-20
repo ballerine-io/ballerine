@@ -1,7 +1,4 @@
-import {
-  InlineRule,
-  TransactionsAgainstDynamicRulesType,
-} from './../../src/data-analytics/evaluate-types';
+import { InlineRule, TransactionsAgainstDynamicRulesType } from '../../src/data-analytics/types';
 import * as rules from './../../src/data-analytics/data-analytics.repository/evaluate-transactions-against-dynamic-rules';
 import {
   AlertSeverity,
@@ -235,7 +232,7 @@ export const generateFakeAlertDefinition = async (
     );
 
     const createdBy = faker.internet.userName();
-    
+
     const ruleIdIdx = faker.datatype.number({
       min: 0,
       max: rules.length - 1,

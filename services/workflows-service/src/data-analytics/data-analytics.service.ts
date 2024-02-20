@@ -1,32 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { DataAnalyticsRepository } from './data-analytics.repository';
-import { InlineRule, TransactionsAgainstDynamicRulesType } from './evaluate-types';
+import { InlineRule, TransactionsAgainstDynamicRulesType } from './types';
 import { AggregateType } from './consts';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class DataAnalyticsService {
+  private _evaluateNameToFunction: Record<string, Function> = {
+    [this.evaluateTransactionsAgainstDynamicRules.name]: async (
+      options: TransactionsAgainstDynamicRulesType,
+    ) => {
+      await this.evaluateTransactionsAgainstDynamicRules(options);
+    },
+  };
+
   constructor(
     protected readonly prisma: PrismaService,
     private dataAnalyticsRepository: DataAnalyticsRepository,
   ) {}
 
-  get ruleIdToEvaluateFunction() {
-    return {
-      [this.evaluateTransactionsAgainstDynamicRules.name]: async (options: InlineRule) => {
-        await this.evaluateTransactionsAgainstDynamicRules(options);
-      },
-    };
-  }
+  async runInlineRule({ rule, options }: InlineRule) {
+    const evaluateFn = this._evaluateNameToFunction[rule.name];
+    if (!evaluateFn) {
+      throw new Error(`No evaluation function found for rule name: ${rule.name}`);
+    }
 
-  // Should we use ruleId or ruleName?
-  get evaluateFunctionHandlerByName() {
-    return {
-      [this.evaluateTransactionsAgainstDynamicRules.name]: async (options: InlineRule) => {
-        await this.evaluateTransactionsAgainstDynamicRules(options);
-      },
-    };
+    return await evaluateFn(options);
   }
 
   async evaluateTransactionsAgainstDynamicRules({

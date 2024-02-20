@@ -1,3 +1,4 @@
+import { map } from 'rxjs/operators';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import * as errors from '@/errors';
@@ -10,7 +11,7 @@ import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
-import { InlineRule } from '@/data-analytics/evaluate-types';
+import { InlineRule } from '@/data-analytics/types';
 
 @Injectable()
 export class AlertService {
@@ -114,21 +115,50 @@ export class AlertService {
 
     for (const definition of alertDefinitions) {
       const triggered = await this.checkAlert(definition);
+
       if (triggered) {
-        // const ids = await this.createAlert({
-        //   /* ... */
-        // }); // Provide necessary data
+        this.logger.log(`Alert triggered for alert definition ${definition.id}`);
       }
     }
   }
 
   // Specific alert check logic based on the definition
-  private async checkAlert(definition: AlertDefinition): Promise<boolean> {
-    const inlineRule: InlineRule = definition.inlineRule;
+  private async checkAlert(alertDefinition: AlertDefinition): Promise<boolean> {
+    const inlineRule = alertDefinition.inlineRule as InlineRule;
 
-    const result = await this.dataAnalyticsService.evaluateFunctionHandlerByName[inlineRule.ruleName]
-    this.dataAnalyticsService.evaluateFunctionHandlerByName[];
+    const results = await this.dataAnalyticsService.runInlineRule(inlineRule);
+
+    if (!results || (Array.isArray(results) && results.length === 0)) {
+      return false;
+    }
+
+    await Promise.allSettled(
+      results.map(async (result: any) => {
+        // TODO: dedupe strategy
+        const ids = await this.createAlert(alertDefinition, result);
+      }),
+    );
+
     return true;
+  }
+
+  private createAlert(alertDef: AlertDefinition, data: any): Promise<Alert> {
+    return this.alertRepository.create({
+      data: {
+        alertDefinitioniId: alertDef.id,
+        projectId: alertDef.projectId,
+        severity: alertDef.defaultSeverity,
+        dataTimestamp: new Date(),
+        state: AlertState.Triggered,
+        status: AlertStatus.New,
+        ...data,
+        // business?: BusinessCreateNestedOneWithoutAlertInput
+        // endUser?: EndUserCreateNestedOneWithoutAlertInput
+        // executionDetails: JsonNullValueInput | InputJsonValue
+        // assignedAt?: Date | string | null // TODO: manual assignee logic
+        // counterparty?: CounterpartyCreateNestedOneWithoutAlertsInput
+      },
+    });
   }
 
   private getStatusFromState(newState: AlertState): AlertStatus {
