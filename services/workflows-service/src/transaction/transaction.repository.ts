@@ -94,10 +94,10 @@ export class TransactionRepository {
       whereClause.businessId = getTransactionsParameters.businessId;
     }
 
-    if (getTransactionsParameters.counterpartyOriginatorId) {
+    if (getTransactionsParameters.counterpartyId) {
       whereClause.OR = [
-        { counterpartyOriginatorId: getTransactionsParameters.counterpartyOriginatorId },
-        { counterpartyBeneficiaryId: getTransactionsParameters.counterpartyOriginatorId },
+        { counterpartyOriginatorId: getTransactionsParameters.counterpartyId },
+        { counterpartyBeneficiaryId: getTransactionsParameters.counterpartyId },
       ];
     }
 

@@ -75,7 +75,7 @@ export type TTransactionsList = z.output<typeof TransactionsListSchema>;
 
 export const fetchTransactions = async (params: {
   businessId: string;
-  counterpartyOriginatorId: string;
+  counterpartyId: string;
   page: {
     number: number;
     size: number;
