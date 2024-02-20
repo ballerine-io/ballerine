@@ -13,7 +13,7 @@ export const useZodSearchParams = <TSchema extends AnyZodObject>(
 
   useEffect(() => {
     const isSearchParamsEqual = checkIsLooselyEqualDeep(searchParams, parsedSearchParams);
-    console.log('test');
+
     if (isSearchParamsEqual) {
       return;
     }
