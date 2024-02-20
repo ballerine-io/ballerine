@@ -1,10 +1,10 @@
 import { Public } from '@/common/decorators/public.decorator';
-import { getSwaggerDocument } from '@/main';
 import * as common from '@nestjs/common';
 import { Controller, Res } from '@nestjs/common';
 import * as YAML from 'yaml';
 import express from 'express';
 import { ApiExcludeController } from '@nestjs/swagger';
+import swagger from '@/swagger/swagger';
 
 @Controller('/external/swagger')
 @ApiExcludeController()
@@ -13,7 +13,7 @@ export class SwaggerController {
   @common.Get('/yaml')
   @Public()
   async getSwaggerYaml(@Res() res: express.Response): Promise<any> {
-    const content = YAML.stringify(getSwaggerDocument());
+    const content = YAML.stringify(swagger.document);
 
     res.setHeader('Content-Type', 'application/octet-stream');
     res.setHeader('Content-Disposition', 'attachment; filename=swagger.yaml');
@@ -26,6 +26,6 @@ export class SwaggerController {
   @common.Get('/json')
   @Public()
   async getSwaggerJson(): Promise<any> {
-    return getSwaggerDocument();
+    return swagger.document;
   }
 }
