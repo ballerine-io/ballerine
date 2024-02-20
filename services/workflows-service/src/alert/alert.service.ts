@@ -8,18 +8,23 @@ import { Injectable } from '@nestjs/common';
 import { Alert, AlertDefinition, AlertState, AlertStatus } from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
+import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
+import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 
 @Injectable()
 export class AlertService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly logger: AppLoggerService,
+    private readonly dataAnalyticsService: DataAnalyticsService,
     private readonly alertRepository: AlertRepository,
+    private readonly alertDefinitionRepository: AlertDefinitionRepository,
   ) {}
 
   async create(dto: CreateAlertDefinitionDto, projectId: TProjectId): Promise<AlertDefinition> {
+    const _data = { ...dto, projectId };
     // #TODO: Add validation logic
-    return await this.prisma.alertDefinition.create({ data: dto as any });
+    return await this.alertDefinitionRepository.create({ data: _data as any });
   }
 
   async updateAlertsDecision(
@@ -118,7 +123,7 @@ export class AlertService {
 
   // Specific alert check logic based on the definition
   private async checkAlert(definition: AlertDefinition): Promise<boolean> {
-    // ...
+    this.dataAnalyticsService.evaluateFunctionHandlerByName[definition.ruleId];
     return true;
   }
 
