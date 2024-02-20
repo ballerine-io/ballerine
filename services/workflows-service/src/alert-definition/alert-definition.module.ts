@@ -9,6 +9,4 @@ import { AlertDefinitionService } from '@/alert-definition/alert-definition.serv
   providers: [AlertDefinitionService, AlertDefinitionRepository],
   exports: [AlertDefinitionService],
 })
-export class AlertDefinitionModule {
-  constructor() {}
-}
+export class AlertDefinitionModule {}
