@@ -10,7 +10,7 @@ export class GetTransactionsDto {
 
   @IsOptional()
   @IsString()
-  counterpartyOriginatorId?: string;
+  counterpartyId?: string;
 
   @IsOptional()
   @IsEnum(PaymentMethod)

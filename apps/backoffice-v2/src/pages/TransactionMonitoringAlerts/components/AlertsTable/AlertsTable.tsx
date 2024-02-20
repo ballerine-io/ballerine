@@ -76,7 +76,7 @@ export const AlertsTable: FunctionComponent<IAlertsTableProps> = ({ data }) => {
                           <Link
                             to={`/${locale}/transaction-monitoring/alerts/${itemId}?businessId=${
                               item?.merchant?.id ?? ''
-                            }&counterpartyOriginatorId=${item?.counterpartyId ?? ''}`}
+                            }&counterpartyId=${item?.counterpartyId ?? ''}`}
                             className={`d-full flex p-4`}
                           >
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}

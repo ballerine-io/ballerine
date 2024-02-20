@@ -6,7 +6,7 @@ import { useNavigateBack } from '@/common/hooks/useNavigateBack/useNavigateBack'
 import { useCallback } from 'react';
 
 export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
-  const [{ businessId, counterpartyOriginatorId }] = useSerializedSearchParams();
+  const [{ businessId, counterpartyId }] = useSerializedSearchParams();
   const { alertId } = useParams();
   const { data: alertDefinition, isLoading: isLoadingAlertDefinition } =
     useAlertDefinitionByAlertIdQuery({
@@ -14,7 +14,7 @@ export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
     });
   const { data: transactions } = useTransactionsQuery({
     businessId: businessId ?? '',
-    counterpartyOriginatorId: counterpartyOriginatorId ?? '',
+    counterpartyId: counterpartyId ?? '',
     page: 1,
     pageSize: 50,
   });
