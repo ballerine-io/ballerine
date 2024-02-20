@@ -133,6 +133,7 @@ model Business {
   additionalInfo          Json?
   bankInformation         Json?
   approvalState           ApprovalState @default(NEW) // Current status of the KYB process for the business entity
+  mccCode                 Int?
 
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
@@ -455,6 +456,7 @@ enum PaymentMethod {
   PayPal
   ApplePay
   GooglePay
+  APN
 }
 
 enum PaymentType {
@@ -500,6 +502,24 @@ enum PaymentProcessor {
   AmericanExpress
 }
 
+enum PaymentBrandName {
+  VISA
+  MASTERCARD
+  DCI // Diners Club International
+  SCB_PayNow
+  OCBC_PayNow
+  Atome
+  Dash
+  GrabPay
+  AlipayHost
+  WechatHost
+}
+
+enum TransactionDirection {
+  Inbound
+  Outbound
+}
+
 model TransactionRecord {
   id                       String                   @id @default(cuid())
   transactionCorrelationId String                   @unique @db.VarChar
@@ -513,12 +533,16 @@ model TransactionRecord {
   transactionType          TransactionRecordType? // Enum for transaction type
   transactionStatus        TransactionRecordStatus? @default(Completed)
   transactionStatusReason  String? // Reason for the transaction status
-  transactionDirection TransactionDirection?
+  transactionDirection     TransactionDirection? // Reason for the transaction status
+  transactionReference     String? // Reference number for the transaction
 
-  originatorIpAddress   String? // IP address of the transaction initiator
-  originatorGeoLocation String? // Geolocation of the transaction initiator
-  originatorUserAgent   String? // User agent of the device used for the transaction
+  originatorIpAddress   String?
+  originatorGeoLocation String?
+  originatorUserAgent   String?
+  originatorSortCode    String?
+  originatorBankCountry String?
 
+  paymentBrandName PaymentBrandName?
   paymentMethod    PaymentMethod?
   paymentType      PaymentType?
   paymentChannel   PaymentChannel?
@@ -570,11 +594,14 @@ model TransactionRecord {
 
   counterpartyBeneficiaryId String?
   counterpartyBeneficiary   Counterparty? @relation("BenefitingCounterparty", fields: [counterpartyBeneficiaryId], references: [id])
-  endUser                   EndUser?      @relation(fields: [endUserId], references: [id])
-  endUserId                 String?
-  business                  Business?     @relation(fields: [businessId], references: [id])
-  businessId                String?
 
+  EndUser   EndUser? @relation(fields: [endUserId], references: [id])
+  endUserId String?
+
+  Business   Business? @relation(fields: [businessId], references: [id])
+  businessId String?
+
+  @@unique([projectId, transactionCorrelationId])
   @@index([transactionType])
   @@index([transactionDate])
   @@index([transactionStatus])
@@ -617,10 +644,7 @@ enum AlertType {
   HighRiskTransaction
   DormantAccountActivity
   UnusualPattern
-  // Add other alert types as needed
 }
-
-// ... (Other models and enums)
 
 model AlertDefinition {
   id          String     @id @default(cuid())
@@ -635,9 +659,8 @@ model AlertDefinition {
   rulesetId Int // Set of rules reference
   ruleId    Int // Specific rule within the ruleset
 
-  inlineRule Json? // JSON format for rule definitions
+  inlineRule Json
   createdBy  String @default("SYSTEM")
-  modifiedBy String
 
   dedupeStrategies Json
   config           Json
@@ -647,7 +670,9 @@ model AlertDefinition {
   additionalInfo Json // Additional information
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+
+  modifiedBy String?
+  updatedAt  DateTime @updatedAt
 
   alert Alert[]
 
@@ -729,18 +754,12 @@ enum SanctionListMatchStatus {
   Listed // The counterparty is listed on a sanction list.
 }
 
-enum TransactionDirection {
-  Inbound
-  Outbound
-}
-
 model Counterparty {
-  id String @id @default(cuid())
+  id String @id
 
-  correlationId  String?
-  type           CounterpartyType
-  sortCode       String?
-  bankCountry    String?
+  correlationId String?
+  type          CounterpartyType
+
   additionalInfo Json? // Additional information about the counterparty
 
   businessId String?
@@ -756,5 +775,6 @@ model Counterparty {
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 
+  @@unique([projectId, correlationId])
   @@index([correlationId])
 }

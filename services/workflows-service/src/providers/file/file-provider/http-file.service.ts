@@ -4,7 +4,6 @@ import { promises as fsPromises } from 'fs';
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { Readable } from 'stream';
 import { IStreamableFileProvider } from '../types/interfaces';
-import { removeSensitiveHeaders } from '@/common/utils/request-response/request';
 import { LoggerService } from '@nestjs/common';
 import { interceptAxiosRequests } from '@/common/http-service/utils';
 

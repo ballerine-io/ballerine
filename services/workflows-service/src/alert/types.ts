@@ -14,10 +14,10 @@ export const BulkStatus = {
 
 export type TBulkStatus = (typeof BulkStatus)[keyof typeof BulkStatus];
 
-export type TAlertUpdateResponse = {
+export type TAlertUpdateResponse = Array<{
   alertId: string;
   status: string;
-}[];
+}>;
 
 type SuccessResponse = {
   alertId: string;
@@ -27,12 +27,12 @@ type SuccessResponse = {
 type FailedResponse = {
   alertId: string;
   status: 'failed';
-  errors: {
+  errors: Array<{
     path?: string;
     message: string;
-  }[];
+  }>;
 };
 export type TBulkAssignAlertsResponse = {
-  response: (SuccessResponse | FailedResponse)[];
+  response: Array<SuccessResponse | FailedResponse>;
   overallStatus: TBulkStatus;
 };

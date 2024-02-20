@@ -11,7 +11,7 @@ CREATE TYPE "VerificationStatus" AS ENUM ('Unverified', 'Verified', 'Pending');
 CREATE TYPE "TransactionRecordStatus" AS ENUM ('New', 'Pending', 'Active', 'Completed', 'Rejected', 'Cancelled', 'Failed');
 
 -- CreateEnum
-CREATE TYPE "PaymentMethod" AS ENUM ('CreditCard', 'DebitCard', 'BankTransfer', 'PayPal', 'ApplePay', 'GooglePay');
+CREATE TYPE "PaymentMethod" AS ENUM ('CreditCard', 'DebitCard', 'BankTransfer', 'PayPal', 'ApplePay', 'GooglePay', 'APN');
 
 -- CreateEnum
 CREATE TYPE "PaymentType" AS ENUM ('Instant', 'Scheduled', 'Recurring', 'Refund');
@@ -32,10 +32,16 @@ CREATE TYPE "PaymentAcquirer" AS ENUM ('WellsFargo', 'FirstData', 'Elavon', 'Wor
 CREATE TYPE "PaymentProcessor" AS ENUM ('Visa', 'MasterCard', 'Discover', 'AmericanExpress');
 
 -- CreateEnum
+CREATE TYPE "PaymentBrandName" AS ENUM ('VISA', 'MASTERCARD', 'DCI', 'SCB_PayNow', 'OCBC_PayNow', 'Atome', 'Dash', 'GrabPay', 'AlipayHost', 'WechatHost');
+
+-- CreateEnum
+CREATE TYPE "TransactionDirection" AS ENUM ('Inbound', 'Outbound');
+
+-- CreateEnum
 CREATE TYPE "AlertSeverity" AS ENUM ('100', '200', '300', '400');
 
 -- CreateEnum
-CREATE TYPE "AlertState" AS ENUM ('101', '201', '202', '301', '302', '303');
+CREATE TYPE "AlertState" AS ENUM ('101', '201', '202', '301', '302', '303', '304', '305');
 
 -- CreateEnum
 CREATE TYPE "AlertStatus" AS ENUM ('100', '200', '300');
@@ -58,6 +64,9 @@ CREATE TYPE "PEPStatus" AS ENUM ('NotApplicable', 'PendingReview', 'Confirmed');
 -- CreateEnum
 CREATE TYPE "SanctionListMatchStatus" AS ENUM ('NotListed', 'PendingReview', 'Listed');
 
+-- AlterTable
+ALTER TABLE "Business" ADD COLUMN     "mccCode" INTEGER;
+
 -- CreateTable
 CREATE TABLE "TransactionRecord" (
     "id" TEXT NOT NULL,
@@ -72,9 +81,14 @@ CREATE TABLE "TransactionRecord" (
     "transactionType" "TransactionRecordType",
     "transactionStatus" "TransactionRecordStatus" DEFAULT 'Completed',
     "transactionStatusReason" TEXT,
+    "transactionDirection" "TransactionDirection",
+    "transactionReference" TEXT,
     "originatorIpAddress" TEXT,
     "originatorGeoLocation" TEXT,
     "originatorUserAgent" TEXT,
+    "originatorSortCode" TEXT,
+    "originatorBankCountry" TEXT,
+    "paymentBrandName" "PaymentBrandName",
     "paymentMethod" "PaymentMethod",
     "paymentType" "PaymentType",
     "paymentChannel" "PaymentChannel",
@@ -126,15 +140,15 @@ CREATE TABLE "AlertDefinition" (
     "projectId" TEXT NOT NULL,
     "rulesetId" INTEGER NOT NULL,
     "ruleId" INTEGER NOT NULL,
-    "inlineRule" JSONB,
+    "inlineRule" JSONB NOT NULL,
     "createdBy" TEXT NOT NULL DEFAULT 'SYSTEM',
-    "modifiedBy" TEXT NOT NULL,
     "dedupeStrategies" JSONB NOT NULL,
     "config" JSONB NOT NULL,
     "defaultSeverity" "AlertSeverity" NOT NULL,
     "tags" TEXT[],
     "additionalInfo" JSONB NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modifiedBy" TEXT,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "AlertDefinition_pkey" PRIMARY KEY ("id")
@@ -154,6 +168,7 @@ CREATE TABLE "Alert" (
     "severity" "AlertSeverity",
     "executionDetails" JSONB NOT NULL,
     "assigneeId" TEXT,
+    "assignedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "workflowRuntimeDataId" TEXT,
@@ -167,8 +182,6 @@ CREATE TABLE "Counterparty" (
     "id" TEXT NOT NULL,
     "correlationId" TEXT,
     "type" "CounterpartyType" NOT NULL,
-    "sortCode" TEXT,
-    "bankCountry" TEXT,
     "additionalInfo" JSONB,
     "businessId" TEXT,
     "endUserId" TEXT,
@@ -208,6 +221,9 @@ CREATE INDEX "TransactionRecord_counterpartyBeneficiaryId_idx" ON "TransactionRe
 CREATE INDEX "TransactionRecord_paymentMethod_idx" ON "TransactionRecord"("paymentMethod");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "TransactionRecord_projectId_transactionCorrelationId_key" ON "TransactionRecord"("projectId", "transactionCorrelationId");
+
+-- CreateIndex
 CREATE INDEX "AlertDefinition_projectId_idx" ON "AlertDefinition"("projectId");
 
 -- CreateIndex
@@ -230,6 +246,9 @@ CREATE INDEX "Alert_counterpartyId_idx" ON "Alert"("counterpartyId");
 
 -- CreateIndex
 CREATE INDEX "Counterparty_correlationId_idx" ON "Counterparty"("correlationId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Counterparty_projectId_correlationId_key" ON "Counterparty"("projectId", "correlationId");
 
 -- AddForeignKey
 ALTER TABLE "TransactionRecord" ADD CONSTRAINT "TransactionRecord_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -74,6 +74,7 @@ export class AlertModule {
     axiosRetry(_axios, {
       retries: 3,
       retryDelay: (...arg) => axiosRetry.exponentialDelay(...arg, 1500),
+      // eslint-disable-next-line prefer-arrow/prefer-arrow-functions
       retryCondition(error: unknown) {
         if (error && isAxiosError(error)) {
           if (error.response) {

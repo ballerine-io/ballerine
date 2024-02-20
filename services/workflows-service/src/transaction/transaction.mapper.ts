@@ -17,7 +17,6 @@ export class TransactionEntityMapper {
     | 'riskScore'
     | 'endUserId'
     | 'businessId'
-    | 'transactionDirection'
   > {
     return {
       transactionCorrelationId: dto.correlationId,
@@ -31,6 +30,8 @@ export class TransactionEntityMapper {
       transactionStatusReason: dto.statusReason ?? null,
       transactionBaseAmount: dto.baseAmount,
       transactionBaseCurrency: dto.baseCurrency,
+      transactionDirection: dto.direction ?? null,
+      transactionReference: dto.reference ?? null,
 
       paymentMethod: dto.payment?.method ?? null,
       paymentType: dto.payment?.type ?? null,
@@ -39,6 +40,7 @@ export class TransactionEntityMapper {
       paymentGateway: dto.payment?.gateway ?? null,
       paymentAcquirer: dto.payment?.acquirer ?? null,
       paymentProcessor: dto.payment?.processor ?? null,
+      paymentBrandName: dto.payment?.brandName ?? null,
 
       // Assuming card details and tags are part of the DTO
       cardFingerprint: dto.cardDetails?.fingerprint ?? null,
@@ -69,6 +71,9 @@ export class TransactionEntityMapper {
       counterpartyOriginatorId: dto.originator?.id ?? null,
       counterpartyBeneficiaryId: dto.beneficiary?.id ?? null,
       unusualActivityFlags: dto.unusualActivityFlags ?? {},
+
+      originatorSortCode: null, // Add missing property
+      originatorBankCountry: null, // Add missing property
     };
   }
 
@@ -99,6 +104,8 @@ export class TransactionEntityMapper {
       baseAmount: record.transactionBaseAmount,
       baseCurrency: record.transactionBaseCurrency,
       projectId: record.projectId,
+      direction: record.transactionDirection || undefined,
+      reference: record.transactionReference || undefined,
       originator: record.counterpartyOriginatorId
         ? {
             id: record.counterpartyOriginatorId,
@@ -129,7 +136,9 @@ export class TransactionEntityMapper {
         sku: record.productSku || undefined,
         id: record.productId || undefined,
       },
-
+      // business: {
+      //   id: record.businessId || undefined,
+      // },
       tags: record.tags,
       reviewStatus: record.reviewStatus || undefined,
       reviewerComments: record.reviewerComments || undefined,

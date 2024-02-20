@@ -2,15 +2,17 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   TransactionRecordType,
   TransactionRecordStatus,
-  PaymentMethod,
   PaymentType,
   PaymentChannel,
   PaymentIssuer,
   PaymentGateway,
   PaymentAcquirer,
   PaymentProcessor,
+  PaymentBrandName,
   ReviewStatus,
   CounterpartyType,
+  TransactionDirection,
+  PaymentMethod,
 } from '@prisma/client';
 import {
   IsBoolean,
@@ -31,15 +33,19 @@ export class CounterpartyInfo {
   @ApiProperty({ required: true }) @IsString() correlationId!: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() id?: string;
   @ApiProperty({ required: true }) @IsString() @IsOptional() type?: CounterpartyType;
-  @ApiProperty({ required: true })
+
+  @ApiProperty({ required: false })
   @IsString()
   @Type(() => EndUserCreateDto)
   @IsOptional()
-  entityData?: BusinessCreateDto | EndUserCreateDto;
+  entityData?: (BusinessCreateDto | EndUserCreateDto) & { id: string };
 }
 
 class PaymentInfo {
-  @ApiProperty({ required: false }) @IsEnum(PaymentMethod) @IsOptional() method?: PaymentMethod;
+  @ApiProperty({ required: false })
+  @IsEnum(PaymentMethod)
+  @IsOptional()
+  method?: PaymentMethod;
   @ApiProperty({ required: false }) @IsEnum(PaymentType) @IsOptional() type?: PaymentType;
   @ApiProperty({ required: false }) @IsEnum(PaymentChannel) @IsOptional() channel?: PaymentChannel;
   @ApiProperty({ required: false }) @IsEnum(PaymentIssuer) @IsOptional() issuer?: PaymentIssuer;
@@ -52,6 +58,10 @@ class PaymentInfo {
   @IsEnum(PaymentProcessor)
   @IsOptional()
   processor?: PaymentProcessor;
+  @ApiProperty({ required: false })
+  @IsEnum(PaymentBrandName)
+  @IsOptional()
+  brandName?: PaymentBrandName;
 }
 class ProductInfo {
   @ApiProperty({ required: false }) @IsString() @IsOptional() name?: string;
@@ -78,10 +88,14 @@ export class TransactionCreateDto {
   @ApiProperty({ required: true }) @IsDate() @IsNotEmpty() date!: Date;
   @ApiProperty({ required: true }) @IsNumber() @IsNotEmpty() amount!: number;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() currency!: string;
+  @ApiProperty({ required: true }) @IsNumber() @IsNotEmpty() baseAmount!: number;
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() baseCurrency!: string;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() projectId!: string;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() correlationId!: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() description?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() category?: string;
+  @ApiProperty({ required: false }) @IsString() @IsOptional() direction?: TransactionDirection;
+  @ApiProperty({ required: false }) @IsString() @IsOptional() reference?: string;
 
   @ApiProperty({ required: false, type: 'object' }) @IsOptional() tags?: JsonValue | null;
   @ApiProperty({ required: false, type: 'object' }) @IsOptional() auditTrail?: JsonValue | null;
@@ -89,8 +103,6 @@ export class TransactionCreateDto {
   @IsOptional()
   unusualActivityFlags?: JsonValue | null;
 
-  @ApiProperty({ required: true }) @IsNumber() @IsNotEmpty() baseAmount!: number;
-  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() baseCurrency!: string;
   @ApiProperty({ required: false })
   @IsEnum(TransactionRecordType)
   @IsOptional()
@@ -106,6 +118,7 @@ export class TransactionCreateDto {
   @Type(() => CounterpartyInfo)
   @IsOptional()
   originator?: CounterpartyInfo;
+
   @ApiProperty({ type: CounterpartyInfo })
   @ValidateNested()
   @Type(() => CounterpartyInfo)
@@ -117,6 +130,18 @@ export class TransactionCreateDto {
   @Type(() => PaymentInfo)
   @IsOptional()
   payment?: PaymentInfo;
+
+  @ApiProperty({ type: BusinessCreateDto })
+  @ValidateNested()
+  @Type(() => BusinessCreateDto)
+  @IsOptional()
+  business?: BusinessCreateDto;
+
+  @ApiProperty({ type: EndUserCreateDto })
+  @ValidateNested()
+  @Type(() => EndUserCreateDto)
+  @IsOptional()
+  individual?: EndUserCreateDto;
 
   @ApiProperty({ type: ProductInfo })
   @ValidateNested()
