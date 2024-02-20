@@ -1,6 +1,6 @@
 import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { z } from 'zod';
-import { AlertStatuses, TAlertsList } from '@/domains/alerts/fetchers';
+import { AlertStatus, AlertStatuses, TAlertsList } from '@/domains/alerts/fetchers';
 import { BooleanishSchema } from '@/lib/zod/utils/checkers';
 
 export const getAlertsSearchSchema = (authenticatedUserId: string | null) =>
@@ -12,13 +12,13 @@ export const getAlertsSearchSchema = (authenticatedUserId: string | null) =>
       .catch('dataTimestamp'),
     filter: z
       .object({
-        assigneeId: z.array(z.string().nullable()).catch([authenticatedUserId, null]),
-        status: z.array(z.enum(AlertStatuses)).catch([]),
+        assigneeId: z.array(z.string().nullable()).catch([]),
+        status: z.array(z.enum(AlertStatuses)).catch([AlertStatus.NEW]),
         state: z.array(z.string().nullable()).catch([]),
       })
       .catch({
-        assigneeId: [authenticatedUserId, null],
-        status: [],
+        assigneeId: [],
+        status: [AlertStatus.NEW],
         state: [],
       }),
     selected: BooleanishSchema.optional(),
