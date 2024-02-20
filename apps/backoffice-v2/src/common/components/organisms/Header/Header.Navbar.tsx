@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react';
+import { Fragment, FunctionComponent } from 'react';
 import { NavItem } from './Header.NavItem';
 import { ctw } from '../../../utils/ctw/ctw';
 import { ChevronDown } from 'lucide-react';
@@ -23,7 +23,7 @@ export const Navbar: FunctionComponent = () => {
         const isActiveFilterGroup = checkIsActiveFilterGroup(navItem);
 
         return (
-          <>
+          <Fragment key={navItem.key}>
             {!!navItem.children && (
               <Collapsible
                 key={`${navItem.key}-${isActiveFilterGroup}`}
@@ -101,7 +101,7 @@ export const Navbar: FunctionComponent = () => {
                 </NavItem>
               </ul>
             )}
-          </>
+          </Fragment>
         );
       })}
     </nav>
