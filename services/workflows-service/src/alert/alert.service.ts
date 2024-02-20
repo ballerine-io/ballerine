@@ -10,6 +10,7 @@ import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
+import { InlineRule } from '@/data-analytics/evaluate-types';
 
 @Injectable()
 export class AlertService {
@@ -123,7 +124,10 @@ export class AlertService {
 
   // Specific alert check logic based on the definition
   private async checkAlert(definition: AlertDefinition): Promise<boolean> {
-    this.dataAnalyticsService.evaluateFunctionHandlerByName[definition.ruleId];
+    const inlineRule: InlineRule = definition.inlineRule;
+
+    const result = await this.dataAnalyticsService.evaluateFunctionHandlerByName[inlineRule.ruleName]
+    this.dataAnalyticsService.evaluateFunctionHandlerByName[];
     return true;
   }
 
