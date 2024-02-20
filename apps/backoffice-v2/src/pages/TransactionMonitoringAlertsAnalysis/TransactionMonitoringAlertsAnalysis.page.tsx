@@ -2,6 +2,8 @@ import { AlertAnalysisSheet } from '@/pages/TransactionMonitoringAlertsAnalysis/
 import { useTransactionMonitoringAlertsAnalysisPageLogic } from '@/pages/TransactionMonitoringAlertsAnalysis/hooks/useTransactionMonitoringAlertsAnalysisPageLogic/useTransactionMonitoringAlertsAnalysisPageLogic';
 import { titleCase } from 'string-ts';
 import { Skeleton } from '@/common/components/atoms/Skeleton/Skeleton';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { ctw } from '@/common/utils/ctw/ctw';
 
 export const TransactionMonitoringAlertsAnalysisPage = () => {
   const { transactions, onNavigateBack, alertDefinition, isLoadingAlertDefinition } =
@@ -12,16 +14,24 @@ export const TransactionMonitoringAlertsAnalysisPage = () => {
       transactions={transactions ?? []}
       onOpenStateChange={onNavigateBack}
       heading={
-        <>
+        <span
+          className={ctw({
+            'text-slate-400': !alertDefinition?.name,
+          })}
+        >
           {isLoadingAlertDefinition && <Skeleton className={`h-8 w-[20ch]`} />}
-          {!isLoadingAlertDefinition && titleCase(alertDefinition?.name ?? '')}
-        </>
+          {!isLoadingAlertDefinition && valueOrNA(titleCase(alertDefinition?.name ?? ''))}
+        </span>
       }
       summary={
-        <>
+        <span
+          className={ctw({
+            'text-slate-400': !alertDefinition?.description,
+          })}
+        >
           {isLoadingAlertDefinition && <Skeleton className={`h-5 w-[50ch]`} />}
-          {!isLoadingAlertDefinition && titleCase(alertDefinition?.description ?? '')}
-        </>
+          {!isLoadingAlertDefinition && valueOrNA(titleCase(alertDefinition?.description ?? ''))}
+        </span>
       }
     />
   );
