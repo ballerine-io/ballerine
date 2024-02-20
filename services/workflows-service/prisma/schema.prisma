@@ -556,6 +556,7 @@ model TransactionRecord {
   completed3ds      Boolean?
   cardType          String?
   cardIssuer        String?
+  cardBIN           String?
   cardBrand         String?
 
   cardExpiryMonth String?
@@ -575,11 +576,12 @@ model TransactionRecord {
   additionalInfo Json? // Additional information related to the transaction
 
   // Fields for merchant transactions
-  productName        String?
-  productDescription String?
-  productPrice       Float?
-  productId          String?
-  productSku         String?
+  productName          String?
+  productDescription   String?
+  productPrice         Float?
+  productPriceCurrency String?
+  productId            String?
+  productSku           String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
