@@ -253,7 +253,10 @@ export const generateFakeAlertDefinition = async (
         ruleId: rulesIds[ruleIdIdx],
         createdBy: createdBy,
         modifiedBy: createdBy,
-        dedupeStrategies: { strategy: {} },
+        dedupeStrategies: {
+          strategy: {},
+          cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
+        },
         config: { config: {} },
         inlineRule: rules[ruleIdIdx],
         tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
