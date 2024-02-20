@@ -7,9 +7,10 @@ import { useNavigateBack } from '@/common/hooks/useNavigateBack/useNavigateBack'
 export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
   const [{ businessId, counterpartyId }] = useSerializedSearchParams();
   const { alertId } = useParams();
-  const { data: alertDefinition } = useAlertDefinitionByAlertIdQuery({
-    alertId: alertId ?? '',
-  });
+  const { data: alertDefinition, isLoading: isLoadingAlertDefinition } =
+    useAlertDefinitionByAlertIdQuery({
+      alertId: alertId ?? '',
+    });
   const { data: transactions } = useTransactionsQuery({
     businessId: businessId ?? '',
     counterpartyId: counterpartyId ?? '',
@@ -34,5 +35,6 @@ export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
     transactions,
     onNavigateBack,
     alertDefinition,
+    isLoadingAlertDefinition,
   };
 };

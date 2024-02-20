@@ -1,14 +1,14 @@
 import { SheetContent } from '@/common/components/atoms/Sheet';
 import { Sheet } from '@/common/components/atoms/Sheet/Sheet';
 import { AlertAnalysisTable } from 'src/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisTable';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, ReactNode } from 'react';
 import { TTransactionsList } from '@/domains/transactions/fetchers';
 
 export interface IAlertAnalysisProps {
   onOpenStateChange: () => void;
   transactions: TTransactionsList;
-  heading: string;
-  summary: string;
+  heading: ReactNode;
+  summary: ReactNode;
 }
 
 export const AlertAnalysisSheet: FunctionComponent<IAlertAnalysisProps> = ({
