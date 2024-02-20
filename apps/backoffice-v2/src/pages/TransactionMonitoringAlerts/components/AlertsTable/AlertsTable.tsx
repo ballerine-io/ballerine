@@ -32,7 +32,7 @@ export const AlertsTable: FunctionComponent<IAlertsTableProps> = ({ data }) => {
                       className={`sticky top-0 z-10 h-[34px] bg-white p-0 text-[14px] font-bold text-[#787981]`}
                     >
                       {header.column.id === 'select' && (
-                        <span className={'ps-4'}>
+                        <span className={'pe-4'}>
                           {flexRender(header.column.columnDef.header, header.getContext())}
                         </span>
                       )}
