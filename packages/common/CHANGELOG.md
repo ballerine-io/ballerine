@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.42
+
+### Patch Changes
+
+- updated document schema validation and text
+
 ## 0.7.41
 
 ### Patch Changes
