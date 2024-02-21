@@ -1,4 +1,3 @@
-import { match } from 'ts-pattern';
 import { Search } from '@/pages/TransactionMonitoringAlerts/components/Search';
 import { AlertsFilters } from 'src/pages/TransactionMonitoringAlerts/components/AlertsFilters';
 import React, { ComponentProps, FunctionComponent, useCallback } from 'react';
@@ -12,6 +11,15 @@ import { useAlertsDecisionByIdsMutation } from '@/domains/alerts/hooks/mutations
 import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
 import { AlertsDecisionDropdown } from '@/pages/TransactionMonitoringAlerts/components/AlertsDecisionDropdown/AlertsDecisionDropdown';
 import { COMING_SOON_ALERT_DECISIONS } from '@/pages/TransactionMonitoringAlerts/constants';
+import { TObjectValues } from '@/common/types';
+
+export const decisionToClassName = {
+  [lowerCase(alertStateToDecision.REJECTED)]: 'text-destructive',
+  [lowerCase(alertStateToDecision.CLEARED)]: 'text-success',
+} as const satisfies Record<
+  Extract<Lowercase<TObjectValues<typeof alertStateToDecision>>, 'reject' | 'clear'>,
+  ComponentProps<'span'>['className']
+>;
 
 export const AlertsHeader: FunctionComponent<{
   assignees: TUsers;
@@ -60,16 +68,13 @@ export const AlertsHeader: FunctionComponent<{
       .map(decision => ({
         id: decision,
         value: (
-          <>
-            {match(lowerCase(decision ?? ''))
-              .with(lowerCase(alertStateToDecision.REJECTED), () => (
-                <span className={`text-destructive`}>{decision}</span>
-              ))
-              .with(lowerCase(alertStateToDecision.CLEARED), () => (
-                <span className={`text-success`}>{decision}</span>
-              ))
-              .otherwise(() => decision)}
-          </>
+          <span
+            className={
+              decisionToClassName[lowerCase(decision ?? '') as keyof typeof decisionToClassName]
+            }
+          >
+            {decision}
+          </span>
         ),
       })),
     ...COMING_SOON_ALERT_DECISIONS.map(decision => ({
