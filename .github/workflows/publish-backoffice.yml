@@ -19,15 +19,22 @@ env:
   IMAGE_NAME: ${{ github.repository_owner }}/backoffice
 
 jobs:
+  releases:
+    uses: ./.github/workflows/release.yml
   build-and-push-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    needs: [ releases ]
+    if: ${{ needs.releases.result=='success' }}
 
     steps:
+      - name: Clear the Workspace
+        uses: AutoModality/action-clean@v1
+
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install jq
         run: sudo apt-get install jq
