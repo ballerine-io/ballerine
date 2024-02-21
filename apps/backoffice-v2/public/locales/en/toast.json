@@ -13,19 +13,19 @@
   },
   "approve_document": {
     "success": "The document has been approved successfully.",
-    "error": "Error occurred while approving the document. {{errorMessage}}"
+    "error": "Error occurred while approving the document.\n\n{{errorMessage}}"
   },
   "reject_document": {
     "success": "The document has been rejected successfully.",
-    "error": "Error occurred while rejecting the document. {{errorMessage}}"
+    "error": "Error occurred while rejecting the document.\n\n{{errorMessage}}"
   },
   "ask_revision_document": {
     "success": "The document has been asked for revision successfully.",
-    "error": "Error occurred while asking for revision of the document. {{errorMessage}}"
+    "error": "Error occurred while asking for revision of the document.\n{\n{errorMessage}}"
   },
   "revert_revision": {
     "success": "Asking for document revision has been cancelled successfully.",
-    "error": "Error occurred while reverting the document revision. {{errorMessage}}"
+    "error": "Error occurred while reverting the document revision.\n\n{{errorMessage}}"
   },
   "update_document_properties": {
     "success": "The document has been updated successfully.",
