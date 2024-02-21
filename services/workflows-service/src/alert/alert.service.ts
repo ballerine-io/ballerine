@@ -131,11 +131,9 @@ export class AlertService {
       case AlertState.Escalated:
         return AlertStatus.Pending;
 
-      case AlertState.Resolved:
-      case AlertState.Acknowledged:
       case AlertState.Dismissed:
       case AlertState.Rejected:
-      case AlertState.NotSuspicious:
+      case AlertState.Cleared:
         return AlertStatus.Completed;
 
       default:

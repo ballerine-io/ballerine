@@ -1,3 +1,4 @@
+import { match } from 'ts-pattern';
 import { Search } from '@/pages/TransactionMonitoringAlerts/components/Search';
 import { AlertsFilters } from 'src/pages/TransactionMonitoringAlerts/components/AlertsFilters';
 import React, { ComponentProps, FunctionComponent, useCallback } from 'react';
@@ -60,17 +61,14 @@ export const AlertsHeader: FunctionComponent<{
         id: decision,
         value: (
           <>
-            {lowerCase(decision) === lowerCase(alertStateToDecision.REJECTED) && (
-              <span className={`text-destructive`}>{decision}</span>
-            )}
-
-            {lowerCase(decision) === lowerCase(alertStateToDecision.NOT_SUSPICIOUS) && (
-              <span className={`text-success`}>{decision}</span>
-            )}
-
-            {lowerCase(decision) !== lowerCase(alertStateToDecision.REJECTED) &&
-              lowerCase(decision) !== lowerCase(alertStateToDecision.NOT_SUSPICIOUS) &&
-              decision}
+            {match(lowerCase(decision ?? ''))
+              .with(lowerCase(alertStateToDecision.REJECTED), () => (
+                <span className={`text-destructive`}>{decision}</span>
+              ))
+              .with(lowerCase(alertStateToDecision.CLEARED), () => (
+                <span className={`text-success`}>{decision}</span>
+              ))
+              .otherwise(() => decision)}
           </>
         ),
       })),

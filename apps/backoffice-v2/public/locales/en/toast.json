@@ -62,7 +62,7 @@
     "success": "The alerts have been rejected successfully.",
     "error": "Error occurred while rejecting the alerts."
   },
-  "not_suspicious_alerts": {
+  "clear_alerts": {
     "success": "The alerts have been marked as not suspicious successfully.",
     "error": "Error occurred while marking the alerts as not suspicious."
   },

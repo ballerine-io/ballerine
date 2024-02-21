@@ -228,6 +228,9 @@ importers:
       tesseract.js:
         specifier: ^4.0.1
         version: 4.1.4
+      ts-pattern:
+        specifier: ^5.0.8
+        version: 5.0.8
       vite-plugin-terminal:
         specifier: ^1.1.0
         version: 1.1.0(vite@4.5.0)
@@ -30673,6 +30676,10 @@ packages:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     dev: true
+
+  /ts-pattern@5.0.8:
+    resolution: {integrity: sha512-aafbuAQOTEeWmA7wtcL94w6I89EgLD7F+IlWkr596wYxeb0oveWDO5dQpv85YP0CGbxXT/qXBIeV6IYLcoZ2uA==}
+    dev: false
 
   /tsconfck@2.1.2(typescript@4.9.5):
     resolution: {integrity: sha512-ghqN1b0puy3MhhviwO2kGF8SeMDNhEbnKxjK7h6+fvY9JAxqvXi8y5NAHSQv687OVboS2uZIByzGd45/YxrRHg==}
