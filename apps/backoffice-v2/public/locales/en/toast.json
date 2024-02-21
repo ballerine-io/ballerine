@@ -21,7 +21,7 @@
   },
   "ask_revision_document": {
     "success": "The document has been asked for revision successfully.",
-    "error": "Error occurred while asking for revision of the document.\n{\n{errorMessage}}"
+    "error": "Error occurred while asking for revision of the document.\n\n{{errorMessage}}"
   },
   "revert_revision": {
     "success": "Asking for document revision has been cancelled successfully.",
