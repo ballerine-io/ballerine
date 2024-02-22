@@ -9,9 +9,7 @@ import {
 import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
-import { FindLastActiveFlowParams } from '@/workflow/types/params';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { SortOrder } from '@/common/query-filters/sort-order';
 import type { PrismaTransaction, TProjectIds } from '@/types';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 
@@ -61,17 +59,16 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
-  async findByIdAndLock(
+  async findByIdAndLock<T extends Omit<Prisma.WorkflowRuntimeDataFindFirstOrThrowArgs, 'where'>>(
     id: string,
+    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataFindFirstOrThrowArgs, 'where'>>,
     projectIds: TProjectIds,
-    transaction: PrismaTransaction | PrismaClient = this.prisma,
+    transaction: PrismaTransaction,
   ): Promise<WorkflowRuntimeData> {
-    await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "id" = ${id} AND "projectId" in (${projectIds?.join(
-      ',',
-    )}) FOR UPDATE`;
+    await this.lockWorkflowHierarchyForUpdate(Prisma.sql`"id" = ${id}`, projectIds, transaction);
 
     return await transaction.workflowRuntimeData.findFirstOrThrow(
-      this.scopeService.scopeFindFirst({ where: { id } }, projectIds),
+      this.scopeService.scopeFindOne(merge(args, { where: { id } }), projectIds),
     );
   }
 
@@ -86,6 +83,45 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
+  /**
+   * Locks the workflow hierarchy (including specified workflow runtime data, its parents, and children) to prevent concurrent modifications.
+   * This function uses a recursive CTE to identify and lock all relevant rows within the transaction context, ensuring data integrity during updates.
+   *
+   * @param {Prisma.Sql} where - SQL condition to identify the anchor workflow runtime data records.
+   * @param projectIds
+   * @param transaction
+   * @private
+   */
+  private async lockWorkflowHierarchyForUpdate(
+    where: Prisma.Sql,
+    projectIds: TProjectIds,
+    transaction: PrismaTransaction,
+  ): Promise<void> {
+    await transaction.$executeRaw`WITH RECURSIVE "Hierarchy" AS (
+        -- Anchor member: Select the target row along with a path tracking
+        SELECT w1."id", ARRAY[w1."id"] AS path
+        FROM "WorkflowRuntimeData" w1
+        WHERE ${where}
+        ${
+          Array.isArray(projectIds)
+            ? Prisma.sql`AND "projectId" in (${Prisma.join(projectIds)})`
+            : Prisma.sql``
+        }
+
+        UNION ALL
+
+        -- Recursive member: Select parents and children, avoiding cycles by checking the path
+        SELECT w2."id", "Hierarchy".path || w2."id"
+        FROM "WorkflowRuntimeData" w2
+           JOIN "Hierarchy" ON w2."parent_runtime_data_id" = "Hierarchy"."id" OR "Hierarchy"."id" = w2."id"
+        WHERE NOT w2."id" = ANY("Hierarchy".path) -- Prevent revisiting nodes
+      )
+      SELECT w.*
+      FROM "WorkflowRuntimeData" w
+      INNER JOIN "Hierarchy" ir ON w."id" = ir."id"
+      FOR UPDATE`;
+  }
+
   async findByIdAndLockUnscoped({
     id,
     transaction = this.prisma,
@@ -93,7 +129,7 @@ export class WorkflowRuntimeDataRepository {
     id: string;
     transaction: PrismaTransaction | PrismaClient;
   }): Promise<WorkflowRuntimeData> {
-    await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "id" = ${id} FOR UPDATE`;
+    await this.lockWorkflowHierarchyForUpdate(Prisma.sql`"id" = ${id}`, null, transaction);
 
     return await transaction.workflowRuntimeData.findFirstOrThrow({ where: { id } });
   }
@@ -170,15 +206,12 @@ export class WorkflowRuntimeDataRepository {
     projectIds: TProjectIds,
     transaction: PrismaTransaction,
   ) {
-    if (entityType === 'endUser') {
-      await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "workflowDefinitionId" = ${workflowDefinitionId} AND "projectId" IN (${Prisma.join(
-        projectIds ?? [],
-      )}) AND "status" != 'completed' AND "endUserId" = ${entityId} FOR UPDATE LIMIT 1`;
-    } else {
-      await transaction.$executeRaw`SELECT * FROM "WorkflowRuntimeData" WHERE "workflowDefinitionId" = ${workflowDefinitionId} AND "projectId" IN (${Prisma.join(
-        projectIds ?? [],
-      )}) AND "status" != 'completed' AND "businessId" = ${entityId} FOR UPDATE LIMIT 1`;
-    }
+    const query =
+      entityType === 'endUser'
+        ? Prisma.sql`"status" != 'completed' AND "endUserId" = ${entityId}`
+        : Prisma.sql`"status" != 'completed' AND "businessId" = ${entityId}`;
+
+    await this.lockWorkflowHierarchyForUpdate(query, null, transaction);
 
     return await this.findOne(
       {
@@ -298,26 +331,5 @@ export class WorkflowRuntimeDataRepository {
     `;
 
     return (await this.prisma.$queryRaw(sql)) as WorkflowRuntimeData[];
-  }
-
-  async findLastActive(
-    { workflowDefinitionId, businessId }: FindLastActiveFlowParams,
-    projectIds: TProjectIds,
-  ): Promise<WorkflowRuntimeData | null> {
-    const query = this.projectScopeService.scopeFindOne(
-      {
-        orderBy: {
-          createdAt: 'desc' as SortOrder,
-        },
-        where: {
-          // status: 'active' as WorkflowRuntimeDataStatus,
-          businessId,
-          workflowDefinitionId,
-        },
-      },
-      projectIds,
-    );
-
-    return await this.findOne(query, projectIds);
   }
 }
