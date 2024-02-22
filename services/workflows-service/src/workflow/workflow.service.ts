@@ -1862,10 +1862,6 @@ export class WorkflowService {
         to: currentState,
       });
 
-      if (currentState === 'approved') {
-        await new Promise(resolve => setTimeout(resolve, 10000));
-      }
-
       const updatedRuntimeData = await this.updateWorkflowRuntimeData(
         workflowRuntimeData.id,
         {
