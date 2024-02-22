@@ -21,12 +21,12 @@ import { DialogHeader } from '../../../../common/components/organisms/Dialog/Dia
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { useCaseCallToActionLegacyLogic } from '@/lib/blocks/components/CaseCallToActionLegacy/hooks/useCaseCallToActionLegacyLogic/useCaseCallToActionLegacyLogic';
 
-const motionProps: ComponentProps<typeof MotionButton> = {
+const motionButtonProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
   initial: { y: 10, opacity: 0 },
   transition: { type: 'spring', bounce: 0.3 },
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
-};
+} satisfies ComponentProps<typeof MotionButton>;
 
 export const CaseCallToActionLegacy: FunctionComponent<ICaseCallToActionLegacyProps> = ({
   value,
@@ -61,7 +61,11 @@ export const CaseCallToActionLegacy: FunctionComponent<ICaseCallToActionLegacyPr
       <Dialog>
         <DialogTrigger asChild>
           <MotionButton
-            {...motionProps}
+            {...motionButtonProps}
+            animate={{
+              ...motionButtonProps.animate,
+              opacity: data?.disabled || isDisabled ? 0.5 : motionButtonProps.animate.opacity,
+            }}
             size="wide"
             variant="warning"
             disabled={data?.disabled || isDisabled}
