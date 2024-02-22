@@ -23,7 +23,6 @@ import { UserService } from '@/user/user.service';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
-import { GetLastActiveFlowParams } from '@/workflow/types/params';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
 import { toPrismaWhere } from '@/workflow/utils/toPrismaWhere';
 import {
@@ -219,20 +218,6 @@ export class WorkflowService {
     });
   }
 
-  async getWorkflowRuntimeWithChildrenDataById(
-    id: string,
-    args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
-    projectIds: TProjectIds,
-  ) {
-    return await this.workflowRuntimeDataRepository.findById(
-      id,
-      {
-        ...args,
-      },
-      projectIds,
-    );
-  }
-
   async getWorkflowByIdWithRelations(
     id: string,
     args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
@@ -372,14 +357,6 @@ export class WorkflowService {
     }
 
     return childWorkflow;
-  }
-
-  async getWorkflowRuntimeDataByCorrelationId(
-    id: string,
-    args: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
-    projectIds: TProjectIds,
-  ) {
-    return await this.workflowRuntimeDataRepository.findById(id, args, projectIds);
   }
 
   async getWorkflowDefinitionById(
@@ -688,6 +665,7 @@ export class WorkflowService {
     return await this.prismaService.$transaction(async transaction => {
       const runtimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
         id,
+        {},
         [projectId],
         transaction,
       );
@@ -778,6 +756,7 @@ export class WorkflowService {
     return await this.prismaService.$transaction(async transaction => {
       const workflow = await this.workflowRuntimeDataRepository.findByIdAndLock(
         workflowId,
+        {},
         projectIds,
         transaction,
       );
@@ -904,6 +883,7 @@ export class WorkflowService {
     return await beginTransactionIfNotExist(async transaction => {
       const runtimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
         workflowId,
+        {},
         [projectId],
         transaction,
       );
@@ -1086,10 +1066,11 @@ export class WorkflowService {
     return await beginTransactionIfNotExist(async transaction => {
       const projectIds: TProjectIds = projectId ? [projectId] : null;
 
-      const runtimeData = await this.workflowRuntimeDataRepository.findById(
+      const runtimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
         workflowRuntimeId,
         {},
         projectIds,
+        transaction,
       );
       const workflowDef = await this.workflowDefinitionRepository.findById(
         runtimeData.workflowDefinitionId,
@@ -1505,8 +1486,8 @@ export class WorkflowService {
           );
         }
 
-        mergedConfig?.initialEvent &&
-          (await this.event(
+        if (mergedConfig?.initialEvent) {
+          workflowRuntimeData = await this.event(
             {
               id: workflowRuntimeData.id,
               name: mergedConfig?.initialEvent,
@@ -1514,13 +1495,8 @@ export class WorkflowService {
             projectIds,
             currentProjectId,
             transaction,
-          ));
-
-        workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
-          workflowRuntimeData.id,
-          {},
-          projectIds,
-        );
+          );
+        }
 
         if ('salesforceObjectName' in salesforceData && salesforceData.salesforceObjectName) {
           await this.updateSalesforceRecord({
@@ -1811,7 +1787,7 @@ export class WorkflowService {
 
     return await beginTransactionIfNotExist(async transaction => {
       this.logger.log('Workflow event received', { id, type });
-      const workflowRuntimeData = await this.workflowRuntimeDataRepository.findById(
+      const workflowRuntimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
         id,
         {},
         projectIds,
@@ -1856,6 +1832,7 @@ export class WorkflowService {
             },
             projectIds,
             currentProjectId,
+            transaction,
           );
         },
       });
@@ -1885,6 +1862,10 @@ export class WorkflowService {
         to: currentState,
       });
 
+      if (currentState === 'approved') {
+        await new Promise(resolve => setTimeout(resolve, 10000));
+      }
+
       const updatedRuntimeData = await this.updateWorkflowRuntimeData(
         workflowRuntimeData.id,
         {
@@ -1904,6 +1885,7 @@ export class WorkflowService {
           isFinal,
           projectIds,
           currentProjectId,
+          transaction,
           currentState,
         );
       }
@@ -1964,13 +1946,15 @@ export class WorkflowService {
     isFinal: boolean,
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
+    transaction: PrismaTransaction,
     childRuntimeState?: string,
   ) {
-    let parentWorkflowRuntime = await this.getWorkflowRuntimeWithChildrenDataById(
+    let parentWorkflowRuntime = await this.workflowRuntimeDataRepository.findByIdAndLock(
       // @ts-expect-error - error from Prisma types fix
       workflowRuntimeData.parentRuntimeDataId,
       { include: { childWorkflowsRuntimeData: true } },
       projectIds,
+      transaction,
     );
 
     const parentWorkflowDefinition = await this.getWorkflowDefinitionById(
@@ -2015,10 +1999,14 @@ export class WorkflowService {
           {
             id: parentWorkflowRuntime.id,
             name: 'DEEP_MERGE_CONTEXT',
-            payload: parentContext,
+            payload: {
+              newContext: parentContext,
+              arrayMergeOption: 'by_id',
+            },
           },
           projectIds,
           currentProjectId,
+          transaction,
         );
 
         if (
@@ -2033,6 +2021,7 @@ export class WorkflowService {
               },
               projectIds,
               currentProjectId,
+              transaction,
             );
           } catch (ex) {
             console.warn(
@@ -2110,35 +2099,6 @@ export class WorkflowService {
 
   async getWorkflowRuntimeDataContext(id: string, projectIds: TProjectIds) {
     return this.workflowRuntimeDataRepository.findContext(id, projectIds);
-  }
-
-  async getLastActiveFlow({
-    email,
-    workflowRuntimeDefinitionId,
-    projectIds,
-  }: GetLastActiveFlowParams): Promise<WorkflowRuntimeData | null> {
-    const endUser = await this.endUserService.getByEmail(email, projectIds);
-
-    if (!endUser || !endUser?.businesses?.length) return null;
-
-    const query = {
-      endUserId: endUser.id,
-      ...{
-        workflowDefinitionId: workflowRuntimeDefinitionId,
-        businessId: endUser.businesses.at(-1)!.id,
-      },
-      projectIds,
-    };
-
-    this.logger.log(`Getting last active workflow`, query);
-
-    const workflowData = await this.workflowRuntimeDataRepository.findLastActive(query, projectIds);
-
-    this.logger.log('Last active workflow: ', {
-      workflowId: workflowData ? workflowData.id : null,
-    });
-
-    return workflowData ? workflowData : null;
   }
 
   async copyDocumentsPagesFilesAndCreate(
