@@ -253,6 +253,10 @@ export const useDirectorsBlocks = ({
                       trigger: (
                         <MotionButton
                           {...motionButtonProps}
+                          animate={{
+                            ...motionButtonProps.animate,
+                            opacity: isApproveDisabled ? 0.5 : motionButtonProps.animate.opacity,
+                          }}
                           disabled={isApproveDisabled}
                           size={'wide'}
                           variant={'success'}
