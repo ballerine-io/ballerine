@@ -21,7 +21,7 @@
   "types": "dist/index.d.ts",
   "name": "@ballerine/web-ui-sdk",
   "private": false,
-  "version": "1.4.39",
+  "version": "1.4.40",
   "type": "module",
   "files": [
     "dist"
