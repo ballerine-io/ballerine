@@ -48,10 +48,10 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       SESSION_SECRET: ${SESSION_SECRET}
-      BACKOFFICE_CORS_ORIGIN: http://${DOMAIN_NAME:-localhost}:${BACKOFFICE_PORT}
-      WORKFLOW_DASHBOARD_CORS_ORIGIN: http://${DOMAIN_NAME:-localhost}:${WORKFLOW_DASHBOARD_PORT}
+      BACKOFFICE_CORS_ORIGIN: http://${DOMAIN_NAME:-localhost}:${BACKOFFICE_PORT} # Update this
+      WORKFLOW_DASHBOARD_CORS_ORIGIN: http://${DOMAIN_NAME:-localhost}:${WORKFLOW_DASHBOARD_PORT} # Update this
       PORT: ${WORKFLOW_SVC_PORT}
-      KYB_EXAMPLE_CORS_ORIGIN: http://${DOMAIN_NAME:-localhost}:${KYB_APP_PORT}
+      KYB_EXAMPLE_CORS_ORIGIN: http://${DOMAIN_NAME:-localhost}:${KYB_APP_PORT} # Update this
       WEBHOOK_SECRET: webhook_secret
       APP_API_URL: https://alon.ballerine.dev
       EMAIL_API_TOKEN: ''
@@ -94,5 +94,17 @@ services:
       timeout: 45s
       interval: 10s
       retries: 10
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    container_name: caddy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy/site:/srv
+      - ./caddy/caddy_data:/data
+      - ./caddy/caddy_config:/config
 volumes:
   postgres15: ~
