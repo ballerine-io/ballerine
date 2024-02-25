@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@/prisma/prisma.service';
-import { evaluateTransactionsAgainstDynamicRules } from './evaluate-transactions-against-dynamic-rules';
+import { evaluateTransactionsAgainstDynamicRules } from './data-analytics.repository/evaluate-transactions-against-dynamic-rules';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
 import { ClsService } from 'nestjs-cls';
 import { PaymentMethod, TransactionDirection } from '@prisma/client';
-import { DataAnalyticsService } from '../data-analytics.service';
+import { DataAnalyticsService } from './data-analytics.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { DataAnalyticsRepository } from '.';
+import { DataAnalyticsRepository } from './data-analytics.repository';
 
 const PROJECT_ID = 'project-id';
 
