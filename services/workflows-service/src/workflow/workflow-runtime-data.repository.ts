@@ -12,9 +12,12 @@ import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import type { PrismaTransaction, TProjectIds } from '@/types';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
+import { ARRAY_MERGE_OPTION, ArrayMergeOption } from '@ballerine/workflow-core';
 
-export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
-
+/**
+ * Columns that are related to the state of the workflow runtime data.
+ * These columns should be excluded from regular update operations.
+ */
 type StateRelatedColumns = 'state' | 'status' | 'context' | 'tags';
 
 @Injectable()
@@ -160,7 +163,7 @@ export class WorkflowRuntimeDataRepository {
   async updateRuntimeConfigById(
     id: string,
     newConfig: any,
-    arrayMergeOption: ArrayMergeOption = 'by_id',
+    arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.BY_ID,
     projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeData> {
     const stringifiedConfig = JSON.stringify(newConfig);
@@ -206,10 +209,19 @@ export class WorkflowRuntimeDataRepository {
     projectIds: TProjectIds,
     transaction: PrismaTransaction,
   ) {
-    const query =
-      entityType === 'endUser'
-        ? Prisma.sql`"status" != 'completed' AND "endUserId" = ${entityId}`
-        : Prisma.sql`"status" != 'completed' AND "businessId" = ${entityId}`;
+    let query: Prisma.Sql;
+
+    switch (entityType) {
+      case 'endUser':
+        query = Prisma.sql`"status" != 'completed' AND "endUserId" = ${entityId}`;
+        break;
+      case 'business':
+        query = Prisma.sql`"status" != 'completed' AND "businessId" = ${entityId}`;
+        break;
+      default:
+        entityType satisfies never;
+        throw new Error(`Unsupported entity type: ${entityType}`);
+    }
 
     await this.lockWorkflowHierarchyForUpdate(query, null, transaction);
 

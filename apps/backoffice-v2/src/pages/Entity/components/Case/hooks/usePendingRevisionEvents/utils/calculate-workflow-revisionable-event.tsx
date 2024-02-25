@@ -7,7 +7,7 @@ export const calculateWorkflowRevisionableEvent = (
 ) => {
   const isStateManualReview = workflow.state === CommonWorkflowStates.MANUAL_REVIEW;
 
-  if (isStateManualReview) return true;
+  if (isStateManualReview) return CommonWorkflowEvent.REVISION;
 
   if (documentStatus === CommonWorkflowEvent.REVISION) {
     return CommonWorkflowEvent.REVISION;

@@ -15,6 +15,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
 import { GetFlowConfigurationInputDto } from '@/collection-flow/dto/get-flow-configuration-input.dto';
 import { UpdateContextInputDto } from '@/collection-flow/dto/update-context-input.dto';
+import { BUILT_IN_EVENT, ARRAY_MERGE_OPTION } from '@ballerine/workflow-core';
 
 @Public()
 @UseTokenAuthGuard()
@@ -125,10 +126,10 @@ export class ColectionFlowController {
     return await this.workflowService.event(
       {
         id: tokenScope.workflowRuntimeDataId,
-        name: 'DEEP_MERGE_CONTEXT',
+        name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
         payload: {
           newContext: context,
-          arrayMergeOption: 'by_id',
+          arrayMergeOption: ARRAY_MERGE_OPTION.BY_ID,
         },
       },
       [tokenScope.projectId],

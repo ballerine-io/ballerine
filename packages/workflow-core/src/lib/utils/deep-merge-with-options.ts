@@ -48,20 +48,27 @@ const mergeArraysByIndex = (arr1: unknown[], arr2: unknown[]) => {
   return result;
 };
 
-type ArrayMergeOption = 'concat' | 'replace' | 'by_id' | 'by_index';
+export const ARRAY_MERGE_OPTION = {
+  BY_ID: 'by_id',
+  BY_INDEX: 'by_index',
+  CONCAT: 'concat',
+  REPLACE: 'replace',
+} as const;
+
+export type ArrayMergeOption = (typeof ARRAY_MERGE_OPTION)[keyof typeof ARRAY_MERGE_OPTION];
 
 export const deepMergeWithOptions = (
   val1: UnknownRecord | unknown[],
   val2: UnknownRecord | unknown[],
-  arrayMergeOption: ArrayMergeOption = 'concat',
+  arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.CONCAT,
 ) => {
   // Handle array inputs
   if (Array.isArray(val1) && Array.isArray(val2)) {
-    if (arrayMergeOption === 'replace') {
+    if (arrayMergeOption === ARRAY_MERGE_OPTION.REPLACE) {
       return val2;
     } else {
       switch (arrayMergeOption) {
-        case 'by_id': {
+        case ARRAY_MERGE_OPTION.BY_ID: {
           // Merge by_id could not be performed on primite or falsy (null, undefined) values.
           // Checking of some of value within array doesnt include id or falsy and forcing merge by_index strategy
           if (
@@ -72,9 +79,9 @@ export const deepMergeWithOptions = (
           }
           return mergeArraysById(val1 as ArrayOfObjectsWithId, val2 as ArrayOfObjectsWithId);
         }
-        case 'by_index':
+        case ARRAY_MERGE_OPTION.BY_INDEX:
           return mergeArraysByIndex(val1, val2);
-        case 'concat':
+        case ARRAY_MERGE_OPTION.CONCAT:
         default:
           return [...val1, ...val2];
       }
@@ -88,11 +95,11 @@ export const deepMergeWithOptions = (
       const val1Child = val1[key];
       const val2Child = val2[key];
       if (Array.isArray(val1Child) && Array.isArray(val2Child)) {
-        if (arrayMergeOption === 'replace') {
+        if (arrayMergeOption === ARRAY_MERGE_OPTION.REPLACE) {
           result[key] = val2[key];
         } else {
           switch (arrayMergeOption) {
-            case 'by_id': {
+            case ARRAY_MERGE_OPTION.BY_ID: {
               // Merging arrays of primitives using by_index strategy
               if (
                 val1Child.some((val: unknown) => !isObject(val) || !Boolean(val?.id)) ||
@@ -104,10 +111,10 @@ export const deepMergeWithOptions = (
               result[key] = mergeArraysById(val1Child || [], val2Child);
               break;
             }
-            case 'by_index':
+            case ARRAY_MERGE_OPTION.BY_INDEX:
               result[key] = mergeArraysByIndex(val1Child || [], val2Child);
               break;
-            case 'concat':
+            case ARRAY_MERGE_OPTION.CONCAT:
             default:
               result[key] = [...(val1Child || []), ...val2Child];
           }
