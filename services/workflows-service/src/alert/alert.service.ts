@@ -3,7 +3,7 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import * as errors from '@/errors';
 import { PrismaService } from '@/prisma/prisma.service';
 import { isFkConstraintError } from '@/prisma/prisma.util';
-import { TProjectId } from '@/types';
+import { ObjectValues, TProjectId } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { Alert, AlertDefinition, AlertState, AlertStatus } from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
@@ -122,7 +122,7 @@ export class AlertService {
     return true;
   }
 
-  private getStatusFromState(newState: AlertState): AlertStatus {
+  private getStatusFromState(newState: AlertState): ObjectValues<typeof AlertStatus> {
     const alertStateToStatusMap = {
       [AlertState.Triggered]: AlertStatus.New,
       [AlertState.UnderReview]: AlertStatus.Pending,
@@ -136,5 +136,7 @@ export class AlertService {
     if (!status) {
       throw new Error(`Invalid alert state: "${newState}"`);
     }
+
+    return status;
   }
 }
