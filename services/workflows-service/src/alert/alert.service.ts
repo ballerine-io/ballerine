@@ -6,7 +6,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { isFkConstraintError } from '@/prisma/prisma.util';
 import { TProjectId } from '@/types';
 import { Injectable } from '@nestjs/common';
-import { Alert, AlertDefinition, AlertState, AlertStatus } from '@prisma/client';
+import { Alert, AlertDefinition, AlertState, AlertStatus, Prisma } from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
@@ -14,11 +14,6 @@ import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.r
 import { InlineRule } from '@/data-analytics/types';
 
 // TODO: move to utils
-const isRejected = (input: PromiseSettledResult<unknown>): input is PromiseRejectedResult =>
-  input.status === 'rejected';
-
-const isFulfilled = <T>(input: PromiseSettledResult<T>): input is PromiseFulfilledResult<T> =>
-  input.status === 'fulfilled';
 
 @Injectable()
 export class AlertService {
@@ -133,22 +128,25 @@ export class AlertService {
   private async checkAlert(alertDefinition: AlertDefinition): Promise<boolean> {
     const inlineRule = alertDefinition.inlineRule as InlineRule;
 
-    const results = await this.dataAnalyticsService.runInlineRule(inlineRule);
+    const results = await this.dataAnalyticsService.runInlineRule(
+      alertDefinition.projectId,
+      inlineRule,
+    );
 
     if (!results || (Array.isArray(results) && results.length === 0)) {
       return false;
     }
 
-    const releavntAlerts = await this.getDeduplicatedAlerts(
-      alertDefinition.projectId,
-      alertDefinition,
-      results,
-    );
+    // const releavntAlerts = await this.getDeduplicatedAlerts(
+    //   alertDefinition.projectId,
+    //   alertDefinition,
+    //   results,
+    // );
 
-    const setteledAlerts = await Promise.allSettled<
+    const alertsSetteledResult = await Promise.allSettled<
       { alert: Alert; alertDefinition: AlertDefinition }[]
     >(
-      releavntAlerts.map(async (result: any) => {
+      results.map(async (result: any) => {
         return {
           alertDefinition,
           alert: await this.createAlert(alertDefinition, result),
@@ -156,24 +154,36 @@ export class AlertService {
       }),
     );
 
-    return setteledAlerts.filter(isFulfilled).length > 0;
+    const result = {
+      fulfilled: [],
+      rejected: [],
+    } as any;
+
+    alertsSetteledResult.forEach(resultItem => {
+      if (resultItem.status === 'fulfilled') {
+        result.fulfilled.push(resultItem.value);
+      } else if (resultItem.status === 'rejected') {
+        result.rejected.push(resultItem.reason);
+      }
+    });
+
+    return result;
   }
 
-  private createAlert(alertDef: AlertDefinition, data: any): Promise<Alert> {
+  private createAlert(
+    alertDef: AlertDefinition,
+    data: Pick<Prisma.AlertUncheckedCreateInput, 'businessId' | 'endUserId' | 'counterpartyId'>,
+  ): Promise<Alert> {
     return this.alertRepository.create({
       data: {
-        alertDefinitioniId: alertDef.id,
+        alertDefinitionId: alertDef.id,
         projectId: alertDef.projectId,
         severity: alertDef.defaultSeverity,
         dataTimestamp: new Date(),
         state: AlertState.Triggered,
         status: AlertStatus.New,
+        executionDetails: {},
         ...data,
-        // business?: BusinessCreateNestedOneWithoutAlertInput
-        // endUser?: EndUserCreateNestedOneWithoutAlertInput
-        // executionDetails: JsonNullValueInput | InputJsonValue
-        // assignedAt?: Date | string | null // TODO: manual assignee logic
-        // counterparty?: CounterpartyCreateNestedOneWithoutAlertsInput
       },
     });
   }

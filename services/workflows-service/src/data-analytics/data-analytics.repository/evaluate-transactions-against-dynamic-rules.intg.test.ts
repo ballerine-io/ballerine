@@ -5,9 +5,15 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
 import { ClsService } from 'nestjs-cls';
 import { PaymentMethod, TransactionDirection } from '@prisma/client';
+import { DataAnalyticsService } from '../data-analytics.service';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { DataAnalyticsRepository } from '.';
+
+const PROJECT_ID = 'project-id';
 
 describe('TransactionRulesEvaluationService', () => {
   let prismaService: PrismaService;
+  let dataAnalyticsService: DataAnalyticsService;
   const transactionIdsForCleanup: string[] = [];
 
   beforeAll(async () => {
@@ -16,11 +22,15 @@ describe('TransactionRulesEvaluationService', () => {
         { useClass: WinstonLogger, provide: 'LOGGER' },
         ClsService,
         AppLoggerService,
+        DataAnalyticsService,
+        DataAnalyticsRepository,
+        ProjectScopeService,
         PrismaService,
       ],
     }).compile();
 
     prismaService = module.get<PrismaService>(PrismaService);
+    dataAnalyticsService = module.get<DataAnalyticsService>(DataAnalyticsService);
 
     await prismaService.customer.create({
       data: {
@@ -32,7 +42,7 @@ describe('TransactionRulesEvaluationService', () => {
     });
     await prismaService.project.create({
       data: {
-        id: 'project-id',
+        id: PROJECT_ID,
         name: 'project-name',
         customer: { connect: { id: 'customer-id' } },
       },
@@ -41,14 +51,14 @@ describe('TransactionRulesEvaluationService', () => {
       data: {
         id: 'business-id-1',
         companyName: 'business-name-1',
-        projectId: 'project-id',
+        projectId: PROJECT_ID,
       },
     });
     await prismaService.business.create({
       data: {
         id: 'business-id-2',
         companyName: 'business-name-2',
-        projectId: 'project-id',
+        projectId: PROJECT_ID,
       },
     });
 
@@ -69,65 +79,65 @@ describe('TransactionRulesEvaluationService', () => {
       });
     }
 
-    await createCounterParty(prismaService, 'counterparty-1', 'project-id');
-    await createCounterParty(prismaService, 'counterparty-2', 'project-id');
-    await createCounterParty(prismaService, '9999999999999999', 'project-id');
-    await createCounterParty(prismaService, '999999******9999', 'project-id');
-    await createCounterParty(prismaService, 'counterparty-3', 'project-id');
-    await createCounterParty(prismaService, 'counterparty-4', 'project-id');
+    await createCounterParty(prismaService, 'counterparty-1', PROJECT_ID);
+    await createCounterParty(prismaService, 'counterparty-2', PROJECT_ID);
+    await createCounterParty(prismaService, '9999999999999999', PROJECT_ID);
+    await createCounterParty(prismaService, '999999******9999', PROJECT_ID);
+    await createCounterParty(prismaService, 'counterparty-3', PROJECT_ID);
+    await createCounterParty(prismaService, 'counterparty-4', PROJECT_ID);
 
     await prismaService.transactionRecord.createMany({
       data: [
         {
-          transactionDirection: 'Inbound',
+          transactionDirection: TransactionDirection.inbound,
           counterpartyOriginatorId: 'counterparty-1',
-          paymentMethod: PaymentMethod.CreditCard,
+          paymentMethod: PaymentMethod.credit_card,
           transactionDate: new Date(),
           transactionAmount: 500,
           transactionCorrelationId: 'correlation-id-1',
           transactionCurrency: 'USD',
           transactionBaseAmount: 500,
           transactionBaseCurrency: 'USD',
-          projectId: 'project-id',
+          projectId: PROJECT_ID,
           businessId: 'business-id-1',
         },
         {
-          transactionDirection: 'Inbound',
+          transactionDirection: TransactionDirection.inbound,
           counterpartyOriginatorId: 'counterparty-1',
-          paymentMethod: PaymentMethod.CreditCard,
+          paymentMethod: PaymentMethod.credit_card,
           transactionDate: new Date(),
           transactionAmount: 500,
           transactionCorrelationId: 'correlation-id-2',
           transactionCurrency: 'USD',
           transactionBaseAmount: 500,
           transactionBaseCurrency: 'USD',
-          projectId: 'project-id',
+          projectId: PROJECT_ID,
           businessId: 'business-id-1',
         },
         {
-          transactionDirection: 'Inbound',
+          transactionDirection: 'inbound',
           counterpartyOriginatorId: 'counterparty-1',
-          paymentMethod: PaymentMethod.CreditCard,
+          paymentMethod: PaymentMethod.credit_card,
           transactionDate: new Date(),
           transactionAmount: 1000,
           transactionCorrelationId: 'correlation-id-3',
           transactionCurrency: 'USD',
           transactionBaseAmount: 1000,
           transactionBaseCurrency: 'USD',
-          projectId: 'project-id',
+          projectId: PROJECT_ID,
           businessId: 'business-id-2',
         },
         {
-          transactionDirection: 'Inbound',
+          transactionDirection: 'inbound',
           counterpartyOriginatorId: 'counterparty-2',
-          paymentMethod: PaymentMethod.CreditCard,
+          paymentMethod: PaymentMethod.credit_card,
           transactionDate: new Date(),
           transactionAmount: 1500,
           transactionCorrelationId: 'correlation-id-4',
           transactionCurrency: 'USD',
           transactionBaseAmount: 1500,
           transactionBaseCurrency: 'USD',
-          projectId: 'project-id',
+          projectId: PROJECT_ID,
           businessId: 'business-id-2',
         },
       ],
@@ -143,12 +153,13 @@ describe('TransactionRulesEvaluationService', () => {
     });
   });
 
-  it('should correctly evaluate inbound credit card transactions excluding specified counterparties and exceeding amount threshold', async () => {
+  it.only('should correctly evaluate inbound credit card transactions excluding specified counterparties and exceeding amount threshold', async () => {
     const amountThreshold = 700;
-    const results = await evaluateTransactionsAgainstDynamicRules({
-      direction: 'Inbound',
+    const results = await dataAnalyticsService.evaluateTransactionsAgainstDynamicRules({
+      projectId: PROJECT_ID,
+      direction: 'inbound',
       excludedCounterpartyIds: ['excluded-counterparty-1'],
-      paymentMethods: [PaymentMethod.CreditCard],
+      paymentMethods: [PaymentMethod.credit_card],
       excludePaymentMethods: false,
       days: 7,
       amountThreshold: amountThreshold,
@@ -178,25 +189,26 @@ describe('TransactionRulesEvaluationService', () => {
     await prismaService.transactionRecord.createMany({
       data: transactionsSeeds.map(({ id, counterpartyOriginatorId }, index) => ({
         id,
-        transactionDirection: 'Inbound',
+        transactionDirection: 'inbound',
         counterpartyOriginatorId,
-        paymentMethod: PaymentMethod.CreditCard,
+        paymentMethod: PaymentMethod.credit_card,
         transactionDate: new Date(),
         transactionAmount: 1500,
         transactionCorrelationId: `correlation-id-temp-${index}`,
         transactionCurrency: 'USD',
         transactionBaseAmount: 1500,
         transactionBaseCurrency: 'USD',
-        projectId: 'project-id',
+        projectId: PROJECT_ID,
       })),
     });
     transactionIdsForCleanup.push(...transactionsSeeds.map(({ id }) => id));
 
     // Act
     const creditCardResults = await evaluateTransactionsAgainstDynamicRules({
-      direction: 'Inbound',
+      projectId: PROJECT_ID,
+      direction: 'inbound',
       excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
-      paymentMethods: [PaymentMethod.CreditCard],
+      paymentMethods: [PaymentMethod.credit_card],
       excludePaymentMethods: false,
       days: 7,
       amountThreshold: amountThreshold,
@@ -219,23 +231,23 @@ describe('TransactionRulesEvaluationService', () => {
       {
         id: 'transaction-id-1',
         counterpartyOriginatorId: '9999999999999999',
-        paymentMethod: PaymentMethod.CreditCard,
+        paymentMethod: PaymentMethod.credit_card,
       },
       {
         id: 'transaction-id-2',
         counterpartyOriginatorId: '999999******9999',
-        paymentMethod: PaymentMethod.BankTransfer,
+        paymentMethod: PaymentMethod.bank_transfer,
       },
       {
         id: 'transaction-id-3',
         counterpartyOriginatorId: 'counterparty-3',
-        paymentMethod: PaymentMethod.BankTransfer,
+        paymentMethod: PaymentMethod.bank_transfer,
         amount: 500,
       },
       {
         id: 'transaction-id-4',
         counterpartyOriginatorId: 'counterparty-4',
-        paymentMethod: PaymentMethod.BankTransfer,
+        paymentMethod: PaymentMethod.bank_transfer,
         amount: 500,
       },
     ];
@@ -243,16 +255,16 @@ describe('TransactionRulesEvaluationService', () => {
       data: transactionsSeeds.map(
         ({ id, counterpartyOriginatorId, paymentMethod, amount }, index) => ({
           id,
-          transactionDirection: TransactionDirection.Inbound,
+          transactionDirection: TransactionDirection.inbound,
           counterpartyOriginatorId,
-          paymentMethod: paymentMethod || PaymentMethod.DebitCard, // Assume these are non-credit card payment methods. Adjust as necessary.
+          paymentMethod: paymentMethod || PaymentMethod.debit_card, // Assume these are non-credit card payment methods. Adjust as necessary.
           transactionDate: new Date(),
           transactionAmount: amount || 1500,
           transactionCorrelationId: `correlation-id-temp-${index}`,
           transactionCurrency: 'USD',
           transactionBaseAmount: 1500,
           transactionBaseCurrency: 'USD',
-          projectId: 'project-id',
+          projectId: PROJECT_ID,
         }),
       ),
     });
@@ -260,9 +272,14 @@ describe('TransactionRulesEvaluationService', () => {
 
     // Act: Execute the function with specific parameters for non-credit card transactions
     const nonCreditCardResults = await evaluateTransactionsAgainstDynamicRules({
-      direction: 'Inbound',
+      projectId: PROJECT_ID,
+      direction: 'inbound',
       excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
-      paymentMethods: ['DebitCard', PaymentMethod.BankTransfer, 'PayPal'], // Assume these are non-credit card payment methods. Adjust as necessary.
+      paymentMethods: [
+        PaymentMethod.debit_card,
+        PaymentMethod.bank_transfer,
+        PaymentMethod.pay_pal,
+      ], // Assume these are non-credit card payment methods. Adjust as necessary.
       excludePaymentMethods: true, // Set to true if you're excluding these payment methods, otherwise set to false.
       days: 7,
       amountThreshold: amountThreshold,

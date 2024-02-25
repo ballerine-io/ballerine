@@ -105,8 +105,7 @@ WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
     )} > ${amountThreshold}`;
   }
 
-  console.log(query);
-  console.log('Executing query...', query.text);
+  console.log('Executing query...', query.sql);
   const results = await prisma.$queryRaw(query);
 
   console.log(results);

@@ -20,16 +20,17 @@ export class DataAnalyticsService {
     private dataAnalyticsRepository: DataAnalyticsRepository,
   ) {}
 
-  async runInlineRule({ rule, options }: InlineRule) {
-    const evaluateFn = this._evaluateNameToFunction[rule.name];
+  async runInlineRule(projectId: string, inlineRule: InlineRule) {
+    const evaluateFn = this._evaluateNameToFunction[inlineRule.name];
     if (!evaluateFn) {
-      throw new Error(`No evaluation function found for rule name: ${rule.name}`);
+      throw new Error(`No evaluation function found for rule name: ${inlineRule.name}`);
     }
 
-    return await evaluateFn(options);
+    return await evaluateFn(inlineRule.options);
   }
 
   async evaluateTransactionsAgainstDynamicRules({
+    projectId,
     amountThreshold,
     amountBetween,
     direction = 'inbound',
@@ -42,18 +43,24 @@ export class DataAnalyticsService {
     groupByCounterparty = false,
     havingAggregate = AggregateType.SUM,
   }: TransactionsAgainstDynamicRulesType) {
-    const conditions: Prisma.Sql[] = [];
+    const conditions: Prisma.Sql[] = [
+      Prisma.sql`"projectId" = ${projectId}`,
+      Prisma.sql`"transactionDirection"::text = ${direction}`,
+      Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${this.getIntervalTime(
+        timeUnit,
+        timeAmount,
+      )}'`,
+    ];
 
-    conditions.push(Prisma.sql`"transactionDirection"::text = ${direction}`);
     if (excludedCounterpartyIds.length) {
       conditions.push(
-        Prisma.sql`AND "counterpartyOriginatorId" NOT IN (${Prisma.join(excludedCounterpartyIds)})`,
+        Prisma.sql`"counterpartyOriginatorId" NOT IN (${Prisma.join(excludedCounterpartyIds)})`,
       );
     }
     if (paymentMethods.length) {
       const methodCondition = excludePaymentMethods ? `NOT IN` : `IN`;
       conditions.push(
-        Prisma.sql`AND "paymentMethod"::text ${Prisma.raw(methodCondition)} (${Prisma.join(
+        Prisma.sql`"paymentMethod"::text ${Prisma.raw(methodCondition)} (${Prisma.join(
           paymentMethods,
         )})`,
       );
@@ -61,37 +68,11 @@ export class DataAnalyticsService {
 
     if (amountBetween) {
       conditions.push(
-        Prisma.sql`AND "transactionAmount" BETWEEN ${amountBetween.min} AND ${amountBetween.max}`,
+        Prisma.sql`"transactionAmount" BETWEEN ${amountBetween.min} AND ${amountBetween.max}`,
       );
     }
 
-    let intervatTime;
-    switch (timeUnit) {
-      case 'minutes':
-        intervatTime = Prisma.sql`${timeAmount} minutes`;
-        break;
-      case 'hours':
-        intervatTime = Prisma.sql`${timeAmount} hours`;
-        break;
-      case 'days':
-        intervatTime = Prisma.sql`${timeAmount} days`;
-        break;
-      case 'weeks':
-        intervatTime = Prisma.sql`${timeAmount} weeks`;
-        break;
-      case 'months':
-        intervatTime = Prisma.sql`${timeAmount} months`;
-        break;
-      case 'years':
-        intervatTime = Prisma.sql`${timeAmount} years`;
-        break;
-      default:
-        intervatTime = Prisma.sql`${timeAmount} days`;
-    }
-
-    conditions.push(Prisma.sql`AND "transactionDate" >= CURRENT_DATE - INTERVAL '${intervatTime}'`);
-
-    const whereClause = Prisma.join(conditions, ' ');
+    const whereClause = Prisma.join(conditions, ' AND ');
     // build conditional select, businessId alone, counterpartyOriginatorId alone, or both
     let selectClause: Prisma.Sql;
     let groupByClause: Prisma.Sql;
@@ -135,5 +116,30 @@ WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
 
     console.log(results);
     return results;
+  }
+
+  private getIntervalTime(timeUnit: string, timeAmount: number) {
+    switch (timeUnit) {
+      case 'minutes':
+        return Prisma.sql`${timeAmount} minutes`;
+        break;
+      case 'hours':
+        return Prisma.sql`${timeAmount} hours`;
+        break;
+      case 'days':
+        return Prisma.sql`${timeAmount} days`;
+        break;
+      case 'weeks':
+        return Prisma.sql`${timeAmount} weeks`;
+        break;
+      case 'months':
+        return Prisma.sql`${timeAmount} months`;
+        break;
+      case 'years':
+        return Prisma.sql`${timeAmount} years`;
+        break;
+      default:
+        return Prisma.sql`${timeAmount} days`;
+    }
   }
 }
