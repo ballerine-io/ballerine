@@ -10,6 +10,7 @@ export type InlineRule = {
 export type TAggregations = keyof typeof AggregateType;
 
 export type TransactionsAgainstDynamicRulesType = {
+  projectId: string;
   havingAggregate?: TAggregations;
   amountBetween?: { min: number; max: number };
   timeAmount?: number;
