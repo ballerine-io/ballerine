@@ -122,10 +122,10 @@ export const columns = [
       const decision = info.getValue();
       const screamingSnakeDecision = toScreamingSnakeCase(decision ?? '');
       const decisionToTextColor = {
-        NOT_SUSPICIOUS: 'text-success',
+        CLEARED: 'text-success',
         REJECTED: 'text-destructive',
       } as const satisfies Record<
-        Extract<Uppercase<SnakeCase<TAlertState>>, 'NOT_SUSPICIOUS' | 'REJECTED'>,
+        Extract<Uppercase<SnakeCase<TAlertState>>, 'CLEARED' | 'REJECTED'>,
         ComponentProps<typeof TextWithNAFallback>['className']
       >;
 

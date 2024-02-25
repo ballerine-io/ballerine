@@ -50,33 +50,29 @@ export const AlertState = {
   TRIGGERED: 'Triggered',
   UNDER_REVIEW: 'UnderReview',
   ESCALATED: 'Escalated',
-  RESOLVED: 'Resolved',
-  ACKNOWLEDGED: 'Acknowledged',
-  DISMISSED: 'Dismissed',
   REJECTED: 'Rejected',
-  NOT_SUSPICIOUS: 'NotSuspicious',
+  DISMISSED: 'Dismissed',
+  CLEARED: 'Cleared',
 } as const;
 
 export const AlertStates = [
   AlertState.TRIGGERED,
   AlertState.UNDER_REVIEW,
   AlertState.ESCALATED,
-  AlertState.RESOLVED,
-  AlertState.ACKNOWLEDGED,
-  AlertState.DISMISSED,
   AlertState.REJECTED,
-  AlertState.NOT_SUSPICIOUS,
+  AlertState.DISMISSED,
+  AlertState.CLEARED,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof AlertState>>;
 
 export const alertStateToDecision = {
   REJECTED: 'Reject',
-  NOT_SUSPICIOUS: 'Not Suspicious',
+  CLEARED: 'Clear',
   REVERT_DECISION: 'Revert Decision',
 } as const satisfies Partial<Record<keyof typeof AlertState | (string & {}), string>>;
 
 export const alertDecisionToState = {
   REJECT: 'Rejected',
-  NOT_SUSPICIOUS: 'NotSuspicious',
+  CLEAR: 'Cleared',
   REVERT_DECISION: 'Triggered',
 } as const satisfies Partial<Record<keyof typeof AlertState | (string & {}), string>>;
 

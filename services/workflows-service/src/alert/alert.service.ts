@@ -3,7 +3,7 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import * as errors from '@/errors';
 import { PrismaService } from '@/prisma/prisma.service';
 import { isFkConstraintError } from '@/prisma/prisma.util';
-import { TProjectId } from '@/types';
+import { ObjectValues, TProjectId } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { Alert, AlertDefinition, AlertState, AlertStatus } from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
@@ -122,24 +122,21 @@ export class AlertService {
     return true;
   }
 
-  private getStatusFromState(newState: AlertState): AlertStatus {
-    switch (newState) {
-      case AlertState.Triggered:
-        return AlertStatus.New;
+  private getStatusFromState(newState: AlertState): ObjectValues<typeof AlertStatus> {
+    const alertStateToStatusMap = {
+      [AlertState.Triggered]: AlertStatus.New,
+      [AlertState.UnderReview]: AlertStatus.Pending,
+      [AlertState.Escalated]: AlertStatus.Pending,
+      [AlertState.Dismissed]: AlertStatus.Completed,
+      [AlertState.Rejected]: AlertStatus.Completed,
+      [AlertState.Cleared]: AlertStatus.Completed,
+    } as const;
+    const status = alertStateToStatusMap[newState];
 
-      case AlertState.UnderReview:
-      case AlertState.Escalated:
-        return AlertStatus.Pending;
-
-      case AlertState.Resolved:
-      case AlertState.Acknowledged:
-      case AlertState.Dismissed:
-      case AlertState.Rejected:
-      case AlertState.NotSuspicious:
-        return AlertStatus.Completed;
-
-      default:
-        throw new Error('Invalid state');
+    if (!status) {
+      throw new Error(`Invalid alert state: "${newState}"`);
     }
+
+    return status;
   }
 }

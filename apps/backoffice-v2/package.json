@@ -106,6 +106,7 @@
     "tailwind-merge": "^1.10.0",
     "tailwindcss-animate": "^1.0.5",
     "tesseract.js": "^4.0.1",
+    "ts-pattern": "^5.0.8",
     "vite-plugin-terminal": "^1.1.0",
     "zod": "^3.22.3"
   },

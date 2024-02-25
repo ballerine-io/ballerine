@@ -9,8 +9,8 @@ const getToastAction = (decision: TAlertState): TToastKeyWithSuccessAndError => 
     return 'reject_alerts' as const;
   }
 
-  if (decision === AlertState.NOT_SUSPICIOUS) {
-    return 'not_suspicious_alerts' as const;
+  if (decision === AlertState.CLEARED) {
+    return 'clear_alerts' as const;
   }
 
   if (decision === AlertState.TRIGGERED) {
