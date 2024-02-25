@@ -17,7 +17,7 @@ function update_frontend_build_variables() {
     for i in $env_files;
         do
             echo "Updating env variables of $i"
-            sed -i "s/localhost/${WORKFLOW_SERVICE_DOMAIN_NAME}/g" $i
+            sed -i "s/http:\/\/localhost:3000/${WORKFLOW_SERVICE_DOMAIN_NAME}/g" $i
         done
 
 }
