@@ -123,21 +123,18 @@ export class AlertService {
   }
 
   private getStatusFromState(newState: AlertState): AlertStatus {
-    switch (newState) {
-      case AlertState.Triggered:
-        return AlertStatus.New;
+    const alertStateToStatusMap = {
+      [AlertState.Triggered]: AlertStatus.New,
+      [AlertState.UnderReview]: AlertStatus.Pending,
+      [AlertState.Escalated]: AlertStatus.Pending,
+      [AlertState.Dismissed]: AlertStatus.Completed,
+      [AlertState.Rejected]: AlertStatus.Completed,
+      [AlertState.Cleared]: AlertStatus.Completed,
+    } as const;
+    const status = alertStateToStatusMap[newState];
 
-      case AlertState.UnderReview:
-      case AlertState.Escalated:
-        return AlertStatus.Pending;
-
-      case AlertState.Dismissed:
-      case AlertState.Rejected:
-      case AlertState.Cleared:
-        return AlertStatus.Completed;
-
-      default:
-        throw new Error('Invalid state');
+    if (!status) {
+      throw new Error(`Invalid alert state: "${newState}"`);
     }
   }
 }
