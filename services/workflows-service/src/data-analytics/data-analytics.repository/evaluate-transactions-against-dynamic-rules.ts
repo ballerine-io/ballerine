@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma, TransactionDirection } from '@prisma/client';
 import { Sql } from '@prisma/client/runtime';
 import { AggregateType } from '../consts';
 import type { InlineRule, TransactionsAgainstDynamicRulesType } from '../types';
@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export const evaluateTransactionsAgainstDynamicRules = async ({
   amountThreshold,
   amountBetween,
-  direction = 'Inbound',
+  direction = TransactionDirection.inbound,
   excludedCounterpartyIds = [],
   paymentMethods = [],
   excludePaymentMethods = false,

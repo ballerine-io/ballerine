@@ -32,7 +32,7 @@ export class DataAnalyticsService {
   async evaluateTransactionsAgainstDynamicRules({
     amountThreshold,
     amountBetween,
-    direction = 'Inbound',
+    direction = 'inbound',
     excludedCounterpartyIds = [],
     paymentMethods = [],
     excludePaymentMethods = false,

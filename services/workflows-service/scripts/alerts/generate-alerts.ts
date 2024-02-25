@@ -24,31 +24,22 @@ const tags = [
     faker.random.word(),
   ]),
 ];
-const generateRule = (ruleName: string, options: InlineRule, groupedBy: string[] = []) => {
-  return {
-    rule: {
-      name: ruleName,
-    },
-    options,
-    groupedBy,
-  };
-};
 
 const getRuleDefinitions = () => {
   // Rule ID: PAY_HCA_CC
-  // Description: High Cumulative Amount - Inbound - Customer (Credit Card)
+  // Description: High Cumulative Amount - nbound - Customer (Credit Card)
   // Condition: Sum of incoming transactions over a set period of time is greater than a limit of credit card.
   const _PAY_HCA_CC = {
-    ruleName: 'PAY_HCA_CC',
+    name: 'PAY_HCA_CC',
     groupedBy: ['businessId'],
     options: {
       groupByBusiness: true,
       havingAggregate: AggregateType.SUM,
 
-      direction: 'Inbound',
+      direction: 'inbound',
       excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
 
-      paymentMethods: [PaymentMethod.CreditCard],
+      paymentMethods: [PaymentMethod.credit_card],
       excludePaymentMethods: false,
 
       timeAmount: 7,
@@ -56,22 +47,22 @@ const getRuleDefinitions = () => {
 
       amountThreshold: 1000,
     } as TransactionsAgainstDynamicRulesType,
-  };
+  } as InlineRule;
 
   // Rule ID: PAY_HCA_APM
-  // Description: High Cumulative Amount - Inbound - Customer (APM)
+  // Description: High Cumulative Amount - inbound - Customer (APM)
   // Condition: Sum of incoming transactions over a set period of time is greater than a limit of APM.
   const _PAY_HCA_APM = {
-    ruleName: 'PAY_HCA_APM',
+    name: 'PAY_HCA_APM',
     groupedBy: ['businessId'],
     options: {
       groupByBusiness: true,
       havingAggregate: AggregateType.SUM,
 
-      direction: 'Inbound',
+      direction: 'inbound',
       excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
 
-      paymentMethods: [PaymentMethod.CreditCard],
+      paymentMethods: [PaymentMethod.credit_card],
       excludePaymentMethods: true,
 
       timeAmount: 7,
@@ -79,22 +70,22 @@ const getRuleDefinitions = () => {
 
       amountThreshold: 1000,
     } as TransactionsAgainstDynamicRulesType,
-  };
+  } as InlineRule;
 
   // Rule ID: STRUC_CC
-  // Description: Structuring - Inbound - Customer (Credit Card)
+  // Description: Structuring - inbound - Customer (Credit Card)
   // Condition: Significant number of low value incoming transactions just below a threshold of credit card.
   const _STRUC_CC = {
-    ruleName: 'STRUC_CC',
+    name: 'STRUC_CC',
     groupedBy: ['businessId'],
     options: {
       groupByBusiness: true,
       havingAggregate: AggregateType.COUNT,
 
-      direction: 'Inbound',
+      direction: 'inbound',
       excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
 
-      paymentMethods: [PaymentMethod.CreditCard],
+      paymentMethods: [PaymentMethod.credit_card],
       excludePaymentMethods: false,
 
       timeAmount: 7,
@@ -102,22 +93,22 @@ const getRuleDefinitions = () => {
 
       amountBetween: { min: 500, max: 1000 },
     } as TransactionsAgainstDynamicRulesType,
-  };
+  } as InlineRule;
 
   // Rule ID: STRUC_APM
-  // Description: Structuring - Inbound - Customer (APM)
+  // Description: Structuring - inbound - Customer (APM)
   // Condition: Significant number of low value incoming transactions just below a threshold of APM.
   const _STRUC_APM = {
-    ruleName: 'STRUC_APM',
+    name: 'STRUC_APM',
     groupedBy: ['businessId'],
     options: {
       groupByBusiness: true,
       havingAggregate: AggregateType.COUNT,
 
-      direction: 'Inbound',
+      direction: 'inbound',
       excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
 
-      paymentMethods: [PaymentMethod.CreditCard],
+      paymentMethods: [PaymentMethod.credit_card],
       excludePaymentMethods: false,
 
       timeAmount: 7,
@@ -125,14 +116,14 @@ const getRuleDefinitions = () => {
 
       amountBetween: { min: 500, max: 1000 },
     } as TransactionsAgainstDynamicRulesType,
-  };
+  } as InlineRule;
 
   const rules = [_PAY_HCA_CC, _PAY_HCA_APM, _STRUC_CC, _STRUC_APM];
 
   const mergedRules: Record<string, InlineRule> = {};
 
   rules.forEach(rule => {
-    mergedRules[rule.ruleName] = generateRule(rule.ruleName, rule.options, rule.groupedBy);
+    mergedRules[rule.name] = rule;
   });
 
   return mergedRules;
@@ -238,37 +229,38 @@ export const generateFakeAlertDefinition = async (
       max: rules.length - 1,
     });
 
+    return [];
     // Create Alert Definition
-    return await prisma.alertDefinition.create({
-      include: {
-        alert: true,
-      },
-      data: {
-        type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
-        name: faker.lorem.words(3),
-        enabled: faker.datatype.boolean(),
-        description: faker.lorem.sentence(),
-        rulesetId: ruleIdIdx.toString(),
-        defaultSeverity,
-        ruleId: rulesIds[ruleIdIdx],
-        createdBy: createdBy,
-        modifiedBy: createdBy,
-        dedupeStrategies: {
-          strategy: {},
-          cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
-        },
-        config: { config: {} },
-        inlineRule: rules[ruleIdIdx],
-        tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
-        additionalInfo: {},
-        projectId: project.id,
-        alert: {
-          createMany: {
-            data: alerts,
-            skipDuplicates: true,
-          },
-        },
-      },
-    });
+    // return await prisma.alertDefinition.create({
+    //   include: {
+    //     alert: true,
+    //   },
+    //   data: {
+    //     type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
+    //     name: faker.lorem.words(3),
+    //     enabled: faker.datatype.boolean(),
+    //     description: faker.lorem.sentence(),
+    //     rulesetId: ruleIdIdx.toString(),
+    //     defaultSeverity,
+    //     ruleId: rulesIds[ruleIdIdx],
+    //     createdBy: createdBy,
+    //     modifiedBy: createdBy,
+    //     dedupeStrategies: {
+    //       strategy: {},
+    //       cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
+    //     },
+    //     config: { config: {} },
+    //     inlineRule: rules[ruleIdIdx],
+    //     tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
+    //     additionalInfo: {},
+    //     projectId: project.id,
+    //     alert: {
+    //       createMany: {
+    //         data: alerts,
+    //         skipDuplicates: true,
+    //       },
+    //     },
+    //   },
+    // });
   });
 };
