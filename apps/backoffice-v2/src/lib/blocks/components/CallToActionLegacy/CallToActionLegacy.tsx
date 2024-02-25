@@ -184,7 +184,7 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
             {...motionButtonProps}
             animate={{
               ...motionButtonProps.animate,
-              opacity: disabled ? 0.5 : motionsProps.animate,
+              opacity: disabled ? 0.5 : motionButtonProps.animate.opacity,
             }}
             size="wide"
             variant="warning"
