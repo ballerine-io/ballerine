@@ -1,7 +1,7 @@
+import React, { useCallback } from 'react';
 import { AnyObject } from '@/common/types';
 import { ArrayFieldLayoutItem } from '@/components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayout';
 import { ctw } from '@/utils/ctw';
-import { useCallback } from 'react';
 
 interface ArrayFieldsLayoutItemProps {
   element: ArrayFieldLayoutItem;
@@ -22,9 +22,8 @@ export const ArrayFieldsLayoutItem = ({
 
   const createDeleteHandler = useCallback(() => {
     return (event: React.MouseEvent) => {
-      const deleterFn = element.onDropIndexClick(element.index);
-      deleterFn(event);
-      onDelete && onDelete(element.index);
+      element.onDropIndexClick(element.index)(event);
+      onDelete?.(element.index);
     };
   }, [element, onDelete]);
 
