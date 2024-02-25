@@ -36,6 +36,8 @@ import {
   isErrorWithMessage,
 } from '@ballerine/common';
 import {
+  ARRAY_MERGE_OPTION,
+  BUILT_IN_EVENT,
   ChildPluginCallbackOutput,
   ChildToParentCallback,
   ChildWorkflowCallback,
@@ -79,10 +81,7 @@ import {
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
-import {
-  ArrayMergeOption,
-  WorkflowRuntimeDataRepository,
-} from './workflow-runtime-data.repository';
+import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
 import mime from 'mime';
 import { env } from '@/env';
 import { ValidationError } from '@/errors';
@@ -344,10 +343,10 @@ export class WorkflowService {
       await this.event(
         {
           id: childPluginConfig.parentWorkflowRuntimeId,
-          name: 'DEEP_MERGE_CONTEXT',
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
           payload: {
             newContext,
-            arrayMergeOption: 'replace',
+            arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
           },
         },
         projectIds,
@@ -920,14 +919,17 @@ export class WorkflowService {
       let updatedWorkflow = await this.event(
         {
           id: workflowId,
-          name: 'DEEP_MERGE_CONTEXT',
+          name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
           payload: {
             newContext: this.updateDocumentInContext(
               runtimeData.context,
               documentSchema,
               documentsUpdateContextMethod,
             ),
-            arrayMergeOption: documentsUpdateContextMethod === 'director' ? 'by_index' : 'by_id',
+            arrayMergeOption:
+              documentsUpdateContextMethod === 'director'
+                ? ARRAY_MERGE_OPTION.BY_INDEX
+                : ARRAY_MERGE_OPTION.BY_ID,
           },
         },
         [projectId],
@@ -1184,7 +1186,7 @@ export class WorkflowService {
     return await this.workflowRuntimeDataRepository.updateRuntimeConfigById(
       workflowRuntimeId,
       { language },
-      'by_index',
+      ARRAY_MERGE_OPTION.BY_INDEX,
       projectIds,
     );
   }
@@ -1994,10 +1996,10 @@ export class WorkflowService {
         parentWorkflowRuntime = await this.event(
           {
             id: parentWorkflowRuntime.id,
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             payload: {
               newContext: parentContext,
-              arrayMergeOption: 'by_id',
+              arrayMergeOption: ARRAY_MERGE_OPTION.BY_ID,
             },
           },
           projectIds,

@@ -22,6 +22,7 @@ import { plainToClass } from 'class-transformer';
 import { randomUUID } from 'crypto';
 import keyBy from 'lodash/keyBy';
 import get from 'lodash/get';
+import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 
 @Injectable()
 export class CollectionFlowService {
@@ -217,7 +218,7 @@ export class CollectionFlowService {
     return await this.workflowService.event(
       {
         id: tokenScope.workflowRuntimeDataId,
-        name: 'UPDATE_CONTEXT',
+        name: BUILT_IN_EVENT.UPDATE_CONTEXT,
         payload: {
           context: payload.data.context,
         },

@@ -33,6 +33,7 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { faker } from '@faker-js/faker';
+import { BUILT_IN_EVENT, ARRAY_MERGE_OPTION } from '@ballerine/workflow-core';
 
 describe('WorkflowService', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -151,7 +152,7 @@ describe('WorkflowService', () => {
   });
 
   describe('event', () => {
-    describe('DEEP_MERGE_CONTEXT', () => {
+    describe(BUILT_IN_EVENT.DEEP_MERGE_CONTEXT, () => {
       it('should merge the existing and new context data when event is called', async () => {
         const createRes = await workflowRuntimeRepository.create({
           data: {
@@ -171,10 +172,10 @@ describe('WorkflowService', () => {
           ],
         };
 
-        const arrayMergeOption: ArrayMergeOption = 'by_id';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.BY_ID;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -212,10 +213,10 @@ describe('WorkflowService', () => {
         });
         const newContext = {};
 
-        const arrayMergeOption: ArrayMergeOption = 'by_id';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.BY_ID;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -249,10 +250,10 @@ describe('WorkflowService', () => {
         });
         const newContext = { key3: 'value3' };
 
-        const arrayMergeOption: ArrayMergeOption = 'by_id';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.BY_ID;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -287,10 +288,10 @@ describe('WorkflowService', () => {
         });
         const newContext = { key2: 'new-value2' };
 
-        const arrayMergeOption: ArrayMergeOption = 'by_id';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.BY_ID;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -328,10 +329,10 @@ describe('WorkflowService', () => {
         });
         const newContext = { key2: { nestedKey2: 'nestedValue2' } };
 
-        const arrayMergeOption: ArrayMergeOption = 'by_id';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.BY_ID;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -369,10 +370,10 @@ describe('WorkflowService', () => {
         });
         const newContext = { key2: { nestedKey1: 'new-nestedValue1' } };
 
-        const arrayMergeOption: ArrayMergeOption = 'by_id';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.BY_ID;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -406,10 +407,10 @@ describe('WorkflowService', () => {
         });
         const newContext = { key2: ['element2'] };
 
-        const arrayMergeOption: ArrayMergeOption = 'concat';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.CONCAT;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -447,10 +448,10 @@ describe('WorkflowService', () => {
         });
         const newContext = { key2: ['element3'] };
 
-        const arrayMergeOption: ArrayMergeOption = 'by_index';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.BY_INDEX;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -484,10 +485,10 @@ describe('WorkflowService', () => {
         });
         const newContext = { key2: 'value2' };
 
-        const arrayMergeOption: ArrayMergeOption = 'by_id';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.BY_ID;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -527,10 +528,10 @@ describe('WorkflowService', () => {
           key2: { nestedKey: ['value3'] },
         };
 
-        const arrayMergeOption: ArrayMergeOption = 'concat';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.CONCAT;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -569,10 +570,10 @@ describe('WorkflowService', () => {
           key2: { nestedKey: [{ id: '2', value: 'value3' }] },
         };
 
-        const arrayMergeOption: ArrayMergeOption = 'concat';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.CONCAT;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -616,10 +617,10 @@ describe('WorkflowService', () => {
           key2: { nestedKey: { anotherNestedKey: ['value3'] } },
         };
 
-        const arrayMergeOption: ArrayMergeOption = 'concat';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.CONCAT;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -657,10 +658,10 @@ describe('WorkflowService', () => {
           key1: { key2: { key3: { key4: { key5: 'value2', key6: 'value3' } } } },
         };
 
-        const arrayMergeOption: ArrayMergeOption = 'concat';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.CONCAT;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -699,10 +700,10 @@ describe('WorkflowService', () => {
           key2: { nestedKey1: 'new-value2', nestedKey3: 'value4' },
         };
 
-        const arrayMergeOption: ArrayMergeOption = 'concat';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.CONCAT;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -738,10 +739,10 @@ describe('WorkflowService', () => {
           key2: [{ id: '2', data: 'data2' }],
         };
 
-        const arrayMergeOption: ArrayMergeOption = 'by_id';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.BY_ID;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -777,10 +778,10 @@ describe('WorkflowService', () => {
         });
         const newContext = { key1: ['element3'], key2: ['element3', 'element4'] };
 
-        const arrayMergeOption: ArrayMergeOption = 'by_index';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.BY_INDEX;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -813,10 +814,10 @@ describe('WorkflowService', () => {
         });
         const newContext = { key1: ['element3'], key2: ['element3', 'element4'] };
 
-        const arrayMergeOption: ArrayMergeOption = 'concat';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.CONCAT;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -874,10 +875,10 @@ describe('WorkflowService', () => {
           },
         };
 
-        const arrayMergeOption = 'concat';
+        const arrayMergeOption = ARRAY_MERGE_OPTION.CONCAT;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -942,10 +943,10 @@ describe('WorkflowService', () => {
           ],
         };
 
-        const arrayMergeOption = 'by_id';
+        const arrayMergeOption = ARRAY_MERGE_OPTION.BY_ID;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -1028,10 +1029,10 @@ describe('WorkflowService', () => {
           ],
         };
 
-        const arrayMergeOption: ArrayMergeOption = 'concat';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.CONCAT;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,
@@ -1130,10 +1131,10 @@ describe('WorkflowService', () => {
           ],
         };
 
-        const arrayMergeOption: ArrayMergeOption = 'replace';
+        const arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.REPLACE;
         await workflowRuntimeService.event(
           {
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             id: createRes.id,
             payload: {
               newContext,

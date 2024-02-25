@@ -39,7 +39,7 @@ import {
   ISerializableCommonPluginParams,
   IterativePluginParams,
 } from './plugins/common-plugin/types';
-import { TContext } from './utils';
+import { ArrayMergeOption, TContext } from './utils';
 import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
 import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
 import { search } from 'jmespath';
@@ -51,6 +51,7 @@ import {
   TransformerPluginParams,
 } from './plugins/common-plugin/transformer-plugin';
 import { deepMergeWithOptions } from './utils';
+import { BUILT_IN_EVENT } from './index';
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
@@ -457,7 +458,7 @@ export class WorkflowRunner {
           payload,
         }: {
           payload: {
-            arrayMergeOption: 'replace' | 'by_id' | 'by_index' | 'concat';
+            arrayMergeOption: ArrayMergeOption;
             newContext: Record<PropertyKey, unknown>;
           };
         },
@@ -468,10 +469,10 @@ export class WorkflowRunner {
       {
         predictableActionArguments: true,
         on: {
-          UPDATE_CONTEXT: {
+          [BUILT_IN_EVENT.UPDATE_CONTEXT]: {
             actions: updateContext,
           },
-          DEEP_MERGE_CONTEXT: {
+          [BUILT_IN_EVENT.DEEP_MERGE_CONTEXT]: {
             actions: deepMergeContext,
           },
         },

@@ -16,6 +16,8 @@ export type {
   ChildToParentCallback,
   SerializableValidatableTransformer,
   THelperFormatingLogic,
+  BuiltInEvent,
+  ArrayMergeOption,
 } from './lib';
 export {
   createWorkflow,
@@ -26,4 +28,6 @@ export {
   JsonSchemaValidator,
   HelpersTransformer,
   validateDefinitionLogic,
+  BUILT_IN_EVENT,
+  ARRAY_MERGE_OPTION,
 } from './lib';

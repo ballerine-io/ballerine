@@ -34,6 +34,7 @@ import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definit
 import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
 import { env } from '@/env';
 import { PrismaService } from '@/prisma/prisma.service';
+import { BUILT_IN_EVENT, ARRAY_MERGE_OPTION } from '@ballerine/workflow-core';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -315,10 +316,10 @@ export class WorkflowControllerExternal {
         await this.service.event(
           {
             id: params.id,
-            name: 'DEEP_MERGE_CONTEXT',
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
             payload: {
               newContext: context,
-              arrayMergeOption: 'replace',
+              arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
             },
           },
           [workflowRuntime.projectId],
