@@ -110,7 +110,7 @@ export const generateTransactions = async (
         cardExpiryMonth: faker.date.future().getMonth().toString(),
         cardExpiryYear: faker.date.future().getFullYear().toString(),
         cardHolderName: faker.name.fullName(),
-        cardBIN: faker.finance.creditCardNumber().substring(0, 6),
+        cardBin: Number.parseInt(faker.finance.creditCardNumber().slice(0, 6), 10),
         cardTokenized: faker.random.alphaNumeric(16),
         tags: JSON.stringify(faker.random.words(5).split(' ')),
         reviewStatus: faker.helpers.arrayElement(Object.values(ReviewStatus)),

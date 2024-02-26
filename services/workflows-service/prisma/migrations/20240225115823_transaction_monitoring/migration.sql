@@ -1,41 +1,41 @@
 -- CreateEnum
-CREATE TYPE "TransactionRecordType" AS ENUM ('Deposit', 'Withdrawal', 'Transfer', 'Payment', 'Refund', 'Chargeback');
+CREATE TYPE "TransactionRecordType" AS ENUM ('deposit', 'withdrawal', 'transfer', 'payment', 'refund', 'chargeback');
 
 -- CreateEnum
-CREATE TYPE "ReviewStatus" AS ENUM ('Pending', 'Reviewed', 'Flagged', 'Cleared', 'Rejected');
+CREATE TYPE "ReviewStatus" AS ENUM ('pending', 'reviewed', 'flagged', 'cleared', 'rejected');
 
 -- CreateEnum
-CREATE TYPE "VerificationStatus" AS ENUM ('Unverified', 'Verified', 'Pending');
+CREATE TYPE "VerificationStatus" AS ENUM ('unverified', 'verified', 'pending');
 
 -- CreateEnum
-CREATE TYPE "TransactionRecordStatus" AS ENUM ('New', 'Pending', 'Active', 'Completed', 'Rejected', 'Cancelled', 'Failed');
+CREATE TYPE "TransactionRecordStatus" AS ENUM ('new', 'pending', 'active', 'completed', 'rejected', 'cancelled', 'failed');
 
 -- CreateEnum
-CREATE TYPE "PaymentMethod" AS ENUM ('CreditCard', 'DebitCard', 'BankTransfer', 'PayPal', 'ApplePay', 'GooglePay', 'APN');
+CREATE TYPE "PaymentMethod" AS ENUM ('credit_card', 'debit_card', 'bank_transfer', 'pay_pal', 'apple_pay', 'google_pay', 'apn');
 
 -- CreateEnum
-CREATE TYPE "PaymentType" AS ENUM ('Instant', 'Scheduled', 'Recurring', 'Refund');
+CREATE TYPE "PaymentType" AS ENUM ('instant', 'scheduled', 'recurring', 'refund');
 
 -- CreateEnum
-CREATE TYPE "PaymentChannel" AS ENUM ('Online', 'MobileApp', 'InStore', 'Telephone', 'MailOrder');
+CREATE TYPE "PaymentChannel" AS ENUM ('online', 'mobile_app', 'in_store', 'telephone', 'mail_order');
 
 -- CreateEnum
-CREATE TYPE "PaymentIssuer" AS ENUM ('Chase', 'BankOfAmerica', 'Citibank', 'AmericanExpress');
+CREATE TYPE "PaymentIssuer" AS ENUM ('chase', 'bank_of_america', 'citibank', 'american_express');
 
 -- CreateEnum
-CREATE TYPE "PaymentGateway" AS ENUM ('Stripe', 'PayPal', 'Square', 'Adyen');
+CREATE TYPE "PaymentGateway" AS ENUM ('stripe', 'pay_pal', 'square', 'adyen');
 
 -- CreateEnum
-CREATE TYPE "PaymentAcquirer" AS ENUM ('WellsFargo', 'FirstData', 'Elavon', 'WorldPay');
+CREATE TYPE "PaymentAcquirer" AS ENUM ('wells_fargo', 'first_data', 'elavon', 'world_pay');
 
 -- CreateEnum
-CREATE TYPE "PaymentProcessor" AS ENUM ('Visa', 'MasterCard', 'Discover', 'AmericanExpress');
+CREATE TYPE "PaymentProcessor" AS ENUM ('visa', 'master_card', 'discover', 'american_express');
 
 -- CreateEnum
-CREATE TYPE "PaymentBrandName" AS ENUM ('VISA', 'MASTERCARD', 'DCI', 'SCB_PayNow', 'OCBC_PayNow', 'Atome', 'Dash', 'GrabPay', 'AlipayHost', 'WechatHost');
+CREATE TYPE "PaymentBrandName" AS ENUM ('visa', 'mastercard', 'dci', 'scb_pay_now', 'ocbc_pay_now', 'atome', 'dash', 'grab_pay', 'alipay_host', 'wechat_host');
 
 -- CreateEnum
-CREATE TYPE "TransactionDirection" AS ENUM ('Inbound', 'Outbound');
+CREATE TYPE "TransactionDirection" AS ENUM ('inbound', 'outbound');
 
 -- CreateEnum
 CREATE TYPE "AlertSeverity" AS ENUM ('100', '200', '300', '400');
@@ -79,7 +79,7 @@ CREATE TABLE "TransactionRecord" (
     "transactionDescription" TEXT,
     "transactionCategory" TEXT,
     "transactionType" "TransactionRecordType",
-    "transactionStatus" "TransactionRecordStatus" DEFAULT 'Completed',
+    "transactionStatus" "TransactionRecordStatus" DEFAULT 'completed',
     "transactionStatusReason" TEXT,
     "transactionDirection" "TransactionDirection",
     "transactionReference" TEXT,
@@ -101,6 +101,7 @@ CREATE TABLE "TransactionRecord" (
     "completed3ds" BOOLEAN,
     "cardType" TEXT,
     "cardIssuer" TEXT,
+    "cardBin" INTEGER,
     "cardBrand" TEXT,
     "cardExpiryMonth" TEXT,
     "cardExpiryYear" TEXT,
@@ -117,6 +118,7 @@ CREATE TABLE "TransactionRecord" (
     "productName" TEXT,
     "productDescription" TEXT,
     "productPrice" DOUBLE PRECISION,
+    "productPriceCurrency" TEXT,
     "productId" TEXT,
     "productSku" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -138,8 +140,8 @@ CREATE TABLE "AlertDefinition" (
     "enabled" BOOLEAN NOT NULL DEFAULT true,
     "description" TEXT,
     "projectId" TEXT NOT NULL,
-    "rulesetId" INTEGER NOT NULL,
-    "ruleId" INTEGER NOT NULL,
+    "rulesetId" TEXT,
+    "ruleId" TEXT,
     "inlineRule" JSONB NOT NULL,
     "createdBy" TEXT NOT NULL DEFAULT 'SYSTEM',
     "dedupeStrategies" JSONB NOT NULL,

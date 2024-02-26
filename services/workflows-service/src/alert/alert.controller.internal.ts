@@ -22,19 +22,10 @@ export class AlertControllerInternal {
     // type: [{}],
   })
   @swagger.ApiForbiddenResponse({ description: 'Forbidden' })
-  async checkAlerts(
-    @common.Body() body: any,
-    @common.Res() response: Response,
-    @CurrentProject() currentProjectId: types.TProjectId,
-  ): Promise<Response> {
+  async checkAlerts(@common.Res() response: Response): Promise<Response> {
     try {
-      // Log the request
-      this.logger.log(`Checking alerts for project: ${currentProjectId}`, {
-        component: 'AlertControllerExternal',
-      });
-
       // Call the service to check the alerts
-      await this.service.checkAllAlerts(); // Modify this as needed to handle `body` or `currentProjectId`
+      await this.service.checkAllAlerts();
 
       // Respond with success message
       return response
@@ -44,9 +35,8 @@ export class AlertControllerInternal {
       this.logger.error(`Error checking alerts: ${error instanceof Error ? error.message : ''}`, {
         error,
       });
-      return response
-        .status(common.HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: 'Error checking alerts' });
+
+      throw new common.InternalServerErrorException();
     }
   }
 }
