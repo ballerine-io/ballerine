@@ -1,7 +1,7 @@
 import { set } from 'lodash';
 import { Injectable } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { AnyRecord } from '@ballerine/common';
+import { AnyRecord, isObject, ProcessStatus } from '@ballerine/common';
 import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
@@ -11,6 +11,7 @@ import { CustomerService } from '@/customer/customer.service';
 import type { TProjectId, TProjectIds } from '@/types';
 import { TDocumentsWithoutPageType } from '@/common/types';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
+import get from 'lodash/get';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -40,6 +41,21 @@ export class HookCallbackHandlerService {
         workflowRuntime,
         resultDestinationPath,
         currentProjectId,
+      );
+    }
+
+    const removeLastKeyFromPath = (path: string) => {
+      return path?.split('.')?.slice(0, -1)?.join('.');
+    };
+
+    const resultDestinationPathWithoutLastKey = removeLastKeyFromPath(resultDestinationPath);
+    const result = get(workflowRuntime.context, resultDestinationPathWithoutLastKey);
+
+    if (isObject(result) && result.status) {
+      set(
+        workflowRuntime.context,
+        `${resultDestinationPathWithoutLastKey}.status`,
+        ProcessStatus.SUCCESS,
       );
     }
 
