@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
 import { EndUserModel } from './end-user.model';
 import type { TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
@@ -45,6 +45,18 @@ export class EndUserRepository {
         },
         projectIds,
       ),
+    );
+  }
+
+  async findByIdUnscoped<T extends Omit<Prisma.EndUserFindUniqueArgs, 'where'>>(
+    id: string,
+    args: Prisma.SelectSubset<T, Omit<Prisma.EndUserFindUniqueArgs, 'where'>>,
+  ) {
+    return await this.prisma.endUser.findFirstOrThrow(
+      this.scopeService.scopeFindFirst({
+        where: { id },
+        ...args,
+      }),
     );
   }
 
