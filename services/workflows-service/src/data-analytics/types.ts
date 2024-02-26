@@ -2,7 +2,8 @@ import { TransactionDirection, PaymentMethod } from '@prisma/client';
 import { AggregateType } from './consts';
 
 export type InlineRule = {
-  name: string;
+  id: string;
+  fnName: string;
   options: TransactionsAgainstDynamicRulesType;
   groupedBy: Array<string>;
 };
