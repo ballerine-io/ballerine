@@ -1,20 +1,19 @@
+import { getRuleDefinitions } from './../../scripts/alerts/generate-alerts';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@/prisma/prisma.service';
-import { evaluateTransactionsAgainstDynamicRules } from './data-analytics.repository/evaluate-transactions-against-dynamic-rules';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
 import { ClsService } from 'nestjs-cls';
 import { PaymentMethod, TransactionDirection } from '@prisma/client';
 import { DataAnalyticsService } from './data-analytics.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { DataAnalyticsRepository } from './data-analytics.repository';
+import { InlineRule } from './types';
 
 const PROJECT_ID = 'project-id';
 
 describe('TransactionRulesEvaluationService', () => {
   let prismaService: PrismaService;
   let dataAnalyticsService: DataAnalyticsService;
-  const transactionIdsForCleanup: string[] = [];
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -23,7 +22,6 @@ describe('TransactionRulesEvaluationService', () => {
         ClsService,
         AppLoggerService,
         DataAnalyticsService,
-        DataAnalyticsRepository,
         ProjectScopeService,
         PrismaService,
       ],
@@ -96,7 +94,7 @@ describe('TransactionRulesEvaluationService', () => {
           transactionAmount: 500,
           transactionCorrelationId: 'correlation-id-1',
           transactionCurrency: 'USD',
-          transactionBaseAmount: 500,
+          transactionBaseAmount: 505,
           transactionBaseCurrency: 'USD',
           projectId: PROJECT_ID,
           businessId: 'business-id-1',
@@ -106,7 +104,7 @@ describe('TransactionRulesEvaluationService', () => {
           counterpartyOriginatorId: 'counterparty-1',
           paymentMethod: PaymentMethod.credit_card,
           transactionDate: new Date(),
-          transactionAmount: 500,
+          transactionAmount: 505,
           transactionCorrelationId: 'correlation-id-2',
           transactionCurrency: 'USD',
           transactionBaseAmount: 500,
@@ -119,10 +117,10 @@ describe('TransactionRulesEvaluationService', () => {
           counterpartyOriginatorId: 'counterparty-1',
           paymentMethod: PaymentMethod.credit_card,
           transactionDate: new Date(),
-          transactionAmount: 1000,
+          transactionAmount: 1005,
           transactionCorrelationId: 'correlation-id-3',
           transactionCurrency: 'USD',
-          transactionBaseAmount: 1000,
+          transactionBaseAmount: 1005,
           transactionBaseCurrency: 'USD',
           projectId: PROJECT_ID,
           businessId: 'business-id-2',
@@ -144,16 +142,7 @@ describe('TransactionRulesEvaluationService', () => {
     });
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  beforeEach(async () => {});
-
-  afterEach(async () => {
-    await prismaService.transactionRecord.deleteMany({
-      where: { id: { in: transactionIdsForCleanup } },
-    });
-  });
-
-  it.only('should correctly evaluate inbound credit card transactions excluding specified counterparties and exceeding amount threshold', async () => {
+  it('should correctly evaluate inbound credit card transactions excluding specified counterparties and exceeding amount threshold', async () => {
     const amountThreshold = 700;
     const results = await dataAnalyticsService.evaluateTransactionsAgainstDynamicRules({
       projectId: PROJECT_ID,
@@ -179,119 +168,251 @@ describe('TransactionRulesEvaluationService', () => {
     );
   });
 
-  it('should correctly evaluate inbound credit card transactions excluding specific counterparties and exceeding amount threshold', async () => {
-    // Assert
-    const amountThreshold = 1000;
-    const transactionsSeeds = [
-      { id: 'transaction-id-1', counterpartyOriginatorId: '9999999999999999' },
-      { id: 'transaction-id-2', counterpartyOriginatorId: '999999******9999' },
-    ];
-    await prismaService.transactionRecord.createMany({
-      data: transactionsSeeds.map(({ id, counterpartyOriginatorId }, index) => ({
-        id,
-        transactionDirection: 'inbound',
-        counterpartyOriginatorId,
-        paymentMethod: PaymentMethod.credit_card,
-        transactionDate: new Date(),
-        transactionAmount: 1500,
-        transactionCorrelationId: `correlation-id-temp-${index}`,
-        transactionCurrency: 'USD',
-        transactionBaseAmount: 1500,
-        transactionBaseCurrency: 'USD',
-        projectId: PROJECT_ID,
-      })),
-    });
-    transactionIdsForCleanup.push(...transactionsSeeds.map(({ id }) => id));
+  describe('evaluate inbound credit card transactions', () => {
+    const transactionIdsForCleanup: string[] = [];
 
-    // Act
-    const creditCardResults = await evaluateTransactionsAgainstDynamicRules({
-      projectId: PROJECT_ID,
-      direction: 'inbound',
-      excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
-      paymentMethods: [PaymentMethod.credit_card],
-      excludePaymentMethods: false,
-      days: 7,
-      amountThreshold: amountThreshold,
-    });
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    beforeEach(async () => {
+      const transactionsSeeds = [
+        { id: 'transaction-id-1', counterpartyOriginatorId: '9999999999999999' },
+        { id: 'transaction-id-2', counterpartyOriginatorId: '999999******9999' },
+      ];
 
-    // Assert
-    expect(creditCardResults as any[]).toBeDefined();
-    expect((creditCardResults as any[]).length).toBeGreaterThan(0);
-    (creditCardResults as any[]).forEach(hit => {
-      expect(hit.totalAmount).toBeGreaterThan(amountThreshold);
-      expect(hit.counterpartyOriginatorId).not.toBe('9999999999999999');
-      expect(hit.counterpartyOriginatorId).not.toBe('999999******9999');
-    });
-  });
-
-  it('should correctly evaluate inbound non-credit card transactions excluding specific counterparties and exceeding amount threshold', async () => {
-    const amountThreshold = 1000; // Example threshold
-    // Assert
-    const transactionsSeeds = [
-      {
-        id: 'transaction-id-1',
-        counterpartyOriginatorId: '9999999999999999',
-        paymentMethod: PaymentMethod.credit_card,
-      },
-      {
-        id: 'transaction-id-2',
-        counterpartyOriginatorId: '999999******9999',
-        paymentMethod: PaymentMethod.bank_transfer,
-      },
-      {
-        id: 'transaction-id-3',
-        counterpartyOriginatorId: 'counterparty-3',
-        paymentMethod: PaymentMethod.bank_transfer,
-        amount: 500,
-      },
-      {
-        id: 'transaction-id-4',
-        counterpartyOriginatorId: 'counterparty-4',
-        paymentMethod: PaymentMethod.bank_transfer,
-        amount: 500,
-      },
-    ];
-    await prismaService.transactionRecord.createMany({
-      data: transactionsSeeds.map(
-        ({ id, counterpartyOriginatorId, paymentMethod, amount }, index) => ({
+      await prismaService.transactionRecord.createMany({
+        data: transactionsSeeds.map(({ id, counterpartyOriginatorId }, index) => ({
           id,
-          transactionDirection: TransactionDirection.inbound,
+          transactionDirection: 'inbound',
           counterpartyOriginatorId,
-          paymentMethod: paymentMethod || PaymentMethod.debit_card, // Assume these are non-credit card payment methods. Adjust as necessary.
+          paymentMethod: PaymentMethod.credit_card,
           transactionDate: new Date(),
-          transactionAmount: amount || 1500,
+          transactionAmount: 1500,
           transactionCorrelationId: `correlation-id-temp-${index}`,
           transactionCurrency: 'USD',
           transactionBaseAmount: 1500,
           transactionBaseCurrency: 'USD',
           projectId: PROJECT_ID,
-        }),
-      ),
-    });
-    transactionIdsForCleanup.push(...transactionsSeeds.map(({ id }) => id));
+        })),
+      });
 
-    // Act: Execute the function with specific parameters for non-credit card transactions
-    const nonCreditCardResults = await evaluateTransactionsAgainstDynamicRules({
-      projectId: PROJECT_ID,
-      direction: 'inbound',
-      excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
-      paymentMethods: [
-        PaymentMethod.debit_card,
-        PaymentMethod.bank_transfer,
-        PaymentMethod.pay_pal,
-      ], // Assume these are non-credit card payment methods. Adjust as necessary.
-      excludePaymentMethods: true, // Set to true if you're excluding these payment methods, otherwise set to false.
-      days: 7,
-      amountThreshold: amountThreshold,
+      transactionIdsForCleanup.push(...transactionsSeeds.map(({ id }) => id));
     });
 
-    // Assert: Verify the results for non-credit card transactions
-    expect(nonCreditCardResults as any[]).toBeDefined();
-    expect((nonCreditCardResults as any[]).length).toBeGreaterThan(0);
-    (nonCreditCardResults as any[]).forEach(hit => {
-      expect(hit.totalAmount).toBeGreaterThan(amountThreshold);
-      expect(hit.counterpartyOriginatorId).not.toBe('9999999999999999');
-      expect(hit.counterpartyOriginatorId).not.toBe('999999******9999');
+    afterAll(async () => {
+      await prismaService.transactionRecord.deleteMany({
+        where: { id: { in: transactionIdsForCleanup } },
+      });
+    });
+
+    it('should correctly evaluate inbound credit card transactions excluding specific counterparties and exceeding amount threshold', async () => {
+      // Assert
+      const amountThreshold = 1000;
+
+      // Act
+      const creditCardResults = await dataAnalyticsService.evaluateTransactionsAgainstDynamicRules({
+        projectId: PROJECT_ID,
+        direction: 'inbound',
+        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: false,
+        days: 7,
+        amountThreshold: amountThreshold,
+      });
+
+      // Assert
+      expect(creditCardResults as any[]).toBeDefined();
+      expect((creditCardResults as any[]).length).toBeGreaterThan(0);
+      (creditCardResults as any[]).forEach(hit => {
+        expect(hit.totalAmount).toBeGreaterThan(amountThreshold);
+        expect(hit.counterpartyOriginatorId).not.toBe('9999999999999999');
+        expect(hit.counterpartyOriginatorId).not.toBe('999999******9999');
+      });
+    });
+  });
+
+  describe('evaluate inbound non-credit card transactions', () => {
+    const transactionIdsForCleanup: string[] = [];
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    beforeEach(async () => {
+      const transactionsSeeds = [
+        {
+          id: 'transaction-id-1',
+          counterpartyOriginatorId: '9999999999999999',
+          paymentMethod: PaymentMethod.credit_card,
+        },
+        {
+          id: 'transaction-id-2',
+          counterpartyOriginatorId: '999999******9999',
+          paymentMethod: PaymentMethod.bank_transfer,
+        },
+        {
+          id: 'transaction-id-3',
+          counterpartyOriginatorId: 'counterparty-3',
+          paymentMethod: PaymentMethod.bank_transfer,
+          amount: 500,
+        },
+        {
+          id: 'transaction-id-4',
+          counterpartyOriginatorId: 'counterparty-4',
+          paymentMethod: PaymentMethod.bank_transfer,
+          amount: 500,
+        },
+      ];
+      await prismaService.transactionRecord.createMany({
+        data: transactionsSeeds.map(
+          ({ id, counterpartyOriginatorId, paymentMethod, amount }, index) => ({
+            id,
+            transactionDirection: TransactionDirection.inbound,
+            counterpartyOriginatorId,
+            paymentMethod: paymentMethod || PaymentMethod.debit_card, // Assume these are non-credit card payment methods. Adjust as necessary.
+            transactionDate: new Date(),
+            transactionAmount: amount || 1500,
+            transactionCorrelationId: `correlation-id-temp-${index}`,
+            transactionCurrency: 'USD',
+            transactionBaseAmount: 1500,
+            transactionBaseCurrency: 'USD',
+            projectId: PROJECT_ID,
+          }),
+        ),
+      });
+      transactionIdsForCleanup.push(...transactionsSeeds.map(({ id }) => id));
+    });
+
+    afterAll(async () => {
+      await prismaService.transactionRecord.deleteMany({
+        where: { id: { in: transactionIdsForCleanup } },
+      });
+    });
+
+    it('should correctly evaluate inbound non-credit card transactions excluding specific counterparties and exceeding amount threshold', async () => {
+      // Assert
+      const amountThreshold = 1000;
+
+      // Act: Execute the function with specific parameters for non-credit card transactions
+      const nonCreditCardResults =
+        await dataAnalyticsService.evaluateTransactionsAgainstDynamicRules({
+          projectId: PROJECT_ID,
+          direction: 'inbound',
+          excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+          paymentMethods: [
+            PaymentMethod.debit_card,
+            PaymentMethod.bank_transfer,
+            PaymentMethod.pay_pal,
+          ], // Assume these are non-credit card payment methods. Adjust as necessary.
+          excludePaymentMethods: true, // Set to true if you're excluding these payment methods, otherwise set to false.
+          days: 7,
+          amountThreshold: amountThreshold,
+        });
+
+      // Assert: Verify the results for non-credit card transactions
+      expect(nonCreditCardResults as any[]).toBeDefined();
+      expect((nonCreditCardResults as any[]).length).toBeGreaterThan(0);
+      (nonCreditCardResults as any[]).forEach(hit => {
+        expect(hit.totalAmount).toBeGreaterThan(amountThreshold);
+        expect(hit.counterpartyOriginatorId).not.toBe('9999999999999999');
+        expect(hit.counterpartyOriginatorId).not.toBe('999999******9999');
+      });
+    });
+  });
+
+  describe('Rule ID: PAY_HCA_CC', () => {
+    const transactionIdsForCleanup: string[] = [];
+
+    afterAll(async () => {
+      await prismaService.transactionRecord.deleteMany({
+        where: { id: { in: transactionIdsForCleanup } },
+      });
+    });
+
+    describe('', () => {
+      const transactionIdsForCleanup: string[] = [];
+
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      beforeEach(async () => {
+        const transactionsSeeds = [
+          {
+            id: 'transaction-id-1',
+            counterpartyOriginatorId: '9999999999999999',
+            paymentMethod: PaymentMethod.credit_card,
+          },
+          {
+            id: 'transaction-id-2',
+            counterpartyOriginatorId: '999999******9999',
+            paymentMethod: PaymentMethod.bank_transfer,
+          },
+        ];
+
+        const data1 = Array.from({ length: 10 }).map((_, index) => ({
+          id: `id-${index}`,
+          transactionDirection: TransactionDirection.inbound,
+          counterpartyOriginatorId: '9999999999999999',
+          paymentMethod: PaymentMethod.debit_card, // Assume these are non-credit card payment methods. Adjust as necessary.
+          transactionDate: new Date(),
+          transactionAmount: 555,
+          transactionCorrelationId: `correlation-id-tmp-${index}`,
+          transactionCurrency: 'USD',
+          transactionBaseAmount: 555,
+          transactionBaseCurrency: 'USD',
+          projectId: PROJECT_ID,
+        }));
+
+        const data2 = transactionsSeeds.map(
+          ({ id, counterpartyOriginatorId, paymentMethod }, index) => ({
+            id,
+            transactionDirection: TransactionDirection.inbound,
+            counterpartyOriginatorId,
+            paymentMethod: paymentMethod || PaymentMethod.debit_card, // Assume these are non-credit card payment methods. Adjust as necessary.
+            transactionDate: new Date(),
+            transactionAmount: 555,
+            transactionCorrelationId: `correlation-id-temp-${index}`,
+            transactionCurrency: 'USD',
+            transactionBaseAmount: 555,
+            transactionBaseCurrency: 'USD',
+            projectId: PROJECT_ID,
+          }),
+        );
+        const tranactions = await prismaService.transactionRecord.createMany({
+          data: [...data1, ...data2],
+        });
+
+        transactionIdsForCleanup.concat([...data1, ...data2].map(({ id }) => id));
+      });
+
+      it('should correctly evaluate sum of incoming transactions over a set period of time is greater than a limit of credit card.', async () => {
+        // Assert
+        const rule = Object.values(getRuleDefinitions()).find(
+          (rule: InlineRule) => rule.id === 'PAY_HCA_CC',
+        );
+        expect(rule).toBeDefined();
+
+        // Act
+        const results = await dataAnalyticsService.evaluateTransactionsAgainstDynamicRules({
+          ...rule,
+          projectId: PROJECT_ID,
+        });
+
+        // Assert
+        expect(results as any[]).toBeDefined();
+        expect((results as any[]).length).toBeGreaterThan(0);
+
+        expect(results).toMatchObject([
+          {
+            businessId: 'business-id-1',
+            counterpartyOriginatorId: 'counterparty-1',
+            totalAmount: 1005,
+          },
+          {
+            businessId: 'business-id-2',
+            counterpartyOriginatorId: 'counterparty-1',
+            totalAmount: 1005,
+          },
+          {
+            businessId: 'business-id-2',
+            counterpartyOriginatorId: 'counterparty-2',
+            totalAmount: 1500,
+          },
+        ]);
+      });
     });
   });
 });

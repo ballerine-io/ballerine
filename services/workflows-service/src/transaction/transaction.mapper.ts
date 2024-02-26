@@ -76,7 +76,7 @@ export class TransactionEntityMapper {
 
       originatorBankCountry: dto.originator?.bankCountry ?? null,
 
-      cardBIN: dto.cardDetails?.cardBIN ?? null,
+      cardBin: dto.cardDetails?.cardBin ?? null,
       productPriceCurrency: dto.product?.currency ?? null,
     };
   }

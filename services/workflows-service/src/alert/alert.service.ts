@@ -12,6 +12,7 @@ import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { InlineRule } from '@/data-analytics/types';
+import _ from 'lodash';
 
 // TODO: move to utils
 
@@ -112,7 +113,7 @@ export class AlertService {
   }
 
   // Function to perform alert checks for each alert definition
-  async checkAllAlerts(): Promise<void> {
+  async checkAllAlerts() {
     const alertDefinitions = await this.getAllAlertDefinitions();
 
     for (const definition of alertDefinitions) {
@@ -137,6 +138,21 @@ export class AlertService {
       return false;
     }
 
+    // Find the missing keys
+    results.forEach((aggreatedRow: any) => {
+      const missingKeys = _.difference(inlineRule.groupedBy, Object.keys(aggreatedRow));
+      // If there are missing keys, log an error message
+      if (missingKeys.length > 0) {
+        console.error(
+          `Alert aggregated row is missing properties for groupBy: ${missingKeys.join(', ')}`,
+          {
+            inlineRule,
+            aggreatedRow,
+          },
+        );
+      }
+    });
+
     // const releavntAlerts = await this.getDeduplicatedAlerts(
     //   alertDefinition.projectId,
     //   alertDefinition,
@@ -146,10 +162,12 @@ export class AlertService {
     const alertsSetteledResult = await Promise.allSettled<
       { alert: Alert; alertDefinition: AlertDefinition }[]
     >(
-      results.map(async (result: any) => {
+      results.map(async (aggreatedRow: any) => {
+        const data = _.pick(aggreatedRow, inlineRule.groupedBy);
+
         return {
           alertDefinition,
-          alert: await this.createAlert(alertDefinition, result),
+          alert: await this.createAlert(alertDefinition, data),
         };
       }),
     );
