@@ -5,7 +5,7 @@ export type InlineRule = {
   id: string;
   fnName: string;
   options: TransactionsAgainstDynamicRulesType;
-  groupedBy: Array<string>;
+  groupedBy: string[];
 };
 
 export type TAggregations = keyof typeof AggregateType;
@@ -25,3 +25,7 @@ export type TransactionsAgainstDynamicRulesType = {
   groupByBusiness?: boolean;
   groupByCounterparty?: boolean;
 };
+
+export type AnyArray = any[];
+
+export type GenericFunction = (...args: AnyArray) => any;

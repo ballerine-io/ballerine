@@ -2,8 +2,6 @@ import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { AlertService } from '@/alert/alert.service';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import * as types from '@/types';
 import type { Response } from 'express';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 

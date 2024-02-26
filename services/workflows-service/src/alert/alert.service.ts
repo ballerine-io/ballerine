@@ -1,4 +1,3 @@
-import { map } from 'rxjs/operators';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import * as errors from '@/errors';
@@ -160,7 +159,7 @@ export class AlertService {
     // );
 
     const alertsSetteledResult = await Promise.allSettled<
-      { alert: Alert; alertDefinition: AlertDefinition }[]
+      Array<{ alert: Alert; alertDefinition: AlertDefinition }>
     >(
       results.map(async (aggreatedRow: any) => {
         const data = _.pick(aggreatedRow, inlineRule.groupedBy);

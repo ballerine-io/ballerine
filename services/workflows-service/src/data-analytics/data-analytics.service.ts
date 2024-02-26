@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { InlineRule, TransactionsAgainstDynamicRulesType } from './types';
+import { GenericFunction, InlineRule, TransactionsAgainstDynamicRulesType } from './types';
 import { AggregateType } from './consts';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class DataAnalyticsService {
-  private _evaluateNameToFunction: Record<string, Function> = {};
+  private _evaluateNameToFunction: Record<string, GenericFunction> = {};
 
   constructor(protected readonly prisma: PrismaService) {
     this._evaluateNameToFunction[this.evaluateTransactionsAgainstDynamicRules.name] =
@@ -90,7 +90,7 @@ export class DataAnalyticsService {
 
     const whereClause = Prisma.join(conditions, ' AND ');
 
-    let havingClause: string = '';
+    let havingClause = '';
     switch (havingAggregate) {
       case AggregateType.COUNT:
         havingClause = `${AggregateType.COUNT}(id)`;
