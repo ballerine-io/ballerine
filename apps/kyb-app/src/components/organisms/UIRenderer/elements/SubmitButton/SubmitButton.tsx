@@ -19,7 +19,7 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
   const { onClickHandler } = useUIElementHandlers(definition);
   const { state } = useDynamicUIContext();
   const { state: uiElementState } = useUIElementState(definition);
-  const { currentPage } = usePageResolverContext();
+  const { currentPage, pages } = usePageResolverContext();
   const { errors } = usePageContext();
 
   const setPageElementsTouched = useCallback(
@@ -64,8 +64,13 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
       state,
     );
     onClickHandler();
-    trackFinish();
-  }, [currentPage, state, setPageElementsTouched, onClickHandler, trackFinish]);
+
+    const isFinishPage = currentPage?.name === pages.at(-1)?.name;
+
+    if (isFinishPage) {
+      trackFinish();
+    }
+  }, [currentPage, pages, state, setPageElementsTouched, onClickHandler, trackFinish]);
 
   return (
     <Button
