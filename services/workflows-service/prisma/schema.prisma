@@ -417,107 +417,107 @@ model DataMigrationVersion {
 }
 
 enum TransactionRecordType {
-  Deposit
-  Withdrawal
-  Transfer
-  Payment
-  Refund
-  Chargeback
+  deposit
+  withdrawal
+  transfer
+  payment
+  refund
+  chargeback
 }
 
 enum ReviewStatus {
-  Pending
-  Reviewed
-  Flagged
-  Cleared
-  Rejected
+  pending
+  reviewed
+  flagged
+  cleared
+  rejected
 }
 
 enum VerificationStatus {
-  Unverified
-  Verified
-  Pending
+  unverified
+  verified
+  pending
 }
 
 enum TransactionRecordStatus {
-  New
-  Pending
-  Active
-  Completed
-  Rejected
-  Cancelled
-  Failed
+  new
+  pending
+  active
+  completed
+  rejected
+  cancelled
+  failed
 }
 
 enum PaymentMethod {
-  CreditCard
-  DebitCard
-  BankTransfer
-  PayPal
-  ApplePay
-  GooglePay
-  APN
+  credit_card
+  debit_card
+  bank_transfer
+  pay_pal
+  apple_pay
+  google_pay
+  apn
 }
 
 enum PaymentType {
-  Instant
-  Scheduled
-  Recurring
-  Refund
+  instant
+  scheduled
+  recurring
+  refund
 }
 
 enum PaymentChannel {
-  Online
-  MobileApp
-  InStore
-  Telephone
-  MailOrder
+  online
+  mobile_app
+  in_store
+  telephone
+  mail_order
 }
 
 enum PaymentIssuer {
-  Chase
-  BankOfAmerica
-  Citibank
-  AmericanExpress
+  chase
+  bank_of_america
+  citibank
+  american_express
 }
 
 enum PaymentGateway {
-  Stripe
-  PayPal
-  Square
-  Adyen
+  stripe
+  pay_pal
+  square
+  adyen
 }
 
 enum PaymentAcquirer {
-  WellsFargo
-  FirstData
-  Elavon
-  WorldPay
+  wells_fargo
+  first_data
+  elavon
+  world_pay
 }
 
 enum PaymentProcessor {
-  Visa
-  MasterCard
-  Discover
-  AmericanExpress
+  visa
+  master_card
+  discover
+  american_express
 }
 
 enum PaymentBrandName {
-  VISA
-  MASTERCARD
-  DCI // Diners Club International
-  SCB_PayNow
-  OCBC_PayNow
-  Atome
-  Dash
-  GrabPay
-  AlipayHost
-  WechatHost
+  visa
+  mastercard
+  dci // diners club international
+  scb_pay_now
+  ocbc_pay_now
+  atome
+  dash
+  grab_pay
+  alipay_host
+  wechat_host
 }
 
 enum TransactionDirection {
-  Inbound
-  Outbound
+  inbound
+  outbound
 }
 
 model TransactionRecord {
@@ -531,7 +531,7 @@ model TransactionRecord {
   transactionDescription   String? // Description of the transaction
   transactionCategory      String? // Category of the transaction
   transactionType          TransactionRecordType? // Enum for transaction type
-  transactionStatus        TransactionRecordStatus? @default(Completed)
+  transactionStatus        TransactionRecordStatus? @default(completed)
   transactionStatusReason  String? // Reason for the transaction status
   transactionDirection     TransactionDirection? // Reason for the transaction status
   transactionReference     String? // Reference number for the transaction
@@ -556,7 +556,7 @@ model TransactionRecord {
   completed3ds      Boolean?
   cardType          String?
   cardIssuer        String?
-  cardBIN           Int?
+  cardBin           Int?
   cardBrand         String?
 
   cardExpiryMonth String?
@@ -759,7 +759,7 @@ enum SanctionListMatchStatus {
 }
 
 model Counterparty {
-  id String @id
+  id String @id @default(cuid())
 
   correlationId String?
   type          CounterpartyType
@@ -782,3 +782,4 @@ model Counterparty {
   @@unique([projectId, correlationId])
   @@index([correlationId])
 }
+
