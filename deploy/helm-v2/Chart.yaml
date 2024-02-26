@@ -1,0 +1,48 @@
+apiVersion: v2
+name: ballerine
+version: 1.0.0
+appVersion: "1.16.0"
+home: https://ballerine.com/
+description: A Helm chart for Ballerine Application on Kubernetes
+
+icon: https://uploads-ssl.webflow.com/62a3bad46800eb4715b2faf1/646372b198f456345c69339c_logo%20github.png
+
+sources:
+  - https://github.com/ballerine-io/ballerine/tree/dev/deploy/helm
+  - https://github.com/bitnami/charts
+
+maintainers:
+  - name: MayurDuduka
+    email: mayur@iamops.io
+
+type: application
+
+dependencies:
+  - name: postgresql
+    repository: "oci://registry-1.docker.io/bitnamicharts"
+    version: 14.2.2
+    condition: postgresql.enabled
+  - name: backoffice
+    repository: file://charts/backoffice
+    version: 0.1.0
+    condition: backoffice.enabled
+  - name: headless-example
+    repository: file://charts/headless-example
+    version: 0.1.0
+    condition: headless-example.enabled
+  - name: kyb-app
+    repository: file://charts/kyb-app
+    version: 0.1.0
+    condition: kyb-app.enabled
+  - name: websocket-service
+    repository: file://charts/websocket-service
+    version: 0.1.0
+    condition: websocket-service.enabled
+  - name: wf-service
+    repository: file://charts/wf-service
+    version: 0.1.0
+    condition: wf-service.enabled
+  - name: workflows-dashboard
+    repository: file://charts/workflows-dashboard
+    version: 0.1.0
+    condition: workflows-dashboard.enabled
