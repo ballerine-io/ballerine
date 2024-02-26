@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "headless-example.fullname" . }}-test-connection"
+  labels:
+    {{- include "headless-example.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "headless-example.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
