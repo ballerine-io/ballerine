@@ -8,6 +8,10 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
+  {{- if .Values.strategyType }}
+  strategy:
+    type: {{ .Values.strategyType }}
+  {{- end }}
   {{- if .Values.updateStrategy }}
     rollingUpdate:
       {{- if .Values.updateStrategy.maxSurge }}

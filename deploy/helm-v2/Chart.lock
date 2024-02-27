@@ -1,0 +1,24 @@
+dependencies:
+- name: postgresql
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 14.2.2
+- name: backoffice
+  repository: file://charts/backoffice
+  version: 0.1.0
+- name: headless-example
+  repository: file://charts/headless-example
+  version: 0.1.0
+- name: kyb-app
+  repository: file://charts/kyb-app
+  version: 0.1.0
+- name: websocket-service
+  repository: file://charts/websocket-service
+  version: 0.1.0
+- name: wf-service
+  repository: file://charts/wf-service
+  version: 0.1.0
+- name: workflows-dashboard
+  repository: file://charts/workflows-dashboard
+  version: 0.1.0
+digest: sha256:363abc84d64b9ca65de00d99b7dcd68a1c3342e121bd892b27b726ef0331d442
+generated: "2024-02-26T17:02:44.131972+05:30"

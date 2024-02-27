@@ -38,19 +38,15 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       terminationGracePeriodSeconds: 90
-      initContainers:
-      {{- if .Values.postgresql.enabled }}
-        - name: psql-init-container
-          image: alpine:latest
-          command: ['sh', '-c', "apk add postgresql-client; until pg_isready -h {{ .Release.Name }}-postgresql.{{.Release.Namespace}}.svc.cluster.local; do echo waiting for postgresql; sleep 2; done"]
-      {{- end }}
       {{- if .Values.migration }}
-        - name: migration-init-container
-          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          command: ['npm','run','db:init']
-          envFrom:
-            - configMapRef:
-                name: {{ .Values.nameOverride }}
+      initContainers:
+        - name: wait-for-migrations
+          # image: "ghcr.io/groundnuty/k8s-wait-for:v1.6"
+          image: pegasystems/k8s-wait-for:latest
+          imagePullPolicy: IfNotPresent
+          args: 
+          - "job"
+          - "{{ "init" }}-{{ include "wf-service.fullname" . }}"
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -67,12 +63,9 @@ spec:
           env:
           {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.envFrom }}
           envFrom:
             - secretRef:
                 name: {{ include "wf-service.fullname" . }}
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
