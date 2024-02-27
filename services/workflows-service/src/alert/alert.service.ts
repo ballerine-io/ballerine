@@ -125,7 +125,11 @@ export class AlertService {
 
   // Specific alert check logic based on the definition
   private async checkAlert(alertDefinition: AlertDefinition): Promise<boolean> {
-    const inlineRule = alertDefinition.inlineRule as InlineRule;
+    let inlineRule: InlineRule;
+
+    const unknownData: unknown = alertDefinition.inlineRule;
+
+    inlineRule = unknownData as InlineRule;
 
     const results = await this.dataAnalyticsService.runInlineRule(
       alertDefinition.projectId,
