@@ -1,11 +1,17 @@
 import { TransactionDirection, PaymentMethod } from '@prisma/client';
 import { AggregateType } from './consts';
 
-export type InlineRule = any;
+export type InlineRule = {
+  id: string;
+  fnName: string;
+  options: TransactionsAgainstDynamicRulesType;
+  groupedBy: readonly string[];
+};
 
 export type TAggregations = keyof typeof AggregateType;
 
 export type TransactionsAgainstDynamicRulesType = {
+  projectId: string;
   havingAggregate?: TAggregations;
   amountBetween?: { min: number; max: number };
   timeAmount?: number;
@@ -19,3 +25,11 @@ export type TransactionsAgainstDynamicRulesType = {
   groupByBusiness?: boolean;
   groupByCounterparty?: boolean;
 };
+
+export type AnyArray = any[];
+
+export type AnyRecord = Record<PropertyKey, any>;
+
+export type GenericFunction = (...args: AnyArray) => any;
+
+export type GenericAsyncFunction = (...args: AnyArray) => Promise<any>;

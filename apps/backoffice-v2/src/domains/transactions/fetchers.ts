@@ -10,8 +10,8 @@ import { noNullish } from '@ballerine/common';
 import qs from 'qs';
 
 export const TransactionDirection = {
-  INBOUND: 'Inbound',
-  OUTBOUND: 'Outbound',
+  INBOUND: 'inbound',
+  OUTBOUND: 'outbound',
 } as const;
 
 export const TransactionDirections = [
@@ -20,13 +20,13 @@ export const TransactionDirections = [
 ] as const satisfies ReadonlyArray<TObjectValues<typeof TransactionDirection>>;
 
 export const PaymentMethod = {
-  CREDIT_CARD: 'CreditCard',
-  DEBIT_CARD: 'DebitCard',
-  BANK_TRANSFER: 'BankTransfer',
-  PAYPAL: 'PayPal',
-  APPLE_PAY: 'ApplePay',
-  GOOGLE_PAY: 'GooglePay',
-  APN: 'APN',
+  CREDIT_CARD: 'credit_card',
+  DEBIT_CARD: 'debit_card',
+  BANK_TRANSFER: 'bank_transfer',
+  PAYPAL: 'pay_pal',
+  APPLE_PAY: 'apple_pay',
+  GOOGLE_PAY: 'google_pay',
+  APN: 'apn',
 } as const;
 
 export const PaymentMethods = [
