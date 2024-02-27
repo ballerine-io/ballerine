@@ -42,6 +42,7 @@ export class AlertDefinitionRepository {
     projectIds: TProjectIds,
   ): Promise<AlertDefinition> {
     const queryArgs = this.scopeService.scopeFindOne(args, projectIds);
+
     return await this.prisma.alertDefinition.findFirstOrThrow(queryArgs);
   }
 

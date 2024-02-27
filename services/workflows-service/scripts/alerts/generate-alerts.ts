@@ -44,7 +44,7 @@ export const getRuleDefinitions = () => {
 
       amountThreshold: 1000,
     } as TransactionsAgainstDynamicRulesType,
-  } as InlineRule;
+  } as const satisfies InlineRule;
 
   // Rule ID: PAY_HCA_APM
   // Description: High Cumulative Amount - inbound - Customer (APM)
@@ -68,7 +68,7 @@ export const getRuleDefinitions = () => {
 
       amountThreshold: 1000,
     } as TransactionsAgainstDynamicRulesType,
-  } as InlineRule;
+  } as const satisfies InlineRule;
 
   // Rule ID: STRUC_CC
   // Description: Structuring - inbound - Customer (Credit Card)
@@ -92,7 +92,7 @@ export const getRuleDefinitions = () => {
 
       amountBetween: { min: 500, max: 1000 },
     } as TransactionsAgainstDynamicRulesType,
-  } as InlineRule;
+  } as const satisfies InlineRule;
 
   // Rule ID: STRUC_APM
   // Description: Structuring - inbound - Customer (APM)
@@ -118,7 +118,7 @@ export const getRuleDefinitions = () => {
 
       amountThreshold: 5,
     } as TransactionsAgainstDynamicRulesType,
-  } as InlineRule;
+  } as const satisfies InlineRule;
 
   const rules = [_PAY_HCA_CC, _PAY_HCA_APM, _STRUC_CC, _STRUC_APM];
 
@@ -198,7 +198,6 @@ export const generateFakeAlertDefinition = async (
   };
 
   const rules = Object.values(getRuleDefinitions());
-  const rulesIds = Object.keys(getRuleDefinitions());
 
   return Array.from({
     length: faker.datatype.number({
@@ -226,10 +225,7 @@ export const generateFakeAlertDefinition = async (
 
     const createdBy = faker.internet.userName();
 
-    const ruleIdIdx = faker.datatype.number({
-      min: 0,
-      max: rules.length - 1,
-    });
+    const rule = faker.helpers.arrayElement(rules);
 
     // Create Alert Definition
     return await prisma.alertDefinition.create({
@@ -241,9 +237,9 @@ export const generateFakeAlertDefinition = async (
         name: faker.lorem.words(3),
         enabled: faker.datatype.boolean(),
         description: faker.lorem.sentence(),
-        rulesetId: ruleIdIdx.toString(),
+        rulesetId: `set-${rule.id}`,
         defaultSeverity,
-        ruleId: rulesIds[ruleIdIdx],
+        ruleId: rule.id,
         createdBy: createdBy,
         modifiedBy: createdBy,
         dedupeStrategies: {
@@ -251,7 +247,7 @@ export const generateFakeAlertDefinition = async (
           cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
         },
         config: { config: {} },
-        inlineRule: rules[ruleIdIdx] as any,
+        inlineRule: rule,
         tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
         additionalInfo: {},
         projectId: project.id,

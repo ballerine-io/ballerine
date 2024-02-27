@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { GenericFunction, InlineRule, TransactionsAgainstDynamicRulesType } from './types';
+import { GenericAsyncFunction, InlineRule, TransactionsAgainstDynamicRulesType } from './types';
 import { AggregateType } from './consts';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class DataAnalyticsService {
-  private _evaluateNameToFunction: Record<string, GenericFunction> = {};
+  private _evaluateNameToFunction: Record<string, GenericAsyncFunction> = {};
 
   constructor(protected readonly prisma: PrismaService) {
     this._evaluateNameToFunction[this.evaluateTransactionsAgainstDynamicRules.name] =
@@ -15,6 +15,7 @@ export class DataAnalyticsService {
 
   async runInlineRule(projectId: string, inlineRule: InlineRule) {
     const evaluateFn = this._evaluateNameToFunction[inlineRule.fnName];
+
     if (!evaluateFn) {
       throw new Error(`No evaluation function found for rule name: ${inlineRule.id}`);
     }
@@ -57,6 +58,7 @@ export class DataAnalyticsService {
     }
     if (paymentMethods.length) {
       const methodCondition = excludePaymentMethods ? `NOT IN` : `IN`;
+
       conditions.push(
         Prisma.sql`"paymentMethod"::text ${Prisma.raw(methodCondition)} (${Prisma.join(
           paymentMethods,

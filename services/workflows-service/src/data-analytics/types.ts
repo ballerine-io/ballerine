@@ -5,7 +5,7 @@ export type InlineRule = {
   id: string;
   fnName: string;
   options: TransactionsAgainstDynamicRulesType;
-  groupedBy: string[];
+  groupedBy: readonly string[];
 };
 
 export type TAggregations = keyof typeof AggregateType;
@@ -28,4 +28,8 @@ export type TransactionsAgainstDynamicRulesType = {
 
 export type AnyArray = any[];
 
+export type AnyRecord = Record<PropertyKey, any>;
+
 export type GenericFunction = (...args: AnyArray) => any;
+
+export type GenericAsyncFunction = (...args: AnyArray) => Promise<any>;
