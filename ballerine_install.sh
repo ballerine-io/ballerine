@@ -50,3 +50,6 @@ if [[ ! -z "${WORKFLOW_SERVICE_DOMAIN_NAME}" ]]; then
   update_frontend_build_variables
   update_env_docker_compose
 fi
+
+## Bring docker-container up
+cd deploy; sudo docker-compose -f docker-compose-build.yml up -d
