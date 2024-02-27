@@ -41,28 +41,28 @@ CREATE TYPE "TransactionDirection" AS ENUM ('inbound', 'outbound');
 CREATE TYPE "AlertSeverity" AS ENUM ('100', '200', '300', '400');
 
 -- CreateEnum
-CREATE TYPE "AlertState" AS ENUM ('101', '201', '202', '301', '302', '303', '304', '305');
+CREATE TYPE "AlertState" AS ENUM ('101', '201', '202', '301', '302', '303');
 
 -- CreateEnum
 CREATE TYPE "AlertStatus" AS ENUM ('100', '200', '300');
 
 -- CreateEnum
-CREATE TYPE "AlertType" AS ENUM ('HighRiskTransaction', 'DormantAccountActivity', 'UnusualPattern');
+CREATE TYPE "AlertType" AS ENUM ('high_risk_transaction', 'dormant_account_activity', 'unusual_pattern');
 
 -- CreateEnum
-CREATE TYPE "CounterpartyType" AS ENUM ('Individual', 'Company', 'Government', 'NonProfit');
+CREATE TYPE "CounterpartyType" AS ENUM ('individual', 'company', 'government', 'non_profit');
 
 -- CreateEnum
-CREATE TYPE "RiskCategory" AS ENUM ('Low', 'Medium', 'High');
+CREATE TYPE "RiskCategory" AS ENUM ('low', 'medium', 'high');
 
 -- CreateEnum
-CREATE TYPE "ComplianceStatus" AS ENUM ('Compliant', 'NonCompliant', 'UnderReview');
+CREATE TYPE "ComplianceStatus" AS ENUM ('compliant', 'non_compliant', 'under_review');
 
 -- CreateEnum
-CREATE TYPE "PEPStatus" AS ENUM ('NotApplicable', 'PendingReview', 'Confirmed');
+CREATE TYPE "PEPStatus" AS ENUM ('not_applicable', 'pending_review', 'confirmed');
 
 -- CreateEnum
-CREATE TYPE "SanctionListMatchStatus" AS ENUM ('NotListed', 'PendingReview', 'Listed');
+CREATE TYPE "SanctionListMatchStatus" AS ENUM ('not_listed', 'pending_review', 'listed');
 
 -- AlterTable
 ALTER TABLE "Business" ADD COLUMN     "mccCode" INTEGER;

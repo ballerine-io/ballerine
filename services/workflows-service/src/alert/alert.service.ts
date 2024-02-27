@@ -12,6 +12,7 @@ import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { InlineRule } from '@/data-analytics/types';
 import _ from 'lodash';
+import { AlertExecutionStatus } from './consts';
 
 // TODO: move to utils
 
@@ -131,63 +132,75 @@ export class AlertService {
 
     inlineRule = unknownData as InlineRule;
 
-    const results = await this.dataAnalyticsService.runInlineRule(
+    const ruleExecutionResults = await this.dataAnalyticsService.runInlineRule(
       alertDefinition.projectId,
       inlineRule,
     );
 
-    if (!results || (Array.isArray(results) && results.length === 0)) {
+    if (
+      !ruleExecutionResults ||
+      (Array.isArray(ruleExecutionResults) && ruleExecutionResults.length === 0)
+    ) {
       return false;
     }
 
-    // Find the missing keys
-    results.forEach((aggreatedRow: any) => {
-      const missingKeys = _.difference(inlineRule.groupedBy, Object.keys(aggreatedRow));
-      // If there are missing keys, log an error message
-      if (missingKeys.length > 0) {
-        console.error(
-          `Alert aggregated row is missing properties for groupBy: ${missingKeys.join(', ')}`,
-          {
-            inlineRule,
-            aggreatedRow,
-          },
-        );
-      }
-    });
-
-    // const releavntAlerts = await this.getDeduplicatedAlerts(
-    //   alertDefinition.projectId,
-    //   alertDefinition,
-    //   results,
-    // );
-
-    const alertsSetteledResult = await Promise.allSettled<
-      Array<{ alert: Alert; alertDefinition: AlertDefinition }>
-    >(
-      results.map(async (aggreatedRow: any) => {
-        const data = _.pick(aggreatedRow, inlineRule.groupedBy);
-
-        return {
-          alertDefinition,
-          alert: await this.createAlert(alertDefinition, data),
-        };
-      }),
-    );
-
-    const result = {
+    const alertResponse = {
       fulfilled: [],
       rejected: [],
+      skipped: [],
     } as any;
 
-    alertsSetteledResult.forEach(resultItem => {
-      if (resultItem.status === 'fulfilled') {
-        result.fulfilled.push(resultItem.value);
-      } else if (resultItem.status === 'rejected') {
-        result.rejected.push(resultItem.reason);
-      }
-    });
+    const alertsPromises = ruleExecutionResults
+      .filter((aggregatedRow: Record<string, unknown>) => {
+        if (
+          _.some(
+            inlineRule.groupedBy,
+            field => _.isNull(aggregatedRow[field]) || _.isUndefined(aggregatedRow[field]),
+          )
+        ) {
+          this.logger.error(`Alert aggregated row is missing properties `, {
+            inlineRule,
+            aggregatedRow,
+          });
+          return false;
+        }
+        return true;
+      })
+      .map(async (aggregatedRow: object) => {
+        try {
+          const pickedResult = _.pick(aggregatedRow, inlineRule.groupedBy);
 
-    return result;
+          if (await this.isDuplicateAlert(alertDefinition, pickedResult)) {
+            alertResponse.skipped.push({
+              status: AlertExecutionStatus.SKIPPED,
+              alertDefinition,
+              aggregatedRow,
+            });
+          } else {
+            alertResponse.fulfilled.push({
+              status: AlertExecutionStatus.SUCCEEDED,
+              alertDefinition,
+              aggregatedRow,
+              alert: await this.createAlert(alertDefinition, pickedResult),
+            });
+          }
+        } catch (error) {
+          console.error(error);
+
+          alertResponse.rejected.push({
+            status: AlertExecutionStatus.FAILED,
+            error,
+            alertDefinition,
+            aggregatedRow,
+          });
+        }
+      });
+
+    await Promise.all(alertsPromises);
+
+    this.logger.debug('Finished to run check alerts', alertResponse);
+
+    return alertResponse;
   }
 
   private createAlert(
@@ -200,57 +213,35 @@ export class AlertService {
         projectId: alertDef.projectId,
         severity: alertDef.defaultSeverity,
         dataTimestamp: new Date(),
-        state: AlertState.Triggered,
-        status: AlertStatus.New,
+        state: AlertState.triggered,
+        status: AlertStatus.new,
         executionDetails: {},
         ...data,
       },
     });
   }
 
-  private async getDeduplicatedAlerts(
-    projectId: string,
-    alertDef: AlertDefinition,
-    data: any,
-  ): Promise<any> {
-    const cooldownTimeframe = (alertDef.dedupeStrategies as any).cooldownTimeframe;
+  private async isDuplicateAlert(alertDef: AlertDefinition, data: object): Promise<Boolean> {
+    const filters = _.map(data, (value, key) => ({ [key]: value })) || [];
 
-    const potentialDuplicates = await this.alertRepository.findMany(
+    return await this.alertRepository.exists(
       {
         where: {
-          AND: [
-            { projectId: projectId },
-            { alertDefinitionId: alertDef.id },
-            { dataTimestamp: { gte: new Date(data.dataTimestamp - cooldownTimeframe) } },
-            // Adjust the cooldown timeframe as needed
-          ],
+          AND: [{ alertDefinitionId: alertDef.id }, ...filters],
         },
       },
-      [projectId],
+      [alertDef.projectId],
     );
-
-    const groupedDuplicates = potentialDuplicates.reduce((acc: any, alert) => {
-      const key = `${alert.projectId}_${alert.alertDefinitionId}_${Math.floor(
-        alert.dataTimestamp.getTime() / cooldownTimeframe,
-      )}`;
-      acc[key] = acc[key] || [];
-      acc[key].push(alert);
-      return acc;
-    }, {});
-
-    return Object.values(groupedDuplicates)
-      .filter(group => (group as Alert[]).length > 1)
-      .flat() as Alert[];
   }
 
   private getStatusFromState(newState: AlertState): ObjectValues<typeof AlertStatus> {
     const alertStateToStatusMap = {
-      [AlertState.Triggered]: AlertStatus.New,
-      [AlertState.UnderReview]: AlertStatus.Pending,
-      [AlertState.Escalated]: AlertStatus.Pending,
-      [AlertState.Dismissed]: AlertStatus.Completed,
-      [AlertState.Rejected]: AlertStatus.Completed,
-      [AlertState.Cleared]: AlertStatus.Completed,
+      [AlertState.triggered]: AlertStatus.new,
+      [AlertState.underReview]: AlertStatus.pending,
+      [AlertState.escalated]: AlertStatus.pending,
+      [AlertState.dismissed]: AlertStatus.completed,
+      [AlertState.rejected]: AlertStatus.completed,
+      [AlertState.cleared]: AlertStatus.completed,
     } as const;
     const status = alertStateToStatusMap[newState];
 

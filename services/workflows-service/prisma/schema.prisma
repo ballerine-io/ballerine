@@ -616,38 +616,38 @@ model TransactionRecord {
 }
 
 enum AlertSeverity {
-  Low      @map("100")
-  Medium   @map("200")
-  High     @map("300")
-  Critical @map("400")
+  low      @map("100")
+  medium   @map("200")
+  high     @map("300")
+  critical @map("400")
 }
 
 enum AlertState {
 
   // New
-  Triggered     @map("101")  // Alert generated based on criteria indicating potential suspicious activity.
+  triggered     @map("101")  // Alert generated based on criteria indicating potential suspicious activity.
 
   // Pending
-  UnderReview   @map("201")  // Alert is being investigated for more details and assessment.
-  Escalated     @map("202")  // Alert requires attention from higher authority or specialized investigation.
+  underReview   @map("201")  // Alert is being investigated for more details and assessment.
+  escalated     @map("202")  // Alert requires attention from higher authority or specialized investigation.
 
   // Completed - Various resolutions indicating the outcome of the investigation.
-  Rejected      @map("301")  // Investigation confirms the alert as a real threat, necessitating specific actions or interventions.
-  Dismissed     @map("302")  // Alert considered not relevant or not posing any actionable risk.
-  Cleared       @map("303")  // Investigation finds activity to be legitimate and not suspicious.
+  rejected      @map("301")  // Investigation confirms the alert as a real threat, necessitating specific actions or interventions.
+  dismissed     @map("302")  // Alert considered not relevant or not posing any actionable risk.
+  cleared       @map("303")  // Investigation finds activity to be legitimate and not suspicious.
 
 }
 
 enum AlertStatus {
-  New       @map("100")
-  Pending   @map("200")
-  Completed @map("300")
+  new       @map("100")
+  pending   @map("200")
+  completed @map("300")
 }
 
 enum AlertType {
-  HighRiskTransaction
-  DormantAccountActivity
-  UnusualPattern
+  high_risk_transaction
+  dormant_account_activity
+  unusual_pattern
 }
 
 model AlertDefinition {
@@ -728,34 +728,34 @@ model Alert {
 }
 
 enum CounterpartyType {
-  Individual
-  Company
-  Government
-  NonProfit
+  individual
+  company
+  government
+  non_profit
 }
 
 enum RiskCategory {
-  Low
-  Medium
-  High
+  low
+  medium
+  high
 }
 
 enum ComplianceStatus {
-  Compliant
-  NonCompliant
-  UnderReview
+  compliant
+  non_compliant
+  under_review
 }
 
 enum PEPStatus {
-  NotApplicable // The counterparty is not a politically exposed person.
-  PendingReview // The status of the counterparty being a politically exposed person is pending review.
-  Confirmed // The counterparty has been confirmed as a politically exposed person.
+  not_applicable // the counterparty is not a politically exposed person.
+  pending_review // the status of the counterparty being a politically exposed person is pending review.
+  confirmed // The counterparty has been confirmed as a politically exposed person.
 }
 
 enum SanctionListMatchStatus {
-  NotListed // The counterparty is not found on any sanction list.
-  PendingReview // The counterparty's status against sanction lists is pending review.
-  Listed // The counterparty is listed on a sanction list.
+  not_listed // the counterparty is not found on any sanction list.
+  pending_review // the counterparty's status against sanction lists is pending review.
+  listed // The counterparty is listed on a sanction list.
 }
 
 model Counterparty {

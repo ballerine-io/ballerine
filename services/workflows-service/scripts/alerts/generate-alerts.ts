@@ -199,65 +199,59 @@ export const generateFakeAlertDefinition = async (
 
   const rules = Object.values(getRuleDefinitions());
 
-  return Array.from({
-    length: faker.datatype.number({
-      min: 5,
-      max: 10,
-    }),
-  }).forEach(async () => {
-    const defaultSeverity = faker.helpers.arrayElement(Object.values(AlertSeverity));
+  await Promise.all(
+    rules.map(async rule => {
+      const defaultSeverity = faker.helpers.arrayElement(Object.values(AlertSeverity));
 
-    // Create alerts
-    const alerts = Array.from(
-      {
-        length: Object.keys(rules).length,
-      },
-      () => {
-        return {
-          projectId: project.id,
-          ...generateFakeAlert({
-            defaultSeverity,
-            ids,
-          }),
-        };
-      },
-    );
-
-    const createdBy = faker.internet.userName();
-
-    const rule = faker.helpers.arrayElement(rules);
-
-    // Create Alert Definition
-    return await prisma.alertDefinition.create({
-      include: {
-        alert: true,
-      },
-      data: {
-        type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
-        name: faker.lorem.words(3),
-        enabled: faker.datatype.boolean(),
-        description: faker.lorem.sentence(),
-        rulesetId: `set-${rule.id}`,
-        defaultSeverity,
-        ruleId: rule.id,
-        createdBy: createdBy,
-        modifiedBy: createdBy,
-        dedupeStrategies: {
-          strategy: {},
-          cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
+      // Create alerts
+      const alerts = Array.from(
+        {
+          length: faker.datatype.number({ min: 3, max: 5 }),
         },
-        config: { config: {} },
-        inlineRule: rule,
-        tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
-        additionalInfo: {},
-        projectId: project.id,
-        alert: {
-          createMany: {
-            data: alerts,
-            skipDuplicates: true,
+        () => {
+          return {
+            projectId: project.id,
+            ...generateFakeAlert({
+              defaultSeverity,
+              ids,
+            }),
+          };
+        },
+      );
+
+      const createdBy = faker.internet.userName();
+
+      await prisma.alertDefinition.create({
+        include: {
+          alert: true,
+        },
+        data: {
+          type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
+          name: faker.lorem.words(3),
+          enabled: faker.datatype.boolean(),
+          description: faker.lorem.sentence(),
+          rulesetId: `set-${rule.id}`,
+          defaultSeverity,
+          ruleId: rule.id,
+          createdBy: createdBy,
+          modifiedBy: createdBy,
+          dedupeStrategies: {
+            strategy: {},
+            cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
+          },
+          config: { config: {} },
+          inlineRule: rule,
+          tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
+          additionalInfo: {},
+          projectId: project.id,
+          alert: {
+            createMany: {
+              data: alerts,
+              skipDuplicates: true,
+            },
           },
         },
-      },
-    });
-  });
+      });
+    }),
+  );
 };
