@@ -24,27 +24,9 @@ postgresql:
 
 backoffice:
   enabled: true
-  applicationConfig:
-    BCRYPT_SALT: "10"
-    DB_URL: ""
-    DB_USER: ""
-    DB_PASSWORD: ""
-    DB_PORT: "5432"
-    PORT: "3000"
-    COMPOSE_PROJECT_NAME: "ballerine-x"
-    SESSION_SECRET: ""
-    SESSION_EXPIRATION_IN_MINUTES: '60'
-    BACKOFFICE_CORS_ORIGIN: "http://localhost:5137"
-    HEADLESS_EXAMPLE_CORS_ORIGIN: "http://localhost:5173"
-    API_KEY: "secret"
-    NODE_ENV: "development"
-    SENTRY_DSN: ""
-    WEBHOOK_URL: ""
-    WEBHOOK_SECRET: "webhook_secret"
-    WORKFLOW_DASHBOARD_CORS_ORIGIN: "http://localhost:5200"
-    KYB_EXAMPLE_CORS_ORIGIN: "http://localhost:5201"
-    APP_API_URL: https://alon.ballerine.dev
-    UNIFIED_API_URL: "https://unified-api-test.eu.ballerine.app"
+  applicationConfig: {}
+  ingress:
+    enabled: false
 
 #############################
 ###### headlessexample ######
@@ -52,6 +34,9 @@ backoffice:
 
 headless-example:
   enabled: true
+  applicationConfig: {}
+  ingress:
+    enabled: false
 
 ####################
 ###### kybapp ######
@@ -59,6 +44,9 @@ headless-example:
 
 kyb-app:
   enabled: true
+  applicationConfig: {}
+  ingress:
+    enabled: false
 
 #############################
 ###### websocketService ######
@@ -70,6 +58,8 @@ websocket-service:
     PORT: 3500
     NODE_ENV: development
     COMPOSE_PROJECT_NAME: ballerine-x
+  ingress:
+    enabled: false
 
 #############################
 ###### wf-service ###########
@@ -78,7 +68,10 @@ websocket-service:
 wf-service:
   enabled: true
   migration: true
+  ingress:
+    enabled: false
   applicationConfig:
+    ENVIRONMENT_NAME: development
     BCRYPT_SALT: "10"
     DB_URL: ""
     DB_USER: ""
@@ -86,7 +79,7 @@ wf-service:
     DB_PORT: "5432"
     PORT: "3000"
     COMPOSE_PROJECT_NAME: "ballerine-x"
-    SESSION_SECRET: ""
+    SESSION_SECRET: "iGdnj4A0YOhj8dHJK7IWSvQKEZsG7P70FFehuddhFPjtg/bSkzFejYILk4Xue6Ilx9y3IAwzR8pV1gb4"
     SESSION_EXPIRATION_IN_MINUTES: '60'
     BACKOFFICE_CORS_ORIGIN: "http://localhost:5137"
     HEADLESS_EXAMPLE_CORS_ORIGIN: "http://localhost:5173"
@@ -99,10 +92,3 @@ wf-service:
     KYB_EXAMPLE_CORS_ORIGIN: "http://localhost:5201"
     APP_API_URL: https://alon.ballerine.dev
     UNIFIED_API_URL: "https://unified-api-test.eu.ballerine.app"
-
-#############################
-###### workflowsdashboard ###
-#############################
-
-workflows-dashboard:
-  enabled: true

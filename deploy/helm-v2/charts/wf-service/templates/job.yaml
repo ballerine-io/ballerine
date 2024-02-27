@@ -1,0 +1,30 @@
+{{- if .Values.migration }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ "init" }}-{{ include "wf-service.fullname" . }}
+  labels:
+    {{- include "wf-service.labels" . | nindent 4 }}
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 120
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+      - name: psql-init-container
+        image: alpine:latest
+        command: ['sh', '-c', "apk add postgresql-client; until pg_isready -h {{ .Release.Name }}-postgresql.{{.Release.Namespace}}.svc.cluster.local; do echo waiting for postgresql; sleep 2; done"]
+      containers:
+      - name: migration-init-container
+        image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["npm","run","db:init"]
+        {{- with .Values.env }}
+        env:
+        {{- toYaml . | nindent 12 }}
+        {{- end }}
+        envFrom:
+          - secretRef:
+              name: {{ include "wf-service.fullname" . }}
+{{- end }}
