@@ -126,11 +126,9 @@ export class AlertService {
 
   // Specific alert check logic based on the definition
   private async checkAlert(alertDefinition: AlertDefinition): Promise<boolean> {
-    let inlineRule: InlineRule;
-
     const unknownData: unknown = alertDefinition.inlineRule;
 
-    inlineRule = unknownData as InlineRule;
+    const inlineRule: InlineRule = unknownData as InlineRule;
 
     const ruleExecutionResults = await this.dataAnalyticsService.runInlineRule(
       alertDefinition.projectId,
@@ -226,7 +224,7 @@ export class AlertService {
     });
   }
 
-  private async isDuplicateAlert(alertDef: AlertDefinition, data: object): Promise<Boolean> {
+  private async isDuplicateAlert(alertDef: AlertDefinition, data: object): Promise<boolean> {
     const filters = _.map(data, (value, key) => ({ [key]: value })) || [];
 
     return await this.alertRepository.exists(

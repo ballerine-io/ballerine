@@ -9,7 +9,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import type { AuthenticatedEntity, TProjectId } from '@/types';
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { Alert, AlertDefinition, Business, User } from '@prisma/client';
+import { Alert, AlertDefinition } from '@prisma/client';
 import * as errors from '../errors';
 import { AlertAssigneeUniqueDto, BulkAlertsResponse } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
