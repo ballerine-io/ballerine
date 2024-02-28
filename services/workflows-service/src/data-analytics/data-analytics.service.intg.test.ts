@@ -4,7 +4,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
 import { ClsService } from 'nestjs-cls';
-import { PaymentMethod, TransactionDirection } from '@prisma/client';
+import { CounterpartyType, PaymentMethod, TransactionDirection } from '@prisma/client';
 import { DataAnalyticsService } from './data-analytics.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { InlineRule } from './types';
@@ -70,7 +70,7 @@ describe('TransactionRulesEvaluationService', () => {
       await prismaService.counterparty.create({
         data: {
           id,
-          type: 'Individual',
+          type: CounterpartyType.individual,
           project: { connect: { id: projectId } },
           business: { connect: { id: businessId || 'business-id-1' } },
         },

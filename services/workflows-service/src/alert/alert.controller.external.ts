@@ -14,7 +14,7 @@ import * as errors from '../errors';
 import { AlertAssigneeUniqueDto, BulkAlertsResponse } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto, FindAlertsSchema } from './dtos/get-alerts.dto';
-import { BulkStatus, TBulkAssignAlertsResponse } from './types';
+import { BulkStatus, TBulkAssignAlertsResponse, TAlertResponse } from './types';
 import { AlertDecisionDto } from './dtos/decision-alert.dto';
 import { UserData } from '@/user/user-data.decorator';
 import { AlertDefinitionService } from '@/alert-definition/alert-definition.service';
@@ -44,7 +44,7 @@ export class AlertControllerExternal {
   }
 
   @common.Get('/')
-  @swagger.ApiOkResponse({ type: Array<unknown> }) // TODO: Set type
+  @swagger.ApiOkResponse({ type: Array<TAlertResponse> }) // TODO: Set type
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.UsePipes(new ZodValidationPipe(FindAlertsSchema, 'query'))
@@ -73,11 +73,7 @@ export class AlertControllerExternal {
     });
     const formattedAlerts = alerts.map(alert => {
       const { alertDefinition, assignee, business, state, ...alertWithoutDefinition } =
-        alert as Alert & {
-          alertDefinition: Pick<AlertDefinition, 'description'>;
-          assignee: Pick<User, 'id' | 'firstName' | 'lastName'>;
-          business: Pick<Business, 'id' | 'companyName'>;
-        };
+        alert as TAlertResponse;
 
       return {
         ...alertWithoutDefinition,
