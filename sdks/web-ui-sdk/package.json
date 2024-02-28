@@ -21,7 +21,7 @@
   "types": "dist/index.d.ts",
   "name": "@ballerine/web-ui-sdk",
   "private": false,
-  "version": "1.4.38",
+  "version": "1.4.41",
   "type": "module",
   "files": [
     "dist"
@@ -96,7 +96,7 @@
     "vitest": "^0.24.5"
   },
   "dependencies": {
-    "@ballerine/common": "0.7.41",
+    "@ballerine/common": "0.7.43",
     "@zerodevx/svelte-toast": "^0.8.0",
     "compressorjs": "^1.1.1",
     "deepmerge": "^4.3.0",

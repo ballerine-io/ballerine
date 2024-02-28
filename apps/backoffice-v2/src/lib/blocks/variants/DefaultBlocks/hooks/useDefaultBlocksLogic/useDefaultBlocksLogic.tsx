@@ -318,6 +318,10 @@ export const useDefaultBlocksLogic = () => {
       Trigger: props => (
         <MotionButton
           {...motionButtonProps}
+          animate={{
+            ...motionButtonProps.animate,
+            opacity: !caseState.actionButtonsEnabled ? 0.5 : motionButtonProps.animate.opacity,
+          }}
           variant="outline"
           className={'ms-3.5'}
           disabled={!caseState.actionButtonsEnabled}

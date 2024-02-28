@@ -9,20 +9,24 @@ import {
   ArrayFieldsLayoutItemTitle,
   ArrayFieldsLayoutProps,
 } from '@ballerine/ui';
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import pullAt from 'lodash/pullAt';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { useTranslation } from 'react-i18next';
+import { useUIElementHandlers } from '@/components/organisms/UIRenderer/hooks/useUIElementHandlers';
 
 const jsonLogicRuleEngine = new JsonLogicRuleEngine();
 
 export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
   const { t } = useTranslation();
   const { definition } = useJSONFormDefinition();
+  const { onChangeHandler } = useUIElementHandlers(definition);
   const { stateApi, payload } = useStateManagerContext();
   const isNewItemsCanBeAdded = useMemo(() => {
-    if (!Array.isArray(definition?.options?.canAdd)) return true;
+    if (!Array.isArray(definition?.options?.canAdd)) {
+      return true;
+    }
 
     return definition?.options?.canAdd.length
       ? definition?.options?.canAdd.every(rule => jsonLogicRuleEngine.test(payload, rule))
@@ -41,8 +45,9 @@ export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
       pullAt(dataArray, index);
 
       stateApi.setContext(ctx);
+      onChangeHandler({ target: { value: dataArray } } as React.ChangeEvent<any>);
     },
-    [definition, stateApi],
+    [definition, stateApi, onChangeHandler],
   );
 
   // JSONForm items and context data not in sync, so when new items in json form are only visual.

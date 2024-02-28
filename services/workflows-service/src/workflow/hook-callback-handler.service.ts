@@ -1,7 +1,7 @@
 import { set } from 'lodash';
 import { Injectable } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { AnyRecord } from '@ballerine/common';
+import { AnyRecord, isObject, ProcessStatus } from '@ballerine/common';
 import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
@@ -11,6 +11,7 @@ import { CustomerService } from '@/customer/customer.service';
 import type { TProjectId, TProjectIds } from '@/types';
 import { TDocumentsWithoutPageType } from '@/common/types';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
+import get from 'lodash/get';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -43,6 +44,21 @@ export class HookCallbackHandlerService {
       );
     }
 
+    const removeLastKeyFromPath = (path: string) => {
+      return path?.split('.')?.slice(0, -1)?.join('.');
+    };
+
+    const resultDestinationPathWithoutLastKey = removeLastKeyFromPath(resultDestinationPath);
+    const result = get(workflowRuntime.context, resultDestinationPathWithoutLastKey);
+
+    if (isObject(result) && result.status) {
+      set(
+        workflowRuntime.context,
+        `${resultDestinationPathWithoutLastKey}.status`,
+        ProcessStatus.SUCCESS,
+      );
+    }
+
     return set({}, resultDestinationPath, data);
   }
   async mapCallbackDataToIndividual(
@@ -59,7 +75,7 @@ export class HookCallbackHandlerService {
     const documentProperties = this.formatDocumentProperties(data, kycDocument);
     const pages = await this.formatPages(data);
     const decision = this.formatDecision(data);
-    const documentCategory = (kycDocument.type as AnyRecord).value as string;
+    const documentCategory = (kycDocument.type as AnyRecord)?.value as string;
     const documents = this.formatDocuments(
       documentCategory,
       pages,
@@ -101,7 +117,7 @@ export class HookCallbackHandlerService {
         pages: pages,
         issuer: issuer,
         properties: documentProperties,
-        issuingVersion: kycDocument['issueNumber'],
+        issuingVersion: kycDocument['issueNumber'] || 1,
       },
     ];
 
@@ -109,30 +125,42 @@ export class HookCallbackHandlerService {
   }
 
   private formatDecision(data: AnyRecord) {
+    const insights = data.insights as AnyRecord[]; // Explicitly type 'insights' as 'AnyRecord[]'
     return {
       status: data.decision,
       decisionReason: data.reason,
-      riskLabels: data.riskLabels,
+      decisionScore: data.decisionScore,
+      riskLabels:
+        insights &&
+        insights.map &&
+        insights
+          .map((insight: AnyRecord) => {
+            if (insight.result === 'yes') {
+              return insight.label;
+            }
+          })
+          .filter((x: any) => Boolean(x))
+          .join(', '),
     };
   }
 
   private formatEntityData(data: AnyRecord) {
     const person = data.person as AnyRecord;
     const additionalInfo = {
-      gender: person['gender'],
-      nationality: person['nationality'],
-      yearOfBirth: person['yearOfBirth'],
-      placeOfBirth: person['placeOfBirth'],
-      pepSanctionMatch: person['pepSanctionMatch'],
-      addresses: person['addresses'],
+      gender: (person['gender'] as any)?.value,
+      nationality: (person['nationality'] as any)?.value,
+      // yearOfBirth: person['yearOfBirth'],
+      placeOfBirth: (person['placeOfBirth'] as any)?.value,
+      // pepSanctionMatch: person['pepSanctionMatch'],
+      addresses: (person['addresses'] as any)?.value,
     };
 
     const entityInformation = {
-      nationalId: person['idNumber'],
-      firstName: person['firstName'],
-      lastName: person['lastName'],
-      dateOfBirth: person['dateOfBirth'],
-      email: person['email'],
+      // nationalId: person['idNumber'],
+      firstName: (person['firstName'] as any)?.value,
+      lastName: (person['lastName'] as any)?.value,
+      dateOfBirth: (person['dateOfBirth'] as any)?.value,
+      // email: person['email'],
       additionalInfo: additionalInfo,
     };
     const entity = {
@@ -145,15 +173,15 @@ export class HookCallbackHandlerService {
 
   private formatIssuerData(kycDocument: AnyRecord) {
     const additionalIssuerInfor = {
-      validFrom: kycDocument['validFrom'],
-      validUntil: kycDocument['validUntil'],
-      firstIssue: kycDocument['firstIssue'],
+      validFrom: (kycDocument['validFrom'] as any)?.value,
+      validUntil: (kycDocument['validUntil'] as any)?.value, // Add type assertion here
+      firstIssue: (kycDocument['firstIssue'] as any)?.value,
     };
     const issuer = {
       additionalInfo: additionalIssuerInfor,
-      country: kycDocument['country'],
-      name: kycDocument['issuedBy'],
-      city: kycDocument['placeOfIssue'],
+      country: (kycDocument['country'] as any)?.value,
+      // name: kycDocument['issuedBy'],
+      city: (kycDocument['placeOfIssue'] as any)?.value,
     };
     return issuer;
   }
@@ -188,11 +216,11 @@ export class HookCallbackHandlerService {
   private formatDocumentProperties(data: AnyRecord, kycDocument: AnyRecord) {
     const person = data.person as AnyRecord;
     const properties = {
-      expiryDate: kycDocument['validUntil'],
-      idNumber: person['idNumber'],
-      validFrom: kycDocument['validFrom'],
-      validUntil: kycDocument['validUntil'],
-      firstIssue: kycDocument['firstIssue'],
+      expiryDate: (kycDocument['validUntil'] as any)?.value,
+      idNumber: (person['idNumber'] as any)?.value,
+      validFrom: (kycDocument['validFrom'] as any)?.value,
+      validUntil: (kycDocument['validUntil'] as any)?.value,
+      firstIssue: (kycDocument['firstIssue'] as any)?.value,
     };
     return properties;
   }
