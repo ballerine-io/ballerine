@@ -59,7 +59,7 @@ export class HookCallbackHandlerService {
     const documentProperties = this.formatDocumentProperties(data, kycDocument);
     const pages = await this.formatPages(data);
     const decision = this.formatDecision(data);
-    const documentCategory = kycDocument.type as string;
+    const documentCategory = (kycDocument.type as AnyRecord).value as string;
     const documents = this.formatDocuments(
       documentCategory,
       pages,

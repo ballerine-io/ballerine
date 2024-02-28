@@ -317,14 +317,17 @@ export class WorkflowService {
     transaction: PrismaTransaction,
   ) {
     const childWorkflow = (
-      await this.createOrUpdateWorkflowRuntime({
-        workflowDefinitionId: childPluginConfig.definitionId,
-        context: childPluginConfig.initOptions.context as unknown as DefaultContextSchema,
-        config: childPluginConfig.initOptions.config as unknown as AnyRecord,
-        parentWorkflowId: childPluginConfig.parentWorkflowRuntimeId,
-        projectIds,
-        currentProjectId,
-      })
+      await this.createOrUpdateWorkflowRuntime(
+        {
+          workflowDefinitionId: childPluginConfig.definitionId,
+          context: childPluginConfig.initOptions.context as unknown as DefaultContextSchema,
+          config: childPluginConfig.initOptions.config as unknown as AnyRecord,
+          parentWorkflowId: childPluginConfig.parentWorkflowRuntimeId,
+          projectIds,
+          currentProjectId,
+        },
+        transaction,
+      )
     )[0];
 
     if (childWorkflow) {
@@ -1276,24 +1279,33 @@ export class WorkflowService {
     }));
   }
 
-  async createOrUpdateWorkflowRuntime({
-    workflowDefinitionId,
-    context,
-    config,
-    parentWorkflowId,
-    projectIds,
-    currentProjectId,
-    ...salesforceData
-  }: {
-    workflowDefinitionId: string;
-    context: DefaultContextSchema;
-    config?: WorkflowConfig;
-    parentWorkflowId?: string;
-    projectIds: TProjectIds;
-    currentProjectId: TProjectId;
-    // eslint-disable-next-line @typescript-eslint/ban-types
-  } & ({ salesforceObjectName: string; salesforceRecordId: string } | {})) {
-    return await this.prismaService.$transaction(async transaction => {
+  async createOrUpdateWorkflowRuntime(
+    {
+      workflowDefinitionId,
+      context,
+      config,
+      parentWorkflowId,
+      projectIds,
+      currentProjectId,
+      ...salesforceData
+    }: {
+      workflowDefinitionId: string;
+      context: DefaultContextSchema;
+      config?: WorkflowConfig;
+      parentWorkflowId?: string;
+      projectIds: TProjectIds;
+      currentProjectId: TProjectId;
+      // eslint-disable-next-line @typescript-eslint/ban-types
+    } & ({ salesforceObjectName: string; salesforceRecordId: string } | {}),
+    transaction?: PrismaTransaction,
+  ) {
+    const beginTransactionIfNotExist = beginTransactionIfNotExistCurry({
+      transaction,
+      prismaService: this.prismaService,
+      options: defaultPrismaTransactionOptions,
+    });
+
+    return await beginTransactionIfNotExist(async transaction => {
       const workflowDefinition = await this.workflowDefinitionRepository.findById(
         workflowDefinitionId,
         {},
@@ -1404,31 +1416,34 @@ export class WorkflowService {
           };
         };
 
-        workflowRuntimeData = await this.workflowRuntimeDataRepository.create({
-          data: {
-            ...entityConnect,
-            workflowDefinitionVersion: workflowDefinition.version,
-            context: {
-              ...contextToInsert,
-              documents: documentsWithPersistedImages,
-              flowConfig: (contextToInsert as any)?.flowConfig ?? createFlowConfig(uiSchema),
-            } as InputJsonValue,
-            config: mergedConfig as InputJsonValue,
-            // @ts-expect-error - error from Prisma types fix
-            state: workflowDefinition.definition.initial as string,
-            status: 'active',
-            workflowDefinitionId: workflowDefinition.id,
-            ...(parentWorkflowId &&
-              ({
-                parentRuntimeDataId: parentWorkflowId,
-              } satisfies Omit<
-                Prisma.WorkflowRuntimeDataCreateArgs['data'],
-                'context' | 'workflowDefinitionVersion'
-              >)),
-            ...('salesforceObjectName' in salesforceData && salesforceData),
-            projectId: currentProjectId,
+        workflowRuntimeData = await this.workflowRuntimeDataRepository.create(
+          {
+            data: {
+              ...entityConnect,
+              workflowDefinitionVersion: workflowDefinition.version,
+              context: {
+                ...contextToInsert,
+                documents: documentsWithPersistedImages,
+                flowConfig: (contextToInsert as any)?.flowConfig ?? createFlowConfig(uiSchema),
+              } as InputJsonValue,
+              config: mergedConfig as InputJsonValue,
+              // @ts-expect-error - error from Prisma types fix
+              state: workflowDefinition.definition.initial as string,
+              status: 'active',
+              workflowDefinitionId: workflowDefinition.id,
+              ...(parentWorkflowId &&
+                ({
+                  parentRuntimeDataId: parentWorkflowId,
+                } satisfies Omit<
+                  Prisma.WorkflowRuntimeDataCreateArgs['data'],
+                  'context' | 'workflowDefinitionVersion'
+                >)),
+              ...('salesforceObjectName' in salesforceData && salesforceData),
+              projectId: currentProjectId,
+            },
           },
-        });
+          transaction,
+        );
 
         logDocumentWithoutId({
           line: 'createOrUpdateWorkflow 1476',
@@ -1461,11 +1476,15 @@ export class WorkflowService {
           }
 
           const nowPlus30Days = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-          const workflowToken = await this.workflowTokenService.create(currentProjectId, {
-            workflowRuntimeDataId: workflowRuntimeData.id,
-            endUserId: endUserId,
-            expiresAt: nowPlus30Days,
-          });
+          const workflowToken = await this.workflowTokenService.create(
+            currentProjectId,
+            {
+              workflowRuntimeDataId: workflowRuntimeData.id,
+              endUserId: endUserId,
+              expiresAt: nowPlus30Days,
+            },
+            transaction,
+          );
 
           workflowRuntimeData = await this.workflowRuntimeDataRepository.updateStateById(
             workflowRuntimeData.id,
@@ -1572,7 +1591,7 @@ export class WorkflowService {
           entities,
         },
       ] as const;
-    }, defaultPrismaTransactionOptions);
+    });
   }
 
   private async __generateEndUserWithBusiness({
@@ -2009,7 +2028,9 @@ export class WorkflowService {
 
         if (
           childWorkflowCallback.deliverEvent &&
-          parentWorkflowRuntime.status !== WorkflowRuntimeDataStatus.completed
+          parentWorkflowRuntime.status !== WorkflowRuntimeDataStatus.completed &&
+          childRuntimeState &&
+          childWorkflowCallback.persistenceStates?.includes(childRuntimeState)
         ) {
           try {
             await this.event(

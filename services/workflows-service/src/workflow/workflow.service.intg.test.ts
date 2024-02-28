@@ -9,10 +9,7 @@ import { FileService } from '@/providers/file/file.service';
 import { StorageService } from '@/storage/storage.service';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { BusinessRepository } from '@/business/business.repository';
-import {
-  ArrayMergeOption,
-  WorkflowRuntimeDataRepository,
-} from '@/workflow/workflow-runtime-data.repository';
+import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -33,7 +30,7 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { faker } from '@faker-js/faker';
-import { BUILT_IN_EVENT, ARRAY_MERGE_OPTION } from '@ballerine/workflow-core';
+import { BUILT_IN_EVENT, ARRAY_MERGE_OPTION, ArrayMergeOption } from '@ballerine/workflow-core';
 
 describe('WorkflowService', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;

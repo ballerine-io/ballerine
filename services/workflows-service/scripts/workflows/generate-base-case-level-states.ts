@@ -45,13 +45,13 @@ export const generateBaseCaseLevelStatesAutoTransitionOnRevision = (
       ...definition[CommonWorkflowStates.REVISION],
       on: {
         ...definition[CommonWorkflowStates.REVISION].on,
-        '*': {
-          target: defaultState,
-          cond: {
-            type: 'jmespath',
-            options: {
-              rule: 'length(documents[?decision.status]) < length(documents)',
-            },
+      },
+      always: {
+        target: defaultState,
+        cond: {
+          type: 'jmespath',
+          options: {
+            rule: 'length(documents[?decision.status]) < length(documents)',
           },
         },
       },
