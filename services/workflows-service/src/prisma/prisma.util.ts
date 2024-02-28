@@ -54,7 +54,7 @@ export const beginTransactionIfNotExistCurry = ({
   prismaService: PrismaService;
   options?: PrismaTransactionOptions;
 }) => {
-  return <T>(callback: (transaction: PrismaTransaction) => Promise<T>) => {
+  return <T>(callback: (transaction: PrismaTransaction) => Promise<T>): Promise<T> => {
     return transaction ? callback(transaction) : prismaService.$transaction(callback, options);
   };
 };

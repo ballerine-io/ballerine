@@ -27,19 +27,21 @@ export class ChildWorkflowPlugin {
   async invoke(context: TContext) {
     const childWorkflowContext = await this.transformData(this.transformers || [], context);
 
-    void this.action({
-      parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
-      definitionId: this.definitionId,
-      initOptions: {
-        context: childWorkflowContext,
-        event: this.initEvent,
-        config: {
-          language: this.parentWorkflowRuntimeConfig.language,
+    try {
+      await this.action({
+        parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
+        definitionId: this.definitionId,
+        initOptions: {
+          context: childWorkflowContext,
+          event: this.initEvent,
+          config: {
+            language: this.parentWorkflowRuntimeConfig.language,
+          },
         },
-      },
-    });
-
-    return Promise.resolve();
+      });
+    } finally {
+      return Promise.resolve();
+    }
   }
 
   async transformData(transformers: Transformers, record: AnyRecord) {

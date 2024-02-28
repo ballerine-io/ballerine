@@ -3,37 +3,35 @@ import { CommonWorkflowEvent, CommonWorkflowStates, StateTag } from '@ballerine/
 export const generateBaseTaskLevelStates = () => ({
   [CommonWorkflowStates.MANUAL_REVIEW]: {
     tags: [StateTag.MANUAL_REVIEW],
-    on: {
-      '*': [
-        {
-          target: CommonWorkflowStates.APPROVED,
-          cond: {
-            type: 'jmespath',
-            options: {
-              rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `0` && length(documents[?decision.status == 'approved']) == length(documents)",
-            },
+    always: [
+      {
+        target: CommonWorkflowStates.APPROVED,
+        cond: {
+          type: 'jmespath',
+          options: {
+            rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `0` && length(documents[?decision.status == 'approved']) == length(documents)",
           },
         },
-        {
-          target: CommonWorkflowStates.REJECTED,
-          cond: {
-            type: 'jmespath',
-            options: {
-              rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `0` && length(documents[?decision.status == 'rejected']) > `0`",
-            },
+      },
+      {
+        target: CommonWorkflowStates.REJECTED,
+        cond: {
+          type: 'jmespath',
+          options: {
+            rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `0` && length(documents[?decision.status == 'rejected']) > `0`",
           },
         },
-        {
-          target: CommonWorkflowStates.REVISION,
-          cond: {
-            type: 'jmespath',
-            options: {
-              rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `0` && length(documents[?decision.status == 'revision']) > `0`",
-            },
+      },
+      {
+        target: CommonWorkflowStates.REVISION,
+        cond: {
+          type: 'jmespath',
+          options: {
+            rule: "length(documents[?decision.status]) == length(documents) && length(documents) > `0` && length(documents[?decision.status == 'revision']) > `0`",
           },
         },
-      ],
-    },
+      },
+    ],
   },
   [CommonWorkflowStates.REJECTED]: {
     tags: [StateTag.REJECTED],
@@ -51,13 +49,13 @@ export const generateBaseTaskLevelStates = () => ({
     tags: [StateTag.REVISION],
     on: {
       [CommonWorkflowEvent.RETURN_TO_REVIEW]: CommonWorkflowStates.MANUAL_REVIEW,
-      '*': {
-        target: CommonWorkflowStates.MANUAL_REVIEW,
-        cond: {
-          type: 'jmespath',
-          options: {
-            rule: 'length(documents[?decision.status]) < length(documents)',
-          },
+    },
+    always: {
+      target: CommonWorkflowStates.MANUAL_REVIEW,
+      cond: {
+        type: 'jmespath',
+        options: {
+          rule: 'length(documents[?decision.status]) < length(documents)',
         },
       },
     },

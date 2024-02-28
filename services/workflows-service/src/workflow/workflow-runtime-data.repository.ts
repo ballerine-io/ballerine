@@ -30,8 +30,9 @@ export class WorkflowRuntimeDataRepository {
 
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
+    transaction: PrismaTransaction | PrismaClient = this.prisma,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.create<T>({
+    return await transaction.workflowRuntimeData.create<T>({
       ...args,
       data: {
         ...args.data,
