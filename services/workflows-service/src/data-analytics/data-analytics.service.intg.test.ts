@@ -8,6 +8,7 @@ import { CounterpartyType, PaymentMethod, TransactionDirection } from '@prisma/c
 import { DataAnalyticsService } from './data-analytics.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { InlineRule } from './types';
+import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 
 const PROJECT_ID = 'project-id';
 
@@ -17,10 +18,9 @@ describe('TransactionRulesEvaluationService', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: commonTestingModules,
       providers: [
         { useClass: WinstonLogger, provide: 'LOGGER' },
-        ClsService,
-        AppLoggerService,
         DataAnalyticsService,
         ProjectScopeService,
         PrismaService,
