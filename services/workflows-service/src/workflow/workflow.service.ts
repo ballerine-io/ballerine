@@ -1907,13 +1907,15 @@ export class WorkflowService {
         );
       }
 
-      this.workflowEventEmitter.emit('workflow.state.changed', {
-        //@ts-expect-error
-        entityId,
-        state: updatedRuntimeData.state,
-        correlationId: updatedRuntimeData.context.ballerineEntityId,
-        runtimeData: updatedRuntimeData,
-      });
+      if (currentState !== workflowRuntimeData.state) {
+        this.workflowEventEmitter.emit('workflow.state.changed', {
+          //@ts-expect-error
+          entityId,
+          state: updatedRuntimeData.state,
+          correlationId: updatedRuntimeData.context.ballerineEntityId,
+          runtimeData: updatedRuntimeData,
+        });
+      }
 
       if (!isFinal || (currentState !== 'approved' && currentState !== 'rejected')) {
         return updatedRuntimeData;
