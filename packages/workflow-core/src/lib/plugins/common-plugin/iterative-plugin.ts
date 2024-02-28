@@ -28,7 +28,11 @@ export class IterativePlugin {
 
     if (!Array.isArray(iterationParams)) {
       console.error('Iterative plugin could not find iterate on param');
-      return this.composeErrorResponse('Iterative plugin could not find iterate on param');
+      // return this.composeErrorResponse('Iterative plugin could not find iterate on param');
+      return {
+        callbackAction: this.successAction,
+        warnnings: ['Iterative plugin could not find iterate on param'],
+      };
     }
 
     for (const param of iterationParams) {

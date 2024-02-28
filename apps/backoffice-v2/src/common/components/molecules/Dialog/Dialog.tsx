@@ -11,12 +11,12 @@ import { AnimatePresence } from 'framer-motion';
 import { DialogClose } from '@radix-ui/react-dialog';
 
 export interface DialogProps extends ComponentProps<typeof ShadCNDialog> {
-  trigger: ReactNode | Array<ReactNode>;
-  content: ReactNode | Array<ReactNode>;
-  title?: ReactNode | Array<ReactNode>;
-  description?: ReactNode | Array<ReactNode>;
-  footer?: ReactNode | Array<ReactNode>;
-  close?: ReactNode | Array<ReactNode>;
+  trigger: ReactNode | ReactNode[];
+  content: ReactNode | ReactNode[];
+  title?: ReactNode | ReactNode[];
+  description?: ReactNode | ReactNode[];
+  footer?: ReactNode | ReactNode[];
+  close?: ReactNode | ReactNode[];
   props?: {
     dialog?: ComponentProps<typeof ShadCNDialog>;
     trigger?: ComponentProps<typeof DialogTrigger>;

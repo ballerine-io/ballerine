@@ -968,16 +968,6 @@ async function seed(bcryptSalt: string | number) {
       where: {
         workflowDefinitionId: { in: ['kyb_with_associated_companies_example'] },
         businessId: { not: null },
-        state: {
-          in: [
-            'manual_review',
-            'approved',
-            'revision',
-            'rejected',
-            'pending_kyc_response',
-            'pending_kyb_response',
-          ],
-        },
       },
     },
     project1.id,
