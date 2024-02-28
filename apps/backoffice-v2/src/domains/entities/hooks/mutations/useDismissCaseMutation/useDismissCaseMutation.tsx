@@ -5,8 +5,7 @@ import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { Action } from '../../../../../common/enums';
 
-// @TODO: Refactor to be under cases/workflows domain
-export const useApproveCaseMutation = ({
+export const useDismissCaseMutation = ({
   workflowId,
   onSelectNextCase,
 }: {
@@ -20,20 +19,20 @@ export const useApproveCaseMutation = ({
       fetchWorkflowEvent({
         workflowId,
         body: {
-          name: Action.APPROVE,
+          name: Action.DISMISS,
         },
       }),
     onSuccess: () => {
       // workflowsQueryKeys._def is the base key for all workflows queries
       void queryClient.invalidateQueries(workflowsQueryKeys._def);
 
-      toast.success(t('toast:approve_case.success'));
+      toast.success(t('toast:dismiss_case.success'));
 
       // TODO: Re-implement
       // onSelectNextEntity();
     },
     onError: () => {
-      toast.error(t('toast:approve_case.error'));
+      toast.error(t('toast:dismiss_case.error'));
     },
   });
 };
