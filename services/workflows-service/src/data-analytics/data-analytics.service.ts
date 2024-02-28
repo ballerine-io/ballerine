@@ -1,14 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { GenericAsyncFunction, InlineRule, TransactionsAgainstDynamicRulesType } from './types';
+import { InlineRule, TransactionsAgainstDynamicRulesType } from './types';
 import { AggregateType } from './consts';
 import { Prisma } from '@prisma/client';
+import { GenericAsyncFunction } from '@/types';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 @Injectable()
 export class DataAnalyticsService {
   private _evaluateNameToFunction: Record<string, GenericAsyncFunction> = {};
 
-  constructor(protected readonly prisma: PrismaService) {
+  constructor(
+    protected readonly prisma: PrismaService,
+    protected readonly logger: AppLoggerService,
+  ) {
     this._evaluateNameToFunction[this.evaluateTransactionsAgainstDynamicRules.name] =
       this.evaluateTransactionsAgainstDynamicRules.bind(this);
   }
@@ -115,11 +120,16 @@ WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
 WHERE ${whereClause} GROUP BY ${groupByClause}`;
     }
 
-    console.log('Executing query...\n', query.sql);
-    console.log('With values:...\n', query.values);
+    this.logger.log('Executing query...\n', {
+      query: query.sql,
+      values: query.values,
+    });
+
     const results = await this.prisma.$queryRaw(query);
 
-    console.log(results);
+    this.logger.debug('evaluateTransactionsAgainstDynamicRules results', {
+      results,
+    });
     return results;
   }
 

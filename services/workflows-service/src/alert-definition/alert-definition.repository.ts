@@ -37,13 +37,22 @@ export class AlertDefinitionRepository {
     return await this.prisma.alertDefinition.create<T>(args);
   }
 
-  async findFirst<T extends Prisma.AlertDefinitionFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.AlertDefinitionFindManyArgs>,
+  async findFirst<T extends Prisma.AlertDefinitionFindFirstArgs>(
+    args: Prisma.SelectSubset<T, Prisma.AlertDefinitionFindFirstArgs>,
     projectIds: TProjectIds,
   ): Promise<AlertDefinition> {
-    const queryArgs = this.scopeService.scopeFindOne(args, projectIds);
+    const queryArgs = this.scopeService.scopeFindFirst(args, projectIds);
 
     return await this.prisma.alertDefinition.findFirstOrThrow(queryArgs);
+  }
+
+  async findMany<T extends Prisma.AlertDefinitionFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.AlertDefinitionFindManyArgs>,
+    projectIds: TProjectIds,
+  ): Promise<AlertDefinition[]> {
+    const queryArgs = this.scopeService.scopeFindMany(args, projectIds);
+
+    return await this.prisma.alertDefinition.findMany(queryArgs);
   }
 
   async findById<T extends Omit<Prisma.AlertDefinitionFindFirstOrThrowArgs, 'where'>>(

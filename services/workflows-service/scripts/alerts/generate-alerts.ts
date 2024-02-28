@@ -28,7 +28,7 @@ export const getRuleDefinitions = () => {
   const _PAY_HCA_CC = {
     id: 'PAY_HCA_CC',
     fnName: 'evaluateTransactionsAgainstDynamicRules',
-    groupedBy: ['businessId'],
+    subjects: ['businessId'],
     options: {
       groupByBusiness: true,
       havingAggregate: AggregateType.SUM,
@@ -52,7 +52,7 @@ export const getRuleDefinitions = () => {
   const _PAY_HCA_APM = {
     id: 'PAY_HCA_APM',
     fnName: 'evaluateTransactionsAgainstDynamicRules',
-    groupedBy: ['businessId'],
+    subjects: ['businessId'],
     options: {
       groupByBusiness: true,
       havingAggregate: AggregateType.SUM,
@@ -76,7 +76,7 @@ export const getRuleDefinitions = () => {
   const _STRUC_CC = {
     id: 'STRUC_CC',
     fnName: 'evaluateTransactionsAgainstDynamicRules',
-    groupedBy: ['businessId'],
+    subjects: ['businessId'],
     options: {
       groupByBusiness: true,
       havingAggregate: AggregateType.COUNT,
@@ -90,6 +90,7 @@ export const getRuleDefinitions = () => {
       timeAmount: 7,
       timeUnit: 'days',
 
+      amountThreshold: 5,
       amountBetween: { min: 500, max: 1000 },
     } as TransactionsAgainstDynamicRulesType,
   } as const satisfies InlineRule;
@@ -100,7 +101,7 @@ export const getRuleDefinitions = () => {
   const _STRUC_APM = {
     id: 'STRUC_APM',
     fnName: 'evaluateTransactionsAgainstDynamicRules',
-    groupedBy: ['businessId'],
+    subjects: ['businessId'],
     options: {
       groupByBusiness: true,
       havingAggregate: AggregateType.COUNT,

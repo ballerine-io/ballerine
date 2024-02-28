@@ -119,7 +119,7 @@ export class AlertService {
       const triggered = await this.checkAlert(definition);
 
       if (triggered) {
-        this.logger.log(`Alert triggered for alert definition ${definition.id}`);
+        this.logger.log(`Alert triggered for alert definition '${definition.id}'`);
       }
     }
   }
@@ -150,51 +150,56 @@ export class AlertService {
       skipped: [],
     } as any;
 
-    const alertsPromises = ruleExecutionResults
-      .filter((aggregatedRow: Record<string, unknown>) => {
-        if (
-          _.some(
-            inlineRule.groupedBy,
-            field => _.isNull(aggregatedRow[field]) || _.isUndefined(aggregatedRow[field]),
-          )
-        ) {
-          this.logger.error(`Alert aggregated row is missing properties `, {
-            inlineRule,
-            aggregatedRow,
-          });
-          return false;
-        }
-        return true;
-      })
-      .map(async (aggregatedRow: object) => {
+    const alertsPromises = ruleExecutionResults.map(
+      async (executionRow: Record<string, unknown>) => {
         try {
-          const pickedResult = _.pick(aggregatedRow, inlineRule.groupedBy);
+          if (
+            _.some(
+              inlineRule.subjects,
+              field => _.isNull(executionRow[field]) || _.isUndefined(executionRow[field]),
+            )
+          ) {
+            this.logger.error(`Alert aggregated row is missing properties `, {
+              inlineRule,
+              aggregatedRow: executionRow,
+            });
 
-          if (await this.isDuplicateAlert(alertDefinition, pickedResult)) {
-            alertResponse.skipped.push({
+            return alertResponse.rejected.push({
+              status: AlertExecutionStatus.FAILED,
+              alertDefinition,
+              executionRow,
+              error: new Error('Aggregated row is missing properties'),
+            });
+          }
+
+          const subjectResult = _.pick(executionRow, inlineRule.subjects);
+
+          if (await this.isDuplicateAlert(alertDefinition, subjectResult)) {
+            return alertResponse.skipped.push({
               status: AlertExecutionStatus.SKIPPED,
               alertDefinition,
-              aggregatedRow,
+              executionRow,
             });
           } else {
-            alertResponse.fulfilled.push({
+            return alertResponse.fulfilled.push({
               status: AlertExecutionStatus.SUCCEEDED,
               alertDefinition,
-              aggregatedRow,
-              alert: await this.createAlert(alertDefinition, pickedResult),
+              executionRow,
+              alert: await this.createAlert(alertDefinition, subjectResult),
             });
           }
         } catch (error) {
           console.error(error);
 
-          alertResponse.rejected.push({
+          return alertResponse.rejected.push({
             status: AlertExecutionStatus.FAILED,
             error,
             alertDefinition,
-            aggregatedRow,
+            executionRow,
           });
         }
-      });
+      },
+    );
 
     await Promise.all(alertsPromises);
 
