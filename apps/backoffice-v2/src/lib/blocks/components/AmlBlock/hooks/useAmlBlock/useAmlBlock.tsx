@@ -5,16 +5,28 @@ import { Badge } from '@ballerine/ui';
 import { WarningFilledSvg } from '@/common/components/atoms/icons';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
 import { amlAdapter } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
+import { safeEvery } from '@ballerine/common';
 
 export const useAmlBlock = ({
   sessionKeys,
   getAmlData,
 }: {
   sessionKeys: string[];
-  getAmlData: (key: string) => any;
+  getAmlData: (key: string) => Parameters<typeof amlAdapter>[0];
 }) => {
-  return useMemo(() => {
+  const isAmlEmpty = useMemo(() => {
     if (!sessionKeys?.length) {
+      return true;
+    }
+
+    return safeEvery(sessionKeys, key => {
+      const aml = getAmlData(key);
+
+      return !aml;
+    });
+  }, [getAmlData, sessionKeys]);
+  const amlBlock = useMemo(() => {
+    if (isAmlEmpty) {
       return [];
     }
 
@@ -346,5 +358,20 @@ export const useAmlBlock = ({
         ) ?? []),
       ];
     });
-  }, [getAmlData, sessionKeys]);
+  }, [getAmlData, isAmlEmpty, sessionKeys]);
+
+  if (isAmlEmpty) {
+    return [];
+  }
+
+  return createBlocksTyped()
+    .addBlock()
+    .addCell({
+      id: 'header',
+      type: 'heading',
+      value: 'Compliance Check Results',
+    })
+    .build()
+    .concat(amlBlock)
+    .flat(1);
 };

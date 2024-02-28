@@ -49,6 +49,7 @@ export const WorkflowDefinitionVariant = {
   KYB_WITH_ASSOCIATED_COMPANIES: 'KYB_WITH_ASSOCIATED_COMPANIES',
   KYC: 'KYC',
   DEFAULT: 'DEFAULT',
+  ONGOING: 'ONGOING',
 } as const;
 
 export type TStateTags = typeof StateTags;

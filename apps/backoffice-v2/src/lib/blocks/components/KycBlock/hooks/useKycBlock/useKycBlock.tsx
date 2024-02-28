@@ -98,17 +98,15 @@ export const useKycBlock = ({
       ]) ?? []
     : [];
 
-  const hasAml = kycSessionKeys?.some(key => {
-    return (
-      !!childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ||
-      !!childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml
-    );
-  });
-  const amlBlock = useAmlBlock({
-    sessionKeys: kycSessionKeys,
-    getAmlData: key =>
+  const getAmlData = useCallback(
+    (key: string) =>
       childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ??
       childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml,
+    [childWorkflow?.context?.pluginsOutput?.kyc_session],
+  );
+  const amlBlock = useAmlBlock({
+    sessionKeys: kycSessionKeys,
+    getAmlData,
   });
 
   const documentExtractedData = kycSessionKeys?.length
@@ -419,18 +417,7 @@ export const useKycBlock = ({
                 })
                 .addCell({
                   type: 'container',
-                  value: !hasAml
-                    ? []
-                    : createBlocksTyped()
-                        .addBlock()
-                        .addCell({
-                          id: 'header',
-                          type: 'heading',
-                          value: 'Compliance Check Results',
-                        })
-                        .build()
-                        .concat(amlBlock)
-                        .flat(1),
+                  value: amlBlock,
                 })
                 .build()
                 .flat(1),
