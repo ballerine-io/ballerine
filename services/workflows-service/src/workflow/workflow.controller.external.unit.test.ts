@@ -15,8 +15,6 @@ import { EndUserService } from '@/end-user/end-user.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { PrismaService } from '@/prisma/prisma.service';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { ClsService } from 'nestjs-cls';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
 
 const acGuard = {
@@ -78,9 +76,10 @@ describe('Workflow (external)', () => {
           provide: 'LOGGER',
           useClass: WinstonLogger,
         },
-        PrismaService,
-        ClsService,
-        AppLoggerService,
+        {
+          provide: PrismaService,
+          useValue: {} as PrismaService,
+        },
       ],
       controllers: [WorkflowControllerExternal],
       imports: [ACLModule],
