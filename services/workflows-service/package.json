@@ -25,7 +25,7 @@
     "db:migrate-up": "prisma migrate deploy",
     "db:reset": "prisma migrate reset --skip-seed -f",
     "db:reset:dev": "npm run db:reset && npm run seed",
-    "db:reset:dev:with-data": "npm run db:reset && npm run seed && npm run db:data-migration:migrate",
+    "db:reset:dev:with-data": "npm run db:reset:dev && npm run db:data-migration:migrate",
     "db:init": "npm run db:migrate-dev -- --name 'initial version' && npm run db:migrate-up seed",
     "prisma:generate": "prisma generate",
     "docker:db": "docker compose -f docker-compose.db.yml up -d --wait",
