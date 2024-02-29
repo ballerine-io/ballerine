@@ -7,6 +7,7 @@ import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.ser
 import { Base64FileService } from '@/providers/file/file-provider/base64-file.service';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
 import { LocalFileService } from '@/providers/file/file-provider/local-file.service';
+import { extractBase64Payload } from '@/providers/file/utils/extract-base64-payload';
 import { StorageService } from '@/storage/storage.service';
 import type { TProjectId } from '@/types';
 import { getDocumentId, isErrorWithMessage } from '@ballerine/common';
@@ -221,10 +222,13 @@ export class FileService {
       };
     }
 
-    if (provider == 'base64' && z.string().refine(Base64.isValid)) {
+    if (
+      provider == 'base64' &&
+      z.string().refine(Base64.isValid).parse(extractBase64Payload(uri))
+    ) {
       return {
         sourceServiceProvider: new Base64FileService(),
-        sourceRemoteFileConfig: uri,
+        sourceRemoteFileConfig: uri as TRemoteFileConfig,
       };
     }
 
@@ -281,7 +285,7 @@ export class FileService {
   }
 
   async copyToDestinationAndCreate(
-    fileDetails: { id: string; uri: string; provider: string; fileName: string; data?: string },
+    fileDetails: { id: string; uri: string; provider: string; fileName: string },
     entityId: string,
     projectId: TProjectId,
     customerName: string,
@@ -347,7 +351,9 @@ export class FileService {
         ? fileInfo?.remoteFilePath?.fileNameInBucket
         : undefined,
       projectId,
-      mimeType: fileInfo?.mimeType,
+      // After copy of file that was created from base64 its losing mimeType
+      // Forcing to use mimeType of source file when provider is base64
+      mimeType: fileDetails.provider === 'base64' ? fileType.mimeType : fileInfo?.mimeType,
       fileName: fileDetails.fileName,
     });
 

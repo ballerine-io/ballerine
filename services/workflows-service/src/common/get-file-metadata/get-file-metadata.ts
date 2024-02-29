@@ -1,8 +1,8 @@
+import { getFileExtension } from '@/common/get-file-extension/get-file-extension';
 import { getFileType } from '@/common/get-file-type/get-file-type';
+import { log } from '@ballerine/common';
 import { MimeType } from 'file-type';
 import mime from 'mime';
-import { getFileExtension } from '@/common/get-file-extension/get-file-extension';
-import { log } from '@ballerine/common';
 
 /**
  *

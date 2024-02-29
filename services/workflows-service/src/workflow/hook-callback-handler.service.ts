@@ -5,7 +5,7 @@ import { CustomerService } from '@/customer/customer.service';
 import type { TProjectId, TProjectIds } from '@/types';
 import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { AnyRecord } from '@ballerine/common';
+import { AnyRecord, TDocument } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
 import { WorkflowRuntimeData } from '@prisma/client';
 import fs from 'fs';
@@ -76,17 +76,23 @@ export class HookCallbackHandlerService {
     const { context } = workflowRuntime;
     const { reportData, base64Pdf } = data;
 
-    const pdfDocument = {
+    const pdfDocument: TDocument = {
       category: 'website-monitoring',
       type: 'pdf-report',
       pages: [
         {
           provider: 'base64',
-          data: base64Pdf,
+          uri: base64Pdf,
           type: 'application/pdf',
+          fileName: 'report.pdf',
         },
       ],
+      issuer: {
+        // TODO: use real company country?
+        country: 'GB',
+      },
       propertiesSchema: {},
+      properties: {},
     };
 
     const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
@@ -96,7 +102,7 @@ export class HookCallbackHandlerService {
       customer.name,
     );
 
-    set(workflowRuntime.context, resultDestinationPath, { reportData });
+    set(workflowRuntime.context, resultDestinationPath, { reportData, base64Pdf });
     workflowRuntime.context.documents = persistedDocuments;
 
     await this.workflowService.updateWorkflowRuntimeData(

@@ -34,7 +34,6 @@ import {
   DefaultContextSchema,
   getDocumentId,
   isErrorWithMessage,
-  TDefaultSchemaDocumentPage,
 } from '@ballerine/common';
 import {
   ChildPluginCallbackOutput,
@@ -1855,9 +1854,6 @@ export class WorkflowService {
                 fileName: string;
               }
             ).fileName,
-            data: (
-              documentPage as Extract<TDefaultSchemaDocumentPage, { data?: string | undefined }>
-            ).data,
           },
           entityId,
           projectId,
