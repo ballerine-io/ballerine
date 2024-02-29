@@ -8,12 +8,12 @@ import { IndividualAmlWebhookInput } from '@/webhooks/dtos/individual-aml-webhoo
 import { WebhooksService } from '@/webhooks/webhooks.service';
 
 const WEBHOOKS = {
-  AML_HIT: 'AML_HIT',
+  AML_INDIVIDUAL_MONITORING_UPDATE: 'aml.individuals.monitoring.update',
 } as const;
 
 const ENTITY_TYPES = {
   BUSINESS: 'business',
-  INDIVIDUALS: 'individuals',
+  INDIVIDUAL: 'individual',
 } as const;
 
 @swagger.ApiBearerAuth()
@@ -37,10 +37,10 @@ export class WebhooksController {
     @common.Body() data: IndividualAmlWebhookInput,
   ) {
     try {
-      if (entityType === ENTITY_TYPES.INDIVIDUALS) {
+      if (entityType === ENTITY_TYPES.INDIVIDUAL) {
         const { eventName } = data;
 
-        if (eventName === WEBHOOKS.AML_HIT) {
+        if (eventName === WEBHOOKS.AML_INDIVIDUAL_MONITORING_UPDATE) {
           await this.webhooksService.handleIndividualAmlHit(data as IndividualAmlWebhookInput);
         }
       }
