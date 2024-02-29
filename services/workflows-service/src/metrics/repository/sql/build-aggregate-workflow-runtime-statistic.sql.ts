@@ -1,4 +1,7 @@
-export const aggregateWorkflowRuntimeStatisticQuery = `
+import { TProjectIds } from '@/types';
+import { Prisma } from '@prisma/client';
+
+export const buildAggregateWorkflowRuntimeStatisticQuery = (projectIds: TProjectIds) => Prisma.sql`
 select
   "workflowDefinitionId",
   "name" as "workflowDefinitionName",
@@ -29,7 +32,7 @@ from
   from
     "WorkflowRuntimeData"
   where
-    "projectId" in ($1)
+    "projectId" in (${projectIds?.join(',')})
   group by
     "workflowDefinitionId",
     "status"
