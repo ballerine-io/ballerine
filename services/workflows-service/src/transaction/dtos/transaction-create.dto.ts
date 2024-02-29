@@ -85,7 +85,7 @@ class CardInfo {
   @ApiProperty({ required: false }) @IsString() @IsOptional() expiryYear?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() holderName?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() tokenized?: string;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() cardBIN?: number;
+  @ApiProperty({ required: false }) @IsString() @IsOptional() cardBin?: number;
   // Add other card-related fields as necessary
 }
 export class TransactionCreateDto {
