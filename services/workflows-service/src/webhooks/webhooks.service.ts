@@ -14,10 +14,35 @@ export class WebhooksService {
     private readonly workflowDefinitionService: WorkflowDefinitionService,
   ) {}
 
-  async handleAmlHit({ entityId }: IndividualAmlWebhookInput) {
-    const { projectId } = await this.endUserRepository.findByIdUnscoped(entityId, {
+  async handleIndividualAmlHit({ entityId }: IndividualAmlWebhookInput) {
+    const { projectId, ...rest } = await this.endUserRepository.findByIdUnscoped(entityId, {
       select: {
+        approvalState: true,
+        stateReason: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        country: true,
+        nationalId: true,
+        dateOfBirth: true,
+        additionalInfo: true,
+        createdAt: true,
+        updatedAt: true,
         projectId: true,
+        businesses: {
+          select: {
+            address: true,
+            country: true,
+            website: true,
+            companyName: true,
+            businessType: true,
+            approvalState: true,
+            registrationNumber: true,
+            dateOfIncorporation: true,
+            countryOfIncorporation: true,
+          },
+        },
       },
     });
 
@@ -38,6 +63,7 @@ export class WebhooksService {
       workflowDefinitionId,
       context: {
         entity: {
+          ...rest,
           id: entityId,
           type: 'individual',
         },

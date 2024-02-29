@@ -41,7 +41,7 @@ export class WebhooksController {
         const { eventName } = data;
 
         if (eventName === WEBHOOKS.AML_HIT) {
-          await this.webhooksService.handleAmlHit(data as IndividualAmlWebhookInput);
+          await this.webhooksService.handleIndividualAmlHit(data as IndividualAmlWebhookInput);
         }
       }
     } catch (error) {
