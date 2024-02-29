@@ -56,8 +56,6 @@ import {
 } from '@nestjs/common';
 import {
   ApprovalState,
-  Business,
-  EndUser,
   Prisma,
   PrismaClient,
   UiDefinitionContext,
@@ -1537,7 +1535,7 @@ export class WorkflowService {
           {
             data: {
               ...entityConnect,
-              context: contextToInsert,
+              context: contextToInsert as InputJsonValue,
               config: merge(
                 existingWorkflowRuntimeData.config,
                 validatedConfig || {},
