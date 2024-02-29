@@ -53,11 +53,11 @@ module.exports = {
       {
         blankLine: 'always',
         prev: '*',
-        next: ['const', 'let', 'var', 'if', 'switch', 'for', 'while'],
+        next: ['if', 'switch', 'for', 'while'],
       }, // Line break before these statements
       {
         blankLine: 'always',
-        prev: ['const', 'let', 'var', 'if', 'switch', 'for', 'while'],
+        prev: ['if', 'switch', 'for', 'while'],
         next: '*',
       }, // Line break after these statements
     ],
