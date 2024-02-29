@@ -50,7 +50,7 @@ install_docker(){
 }
 
 deploy_ballerine(){
-  git clone https://github.com/ballerine-io/ballerine.git -b deploy/ballerine/deploy/aws/instances ;
+  git clone https://github.com/ballerine-io/ballerine.git;
   rm /home/ubuntu/ballerine/deploy/.env
   source_env_variables
   cd ballerine/deploy ; sudo docker-compose -f docker-compose-build.yml up -d --force-recreate

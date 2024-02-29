@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { getDocumentsByCountry, StateTag, TDocument } from '@ballerine/common';
-import { ctw } from '@ballerine/ui';
+import { Button, ctw } from '@ballerine/ui';
 import { UseQueryResult } from '@tanstack/react-query';
 import {
   composePickableCategoryType,
@@ -22,6 +22,8 @@ import { getRevisionReasonsForDocument } from '@/lib/blocks/components/Directors
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { toTitleCase } from 'string-ts';
 import { DecisionStatus, Director } from '@/lib/blocks/hooks/useDirectorsBlocks/types';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 
 export const useDirectorsBlocks = ({
   workflow,
@@ -239,20 +241,54 @@ export const useDirectorsBlocks = ({
               return approvedBadgeBlock;
             } else {
               if (decisionStatus !== 'revision') {
+                const isApproveDisabled =
+                  (!isDoneWithRevision && Boolean(document?.decision?.status)) ||
+                  noAction ||
+                  isLoadingApproveTaskById;
                 const approveButtonBlock = createBlocksTyped()
                   .addBlock()
                   .addCell({
-                    type: 'callToActionLegacy',
+                    type: 'dialog',
                     value: {
-                      text: 'Approve',
+                      trigger: (
+                        <MotionButton
+                          {...motionButtonProps}
+                          animate={{
+                            ...motionButtonProps.animate,
+                            opacity: isApproveDisabled ? 0.5 : motionButtonProps.animate.opacity,
+                          }}
+                          disabled={isApproveDisabled}
+                          size={'wide'}
+                          variant={'success'}
+                        >
+                          Approve
+                        </MotionButton>
+                      ),
+                      title: `Approval confirmation`,
+                      description: <p className={`text-sm`}>Are you sure you want to approve?</p>,
+                      close: (
+                        <div className={`space-x-2`}>
+                          <Button type={'button'} variant={`secondary`}>
+                            Cancel
+                          </Button>
+                          <Button
+                            disabled={isApproveDisabled}
+                            onClick={onMutateApproveTaskById({
+                              taskId: document.id,
+                              contextUpdateMethod: 'director',
+                            })}
+                          >
+                            Approve
+                          </Button>
+                        </div>
+                      ),
                       props: {
-                        decision: 'approve',
-                        id: document.id,
-                        contextUpdateMethod: 'director',
-                        disabled:
-                          (!isDoneWithRevision && Boolean(document?.decision?.status)) || noAction,
-                        workflow,
-                        onReuploadNeeded,
+                        content: {
+                          className: 'mb-96',
+                        },
+                        title: {
+                          className: `text-2xl`,
+                        },
                       },
                     },
                   })

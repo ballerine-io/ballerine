@@ -44,14 +44,11 @@ export const addPropertiesSchemaToDocument = (
   documentSchema: WorkflowDefinition['documentsSchema'],
 ) => {
   // when does not have document specific for specific country/category -> go to default
+  const propertiesSchemaFromDefinition =
+    documentSchema &&
+    getPropertiesFromDefinition(document, documentSchema as TDocument[], document?.issuer?.country);
   const propertiesSchema =
-    (documentSchema &&
-      getPropertiesFromDefinition(
-        document,
-        documentSchema as TDocument[],
-        document?.issuer?.country,
-      )) ||
-    getPropertiesSchemaForDocument(document);
+    propertiesSchemaFromDefinition || getPropertiesSchemaForDocument(document);
 
   return {
     ...document,

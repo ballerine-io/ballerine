@@ -1,11 +1,12 @@
 # @ballerine/ui
 
-## 0.3.29-11210907c.0
+## 0.3.29
 
 ### Patch Changes
 
+- Ver bump
 - Updated dependencies
-  - @ballerine/common@0.7.42-11210907c.0
+  - @ballerine/common@0.7.43
 
 ## 0.3.28
 
