@@ -1,4 +1,10 @@
-export const aggregateApprovalRateQuery = `
+import { TProjectIds } from '@/types';
+import { Prisma } from '@prisma/client';
+
+export const buildAggregateApprovalRateQuery = (
+  fromDate: Date = new Date(),
+  projectIds: TProjectIds,
+) => Prisma.sql`
 SELECT
   (CASE
     WHEN counts."resolvedCount" > 0 AND counts."approvedCount" > 0
@@ -9,12 +15,12 @@ FROM (
   SELECT
     (SELECT COUNT(*)
      FROM "WorkflowRuntimeData"
-     WHERE "resolvedAt" >= $1
-       AND "projectId" in ($2)) AS "resolvedCount",
+     WHERE "resolvedAt" >= ${fromDate}
+       AND "projectId" in (${projectIds?.join(',')})) AS "resolvedCount",
     (SELECT COUNT(*)
      FROM "WorkflowRuntimeData"
      WHERE context -> 'documents' @> '[{"decision": {"status": "approved"}}]'
-       AND "resolvedAt" >= $1
-       AND "projectId" in ($2)) AS "approvedCount"
+       AND "resolvedAt" >= ${fromDate}
+       AND "projectId" in (${projectIds?.join(',')})) AS "approvedCount"
 ) AS counts;
 `;
