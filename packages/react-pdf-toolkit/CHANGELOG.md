@@ -1,5 +1,14 @@
 # @ballerine/react-pdf-toolkit
 
+## 1.0.15-11210907c.0
+
+### Patch Changes
+
+- Version bump
+- c5cc4384e: Updated Header date formatting
+- Updated dependencies
+  - @ballerine/ui@0.3.30-11210907c.0
+
 ## 1.0.14
 
 ### Patch Changes
