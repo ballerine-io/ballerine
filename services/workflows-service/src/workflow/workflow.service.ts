@@ -2183,7 +2183,9 @@ export class WorkflowService {
 
         if (
           childWorkflowCallback.deliverEvent &&
-          parentWorkflowRuntime.status !== WorkflowRuntimeDataStatus.completed
+          parentWorkflowRuntime.status !== WorkflowRuntimeDataStatus.completed &&
+          childRuntimeState &&
+          childWorkflowCallback.persistenceStates?.includes(childRuntimeState)
         ) {
           try {
             await this.event(
