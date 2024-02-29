@@ -8,8 +8,8 @@ export const StateTag = {
   COLLECTION_FLOW: 'collection_flow',
   FAILURE: 'failure',
   DATA_ENRICHMENT: 'data_enrichment',
-  DISMISSED: 'dismissed',
   FLAGGED: 'flagged',
+  DISMISSED: 'dismissed',
 } as const;
 
 export const StateTags = [
@@ -26,7 +26,6 @@ export const StateTags = [
 ] as const;
 
 export const CommonWorkflowEvent = {
-  TASK_REVIEWED: 'TASK_REVIEWED',
   CASE_REVIEWED: 'CASE_REVIEWED',
   RETURN_TO_REVIEW: 'RETURN_TO_REVIEW',
   RESUBMITTED: 'RESUBMITTED',
@@ -34,8 +33,8 @@ export const CommonWorkflowEvent = {
   APPROVE: 'approve',
   REVISION: 'revision',
   RESOLVE: 'resolve',
-  DISMISS: 'dimiss',
   FLAG: 'flag',
+  DISMISS: 'dismiss',
 } as const;
 
 export const CommonWorkflowStates = {
@@ -44,8 +43,8 @@ export const CommonWorkflowStates = {
   APPROVED: 'approved',
   RESOLVED: 'resolved',
   REVISION: 'revision',
-  DISMISSED: 'dismissed',
   FLAGGED: 'flagged',
+  DISMISSED: 'dismissed',
 } as const;
 
 export type TStateTag = (typeof StateTags)[number];
