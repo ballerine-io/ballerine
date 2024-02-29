@@ -22,6 +22,7 @@ import { plainToClass } from 'class-transformer';
 import { randomUUID } from 'crypto';
 import keyBy from 'lodash/keyBy';
 import get from 'lodash/get';
+import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
 
 @Injectable()
 export class CollectionFlowService {
@@ -189,37 +190,6 @@ export class CollectionFlowService {
     return workflowData ? workflowData : null;
   }
 
-  async updateWorkflowRuntimeData(payload: UpdateFlowDto, tokenScope: ITokenScope) {
-    const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
-      tokenScope.workflowRuntimeDataId,
-      {},
-      [tokenScope.projectId] as TProjectIds,
-    );
-
-    if (payload.data.endUser) {
-      await this.endUserService.updateById(tokenScope.endUserId, {
-        data: { ...payload.data.endUser, projectId: tokenScope.projectId },
-      });
-    }
-
-    if (payload.data.ballerineEntityId && payload.data.business) {
-      await this.businessService.updateById(payload.data.ballerineEntityId, {
-        data: { ...payload.data.business, projectId: tokenScope.projectId },
-      });
-    }
-
-    const { state, ...resetContext } = payload.data.context as Record<string, any>;
-
-    return await this.workflowService.createOrUpdateWorkflowRuntime({
-      workflowDefinitionId: workflowRuntime.workflowDefinitionId,
-      context: resetContext as DefaultContextSchema,
-      config: workflowRuntime.config,
-      parentWorkflowId: undefined,
-      projectIds: [tokenScope.projectId],
-      currentProjectId: tokenScope.projectId,
-    });
-  }
-
   async updateWorkflowRuntimeLanguage(language: string, tokenScope: ITokenScope) {
     const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
       tokenScope.workflowRuntimeDataId,
@@ -245,18 +215,16 @@ export class CollectionFlowService {
       });
     }
 
-    return await this.workflowService.syncContextById(
-      tokenScope.workflowRuntimeDataId,
-      payload.data.context as DefaultContextSchema,
+    return await this.workflowService.event(
+      {
+        id: tokenScope.workflowRuntimeDataId,
+        name: BUILT_IN_EVENT.UPDATE_CONTEXT,
+        payload: {
+          context: payload.data.context,
+        },
+      },
+      [tokenScope.projectId],
       tokenScope.projectId,
-    );
-  }
-
-  async resubmitFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
-    await this.workflowService.event(
-      { id: flowId, name: 'RESUBMITTED' },
-      projectIds,
-      currentProjectId,
     );
   }
 

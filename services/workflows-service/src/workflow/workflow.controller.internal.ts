@@ -269,7 +269,6 @@ export class WorkflowControllerInternal {
         },
         projectIds,
         currentProjectId,
-        data.postUpdateEventName,
       );
     } catch (error) {
       if (isRecordNotFoundError(error)) {

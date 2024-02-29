@@ -6,7 +6,6 @@ import { assign, createMachine, interpret } from 'xstate';
 import { HttpError } from './errors';
 import type {
   ChildPluginCallbackOutput,
-  IUpdateContextEvent,
   ObjectValues,
   WorkflowEvent,
   WorkflowEventWithoutState,
@@ -40,7 +39,7 @@ import {
   ISerializableCommonPluginParams,
   IterativePluginParams,
 } from './plugins/common-plugin/types';
-import { TContext } from './utils';
+import { ArrayMergeOption, TContext } from './utils';
 import { IterativePlugin } from './plugins/common-plugin/iterative-plugin';
 import { ChildWorkflowPlugin } from './plugins/common-plugin/child-workflow-plugin';
 import { search } from 'jmespath';
@@ -51,6 +50,8 @@ import {
   TransformerPlugin,
   TransformerPluginParams,
 } from './plugins/common-plugin/transformer-plugin';
+import { deepMergeWithOptions } from './utils';
+import { BUILT_IN_EVENT } from './index';
 
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
@@ -125,7 +126,6 @@ export class WorkflowRunner {
       ...(workflowContext && Object.keys(workflowContext.machineContext ?? {})?.length
         ? workflowContext.machineContext
         : definition.context ?? {}),
-      workflowRuntimeId: runtimeId,
     };
 
     // use initial state or provided state
@@ -240,7 +240,12 @@ export class WorkflowRunner {
       stateNames: iterarivePluginParams.stateNames,
       //@ts-ignore
       iterateOn: this.fetchTransformers(iterarivePluginParams.iterateOn),
-      action: (context: TContext) => actionPlugin!.invoke(context, this.#__config),
+      action: (context: TContext) =>
+        actionPlugin!.invoke({
+          ...context,
+          workflowRuntimeConfig: this.#__config,
+          workflowRuntimeId: this.#__runtimeId,
+        }),
       successAction: iterarivePluginParams.successAction,
       errorAction: iterarivePluginParams.errorAction,
     };
@@ -435,23 +440,40 @@ export class WorkflowRunner {
       },
     };
 
-    const updateContext = assign<Record<PropertyKey, any>, IUpdateContextEvent>(
-      (context, event) => {
-        context = {
-          ...context,
-          ...event.payload,
-        };
+    const updateContext = assign(
+      (
+        context,
+        event: {
+          payload: {
+            context: Record<PropertyKey, unknown>;
+          };
+        },
+      ) => event.payload.context,
+    );
 
-        return context;
-      },
+    const deepMergeContext = assign(
+      (
+        context,
+        {
+          payload,
+        }: {
+          payload: {
+            arrayMergeOption: ArrayMergeOption;
+            newContext: Record<PropertyKey, unknown>;
+          };
+        },
+      ) => deepMergeWithOptions(context, payload.newContext, payload.arrayMergeOption),
     );
 
     return createMachine(
       {
         predictableActionArguments: true,
         on: {
-          UPDATE_CONTEXT: {
+          [BUILT_IN_EVENT.UPDATE_CONTEXT]: {
             actions: updateContext,
+          },
+          [BUILT_IN_EVENT.DEEP_MERGE_CONTEXT]: {
+            actions: deepMergeContext,
           },
         },
         ...definition,
@@ -582,7 +604,11 @@ export class WorkflowRunner {
 
   private async __invokeCommonPlugin(commonPlugin: CommonPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const { callbackAction, error } = await commonPlugin.invoke?.(this.#__context, this.#__config);
+    const { callbackAction, error } = await commonPlugin.invoke?.({
+      ...this.#__context,
+      workflowRuntimeConfig: this.#__config,
+      workflowRuntimeId: this.#__runtimeId,
+    });
 
     if (!!error) {
       this.#__context.pluginsOutput = {
@@ -598,10 +624,11 @@ export class WorkflowRunner {
 
   private async __invokeApiPlugin(apiPlugin: HttpPlugin) {
     // @ts-expect-error - multiple types of plugins return different responses
-    const { callbackAction, responseBody, error } = await apiPlugin.invoke?.(
-      this.#__context,
-      this.#__config,
-    );
+    const { callbackAction, responseBody, error } = await apiPlugin.invoke?.({
+      ...this.#__context,
+      workflowRuntimeConfig: this.#__config,
+      workflowRuntimeId: this.#__runtimeId,
+    });
 
     if (error) {
       console.error('Error invoking plugin: ', apiPlugin.name, this.#__context, error);

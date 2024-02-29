@@ -5,10 +5,7 @@ import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fet
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 
-export const useRemoveDecisionTaskByIdMutation = (
-  workflowId: string,
-  postUpdateEventName?: string,
-) => {
+export const useRemoveDecisionTaskByIdMutation = (workflowId: string) => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
   const workflowById = workflowsQueryKeys.byId({ workflowId, filterId });
@@ -27,7 +24,6 @@ export const useRemoveDecisionTaskByIdMutation = (
         body: {
           decision: null,
           reason: null,
-          postUpdateEventName,
         },
         contextUpdateMethod,
       }),

@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
-import type { TProjectId } from '@/types';
+import type { PrismaTransaction, TProjectId } from '@/types';
 import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
@@ -13,8 +13,9 @@ export class WorkflowTokenRepository {
       Prisma.WorkflowRuntimeDataTokenUncheckedCreateInput,
       'workflowRuntimeDataId' | 'endUserId' | 'expiresAt'
     >,
+    transaction: PrismaTransaction | PrismaService = this.prisma,
   ) {
-    return await this.prisma.workflowRuntimeDataToken.create({
+    return await transaction.workflowRuntimeDataToken.create({
       data: {
         ...data,
         projectId,

@@ -14,6 +14,8 @@ import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.ser
 import { EndUserService } from '@/end-user/end-user.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { PrismaService } from '@/prisma/prisma.service';
+import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
 
 const acGuard = {
   canActivate: () => {
@@ -69,6 +71,14 @@ describe('Workflow (external)', () => {
         {
           provide: WorkflowTokenService,
           useValue: {} as WorkflowTokenService,
+        },
+        {
+          provide: 'LOGGER',
+          useClass: WinstonLogger,
+        },
+        {
+          provide: PrismaService,
+          useValue: {} as PrismaService,
         },
       ],
       controllers: [WorkflowControllerExternal],

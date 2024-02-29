@@ -15,6 +15,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
 import { GetFlowConfigurationInputDto } from '@/collection-flow/dto/get-flow-configuration-input.dto';
 import { UpdateContextInputDto } from '@/collection-flow/dto/update-context-input.dto';
+import { BUILT_IN_EVENT, ARRAY_MERGE_OPTION } from '@ballerine/workflow-core';
 
 @Public()
 @UseTokenAuthGuard()
@@ -104,11 +105,6 @@ export class ColectionFlowController {
     );
   }
 
-  @common.Put('')
-  async updateFlow(@common.Body() payload: UpdateFlowDto, @TokenScope() tokenScope: ITokenScope) {
-    return await this.service.updateWorkflowRuntimeData(payload, tokenScope);
-  }
-
   @common.Put('/language')
   async updateFlowLanguage(
     @common.Body() { language }: UpdateFlowLanguageDto,
@@ -127,9 +123,18 @@ export class ColectionFlowController {
     @common.Body() { context }: UpdateContextInputDto,
     @TokenScope() tokenScope: ITokenScope,
   ) {
-    return await this.workflowService.updateContextById(tokenScope.workflowRuntimeDataId, context, [
+    return await this.workflowService.event(
+      {
+        id: tokenScope.workflowRuntimeDataId,
+        name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+        payload: {
+          newContext: context,
+          arrayMergeOption: ARRAY_MERGE_OPTION.BY_ID,
+        },
+      },
+      [tokenScope.projectId],
       tokenScope.projectId,
-    ]);
+    );
   }
 
   @common.Post('/send-event')
@@ -146,8 +151,8 @@ export class ColectionFlowController {
 
   @common.Post('resubmit')
   async resubmitFlow(@TokenScope() tokenScope: ITokenScope) {
-    return this.service.resubmitFlow(
-      tokenScope.workflowRuntimeDataId,
+    await this.workflowService.event(
+      { id: tokenScope.workflowRuntimeDataId, name: 'RESUBMITTED' },
       [tokenScope.projectId],
       tokenScope.projectId,
     );

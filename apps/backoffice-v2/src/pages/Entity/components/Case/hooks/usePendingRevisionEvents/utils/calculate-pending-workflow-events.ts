@@ -23,6 +23,7 @@ export const calculatePendingWorkflowEvents = (workflow: TWorkflowById): Array<I
     .map(document => {
       return {
         workflowId: workflow.id,
+        workflowState: workflow.state,
         documentId: document?.id as string,
         eventName: calculateWorkflowRevisionableEvent(workflow, document?.decision?.status),
         token: workflow?.context?.metadata?.token,
@@ -31,9 +32,7 @@ export const calculatePendingWorkflowEvents = (workflow: TWorkflowById): Array<I
     .filter((a): a is NonNullable<IPendingEvent> => !!a && !!a.eventName);
 };
 
-export const calculateAllWorkflowPendingEvents = (
-  workflow: TWorkflowById,
-): Array<IPendingEvent> => {
+export const calculateAllWorkflowPendingEvents = (workflow: TWorkflowById): IPendingEvent[] => {
   return [
     ...calculatePendingWorkflowEvents(workflow),
     ...(workflow.childWorkflows?.flatMap(childWorkflow =>

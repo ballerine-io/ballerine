@@ -7,7 +7,6 @@ import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { useCallback, useMemo } from 'react';
 import toast from 'react-hot-toast';
-import { getPostDecisionEventName } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 
@@ -30,9 +29,8 @@ export const useManualReviewBlocksLogic = () => {
     openCorporate: _openCorporate,
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
-  const postDecisionEventName = getPostDecisionEventName(workflow);
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingReuploadNeeded } =
-    useRevisionTaskByIdMutation(postDecisionEventName);
+    useRevisionTaskByIdMutation();
   const onReuploadNeeded = useCallback(
     ({
         workflowId,
