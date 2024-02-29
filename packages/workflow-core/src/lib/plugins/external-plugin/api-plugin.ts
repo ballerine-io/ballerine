@@ -36,12 +36,9 @@ export class ApiPlugin {
     this.displayName = pluginParams.displayName;
   }
 
-  async invoke(context: TContext, config: unknown) {
+  async invoke(context: TContext) {
     try {
-      const requestPayload = await this.transformData(this.request.transformers, {
-        ...context,
-        workflowRuntimeConfig: config,
-      });
+      const requestPayload = await this.transformData(this.request.transformers, context);
 
       const { isValidRequest, errorMessage } = await this.validateContent(
         this.request.schemaValidator,

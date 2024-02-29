@@ -91,7 +91,7 @@ describe('#EndUserControllerExternal', () => {
 
     customer = await createCustomer(
       await app.get(PrismaService),
-      'someRandomId',
+      faker.datatype.uuid(),
       'secret3',
       '',
       '',
