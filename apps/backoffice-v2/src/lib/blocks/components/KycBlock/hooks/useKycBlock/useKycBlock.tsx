@@ -18,16 +18,18 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { Badge } from '@ballerine/ui';
+import { Badge, Button } from '@ballerine/ui';
 import { WarningFilledSvg } from '@/common/components/atoms/icons';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 
-const motionProps: ComponentProps<typeof MotionBadge> = {
+const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
   initial: { y: 10, opacity: 0 },
   transition: { type: 'spring', bounce: 0.3 },
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
-};
+} satisfies ComponentProps<typeof MotionBadge>;
 
 export const useKycBlock = ({
   parentWorkflowId,
@@ -37,7 +39,7 @@ export const useKycBlock = ({
   parentWorkflowId: string;
 }) => {
   const { noAction } = useCaseDecision();
-  const results: Array<Array<string>> = [];
+  const results: string[][] = [];
   const kycSessionKeys = Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {});
 
   const docsData = useStorageFilesQuery(
@@ -604,7 +606,7 @@ export const useKycBlock = ({
           type: 'badge',
           value: 'Pending re-upload',
           props: {
-            ...motionProps,
+            ...motionBadgeProps,
             variant: 'warning',
             className: badgeClassNames,
           },
@@ -620,7 +622,7 @@ export const useKycBlock = ({
           type: 'badge',
           value: 'Approved',
           props: {
-            ...motionProps,
+            ...motionBadgeProps,
             variant: 'success',
             className: `${badgeClassNames} bg-success/20`,
           },
@@ -636,7 +638,7 @@ export const useKycBlock = ({
           type: 'badge',
           value: 'Rejected',
           props: {
-            ...motionProps,
+            ...motionBadgeProps,
             variant: 'destructive',
             className: badgeClassNames,
           },
@@ -652,7 +654,7 @@ export const useKycBlock = ({
           type: 'badge',
           value: 'Pending ID verification',
           props: {
-            ...motionProps,
+            ...motionBadgeProps,
             variant: 'warning',
             className: badgeClassNames,
           },
@@ -674,14 +676,41 @@ export const useKycBlock = ({
         },
       })
       .addCell({
-        type: 'callToAction',
+        type: 'dialog',
         value: {
-          text: 'Approve',
-          onClick: onMutateApproveCase,
+          trigger: (
+            <MotionButton
+              {...motionButtonProps}
+              animate={{
+                ...motionButtonProps.animate,
+                opacity: isDisabled ? 0.5 : motionButtonProps.animate.opacity,
+              }}
+              disabled={isDisabled}
+              size={'wide'}
+              variant={'success'}
+            >
+              Approve
+            </MotionButton>
+          ),
+          title: `Approval confirmation`,
+          description: <p className={`text-sm`}>Are you sure you want to approve?</p>,
+          close: (
+            <div className={`space-x-2`}>
+              <Button type={'button'} variant={`secondary`}>
+                Cancel
+              </Button>
+              <Button disabled={isDisabled} onClick={onMutateApproveCase}>
+                Approve
+              </Button>
+            </div>
+          ),
           props: {
-            disabled: isDisabled,
-            size: 'wide',
-            variant: 'success',
+            content: {
+              className: 'mb-96',
+            },
+            title: {
+              className: `text-2xl`,
+            },
           },
         },
       })

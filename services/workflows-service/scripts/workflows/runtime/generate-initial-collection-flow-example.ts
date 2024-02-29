@@ -22,7 +22,7 @@ export const generateInitialCollectionFlowExample = async (
       endUserId: endUserId,
       workflowDefinitionId: workflowDefinitionId,
       projectId: projectId,
-      state: 'idle',
+      state: 'collection_flow',
       context: {
         workflowId: workflowDefinitionId,
         entity: {

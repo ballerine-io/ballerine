@@ -1,10 +1,16 @@
 # @ballerine/common
 
-## 0.7.42-11210907c.0
+## 0.7.43
 
 ### Patch Changes
 
-- bump
+- Ver bump
+
+## 0.7.42
+
+### Patch Changes
+
+- updated document schema validation and text
 
 ## 0.7.41
 
