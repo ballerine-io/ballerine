@@ -11,5 +11,5 @@ export const tagToBadgeData = {
   [StateTag.FAILURE]: { variant: 'destructive', text: 'Failed' },
   [StateTag.DATA_ENRICHMENT]: { variant: 'violet', text: 'Awaiting 3rd Party Data' },
   [StateTag.DISMISSED]: { variant: 'success', text: 'Dismissed' },
-  [StateTag.FLAGGED]: { variant: 'success', text: 'Flagged' },
+  [StateTag.FLAGGED]: { variant: 'destructive', text: 'Flagged' },
 } as const;
