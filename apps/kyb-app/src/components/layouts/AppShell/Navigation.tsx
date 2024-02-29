@@ -6,7 +6,7 @@ import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageRes
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
 import { useCustomer } from '@/components/providers/CustomerProvider';
-import { useFlowTracking } from '@/hooks/useFlowTracking';
+import { useAppExit } from '@/hooks/useAppExit/useAppExit';
 import { ctw } from '@ballerine/ui';
 
 export const Navigation = () => {
@@ -15,7 +15,7 @@ export const Navigation = () => {
   const { stateApi } = useStateManagerContext();
   const { currentPage } = usePageResolverContext();
   const { customer } = useCustomer();
-  const { trackExit } = useFlowTracking();
+  const exitFromApp = useAppExit();
 
   const isFirstStep = currentPage?.number === 1;
   const isDisabled = state.isLoading;
@@ -26,10 +26,9 @@ export const Navigation = () => {
       return;
     }
 
-    trackExit();
-    window.location.href = customer?.websiteUrl!;
+    exitFromApp();
     return;
-  }, [stateApi]);
+  }, [stateApi, exitFromApp]);
 
   return (
     <button
