@@ -9,6 +9,7 @@ image:
 
 env: {}
 envFrom: []
+secrets: []
 
 strategyType: RollingUpdate
 updateStrategy:
@@ -74,3 +75,5 @@ tolerations: []
 affinity: {}
 
 applicationConfig: {}
+
+postgresqlself: false

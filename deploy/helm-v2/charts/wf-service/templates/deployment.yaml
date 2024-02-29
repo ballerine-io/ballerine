@@ -40,8 +40,7 @@ spec:
       terminationGracePeriodSeconds: 90
       {{- if .Values.migration }}
       initContainers:
-        - name: wait-for-migrations
-          # image: "ghcr.io/groundnuty/k8s-wait-for:v1.6"
+        - name: wait-for-migration
           image: pegasystems/k8s-wait-for:latest
           imagePullPolicy: IfNotPresent
           args: 
@@ -59,13 +58,28 @@ spec:
               exec:
                 command: ["sleep","30"]
           command: {{ .Values.image.command | toYaml | nindent 12 }}
-          {{- with .Values.env }}
+          {{- if or .Values.postgresqlself .Values.env }}
           env:
+          - name: DB_URL
+            value: "postgresql://admin:admin@{{ .Release.Name }}-postgresql.{{.Release.Namespace}}.svc.cluster.local:5432/postgres" # Update with actual connection URL
+          - name: DB_USER
+            value: "admin"
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .Release.Name }}-postgresql"
+                key: password
           {{- toYaml . | nindent 12 }}
           {{- end }}
           envFrom:
+          {{- range .Values.secrets }}
+            - secretRef:
+                name: {{ .name }}
+          {{- end }}
+          {{- if .Values.postgresqlself }}
             - secretRef:
                 name: {{ include "wf-service.fullname" . }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

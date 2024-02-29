@@ -62,33 +62,44 @@ websocket-service:
     enabled: false
 
 #############################
+###### workflowsdashboard ######
+#############################
+
+workflows-dashboard:
+  enabled: true
+  applicationConfig: {}
+  ingress:
+    enabled: false
+
+#############################
 ###### wf-service ###########
 #############################
 
 wf-service:
   enabled: true
-  migration: true
   ingress:
     enabled: false
+  secrets:
+    - name: workflow-service-dev-secrets
   applicationConfig:
     ENVIRONMENT_NAME: development
     BCRYPT_SALT: "10"
     DB_URL: ""
     DB_USER: ""
     DB_PASSWORD: ""
-    DB_PORT: "5432"
+    DB_PORT: ""
     PORT: "3000"
     COMPOSE_PROJECT_NAME: "ballerine-x"
     SESSION_SECRET: "iGdnj4A0YOhj8dHJK7IWSvQKEZsG7P70FFehuddhFPjtg/bSkzFejYILk4Xue6Ilx9y3IAwzR8pV1gb4"
     SESSION_EXPIRATION_IN_MINUTES: '60'
-    BACKOFFICE_CORS_ORIGIN: "http://localhost:5137"
-    HEADLESS_EXAMPLE_CORS_ORIGIN: "http://localhost:5173"
+    BACKOFFICE_CORS_ORIGIN: ""
+    HEADLESS_EXAMPLE_CORS_ORIGIN: ""
+    WORKFLOW_DASHBOARD_CORS_ORIGIN: ""
+    KYB_EXAMPLE_CORS_ORIGIN: ""
     API_KEY: "secret"
     NODE_ENV: "development"
-    SENTRY_DSN: ""
-    WEBHOOK_URL: ""
     WEBHOOK_SECRET: "webhook_secret"
-    WORKFLOW_DASHBOARD_CORS_ORIGIN: "http://localhost:5200"
-    KYB_EXAMPLE_CORS_ORIGIN: "http://localhost:5201"
     APP_API_URL: https://alon.ballerine.dev
     UNIFIED_API_URL: "https://unified-api-test.eu.ballerine.app"
+  migration: false
+  postgresqlself: false
