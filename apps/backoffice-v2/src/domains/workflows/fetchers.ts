@@ -286,7 +286,6 @@ export const updateWorkflowDecision = async ({
   body: {
     decision: string | null;
     reason?: string;
-    postUpdateEventName?: string;
   };
   contextUpdateMethod: 'base' | 'director';
 }) => {
