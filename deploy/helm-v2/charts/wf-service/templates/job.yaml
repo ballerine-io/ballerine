@@ -20,8 +20,17 @@ spec:
         image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["npm","run","db:init"]
-        {{- with .Values.env }}
+        {{- if or .Values.postgresqlself .Values.env }}
         env:
+        - name: DB_URL
+          value: "postgresql://admin:admin@{{ .Release.Name }}-postgresql.{{.Release.Namespace}}.svc.cluster.local:5432/postgres" # Update with actual connection URL
+        - name: DB_USER
+          value: "admin"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "ballerine-postgresql"
+              key: password
         {{- toYaml . | nindent 12 }}
         {{- end }}
         envFrom:

@@ -21,4 +21,4 @@ dependencies:
   repository: file://charts/workflows-dashboard
   version: 0.1.0
 digest: sha256:363abc84d64b9ca65de00d99b7dcd68a1c3342e121bd892b27b726ef0331d442
-generated: "2024-02-26T17:02:44.131972+05:30"
+generated: "2024-02-28T18:20:40.565481+05:30"
