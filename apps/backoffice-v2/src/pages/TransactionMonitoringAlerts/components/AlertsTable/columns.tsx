@@ -113,7 +113,9 @@ export const columns = [
     cell: info => {
       const status = info.getValue();
 
-      return <TextWithNAFallback className={`font-semibold`}>{status}</TextWithNAFallback>;
+      return (
+        <TextWithNAFallback className={`font-semibold`}>{titleCase(status)}</TextWithNAFallback>
+      );
     },
     header: 'Status',
   }),
