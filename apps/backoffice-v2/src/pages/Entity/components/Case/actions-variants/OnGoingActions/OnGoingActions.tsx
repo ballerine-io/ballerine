@@ -29,46 +29,6 @@ export const OnGoingActions = () => {
         <DialogTrigger asChild>
           <Button
             size="md"
-            variant="success"
-            disabled={isLoadingActions || !canDismiss}
-            className={ctw({
-              loading: debouncedIsLoadingDismissCase,
-            })}
-          >
-            Dismiss
-          </Button>
-        </DialogTrigger>
-        <DialogContent className={`mb-96`}>
-          <DialogHeader>
-            <DialogTitle className={`text-2xl`}>Dismissal Confirmation</DialogTitle>
-            <DialogDescription asChild>
-              <p className="text-sm">Are you sure you want to dismiss?</p>
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <DialogClose asChild>
-              <div className={`space-x-2`}>
-                <Button type={'button'} variant={`secondary`}>
-                  Cancel
-                </Button>
-                <Button
-                  onClick={onMutateDismissCase}
-                  disabled={isLoadingActions || !canDismiss}
-                  className={ctw({
-                    loading: debouncedIsLoadingDismissCase,
-                  })}
-                >
-                  Dismiss
-                </Button>
-              </div>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button
-            size="md"
             variant="destructive"
             disabled={isLoadingActions || !canFlag}
             className={ctw({
@@ -99,6 +59,46 @@ export const OnGoingActions = () => {
                   })}
                 >
                   Flag
+                </Button>
+              </div>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            size="md"
+            variant="success"
+            disabled={isLoadingActions || !canDismiss}
+            className={ctw({
+              loading: debouncedIsLoadingDismissCase,
+            })}
+          >
+            Dismiss
+          </Button>
+        </DialogTrigger>
+        <DialogContent className={`mb-96`}>
+          <DialogHeader>
+            <DialogTitle className={`text-2xl`}>Dismissal Confirmation</DialogTitle>
+            <DialogDescription asChild>
+              <p className="text-sm">Are you sure you want to dismiss?</p>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <div className={`space-x-2`}>
+                <Button type={'button'} variant={`secondary`}>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={onMutateDismissCase}
+                  disabled={isLoadingActions || !canDismiss}
+                  className={ctw({
+                    loading: debouncedIsLoadingDismissCase,
+                  })}
+                >
+                  Dismiss
                 </Button>
               </div>
             </DialogClose>

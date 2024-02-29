@@ -133,6 +133,49 @@ export const fetchWorkflowById = async ({
       ...data,
       context: {
         ...data.context,
+        aml: {
+          hits: [
+            {
+              matchedName: 'John Doe',
+              dateOfBirth: '1985-04-12',
+              countries: ['USA'],
+              matchTypes: ['sanction', 'pep'],
+              aka: ['J. Doe', 'Johnny D.'],
+              listingsRelatedToMatch: {
+                warnings: [
+                  {
+                    sourceName: 'Global Warning List',
+                    sourceUrl: 'https://globalwarninglist.com/warning/johndoe',
+                    date: '2022-05-01',
+                  },
+                ],
+                sanctions: [
+                  {
+                    sourceName: 'United Nations Sanctions',
+                    sourceUrl: 'https://un.org/sanctions/johndoe',
+                    date: '2022-06-15',
+                  },
+                ],
+                pep: [
+                  {
+                    sourceName: 'Political Exposed Persons List',
+                    sourceUrl: 'https://peplist.com/politicians/johndoe',
+                    date: '2022-07-20',
+                  },
+                ],
+                adverseMedia: [
+                  {
+                    sourceName: 'AdverseMedia News',
+                    sourceUrl: 'https://adversemedianews.com/articles/johndoe',
+                    date: '2022-08-05',
+                  },
+                ],
+              },
+            },
+          ],
+          createdAt: '2024-02-28T12:00:00Z',
+          totalHits: 1,
+        },
         pluginsOutput: {
           ...data.context?.pluginsOutput,
           // TODO: Upgrade workflows-service TypeScript version to >= 5 and use `string-ts`'s `deepCamelCase` instead on the server side in `formatWorkflow`.
@@ -140,55 +183,6 @@ export const fetchWorkflowById = async ({
           website_monitoring: {
             ...data.context?.pluginsOutput?.website_monitoring,
             data: deepCamelKeys(data.context?.pluginsOutput?.website_monitoring?.data ?? {}),
-          },
-          kyc_session: {
-            kyc_session_1: {
-              result: {
-                aml: {
-                  hits: [
-                    {
-                      matchedName: 'John Doe',
-                      dateOfBirth: '1985-04-12',
-                      countries: ['USA'],
-                      matchTypes: ['sanction', 'pep'],
-                      aka: ['J. Doe', 'Johnny D.'],
-                      listingsRelatedToMatch: {
-                        warnings: [
-                          {
-                            sourceName: 'Global Warning List',
-                            sourceUrl: 'https://globalwarninglist.com/warning/johndoe',
-                            date: '2022-05-01',
-                          },
-                        ],
-                        sanctions: [
-                          {
-                            sourceName: 'United Nations Sanctions',
-                            sourceUrl: 'https://un.org/sanctions/johndoe',
-                            date: '2022-06-15',
-                          },
-                        ],
-                        pep: [
-                          {
-                            sourceName: 'Political Exposed Persons List',
-                            sourceUrl: 'https://peplist.com/politicians/johndoe',
-                            date: '2022-07-20',
-                          },
-                        ],
-                        adverseMedia: [
-                          {
-                            sourceName: 'AdverseMedia News',
-                            sourceUrl: 'https://adversemedianews.com/articles/johndoe',
-                            date: '2022-08-05',
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                  createdAt: '2024-02-28T12:00:00Z',
-                  totalHits: 1,
-                },
-              },
-            },
           },
         },
       },

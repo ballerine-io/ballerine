@@ -13,12 +13,7 @@ export const useOnGoingBlocksLogic = () => {
     filterId: filterId ?? '',
   });
   const kycSessionKeys = Object.keys(workflow?.context?.pluginsOutput?.kyc_session ?? {});
-  const getAmlData = useCallback(
-    (key: string) =>
-      workflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ??
-      workflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml,
-    [workflow?.context?.pluginsOutput?.kyc_session],
-  );
+  const getAmlData = useCallback((key: string) => workflow?.context?.aml, [workflow?.context?.aml]);
   const amlBlock = useAmlBlock({
     sessionKeys: kycSessionKeys,
     getAmlData,
