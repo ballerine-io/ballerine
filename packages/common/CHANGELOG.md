@@ -1,5 +1,17 @@
 # @ballerine/common
 
+## 0.7.45
+
+### Patch Changes
+
+- Updated common enums
+
+## 0.7.44
+
+### Patch Changes
+
+- Fixes for concurrency fixes
+
 ## 0.7.43
 
 ### Patch Changes
