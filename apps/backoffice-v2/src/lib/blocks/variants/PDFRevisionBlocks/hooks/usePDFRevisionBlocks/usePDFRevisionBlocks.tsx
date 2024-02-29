@@ -28,7 +28,7 @@ export const usePDFRevisionBlocks = () => {
               width: '100%',
               height: '100%',
             },
-            value: workflow?.context?.entity?.report.base64Pdf || '',
+            value: workflow?.context?.entity?.report?.base64Pdf || '',
           })
           .build()
           .flat(1),
