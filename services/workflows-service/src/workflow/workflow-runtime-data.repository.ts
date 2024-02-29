@@ -1,16 +1,24 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { Prisma, WorkflowRuntimeData, WorkflowRuntimeDataStatus } from '@prisma/client';
+import {
+  Prisma,
+  PrismaClient,
+  WorkflowRuntimeData,
+  WorkflowRuntimeDataStatus,
+} from '@prisma/client';
 import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
-import { FindLastActiveFlowParams } from '@/workflow/types/params';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { SortOrder } from '@/common/query-filters/sort-order';
-import type { TProjectIds } from '@/types';
+import type { PrismaTransaction, TProjectIds } from '@/types';
 import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
+import { ARRAY_MERGE_OPTION, ArrayMergeOption } from '@ballerine/workflow-core';
 
-export type ArrayMergeOption = 'by_id' | 'by_index' | 'concat' | 'replace';
+/**
+ * Columns that are related to the state of the workflow runtime data.
+ * These columns should be excluded from regular update operations.
+ */
+type StateRelatedColumns = 'state' | 'status' | 'context' | 'tags';
 
 @Injectable()
 export class WorkflowRuntimeDataRepository {
@@ -22,8 +30,9 @@ export class WorkflowRuntimeDataRepository {
 
   async create<T extends Prisma.WorkflowRuntimeDataCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataCreateArgs>,
+    transaction: PrismaTransaction | PrismaClient = this.prisma,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.create<T>({
+    return await transaction.workflowRuntimeData.create<T>({
       ...args,
       data: {
         ...args.data,
@@ -47,9 +56,23 @@ export class WorkflowRuntimeDataRepository {
   async findOne<T extends Prisma.WorkflowRuntimeDataFindFirstArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindFirstArgs>,
     projectIds: TProjectIds,
+    transaction: PrismaTransaction | PrismaClient = this.prisma,
   ): Promise<WorkflowRuntimeData | null> {
-    return await this.prisma.workflowRuntimeData.findFirst(
+    return await transaction.workflowRuntimeData.findFirst(
       this.scopeService.scopeFindOne(args, projectIds),
+    );
+  }
+
+  async findByIdAndLock<T extends Omit<Prisma.WorkflowRuntimeDataFindFirstOrThrowArgs, 'where'>>(
+    id: string,
+    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataFindFirstOrThrowArgs, 'where'>>,
+    projectIds: TProjectIds,
+    transaction: PrismaTransaction,
+  ): Promise<WorkflowRuntimeData> {
+    await this.lockWorkflowHierarchyForUpdate(Prisma.sql`"id" = ${id}`, projectIds, transaction);
+
+    return await transaction.workflowRuntimeData.findFirstOrThrow(
+      this.scopeService.scopeFindOne(merge(args, { where: { id } }), projectIds),
     );
   }
 
@@ -57,19 +80,69 @@ export class WorkflowRuntimeDataRepository {
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataFindFirstOrThrowArgs, 'where'>>,
     projectIds: TProjectIds,
+    transaction: PrismaTransaction | PrismaClient = this.prisma,
   ): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.findFirstOrThrow(
+    return await transaction.workflowRuntimeData.findFirstOrThrow(
       this.scopeService.scopeFindOne(merge(args, { where: { id } }), projectIds),
     );
   }
 
-  async findByIdUnscoped(id: string): Promise<WorkflowRuntimeData> {
-    return await this.prisma.workflowRuntimeData.findFirstOrThrow({ where: { id } });
+  /**
+   * Locks the workflow hierarchy (including specified workflow runtime data, its parents, and children) to prevent concurrent modifications.
+   * This function uses a recursive CTE to identify and lock all relevant rows within the transaction context, ensuring data integrity during updates.
+   *
+   * @param {Prisma.Sql} where - SQL condition to identify the anchor workflow runtime data records.
+   * @param projectIds
+   * @param transaction
+   * @private
+   */
+  private async lockWorkflowHierarchyForUpdate(
+    where: Prisma.Sql,
+    projectIds: TProjectIds,
+    transaction: PrismaTransaction,
+  ): Promise<void> {
+    await transaction.$executeRaw`WITH RECURSIVE "Hierarchy" AS (
+        -- Anchor member: Select the target row along with a path tracking
+        SELECT w1."id", ARRAY[w1."id"] AS path
+        FROM "WorkflowRuntimeData" w1
+        WHERE ${where}
+        ${
+          Array.isArray(projectIds)
+            ? Prisma.sql`AND "projectId" in (${Prisma.join(projectIds)})`
+            : Prisma.sql``
+        }
+
+        UNION ALL
+
+        -- Recursive member: Select parents and children, avoiding cycles by checking the path
+        SELECT w2."id", "Hierarchy".path || w2."id"
+        FROM "WorkflowRuntimeData" w2
+           JOIN "Hierarchy" ON w2."parent_runtime_data_id" = "Hierarchy"."id" OR "Hierarchy"."id" = w2."id"
+        WHERE NOT w2."id" = ANY("Hierarchy".path) -- Prevent revisiting nodes
+      )
+      SELECT w.*
+      FROM "WorkflowRuntimeData" w
+      INNER JOIN "Hierarchy" ir ON w."id" = ir."id"
+      FOR UPDATE`;
   }
 
-  async updateById<T extends Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>(
+  async findByIdAndLockUnscoped({
+    id,
+    transaction = this.prisma,
+  }: {
+    id: string;
+    transaction: PrismaTransaction | PrismaClient;
+  }): Promise<WorkflowRuntimeData> {
+    await this.lockWorkflowHierarchyForUpdate(Prisma.sql`"id" = ${id}`, null, transaction);
+
+    return await transaction.workflowRuntimeData.findFirstOrThrow({ where: { id } });
+  }
+
+  async updateById(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowRuntimeDataUpdateArgs, 'where'>>,
+    args: {
+      data: Omit<Prisma.WorkflowRuntimeDataUncheckedUpdateInput, StateRelatedColumns>;
+    },
   ): Promise<WorkflowRuntimeData> {
     return await this.prisma.workflowRuntimeData.update({
       where: { id },
@@ -77,35 +150,26 @@ export class WorkflowRuntimeDataRepository {
     });
   }
 
+  async updateStateById(
+    id: string,
+    { data }: { data: Prisma.WorkflowRuntimeDataUncheckedUpdateInput },
+    transaction: PrismaTransaction,
+  ): Promise<WorkflowRuntimeData> {
+    return await transaction.workflowRuntimeData.update({
+      where: { id },
+      data: data,
+    });
+  }
+
   async updateRuntimeConfigById(
     id: string,
     newConfig: any,
-    arrayMergeOption: ArrayMergeOption = 'by_id',
+    arrayMergeOption: ArrayMergeOption = ARRAY_MERGE_OPTION.BY_ID,
     projectIds: TProjectIds,
   ): Promise<WorkflowRuntimeData> {
     const stringifiedConfig = JSON.stringify(newConfig);
     const affectedRows = await this.prisma
       .$executeRaw`UPDATE "WorkflowRuntimeData" SET "config" = jsonb_deep_merge_with_options("config", ${stringifiedConfig}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id} AND "projectId" in (${projectIds?.join(
-      ',',
-    )})`;
-
-    // Retrieve and return the updated record
-    if (affectedRows === 0) {
-      throw new Error(`No workflowRuntimeData found with the id "${id}"`);
-    }
-
-    return this.findById(id, {}, projectIds);
-  }
-
-  async updateContextById(
-    id: string,
-    newContext: any,
-    arrayMergeOption: ArrayMergeOption = 'by_id',
-    projectIds: TProjectIds,
-  ): Promise<WorkflowRuntimeData> {
-    const stringifiedContext = JSON.stringify(newContext);
-    const affectedRows = await this.prisma
-      .$executeRaw`UPDATE "WorkflowRuntimeData" SET "context" = jsonb_deep_merge_with_options("context", ${stringifiedContext}::jsonb, ${arrayMergeOption}) WHERE "id" = ${id} AND "projectId" in (${projectIds?.join(
       ',',
     )})`;
 
@@ -133,7 +197,7 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
-  async findActiveWorkflowByEntity(
+  async findActiveWorkflowByEntityAndLock(
     {
       entityId,
       entityType,
@@ -144,7 +208,24 @@ export class WorkflowRuntimeDataRepository {
       workflowDefinitionId: string;
     },
     projectIds: TProjectIds,
+    transaction: PrismaTransaction,
   ) {
+    let query: Prisma.Sql;
+
+    switch (entityType) {
+      case 'endUser':
+        query = Prisma.sql`"status" != 'completed' AND "endUserId" = ${entityId}`;
+        break;
+      case 'business':
+        query = Prisma.sql`"status" != 'completed' AND "businessId" = ${entityId}`;
+        break;
+      default:
+        entityType satisfies never;
+        throw new Error(`Unsupported entity type: ${entityType}`);
+    }
+
+    await this.lockWorkflowHierarchyForUpdate(query, null, transaction);
+
     return await this.findOne(
       {
         where: {
@@ -158,21 +239,7 @@ export class WorkflowRuntimeDataRepository {
         },
       },
       projectIds,
-    );
-  }
-
-  async getEntityTypeAndId(workflowRuntimeDataId: string, projectIds: TProjectIds) {
-    return await this.findOne(
-      {
-        where: {
-          id: workflowRuntimeDataId,
-        },
-        select: {
-          businessId: true,
-          endUserId: true,
-        },
-      },
-      projectIds,
+      transaction,
     );
   }
 
@@ -277,26 +344,5 @@ export class WorkflowRuntimeDataRepository {
     `;
 
     return (await this.prisma.$queryRaw(sql)) as WorkflowRuntimeData[];
-  }
-
-  async findLastActive(
-    { workflowDefinitionId, businessId }: FindLastActiveFlowParams,
-    projectIds: TProjectIds,
-  ): Promise<WorkflowRuntimeData | null> {
-    const query = this.projectScopeService.scopeFindOne(
-      {
-        orderBy: {
-          createdAt: 'desc' as SortOrder,
-        },
-        where: {
-          // status: 'active' as WorkflowRuntimeDataStatus,
-          businessId,
-          workflowDefinitionId,
-        },
-      },
-      projectIds,
-    );
-
-    return await this.findOne(query, projectIds);
   }
 }
