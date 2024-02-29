@@ -95,26 +95,7 @@ import {
 
 type TEntityId = string;
 
-export const ResubmissionReason = {
-  BLURRY_IMAGE: 'BLURRY_IMAGE',
-  CUT_IMAGE: 'CUT_IMAGE',
-  UNSUPPORTED_DOCUMENT: 'UNSUPPORTED_DOCUMENT',
-  DAMAGED_DOCUMENT: 'DAMAGED_DOCUMENT',
-  EXPIRED_DOCUMENT: 'EXPIRED_DOCUMENT',
-  COPY_OF_A_COPY: 'COPY_OF_A_COPY',
-  FACE_IS_UNCLEAR: 'FACE_IS_UNCLEAR',
-  FACE_IS_NOT_MATCHING: 'FACE_IS_NOT_MATCHING',
-} as const;
-
-export interface WorkflowData {
-  workflowDefinition: object;
-  workflowRuntimeData: object;
-}
-
 export type TEntityType = 'endUser' | 'business';
-
-// Discuss model classes location
-export type IntentResponse = WorkflowData[];
 
 // TODO: TEMP (STUB)
 const policies = {

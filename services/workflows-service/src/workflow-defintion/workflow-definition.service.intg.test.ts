@@ -205,8 +205,8 @@ describe('WorkflowDefinitionService', () => {
       );
 
       // Assert
-      const updatedFilter1 = await filterService.getById(filter1.id, {}, [filter1.id]);
-      const updatedFilter2 = await filterService.getById(filter2.id, {}, [filter2.id]);
+      const updatedFilter1 = await filterService.getById(filter1.id, {}, [project.id]);
+      const updatedFilter2 = await filterService.getById(filter2.id, {}, [project.id]);
       const otherProjectId = await filterService.getById(otherProjectFilter.id, {}, [
         otherProjectFilter.projectId,
       ]);

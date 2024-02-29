@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
-import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from '@/prisma/prisma.service';
 import { EndUserModel } from './end-user.model';
-import type { PrismaTransaction, TProjectIds } from '@/types';
+import type { TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
@@ -48,6 +48,18 @@ export class EndUserRepository {
     );
   }
 
+  async findByIdUnscoped<T extends Omit<Prisma.EndUserFindUniqueArgs, 'where'>>(
+    id: string,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.EndUserFindUniqueArgs, 'where'>>,
+  ) {
+    return await this.prisma.endUser.findFirstOrThrow(
+      this.scopeService.scopeFindFirst({
+        where: { id },
+        ...args,
+      }),
+    );
+  }
+
   async findByCorrelationId<T extends Omit<Prisma.EndUserFindFirstArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.EndUserFindFirstArgs, 'where'>>,
@@ -72,9 +84,8 @@ export class EndUserRepository {
   async updateById<T extends Omit<Prisma.EndUserUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.EndUserUpdateArgs, 'where'>>,
-    transaction: PrismaClient | PrismaTransaction = this.prisma,
   ): Promise<EndUserModel> {
-    return await transaction.endUser.update({
+    return await this.prisma.endUser.update({
       where: { id },
       ...args,
     });
