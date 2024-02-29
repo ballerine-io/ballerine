@@ -9,13 +9,11 @@ import {
 import { motionBadgeProps } from '../../motion-badge-props';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
-import { getPostRemoveDecisionEventName } from '@/pages/Entity/get-post-remove-decision-event-name';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
-import { getPostDecisionEventName } from '../../components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { X } from 'lucide-react';
 import { getRevisionReasonsForDocument } from '@/lib/blocks/components/DirectorsCallToAction/helpers';
@@ -44,10 +42,7 @@ export const useDirectorsBlocks = ({
     reason?: string;
   }) => () => void;
 }) => {
-  const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(
-    workflow?.id,
-    getPostRemoveDecisionEventName(workflow),
-  );
+  const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
 
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
@@ -78,9 +73,8 @@ export const useDirectorsBlocks = ({
     });
   }, [documents, removeDecisionById]);
 
-  const postApproveEventName = getPostDecisionEventName(workflow);
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
-    useApproveTaskByIdMutation(workflow?.id, postApproveEventName);
+    useApproveTaskByIdMutation(workflow?.id);
   const onMutateApproveTaskById = useCallback(
     ({
         taskId,
