@@ -4,7 +4,7 @@ import * as swagger from '@nestjs/swagger';
 import * as errors from '../errors';
 import { plainToClass } from 'class-transformer';
 import type { Request } from 'express';
-import * as nestAccessControl from 'nest-access-control';
+// import * as nestAccessControl from 'nest-access-control';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { FilterFindManyArgs } from '@/filter/dtos/filter-find-many-args';
 import { FilterModel } from '@/filter/filter.model';
@@ -17,9 +17,7 @@ import type { TProjectIds } from '@/types';
 @common.Controller('internal/filters')
 export class FilterControllerInternal {
   constructor(
-    protected readonly service: FilterService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    protected readonly service: FilterService, // @nestAccessControl.InjectRolesBuilder() // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
 
   @common.Get()
