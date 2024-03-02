@@ -15,7 +15,7 @@ import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.servi
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
-import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
+// import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
 
 const acGuard = {
   canActivate: () => {
@@ -86,8 +86,8 @@ describe('Workflow (external)', () => {
     })
       // .overrideGuard(ACGuard)
       // .useValue(acGuard)
-      .overrideInterceptor(AclFilterResponseInterceptor)
-      .useValue(aclFilterResponseInterceptor)
+      // .overrideInterceptor(AclFilterResponseInterceptor)
+      // .useValue(aclFilterResponseInterceptor)
       // .overrideInterceptor(AclValidateRequestInterceptor)
       // .useValue(aclValidateRequestInterceptor)
       .compile();
