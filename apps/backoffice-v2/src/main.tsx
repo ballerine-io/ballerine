@@ -1,6 +1,8 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
+import '@total-typescript/ts-reset';
+
 import '@ballerine/ui/dist/style.css';
 import '@fontsource/inter';
 

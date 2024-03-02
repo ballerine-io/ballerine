@@ -125,6 +125,7 @@
     "@tanstack/react-query-devtools": "4.22.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
+    "@total-typescript/ts-reset": "^0.5.1",
     "@types/leaflet": "^1.9.3",
     "@types/node": "^18.11.13",
     "@types/qs": "^6.9.7",
