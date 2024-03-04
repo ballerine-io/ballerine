@@ -1,8 +1,8 @@
 import { Test } from '@nestjs/testing';
 import { ACLModule } from '@/common/access-control/acl.module';
-import { ACGuard } from 'nest-access-control';
-import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
-import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
+// import { ACGuard } from 'nest-access-control';
+// import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
+// import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
 import {
   CallHandler,
   DynamicModule,
@@ -74,12 +74,12 @@ export const initiateNestApp = async (
     controllers: controllers,
     imports: [ACLModule, ...modules, ...commonTestingModules],
   })
-    .overrideGuard(ACGuard)
-    .useValue(acGuard)
-    .overrideInterceptor(AclFilterResponseInterceptor)
-    .useValue(aclFilterResponseInterceptor)
-    .overrideInterceptor(AclValidateRequestInterceptor)
-    .useValue(aclValidateRequestInterceptor)
+    // .overrideGuard(ACGuard)
+    // .useValue(acGuard)
+    // .overrideInterceptor(AclFilterResponseInterceptor)
+    // .useValue(aclFilterResponseInterceptor)
+    // .overrideInterceptor(AclValidateRequestInterceptor)
+    // .useValue(aclValidateRequestInterceptor)
     .compile();
 
   app = moduleRef.createNestApplication();
