@@ -1,16 +1,16 @@
 import { FunctionComponent } from 'react';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { checkIsOnGoingVariant } from '@/lib/blocks/variants/variant-checkers';
+import { checkIsOngoingVariant } from '@/lib/blocks/variants/variant-checkers';
 import { DefaultActions } from '@/pages/Entity/components/Case/actions-variants/DefaultActions/DefaultActions';
-import { OnGoingActions } from '@/pages/Entity/components/Case/actions-variants/OnGoingActions/OnGoingActions';
+import { OngoingActions } from '@/pages/Entity/components/Case/actions-variants/OngoingActions/OngoingActions';
 
 export const ActionsVariant: FunctionComponent<{
   workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'variant' | 'config' | 'version'>;
 }> = ({ workflowDefinition }) => {
-  const isOnGoingVariant = checkIsOnGoingVariant(workflowDefinition);
+  const isOngoingVariant = checkIsOngoingVariant(workflowDefinition);
 
-  if (isOnGoingVariant) {
-    return <OnGoingActions />;
+  if (isOngoingVariant) {
+    return <OngoingActions />;
   }
 
   return <DefaultActions />;

@@ -5,7 +5,7 @@ import { useCallback, useMemo } from 'react';
 import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
-export const useOnGoingBlocksLogic = () => {
+export const useOngoingBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
   const filterId = useFilterId();
   const { data: workflow, isLoading } = useWorkflowByIdQuery({

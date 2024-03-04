@@ -10,9 +10,9 @@ import { DialogFooter } from '@/common/components/organisms/Dialog/Dialog.Footer
 import { DialogClose } from '@radix-ui/react-dialog';
 import React from 'react';
 
-import { useOnGoingActionsLogic } from '@/pages/Entity/components/Case/actions-variants/OnGoingActions/hooks/useOnGoingActionsLogic/useOnGoingActionsLogic';
+import { useOngoingActionsLogic } from '@/pages/Entity/components/Case/actions-variants/OngoingActions/hooks/useOngoingActionsLogic/useOngoingActionsLogic';
 
-export const OnGoingActions = () => {
+export const OngoingActions = () => {
   const {
     isLoadingActions,
     debouncedIsLoadingFlagCase,
@@ -21,7 +21,7 @@ export const OnGoingActions = () => {
     onMutateDismissCase,
     canDismiss,
     debouncedIsLoadingDismissCase,
-  } = useOnGoingActionsLogic();
+  } = useOngoingActionsLogic();
 
   return (
     <div className={`flex items-center space-x-4 self-start pe-[3.35rem]`}>
