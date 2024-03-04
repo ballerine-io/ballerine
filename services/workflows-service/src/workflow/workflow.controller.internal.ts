@@ -130,6 +130,7 @@ export class WorkflowControllerInternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found`);
       }
+
       throw error;
     }
   }
@@ -176,6 +177,7 @@ export class WorkflowControllerInternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
   }
@@ -197,6 +199,7 @@ export class WorkflowControllerInternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
   }
@@ -236,6 +239,7 @@ export class WorkflowControllerInternal {
     if (data.systemEventName !== 'workflow.context.changed') {
       throw new common.BadRequestException(`Invalid system event name: ${data.systemEventName}`);
     }
+
     return await this.service.emitSystemWorkflowEvent({
       workflowRuntimeId: params.id,
       projectId: data.projectId,
@@ -274,6 +278,7 @@ export class WorkflowControllerInternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
   }
@@ -299,6 +304,7 @@ export class WorkflowControllerInternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
   }
@@ -340,6 +346,7 @@ export class WorkflowControllerInternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
   }

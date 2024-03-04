@@ -91,12 +91,14 @@ const main = async () => {
         cb();
       };
     }
+
     if (req.session && !req.session.save) {
       // eslint-disable-next-line @typescript-eslint/ban-types
       req.session.save = (cb: Function) => {
         cb();
       };
     }
+
     next();
   });
 
@@ -108,6 +110,7 @@ const main = async () => {
     ) {
       return next();
     }
+
     req.session.nowInMinutes = Math.floor(dayjs().unix() / 60);
     req.session.passport.user.expires = dayjs()
       .add(env.SESSION_EXPIRATION_IN_MINUTES, 'minute')

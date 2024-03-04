@@ -131,6 +131,7 @@ export class StorageControllerInternal {
         fileNameInBucket: persistedFile.fileNameInBucket,
         mimeType,
       });
+
       return res.json({ signedUrl, mimeType });
     }
 
@@ -158,6 +159,7 @@ export class StorageControllerInternal {
     if (!path.isAbsolute(filePath)) return filePath;
 
     const rootDir = path.parse(os.homedir()).root;
+
     return path.join(rootDir, filePath);
   }
 
