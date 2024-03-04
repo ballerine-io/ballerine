@@ -61,19 +61,19 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.1.27
+        specifier: 0.1.28
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: 0.7.45
+        specifier: 0.7.46
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: ^0.3.29
+        specifier: ^0.3.30
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.45
+        specifier: 0.5.46
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.45
+        specifier: 0.5.46
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -233,10 +233,10 @@ importers:
         version: 3.22.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^1.0.7
+        specifier: ^1.0.8
         version: link:../../packages/eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -374,16 +374,16 @@ importers:
   apps/kyb-app:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.1.27
+        specifier: 0.1.28
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: ^0.7.45
+        specifier: ^0.7.46
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.3.29
+        specifier: 0.3.30
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.45
+        specifier: 0.5.46
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -501,10 +501,10 @@ importers:
         version: 3.22.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^1.0.7
+        specifier: ^1.0.8
         version: link:../../packages/eslint-config-react
       '@jest/globals':
         specifier: ^29.7.0
@@ -715,10 +715,10 @@ importers:
         version: 3.22.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^1.0.7
+        specifier: ^1.0.8
         version: link:../../packages/eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -805,10 +805,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.45
+        specifier: 0.7.46
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.5.45
+        specifier: 0.5.46
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -902,7 +902,7 @@ importers:
   examples/report-generation-example:
     dependencies:
       '@ballerine/react-pdf-toolkit':
-        specifier: ^1.0.14
+        specifier: ^1.0.15
         version: link:../../packages/react-pdf-toolkit
       react:
         specifier: ^18.2.0
@@ -945,7 +945,7 @@ importers:
   packages/blocks:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.7.43
+        specifier: ^0.7.46
         version: link:../common
     devDependencies:
       '@babel/core':
@@ -961,10 +961,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../eslint-config
       '@rollup/plugin-babel':
         specifier: 5.3.1
@@ -1121,10 +1121,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1261,7 +1261,7 @@ importers:
   packages/eslint-config-react:
     dependencies:
       '@ballerine/eslint-config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../eslint-config
       eslint-plugin-react:
         specifier: ^7.33.2
@@ -1273,10 +1273,10 @@ importers:
   packages/react-pdf-toolkit:
     dependencies:
       '@ballerine/config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.3.29
+        specifier: 0.3.30
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -1356,10 +1356,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1461,7 +1461,7 @@ importers:
   packages/ui:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.7.43
+        specifier: ^0.7.46
         version: link:../common
       '@emotion/react':
         specifier: ^11.11.1
@@ -1552,10 +1552,10 @@ importers:
         version: 1.14.0
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../config
       '@ballerine/eslint-config-react':
-        specifier: ^1.0.7
+        specifier: ^1.0.8
         version: link:../eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1660,7 +1660,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.45
+        specifier: 0.7.46
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -1688,10 +1688,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1823,7 +1823,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.45
+        specifier: 0.7.46
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -1950,10 +1950,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.7.45
+        specifier: 0.7.46
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.45
+        specifier: 0.5.46
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -1969,10 +1969,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2092,7 +2092,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.5.45
+        specifier: 0.5.46
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2111,10 +2111,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2334,13 +2334,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.7.45
+        specifier: 0.7.46
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.5.45
+        specifier: 0.5.46
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.5.45
+        specifier: 0.5.46
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2509,10 +2509,10 @@ importers:
         version: 3.22.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2653,7 +2653,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@3.3.3)(tailwindcss@3.3.5)(ts-node@10.9.1)
       '@ballerine/common':
-        specifier: ^0.7.45
+        specifier: ^0.7.46
         version: link:../../packages/common
       astro:
         specifier: 3.3.3
@@ -2666,10 +2666,10 @@ importers:
         version: 0.14.5
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.0.6
+        specifier: ^1.0.7
         version: link:../../packages/eslint-config
       eslint:
         specifier: ^8.46.0
