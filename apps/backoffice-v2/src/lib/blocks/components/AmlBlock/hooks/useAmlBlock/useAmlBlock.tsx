@@ -19,11 +19,7 @@ export const useAmlBlock = ({
       return true;
     }
 
-    return safeEvery(sessionKeys, key => {
-      const aml = getAmlData(key);
-
-      return !aml;
-    });
+    return safeEvery(sessionKeys, key => !getAmlData(key));
   }, [getAmlData, sessionKeys]);
   const amlBlock = useMemo(() => {
     if (isAmlEmpty) {

@@ -11,7 +11,7 @@ import { Action } from '@/common/enums';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 
-export const useOnGoingActionsLogic = () => {
+export const useOngoingActionsLogic = () => {
   const { entityId } = useParams();
   const filterId = useFilterId();
 

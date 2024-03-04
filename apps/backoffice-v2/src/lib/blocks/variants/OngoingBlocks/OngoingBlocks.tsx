@@ -1,10 +1,10 @@
 import { BlocksComponent } from '@ballerine/blocks';
 import { NoBlocks } from '@/lib/blocks/components/NoBlocks/NoBlocks';
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { useOnGoingBlocksLogic } from '@/lib/blocks/variants/OnGoingBlocks/hooks/useOnGoingBlocksLogic/useOnGoingBlocksLogic';
+import { useOngoingBlocksLogic } from '@/lib/blocks/variants/OngoingBlocks/hooks/useOngoingBlocksLogic/useOngoingBlocksLogic';
 
-export const OnGoingBlocks = () => {
-  const { blocks, isLoading } = useOnGoingBlocksLogic();
+export const OngoingBlocks = () => {
+  const { blocks, isLoading } = useOngoingBlocksLogic();
 
   return (
     <>

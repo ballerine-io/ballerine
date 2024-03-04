@@ -6,16 +6,16 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 import {
   checkIsKybExampleVariant,
   checkIsManualReviewVariant,
-  checkIsOnGoingVariant,
+  checkIsOngoingVariant,
 } from '@/lib/blocks/variants/variant-checkers';
-import { OnGoingBlocks } from '@/lib/blocks/variants/OnGoingBlocks/OnGoingBlocks';
+import { OngoingBlocks } from '@/lib/blocks/variants/OngoingBlocks/OngoingBlocks';
 
 export const BlocksVariant: FunctionComponent<{
   workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'variant' | 'config' | 'version'>;
 }> = ({ workflowDefinition }) => {
   const isKybExampleVariant = checkIsKybExampleVariant(workflowDefinition);
   const isManualReviewVariant = checkIsManualReviewVariant(workflowDefinition);
-  const isOnGoingVariant = checkIsOnGoingVariant(workflowDefinition);
+  const isOngoingVariant = checkIsOngoingVariant(workflowDefinition);
 
   if (isKybExampleVariant) {
     return <KybExampleBlocks />;
@@ -25,8 +25,8 @@ export const BlocksVariant: FunctionComponent<{
     return <ManualReviewBlocks />;
   }
 
-  if (isOnGoingVariant) {
-    return <OnGoingBlocks />;
+  if (isOngoingVariant) {
+    return <OngoingBlocks />;
   }
 
   return <DefaultBlocks />;

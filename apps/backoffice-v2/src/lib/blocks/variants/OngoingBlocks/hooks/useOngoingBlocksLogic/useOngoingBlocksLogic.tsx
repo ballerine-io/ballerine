@@ -5,7 +5,7 @@ import { useCallback, useMemo } from 'react';
 import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 
-export const useOnGoingBlocksLogic = () => {
+export const useOngoingBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
   const filterId = useFilterId();
   const { data: workflow, isLoading } = useWorkflowByIdQuery({
@@ -13,12 +13,7 @@ export const useOnGoingBlocksLogic = () => {
     filterId: filterId ?? '',
   });
   const kycSessionKeys = Object.keys(workflow?.context?.pluginsOutput?.kyc_session ?? {});
-  const getAmlData = useCallback(
-    (key: string) =>
-      workflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ??
-      workflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml,
-    [workflow?.context?.pluginsOutput?.kyc_session],
-  );
+  const getAmlData = useCallback((key: string) => workflow?.context?.aml, [workflow?.context?.aml]);
   const amlBlock = useAmlBlock({
     sessionKeys: kycSessionKeys,
     getAmlData,

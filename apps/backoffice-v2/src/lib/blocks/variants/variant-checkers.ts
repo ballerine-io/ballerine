@@ -15,7 +15,7 @@ export const checkIsManualReviewVariant = (
   workflowDefinition?.variant === WorkflowDefinitionVariant.MANUAL_REVIEW &&
   workflowDefinition?.config?.isLegacyReject;
 
-export const checkIsOnGoingVariant = (
+export const checkIsOngoingVariant = (
   workflowDefinition: Pick<TWorkflowById['workflowDefinition'], 'variant' | 'config' | 'version'>,
 ) =>
   workflowDefinition?.version >= 0 &&
