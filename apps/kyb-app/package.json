@@ -64,6 +64,7 @@
     "@sentry/vite-plugin": "^2.9.0",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^13.3.0",
+    "@total-typescript/ts-reset": "^0.5.1",
     "@types/dompurify": "^3.0.5",
     "@types/jest": "^26.0.19",
     "@types/jmespath": "^0.15.0",

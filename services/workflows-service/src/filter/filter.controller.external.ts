@@ -5,7 +5,7 @@ import * as swagger from '@nestjs/swagger';
 import * as errors from '../errors';
 import { plainToClass } from 'class-transformer';
 import type { Request } from 'express';
-import * as nestAccessControl from 'nest-access-control';
+// import * as nestAccessControl from 'nest-access-control';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { FilterFindManyArgs } from '@/filter/dtos/filter-find-many-args';
 import { FilterModel } from '@/filter/filter.model';
@@ -24,8 +24,8 @@ import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 export class FilterControllerExternal {
   constructor(
     protected readonly service: FilterService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    // @nestAccessControl.InjectRolesBuilder()
+    // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
