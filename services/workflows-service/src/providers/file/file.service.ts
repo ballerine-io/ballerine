@@ -56,6 +56,7 @@ export class FileService {
           mimeType,
         };
       }
+
       const filePaths = await this.copyThroughFileSystem(
         sourceServiceProvider,
         sourceRemoteFileConfig,

@@ -20,7 +20,7 @@ module.exports = {
     ecmaVersion: 'latest',
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint', 'unused-imports', 'prefer-arrow'],
+  plugins: ['@typescript-eslint', 'unused-imports', 'prefer-arrow', '@stylistic/eslint-plugin-ts'],
   rules: {
     '@typescript-eslint/ban-ts-comment': 'warn',
     'no-unused-vars': 'off', // We use the unused-imports plugin instead
@@ -35,6 +35,31 @@ module.exports = {
         singleReturnOnly: false,
         classPropertiesAllowed: false,
       },
+    ],
+    'newline-before-return': 'error',
+    'padding-line-between-statements': [
+      'error',
+      { blankLine: 'always', prev: ['import', 'export'], next: '*' },
+      {
+        blankLine: 'any',
+        prev: ['import'],
+        next: ['import'],
+      },
+      {
+        blankLine: 'any',
+        prev: ['export'],
+        next: ['export'],
+      },
+      {
+        blankLine: 'always',
+        prev: '*',
+        next: ['if', 'switch', 'for', 'while'],
+      }, // Line break before these statements
+      {
+        blankLine: 'always',
+        prev: ['if', 'switch', 'for', 'while'],
+        next: '*',
+      }, // Line break after these statements
     ],
   },
 };

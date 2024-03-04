@@ -17,9 +17,11 @@ export class WinstonLogger implements IAppLogger {
       format.printf(({ timestamp, level, message, ...metadata }) => {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         let msg = `${timestamp} [${level}] : ${message} `;
+
         if (Object.keys(metadata).length > 0) {
           msg += JSON.stringify(metadata, null, 2);
         }
+
         return msg;
       }),
     );

@@ -21,9 +21,11 @@ export class ServeStaticOptionsService implements ServeStaticModuleOptionsFactor
 
   createLoggerOptions(): ServeStaticModuleOptions[] {
     const serveStaticRootPath = this.configService.get(SERVE_STATIC_ROOT_PATH_VAR) as string;
+
     if (serveStaticRootPath) {
       const resolvedPath = path.resolve(serveStaticRootPath);
       this.logger.log('Serving static files', { resolvedPath });
+
       return [
         ...DEFAULT_STATIC_MODULE_OPTIONS_LIST,
         {
@@ -32,6 +34,7 @@ export class ServeStaticOptionsService implements ServeStaticModuleOptionsFactor
         },
       ];
     }
+
     return DEFAULT_STATIC_MODULE_OPTIONS_LIST;
   }
 }

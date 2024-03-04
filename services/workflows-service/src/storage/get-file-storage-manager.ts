@@ -137,5 +137,6 @@ const decodeFromBase64 = (encodedPrivateKey?: string): string | undefined => {
   if (!encodedPrivateKey) {
     return;
   }
+
   return Buffer.from(encodedPrivateKey, 'base64').toString('utf-8');
 };

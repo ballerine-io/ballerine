@@ -1,5 +1,11 @@
 # @ballerine/eslint-config
 
+## 1.0.7
+
+### Patch Changes
+
+- added rules to enforce spacing
+
 ## 1.0.6
 
 ### Patch Changes

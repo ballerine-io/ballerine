@@ -41,6 +41,7 @@ describe('UnknownArgumentParser', () => {
             params.failedAtPath,
             params.type,
           );
+
           return result;
         }, {} as Record<string, string>);
       });

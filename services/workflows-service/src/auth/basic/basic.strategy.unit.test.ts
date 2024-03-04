@@ -28,6 +28,7 @@ describe('Testing the basicStrategyBase.validate()', () => {
     authService.validateUser.mockReturnValue(Promise.resolve(null));
     //ACT
     const result = basicStrategy.validate('noUsername', TEST_PASSWORD);
+
     //ASSERT
     return expect(result).rejects.toThrowError(UnauthorizedException);
   });

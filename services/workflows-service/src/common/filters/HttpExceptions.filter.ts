@@ -40,6 +40,7 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     const statusCode = this.errorCodesStatusMapping[exception.code] ?? 500;
     let message = '';
+
     if (host.getType() === 'http') {
       // for http requests (REST)
       // Todo : Add all other exception types and also add mapping
@@ -50,12 +51,14 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
       } else {
         message = `[${exception.code}]: ` + this.exceptionShortMessage(exception.message);
       }
+
       if (!Object.keys(this.errorCodesStatusMapping).includes(exception.code)) {
         return super.catch(exception, host);
       }
 
       throw new HttpException(message, statusCode);
     }
+
     throw new HttpException(message, statusCode);
   }
 
@@ -65,6 +68,7 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
    */
   exceptionShortMessage(message: string): string {
     const shortMessage = message.substring(message.indexOf('→'));
+
     return shortMessage.substring(shortMessage.indexOf('\n')).replace(/\n/g, '').trim();
   }
 }

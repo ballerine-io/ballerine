@@ -4,7 +4,6 @@ import { DocumentChangedWebhookCaller } from '../events/document-changed-webhook
 import { Test, TestingModule } from '@nestjs/testing';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import packageJson from '../../package.json';
 import { ConfigService } from '@nestjs/config';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
@@ -146,6 +145,7 @@ describe('WorkflowService', () => {
       axiosRef: {
         post: async (url, data, config) => {
           fakeHttpService.requests.push({ url, data });
+
           return {
             status: 200,
             data: { success: true },

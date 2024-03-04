@@ -75,6 +75,7 @@ export class DocumentChangedWebhookCaller {
         idDoc: id,
       });
       accumulator[id] = doc;
+
       return accumulator;
     }, {});
 
@@ -84,6 +85,7 @@ export class DocumentChangedWebhookCaller {
         this.logger.log('handleWorkflowEvent::anyDocumentStatusChanged::getDocumentId::  ', {
           idDoc: id,
         });
+
         return (
           (!oldDocument.decision && newDocumentsByIdentifier[id]?.decision) ||
           (oldDocument.decision &&
@@ -97,6 +99,7 @@ export class DocumentChangedWebhookCaller {
       this.logger.log('handleWorkflowEvent:: Skipped, ', {
         anyDocumentStatusChanged,
       });
+
       return;
     }
 

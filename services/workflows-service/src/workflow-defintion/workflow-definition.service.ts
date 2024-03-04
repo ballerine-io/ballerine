@@ -49,6 +49,7 @@ export class WorkflowDefinitionService {
       const { where: whereQuery } = filter.query as {
         where: { workflowDefinitionId: string | { in: string[] } };
       };
+
       if (typeof whereQuery.workflowDefinitionId === 'string') {
         return whereQuery.workflowDefinitionId === id;
       }

@@ -29,6 +29,7 @@ export class FilterControllerInternal {
     @common.Req() request: Request,
   ): Promise<FilterModel[]> {
     const args = plainToClass(FilterFindManyArgs, request.query);
+
     return this.service.list(args, projectIds);
   }
 
