@@ -30,6 +30,7 @@ export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
     }
 
     navigateBack();
+    navigateBack();
   }, [navigate, navigateBack]);
 
   return {
@@ -37,5 +38,6 @@ export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
     onNavigateBack,
     alertDefinition,
     isLoadingAlertDefinition,
+    alertId,
   };
 };
