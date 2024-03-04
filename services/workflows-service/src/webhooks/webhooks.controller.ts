@@ -7,11 +7,11 @@ import { AmlWebhookInput } from './dtos/aml-webhook-input';
 import { IndividualAmlWebhookInput } from '@/webhooks/dtos/individual-aml-webhook-input';
 import { WebhooksService } from '@/webhooks/webhooks.service';
 
-const WEBHOOKS = {
+const Webhook = {
   AML_INDIVIDUAL_MONITORING_UPDATE: 'aml.individuals.monitoring.update',
 } as const;
 
-const ENTITY_TYPES = {
+const EntityType = {
   BUSINESS: 'business',
   INDIVIDUAL: 'individual',
 } as const;
@@ -37,10 +37,10 @@ export class WebhooksController {
     @common.Body() data: IndividualAmlWebhookInput,
   ) {
     try {
-      if (entityType === ENTITY_TYPES.INDIVIDUAL) {
+      if (entityType === EntityType.INDIVIDUAL) {
         const { eventName } = data;
 
-        if (eventName === WEBHOOKS.AML_INDIVIDUAL_MONITORING_UPDATE) {
+        if (eventName === Webhook.AML_INDIVIDUAL_MONITORING_UPDATE) {
           await this.webhooksService.handleIndividualAmlHit(data as IndividualAmlWebhookInput);
         }
       }
