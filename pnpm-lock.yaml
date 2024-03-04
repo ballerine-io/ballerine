@@ -280,6 +280,9 @@ importers:
       '@testing-library/react':
         specifier: ^13.3.0
         version: 13.4.0(react-dom@18.2.0)(react@18.2.0)
+      '@total-typescript/ts-reset':
+        specifier: ^0.5.1
+        version: 0.5.1
       '@types/leaflet':
         specifier: ^1.9.3
         version: 1.9.8
@@ -518,6 +521,9 @@ importers:
       '@testing-library/react':
         specifier: ^13.3.0
         version: 13.4.0(react-dom@18.2.0)(react@18.2.0)
+      '@total-typescript/ts-reset':
+        specifier: ^0.5.1
+        version: 0.5.1
       '@types/dompurify':
         specifier: ^3.0.5
         version: 3.0.5
@@ -2520,6 +2526,9 @@ importers:
       '@nestjs/swagger':
         specifier: 6.2.1
         version: 6.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)
+      '@total-typescript/ts-reset':
+        specifier: ^0.5.1
+        version: 0.5.1
       '@types/bcrypt':
         specifier: 5.0.0
         version: 5.0.0
@@ -13804,6 +13813,10 @@ packages:
   /@tootallnate/once@2.0.0:
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
     engines: {node: '>= 10'}
+    dev: true
+
+  /@total-typescript/ts-reset@0.5.1:
+    resolution: {integrity: sha512-AqlrT8YA1o7Ff5wPfMOL0pvL+1X+sw60NN6CcOCqs658emD6RfiXhF7Gu9QcfKBH7ELY2nInLhKSCWVoNL70MQ==}
     dev: true
 
   /@ts-morph/common@0.18.1:

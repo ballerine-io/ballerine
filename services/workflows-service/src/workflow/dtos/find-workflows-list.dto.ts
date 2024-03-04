@@ -52,7 +52,6 @@ const validateOrderBy = (value: unknown, validColumns: readonly string[]) => {
     throw new Error(`Invalid column: ${column}`);
   }
 
-  // @ts-expect-error
   if (!sortDirections.includes(direction)) {
     throw new Error(`Invalid direction: ${direction}`);
   }
