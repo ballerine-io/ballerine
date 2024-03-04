@@ -129,6 +129,7 @@ export class HookCallbackHandlerService {
 
   private formatDecision(data: AnyRecord) {
     const insights = data.insights as AnyRecord[]; // Explicitly type 'insights' as 'AnyRecord[]'
+
     return {
       status: data.decision,
       decisionReason: data.reason,
@@ -186,6 +187,7 @@ export class HookCallbackHandlerService {
       // name: kycDocument['issuedBy'],
       city: (kycDocument['placeOfIssue'] as any)?.value,
     };
+
     return issuer;
   }
 
@@ -225,6 +227,7 @@ export class HookCallbackHandlerService {
       validUntil: (kycDocument['validUntil'] as any)?.value,
       firstIssue: (kycDocument['firstIssue'] as any)?.value,
     };
+
     return properties;
   }
 

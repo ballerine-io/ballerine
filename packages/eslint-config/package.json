@@ -15,6 +15,6 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-unused-imports": "^3.0.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
-    "@stylistic/eslint-plugin": "^1.6.2"
+    "@stylistic/eslint-plugin-ts": "^1.6.2"
   }
 }

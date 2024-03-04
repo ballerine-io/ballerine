@@ -59,6 +59,7 @@ export class BusinessControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<BusinessModel[]> {
     const args = plainToClass(BusinessFindManyArgs, request.query);
+
     return this.service.list(args, projectIds);
   }
 

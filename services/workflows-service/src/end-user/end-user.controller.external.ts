@@ -57,6 +57,7 @@ export class EndUserControllerExternal {
         avatarUrl: true,
       },
     });
+
     return endUser;
   }
 
@@ -90,6 +91,7 @@ export class EndUserControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<EndUserModel[]> {
     const args = plainToClass(EndUserFindManyArgs, request.query);
+
     return this.service.list(args, projectIds);
   }
 

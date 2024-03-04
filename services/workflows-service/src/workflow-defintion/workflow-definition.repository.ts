@@ -25,6 +25,7 @@ export class WorkflowDefinitionRepository {
     args: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionCreateArgs>,
   ): Promise<WorkflowDefinition> {
     validateDefinitionLogic(args.data);
+
     return await this.prisma.workflowDefinition.create<T>(args);
   }
 
@@ -73,6 +74,7 @@ export class WorkflowDefinitionRepository {
         },
       ],
     };
+
     return await transaction.workflowDefinition.findFirstOrThrow(queryArgs);
   }
 

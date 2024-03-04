@@ -102,7 +102,7 @@
   },
   "devDependencies": {
     "@ballerine/config": "^1.0.6",
-    "@ballerine/eslint-config": "^1.0.6",
+    "@ballerine/eslint-config": "^1.0.7",
     "@cspell/cspell-types": "^6.31.1",
     "@nestjs/cli": "9.3.0",
     "@nestjs/swagger": "6.2.1",

@@ -47,6 +47,7 @@ export class ColectionFlowController {
 
     try {
       const adapter = this.adapterManager.getAdapter(activeWorkflow.workflowDefinitionId);
+
       return {
         result: activeWorkflow ? adapter.serialize(activeWorkflow) : null,
       };
@@ -56,6 +57,7 @@ export class ColectionFlowController {
           `${activeWorkflow.workflowDefinitionId as string} is not supported.`,
         );
       }
+
       throw error;
     }
   }

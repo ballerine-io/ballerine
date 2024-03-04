@@ -122,10 +122,13 @@ export class StorageControllerExternal {
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
     }
+
     let customer;
+
     if (projectIds?.[0]) {
       customer = await this.customerService.getByProjectId(projectIds?.[0]);
     }
+
     if (persistedFile.fileNameInBucket) {
       const localFilePath = await downloadFileFromS3(
         AwsS3FileConfig.getBucketName(process.env) as string,
@@ -135,6 +138,7 @@ export class StorageControllerExternal {
       return res.sendFile(localFilePath, { root: '/' });
     } else {
       const root = path.parse(os.homedir()).root;
+
       return res.sendFile(persistedFile.fileNameOnDisk, { root: root });
     }
   }

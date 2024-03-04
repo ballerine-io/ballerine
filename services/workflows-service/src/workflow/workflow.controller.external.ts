@@ -96,6 +96,7 @@ export class WorkflowControllerExternal {
       {},
       projectIds,
     );
+
     if (!workflowRuntimeData) {
       throw new NotFoundException(`No resource with id [${params.id}] was found`);
     }
@@ -129,6 +130,7 @@ export class WorkflowControllerExternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
   }
@@ -340,6 +342,7 @@ export class WorkflowControllerExternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
 
