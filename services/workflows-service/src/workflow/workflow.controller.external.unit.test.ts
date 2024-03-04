@@ -1,11 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CallHandler, ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { ACGuard } from 'nest-access-control';
+// import { ACGuard } from 'nest-access-control';
 import { ACLModule } from '@/common/access-control/acl.module';
-import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
-import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
-
+// import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
+// import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
 import { WorkflowControllerExternal } from './workflow.controller.external';
 import { WorkflowService } from './workflow.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -16,6 +15,7 @@ import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.servi
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
+// import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
 
 const acGuard = {
   canActivate: () => {
@@ -84,12 +84,12 @@ describe('Workflow (external)', () => {
       controllers: [WorkflowControllerExternal],
       imports: [ACLModule],
     })
-      .overrideGuard(ACGuard)
-      .useValue(acGuard)
-      .overrideInterceptor(AclFilterResponseInterceptor)
-      .useValue(aclFilterResponseInterceptor)
-      .overrideInterceptor(AclValidateRequestInterceptor)
-      .useValue(aclValidateRequestInterceptor)
+      // .overrideGuard(ACGuard)
+      // .useValue(acGuard)
+      // .overrideInterceptor(AclFilterResponseInterceptor)
+      // .useValue(aclFilterResponseInterceptor)
+      // .overrideInterceptor(AclValidateRequestInterceptor)
+      // .useValue(aclValidateRequestInterceptor)
       .compile();
 
     app = moduleRef.createNestApplication();
