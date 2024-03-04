@@ -86,6 +86,7 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
     const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
       documents as TDocumentsWithoutPageType,
+      // @ts-expect-error - we don't validate `context` is an object1
       context.entity.id || context.entity.ballerineEntityId,
       currentProjectId,
       customer.name,
@@ -97,7 +98,9 @@ export class HookCallbackHandlerService {
       aml: data.aml,
     };
 
+    // @ts-expect-error - we don't validate `context` is an object
     this.setNestedProperty(context, attributePath, result);
+    // @ts-expect-error - we don't validate `context` is an object
     context.documents = persistedDocuments;
 
     return context;
