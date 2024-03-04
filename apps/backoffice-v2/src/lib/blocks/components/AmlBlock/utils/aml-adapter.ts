@@ -1,38 +1,34 @@
-interface IAmlAdapterParams {
-  hits: Array<{
-    matchedName: string;
-    dateOfBirth: string;
-    countries: string[];
-    matchTypes: string[];
-    aka: string[];
-    listingsRelatedToMatch: {
-      warnings: Array<{
-        sourceName: string;
-        sourceUrl: string;
-        date: string;
-      }>;
-      sanctions: Array<{
-        sourceName: string;
-        sourceUrl: string;
-        date: string;
-      }>;
-      pep: Array<{
-        sourceName: string;
-        sourceUrl: string;
-        date: string;
-      }>;
-      adverseMedia: Array<{
-        sourceName: string;
-        sourceUrl: string;
-        date: string;
-      }>;
-    };
-  }>;
-  createdAt: string;
-  totalHits: number;
-}
+import { z } from 'zod';
 
-export const amlAdapter = (aml: IAmlAdapterParams) => {
+const SourceInfoSchema = z.object({
+  sourceName: z.string().optional().nullable(),
+  sourceUrl: z.string().optional().nullable(),
+  date: z.string().optional().nullable(),
+});
+
+const ListingRelatedToMatchSchema = z.object({
+  warnings: z.array(SourceInfoSchema).optional().nullable(),
+  sanctions: z.array(SourceInfoSchema).optional().nullable(),
+  pep: z.array(SourceInfoSchema).optional().nullable(),
+  adverseMedia: z.array(SourceInfoSchema).optional().nullable(),
+});
+
+const HitSchema = z.object({
+  matchedName: z.string().optional().nullable(),
+  dateOfBirth: z.string().optional().nullable(),
+  countries: z.array(z.string()).optional().nullable(),
+  matchTypes: z.array(z.string()).optional().nullable(),
+  aka: z.array(z.string()).optional().nullable(),
+  listingsRelatedToMatch: ListingRelatedToMatchSchema.optional().nullable(),
+});
+
+export const AmlSchema = z.object({
+  hits: z.array(HitSchema).optional().nullable(),
+  createdAt: z.string().optional().nullable(),
+  totalHits: z.number().optional().nullable(),
+});
+
+export const amlAdapter = (aml: z.infer<typeof AmlSchema>) => {
   const { hits, totalHits, createdAt, ...rest } = aml;
 
   return {

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ComponentProps, useCallback } from 'react';
+import { ComponentProps, useCallback, useMemo } from 'react';
 import { isObject, StateTag, TStateTags } from '@ballerine/common';
 
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
@@ -98,16 +98,17 @@ export const useKycBlock = ({
       ]) ?? []
     : [];
 
-  const getAmlData = useCallback(
-    (key: string) =>
-      childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ??
-      childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml,
-    [childWorkflow?.context?.pluginsOutput?.kyc_session],
-  );
-  const amlBlock = useAmlBlock({
-    sessionKeys: kycSessionKeys,
-    getAmlData,
-  });
+  const amlData = useMemo(() => {
+    if (!kycSessionKeys?.length) {
+      return [];
+    }
+
+    return kycSessionKeys.map(
+      key => kycSessionKeys[key]?.result?.vendorResult?.aml ?? kycSessionKeys[key]?.result?.aml,
+    );
+  }, [kycSessionKeys]);
+
+  const amlBlock = useAmlBlock(amlData);
 
   const documentExtractedData = kycSessionKeys?.length
     ? kycSessionKeys?.map((key, index, collection) =>
