@@ -7,7 +7,7 @@ import { BusinessFindManyArgs } from './dtos/business-find-many-args';
 import { BusinessModel } from './business.model';
 import { plainToClass } from 'class-transformer';
 import type { Request } from 'express';
-import * as nestAccessControl from 'nest-access-control';
+// import * as nestAccessControl from 'nest-access-control';
 import { BusinessService } from './business.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import type { InputJsonValue, TProjectIds } from '@/types';
@@ -20,8 +20,8 @@ import { ProjectScopeService } from '@/project/project-scope.service';
 export class BusinessControllerInternal {
   constructor(
     protected readonly service: BusinessService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    // @nestAccessControl.InjectRolesBuilder()
+    // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     protected readonly projectScopeService: ProjectScopeService,
   ) {}
 

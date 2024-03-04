@@ -4,7 +4,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import type { Response } from 'express';
-import * as nestAccessControl from 'nest-access-control';
+// import * as nestAccessControl from 'nest-access-control';
 import { StorageService } from './storage.service';
 import * as errors from '../errors';
 import { fileFilter } from './file-filter';
@@ -34,8 +34,8 @@ import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 export class StorageControllerInternal {
   constructor(
     protected readonly service: StorageService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    // @nestAccessControl.InjectRolesBuilder()
+    // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     protected readonly logger: AppLoggerService,
     protected readonly httpService: HttpService,
   ) {}

@@ -28,7 +28,7 @@ import * as common from '@nestjs/common';
 import { UseGuards, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
-import * as nestAccessControl from 'nest-access-control';
+// import * as nestAccessControl from 'nest-access-control';
 import * as errors from '../errors';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
@@ -48,8 +48,8 @@ export class WorkflowControllerInternal {
   constructor(
     protected readonly service: WorkflowService,
     protected readonly filterService: FilterService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    // @nestAccessControl.InjectRolesBuilder()
+    // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
@@ -303,11 +303,11 @@ export class WorkflowControllerInternal {
     }
   }
 
-  @nestAccessControl.UseRoles({
-    resource: 'Workflow',
-    action: 'delete',
-    possession: 'own',
-  })
+  // @nestAccessControl.UseRoles({
+  //   resource: 'Workflow',
+  //   action: 'delete',
+  //   possession: 'own',
+  // })
   @common.Delete('/:id')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })

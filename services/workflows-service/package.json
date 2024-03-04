@@ -86,7 +86,6 @@
     "merge-anything": "^5.1.7",
     "mime": "^3.0.0",
     "multer-s3": "3.0.1",
-    "nest-access-control": "2.2.0",
     "nestjs-cls": "^3.5.0",
     "nestjs-prisma": "0.20.0",
     "nestjs-zod": "^3.0.0",
@@ -146,6 +145,6 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "4.2.0",
     "type-fest": "0.11.0",
-    "typescript": "^4.9.3"
+    "typescript": "^5.3.3"
   }
 }

@@ -7,7 +7,7 @@ import { EndUserFindManyArgs } from './dtos/end-user-find-many-args';
 import { EndUserModel } from './end-user.model';
 import { plainToClass } from 'class-transformer';
 import type { Request } from 'express';
-import * as nestAccessControl from 'nest-access-control';
+// import * as nestAccessControl from 'nest-access-control';
 import { EndUserService } from './end-user.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import type { InputJsonValue, TProjectIds } from '@/types';
@@ -18,9 +18,7 @@ import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 @common.Controller('internal/end-users')
 export class EndUserControllerInternal {
   constructor(
-    protected readonly service: EndUserService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    protected readonly service: EndUserService, // @nestAccessControl.InjectRolesBuilder() // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
 
   @common.Get()
