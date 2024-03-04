@@ -152,12 +152,19 @@ export class WorkflowRuntimeDataRepository {
 
   async updateStateById(
     id: string,
-    { data }: { data: Prisma.WorkflowRuntimeDataUncheckedUpdateInput },
+    {
+      data,
+      include = undefined,
+    }: {
+      data: Prisma.WorkflowRuntimeDataUncheckedUpdateInput;
+      include?: Prisma.WorkflowRuntimeDataInclude;
+    },
     transaction: PrismaTransaction,
-  ): Promise<WorkflowRuntimeData> {
+  ) {
     return await transaction.workflowRuntimeData.update({
       where: { id },
-      data: data,
+      data,
+      include,
     });
   }
 

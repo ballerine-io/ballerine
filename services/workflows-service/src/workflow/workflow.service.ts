@@ -61,6 +61,7 @@ import {
   Prisma,
   PrismaClient,
   UiDefinitionContext,
+  User,
   WorkflowDefinition,
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
@@ -1142,16 +1143,17 @@ export class WorkflowService {
       const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
       const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
 
-      const updatedResult = await this.workflowRuntimeDataRepository.updateStateById(
+      const updatedResult = (await this.workflowRuntimeDataRepository.updateStateById(
         runtimeData.id,
         {
           data: {
             ...data,
             resolvedAt: isResolved ? new Date().toISOString() : null,
           },
+          include: { assignee: true },
         },
         transaction,
-      );
+      )) as WorkflowRuntimeData & { assignee: User | null };
 
       if (isResolved) {
         this.logger.log('Workflow resolved', { id: workflowRuntimeId });
@@ -1167,6 +1169,7 @@ export class WorkflowService {
 
       if (contextHasChanged) {
         this.workflowEventEmitter.emit('workflow.context.changed', {
+          assignee: updatedResult.assignee,
           oldRuntimeData: runtimeData,
           updatedRuntimeData: updatedResult,
           state: currentState as string,
@@ -2177,14 +2180,17 @@ export class WorkflowService {
     projectId: string;
     systemEventName: 'workflow.context.changed'; // currently supports only this event
   }) {
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId, {}, [
-      projectId,
-    ]);
+    const runtimeData = (await this.workflowRuntimeDataRepository.findById(
+      workflowRuntimeId,
+      { include: { assignee: true } },
+      [projectId],
+    )) as WorkflowRuntimeData & { assignee: User | null };
     const correlationId = await this.getCorrelationIdFromWorkflow(runtimeData, [projectId]);
 
     this.workflowEventEmitter.emit(
       systemEventName,
       {
+        assignee: runtimeData.assignee,
         oldRuntimeData: runtimeData,
         updatedRuntimeData: runtimeData,
         state: runtimeData.state as string,
