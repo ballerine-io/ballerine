@@ -240,7 +240,7 @@ export class AlertService {
   private getStatusFromState(newState: AlertState): ObjectValues<typeof AlertStatus> {
     const alertStateToStatusMap = {
       [AlertState.triggered]: AlertStatus.new,
-      [AlertState.underReview]: AlertStatus.pending,
+      [AlertState.under_review]: AlertStatus.pending,
       [AlertState.escalated]: AlertStatus.pending,
       [AlertState.dismissed]: AlertStatus.completed,
       [AlertState.rejected]: AlertStatus.completed,

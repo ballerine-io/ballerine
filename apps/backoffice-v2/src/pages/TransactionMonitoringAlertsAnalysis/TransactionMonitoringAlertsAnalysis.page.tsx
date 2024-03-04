@@ -6,11 +6,12 @@ import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { ctw } from '@/common/utils/ctw/ctw';
 
 export const TransactionMonitoringAlertsAnalysisPage = () => {
-  const { transactions, onNavigateBack, alertDefinition, isLoadingAlertDefinition } =
+  const { transactions, onNavigateBack, alertDefinition, isLoadingAlertDefinition, alertId } =
     useTransactionMonitoringAlertsAnalysisPageLogic();
 
   return (
     <AlertAnalysisSheet
+      key={alertId}
       transactions={transactions ?? []}
       onOpenStateChange={onNavigateBack}
       heading={

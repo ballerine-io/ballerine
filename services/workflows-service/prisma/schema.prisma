@@ -623,19 +623,17 @@ enum AlertSeverity {
 }
 
 enum AlertState {
-
   // New
-  triggered     @map("101")  // Alert generated based on criteria indicating potential suspicious activity.
+  triggered @map("101") // Alert generated based on criteria indicating potential suspicious activity.
 
   // Pending
-  underReview   @map("201")  // Alert is being investigated for more details and assessment.
-  escalated     @map("202")  // Alert requires attention from higher authority or specialized investigation.
+  under_review @map("201") // Alert is being investigated for more details and assessment.
+  escalated    @map("202") // Alert requires attention from higher authority or specialized investigation.
 
   // Completed - Various resolutions indicating the outcome of the investigation.
-  rejected      @map("301")  // Investigation confirms the alert as a real threat, necessitating specific actions or interventions.
-  dismissed     @map("302")  // Alert considered not relevant or not posing any actionable risk.
-  cleared       @map("303")  // Investigation finds activity to be legitimate and not suspicious.
-
+  rejected  @map("301") // Investigation confirms the alert as a real threat, necessitating specific actions or interventions.
+  dismissed @map("302") // Alert considered not relevant or not posing any actionable risk.
+  cleared   @map("303") // Investigation finds activity to be legitimate and not suspicious.
 }
 
 enum AlertStatus {
@@ -782,4 +780,3 @@ model Counterparty {
   @@unique([projectId, correlationId])
   @@index([correlationId])
 }
-
