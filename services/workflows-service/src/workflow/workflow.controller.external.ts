@@ -6,9 +6,8 @@ import { NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
-import * as nestAccessControl from 'nest-access-control';
+// import * as nestAccessControl from 'nest-access-control';
 import * as errors from '../errors';
-import { IntentDto } from './dtos/intent';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
@@ -34,7 +33,7 @@ import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definit
 import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
 import { env } from '@/env';
 import { PrismaService } from '@/prisma/prisma.service';
-import { BUILT_IN_EVENT, ARRAY_MERGE_OPTION } from '@ballerine/workflow-core';
+import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('external/workflows')
@@ -43,8 +42,8 @@ export class WorkflowControllerExternal {
   constructor(
     protected readonly service: WorkflowService,
     protected readonly normalizeService: HookCallbackHandlerService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    // @nestAccessControl.InjectRolesBuilder()
+    // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly workflowDefinitionService: WorkflowDefinitionService,
     private readonly prismaService: PrismaService,
@@ -97,6 +96,7 @@ export class WorkflowControllerExternal {
       {},
       projectIds,
     );
+
     if (!workflowRuntimeData) {
       throw new NotFoundException(`No resource with id [${params.id}] was found`);
     }
@@ -130,6 +130,7 @@ export class WorkflowControllerExternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
   }
@@ -341,6 +342,7 @@ export class WorkflowControllerExternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
 

@@ -15,7 +15,7 @@ import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { AnyRecord, DefaultContextSchema } from '@ballerine/common';
+import { AnyRecord } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
 import { Customer, EndUser, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
 import { plainToClass } from 'class-transformer';

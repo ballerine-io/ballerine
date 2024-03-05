@@ -35,11 +35,13 @@ export class AppLoggerService implements LoggerService, OnModuleDestroy {
     };
 
     const reqId = this.cls.get('requestId');
+
     if (reqId) {
       metadata.reqId = reqId;
     }
 
     const entity = this.cls.get('entity');
+
     if (entity && entity.type !== 'admin') {
       if (entity.type === 'customer') {
         // @ts-ignore
@@ -49,6 +51,7 @@ export class AppLoggerService implements LoggerService, OnModuleDestroy {
         metadata.entity = entity.endUser;
       }
     }
+
     return metadata;
   }
 }

@@ -56,8 +56,6 @@ import {
 } from '@nestjs/common';
 import {
   ApprovalState,
-  Business,
-  EndUser,
   Prisma,
   PrismaClient,
   UiDefinitionContext,
@@ -270,6 +268,7 @@ export class WorkflowService {
     };
 
     let nextEvents;
+
     if (addNextEvents) {
       const service = createWorkflow({
         runtimeId: workflow.id,
@@ -651,6 +650,7 @@ export class WorkflowService {
       persistStates: true,
       submitStates: true,
     };
+
     return await this.workflowDefinitionRepository.findMany({ ...args, select }, projectIds);
   }
 
@@ -1090,6 +1090,7 @@ export class WorkflowService {
       );
 
       let contextHasChanged;
+
       if (data.context) {
         data.context.documents = assignIdToDocuments(data.context.documents);
         contextHasChanged = !isEqual(data.context, runtimeData.context);
@@ -1249,6 +1250,7 @@ export class WorkflowService {
     projectIds: TProjectIds,
   ) {
     let correlationId: string;
+
     if (runtimeData.businessId) {
       correlationId = (await this.businessRepository.getCorrelationIdById(
         runtimeData.businessId,
@@ -1264,6 +1266,7 @@ export class WorkflowService {
       console.error('No entity Id found');
       // throw new Error('No entity Id found');
     }
+
     return correlationId;
   }
 
@@ -1723,6 +1726,7 @@ export class WorkflowService {
         project: { connect: { id: projectId } },
       } as Prisma.EndUserCreateInput,
     });
+
     return id;
   }
 
@@ -1760,6 +1764,7 @@ export class WorkflowService {
           {},
           projectIds,
         );
+
         return res && res.id;
       } else {
         const res = await this.endUserRepository.findByCorrelationId(
@@ -1767,6 +1772,7 @@ export class WorkflowService {
           {},
           projectIds,
         );
+
         return res && res.id;
       }
     }
@@ -2082,6 +2088,7 @@ export class WorkflowService {
           projectId: parentWorkflowRuntime.projectId,
         });
       }
+
       contextToPersist[childWorkflow.id] = {
         entityId: childWorkflow.context.entity.id,
         status: childWorkflow.status,
@@ -2103,6 +2110,7 @@ export class WorkflowService {
   private initiateTransformer(transformer: SerializableTransformer): Transformer {
     if (transformer.transformer === 'jmespath')
       return new JmespathTransformer(transformer.mapping as string);
+
     if (transformer.transformer === 'helper')
       return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
 
@@ -2118,6 +2126,7 @@ export class WorkflowService {
     parentWorkflowContext['childWorkflows'][definitionId] ||= {};
 
     parentWorkflowContext['childWorkflows'][definitionId] = contextToPersist;
+
     return parentWorkflowContext;
   }
 
