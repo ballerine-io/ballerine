@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.7.46
+
+### Patch Changes
+
+- added zodBuilder and omit
+
 ## 0.7.45
 
 ### Patch Changes

@@ -5,6 +5,8 @@ import { BusinessModel } from './business.model';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import type { TProjectIds } from '@/types';
 import { PrismaTransaction } from '@/types';
+import { BusinessCreateInputSchema } from '@/business/schemas';
+import { ValidationError } from '@/errors';
 
 @Injectable()
 export class BusinessRepository {
@@ -16,7 +18,16 @@ export class BusinessRepository {
   async create<T extends Prisma.BusinessCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessCreateArgs>,
   ) {
-    return await this.prisma.business.create(args);
+    const result = BusinessCreateInputSchema.safeParse(args.data);
+
+    if (!result.success) {
+      throw ValidationError.fromZodError(result.error);
+    }
+
+    return await this.prisma.business.create({
+      ...args,
+      data: result.data,
+    });
   }
 
   async findMany<T extends Prisma.BusinessFindManyArgs>(
