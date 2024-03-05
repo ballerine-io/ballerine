@@ -39,6 +39,8 @@ export const Action = {
   APPROVE: 'approve',
   REVISION: 'revision',
   CASE_REVIEWED: 'CASE_REVIEWED',
+  DISMISS: 'dismiss',
+  FLAG: 'flag',
 } as const;
 export const Resource = {
   INDIVIDUAL: 'INDIVIDUAL',

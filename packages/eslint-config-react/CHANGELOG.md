@@ -4,6 +4,7 @@
 
 ### Patch Changes
 
+- version bump
 - added rules to enforce spacing
 - Updated dependencies
   - @ballerine/eslint-config@1.0.7

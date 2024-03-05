@@ -6,9 +6,9 @@ import { fetchWorkflowEvent } from '../../../fetchers';
 import { workflowsQueryKeys } from '../../../query-keys';
 
 export const useRevisionCaseMutation = ({
-  onSelectNextEntity,
+  onSelectNextCase,
 }: {
-  onSelectNextEntity?: VoidFunction;
+  onSelectNextCase?: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
 

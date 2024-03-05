@@ -2,7 +2,7 @@ import { NoTasksSvg } from '@/common/components/atoms/icons';
 
 export const NoBlocks = () => {
   return (
-    <div className="mb-72 flex items-center justify-center border-l-[1px] p-4">
+    <div className="flex items-center justify-center border-l-[1px] p-4 pb-72">
       <div className="inline-flex flex-col  items-start gap-4 rounded-md border-[1px] border-[#CBD5E1] p-6">
         <div className="flex w-[464px] items-center justify-center">
           <NoTasksSvg width={80} height={91} />
