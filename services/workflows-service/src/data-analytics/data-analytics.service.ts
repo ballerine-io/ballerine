@@ -4,7 +4,6 @@ import {
   InlineRule,
   TransactionsAgainstDynamicRulesType,
   EvaluateFunctions,
-  TAggregations,
   TCustomersTransactionTypeOptions,
 } from './types';
 import { AggregateType } from './consts';
@@ -25,11 +24,14 @@ export class DataAnalyticsService {
       this.evaluateTransactionsAgainstDynamicRules.name as keyof EvaluateFunctions
     ] = this.evaluateTransactionsAgainstDynamicRules.bind(this);
 
-    // this._evaluateNameToFunction[this.evaluateCustomersTransactionType.name as keyof EvaluateFunctions] =
-    //   this.evaluateCustomersTransactionType.bind(this);
+    this._evaluateNameToFunction[
+      this.evaluateCustomersTransactionType.name as keyof EvaluateFunctions
+    ] = this.evaluateCustomersTransactionType.bind(this) as (
+      options: TransactionsAgainstDynamicRulesType,
+    ) => Promise<any>;
 
-    // this._evaluateNameToFunction[this.evalHistoricAvgOfIncomingTransaction.name as keyof EvaluateFunctions] =
-    //   this.evalHistoricAvgOfIncomingTransaction.bind(this);
+    this._evaluateNameToFunction[this.evaluateDormantAccount.name as keyof EvaluateFunctions] =
+      this.evaluateDormantAccount.bind(this);
 
     // this._evaluateNameToFunction[this.evaluateDormantAccount.name as keyof EvaluateFunctions] =
     //   this.evaluateDormantAccount.bind(this);
