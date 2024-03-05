@@ -29,6 +29,7 @@ export class CustomerControllerExternal {
   @swagger.ApiForbiddenResponse()
   async create(@common.Body() customerCreateModel: CustomerCreateDto) {
     const { projectName, ...customer } = customerCreateModel;
+
     if (projectName) {
       (customer as Prisma.CustomerCreateInput).projects = {
         create: { name: customerCreateModel.projectName! },

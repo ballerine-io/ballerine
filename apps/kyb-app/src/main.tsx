@@ -1,3 +1,5 @@
+import '@total-typescript/ts-reset';
+
 import { SettingsProvider } from '@/common/providers/SettingsProvider/SettingsProvider';
 import { ThemeProvider } from '@/common/providers/ThemeProvider/ThemeProvider';
 import { queryClient } from '@/common/utils/query-client';

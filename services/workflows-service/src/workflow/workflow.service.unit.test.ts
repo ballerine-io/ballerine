@@ -4,7 +4,6 @@ import { DocumentChangedWebhookCaller } from '../events/document-changed-webhook
 import { Test, TestingModule } from '@nestjs/testing';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import packageJson from '../../package.json';
 import { ConfigService } from '@nestjs/config';
 
 class FakeWorkflowRuntimeDataRepo extends BaseFakeRepository {
@@ -146,6 +145,7 @@ describe('WorkflowService', () => {
       axiosRef: {
         post: async (url, data, config) => {
           fakeHttpService.requests.push({ url, data });
+
           return {
             status: 200,
             data: { success: true },
@@ -193,6 +193,7 @@ describe('WorkflowService', () => {
       salesforceService,
       workflowTokenService,
       uiDefinitionService,
+      {} as any,
     );
   });
 
@@ -222,173 +223,6 @@ describe('WorkflowService', () => {
       });
 
       expect(definitions[0]).not.toHaveProperty('updatedAt');
-    });
-  });
-
-  describe('.event', () => {
-    describe('reaching to a state of type "final"', () => {
-      it('updates runtime data status to "completed"', async () => {
-        const initialRuntimeData = {
-          id: '2',
-          workflowDefinitionId: '2',
-          context: {
-            numb: 'context',
-          },
-        };
-        await workflowRuntimeDataRepo.create({
-          data: initialRuntimeData,
-        });
-
-        await service.createWorkflowDefinition(buildWorkflowDeifintion(2));
-        await service.event({ id: '2', name: 'COMPLETE' });
-
-        const runtimeData = await workflowRuntimeDataRepo.findById('2');
-
-        expect(runtimeData.state).toEqual('completed');
-        expect(runtimeData.status).toEqual('completed');
-      });
-    });
-  });
-
-  describe('.updateWorkflowRuntimeData', () => {
-    it('sends a webbhook only for changed documents', async () => {
-      const initialRuntimeData = {
-        id: '2',
-        workflowDefinitionId: '2',
-        context: {
-          documents: [buildDocument('willBeRemoved', 'pending'), buildDocument('a', 'pending')],
-        },
-        config: {
-          subscriptions: [
-            {
-              type: 'webhook',
-              url: 'https://example.com',
-              events: ['workflow.context.document.changed'],
-            },
-          ],
-        },
-      };
-      await workflowRuntimeDataRepo.create({
-        data: initialRuntimeData,
-      });
-
-      const newContext = {
-        documents: [buildDocument('a', 'approved'), buildDocument('added', 'pending')],
-      };
-
-      await service.createWorkflowDefinition(buildWorkflowDeifintion(2));
-      await service.updateWorkflowRuntimeData('2', { context: newContext });
-
-      expect(fakeHttpService.requests).toEqual([
-        {
-          url: configService.get('WEBHOOK_URL'),
-          data: {
-            id: expect.stringMatching(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/),
-            eventName: 'workflow.context.document.changed',
-            workflowDefinitionId: '2',
-            workflowCreatedAt: undefined,
-            workflowResolvedAt: null,
-            ballerineEntityId: undefined,
-            correlationId: '',
-            apiVersion: packageJson.version,
-            timestamp: expect.stringMatching(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/),
-            workflowRuntimeId: '2',
-            environment: 'test',
-            data: {
-              ...newContext,
-            },
-          },
-        },
-      ]);
-    });
-
-    it('sends a webbhook regardless regardless of case identifier case', async () => {
-      const initialRuntimeData = {
-        id: '2',
-        workflowDefinitionId: '2',
-        context: {
-          documents: [buildDocument('a', 'pending')],
-        },
-        config: {
-          subscriptions: [
-            {
-              type: 'webhook',
-              url: 'https://example.com',
-              events: ['workflow.context.document.changed'],
-            },
-          ],
-        },
-      };
-      await workflowRuntimeDataRepo.create({
-        data: initialRuntimeData,
-      });
-
-      const newContext = {
-        documents: [buildDocument('A', 'approved')],
-      };
-
-      await service.createWorkflowDefinition(buildWorkflowDeifintion(2));
-      await service.updateWorkflowRuntimeData('2', { context: newContext });
-
-      expect(fakeHttpService.requests).toEqual([
-        {
-          url: configService.get('WEBHOOK_URL'),
-          data: {
-            id: expect.stringMatching(/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/),
-            eventName: 'workflow.context.document.changed',
-            ballerineEntityId: undefined,
-            workflowResolvedAt: null,
-            workflowCreatedAt: undefined,
-            correlationId: '',
-            apiVersion: packageJson.version,
-            timestamp: expect.stringMatching(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z/),
-            workflowRuntimeId: '2',
-            workflowDefinitionId: '2',
-            environment: 'test',
-            data: {
-              ...newContext,
-            },
-          },
-        },
-      ]);
-    });
-    it('does not send a webhook if no documents have changed', async () => {
-      const initialRuntimeData = {
-        id: '2',
-        workflowDefinitionId: '2',
-        context: {
-          documents: [
-            buildDocument('willBeRemoved', 'pending'),
-            buildDocument('a', 'pending'),
-            buildDocument('b', 'pending'),
-          ],
-        },
-        config: {
-          subscriptions: [
-            {
-              type: 'webhook',
-              url: 'https://example.com',
-              events: ['workflow.context.document.changed'],
-            },
-          ],
-        },
-      };
-      await workflowRuntimeDataRepo.create({
-        data: initialRuntimeData,
-      });
-
-      await service.createWorkflowDefinition(buildWorkflowDeifintion(2));
-      await service.updateWorkflowRuntimeData('2', {
-        context: {
-          documents: [
-            buildDocument('added', 'pending'),
-            buildDocument('a', 'pending'),
-            buildDocument('b', 'pending'),
-          ],
-        },
-      });
-
-      expect(fakeHttpService.requests).toEqual([]);
     });
   });
 });

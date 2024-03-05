@@ -17,6 +17,7 @@ export class CustomerControllerInternal {
   @swagger.ApiForbiddenResponse()
   async find(@ProjectIds() projectIds: TProjectIds): Promise<Customer | null> {
     const projectId = projectIds?.[0];
+
     if (!projectId) throw new NotFoundException('Customer not found');
 
     return this.service.getByProjectId(projectId, {

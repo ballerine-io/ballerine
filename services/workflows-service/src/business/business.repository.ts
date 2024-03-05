@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { BusinessModel } from './business.model';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import type { TProjectIds } from '@/types';
+import { PrismaTransaction } from '@/types';
 
 @Injectable()
 export class BusinessRepository {
@@ -74,8 +75,9 @@ export class BusinessRepository {
   async updateById<T extends Omit<Prisma.BusinessUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.BusinessUpdateArgs, 'where'>>,
+    transaction: PrismaClient | PrismaTransaction = this.prisma,
   ): Promise<BusinessModel> {
-    return await this.prisma.business.update({
+    return await transaction.business.update({
       where: { id },
       ...args,
     });

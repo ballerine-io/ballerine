@@ -37,6 +37,7 @@ import { initHttpMoudle } from '@/common/http-service/http-config.service';
 import { DataMigrationModule } from '@/data-migration/data-migration.module';
 import { CaseManagementModule } from '@/case-management/case-management.module';
 import { WorkflowModule } from '@/workflow/workflow.module';
+import { WebhooksModule } from '@/webhooks/webhooks.module';
 
 @Module({
   controllers: [MetricsController],
@@ -50,6 +51,7 @@ import { WorkflowModule } from '@/workflow/workflow.module';
     EventEmitterModule.forRoot(),
     UserModule,
     WorkflowModule,
+    WebhooksModule,
     UiDefinitionModule,
     StorageModule,
     DataMigrationModule,

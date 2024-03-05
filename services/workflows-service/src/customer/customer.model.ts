@@ -1,6 +1,5 @@
-import { CustomerSubscriptionSchema } from './schemas/zod-schemas';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, ValidateNested } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CustomerModel {
   @ApiProperty({
