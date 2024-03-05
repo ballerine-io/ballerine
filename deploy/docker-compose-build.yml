@@ -27,16 +27,13 @@ services:
       VITE_KYB_DEFINITION_ID: 'kyb_parent_kyc_session_example'
   ballerine-workflow-service:
     container_name: workflow-service
-    build:
-      context: ../services/workflows-service/
-      args:
-        NPM_LOG_LEVEL: notice
+    image: ghcr.io/ballerine-io/workflows-service:latest
     command:
       - /bin/sh
       - -c
       - |
         npm run db:init
-        npm run seed:ex
+        npm run seed
         dumb-init npm run prod
     ports:
       - ${WORKFLOW_SVC_PORT}:${WORKFLOW_SVC_PORT}
