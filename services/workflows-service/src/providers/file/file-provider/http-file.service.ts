@@ -38,6 +38,7 @@ export class HttpFileService implements IStreamableFileProvider {
         method: response.config.method?.toUpperCase(),
         // TODO: should we add also response's headers?
       });
+
       return response;
     });
   }
@@ -65,11 +66,13 @@ export class HttpFileService implements IStreamableFileProvider {
 
     const fileBuffer = response.data;
     await fsPromises.writeFile(localFilePath, Buffer.from(fileBuffer));
+
     return localFilePath;
   }
 
   async isRemoteExists(remoteFileConfig: TRemoteUri): Promise<boolean> {
     const response = await this.client.head(remoteFileConfig);
+
     return response.status >= 200 && response.status < 300;
   }
 
@@ -84,6 +87,7 @@ export class HttpFileService implements IStreamableFileProvider {
     const response: AxiosResponse<Readable> = await axios.get(remoteUri, {
       responseType: 'stream',
     });
+
     return response.data;
   }
 

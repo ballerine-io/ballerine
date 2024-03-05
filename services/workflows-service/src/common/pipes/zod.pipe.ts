@@ -1,4 +1,4 @@
-import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { ZodSchema } from 'zod';
 import type { Paramtype } from '@nestjs/common/interfaces/features/paramtype.interface';
 import { ValidationError } from '@/errors';

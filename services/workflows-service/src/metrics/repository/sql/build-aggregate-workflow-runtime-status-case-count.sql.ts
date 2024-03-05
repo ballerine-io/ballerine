@@ -1,4 +1,10 @@
-export const aggregateWorkflowRuntimeStatusCaseCountQuery = `
+import { TProjectIds } from '@/types';
+import { Prisma } from '@prisma/client';
+
+export const buildAggregateWorkflowRuntimeStatusCaseCountQuery = (
+  fromDate: Date = new Date(),
+  projectIds: TProjectIds,
+) => Prisma.sql`
 select
   sum(
     case
@@ -25,8 +31,8 @@ from
     count("status") as status_count
   from
     "WorkflowRuntimeData"
-  where "createdAt" >= coalesce($1, '1900-01-01'::timestamp)
-  AND "projectId" in ($2)
+  where "createdAt" >= coalesce(${fromDate}, '1900-01-01'::timestamp)
+  AND "projectId" in (${projectIds?.join(',')})
   group by
     "status"
 ) as workflow_runtime_data`;

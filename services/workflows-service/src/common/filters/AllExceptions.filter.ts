@@ -88,6 +88,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     } else if (status >= 500) {
       message = message + ' - Server Error:';
     }
+
     return message;
   }
 }
