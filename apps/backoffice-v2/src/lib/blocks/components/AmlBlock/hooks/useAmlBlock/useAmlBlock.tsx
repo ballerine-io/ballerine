@@ -1,35 +1,19 @@
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import * as React from 'react';
 import { ComponentProps, useMemo } from 'react';
 import { Badge } from '@ballerine/ui';
 import { WarningFilledSvg } from '@/common/components/atoms/icons';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
 import { amlAdapter } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
-import { safeEvery } from '@ballerine/common';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 
-export const useAmlBlock = ({
-  sessionKeys,
-  getAmlData,
-}: {
-  sessionKeys: string[];
-  getAmlData: (key: string) => Parameters<typeof amlAdapter>[0];
-}) => {
-  const isAmlEmpty = useMemo(() => {
-    if (!sessionKeys?.length) {
-      return true;
-    }
-
-    return safeEvery(sessionKeys, key => !getAmlData(key));
-  }, [getAmlData, sessionKeys]);
+export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
   const amlBlock = useMemo(() => {
-    if (isAmlEmpty) {
+    if (!data?.length) {
       return [];
     }
 
-    return sessionKeys?.flatMap(key => {
-      const aml = getAmlData(key);
-
-      if (!Object.keys(aml ?? {}).length) return [];
+    return data.flatMap(aml => {
+      if (!aml || !Object.keys(aml ?? {}).length) return [];
 
       const { totalMatches, fullReport, dateOfCheck, matches } = amlAdapter(aml);
 
@@ -354,9 +338,9 @@ export const useAmlBlock = ({
         ) ?? []),
       ];
     });
-  }, [getAmlData, isAmlEmpty, sessionKeys]);
+  }, [data]);
 
-  if (isAmlEmpty) {
+  if (!amlBlock.length) {
     return [];
   }
 
