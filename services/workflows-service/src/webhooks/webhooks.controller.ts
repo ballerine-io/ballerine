@@ -1,11 +1,11 @@
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import * as nestAccessControl from 'nest-access-control';
 import * as errors from '../errors';
 import { Public } from '@/common/decorators/public.decorator';
 import { AmlWebhookInput } from './dtos/aml-webhook-input';
 import { IndividualAmlWebhookInput } from '@/webhooks/dtos/individual-aml-webhook-input';
 import { WebhooksService } from '@/webhooks/webhooks.service';
+import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
 
 const Webhook = {
   AML_INDIVIDUAL_MONITORING_UPDATE: 'aml.individuals.monitoring.update',
@@ -20,18 +20,14 @@ const EntityType = {
 @swagger.ApiTags('Webhooks')
 @common.Controller('webhooks')
 export class WebhooksController {
-  constructor(
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
-    private readonly webhooksService: WebhooksService,
-  ) {}
+  constructor(private readonly webhooksService: WebhooksService) {}
 
   @common.Post('/:entityType/aml')
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @Public()
-  // @VerifyUnifiedApiSignatureDecorator()
+  @VerifyUnifiedApiSignatureDecorator()
   async amlHook(
     @common.Param() { entityType }: AmlWebhookInput,
     @common.Body() data: IndividualAmlWebhookInput,

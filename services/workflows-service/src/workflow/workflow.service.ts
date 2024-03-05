@@ -59,6 +59,7 @@ import {
   Prisma,
   PrismaClient,
   UiDefinitionContext,
+  User,
   WorkflowDefinition,
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
@@ -248,6 +249,7 @@ export class WorkflowService {
     };
 
     let nextEvents;
+
     if (addNextEvents) {
       const service = createWorkflow({
         runtimeId: workflow.id,
@@ -629,6 +631,7 @@ export class WorkflowService {
       persistStates: true,
       submitStates: true,
     };
+
     return await this.workflowDefinitionRepository.findMany({ ...args, select }, projectIds);
   }
 
@@ -1068,6 +1071,7 @@ export class WorkflowService {
       );
 
       let contextHasChanged;
+
       if (data.context) {
         data.context.documents = assignIdToDocuments(data.context.documents);
         contextHasChanged = !isEqual(data.context, runtimeData.context);
@@ -1121,16 +1125,17 @@ export class WorkflowService {
       const isFinal = workflowDef.definition?.states?.[currentState]?.type === 'final';
       const isResolved = isFinal || data.status === WorkflowRuntimeDataStatus.completed;
 
-      const updatedResult = await this.workflowRuntimeDataRepository.updateStateById(
+      const updatedResult = (await this.workflowRuntimeDataRepository.updateStateById(
         runtimeData.id,
         {
           data: {
             ...data,
             resolvedAt: isResolved ? new Date().toISOString() : null,
           },
+          include: { assignee: true },
         },
         transaction,
-      );
+      )) as WorkflowRuntimeData & { assignee: User | null };
 
       if (isResolved) {
         this.logger.log('Workflow resolved', { id: workflowRuntimeId });
@@ -1146,6 +1151,7 @@ export class WorkflowService {
 
       if (contextHasChanged) {
         this.workflowEventEmitter.emit('workflow.context.changed', {
+          assignee: updatedResult.assignee,
           oldRuntimeData: runtimeData,
           updatedRuntimeData: updatedResult,
           state: currentState as string,
@@ -1225,6 +1231,7 @@ export class WorkflowService {
     projectIds: TProjectIds,
   ) {
     let correlationId: string;
+
     if (runtimeData.businessId) {
       correlationId = (await this.businessRepository.getCorrelationIdById(
         runtimeData.businessId,
@@ -1240,6 +1247,7 @@ export class WorkflowService {
       console.error('No entity Id found');
       // throw new Error('No entity Id found');
     }
+
     return correlationId;
   }
 
@@ -1699,6 +1707,7 @@ export class WorkflowService {
         project: { connect: { id: projectId } },
       } as Prisma.EndUserCreateInput,
     });
+
     return id;
   }
 
@@ -1736,6 +1745,7 @@ export class WorkflowService {
           {},
           projectIds,
         );
+
         return res && res.id;
       } else {
         const res = await this.endUserRepository.findByCorrelationId(
@@ -1743,6 +1753,7 @@ export class WorkflowService {
           {},
           projectIds,
         );
+
         return res && res.id;
       }
     }
@@ -2058,6 +2069,7 @@ export class WorkflowService {
           projectId: parentWorkflowRuntime.projectId,
         });
       }
+
       contextToPersist[childWorkflow.id] = {
         entityId: childWorkflow.context.entity.id,
         status: childWorkflow.status,
@@ -2079,6 +2091,7 @@ export class WorkflowService {
   private initiateTransformer(transformer: SerializableTransformer): Transformer {
     if (transformer.transformer === 'jmespath')
       return new JmespathTransformer(transformer.mapping as string);
+
     if (transformer.transformer === 'helper')
       return new HelpersTransformer(transformer.mapping as THelperFormatingLogic);
 
@@ -2094,6 +2107,7 @@ export class WorkflowService {
     parentWorkflowContext['childWorkflows'][definitionId] ||= {};
 
     parentWorkflowContext['childWorkflows'][definitionId] = contextToPersist;
+
     return parentWorkflowContext;
   }
 
@@ -2156,14 +2170,17 @@ export class WorkflowService {
     projectId: string;
     systemEventName: 'workflow.context.changed'; // currently supports only this event
   }) {
-    const runtimeData = await this.workflowRuntimeDataRepository.findById(workflowRuntimeId, {}, [
-      projectId,
-    ]);
+    const runtimeData = (await this.workflowRuntimeDataRepository.findById(
+      workflowRuntimeId,
+      { include: { assignee: true } },
+      [projectId],
+    )) as WorkflowRuntimeData & { assignee: User | null };
     const correlationId = await this.getCorrelationIdFromWorkflow(runtimeData, [projectId]);
 
     this.workflowEventEmitter.emit(
       systemEventName,
       {
+        assignee: runtimeData.assignee,
         oldRuntimeData: runtimeData,
         updatedRuntimeData: runtimeData,
         state: runtimeData.state as string,

@@ -7,7 +7,6 @@ import { BusinessFindManyArgs } from './dtos/business-find-many-args';
 import { BusinessModel } from './business.model';
 import { plainToClass } from 'class-transformer';
 import type { Request } from 'express';
-import * as nestAccessControl from 'nest-access-control';
 import { BusinessService } from './business.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import type { InputJsonValue, TProjectIds } from '@/types';
@@ -17,11 +16,7 @@ import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 @swagger.ApiTags('internal/businesses')
 @common.Controller('internal/businesses')
 export class BusinessControllerInternal {
-  constructor(
-    protected readonly service: BusinessService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
-  ) {}
+  constructor(protected readonly service: BusinessService) {}
 
   @common.Get()
   @swagger.ApiOkResponse({ type: [BusinessModel] })
