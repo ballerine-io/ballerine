@@ -28,7 +28,9 @@ export const AmlSchema = z.object({
   totalHits: z.number().optional().nullable(),
 });
 
-export const amlAdapter = (aml: z.infer<typeof AmlSchema>) => {
+export type TAml = z.output<typeof AmlSchema>;
+
+export const amlAdapter = (aml: TAml) => {
   const { hits, totalHits, createdAt, ...rest } = aml;
 
   return {

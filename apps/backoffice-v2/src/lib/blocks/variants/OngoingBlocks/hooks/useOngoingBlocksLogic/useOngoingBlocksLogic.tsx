@@ -14,9 +14,9 @@ export const useOngoingBlocksLogic = () => {
     filterId: filterId ?? '',
   });
 
-  const amlData = useMemo(() => workflow?.context?.aml, [workflow?.context?.aml]);
+  const amlData = useMemo(() => [workflow?.context?.aml], [workflow?.context?.aml]);
 
-  const amlBlock = useAmlBlock([amlData]);
+  const amlBlock = useAmlBlock(amlData);
 
   const amlWithContainerBlock = useMemo(() => {
     if (!amlBlock?.length) {
