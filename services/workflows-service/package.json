@@ -20,7 +20,7 @@
     "test:integration": "jest --testRegex '.*\\.intg\\.test\\.ts$'",
     "test:e2e": "jest --testRegex '.*\\.e2e\\.test\\.ts$'",
     "test:watch": "jest --verbose --watch",
-    "seed": "ts-node scripts/seed.ts",
+    "seed": "tsx scripts/seed.ts",
     "db:migrate-dev": "prisma migrate dev",
     "db:migrate-up": "prisma migrate deploy",
     "db:reset": "prisma migrate reset --skip-seed -f",
@@ -32,11 +32,11 @@
     "docker:build": "docker build .",
     "compose:up": "docker compose up -d",
     "compose:down": "docker compose down --volumes",
-    "upload-sourcemaps": "ts-node scripts/upload-sourcemaps.ts",
+    "upload-sourcemaps": "tsx scripts/upload-sourcemaps.ts",
     "prepare": "npm run prisma:generate",
     "db:data-migration:generate": "plop --plopfile ./prisma/data-migrations/plopfile.js --dest ./",
     "db:data-migration:migrate": "rimraf ./dist && npm run build && nest start --entryFile ./src/data-migration/scripts/migrate",
-    "db:data-migration:import": "ts-node ./src/data-migration/scripts/import"
+    "db:data-migration:import": "tsx ./src/data-migration/scripts/import"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.347.1",
@@ -143,8 +143,8 @@
     "supertest": "4.0.2",
     "testcontainers": "^9.8.0",
     "ts-jest": "29.1.1",
-    "ts-node": "^10.9.1",
     "tsconfig-paths": "4.2.0",
+    "tsx": "^4.7.1",
     "type-fest": "0.11.0",
     "typescript": "^5.3.3"
   }
