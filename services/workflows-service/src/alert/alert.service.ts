@@ -116,10 +116,17 @@ export class AlertService {
     const alertDefinitions = await this.getAllAlertDefinitions();
 
     for (const definition of alertDefinitions) {
-      const triggered = await this.checkAlert(definition);
+      try {
+        const triggered = await this.checkAlert(definition);
 
-      if (triggered) {
-        this.logger.log(`Alert triggered for alert definition '${definition.id}'`);
+        if (triggered) {
+          this.logger.log(`Alert triggered for alert definition '${definition.id}'`);
+        }
+      } catch (error) {
+        this.logger.error('Error while checking alert', {
+          error,
+          definitionId: definition.id,
+        });
       }
     }
   }
