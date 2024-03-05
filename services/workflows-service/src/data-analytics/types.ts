@@ -27,6 +27,10 @@ export type TransactionsAgainstDynamicRulesType = {
   groupByCounterparty?: boolean;
 };
 
+export type TDormantAccountOption = {
+  projectId: string;
+};
+
 export type TCustomersTransactionTypeOptions = {
   projectId: string; // TODO: make it required
   transactionType: TransactionRecordType[];
@@ -38,13 +42,10 @@ export type TCustomersTransactionTypeOptions = {
   havingAggregate?: TAggregations;
 };
 
-export type TDormantAccountOption = {
-  projectId: string;
-};
-
 export type EvaluateFunctions = {
   evaluateTransactionsAgainstDynamicRules: (
     options: TransactionsAgainstDynamicRulesType,
   ) => Promise<any>;
   evaluateDormantAccount: (options: TDormantAccountOption) => Promise<any>;
+  evaluateCustomersTransactionType: (options: TCustomersTransactionTypeOptions) => Promise<any>;
 };
