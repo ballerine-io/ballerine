@@ -8,6 +8,8 @@ export const StateTag = {
   COLLECTION_FLOW: 'collection_flow',
   FAILURE: 'failure',
   DATA_ENRICHMENT: 'data_enrichment',
+  FLAGGED: 'flagged',
+  DISMISSED: 'dismissed',
 } as const;
 
 export const StateTags = [
@@ -19,10 +21,11 @@ export const StateTags = [
   StateTag.COLLECTION_FLOW,
   StateTag.RESOLVED,
   StateTag.FAILURE,
+  StateTag.FLAGGED,
+  StateTag.DISMISSED,
 ] as const;
 
 export const CommonWorkflowEvent = {
-  TASK_REVIEWED: 'TASK_REVIEWED',
   CASE_REVIEWED: 'CASE_REVIEWED',
   RETURN_TO_REVIEW: 'RETURN_TO_REVIEW',
   RESUBMITTED: 'RESUBMITTED',
@@ -30,6 +33,8 @@ export const CommonWorkflowEvent = {
   APPROVE: 'approve',
   REVISION: 'revision',
   RESOLVE: 'resolve',
+  FLAG: 'flag',
+  DISMISS: 'dismiss',
 } as const;
 
 export const CommonWorkflowStates = {
@@ -38,6 +43,8 @@ export const CommonWorkflowStates = {
   APPROVED: 'approved',
   RESOLVED: 'resolved',
   REVISION: 'revision',
+  FLAGGED: 'flagged',
+  DISMISSED: 'dismissed',
 } as const;
 
 export type TStateTag = (typeof StateTags)[number];
@@ -49,6 +56,7 @@ export const WorkflowDefinitionVariant = {
   KYB_WITH_ASSOCIATED_COMPANIES: 'KYB_WITH_ASSOCIATED_COMPANIES',
   KYC: 'KYC',
   DEFAULT: 'DEFAULT',
+  ONGOING: 'ONGOING',
 } as const;
 
 export type TStateTags = typeof StateTags;

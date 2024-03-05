@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-service",
   "private": false,
-  "version": "0.5.41",
+  "version": "0.5.45",
   "description": "workflow-service",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -20,7 +20,7 @@
     "test:integration": "jest --testRegex '.*\\.intg\\.test\\.ts$'",
     "test:e2e": "jest --testRegex '.*\\.e2e\\.test\\.ts$'",
     "test:watch": "jest --verbose --watch",
-    "seed": "ts-node scripts/seed.ts",
+    "seed": "tsx scripts/seed.ts",
     "db:migrate-dev": "prisma migrate dev",
     "db:migrate-up": "prisma migrate deploy",
     "db:reset": "prisma migrate reset --skip-seed -f",
@@ -32,19 +32,19 @@
     "docker:build": "docker build .",
     "compose:up": "docker compose up -d",
     "compose:down": "docker compose down --volumes",
-    "upload-sourcemaps": "ts-node scripts/upload-sourcemaps.ts",
+    "upload-sourcemaps": "tsx scripts/upload-sourcemaps.ts",
     "prepare": "npm run prisma:generate",
     "db:data-migration:generate": "plop --plopfile ./prisma/data-migrations/plopfile.js --dest ./",
     "db:data-migration:migrate": "rimraf ./dist && npm run build && nest start --entryFile ./src/data-migration/scripts/migrate",
-    "db:data-migration:import": "ts-node ./src/data-migration/scripts/import"
+    "db:data-migration:import": "tsx ./src/data-migration/scripts/import"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.347.1",
     "@aws-sdk/lib-storage": "3.347.1",
     "@aws-sdk/s3-request-presigner": "3.347.1",
-    "@ballerine/common": "0.7.41",
-    "@ballerine/workflow-core": "0.5.41",
-    "@ballerine/workflow-node-sdk": "0.5.41",
+    "@ballerine/common": "0.7.45",
+    "@ballerine/workflow-core": "0.5.45",
+    "@ballerine/workflow-node-sdk": "0.5.45",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
     "@nestjs/common": "^9.3.12",
@@ -86,7 +86,6 @@
     "merge-anything": "^5.1.7",
     "mime": "^3.0.0",
     "multer-s3": "3.0.1",
-    "nest-access-control": "2.2.0",
     "nestjs-cls": "^3.5.0",
     "nestjs-prisma": "0.20.0",
     "nestjs-zod": "^3.0.0",
@@ -102,11 +101,12 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.0.5",
-    "@ballerine/eslint-config": "^1.0.5",
+    "@ballerine/config": "^1.0.6",
+    "@ballerine/eslint-config": "^1.0.7",
     "@cspell/cspell-types": "^6.31.1",
     "@nestjs/cli": "9.3.0",
     "@nestjs/swagger": "6.2.1",
+    "@total-typescript/ts-reset": "^0.5.1",
     "@types/bcrypt": "5.0.0",
     "@types/cookie-session": "^2.0.44",
     "@types/express": "4.17.9",
@@ -143,9 +143,9 @@
     "supertest": "4.0.2",
     "testcontainers": "^9.8.0",
     "ts-jest": "29.1.1",
-    "ts-node": "^10.9.1",
     "tsconfig-paths": "4.2.0",
+    "tsx": "^4.7.1",
     "type-fest": "0.11.0",
-    "typescript": "^4.9.3"
+    "typescript": "^5.3.3"
   }
 }

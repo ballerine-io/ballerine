@@ -19,7 +19,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { createCustomer } from '@/test/helpers/create-customer';
-import { PrismaClient, Project, User } from '@prisma/client';
+import { Business, PrismaClient, Project, User } from '@prisma/client';
 import { createProject } from '@/test/helpers/create-project';
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
@@ -38,6 +38,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
   let app: INestApplication;
   let workflowService: WorkflowService;
   let project: Project;
+  let business: Business;
   let assignee: User;
   const db = new PrismaClient();
 
@@ -101,6 +102,11 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       [PrismaModule],
       [userAuthOverrideMiddleware],
     );
+    const businessRepository = (await fetchServiceFromModule(
+      BusinessRepository,
+      servicesProviders,
+      [PrismaModule],
+    )) as unknown as BusinessRepository;
 
     const customer = await createCustomer(
       await app.get(PrismaService),
@@ -111,6 +117,16 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       'webhook-shared-secret',
     );
     project = await createProject(await app.get(PrismaService), customer, '4');
+    business = await businessRepository.create({
+      data: {
+        companyName: 'Test Company',
+        project: {
+          connect: {
+            id: project.id,
+          },
+        },
+      },
+    });
   });
 
   describe('PATCH /:id/decision/:documentId', () => {
@@ -121,7 +137,10 @@ describe('/api/v1/internal/workflows #api #integration', () => {
           data: {
             name: 'test',
             definitionType: 'statechart-json',
-            definition: {},
+            definition: {
+              initial: 'idle',
+              states: { idle: {} },
+            },
             isPublic: true,
           },
         } satisfies Parameters<(typeof db)['workflowDefinition']['create']>[0];
@@ -150,6 +169,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
               ],
             },
             projectId: project.id,
+            businessId: business.id,
           },
         } satisfies Parameters<(typeof db)['workflowRuntimeData']['create']>[0];
         const createUserPayload = {
