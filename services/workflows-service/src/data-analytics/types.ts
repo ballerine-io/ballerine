@@ -5,7 +5,10 @@ import { GenericAsyncFunction } from '@/types';
 export type InlineRule = {
   id: string;
   fnName: string;
-  options: TransactionsAgainstDynamicRulesType | TCustomersTransactionTypeOptions;
+  options:
+    | TransactionsAgainstDynamicRulesType
+    | TDormantAccountOption
+    | TCustomersTransactionTypeOptions;
   subjects: readonly string[];
 };
 

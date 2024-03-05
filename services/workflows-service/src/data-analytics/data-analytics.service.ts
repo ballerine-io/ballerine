@@ -4,6 +4,7 @@ import {
   InlineRule,
   TransactionsAgainstDynamicRulesType,
   EvaluateFunctions,
+  TAggregations,
   TCustomersTransactionTypeOptions,
 } from './types';
 import { AggregateType } from './consts';
@@ -32,9 +33,6 @@ export class DataAnalyticsService {
 
     this._evaluateNameToFunction[this.evaluateDormantAccount.name as keyof EvaluateFunctions] =
       this.evaluateDormantAccount.bind(this);
-
-    // this._evaluateNameToFunction[this.evaluateDormantAccount.name as keyof EvaluateFunctions] =
-    //   this.evaluateDormantAccount.bind(this);
   }
 
   private async _executeQuery(query: Prisma.Sql) {
