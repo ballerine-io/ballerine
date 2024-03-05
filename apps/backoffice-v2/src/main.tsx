@@ -20,7 +20,7 @@ const prepare = async () => {
   }
 
   return Promise.resolve();
-};
+}; 
 
 void prepare().then(() => {
   if (!rootElement.innerHTML) {
