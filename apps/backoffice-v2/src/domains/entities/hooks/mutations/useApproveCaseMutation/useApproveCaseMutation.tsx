@@ -8,10 +8,10 @@ import { Action } from '../../../../../common/enums';
 // @TODO: Refactor to be under cases/workflows domain
 export const useApproveCaseMutation = ({
   workflowId,
-  onSelectNextEntity,
+  onSelectNextCase,
 }: {
   workflowId: string;
-  onSelectNextEntity?: VoidFunction;
+  onSelectNextCase?: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
 

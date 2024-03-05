@@ -1,14 +1,13 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { getPostDecisionEventName } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
-import { CommonWorkflowEvent } from '@ballerine/common';
+import { CommonWorkflowEvent, CommonWorkflowStates } from '@ballerine/common';
 
 export const calculateWorkflowRevisionableEvent = (
   workflow: TWorkflowById,
   documentStatus: string,
 ) => {
-  const postDecisionEvent = getPostDecisionEventName(workflow);
+  const isStateManualReview = workflow.state === CommonWorkflowStates.MANUAL_REVIEW;
 
-  if (postDecisionEvent) return postDecisionEvent;
+  if (isStateManualReview) return CommonWorkflowEvent.REVISION;
 
   if (documentStatus === CommonWorkflowEvent.REVISION) {
     return CommonWorkflowEvent.REVISION;

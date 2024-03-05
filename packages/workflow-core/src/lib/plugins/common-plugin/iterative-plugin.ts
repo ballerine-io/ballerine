@@ -21,17 +21,18 @@ export class IterativePlugin {
     console.log(`Constructed IterativePlugin with params: ${JSON.stringify(pluginParams)}`);
   }
 
-  async invoke(context: TContext, config: unknown) {
+  async invoke(context: TContext) {
     console.log('invoke() method called');
 
-    const iterationParams = await this.transformData(this.iterateOn, {
-      ...context,
-      workflowRuntimeConfig: config,
-    });
+    const iterationParams = await this.transformData(this.iterateOn, context);
 
     if (!Array.isArray(iterationParams)) {
       console.error('Iterative plugin could not find iterate on param');
-      return this.composeErrorResponse('Iterative plugin could not find iterate on param');
+      // return this.composeErrorResponse('Iterative plugin could not find iterate on param');
+      return {
+        callbackAction: this.successAction,
+        warnnings: ['Iterative plugin could not find iterate on param'],
+      };
     }
 
     for (const param of iterationParams) {

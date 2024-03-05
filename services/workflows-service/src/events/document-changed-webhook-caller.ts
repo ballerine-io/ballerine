@@ -75,6 +75,7 @@ export class DocumentChangedWebhookCaller {
         idDoc: id,
       });
       accumulator[id] = doc;
+
       return accumulator;
     }, {});
 
@@ -84,6 +85,7 @@ export class DocumentChangedWebhookCaller {
         this.logger.log('handleWorkflowEvent::anyDocumentStatusChanged::getDocumentId::  ', {
           idDoc: id,
         });
+
         return (
           (!oldDocument.decision && newDocumentsByIdentifier[id]?.decision) ||
           (oldDocument.decision &&
@@ -97,6 +99,7 @@ export class DocumentChangedWebhookCaller {
       this.logger.log('handleWorkflowEvent:: Skipped, ', {
         anyDocumentStatusChanged,
       });
+
       return;
     }
 
@@ -177,6 +180,14 @@ export class DocumentChangedWebhookCaller {
         eventName: 'workflow.context.document.changed',
         apiVersion,
         timestamp: new Date().toISOString(),
+        assignee: data.assignee
+          ? {
+              id: data.assignee.id,
+              firstName: data.assignee.firstName,
+              lastName: data.assignee.lastName,
+              email: data.assignee.email,
+            }
+          : null,
         workflowCreatedAt: data.updatedRuntimeData.createdAt,
         workflowResolvedAt: data.updatedRuntimeData.resolvedAt,
         workflowDefinitionId: data.updatedRuntimeData.workflowDefinitionId,

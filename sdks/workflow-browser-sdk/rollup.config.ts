@@ -10,6 +10,7 @@ import dts from 'rollup-plugin-dts';
 import json from '@rollup/plugin-json';
 
 import visualizer from 'rollup-plugin-visualizer';
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const size = require('rollup-plugin-size');
 

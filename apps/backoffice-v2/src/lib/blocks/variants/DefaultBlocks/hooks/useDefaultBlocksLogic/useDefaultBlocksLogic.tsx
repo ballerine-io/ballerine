@@ -16,7 +16,6 @@ import { Button } from '@/common/components/atoms/Button/Button';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { Send } from 'lucide-react';
 import { useAssociatedCompaniesInformationBlock } from '@/lib/blocks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
-import { getPostDecisionEventName } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
 import { useRegistryInfoBlock } from '@/lib/blocks/hooks/useRegistryInfoBlock/useRegistryInfoBlock';
 import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBlock/useKybRegistryInfoBlock';
@@ -63,9 +62,8 @@ export const useDefaultBlocksLogic = () => {
   const isWorkflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??
     workflow?.context?.entity?.type === 'business';
-  const postDecisionEventName = getPostDecisionEventName(workflow);
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingReuploadNeeded } =
-    useRevisionTaskByIdMutation(postDecisionEventName);
+    useRevisionTaskByIdMutation();
   const onReuploadNeeded = useCallback(
     ({
         workflowId,
@@ -320,6 +318,10 @@ export const useDefaultBlocksLogic = () => {
       Trigger: props => (
         <MotionButton
           {...motionButtonProps}
+          animate={{
+            ...motionButtonProps.animate,
+            opacity: !caseState.actionButtonsEnabled ? 0.5 : motionButtonProps.animate.opacity,
+          }}
           variant="outline"
           className={'ms-3.5'}
           disabled={!caseState.actionButtonsEnabled}

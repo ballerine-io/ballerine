@@ -11,6 +11,7 @@ export class InvalidArgumentParser extends IParser {
 
   parse(): IParserResult {
     const { message } = this;
+
     if (!message) return {};
 
     return this.execPattern(this.pattern, (result, match) => {
