@@ -21,57 +21,8 @@ export class DataAnalyticsService {
     protected readonly prisma: PrismaService,
     protected readonly logger: AppLoggerService,
   ) {
-    this._evaluateNameToFunction[
-      this.evaluateTransactionsAgainstDynamicRules.name as keyof EvaluateFunctions
-    ] = this.evaluateTransactionsAgainstDynamicRules.bind(this);
-
-    this._evaluateNameToFunction[
-      this.evaluateCustomersTransactionType.name as keyof EvaluateFunctions
-    ] = this.evaluateCustomersTransactionType.bind(this) as (
-      options: TransactionsAgainstDynamicRulesType,
-    ) => Promise<any>;
-
-    this._evaluateNameToFunction[this.evaluateDormantAccount.name as keyof EvaluateFunctions] =
-      this.evaluateDormantAccount.bind(this);
-  }
-
-  private async _executeQuery(query: Prisma.Sql) {
-    this.logger.log('Executing query...\n', {
-      query: query.sql,
-      values: query.values,
-    });
-
-    const results = await this.prisma.$queryRaw(query);
-
-    this.logger.debug('evaluateTransactionsAgainstDynamicRules results', {
-      results,
-    });
-    return results;
-  }
-
-  private getIntervalTime(timeUnit: string, timeAmount: number) {
-    switch (timeUnit) {
-      case 'minutes':
-        return Prisma.sql`${timeAmount} minutes`;
-        break;
-      case 'hours':
-        return Prisma.sql`${timeAmount} hours`;
-        break;
-      case 'days':
-        return Prisma.sql`${timeAmount} days`;
-        break;
-      case 'weeks':
-        return Prisma.sql`${timeAmount} weeks`;
-        break;
-      case 'months':
-        return Prisma.sql`${timeAmount} months`;
-        break;
-      case 'years':
-        return Prisma.sql`${timeAmount} years`;
-        break;
-      default:
-        return Prisma.sql`${timeAmount} days`;
-    }
+    this._evaluateNameToFunction[this.evaluateTransactionsAgainstDynamicRules.name] =
+      this.evaluateTransactionsAgainstDynamicRules.bind(this);
   }
 
   async runInlineRule(projectId: string, inlineRule: InlineRule) {
