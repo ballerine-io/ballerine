@@ -4,6 +4,7 @@
 
 ### Patch Changes
 
+- version bump
 - added rules to enforce spacing
 
 ## 1.0.6

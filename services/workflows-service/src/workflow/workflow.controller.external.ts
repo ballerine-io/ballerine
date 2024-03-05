@@ -155,6 +155,7 @@ export class WorkflowControllerExternal {
 
     const hasSalesforceRecord =
       Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
+
     const latestDefinitionVersion = await this.workflowDefinitionService.getLatestVersion(
       workflowId,
       projectIds,
