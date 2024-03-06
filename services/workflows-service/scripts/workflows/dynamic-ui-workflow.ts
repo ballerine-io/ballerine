@@ -316,6 +316,17 @@ export const dynamicUiWorkflowDefinition = {
             transformer: 'jmespath',
             mapping: `{entity: {data: @, type: 'individual'}}`,
           },
+          {
+            transformer: 'helper',
+            mapping: [
+              {
+                source: 'entity.data',
+                target: 'entity.data',
+                method: 'omit',
+                value: ['workflowRuntimeId', 'workflowRuntimeConfig'],
+              },
+            ],
+          },
         ],
         initEvent: 'start',
       },

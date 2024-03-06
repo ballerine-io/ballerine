@@ -352,6 +352,8 @@ export const useDefaultBlocksLogic = () => {
         </Button>
       ),
     },
+    isAssociatedCompanyKybEnabled:
+      !!workflow?.workflowDefinition?.config?.isAssociatedCompanyKybEnabled,
   });
 
   const associatedCompaniesInformationBlock = useAssociatedCompaniesInformationBlock(
