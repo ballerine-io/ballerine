@@ -11,6 +11,8 @@ export const CaseCreation = withCaseCreation(() => {
   const { workflowDefinition, isLoading, error } = useCaseCreationWorkflowDefinition();
   const { isOpen, setIsOpen: setOpen } = useCaseCreationContext();
 
+  if (!workflowDefinition?.config?.enableManualCreation) return null;
+
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
       <SheetTrigger asChild>
