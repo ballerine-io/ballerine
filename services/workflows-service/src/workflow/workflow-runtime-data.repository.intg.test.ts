@@ -30,6 +30,7 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { faker } from '@faker-js/faker';
+import { BusinessService } from '@/business/business.service';
 
 describe('#Workflow Runtime Repository Integration Tests', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -51,6 +52,7 @@ describe('#Workflow Runtime Repository Integration Tests', () => {
       StorageService,
       WorkflowEventEmitterService,
       BusinessRepository,
+      BusinessService,
       WorkflowDefinitionRepository,
       WorkflowService,
       EventEmitter2,

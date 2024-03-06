@@ -101,6 +101,7 @@ describe('WorkflowService', () => {
   let workflowRuntimeDataRepo;
   let projectScopeService;
   let businessRepo;
+  let businessService;
   let customerService;
   let endUserRepo;
   let entityRepo;
@@ -131,6 +132,7 @@ describe('WorkflowService', () => {
     const workflowDefinitionRepo = new FakeWorkflowDefinitionRepo();
     workflowRuntimeDataRepo = new FakeWorkflowRuntimeDataRepo();
     businessRepo = new FakeBusinessRepo();
+    businessService = new FakeBusinessRepo();
     endUserRepo = new FakeEndUserRepo();
     entityRepo = new FakeEntityRepo();
     customerService = new FakeCustomerRepo();
@@ -183,6 +185,7 @@ describe('WorkflowService', () => {
       endUserRepo,
       {} as any,
       businessRepo,
+      businessService,
       entityRepo,
       customerService,
       {} as any,

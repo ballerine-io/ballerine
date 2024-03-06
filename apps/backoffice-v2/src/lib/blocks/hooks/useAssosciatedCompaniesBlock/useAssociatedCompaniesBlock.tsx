@@ -16,6 +16,7 @@ export const motionButtonProps = {
 export const useAssociatedCompaniesBlock = ({
   workflows,
   dialog,
+  isAssociatedCompanyKybEnabled,
 }: {
   workflows: TWorkflowById[];
   dialog: {
@@ -30,6 +31,7 @@ export const useAssociatedCompaniesBlock = ({
     }>;
     Close: FunctionComponent<{ associatedCompany: ReturnType<typeof associatedCompanyAdapter> }>;
   };
+  isAssociatedCompanyKybEnabled: boolean;
 }) => {
   const transformedAssociatedCompanies = useMemo(
     () => workflows?.map(workflow => associatedCompanyAdapter(workflow)),
@@ -143,7 +145,8 @@ export const useAssociatedCompaniesBlock = ({
                           })
                           .build()
                           .flat(1),
-                        ...(associatedCompany?.nextEvents?.includes('START_ASSOCIATED_COMPANY_KYB')
+                        ...(isAssociatedCompanyKybEnabled &&
+                        associatedCompany?.nextEvents?.includes('START_ASSOCIATED_COMPANY_KYB')
                           ? createBlocksTyped()
                               .addBlock()
                               .addCell({

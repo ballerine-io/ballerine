@@ -4,7 +4,12 @@ import { search } from 'jmespath';
 import { AnyRecord } from '@ballerine/common';
 import merge from 'lodash.merge';
 
-export type THelperMethod = 'regex' | 'imageUrlToBase64' | 'remove' | 'mergeArrayEachItemWithValue';
+export type THelperMethod =
+  | 'regex'
+  | 'imageUrlToBase64'
+  | 'remove'
+  | 'mergeArrayEachItemWithValue'
+  | 'omit';
 export class HelpersTransformer extends BaseContextTransformer {
   name = 'helpers-transformer';
   mapping: THelperFormatingLogic;
@@ -36,12 +41,13 @@ export class HelpersTransformer extends BaseContextTransformer {
 
   mergeArrayEachItemWithValue(
     context: Parameters<typeof this.transform>[0],
-    attribute: Array<AnyRecord>,
+    attribute: AnyRecord[],
     _value: string,
     options: { mapJmespath: string; mergeWithJmespath: string },
   ) {
     const jmespathResult = search(context, options.mapJmespath);
     const mergeWithResult = search(context, options.mergeWithJmespath);
+
     if (!jmespathResult || !mergeWithResult) {
       console.warn(
         'mergeArrayEachItemWithValue: jmespathResult or mergeWithResult is null',
@@ -61,7 +67,7 @@ export class HelpersTransformer extends BaseContextTransformer {
     return jmespathResult.map((item: AnyRecord) => merge(item, mergeWithResult));
   }
 
-  remove(..._args: Array<any>) {
+  remove(..._args: any[]) {
     return undefined;
   }
 
@@ -93,14 +99,15 @@ export class HelpersTransformer extends BaseContextTransformer {
     return base64Prefix + base64Image;
   }
 
-  getNestedProperty(record: Record<string, any>, path: Array<string>) {
+  getNestedProperty(record: Record<string, any>, path: string[]) {
     return path.reduce((prev, curr) => {
       return prev ? prev[curr] : null;
     }, record);
   }
 
-  setNestedProperty(obj: Record<string, any>, path: Array<string>, value: unknown) {
+  setNestedProperty(obj: Record<string, any>, path: string[], value: unknown) {
     let current = obj;
+
     for (let i = 0; i < path.length; i++) {
       if (i === path.length - 1) {
         current[path[i] as keyof typeof current] = value;
@@ -110,5 +117,15 @@ export class HelpersTransformer extends BaseContextTransformer {
         current = current[path[i] as keyof typeof current];
       }
     }
+  }
+
+  omit(_context: TContext, attribute: AnyRecord, value: string[]) {
+    const result = structuredClone(attribute);
+
+    for (const key of value) {
+      delete result[key];
+    }
+
+    return result;
   }
 }

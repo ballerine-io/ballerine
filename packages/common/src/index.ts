@@ -19,6 +19,7 @@ export {
   uniqueArray,
   zodErrorToReadable,
   isNonEmptyArray,
+  zodBuilder,
 } from './utils';
 
 export type { IErrorWithMessage } from './utils';

@@ -34,7 +34,8 @@ import { WorkflowControllerExternal } from '@/workflow/workflow.controller.exter
 import { WorkflowControllerInternal } from '@/workflow/workflow.controller.internal';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
-import { Module, forwardRef } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
+import { BusinessService } from '@/business/business.service';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
@@ -54,6 +55,7 @@ import { Module, forwardRef } from '@nestjs/common';
     EndUserRepository,
     EndUserService,
     BusinessRepository,
+    BusinessService,
     EntityRepository,
     StorageService,
     FileRepository,

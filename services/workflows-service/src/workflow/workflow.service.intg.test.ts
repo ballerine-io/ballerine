@@ -30,7 +30,8 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { faker } from '@faker-js/faker';
-import { BUILT_IN_EVENT, ARRAY_MERGE_OPTION, ArrayMergeOption } from '@ballerine/workflow-core';
+import { ARRAY_MERGE_OPTION, ArrayMergeOption, BUILT_IN_EVENT } from '@ballerine/workflow-core';
+import { BusinessService } from '@/business/business.service';
 
 describe('WorkflowService', () => {
   let workflowRuntimeRepository: WorkflowRuntimeDataRepository;
@@ -54,6 +55,7 @@ describe('WorkflowService', () => {
       StorageService,
       WorkflowEventEmitterService,
       BusinessRepository,
+      BusinessService,
       WorkflowDefinitionRepository,
       WorkflowService,
       EventEmitter2,

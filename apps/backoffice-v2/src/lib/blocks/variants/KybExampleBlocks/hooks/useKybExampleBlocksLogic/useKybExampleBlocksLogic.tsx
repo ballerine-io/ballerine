@@ -256,6 +256,8 @@ export const useKybExampleBlocksLogic = () => {
         </>
       ),
     },
+    isAssociatedCompanyKybEnabled:
+      !!workflow?.workflowDefinition?.config?.isAssociatedCompanyKybEnabled,
   });
   const associatedCompaniesInformationBlock = useAssociatedCompaniesInformationBlock(
     kybChildWorkflows ?? [],
