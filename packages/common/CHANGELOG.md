@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- added zodBuilder and omit
+- version bump
 
 ## 0.7.45
 

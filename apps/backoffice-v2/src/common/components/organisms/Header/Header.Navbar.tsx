@@ -6,6 +6,7 @@ import { Collapsible } from '@/common/components/molecules/Collapsible/Collapsib
 import { CollapsibleTrigger } from '@/common/components/molecules/Collapsible/Collapsible.Trigger';
 import { CollapsibleContent } from '@/common/components/molecules/Collapsible/Collapsible.Content';
 import { useNavbarLogic } from '@/common/components/organisms/Header/hooks/useNavbarLogic/useNavbarLogic';
+import { Fragment } from 'react';
 
 /**
  * @description A nav element which wraps {@link NavItem} components of the app's routes. Supports nested routes.
@@ -23,13 +24,9 @@ export const Navbar: FunctionComponent = () => {
         const isActiveFilterGroup = checkIsActiveFilterGroup(navItem);
 
         return (
-          <>
+          <Fragment key={`${navItem.key}-${isActiveFilterGroup}`}>
             {!!navItem.children && (
-              <Collapsible
-                key={`${navItem.key}-${isActiveFilterGroup}`}
-                defaultOpen={isActiveFilterGroup}
-                className={`space-y-2`}
-              >
+              <Collapsible defaultOpen={isActiveFilterGroup} className={`space-y-2`}>
                 <CollapsibleTrigger
                   className={ctw(
                     `flex w-full items-center gap-x-2 rounded-lg p-2 text-sm font-semibold text-[#8D93A5] [&[data-state=open]>svg]:rotate-0`,
@@ -95,7 +92,7 @@ export const Navbar: FunctionComponent = () => {
                 </NavItem>
               </ul>
             )}
-          </>
+          </Fragment>
         );
       })}
     </nav>

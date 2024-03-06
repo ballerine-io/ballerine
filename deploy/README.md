@@ -25,52 +25,19 @@ To start using the `docker-compose.yml` file in a repository, you need to clone 
 4. Once the cloning process is complete, navigate to the cloned repository directory:
 
     ```shell
-    cd deploy
+    cd ballerine;
     ```
 
-## Understanding the docker-compose.yml File
-
-The `docker-compose.yml` file in the cloned repository defines the services and configurations required for the project. Take some time to understand the structure and content of the file. It typically contains service definitions, volumes, networks, and other configurations specific to the project.
-
-## Running Containers with Docker Compose
-
-To start the Docker services defined in the `docker-compose.yml` file, follow these steps:
-
-1. Open a terminal or command prompt.
-2. Navigate to the root directory of the cloned repository (where the `docker-compose.yml` file is located).
+5. Run the ballerine_install script with domain name incase Ballerine is installed on any cloud provider
 
     ```shell
-    cd deploy
+    ./ballerine_install.sh <domain_name>
     ```
 
-3. Update env file with all the required values
-
-    ``` shell
-    BACKOFFICE_PORT=5137
-    HEADLESS_SVC_PORT=5173
-    WORKFLOW_SVC_PORT=3000
-    BCRYPT_SALT=10
-    API_KEY="secret"
-    NODE_ENV="development"
-    COMPOSE_PROJECT_NAME=ballerine-x
-    DB_PORT=5432
-    DB_USER=admin
-    DB_PASSWORD=admin
-    SESSION_SECRET=secret
-    SESSION_EXPIRATION_IN_MINUTES=60
-    BACKOFFICE_CORS_ORIGIN=
-    HEADLESS_EXAMPLE_CORS_ORIGIN=
-    WORKFLOW_DASHBOARD_CORS_ORIGIN=
-    WORKFLOW_DASHBOARD_PORT=5200
-    WEBSOCKET_SVC_PORT=3500
-    KYB_APP_PORT=5201
-    DOMAIN_NAME="<domain on which Ballerine should be up>"
-    ```
-
-4. Bring up the containers
+    For Example:
 
     ```shell
-    docker-compose -f docker-compose-build.yml up -d
+    ./ballerine_install.sh gpwf.eu-central-1.ballerine.io
     ```
 
 ## Additional Docker Compose Commands

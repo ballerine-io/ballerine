@@ -26,6 +26,7 @@ export const StateTags = [
 ] as const;
 
 export const CommonWorkflowEvent = {
+  START: 'START',
   CASE_REVIEWED: 'CASE_REVIEWED',
   RETURN_TO_REVIEW: 'RETURN_TO_REVIEW',
   RESUBMITTED: 'RESUBMITTED',
@@ -38,6 +39,7 @@ export const CommonWorkflowEvent = {
 } as const;
 
 export const CommonWorkflowStates = {
+  IDLE: 'idle',
   MANUAL_REVIEW: 'manual_review',
   REJECTED: 'rejected',
   APPROVED: 'approved',

@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- added zodBuilder and omit
+- version bump
 - Updated dependencies
   - @ballerine/common@0.7.46
 
