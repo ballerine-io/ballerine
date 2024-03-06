@@ -91,6 +91,7 @@ import {
   beginTransactionIfNotExistCurry,
   defaultPrismaTransactionOptions,
 } from '@/prisma/prisma.util';
+import { BusinessService } from '@/business/business.service';
 
 type TEntityId = string;
 
@@ -114,6 +115,7 @@ export class WorkflowService {
     protected readonly endUserRepository: EndUserRepository,
     protected readonly endUserService: EndUserService,
     protected readonly businessRepository: BusinessRepository,
+    protected readonly businessService: BusinessService,
     protected readonly entityRepository: EntityRepository,
     protected readonly customerService: CustomerService,
     protected readonly fileService: FileService,
@@ -1696,7 +1698,7 @@ export class WorkflowService {
   ) {
     const data = context.entity.data as Record<PropertyKey, unknown>;
 
-    const { id } = await this.endUserRepository.create({
+    const { id } = await this.endUserService.create({
       data: {
         correlationId: entity.id,
         email: data.email,
@@ -1717,7 +1719,7 @@ export class WorkflowService {
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
   ) {
-    const { id } = await this.businessRepository.create({
+    const { id } = await this.businessService.create({
       data: {
         correlationId: entity.id,
         ...(context.entity.data as object),

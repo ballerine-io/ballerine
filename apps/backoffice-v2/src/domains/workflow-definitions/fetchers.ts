@@ -18,6 +18,7 @@ export const WorkflowDefinitionConfigSchema = z
   .object({
     enableManualCreation: z.boolean().default(false),
     isManualCreation: z.boolean().default(false),
+    isAssociatedCompanyKybEnabled: z.boolean().default(false),
   })
   .passthrough()
   .nullable();
