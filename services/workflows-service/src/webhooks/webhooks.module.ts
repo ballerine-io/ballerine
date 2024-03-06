@@ -29,6 +29,7 @@ import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
 import { WebhooksController } from '@/webhooks/webhooks.controller';
 import { WebhooksService } from '@/webhooks/webhooks.service';
+import { BusinessService } from '@/business/business.service';
 
 @Module({
   controllers: [WebhooksController],
@@ -46,6 +47,7 @@ import { WebhooksService } from '@/webhooks/webhooks.service';
     WorkflowRuntimeDataRepository,
     EndUserService,
     EndUserRepository,
+    BusinessService,
     BusinessRepository,
     EntityRepository,
     FileService,
