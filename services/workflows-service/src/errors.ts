@@ -38,12 +38,12 @@ export class ValidationError extends common.BadRequestException {
   @ApiProperty()
   statusCode!: number;
   @ApiProperty()
-  static message: string = 'Validation error';
+  static message = 'Validation error';
 
   @ApiProperty({ type: DetailedValidationError })
-  errors!: { message: string; path: string }[];
+  errors!: Array<{ message: string; path: string }>;
 
-  constructor(errors: { message: string; path: string }[]) {
+  constructor(errors: Array<{ message: string; path: string }>) {
     super(
       {
         statusCode: common.HttpStatus.BAD_REQUEST,
@@ -60,7 +60,7 @@ export class ValidationError extends common.BadRequestException {
     return this.errors;
   }
 
-  static fromAjvError(error: ErrorObject<string, Record<string, any>, unknown>[]) {
+  static fromAjvError(error: Array<ErrorObject<string, Record<string, any>, unknown>>) {
     const errors = error.map(({ instancePath, message }) => ({
       message: `${startCase(lowerCase(instancePath)).replace('/', '.')} ${message}.`,
       path: instancePath,

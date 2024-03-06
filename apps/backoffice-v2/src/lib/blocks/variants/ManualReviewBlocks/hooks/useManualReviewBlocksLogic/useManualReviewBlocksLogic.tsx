@@ -1,15 +1,14 @@
-import { useParams } from 'react-router-dom';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
-import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
-import { useCallback, useMemo } from 'react';
-import { toast } from 'sonner';
-import { getPostDecisionEventName } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
-import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
+import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
+import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
+import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { useCallback, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export const useManualReviewBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -30,9 +29,8 @@ export const useManualReviewBlocksLogic = () => {
     openCorporate: _openCorporate,
     ...entityDataAdditionalInfo
   } = workflow?.context?.entity?.data?.additionalInfo ?? {};
-  const postDecisionEventName = getPostDecisionEventName(workflow);
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingReuploadNeeded } =
-    useRevisionTaskByIdMutation(postDecisionEventName);
+    useRevisionTaskByIdMutation();
   const onReuploadNeeded = useCallback(
     ({
         workflowId,

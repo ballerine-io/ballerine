@@ -16,7 +16,6 @@ import { ctw } from '@/common/utils/ctw/ctw';
 import { ExternalLink, Send } from 'lucide-react';
 import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
 import { associatedCompanyAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-adapter';
-import { getPostDecisionEventName } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
@@ -79,9 +78,8 @@ export const useKybExampleBlocksLogic = () => {
     },
     [mutateEvent],
   );
-  const postDecisionEventName = getPostDecisionEventName(workflow);
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingReuploadNeeded } =
-    useRevisionTaskByIdMutation(postDecisionEventName);
+    useRevisionTaskByIdMutation();
   const onReuploadNeeded = useCallback(
     ({
         workflowId,
@@ -214,6 +212,10 @@ export const useKybExampleBlocksLogic = () => {
       Trigger: props => (
         <MotionButton
           {...motionButtonProps}
+          animate={{
+            ...motionButtonProps.animate,
+            opacity: !caseState.actionButtonsEnabled ? 0.5 : motionButtonProps.animate.opacity,
+          }}
           variant="outline"
           className={'ms-3.5'}
           disabled={!caseState.actionButtonsEnabled}
@@ -254,6 +256,8 @@ export const useKybExampleBlocksLogic = () => {
         </>
       ),
     },
+    isAssociatedCompanyKybEnabled:
+      !!workflow?.workflowDefinition?.config?.isAssociatedCompanyKybEnabled,
   });
   const associatedCompaniesInformationBlock = useAssociatedCompaniesInformationBlock(
     kybChildWorkflows ?? [],

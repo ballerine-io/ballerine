@@ -22,12 +22,12 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
     definition: {
       id: `${definitionId}_v1`,
       predictableActionArguments: true,
-      initial: 'idle',
+      initial: 'collection_flow',
       context: {
         documents: [],
       },
       states: {
-        idle: {
+        collection_flow: {
           tags: [StateTag.COLLECTION_FLOW],
           on: {
             COLLECTION_FLOW_FINISHED: [{ target: 'create_kyc_workflows' }],
@@ -103,6 +103,17 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
               transformer: 'jmespath',
               mapping: `{entity: {data: @, type: 'individual'}}`,
             },
+            {
+              transformer: 'helper',
+              mapping: [
+                {
+                  source: 'entity.data',
+                  target: 'entity.data',
+                  method: 'omit',
+                  value: ['workflowRuntimeId', 'workflowRuntimeConfig'],
+                },
+              ],
+            },
           ],
         },
         {
@@ -113,6 +124,17 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
             {
               transformer: 'jmespath',
               mapping: `{entity: {data: @, type: 'business'}}`,
+            },
+            {
+              transformer: 'helper',
+              mapping: [
+                {
+                  source: 'entity.data',
+                  target: 'entity.data',
+                  method: 'omit',
+                  value: ['workflowRuntimeId', 'workflowRuntimeConfig'],
+                },
+              ],
             },
           ],
         },
@@ -238,6 +260,7 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
           deliverEvent: 'KYC_REVISION',
         },
       ],
+      isCaseOverviewEnabled: true,
     },
     contextSchema: {
       type: 'json-schema',
