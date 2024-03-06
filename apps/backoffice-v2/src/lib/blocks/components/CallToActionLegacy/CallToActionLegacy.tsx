@@ -16,12 +16,12 @@ import { ctw } from '../../../../common/utils/ctw/ctw';
 import { ICallToActionLegacyProps } from './interfaces';
 import { useCallToActionLegacyLogic } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 
-const motionProps: ComponentProps<typeof MotionButton> = {
+const motionButtonProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
   initial: { y: 10, opacity: 0 },
   transition: { type: 'spring', bounce: 0.3 },
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
-};
+} satisfies ComponentProps<typeof MotionButton>;
 
 export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = ({ value }) => {
   const {
@@ -73,7 +73,11 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
         onOpenChange={handleDialogClose}
         trigger={
           <MotionButton
-            {...motionProps}
+            {...motionButtonProps}
+            animate={{
+              ...motionButtonProps.animate,
+              opacity: disabled ? 0.5 : motionButtonProps.animate.opacity,
+            }}
             size="wide"
             variant="destructive"
             className={ctw({ loading: isLoadingTaskDecisionById })}
@@ -177,7 +181,11 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
         onOpenChange={handleDialogClose}
         trigger={
           <MotionButton
-            {...motionProps}
+            {...motionButtonProps}
+            animate={{
+              ...motionButtonProps.animate,
+              opacity: disabled ? 0.5 : motionButtonProps.animate.opacity,
+            }}
             size="wide"
             variant="warning"
             disabled={disabled}
@@ -281,7 +289,11 @@ export const CallToActionLegacy: FunctionComponent<ICallToActionLegacyProps> = (
   return (
     <AnimatePresence>
       <MotionButton
-        {...motionProps}
+        {...motionButtonProps}
+        animate={{
+          ...motionButtonProps.animate,
+          opacity: disabled ? 0.5 : motionButtonProps.animate.opacity,
+        }}
         size="wide"
         variant="success"
         className={ctw({ loading: isLoadingTaskDecisionById })}

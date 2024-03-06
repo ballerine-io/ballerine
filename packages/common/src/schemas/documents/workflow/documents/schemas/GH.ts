@@ -6,6 +6,7 @@ const alphaNumeric = '^[a-zA-Z0-9]*$';
 
 export const getGhanaDocuments = (): TDocument[] => {
   const TypeAlphanumericString = Type.String({ pattern: '^[a-zA-Z0-9]*$' });
+  const TypeNonEmptyAlphanumericString = Type.String({ pattern: '^[a-zA-Z0-9]*$', minLength: 1 });
   const TypeAlphanumericWithSpacesString = Type.String({ pattern: '^[\\sa-zA-Z0-9]*$' });
   const TypePastDate = Type.String({
     format: 'date',
@@ -16,7 +17,7 @@ export const getGhanaDocuments = (): TDocument[] => {
     formatMinimum: new Date().toISOString().split('T')[0],
   });
   const TypeNationalIdNumber = Type.String({ pattern: ghNationalIdNumber });
-  const TypeStringAtLeastOneWord = Type.String({ minLength: 1 });
+  const TypeNonEmptyString = Type.String({ minLength: 1 });
   const TypeStringEnum = <T extends string[]>(values: [...T]) =>
     Type.Unsafe<T[number]>({
       type: 'string',
@@ -48,7 +49,7 @@ export const getGhanaDocuments = (): TDocument[] => {
     //       version: 1,
     //       propertiesSchema: Type.Object({
     //         msisdn: Type.String({ pattern: '^233[0-9]{9}$' }),
-    //         accountHolderName: TypeStringAtLeastOneWord,
+    //         accountHolderName: TypeNonEmptyString,
     //         from: Type.String({ format: 'date' }),
     //         to: Type.String({ format: 'date' }),
     //         timeRun: Type.String(),
@@ -87,7 +88,7 @@ export const getGhanaDocuments = (): TDocument[] => {
           'Zenith Bank Ghana Limited',
         ]),
         printDate: Type.String({ format: 'date-time' }),
-        accountHolderName: TypeStringAtLeastOneWord,
+        accountHolderName: TypeNonEmptyString,
         from: Type.String({ format: 'date' }),
         to: Type.String({ format: 'date' }),
         accountNumber: Type.Optional(Type.String()),
@@ -703,14 +704,13 @@ export const getGhanaDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object({
         businessName: Type.String(),
-        registrationNumber: TypeAlphanumericString,
+        registrationNumber: TypeNonEmptyAlphanumericString,
         taxIdNumber: TypeAlphanumericString,
         issueDate: TypePastDate,
         firstName: Type.String(),
         middleName: Type.Optional(Type.String()),
         lastName: Type.String(),
         dateOfBirth: TypePastDate,
-        nationalIdNumber: TypeNationalIdNumber,
       }),
     },
     {

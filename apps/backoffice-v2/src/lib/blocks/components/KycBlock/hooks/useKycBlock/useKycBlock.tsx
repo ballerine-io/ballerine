@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ComponentProps, useCallback } from 'react';
+import { ComponentProps, useCallback, useMemo } from 'react';
 import { isObject, StateTag, TStateTags } from '@ballerine/common';
 
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
@@ -18,16 +18,17 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { Badge } from '@ballerine/ui';
-import { WarningFilledSvg } from '@/common/components/atoms/icons';
-import { buttonVariants } from '@/common/components/atoms/Button/Button';
+import { Button } from '@ballerine/ui';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
 
-const motionProps: ComponentProps<typeof MotionBadge> = {
+const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
   initial: { y: 10, opacity: 0 },
   transition: { type: 'spring', bounce: 0.3 },
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
-};
+} satisfies ComponentProps<typeof MotionBadge>;
 
 export const useKycBlock = ({
   parentWorkflowId,
@@ -37,7 +38,7 @@ export const useKycBlock = ({
   parentWorkflowId: string;
 }) => {
   const { noAction } = useCaseDecision();
-  const results: Array<Array<string>> = [];
+  const results: string[][] = [];
   const kycSessionKeys = Object.keys(childWorkflow?.context?.pluginsOutput?.kyc_session ?? {});
 
   const docsData = useStorageFilesQuery(
@@ -97,424 +98,17 @@ export const useKycBlock = ({
       ]) ?? []
     : [];
 
-  const amlAdapter = (aml: {
-    hits: Array<{
-      matchedName: string;
-      dateOfBirth: string;
-      countries: string[];
-      matchTypes: string[];
-      aka: string[];
-      listingsRelatedToMatch: {
-        warnings: Array<{
-          sourceName: string;
-          sourceUrl: string;
-          date: string;
-        }>;
-        sanctions: Array<{
-          sourceName: string;
-          sourceUrl: string;
-          date: string;
-        }>;
-        pep: Array<{
-          sourceName: string;
-          sourceUrl: string;
-          date: string;
-        }>;
-        adverseMedia: Array<{
-          sourceName: string;
-          sourceUrl: string;
-          date: string;
-        }>;
-      };
-    }>;
-    createdAt: string;
-    totalHits: number;
-  }) => {
-    const { hits, totalHits, createdAt, ...rest } = aml;
+  const amlData = useMemo(() => {
+    if (!kycSessionKeys?.length) {
+      return [];
+    }
 
-    return {
-      totalMatches: totalHits ?? 0,
-      fullReport: rest,
-      dateOfCheck: createdAt,
-      matches:
-        hits?.map(
-          ({ matchedName, dateOfBirth, countries, matchTypes, aka, listingsRelatedToMatch }) => {
-            const { sanctions, warnings, pep, adverseMedia } = listingsRelatedToMatch ?? {};
-
-            return {
-              matchedName,
-              dateOfBirth,
-              countries: countries?.join(', ') ?? '',
-              matchTypes: matchTypes?.join(', ') ?? '',
-              aka: aka?.join(', ') ?? '',
-              sanctions:
-                sanctions?.map(sanction => ({
-                  sanction: sanction?.sourceName,
-                  date: sanction?.date,
-                  source: sanction?.sourceUrl,
-                })) ?? [],
-              warnings:
-                warnings?.map(warning => ({
-                  warning: warning?.sourceName,
-                  date: warning?.date,
-                  source: warning?.sourceUrl,
-                })) ?? [],
-              pep:
-                pep?.map(pepItem => ({
-                  person: pepItem?.sourceName,
-                  date: pepItem?.date,
-                  source: pepItem?.sourceUrl,
-                })) ?? [],
-              adverseMedia:
-                adverseMedia?.map(adverseMediaItem => ({
-                  entry: adverseMediaItem?.sourceName,
-                  date: adverseMediaItem?.date,
-                  source: adverseMediaItem?.sourceUrl,
-                })) ?? [],
-            };
-          },
-        ) ?? [],
-    };
-  };
-
-  const hasAml = kycSessionKeys?.some(key => {
-    return (
-      !!childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ||
-      !!childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml
+    return kycSessionKeys.map(
+      key => kycSessionKeys[key]?.result?.vendorResult?.aml ?? kycSessionKeys[key]?.result?.aml,
     );
-  });
-  const complianceCheckResults = kycSessionKeys?.length
-    ? kycSessionKeys?.flatMap(key => {
-        const aml =
-          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ??
-          childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml;
+  }, [kycSessionKeys]);
 
-        if (!Object.keys(aml ?? {}).length) return [];
-
-        const { totalMatches, fullReport, dateOfCheck, matches } = amlAdapter(aml);
-
-        return [
-          ...createBlocksTyped()
-            .addBlock()
-            .addCell({
-              type: 'table',
-              value: {
-                props: {
-                  table: {
-                    className: 'my-8',
-                  },
-                },
-                columns: [
-                  {
-                    accessorKey: 'totalMatches',
-                    header: 'Total Matches',
-                    cell: props => {
-                      const value = props.getValue();
-                      const variant: ComponentProps<typeof Badge>['variant'] =
-                        value === 0 ? 'success' : 'warning';
-
-                      return (
-                        <Badge variant={variant} className={`mb-1 rounded-lg px-2 py-1 font-bold`}>
-                          {value} {value === 1 ? 'match' : 'matches'}
-                        </Badge>
-                      );
-                    },
-                  },
-                  {
-                    accessorKey: 'fullReport',
-                    header: 'Full Report',
-                  },
-                  {
-                    accessorKey: 'dateOfCheck',
-                    header: 'Date Of Check',
-                  },
-                  {
-                    accessorKey: 'scanStatus',
-                    header: 'Scan Status',
-                    cell: props => {
-                      const value = props.getValue();
-                      const variant: ComponentProps<typeof Badge>['variant'] = 'success';
-
-                      return (
-                        <Badge variant={variant} className={`mb-1 rounded-lg px-2 py-1 font-bold`}>
-                          <>{value}</>
-                        </Badge>
-                      );
-                    },
-                  },
-                ],
-                data: [
-                  {
-                    totalMatches,
-                    fullReport,
-                    dateOfCheck,
-                    scanStatus: 'Completed',
-                  },
-                ],
-              },
-            })
-            .addCell({
-              type: 'table',
-              value: {
-                props: {
-                  table: {
-                    className: 'my-8',
-                  },
-                },
-                columns: [
-                  {
-                    accessorKey: 'matchedName',
-                    header: 'Matched Name',
-                  },
-                  {
-                    accessorKey: 'dateOfBirth',
-                    header: 'Date Of Birth',
-                  },
-                  {
-                    accessorKey: 'countries',
-                    header: 'Countries',
-                  },
-                  {
-                    accessorKey: 'aka',
-                    header: 'AKA',
-                  },
-                ],
-                data: matches,
-              },
-            })
-            .build()
-            .flat(1),
-          ...(matches?.flatMap(({ warnings, sanctions, pep, adverseMedia }, index) =>
-            createBlocksTyped()
-              .addBlock()
-              .addCell({
-                type: 'container',
-                value: createBlocksTyped()
-                  .addBlock()
-                  .addCell({
-                    type: 'subheading',
-                    value: `Match ${index + 1}`,
-                    props: {
-                      className: 'text-lg block my-6',
-                    },
-                  })
-                  .addCell({
-                    type: 'table',
-                    value: {
-                      props: {
-                        table: {
-                          className: 'my-8 w-full',
-                        },
-                      },
-                      columns: [
-                        {
-                          accessorKey: 'warning',
-                          header: 'Warning',
-                          cell: props => {
-                            const value = props.getValue();
-
-                            return (
-                              <div className={'flex space-x-2'}>
-                                <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
-                                <span>{value}</span>
-                              </div>
-                            );
-                          },
-                        },
-                        {
-                          accessorKey: 'date',
-                          header: 'Date',
-                        },
-                        {
-                          accessorKey: 'source',
-                          header: 'Source URL',
-                          cell: props => {
-                            const value = props.getValue();
-
-                            return (
-                              <a
-                                className={buttonVariants({
-                                  variant: 'link',
-                                  className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
-                                })}
-                                target={'_blank'}
-                                rel={'noopener noreferrer'}
-                                href={value}
-                              >
-                                Link
-                              </a>
-                            );
-                          },
-                        },
-                      ],
-                      data: warnings,
-                    },
-                  })
-                  .addCell({
-                    type: 'table',
-                    props: {
-                      table: {
-                        className: 'my-8 w-full',
-                      },
-                    },
-                    value: {
-                      columns: [
-                        {
-                          accessorKey: 'sanction',
-                          header: 'Sanction',
-                          cell: props => {
-                            const value = props.getValue();
-
-                            return (
-                              <div className={'flex space-x-2'}>
-                                <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
-                                <span>{value}</span>
-                              </div>
-                            );
-                          },
-                        },
-                        {
-                          accessorKey: 'date',
-                          header: 'Date',
-                        },
-                        {
-                          accessorKey: 'source',
-                          header: 'Source URL',
-                          cell: props => {
-                            const value = props.getValue();
-
-                            return (
-                              <a
-                                className={buttonVariants({
-                                  variant: 'link',
-                                  className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
-                                })}
-                                target={'_blank'}
-                                rel={'noopener noreferrer'}
-                                href={value}
-                              >
-                                Link
-                              </a>
-                            );
-                          },
-                        },
-                      ],
-                      data: sanctions,
-                    },
-                  })
-                  .addCell({
-                    type: 'table',
-                    value: {
-                      props: {
-                        table: {
-                          className: 'my-8 w-full',
-                        },
-                      },
-                      columns: [
-                        {
-                          accessorKey: 'person',
-                          header: 'PEP (Politically Exposed Person)',
-                          cell: props => {
-                            const value = props.getValue();
-
-                            return (
-                              <div className={'flex space-x-2'}>
-                                <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
-                                <span>{value}</span>
-                              </div>
-                            );
-                          },
-                        },
-                        {
-                          accessorKey: 'date',
-                          header: 'Date',
-                        },
-                        {
-                          accessorKey: 'source',
-                          header: 'Source URL',
-                          cell: props => {
-                            const value = props.getValue();
-
-                            return (
-                              <a
-                                className={buttonVariants({
-                                  variant: 'link',
-                                  className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
-                                })}
-                                target={'_blank'}
-                                rel={'noopener noreferrer'}
-                                href={value}
-                              >
-                                Link
-                              </a>
-                            );
-                          },
-                        },
-                      ],
-                      data: pep,
-                    },
-                  })
-                  .addCell({
-                    type: 'table',
-                    value: {
-                      props: {
-                        table: {
-                          className: 'my-8',
-                        },
-                      },
-                      columns: [
-                        {
-                          accessorKey: 'entry',
-                          header: 'Adverse Media',
-                          cell: props => {
-                            const value = props.getValue();
-
-                            return (
-                              <div className={'flex space-x-2'}>
-                                <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
-                                <span>{value}</span>
-                              </div>
-                            );
-                          },
-                        },
-                        {
-                          accessorKey: 'date',
-                          header: 'Date',
-                        },
-                        {
-                          accessorKey: 'source',
-                          header: 'Source URL',
-                          cell: props => {
-                            const value = props.getValue();
-
-                            return (
-                              <a
-                                className={buttonVariants({
-                                  variant: 'link',
-                                  className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
-                                })}
-                                target={'_blank'}
-                                rel={'noopener noreferrer'}
-                                href={value}
-                              >
-                                Link
-                              </a>
-                            );
-                          },
-                        },
-                      ],
-                      data: adverseMedia,
-                    },
-                  })
-                  .build()
-                  .flat(1),
-              })
-              .build()
-              .flat(1),
-          ) ?? []),
-        ];
-      })
-    : [];
+  const amlBlock = useAmlBlock(amlData);
 
   const documentExtractedData = kycSessionKeys?.length
     ? kycSessionKeys?.map((key, index, collection) =>
@@ -604,7 +198,7 @@ export const useKycBlock = ({
           type: 'badge',
           value: 'Pending re-upload',
           props: {
-            ...motionProps,
+            ...motionBadgeProps,
             variant: 'warning',
             className: badgeClassNames,
           },
@@ -620,7 +214,7 @@ export const useKycBlock = ({
           type: 'badge',
           value: 'Approved',
           props: {
-            ...motionProps,
+            ...motionBadgeProps,
             variant: 'success',
             className: `${badgeClassNames} bg-success/20`,
           },
@@ -636,7 +230,7 @@ export const useKycBlock = ({
           type: 'badge',
           value: 'Rejected',
           props: {
-            ...motionProps,
+            ...motionBadgeProps,
             variant: 'destructive',
             className: badgeClassNames,
           },
@@ -652,7 +246,7 @@ export const useKycBlock = ({
           type: 'badge',
           value: 'Pending ID verification',
           props: {
-            ...motionProps,
+            ...motionBadgeProps,
             variant: 'warning',
             className: badgeClassNames,
           },
@@ -674,14 +268,41 @@ export const useKycBlock = ({
         },
       })
       .addCell({
-        type: 'callToAction',
+        type: 'dialog',
         value: {
-          text: 'Approve',
-          onClick: onMutateApproveCase,
+          trigger: (
+            <MotionButton
+              {...motionButtonProps}
+              animate={{
+                ...motionButtonProps.animate,
+                opacity: isDisabled ? 0.5 : motionButtonProps.animate.opacity,
+              }}
+              disabled={isDisabled}
+              size={'wide'}
+              variant={'success'}
+            >
+              Approve
+            </MotionButton>
+          ),
+          title: `Approval confirmation`,
+          description: <p className={`text-sm`}>Are you sure you want to approve?</p>,
+          close: (
+            <div className={`space-x-2`}>
+              <Button type={'button'} variant={`secondary`}>
+                Cancel
+              </Button>
+              <Button disabled={isDisabled} onClick={onMutateApproveCase}>
+                Approve
+              </Button>
+            </div>
+          ),
           props: {
-            disabled: isDisabled,
-            size: 'wide',
-            variant: 'success',
+            content: {
+              className: 'mb-96',
+            },
+            title: {
+              className: `text-2xl`,
+            },
           },
         },
       })
@@ -797,18 +418,7 @@ export const useKycBlock = ({
                 })
                 .addCell({
                   type: 'container',
-                  value: !hasAml
-                    ? []
-                    : createBlocksTyped()
-                        .addBlock()
-                        .addCell({
-                          id: 'header',
-                          type: 'heading',
-                          value: 'Compliance Check Results',
-                        })
-                        .build()
-                        .concat(complianceCheckResults)
-                        .flat(1),
+                  value: amlBlock,
                 })
                 .build()
                 .flat(1),

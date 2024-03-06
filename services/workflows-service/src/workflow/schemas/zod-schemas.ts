@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 export const ConfigSchema = z
   .object({
+    isAssociatedCompanyKybEnabled: z.boolean().optional(),
     isCaseOverviewEnabled: z.boolean().optional(),
     isLegacyReject: z.boolean().optional(),
     isLockedDocumentCategoryAndType: z.boolean().optional(),
@@ -53,6 +54,7 @@ export const ConfigSchema = z
       .boolean()
       .optional()
       .describe('Indicates if workflow could be created in backoffice'),
+    kybOnExitAction: z.enum(['send-event', 'redirect-to-customer-portal']).optional(),
   })
   .strict()
   .optional();

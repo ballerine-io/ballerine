@@ -59,6 +59,7 @@ export interface IWorkflowContextChangedEventData {
   state: string | null;
   entityId: string;
   correlationId: string;
+  assignee: User | null;
 }
 
 export interface IWorkflowCompletedEventData {
