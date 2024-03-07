@@ -6,11 +6,11 @@ import '@total-typescript/ts-reset';
 import '@ballerine/ui/dist/style.css';
 import '@fontsource/inter';
 
+import { Toaster } from '@/common/components/organisms/Toaster/Toaster';
 import { Router } from './Router/Router';
 import { env } from './common/env/env';
 import './i18n';
 import './index.css';
-import { Toaster } from '@/common/components/organisms/Toaster/Toaster';
 
 export const TOAST_DURATION_IN_MS = 1000 * 3;
 
@@ -34,7 +34,7 @@ void prepare().then(() => {
     root.render(
       <StrictMode>
         <Router />
-        <Toaster position={'top-center'} duration={TOAST_DURATION_IN_MS} visibleToasts={1} />
+        <Toaster position={'top-right'} duration={TOAST_DURATION_IN_MS} visibleToasts={5} />
       </StrictMode>,
     );
   }

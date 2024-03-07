@@ -102,7 +102,7 @@
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.11.2",
     "react-zoom-pan-pinch": "^3.0.8",
-    "sonner": "^1.4.0",
+    "sonner": "^1.4.3",
     "string-ts": "^1.2.0",
     "tailwind-merge": "^1.10.0",
     "tailwindcss-animate": "^1.0.5",
