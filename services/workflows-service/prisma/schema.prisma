@@ -57,7 +57,7 @@ model EndUser {
   id              String  @id @default(cuid())
   isContactPerson Boolean @default(false)
 
-  correlationId String? @unique @db.VarChar
+  correlationId String? @db.VarChar
 
   endUserType   String?       @default("individual") // Add userType: can be 'EndUser', 'CompanyContact', 'Stakeholder'
   approvalState ApprovalState @default(NEW)
@@ -84,10 +84,10 @@ model EndUser {
   projectId                String
   project                  Project                    @relation(fields: [projectId], references: [id])
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
-  TransactionRecord        TransactionRecord[]
   Alert                    Alert[]
   Counterparty             Counterparty[]
 
+  @@unique([projectId, correlationId])
   @@index([endUserType])
   @@index([approvalState])
   @@index([createdAt])
@@ -107,7 +107,7 @@ model EndUsersOnBusinesses {
 
 model Business {
   id            String  @id @default(cuid()) // Unique identifier for the business entity
-  correlationId String? @unique @db.VarChar
+  correlationId String? @db.VarChar
 
   businessType            String?       @default("default")
   createdAt               DateTime      @default(now()) // Timestamp for when the business entity was created
@@ -139,12 +139,12 @@ model Business {
   endUsers             EndUser[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
-  projectId         String
-  project           Project             @relation(fields: [projectId], references: [id])
-  TransactionRecord TransactionRecord[]
-  Alert             Alert[]
-  Counterparty      Counterparty[]
+  projectId    String
+  project      Project        @relation(fields: [projectId], references: [id])
+  Alert        Alert[]
+  Counterparty Counterparty[]
 
+  @@unique([projectId, correlationId])
   @@index([companyName])
   @@index([approvalState])
   @@index([correlationId])
@@ -522,7 +522,7 @@ enum TransactionDirection {
 
 model TransactionRecord {
   id                       String                   @id @default(cuid())
-  transactionCorrelationId String                   @unique @db.VarChar
+  transactionCorrelationId String                   @db.VarChar
   transactionDate          DateTime
   transactionAmount        Float // Amount of the transaction
   transactionCurrency      String // Currency of the transaction
@@ -596,12 +596,6 @@ model TransactionRecord {
 
   counterpartyBeneficiaryId String?
   counterpartyBeneficiary   Counterparty? @relation("BenefitingCounterparty", fields: [counterpartyBeneficiaryId], references: [id])
-
-  endUser   EndUser? @relation(fields: [endUserId], references: [id])
-  endUserId String?
-
-  business   Business? @relation(fields: [businessId], references: [id])
-  businessId String?
 
   @@unique([projectId, transactionCorrelationId])
   @@index([transactionType])
@@ -725,13 +719,6 @@ model Alert {
   @@index([counterpartyId])
 }
 
-enum CounterpartyType {
-  individual
-  company
-  government
-  non_profit
-}
-
 enum RiskCategory {
   low
   medium
@@ -759,8 +746,7 @@ enum SanctionListMatchStatus {
 model Counterparty {
   id String @id @default(cuid())
 
-  correlationId String?
-  type          CounterpartyType
+  correlationId String? // This column is a denormalized value of the EndUser.correlationId or Business.correlationId
 
   additionalInfo Json? // Additional information about the counterparty
 
