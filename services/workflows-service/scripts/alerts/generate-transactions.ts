@@ -16,32 +16,49 @@ import {
   TransactionRecordType,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
+import { generateBusiness, generateEndUser } from '../generate-end-user';
 
 export const generateTransactions = async (
   prismaClient: PrismaClient,
   {
     projectId,
-    business,
-    endUser,
   }: {
     projectId: string;
-    business: Business;
-    endUser: EndUser;
   },
 ) => {
   // Create counterparties and collect their IDs
   const counterpartyIds = await prismaClient.$transaction(async prisma => {
     const ids: string[] = [];
 
-    for (let i = 0; i < 200; i++) {
-      const entityType = faker.helpers.arrayElement(['business', 'endUser']);
+    for (let i = 0; i < 100; i++) {
+      const correlationId = faker.datatype.uuid();
       const counterparty = await prisma.counterparty.create({
         data: {
-          id: faker.datatype.uuid(),
-          correlationId: entityType === 'business' ? business.correlationId : endUser.correlationId,
-          businessId: entityType === 'business' ? business.id : undefined,
-          endUserId: entityType === 'endUser' ? endUser.id : undefined,
-          projectId: projectId,
+          correlationId: correlationId,
+          project: { connect: { id: projectId } },
+          business: {
+            create: generateBusiness({
+              correlationId,
+              projectId,
+            }),
+          },
+        },
+      });
+
+      ids.push(counterparty.id);
+    }
+    for (let i = 0; i < 100; i++) {
+      const correlationId = faker.datatype.uuid();
+      const counterparty = await prisma.counterparty.create({
+        data: {
+          correlationId: correlationId,
+          project: { connect: { id: projectId } },
+          endUser: {
+            create: generateEndUser({
+              correlationId,
+              projectId,
+            }),
+          },
         },
       });
 
