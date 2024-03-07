@@ -45,12 +45,7 @@ export const TransactionsListSchema = z.array(
     transactionDirection: z.enum(TransactionDirections),
     transactionBaseAmount: z.number(),
     transactionBaseCurrency: z.string(),
-    businessId: z.string().nullable(),
-    business: z
-      .object({
-        companyName: z.string(),
-      })
-      .nullable(),
+
     counterpartyOriginator: z
       .object({
         endUser: z
@@ -63,9 +58,8 @@ export const TransactionsListSchema = z.array(
       .nullable(),
     counterpartyOriginatorId: z.string().nullable(),
     paymentMethod: z.enum(PaymentMethods),
-  }).transform(({ business, counterpartyOriginator, ...data }) => ({
+  }).transform(({ counterpartyOriginator, ...data }) => ({
     ...data,
-    business: business?.companyName,
     counterpartyOriginatorName:
       noNullish`${counterpartyOriginator?.endUser?.firstName} ${counterpartyOriginator?.endUser?.lastName}`.trim(),
     transactionBaseAmountWithCurrency:
@@ -76,7 +70,6 @@ export const TransactionsListSchema = z.array(
 export type TTransactionsList = z.output<typeof TransactionsListSchema>;
 
 export const fetchTransactions = async (params: {
-  businessId: string;
   counterpartyId: string;
   page: {
     number: number;
