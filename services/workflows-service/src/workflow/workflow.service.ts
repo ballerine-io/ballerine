@@ -1376,7 +1376,7 @@ export class WorkflowService {
           );
         } catch (err) {
           if (isErrorWithMessage(err)) {
-            this.logger.error(err.message);
+            this.logger.warn(err.message);
           }
         }
 
