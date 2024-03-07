@@ -27,7 +27,7 @@ export class BusinessCreateDto {
     type: String,
   })
   @IsString()
-  correltionId!: string;
+  correlationId!: string;
 
   @ApiProperty({
     required: false,

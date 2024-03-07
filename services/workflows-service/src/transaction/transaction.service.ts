@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { TransactionRepository } from '@/transaction/transaction.repository';
 import { TransactionCreateDto } from './dtos/transaction-create.dto';
 import { TransactionEntityMapper } from './transaction.mapper';
-import { Prisma, TransactionRecord } from '@prisma/client';
-import { sleep } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { GetTransactionsDto } from './dtos/get-transactions.dto';
+import { TProjectId } from '@/types';
+import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
 
 @Injectable()
 export class TransactionService {
@@ -14,86 +14,37 @@ export class TransactionService {
     protected readonly logger: AppLoggerService,
   ) {}
 
-  async create(payload: TransactionCreateDto): Promise<TransactionRecord> {
-    const transactionEntity: Prisma.TransactionRecordCreateInput = {
-      ...TransactionEntityMapper.toEntity(payload),
-      project: {
-        connect: { id: payload.projectId },
-      },
-      // #TODO: fix types - this is a workaround, prisma defines jsonb's as prsima "json input"
-      tags: payload.tags as any,
-      auditTrail: payload.auditTrail as any,
-      unusualActivityFlags: payload.unusualActivityFlags as any,
-      additionalInfo: payload.additionalInfo as any,
-      transactionCorrelationId: '',
-      transactionDate: '',
-      transactionAmount: 0,
-      transactionCurrency: '',
-    };
+  async createBulk({
+    transactionsPayload,
+    projectId,
+  }: {
+    transactionsPayload: TransactionCreateDto[];
+    projectId: TProjectId;
+  }) {
+    const response: Array<TransactionCreatedDto | { error: Error; correlationId: string }> = [];
 
-    return this.repository.create({ data: transactionEntity });
-  }
-
-  async createBatch(payload: TransactionCreateDto[]): Promise<{
-    txCreationResponse: Array<{
-      txid: string;
-      status: 'success' | 'failed';
-      txCorrelationId: string;
-      errorMessage?: string;
-    }>;
-    overallStatus: 'success' | 'partial';
-  }> {
-    // TEMP IMPLEMENTATION - REMOVE WHEN TASK BASED BATCH CREATE IS IMPLEMENTED
-
-    const txCreationResponse: Array<{
-      txid: string;
-      status: 'success' | 'failed';
-      txCorrelationId: string;
-      errorMessage?: string;
-    }> = [];
-    let overallStatus: 'success' | 'partial' = 'success';
-
-    for (const transaction of payload) {
-      const transactionEntity: Prisma.TransactionRecordCreateInput = {
-        ...TransactionEntityMapper.toEntity(transaction),
-        project: {
-          connect: { id: transaction.projectId },
-        },
-        // #TODO: fix types - this is a workaround, prisma defines jsonb's as prsima "json input"
-        tags: transaction.tags as any,
-        auditTrail: transaction.auditTrail as any,
-        unusualActivityFlags: transaction.unusualActivityFlags as any,
-        additionalInfo: transaction.additionalInfo as any,
-        transactionCorrelationId: '',
-        transactionDate: '',
-        transactionAmount: 0,
-        transactionCurrency: '',
-      };
-
-      await sleep(200);
-
-      let res;
+    for (const transactionPayload of transactionsPayload) {
       try {
-        res = await this.repository.create({ data: transactionEntity });
-        txCreationResponse.push({
-          txid: res.id,
-          txCorrelationId: transaction.correlationId,
-          status: 'success',
+        const transaction = await this.repository.create({
+          data: TransactionEntityMapper.toCreateData({
+            dto: transactionPayload,
+            projectId,
+          }),
+        });
+
+        response.push({
+          id: transaction.id,
+          correlationId: transaction.transactionCorrelationId,
         });
       } catch (error) {
-        overallStatus = 'partial';
-
-        txCreationResponse.push({
-          txid: res?.id ?? '',
-          status: 'failed',
-          txCorrelationId: transaction.correlationId,
-          errorMessage: (error as Error).message ?? '',
+        response.push({
+          error: error instanceof Error ? error : new Error('Unknown error', { cause: error }),
+          correlationId: transactionPayload.correlationId,
         });
       }
     }
-    this.logger.log('txCreationResponse', txCreationResponse);
 
-    return { txCreationResponse, overallStatus };
+    return response;
   }
 
   async getAll(args: Parameters<TransactionRepository['findMany']>[0], projectId: string) {
