@@ -188,6 +188,7 @@ export class DocumentChangedWebhookCaller {
               email: data.assignee.email,
             }
           : null,
+        assignedAt: data.assignedAt,
         workflowCreatedAt: data.updatedRuntimeData.createdAt,
         workflowResolvedAt: data.updatedRuntimeData.resolvedAt,
         workflowDefinitionId: data.updatedRuntimeData.workflowDefinitionId,
