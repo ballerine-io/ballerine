@@ -12,6 +12,7 @@ import {
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { AggregateType } from '../../src/data-analytics/consts';
+import { InputJsonValue } from '@/types';
 
 const tags = [
   ...new Set([
@@ -140,18 +141,7 @@ export const generateFakeAlertDefinition = async (
   }: {
     project: Project;
     customer: Customer;
-    ids: Array<
-      | {
-          businessId: string;
-        }
-      | {
-          counterpartyOriginatorId: string;
-        }
-      | {
-          businessId: string;
-          counterpartyOriginatorId: string;
-        }
-    >;
+    ids: string[];
   },
 ) => {
   const generateFakeAlert = ({
@@ -159,26 +149,10 @@ export const generateFakeAlertDefinition = async (
     ids,
   }: {
     defaultSeverity: AlertSeverity;
-    ids: Array<
-      | {
-          businessId: string;
-        }
-      | {
-          counterpartyOriginatorId: string;
-        }
-      | {
-          businessId: string;
-          counterpartyOriginatorId: string;
-        }
-    >;
+    ids: string[];
   }) => {
     const businessIdCounterpartyOriginatorIdOrBoth = faker.helpers.arrayElement(
-      ids.map(id => ({
-        // @ts-expect-error
-        businessId: id.businessId,
-        // @ts-expect-error
-        counterpartyId: id.counterpartyOriginatorId,
-      })),
+      ids.map(id => ({ counterpartyId: id })),
     );
 
     return {
@@ -186,7 +160,7 @@ export const generateFakeAlertDefinition = async (
       state: faker.helpers.arrayElement(Object.values(AlertState)),
       status: faker.helpers.arrayElement(Object.values(AlertStatus)),
       tags: [faker.random.word(), faker.random.word(), faker.random.word()],
-      executionDetails: JSON.parse(faker.datatype.json()),
+      executionDetails: JSON.parse(faker.datatype.json()) as InputJsonValue,
       severity: defaultSeverity,
       ...businessIdCounterpartyOriginatorIdOrBoth,
       // TODO: Assign assigneeId value to a valid user id

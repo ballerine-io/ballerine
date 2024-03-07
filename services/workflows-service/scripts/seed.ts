@@ -146,19 +146,45 @@ async function seed() {
     }),
   });
 
+  const endUser1 = await client.endUser.create({
+    data: generateEndUser({
+      projectId: project1.id,
+    }),
+  });
+
+  const endUser2 = await client.endUser.create({
+    data: generateEndUser({
+      projectId: project1.id,
+    }),
+  });
+
   const ids1 = await generateTransactions(client, {
     projectId: project1.id,
-    businessId: business1.id,
+    business: business1,
+    endUser: endUser1,
   });
   const ids2 = await generateTransactions(client, {
     projectId: project1.id,
-    businessId: business2.id,
+    business: business2,
+    endUser: endUser1,
+  });
+  const ids3 = await generateTransactions(client, {
+    projectId: project1.id,
+    business: business2,
+    endUser: endUser1,
+  });
+  const ids4 = await generateTransactions(client, {
+    projectId: project1.id,
+    business: business2,
+    endUser: endUser2,
   });
 
   await generateFakeAlertDefinitions(client, {
     project: project1,
     customer: customer,
-    ids: [...ids1, ...ids2],
+    ids: [...ids1, ...ids2, ...ids3, ...ids4]
+      .map(({ counterpartyOriginatorId }) => counterpartyOriginatorId)
+      .filter(Boolean),
   });
 
   const project2 = await createProject(client, customer2, '2');

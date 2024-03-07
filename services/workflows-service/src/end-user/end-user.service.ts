@@ -33,7 +33,7 @@ export class EndUserService {
       endUser,
       business,
     }: {
-      endUser: Omit<EndUserCreateDto, 'companyName'>;
+      endUser: Omit<EndUserCreateDto, 'companyName' | 'correlationId'>;
       business: Prisma.BusinessUncheckedCreateWithoutEndUsersInput;
     },
     projectId: TProjectId,

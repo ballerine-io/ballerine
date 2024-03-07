@@ -1,5 +1,6 @@
 import {
-  CounterpartyType,
+  Business,
+  EndUser,
   PaymentAcquirer,
   PaymentBrandName,
   PaymentChannel,
@@ -20,10 +21,12 @@ export const generateTransactions = async (
   prismaClient: PrismaClient,
   {
     projectId,
-    businessId,
+    business,
+    endUser,
   }: {
     projectId: string;
-    businessId: string;
+    business: Business;
+    endUser: EndUser;
   },
 ) => {
   // Create counterparties and collect their IDs
@@ -31,12 +34,13 @@ export const generateTransactions = async (
     const ids: string[] = [];
 
     for (let i = 0; i < 200; i++) {
+      const entityType = faker.helpers.arrayElement(['business', 'endUser']);
       const counterparty = await prisma.counterparty.create({
         data: {
           id: faker.datatype.uuid(),
-          correlationId: faker.datatype.uuid(),
-          type: faker.helpers.arrayElement(Object.values(CounterpartyType)),
-          businessId: businessId,
+          correlationId: entityType === 'business' ? business.correlationId : endUser.correlationId,
+          businessId: entityType === 'business' ? business.id : undefined,
+          endUserId: entityType === 'endUser' ? endUser.id : undefined,
           projectId: projectId,
         },
       });
@@ -47,32 +51,25 @@ export const generateTransactions = async (
     return ids;
   });
 
-  const ids: Array<
-    | {
-        businessId: string;
-      }
-    | {
-        counterpartyOriginatorId: string;
-      }
-    | {
-        businessId: string;
-        counterpartyOriginatorId: string;
-      }
-  > = [];
+  const ids: Array<{
+    counterpartyOriginatorId?: string;
+    counterpartyBeneficiaryId?: string;
+  }> = [];
 
   // Create transactions with a random counterparty ID for each
   for (let i = 0; i < 1000; i++) {
-    const randomCounterpartyId = faker.helpers.arrayElement(counterpartyIds);
+    const getRandomCounterpartyId = () => faker.helpers.arrayElement(counterpartyIds);
     const businessIdCounterpartyIdOrBoth = faker.helpers.arrayElement([
+      {},
       {
-        businessId,
-        counterpartyOriginatorId: randomCounterpartyId,
+        counterpartyOriginatorId: getRandomCounterpartyId(),
       },
       {
-        businessId,
+        counterpartyBeneficiaryId: getRandomCounterpartyId(),
       },
       {
-        counterpartyOriginatorId: randomCounterpartyId,
+        counterpartyOriginatorId: getRandomCounterpartyId(),
+        counterpartyBeneficiaryId: getRandomCounterpartyId(),
       },
     ]);
 
