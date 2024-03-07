@@ -6,7 +6,6 @@ import { TProjectId } from '@/types';
 import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
 import { toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
-import { createTranscationValidator } from './validations/create-transaction.validator';
 
 @Injectable()
 export class TransactionRepository {
@@ -17,35 +16,8 @@ export class TransactionRepository {
 
   async create<T extends Prisma.TransactionRecordCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.TransactionRecordCreateArgs>,
-  ): Promise<TransactionRecord> {
-    createTranscationValidator.safeParse(args.data);
-    // #TODO: Fix this
-    const { projectId, businessId, endUserId, ...rest } = args.data;
-
-    args = {
-      ...args,
-      data: {
-        ...rest,
-        project: {
-          connect: { id: projectId },
-        },
-      },
-    } as any;
-
-    // if (businessId) {
-    //   args.data.business = {
-    //     connect: { id: businessId },
-    //   } as any;
-    // }
-
-    // if (endUserId) {
-    //   args.data.endUser = {
-    //     connect: { id: endUserId },
-    //   } as any;
-    // }
-    const res = await this.prisma.transactionRecord.create<T>(args);
-
-    return res;
+  ) {
+    return await this.prisma.transactionRecord.create<T>(args);
   }
 
   async findMany<T extends Prisma.TransactionRecordFindManyArgs>(
@@ -92,10 +64,6 @@ export class TransactionRepository {
     getTransactionsParameters: GetTransactionsDto,
   ): Prisma.TransactionRecordWhereInput {
     const whereClause: Prisma.TransactionRecordWhereInput = {};
-
-    if (getTransactionsParameters.businessId) {
-      whereClause.businessId = getTransactionsParameters.businessId;
-    }
 
     if (getTransactionsParameters.counterpartyId) {
       whereClause.OR = [

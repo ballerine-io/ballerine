@@ -10,13 +10,12 @@ import {
   PaymentProcessor,
   PaymentBrandName,
   ReviewStatus,
-  CounterpartyType,
   TransactionDirection,
   PaymentMethod,
 } from '@prisma/client';
 import {
   IsBoolean,
-  IsDate,
+  IsDateString,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -31,16 +30,14 @@ import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
 
 export class CounterpartyInfo {
   @ApiProperty({ required: true }) @IsString() correlationId!: string;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() id?: string;
-  @ApiProperty({ required: true }) @IsString() @IsOptional() type?: CounterpartyType;
   @ApiProperty({ required: false }) @IsString() @IsOptional() sortCode?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() bankCountry?: string;
 
-  @ApiProperty({ required: false })
-  @IsString()
-  @Type(() => EndUserCreateDto)
   @IsOptional()
-  entityData?: (BusinessCreateDto | EndUserCreateDto) & { id: string };
+  businessData?: Omit<BusinessCreateDto, 'correlationId'>;
+
+  @IsOptional()
+  endUserData?: Omit<EndUserCreateDto, 'correlationId'>;
 }
 
 class PaymentInfo {
@@ -85,16 +82,14 @@ class CardInfo {
   @ApiProperty({ required: false }) @IsString() @IsOptional() expiryYear?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() holderName?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() tokenized?: string;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() cardBin?: number;
-  // Add other card-related fields as necessary
+  @ApiProperty({ required: false }) @IsNumber() @IsOptional() cardBin?: number;
 }
 export class TransactionCreateDto {
-  @ApiProperty({ required: true }) @IsDate() @IsNotEmpty() date!: Date;
+  @ApiProperty({ required: true }) @IsDateString() @IsNotEmpty() date!: Date;
   @ApiProperty({ required: true }) @IsNumber() @IsNotEmpty() amount!: number;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() currency!: string;
   @ApiProperty({ required: true }) @IsNumber() @IsNotEmpty() baseAmount!: number;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() baseCurrency!: string;
-  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() projectId!: string;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() correlationId!: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() description?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() category?: string;
@@ -134,18 +129,6 @@ export class TransactionCreateDto {
   @Type(() => PaymentInfo)
   @IsOptional()
   payment?: PaymentInfo;
-
-  @ApiProperty({ type: BusinessCreateDto })
-  @ValidateNested()
-  @Type(() => BusinessCreateDto)
-  @IsOptional()
-  business?: BusinessCreateDto;
-
-  @ApiProperty({ type: EndUserCreateDto })
-  @ValidateNested()
-  @Type(() => EndUserCreateDto)
-  @IsOptional()
-  individual?: EndUserCreateDto;
 
   @ApiProperty({ type: ProductInfo })
   @ValidateNested()

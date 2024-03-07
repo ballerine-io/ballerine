@@ -4,7 +4,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
 import { ClsService } from 'nestjs-cls';
-import { CounterpartyType, PaymentMethod, TransactionDirection } from '@prisma/client';
+import { PaymentMethod, TransactionDirection } from '@prisma/client';
 import { DataAnalyticsService } from './data-analytics.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { InlineRule } from './types';
@@ -70,7 +70,6 @@ describe('TransactionRulesEvaluationService', () => {
       await prismaService.counterparty.create({
         data: {
           id,
-          type: CounterpartyType.individual,
           project: { connect: { id: projectId } },
           business: { connect: { id: businessId || 'business-id-1' } },
         },
@@ -97,7 +96,6 @@ describe('TransactionRulesEvaluationService', () => {
           transactionBaseAmount: 505,
           transactionBaseCurrency: 'USD',
           projectId: PROJECT_ID,
-          businessId: 'business-id-1',
         },
         {
           transactionDirection: TransactionDirection.inbound,
@@ -110,7 +108,6 @@ describe('TransactionRulesEvaluationService', () => {
           transactionBaseAmount: 500,
           transactionBaseCurrency: 'USD',
           projectId: PROJECT_ID,
-          businessId: 'business-id-1',
         },
         {
           transactionDirection: 'inbound',
@@ -123,7 +120,6 @@ describe('TransactionRulesEvaluationService', () => {
           transactionBaseAmount: 1005,
           transactionBaseCurrency: 'USD',
           projectId: PROJECT_ID,
-          businessId: 'business-id-2',
         },
         {
           transactionDirection: 'inbound',
@@ -136,7 +132,6 @@ describe('TransactionRulesEvaluationService', () => {
           transactionBaseAmount: 1500,
           transactionBaseCurrency: 'USD',
           projectId: PROJECT_ID,
-          businessId: 'business-id-2',
         },
       ],
     });
