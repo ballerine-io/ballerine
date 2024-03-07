@@ -19,7 +19,7 @@ export const Toaster = ({ className, toastOptions, ...props }: ToasterProps) => 
       toastOptions={{
         ...toastOptions,
         classNames: {
-          toast: 'group toast group-[.toaster]:shadow-lg',
+          toast: 'group toast group-[.toaster]:shadow-lg font-inter',
           actionButton: 'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground',
           cancelButton: 'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground',
         },
