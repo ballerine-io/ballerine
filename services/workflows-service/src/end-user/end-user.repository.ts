@@ -55,6 +55,7 @@ export class EndUserRepository {
     return await this.prisma.endUser.findFirstOrThrow(
       this.scopeService.scopeFindFirst({
         where: { id },
+        // @ts-ignore
         ...args,
       }),
     );
