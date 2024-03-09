@@ -44,7 +44,7 @@ const main = async () => {
     },
   });
 
-  const logger = app.get(AppLoggerService); 
+  const logger = app.get(AppLoggerService);
   const configService = app.get(ConfigService);
 
   app.useLogger(logger);
