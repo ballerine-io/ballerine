@@ -41,7 +41,6 @@ export class EndUserRepository {
       this.scopeService.scopeFindFirst(
         {
           where: { id },
-          // @ts-ignore
           ...args,
         },
         projectIds,
@@ -69,7 +68,6 @@ export class EndUserRepository {
   ) {
     return await this.prisma.endUser.findFirst({
       where: { correlationId: id, projectId: { in: projectIds } },
-      // @ts-ignore
       ...args,
     });
   }
@@ -80,7 +78,6 @@ export class EndUserRepository {
   ) {
     return await this.prisma.endUser.findUnique({
       where: { correlationId: id },
-      // @ts-ignore
       ...args,
     });
   }
