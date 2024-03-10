@@ -1154,6 +1154,7 @@ export class WorkflowService {
       if (contextHasChanged) {
         this.workflowEventEmitter.emit('workflow.context.changed', {
           assignee: updatedResult.assignee,
+          assignedAt: updatedResult.assignedAt,
           oldRuntimeData: runtimeData,
           updatedRuntimeData: updatedResult,
           state: currentState as string,
@@ -1376,7 +1377,7 @@ export class WorkflowService {
           );
         } catch (err) {
           if (isErrorWithMessage(err)) {
-            this.logger.error(err.message);
+            this.logger.warn(err.message);
           }
         }
 
@@ -2183,6 +2184,7 @@ export class WorkflowService {
       systemEventName,
       {
         assignee: runtimeData.assignee,
+        assignedAt: runtimeData.assignedAt,
         oldRuntimeData: runtimeData,
         updatedRuntimeData: runtimeData,
         state: runtimeData.state as string,

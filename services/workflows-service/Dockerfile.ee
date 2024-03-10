@@ -1,0 +1,7 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+WORKDIR /app
+RUN git submodule update --init --recursive
+
+CMD ["npm", "start"]
