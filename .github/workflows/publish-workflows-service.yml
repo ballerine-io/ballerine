@@ -159,6 +159,7 @@ jobs:
 
   build-and-push-ee-image:
     runs-on: ubuntu-latest
+    needs: build-and-push-image
     permissions:
       contents: read
       packages: write
