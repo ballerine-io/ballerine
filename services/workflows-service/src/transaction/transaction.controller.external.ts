@@ -63,6 +63,7 @@ export class TransactionControllerExternal {
   @swagger.ApiResponse({ type: [BulkTransactionsCreatedDto], status: 207 })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiBody({ type: () => [TransactionCreateDto] })
   async createBulk(
     @Body(new ParseArrayPipe({ items: TransactionCreateDto })) body: TransactionCreateDto[],
     @Res() res: express.Response,

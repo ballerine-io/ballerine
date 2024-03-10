@@ -59,7 +59,7 @@ export class AlertUpdateResponse {
   })
   alertId!: string;
 
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: true, enum: BulkStatus })
   @IsEnum(BulkStatus)
   status!: typeof BulkStatus;
 
