@@ -32,7 +32,7 @@ const corsOrigins = [
   ...(env.KYC_EXAMPLE_CORS_ORIGIN ?? []),
   /\.ballerine\.app$/,
   ...(env.ENVIRONMENT_NAME !== 'production' ? devOrigins : []),
-]; 
+];
 
 const main = async () => {
   const app = await NestFactory.create(AppModule, {
