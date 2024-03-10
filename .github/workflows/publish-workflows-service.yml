@@ -5,7 +5,7 @@ on:
   push:
     paths:
       # Run this pipeline only if there are changes in specified path
-      - "services/workflows-service/**"
+      - 'services/workflows-service/**'
     branches:
       - dev
       - test
@@ -109,11 +109,11 @@ jobs:
           exit-code: 1
           vuln-type: 'os,library'
           severity: 'CRITICAL'
-      
+
       - name: Set outputs
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-      
+
       - name: Checkout cloud-infra-config repository
         uses: actions/checkout@v4
         with:
@@ -156,7 +156,7 @@ jobs:
                 "image.tag": "${{ steps.get_version.outputs.version }}-prod"
               }
             }
-            
+
   build-and-push-ee-image:
     runs-on: ubuntu-latest
     permissions:
@@ -171,6 +171,13 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.SUBMODULES_TOKEN }}
 
+      - name: Get package version from package.json
+        id: get_version
+        run: |
+          PACKAGE_VERSION=$(jq -r '.version' services/workflows-service/package.json)
+          echo "::set-output name=version::$PACKAGE_VERSION"
+      - name: Print the version
+        run: echo "The version was ${{ steps.get_version.outputs.version }}"
 
       - name: Checkout submodule branch
         run: |
@@ -216,5 +223,3 @@ jobs:
           tags: ${{ steps.eemeta.outputs.tags }}
           build-args: |
             BASE_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
-
-      
