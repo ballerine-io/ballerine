@@ -4,8 +4,6 @@ FROM ${BASE_IMAGE} as base
 
 WORKDIR /app
 
-COPY --from=base /app/prisma/data-migrations ./prisma/data-migrations
-
 EXPOSE 3000
 
 CMD [ "sleep", "3000" ]
