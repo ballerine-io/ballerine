@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
 import {
   TransactionRecordType,
   TransactionRecordStatus,
@@ -21,6 +21,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -33,10 +34,14 @@ export class CounterpartyInfo {
   @ApiProperty({ required: false }) @IsString() @IsOptional() sortCode?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() bankCountry?: string;
 
-  @IsOptional()
+  @ApiProperty({ type: OmitType(BusinessCreateDto, ['correlationId']) })
+  @ValidateIf(obj => !obj.endUserData)
+  @ValidateNested()
   businessData?: Omit<BusinessCreateDto, 'correlationId'>;
 
-  @IsOptional()
+  @ApiProperty({ type: OmitType(EndUserCreateDto, ['correlationId']) })
+  @ValidateIf(obj => !obj.businessData)
+  @ValidateNested()
   endUserData?: Omit<EndUserCreateDto, 'correlationId'>;
 }
 
@@ -115,14 +120,12 @@ export class TransactionCreateDto {
   @ApiProperty({ type: CounterpartyInfo })
   @ValidateNested()
   @Type(() => CounterpartyInfo)
-  @IsOptional()
-  originator?: CounterpartyInfo;
+  originator!: CounterpartyInfo;
 
   @ApiProperty({ type: CounterpartyInfo })
   @ValidateNested()
   @Type(() => CounterpartyInfo)
-  @IsOptional()
-  beneficiary?: CounterpartyInfo;
+  beneficiary!: CounterpartyInfo;
 
   @ApiProperty({ type: PaymentInfo })
   @ValidateNested()

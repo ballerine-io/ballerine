@@ -6,12 +6,15 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { TProjectId } from '@/types';
 import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
+import { Prisma } from '@prisma/client';
+import { SentryService } from '@/sentry/sentry.service';
 
 @Injectable()
 export class TransactionService {
   constructor(
     protected readonly repository: TransactionRepository,
     protected readonly logger: AppLoggerService,
+    private readonly sentry: SentryService,
   ) {}
 
   async createBulk({
@@ -37,8 +40,16 @@ export class TransactionService {
           correlationId: transaction.transactionCorrelationId,
         });
       } catch (error) {
+        let errorToLog: Error = new Error('Unknown error', { cause: error });
+
+        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+          errorToLog = new Error('Transaction already exists', { cause: error });
+        } else {
+          this.sentry.captureException(errorToLog);
+        }
+
         response.push({
-          error: error instanceof Error ? error : new Error('Unknown error', { cause: error }),
+          error: errorToLog,
           correlationId: transactionPayload.correlationId,
         });
       }
