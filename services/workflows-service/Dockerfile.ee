@@ -7,5 +7,5 @@ COPY ./prisma/data-migrations ./prisma/data-migrations
 
 EXPOSE 3000
 
-CMD [ "sleep", "3000" ]
-# /CMD [ "dumb-init", "npm", "run", "prod" ]
+# CMD [ "sleep", "3000" ]
+CMD [ "dumb-init", "npm", "run", "prod" ]
