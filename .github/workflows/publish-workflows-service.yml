@@ -200,9 +200,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-ee
           tags: |
-            type=raw,value=${{ github.head_ref || github.ref_name }}-ee
-            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}-ee
-            type=raw,value=${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}-ee
+            type=raw,value=${{ github.head_ref || github.ref_name }}
+            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
+            type=raw,value=${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
             type=sha
 
       - name: Build and push ee Docker image
