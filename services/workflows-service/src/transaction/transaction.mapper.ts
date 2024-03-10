@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { CounterpartyInfo, TransactionCreateDto } from './dtos/transaction-create.dto';
 import { InputJsonValue, TProjectId } from '@/types';
+import { HttpException } from '@nestjs/common';
 
 export class TransactionEntityMapper {
   static toCreateData({ dto, projectId }: { dto: TransactionCreateDto; projectId: TProjectId }) {
@@ -97,7 +98,10 @@ export class TransactionEntityMapper {
     | Prisma.TransactionRecordCreateInput['counterpartyOriginator']
     | Prisma.TransactionRecordCreateInput['counterpartyBeneficiary'] {
     if (counterpartyInfo?.businessData && counterpartyInfo?.endUserData) {
-      throw new Error('Counterparty must have either business or end user data, not both.');
+      throw new HttpException(
+        'Counterparty must have either business or end user data, not both.',
+        400,
+      );
     }
 
     return counterpartyInfo
