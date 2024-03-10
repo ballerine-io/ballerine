@@ -155,6 +155,10 @@
       "label": "Cardholder Name",
       "hint": "John W. Doe"
     },
+    "companyAccountHolderName": {
+      "label": "Company Account Holder Name",
+      "hint": "OpenAI Technologies, Inc."
+    },
     "accountHolderName": {
       "label": "Account Holder Name",
       "hint": "OpenAI Technologies, Inc."
@@ -560,6 +564,7 @@
       "directors": "Directors are required.",
       "companies": "Mark the checkbox or add a company.",
       "holderName": "Holder name is required.",
+      "companyAccountHolderName": "Company account holder name is required.",
       "holderFullAddress": "Holder full address is required.",
       "accountNumber": "Account number is required.",
       "swiftCode": "SWIFT code is required.",
@@ -611,6 +616,7 @@
       "nationality": "Invalid nationality. Please select from the available options.",
       "fullAddress": "Full address should be at least 10 characters long.",
       "holderName": "Holder name should be at least 5 characters long.",
+      "companyAccountHolderName": "Company account holder name should be at least 5 characters long.",
       "holderFullAddress": "Holder full address should be at least 10 characters long.",
       "accountNumber": "Account number should be at least 6 characters long.",
       "iban": "IBAN should be at least 15 characters long.",
@@ -643,6 +649,7 @@
       "nationalId": "Identity number should not exceed 20 characters.",
       "fullAddress": "Full address should not exceed 200 characters.",
       "holderName": "Holder name should not exceed 50 characters.",
+      "companyAccountHolderName": "Company account holder name should not exceed 50 characters.",
       "holderFullAddress": "Holder full address should not exceed 200 characters.",
       "accountNumber": "Account number should not exceed 34 characters.",
       "iban": "IBAN should not exceed 34 characters.",
