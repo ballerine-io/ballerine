@@ -184,7 +184,7 @@ jobs:
         run: |
           git submodule update --init --recursive
           cd services/workflows-service/prisma/data-migrations
-          git checkout main # TODO: ${{ github.ref_name }}
+          git checkout ${{ github.ref_name }}
           cd ../../..
 
       - name: Set up Docker Buildx
@@ -223,5 +223,4 @@ jobs:
           cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-ee:${{ github.head_ref || github.ref_name }}'
           tags: ${{ steps.eemeta.outputs.tags }}
           build-args: |
-            BASE_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.version }}-dev
-# "${{ github.head_ref || github.ref_name }}" should be used above
+            BASE_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
