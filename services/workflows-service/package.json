@@ -11,7 +11,7 @@
     "lint": "eslint . --fix",
     "start": "nest start",
     "dev": "npm run start:watch",
-    "prod": "npm run db:migrate-up && node dist/src/main",
+    "prod": "npm run db:migrate-up && npm run db:data-migration:sync && node dist/src/main",
     "start:watch": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "build": "nest build --path=tsconfig.build.json",
@@ -36,6 +36,7 @@
     "prepare": "npm run prisma:generate",
     "db:data-migration:generate": "plop --plopfile ./prisma/data-migrations/plopfile.js --dest ./",
     "db:data-migration:migrate": "rimraf ./dist && npm run build && nest start --entryFile ./src/data-migration/scripts/migrate",
+    "db:data-migration:sync": "npm run build && nest start --entryFile ./src/data-migration/scripts/sync",
     "db:data-migration:import": "tsx ./src/data-migration/scripts/import"
   },
   "dependencies": {

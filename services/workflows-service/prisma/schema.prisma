@@ -146,6 +146,7 @@ model Business {
 
 model WorkflowDefinition {
   id              String  @id @default(cuid())
+  crossEnvKey     String?  @unique
   reviewMachineId String?
   name            String
   version         Int     @default(1)
