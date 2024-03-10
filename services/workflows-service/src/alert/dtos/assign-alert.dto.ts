@@ -1,7 +1,6 @@
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { ArrayMinSize, IsArray, IsString, MinLength } from 'class-validator';
-import type { TAlertUpdateResponse, TBulkStatus } from '../types';
+import { ArrayMinSize, IsArray, IsEnum, IsString, MinLength } from 'class-validator';
 import { BulkStatus } from '../types';
 import { IsNullable } from '@/common/decorators/is-nullable.decorator';
 
@@ -48,6 +47,11 @@ export class AlertAssigneeUniqueDto {
   assigneeId!: string | null;
 }
 
+export class ErrorResponse {
+  @ApiProperty({ required: true, type: String })
+  message!: string;
+}
+
 export class AlertUpdateResponse {
   @ApiProperty({
     required: true,
@@ -55,35 +59,12 @@ export class AlertUpdateResponse {
   })
   alertId!: string;
 
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  status!: string;
-}
+  @ApiProperty({ required: true })
+  @IsEnum(BulkStatus)
+  status!: typeof BulkStatus;
 
-export class BulkAlertsResponse {
-  @ApiProperty({
-    required: true,
-    enum: BulkStatus,
-  })
-  overallStatus!: TBulkStatus;
-
-  @ApiProperty({
-    required: true,
-    type: Array,
-    items: {
-      type: 'object',
-      properties: {
-        alertId: {
-          type: 'string',
-        },
-        status: {
-          type: 'string',
-        },
-      },
-    },
-  })
-  @Type(() => Array<AlertUpdateResponse>)
-  response!: TAlertUpdateResponse;
+  @ApiProperty({ required: false, type: [ErrorResponse] })
+  @IsArray()
+  @Type(() => ErrorResponse)
+  errors?: ErrorResponse[];
 }

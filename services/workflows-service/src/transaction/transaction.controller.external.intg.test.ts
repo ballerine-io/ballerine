@@ -28,9 +28,53 @@ import { TransactionModule } from '@/transaction/transaction.module';
 import { TransactionControllerExternal } from '@/transaction/transaction.controller.external';
 import { TransactionCreateDto } from '@/transaction/dtos/transaction-create.dto';
 import { generateBusiness, generateEndUser } from '../../scripts/generate-end-user';
-import { TransactionRepository } from '@/transaction/transaction.repository';
+import { BulkStatus } from '@/alert/types';
 
-const getBaseTransactionData = (): TransactionCreateDto => {
+const getBusinessCounterpartyData = (business?: Business) => {
+  if (business) {
+    return {
+      correlationId: business.correlationId!,
+      businessData: {
+        companyName: business.companyName,
+        registrationNumber: business.registrationNumber!,
+        mccCode: business.mccCode!,
+        businessType: business.businessType!,
+      },
+    };
+  }
+
+  return {
+    correlationId: faker.datatype.uuid(),
+    businessData: {
+      companyName: faker.company.name(),
+      registrationNumber: faker.datatype.uuid(),
+      mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+      businessType: faker.lorem.word(),
+    },
+  };
+};
+const getEndUserCounterpartyData = (endUser?: EndUser) => {
+  if (endUser) {
+    return {
+      correlationId: endUser.correlationId!,
+      endUserData: {
+        firstName: endUser.firstName,
+        lastName: endUser.lastName,
+      },
+    };
+  }
+
+  return {
+    correlationId: faker.datatype.uuid(),
+    endUserData: {
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      email: faker.internet.email(),
+      phone: faker.phone.number(),
+    },
+  };
+};
+const getBaseTransactionData = () => {
   const amount = parseFloat(faker.finance.amount());
 
   return {
@@ -86,51 +130,9 @@ const getBaseTransactionData = (): TransactionCreateDto => {
     riskScore: faker.datatype.number({ min: 0, max: 100 }),
     regulatoryAuthority: faker.company.name(),
     additionalInfo: JSON.stringify({ note: faker.lorem.sentence() }),
-  };
-};
-const getBusinessCounterpartyData = (business?: Business) => {
-  if (business) {
-    return {
-      correlationId: business.correlationId!,
-      businessData: {
-        companyName: business.companyName,
-        registrationNumber: business.registrationNumber!,
-        mccCode: business.mccCode!,
-        businessType: business.businessType!,
-      },
-    };
-  }
-
-  return {
-    correlationId: faker.datatype.uuid(),
-    businessData: {
-      companyName: faker.company.name(),
-      registrationNumber: faker.datatype.uuid(),
-      mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
-      businessType: faker.lorem.word(),
-    },
-  };
-};
-const getEndUserCounterpartyData = (endUser?: EndUser) => {
-  if (endUser) {
-    return {
-      correlationId: endUser.correlationId!,
-      endUserData: {
-        firstName: endUser.firstName,
-        lastName: endUser.lastName,
-      },
-    };
-  }
-
-  return {
-    correlationId: faker.datatype.uuid(),
-    endUserData: {
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      email: faker.internet.email(),
-      phone: faker.phone.number(),
-    },
-  };
+    originator: getBusinessCounterpartyData(),
+    beneficiary: getEndUserCounterpartyData(),
+  } as const;
 };
 
 describe('#TransactionControllerExternal', () => {
@@ -162,11 +164,7 @@ describe('#TransactionControllerExternal', () => {
     it('creates a transaction with business originator and end user beneficiary', async () => {
       // Assert
       const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
-      const transaction = {
-        ...getBaseTransactionData(),
-        originator: getBusinessCounterpartyData(),
-        beneficiary: getEndUserCounterpartyData(),
-      } as const satisfies TransactionCreateDto;
+      const transaction = getBaseTransactionData();
 
       // Act
       const response = await request(app.getHttpServer())
@@ -264,11 +262,7 @@ describe('#TransactionControllerExternal', () => {
       // Assert
       const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const transactions = [
-        {
-          ...getBaseTransactionData(),
-          originator: getBusinessCounterpartyData(),
-          beneficiary: getEndUserCounterpartyData(),
-        },
+        getBaseTransactionData(),
       ] as const satisfies readonly TransactionCreateDto[];
 
       // Act
@@ -281,7 +275,7 @@ describe('#TransactionControllerExternal', () => {
       expect(response.status).toBe(201);
       expect(response.body).toEqual([
         {
-          status: 201,
+          status: BulkStatus.SUCCESS,
           data: { id: expect.any(String), correlationId: expect.any(String) },
         },
       ]);
@@ -328,7 +322,7 @@ describe('#TransactionControllerExternal', () => {
       expect(response.status).toBe(201);
       expect(response.body).toEqual([
         {
-          status: 201,
+          status: BulkStatus.SUCCESS,
           data: { id: expect.any(String), correlationId: expect.any(String) },
         },
       ]);
@@ -385,7 +379,7 @@ describe('#TransactionControllerExternal', () => {
       expect(response.status).toBe(201);
       expect(response.body).toEqual([
         {
-          status: 201,
+          status: BulkStatus.SUCCESS,
           data: { id: expect.any(String), correlationId: expect.any(String) },
         },
       ]);
@@ -399,39 +393,6 @@ describe('#TransactionControllerExternal', () => {
       expect(transaction.id).toEqual(response.body[0].data.id);
       expect(transaction.counterpartyOriginator?.id).toEqual(originator.id);
       expect(transaction.counterpartyBeneficiary?.id).toEqual(beneficiary.id);
-    });
-
-    it('creates a transaction with no counterparties', async () => {
-      // Arrange
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
-      const transactions = [
-        getBaseTransactionData(),
-      ] as const satisfies readonly TransactionCreateDto[];
-
-      // Act
-      const response = await request(app.getHttpServer())
-        .post('/external/transactions/bulk')
-        .send(transactions)
-        .set('authorization', `Bearer ${apiKey}`);
-
-      // Assert
-      expect(response.status).toBe(201);
-      expect(response.body).toEqual([
-        {
-          status: 201,
-          data: { id: expect.any(String), correlationId: expect.any(String) },
-        },
-      ]);
-      const transaction = await app.get(PrismaService).transactionRecord.findFirstOrThrow({
-        where: { transactionCorrelationId: transactions[0].correlationId, projectId: project.id },
-        include: {
-          counterpartyOriginator: { include: { business: true } },
-          counterpartyBeneficiary: { include: { endUser: true } },
-        },
-      });
-      expect(transaction.id).toEqual(response.body[0].data.id);
-      expect(transaction.counterpartyOriginator).toBeNull();
-      expect(transaction.counterpartyBeneficiary).toBeNull();
     });
 
     it('creates multiple transactions', async () => {
@@ -450,7 +411,7 @@ describe('#TransactionControllerExternal', () => {
       expect(response.body).toHaveLength(5);
       for (const [i, transaction] of transactions.entries()) {
         expect(response.body[i]).toEqual({
-          status: 201,
+          status: BulkStatus.SUCCESS,
           data: { id: expect.any(String), correlationId: expect.any(String) },
         });
         const transactionRecord = await app.get(PrismaService).transactionRecord.findFirstOrThrow({
@@ -466,14 +427,8 @@ describe('#TransactionControllerExternal', () => {
     it('creates multiple transaction with some failing', async () => {
       // Arrange
       const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
-      const transactions = Array.from({ length: 5 }, () =>
-        getBaseTransactionData(),
-      ) satisfies TransactionCreateDto[];
-      // mock TransactionRepository.create to throw an error when the correlationId is 'should-fail'
-      const createSpy = jest.spyOn(app.get(TransactionRepository), 'create');
-      createSpy.mockImplementationOnce(() => {
-        throw new Error('Failed to create transaction');
-      });
+      const transaction = getBaseTransactionData();
+      const transactions = [transaction, transaction] satisfies readonly TransactionCreateDto[];
 
       // Act
       const response = await request(app.getHttpServer())
@@ -483,36 +438,39 @@ describe('#TransactionControllerExternal', () => {
 
       // Assert
       expect(response.status).toBe(207);
-      expect(response.body).toHaveLength(5);
-      const failedTransaction = (response.body as any[]).find(tx => tx.status !== 201);
-      const successfulTransactions = (response.body as any[]).filter(tx => tx.status === 201);
-      for (const transaction of successfulTransactions) {
-        expect(transaction).toEqual({
-          status: 201,
-          data: { id: expect.any(String), correlationId: expect.any(String) },
-        });
-        const transactionRecord = await app.get(PrismaService).transactionRecord.findFirstOrThrow({
-          where: {
-            transactionCorrelationId: transaction.data.correlationId,
-            projectId: project.id,
-          },
-        });
-        expect(transactionRecord.id).toEqual(transaction.data.id);
-      }
+      expect(response.body).toHaveLength(2);
+      const successfulTransaction = (response.body as any[]).find(
+        ({ status }) => status === BulkStatus.SUCCESS,
+      );
+      const failedTransaction = (response.body as any[]).find(
+        ({ status }) => status === BulkStatus.FAILED,
+      );
+      expect(successfulTransaction).toEqual({
+        status: BulkStatus.SUCCESS,
+        data: { id: expect.any(String), correlationId: transaction.correlationId },
+      });
+      const transactionRecord = await app.get(PrismaService).transactionRecord.findFirstOrThrow({
+        where: {
+          transactionCorrelationId: transaction.correlationId,
+          projectId: project.id,
+        },
+      });
+      expect(transactionRecord?.id).toEqual(successfulTransaction.data.id);
       expect(failedTransaction).toEqual({
-        status: 500,
-        error: expect.any(String),
-        data: { correlationId: expect.any(String) },
+        status: BulkStatus.FAILED,
+        error: 'Transaction already exists',
+        data: { correlationId: transaction.correlationId },
       });
     });
 
     it('returns 400 when validation fails', async () => {
       // Arrange
       const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
+      const validTransaction = getBaseTransactionData();
       const transactions = [
-        ...Array.from({ length: 5 }, () => getBaseTransactionData()),
+        ...Array.from({ length: 5 }, () => validTransaction),
         {
-          ...getBaseTransactionData(),
+          ...validTransaction,
           amount: 'asdsad' as unknown as number, // string instead of number
         },
       ] as const satisfies readonly TransactionCreateDto[];

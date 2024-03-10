@@ -6,11 +6,12 @@ import { TransactionService } from '@/transaction/transaction.service';
 import { TransactionControllerExternal } from '@/transaction/transaction.controller.external';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { ProjectScopeService } from '@/project/project-scope.service';
+import { SentryService } from '@/sentry/sentry.service';
 
 @Module({
   imports: [ACLModule, PrismaModule],
   controllers: [TransactionControllerInternal, TransactionControllerExternal],
-  providers: [TransactionService, TransactionRepository, ProjectScopeService],
+  providers: [TransactionService, TransactionRepository, ProjectScopeService, SentryService],
   exports: [ACLModule, TransactionService],
 })
 export class TransactionModule {}

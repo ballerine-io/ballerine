@@ -23,6 +23,8 @@ import { GetTransactionsDto } from '@/transaction/dtos/get-transactions.dto';
 import { PaymentMethod } from '@prisma/client';
 import { BulkTransactionsCreatedDto } from '@/transaction/dtos/bulk-transactions-created.dto';
 import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
+import { BulkStatus } from '@/alert/types';
+import * as errors from '@/errors';
 
 @swagger.ApiTags('Transactions')
 @Controller('external/transactions')
@@ -57,8 +59,10 @@ export class TransactionControllerExternal {
 
   @Post('/bulk')
   @UseCustomerAuthGuard()
-  @swagger.ApiCreatedResponse({ type: BulkTransactionsCreatedDto })
-  @swagger.ApiForbiddenResponse()
+  @swagger.ApiCreatedResponse({ type: [BulkTransactionsCreatedDto] })
+  @swagger.ApiResponse({ type: [BulkTransactionsCreatedDto], status: 207 })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async createBulk(
     @Body(new ParseArrayPipe({ items: TransactionCreateDto })) body: TransactionCreateDto[],
     @Res() res: express.Response,
@@ -76,7 +80,7 @@ export class TransactionControllerExternal {
         hasErrors = true;
 
         return {
-          status: 500,
+          status: BulkStatus.FAILED,
           error: creationResponse.error.message,
           data: {
             correlationId: creationResponse.correlationId,
@@ -85,7 +89,7 @@ export class TransactionControllerExternal {
       }
 
       return {
-        status: 201,
+        status: BulkStatus.SUCCESS,
         data: creationResponse,
       };
     });
