@@ -222,4 +222,5 @@ jobs:
           cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-ee:${{ github.head_ref || github.ref_name }}'
           tags: ${{ steps.eemeta.outputs.tags }}
           build-args: |
-            BASE_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
+            BASE_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.version }}-dev
+# "${{ github.head_ref || github.ref_name }}" should be used above
