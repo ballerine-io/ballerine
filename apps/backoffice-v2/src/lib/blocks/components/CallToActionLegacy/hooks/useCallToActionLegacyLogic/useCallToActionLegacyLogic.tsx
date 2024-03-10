@@ -1,6 +1,6 @@
 import { CommonWorkflowEvent } from '@ballerine/common';
 import { ComponentProps, FunctionComponent, useCallback, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { useApproveTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';

@@ -1,5 +1,4 @@
 import { FunctionComponent, lazy } from 'react';
-import { Toaster } from 'react-hot-toast';
 import { Outlet } from 'react-router-dom';
 import { Providers } from '../../common/components/templates/Providers/Providers';
 import { ServerDownLayout } from './ServerDown.layout';
@@ -15,13 +14,6 @@ const ReactQueryDevtools = lazy(() =>
 export const Root: FunctionComponent = () => {
   return (
     <Providers>
-      <Toaster
-        toastOptions={{
-          position: 'top-center',
-          // In milliseconds
-          duration: 1000 * 3,
-        }}
-      />
       <ServerDownLayout>
         <Outlet />
       </ServerDownLayout>

@@ -1,7 +1,7 @@
 import { TWorkflowById, createWorkflowRequest } from '@/domains/workflows/fetchers';
 import { AnyObject } from '@ballerine/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { t } from 'i18next';
 
 export interface WorkflowCreationParams {
