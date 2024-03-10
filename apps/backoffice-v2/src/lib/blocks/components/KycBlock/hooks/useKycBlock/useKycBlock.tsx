@@ -24,12 +24,12 @@ import { buttonVariants } from '@/common/components/atoms/Button/Button';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 
-const motionProps: ComponentProps<typeof MotionBadge> = {
+const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
   initial: { y: 10, opacity: 0 },
   transition: { type: 'spring', bounce: 0.3 },
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
-};
+} satisfies ComponentProps<typeof MotionBadge>;
 
 export const useKycBlock = ({
   parentWorkflowId,
@@ -606,7 +606,7 @@ export const useKycBlock = ({
           type: 'badge',
           value: 'Pending re-upload',
           props: {
-            ...motionProps,
+            ...motionBadgeProps,
             variant: 'warning',
             className: badgeClassNames,
           },
@@ -622,7 +622,7 @@ export const useKycBlock = ({
           type: 'badge',
           value: 'Approved',
           props: {
-            ...motionProps,
+            ...motionBadgeProps,
             variant: 'success',
             className: `${badgeClassNames} bg-success/20`,
           },
@@ -638,7 +638,7 @@ export const useKycBlock = ({
           type: 'badge',
           value: 'Rejected',
           props: {
-            ...motionProps,
+            ...motionBadgeProps,
             variant: 'destructive',
             className: badgeClassNames,
           },
@@ -654,7 +654,7 @@ export const useKycBlock = ({
           type: 'badge',
           value: 'Pending ID verification',
           props: {
-            ...motionProps,
+            ...motionBadgeProps,
             variant: 'warning',
             className: badgeClassNames,
           },
@@ -681,6 +681,10 @@ export const useKycBlock = ({
           trigger: (
             <MotionButton
               {...motionButtonProps}
+              animate={{
+                ...motionButtonProps.animate,
+                opacity: isDisabled ? 0.5 : motionButtonProps.animate.opacity,
+              }}
               disabled={isDisabled}
               size={'wide'}
               variant={'success'}

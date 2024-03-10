@@ -1,8 +1,4 @@
-import {
-  InlineRule,
-  TransactionsAgainstDynamicRulesType,
-} from './../../src/data-analytics/evaluate-types';
-import * as rules from './../../src/data-analytics/data-analytics.repository/evaluate-transactions-against-dynamic-rules';
+import { InlineRule, TransactionsAgainstDynamicRulesType } from '../../src/data-analytics/types';
 import {
   AlertSeverity,
   AlertState,
@@ -27,33 +23,20 @@ const tags = [
     faker.random.word(),
   ]),
 ];
-const generateRule = (ruleName: string, options: InlineRule, groupedBy: string[] = []) => {
-  return {
-    [ruleName]: {
-      rule: {
-        name: ruleName,
-      },
-      options,
-      groupedBy,
-    },
-  };
-};
 
-const getRuleDefinitions = () => {
-  // Rule ID: PAY_HCA_CC
-  // Description: High Cumulative Amount - Inbound - Customer (Credit Card)
-  // Condition: Sum of incoming transactions over a set period of time is greater than a limit of credit card.
+export const getRuleDefinitions = () => {
   const _PAY_HCA_CC = {
-    ruleName: 'PAY_HCA_CC',
-    groupedBy: ['businessId'],
+    id: 'PAY_HCA_CC',
+    fnName: 'evaluateTransactionsAgainstDynamicRules',
+    subjects: ['businessId'],
     options: {
       groupByBusiness: true,
       havingAggregate: AggregateType.SUM,
 
-      direction: 'Inbound',
+      direction: 'inbound',
       excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
 
-      paymentMethods: [PaymentMethod.CreditCard],
+      paymentMethods: [PaymentMethod.credit_card],
       excludePaymentMethods: false,
 
       timeAmount: 7,
@@ -61,22 +44,23 @@ const getRuleDefinitions = () => {
 
       amountThreshold: 1000,
     } as TransactionsAgainstDynamicRulesType,
-  };
+  } as const satisfies InlineRule;
 
   // Rule ID: PAY_HCA_APM
-  // Description: High Cumulative Amount - Inbound - Customer (APM)
+  // Description: High Cumulative Amount - inbound - Customer (APM)
   // Condition: Sum of incoming transactions over a set period of time is greater than a limit of APM.
   const _PAY_HCA_APM = {
-    ruleName: 'PAY_HCA_APM',
-    groupedBy: ['businessId'],
+    id: 'PAY_HCA_APM',
+    fnName: 'evaluateTransactionsAgainstDynamicRules',
+    subjects: ['businessId'],
     options: {
       groupByBusiness: true,
       havingAggregate: AggregateType.SUM,
 
-      direction: 'Inbound',
+      direction: 'inbound',
       excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
 
-      paymentMethods: [PaymentMethod.CreditCard],
+      paymentMethods: [PaymentMethod.credit_card],
       excludePaymentMethods: true,
 
       timeAmount: 7,
@@ -84,60 +68,65 @@ const getRuleDefinitions = () => {
 
       amountThreshold: 1000,
     } as TransactionsAgainstDynamicRulesType,
-  };
+  } as const satisfies InlineRule;
 
   // Rule ID: STRUC_CC
-  // Description: Structuring - Inbound - Customer (Credit Card)
+  // Description: Structuring - inbound - Customer (Credit Card)
   // Condition: Significant number of low value incoming transactions just below a threshold of credit card.
   const _STRUC_CC = {
-    ruleName: 'STRUC_CC',
-    groupedBy: ['businessId'],
+    id: 'STRUC_CC',
+    fnName: 'evaluateTransactionsAgainstDynamicRules',
+    subjects: ['businessId'],
     options: {
       groupByBusiness: true,
       havingAggregate: AggregateType.COUNT,
 
-      direction: 'Inbound',
+      direction: 'inbound',
       excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
 
-      paymentMethods: [PaymentMethod.CreditCard],
+      paymentMethods: [PaymentMethod.credit_card],
       excludePaymentMethods: false,
 
       timeAmount: 7,
       timeUnit: 'days',
 
+      amountThreshold: 5,
       amountBetween: { min: 500, max: 1000 },
     } as TransactionsAgainstDynamicRulesType,
-  };
+  } as const satisfies InlineRule;
 
   // Rule ID: STRUC_APM
-  // Description: Structuring - Inbound - Customer (APM)
+  // Description: Structuring - inbound - Customer (APM)
   // Condition: Significant number of low value incoming transactions just below a threshold of APM.
   const _STRUC_APM = {
-    ruleName: 'STRUC_APM',
-    groupedBy: ['businessId'],
+    id: 'STRUC_APM',
+    fnName: 'evaluateTransactionsAgainstDynamicRules',
+    subjects: ['businessId'],
     options: {
       groupByBusiness: true,
       havingAggregate: AggregateType.COUNT,
 
-      direction: 'Inbound',
+      direction: 'inbound',
       excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
 
-      paymentMethods: [PaymentMethod.CreditCard],
+      paymentMethods: [PaymentMethod.credit_card],
       excludePaymentMethods: false,
 
       timeAmount: 7,
       timeUnit: 'days',
 
       amountBetween: { min: 500, max: 1000 },
+
+      amountThreshold: 5,
     } as TransactionsAgainstDynamicRulesType,
-  };
+  } as const satisfies InlineRule;
 
   const rules = [_PAY_HCA_CC, _PAY_HCA_APM, _STRUC_CC, _STRUC_APM];
 
   const mergedRules: Record<string, InlineRule> = {};
 
   rules.forEach(rule => {
-    mergedRules[rule.ruleName] = generateRule(rule.ruleName, rule.options, rule.groupedBy);
+    mergedRules[rule.id] = rule;
   });
 
   return mergedRules;
@@ -209,67 +198,61 @@ export const generateFakeAlertDefinition = async (
     } satisfies Omit<Prisma.AlertCreateManyAlertDefinitionInput, 'projectId'>;
   };
 
-  const rules = getRuleDefinitions();
+  const rules = Object.values(getRuleDefinitions());
 
-  return Array.from({
-    length: faker.datatype.number({
-      min: 5,
-      max: 10,
-    }),
-  }).forEach(async () => {
-    const defaultSeverity = faker.helpers.arrayElement(Object.values(AlertSeverity));
+  await Promise.all(
+    rules.map(async rule => {
+      const defaultSeverity = faker.helpers.arrayElement(Object.values(AlertSeverity));
 
-    // Create alerts
-    const alerts = Array.from(
-      {
-        length: Object.keys(rules).length,
-      },
-      () => {
-        return {
+      // Create alerts
+      const alerts = Array.from(
+        {
+          length: faker.datatype.number({ min: 3, max: 5 }),
+        },
+        () => {
+          return {
+            projectId: project.id,
+            ...generateFakeAlert({
+              defaultSeverity,
+              ids,
+            }),
+          };
+        },
+      );
+
+      const createdBy = faker.internet.userName();
+
+      await prisma.alertDefinition.create({
+        include: {
+          alert: true,
+        },
+        data: {
+          type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
+          name: faker.lorem.words(3),
+          enabled: faker.datatype.boolean(),
+          description: faker.lorem.sentence(),
+          rulesetId: `set-${rule.id}`,
+          defaultSeverity,
+          ruleId: rule.id,
+          createdBy: createdBy,
+          modifiedBy: createdBy,
+          dedupeStrategies: {
+            strategy: {},
+            cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
+          },
+          config: { config: {} },
+          inlineRule: rule,
+          tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
+          additionalInfo: {},
           projectId: project.id,
-          ...generateFakeAlert({
-            defaultSeverity,
-            ids,
-          }),
-        };
-      },
-    );
-
-    const createdBy = faker.internet.userName();
-    // Create Alert Definition
-    return await prisma.alertDefinition.create({
-      include: {
-        alert: true, // Include all posts in the returned object
-      },
-      data: {
-        type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
-        name: faker.lorem.words(3),
-        enabled: faker.datatype.boolean(),
-        description: faker.lorem.sentence(),
-        projectId: project.id,
-        rulesetId: faker.datatype.number({
-          min: 1,
-          max: 10,
-        }),
-        defaultSeverity,
-        ruleId: faker.datatype.number({
-          min: 1,
-          max: 10,
-        }),
-        createdBy: createdBy,
-        modifiedBy: createdBy,
-        dedupeStrategies: { strategy: {} },
-        config: { config: {} },
-        inlineRule: faker.helpers.arrayElement(Object.values(rules)),
-        tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
-        additionalInfo: {},
-        alert: {
-          createMany: {
-            data: alerts,
-            skipDuplicates: true,
+          alert: {
+            createMany: {
+              data: alerts,
+              skipDuplicates: true,
+            },
           },
         },
-      },
-    });
-  });
+      });
+    }),
+  );
 };

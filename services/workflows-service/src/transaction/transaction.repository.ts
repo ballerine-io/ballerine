@@ -19,8 +19,8 @@ export class TransactionRepository {
     args: Prisma.SelectSubset<T, Prisma.TransactionRecordCreateArgs>,
   ): Promise<TransactionRecord> {
     createTranscationValidator.safeParse(args.data);
-    // #TODO: Fix this
-    const { projectId, businessId, endUserId, ...rest } = args.data;
+
+    const { projectId, ...rest } = args.data;
 
     args = {
       ...args,
@@ -32,17 +32,6 @@ export class TransactionRepository {
       },
     } as any;
 
-    // if (businessId) {
-    //   args.data.business = {
-    //     connect: { id: businessId },
-    //   } as any;
-    // }
-
-    // if (endUserId) {
-    //   args.data.endUser = {
-    //     connect: { id: endUserId },
-    //   } as any;
-    // }
     const res = await this.prisma.transactionRecord.create<T>(args);
 
     return res;
@@ -92,10 +81,6 @@ export class TransactionRepository {
     getTransactionsParameters: GetTransactionsDto,
   ): Prisma.TransactionRecordWhereInput {
     const whereClause: Prisma.TransactionRecordWhereInput = {};
-
-    if (getTransactionsParameters.businessId) {
-      whereClause.businessId = getTransactionsParameters.businessId;
-    }
 
     if (getTransactionsParameters.counterpartyId) {
       whereClause.OR = [

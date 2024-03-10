@@ -1,3 +1,5 @@
+import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
+import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 import { PasswordService } from '@/auth/password/password.service';
 import { UserService } from '@/user/user.service';
 import { HttpStatus, Module } from '@nestjs/common';
@@ -13,7 +15,6 @@ import {
 } from '@/alert/webhook-manager/webhook-manager.service';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { ClsService } from 'nestjs-cls';
 import axiosRetry from 'axios-retry';
 import { isAxiosError } from 'axios';
 import { getHttpStatusFromAxiosError, interceptAxiosRequests } from '@/common/http-service/utils';
@@ -24,6 +25,7 @@ import { AlertDefinitionModule } from '@/alert-definition/alert-definition.modul
 
 @Module({
   imports: [
+    DataAnalyticsModule,
     ACLModule,
     PrismaModule,
     ProjectModule,
@@ -49,6 +51,7 @@ import { AlertDefinitionModule } from '@/alert-definition/alert-definition.modul
     },
     AlertService,
     AlertRepository,
+    AlertDefinitionRepository,
     WebhookManagerService,
     WebhookEventEmitterService,
     // TODO: Export to user module
@@ -62,7 +65,6 @@ export class AlertModule {
   constructor(
     private readonly httpService: HttpService,
     private readonly logger: AppLoggerService,
-    private readonly clsService: ClsService,
   ) {}
 
   // Defining others configuration for our Axios instance

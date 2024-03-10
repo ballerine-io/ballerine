@@ -11,11 +11,18 @@ export class AlertRepository {
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
-  // Method to create an alert
   async create<T extends Prisma.AlertCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.AlertCreateArgs>,
   ): Promise<Alert> {
     return await this.prisma.alert.create<T>(args);
+  }
+
+  async exists<T extends Pick<Prisma.AlertFindFirstArgs, 'where'>>(
+    args: Prisma.SelectSubset<T, Pick<Prisma.AlertFindFirstArgs, 'where'>>,
+    projectIds: TProjectIds,
+  ) {
+    const queryArgs = this.scopeService.scopeFindFirst(args, projectIds);
+    return await this.prisma.extendedClient.alert.exists(queryArgs.where);
   }
 
   // Method to find many alerts
@@ -28,9 +35,9 @@ export class AlertRepository {
   }
 
   // Method to find a single alert by ID
-  async findById<T extends Omit<Prisma.AlertFindFirstOrThrowArgs, 'where'>>(
+  async findById<T extends Pick<Prisma.AlertFindFirstOrThrowArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.AlertFindFirstOrThrowArgs, 'where'>>,
+    args: Prisma.SelectSubset<T, Pick<Prisma.AlertFindFirstOrThrowArgs, 'where'>>,
     projectIds: TProjectIds,
   ): Promise<Alert> {
     const queryArgs = this.scopeService.scopeFindOne(

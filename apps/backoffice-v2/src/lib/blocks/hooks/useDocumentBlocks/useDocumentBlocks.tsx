@@ -260,6 +260,10 @@ export const useDocumentBlocks = ({
                 trigger: (
                   <MotionButton
                     {...motionButtonProps}
+                    animate={{
+                      ...motionButtonProps.animate,
+                      opacity: !canApprove ? 0.5 : motionButtonProps.animate.opacity,
+                    }}
                     disabled={!canApprove}
                     size={'wide'}
                     variant={'success'}
