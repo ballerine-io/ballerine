@@ -3,6 +3,7 @@ ARG BASE_IMAGE
 FROM ${BASE_IMAGE} as base
 
 WORKDIR /app
+COPY ./prisma/data-migrations ./prisma/data-migrations
 
 EXPOSE 3000
 
