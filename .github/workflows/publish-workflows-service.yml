@@ -182,9 +182,11 @@ jobs:
       - name: Checkout submodule branch
         run: |
           git submodule update --init --recursive
-          cd services/workflows-service
-          git checkout ${{ github.ref_name }}
-          cd ..
+          cd services/workflows-service/prisma/data-migrations
+          ls
+          git checkout main
+          ls
+          cd ../../..
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
