@@ -5,4 +5,5 @@ WORKDIR /app
 
 EXPOSE 3000
 
-CMD [ "dumb-init", "npm", "run", "prod" ]
+CMD [ "sleep", "3000" ]
+# /CMD [ "dumb-init", "npm", "run", "prod" ]
