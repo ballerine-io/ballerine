@@ -1,3 +1,5 @@
+import { Alert, AlertDefinition, Business, User } from '@prisma/client';
+
 export type TAuthenticationConfiguration = {
   apiType: 'API_KEY' | 'OAUTH2' | 'BASIC_AUTH';
   authValue: string;
@@ -13,6 +15,12 @@ export const BulkStatus = {
 } as const;
 
 export type TBulkStatus = (typeof BulkStatus)[keyof typeof BulkStatus];
+
+export type TAlertResponse = Alert & {
+  alertDefinition: Pick<AlertDefinition, 'description'>;
+  assignee: Pick<User, 'id' | 'firstName' | 'lastName'>;
+  business: Pick<Business, 'id' | 'companyName'>;
+};
 
 export type TAlertUpdateResponse = Array<{
   alertId: string;

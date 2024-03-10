@@ -84,8 +84,6 @@ model EndUser {
   projectId                String
   project                  Project                    @relation(fields: [projectId], references: [id])
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
-  TransactionRecord        TransactionRecord[]
-  Alert                    Alert[]
   Counterparty             Counterparty[]
 
   @@index([endUserType])
@@ -141,8 +139,6 @@ model Business {
 
   projectId         String
   project           Project             @relation(fields: [projectId], references: [id])
-  TransactionRecord TransactionRecord[]
-  Alert             Alert[]
   Counterparty      Counterparty[]
 
   @@index([companyName])
@@ -417,107 +413,107 @@ model DataMigrationVersion {
 }
 
 enum TransactionRecordType {
-  Deposit
-  Withdrawal
-  Transfer
-  Payment
-  Refund
-  Chargeback
+  deposit
+  withdrawal
+  transfer
+  payment
+  refund
+  chargeback
 }
 
 enum ReviewStatus {
-  Pending
-  Reviewed
-  Flagged
-  Cleared
-  Rejected
+  pending
+  reviewed
+  flagged
+  cleared
+  rejected
 }
 
 enum VerificationStatus {
-  Unverified
-  Verified
-  Pending
+  unverified
+  verified
+  pending
 }
 
 enum TransactionRecordStatus {
-  New
-  Pending
-  Active
-  Completed
-  Rejected
-  Cancelled
-  Failed
+  new
+  pending
+  active
+  completed
+  rejected
+  cancelled
+  failed
 }
 
 enum PaymentMethod {
-  CreditCard
-  DebitCard
-  BankTransfer
-  PayPal
-  ApplePay
-  GooglePay
-  APN
+  credit_card
+  debit_card
+  bank_transfer
+  pay_pal
+  apple_pay
+  google_pay
+  apn
 }
 
 enum PaymentType {
-  Instant
-  Scheduled
-  Recurring
-  Refund
+  instant
+  scheduled
+  recurring
+  refund
 }
 
 enum PaymentChannel {
-  Online
-  MobileApp
-  InStore
-  Telephone
-  MailOrder
+  online
+  mobile_app
+  in_store
+  telephone
+  mail_order
 }
 
 enum PaymentIssuer {
-  Chase
-  BankOfAmerica
-  Citibank
-  AmericanExpress
+  chase
+  bank_of_america
+  citibank
+  american_express
 }
 
 enum PaymentGateway {
-  Stripe
-  PayPal
-  Square
-  Adyen
+  stripe
+  pay_pal
+  square
+  adyen
 }
 
 enum PaymentAcquirer {
-  WellsFargo
-  FirstData
-  Elavon
-  WorldPay
+  wells_fargo
+  first_data
+  elavon
+  world_pay
 }
 
 enum PaymentProcessor {
-  Visa
-  MasterCard
-  Discover
-  AmericanExpress
+  visa
+  master_card
+  discover
+  american_express
 }
 
 enum PaymentBrandName {
-  VISA
-  MASTERCARD
-  DCI // Diners Club International
-  SCB_PayNow
-  OCBC_PayNow
-  Atome
-  Dash
-  GrabPay
-  AlipayHost
-  WechatHost
+  visa
+  mastercard
+  dci // diners club international
+  scb_pay_now
+  ocbc_pay_now
+  atome
+  dash
+  grab_pay
+  alipay_host
+  wechat_host
 }
 
 enum TransactionDirection {
-  Inbound
-  Outbound
+  inbound
+  outbound
 }
 
 model TransactionRecord {
@@ -531,7 +527,7 @@ model TransactionRecord {
   transactionDescription   String? // Description of the transaction
   transactionCategory      String? // Category of the transaction
   transactionType          TransactionRecordType? // Enum for transaction type
-  transactionStatus        TransactionRecordStatus? @default(Completed)
+  transactionStatus        TransactionRecordStatus? @default(completed)
   transactionStatusReason  String? // Reason for the transaction status
   transactionDirection     TransactionDirection? // Reason for the transaction status
   transactionReference     String? // Reference number for the transaction
@@ -556,7 +552,7 @@ model TransactionRecord {
   completed3ds      Boolean?
   cardType          String?
   cardIssuer        String?
-  cardBIN           Int?
+  cardBin           Int?
   cardBrand         String?
 
   cardExpiryMonth String?
@@ -597,12 +593,6 @@ model TransactionRecord {
   counterpartyBeneficiaryId String?
   counterpartyBeneficiary   Counterparty? @relation("BenefitingCounterparty", fields: [counterpartyBeneficiaryId], references: [id])
 
-  endUser   EndUser? @relation(fields: [endUserId], references: [id])
-  endUserId String?
-
-  business   Business? @relation(fields: [businessId], references: [id])
-  businessId String?
-
   @@unique([projectId, transactionCorrelationId])
   @@index([transactionType])
   @@index([transactionDate])
@@ -616,38 +606,36 @@ model TransactionRecord {
 }
 
 enum AlertSeverity {
-  Low      @map("100")
-  Medium   @map("200")
-  High     @map("300")
-  Critical @map("400")
+  low      @map("100")
+  medium   @map("200")
+  high     @map("300")
+  critical @map("400")
 }
 
 enum AlertState {
-
   // New
-  Triggered     @map("101")  // Alert generated based on criteria indicating potential suspicious activity.
+  triggered @map("101") // Alert generated based on criteria indicating potential suspicious activity.
 
   // Pending
-  UnderReview   @map("201")  // Alert is being investigated for more details and assessment.
-  Escalated     @map("202")  // Alert requires attention from higher authority or specialized investigation.
+  under_review @map("201") // Alert is being investigated for more details and assessment.
+  escalated    @map("202") // Alert requires attention from higher authority or specialized investigation.
 
   // Completed - Various resolutions indicating the outcome of the investigation.
-  Rejected      @map("301")  // Investigation confirms the alert as a real threat, necessitating specific actions or interventions.
-  Dismissed     @map("302")  // Alert considered not relevant or not posing any actionable risk.
-  Cleared       @map("303")  // Investigation finds activity to be legitimate and not suspicious.
-
+  rejected  @map("301") // Investigation confirms the alert as a real threat, necessitating specific actions or interventions.
+  dismissed @map("302") // Alert considered not relevant or not posing any actionable risk.
+  cleared   @map("303") // Investigation finds activity to be legitimate and not suspicious.
 }
 
 enum AlertStatus {
-  New       @map("100")
-  Pending   @map("200")
-  Completed @map("300")
+  new       @map("100")
+  pending   @map("200")
+  completed @map("300")
 }
 
 enum AlertType {
-  HighRiskTransaction
-  DormantAccountActivity
-  UnusualPattern
+  high_risk_transaction
+  dormant_account_activity
+  unusual_pattern
 }
 
 model AlertDefinition {
@@ -692,12 +680,6 @@ model Alert {
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  businessId String?
-  business   Business? @relation(fields: [businessId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-
-  endUserId String?
-  endUser   EndUser? @relation(fields: [endUserId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-
   dataTimestamp DateTime
   state         AlertState
   status        AlertStatus
@@ -720,46 +702,44 @@ model Alert {
   counterparty   Counterparty? @relation(fields: [counterpartyId], references: [id])
 
   @@index([assigneeId])
-  @@index([businessId])
-  @@index([endUserId])
   @@index([projectId])
   @@index([alertDefinitionId])
   @@index([counterpartyId])
 }
 
 enum CounterpartyType {
-  Individual
-  Company
-  Government
-  NonProfit
+  individual
+  company
+  government
+  non_profit
 }
 
 enum RiskCategory {
-  Low
-  Medium
-  High
+  low
+  medium
+  high
 }
 
 enum ComplianceStatus {
-  Compliant
-  NonCompliant
-  UnderReview
+  compliant
+  non_compliant
+  under_review
 }
 
 enum PEPStatus {
-  NotApplicable // The counterparty is not a politically exposed person.
-  PendingReview // The status of the counterparty being a politically exposed person is pending review.
-  Confirmed // The counterparty has been confirmed as a politically exposed person.
+  not_applicable // the counterparty is not a politically exposed person.
+  pending_review // the status of the counterparty being a politically exposed person is pending review.
+  confirmed // The counterparty has been confirmed as a politically exposed person.
 }
 
 enum SanctionListMatchStatus {
-  NotListed // The counterparty is not found on any sanction list.
-  PendingReview // The counterparty's status against sanction lists is pending review.
-  Listed // The counterparty is listed on a sanction list.
+  not_listed // the counterparty is not found on any sanction list.
+  pending_review // the counterparty's status against sanction lists is pending review.
+  listed // The counterparty is listed on a sanction list.
 }
 
 model Counterparty {
-  id String @id
+  id String @id @default(cuid())
 
   correlationId String?
   type          CounterpartyType
@@ -782,3 +762,4 @@ model Counterparty {
   @@unique([projectId, correlationId])
   @@index([correlationId])
 }
+

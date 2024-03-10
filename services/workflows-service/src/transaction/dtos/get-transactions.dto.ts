@@ -6,10 +6,6 @@ import { IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-vali
 export class GetTransactionsDto {
   @IsOptional()
   @IsString()
-  businessId?: string;
-
-  @IsOptional()
-  @IsString()
   counterpartyId?: string;
 
   @IsOptional()

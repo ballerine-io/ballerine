@@ -33,7 +33,7 @@ import {
 import { generateTransactions } from './alerts/generate-transactions';
 import { generateKycManualReviewRuntimeAndToken } from './workflows/runtime/geneate-kyc-manual-review-runtime-and-token';
 import { Type } from '@sinclair/typebox';
-import { generateFakeAlertDefinition } from './alerts/generate-alerts';
+import { generateFakeAlertDefinition as generateFakeAlertDefinitions } from './alerts/generate-alerts';
 
 const BCRYPT_SALT: string | number = 10;
 
@@ -155,7 +155,7 @@ async function seed() {
     businessId: business2.id,
   });
 
-  await generateFakeAlertDefinition(client, {
+  await generateFakeAlertDefinitions(client, {
     project: project1,
     customer: customer,
     ids: [...ids1, ...ids2],
@@ -960,16 +960,6 @@ async function seed() {
       where: {
         workflowDefinitionId: { in: ['kyb_with_associated_companies_example'] },
         businessId: { not: null },
-        state: {
-          in: [
-            'manual_review',
-            'approved',
-            'revision',
-            'rejected',
-            'pending_kyc_response',
-            'pending_kyb_response',
-          ],
-        },
       },
     },
     project1.id,

@@ -9,10 +9,10 @@ import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { env } from '@/common/env/env';
 
 export const AlertSeverity = {
-  CRITICAL: 'Critical',
-  HIGH: 'High',
-  MEDIUM: 'Medium',
-  LOW: 'Low',
+  CRITICAL: 'critical',
+  HIGH: 'high',
+  MEDIUM: 'medium',
+  LOW: 'low',
 } as const;
 
 export const AlertSeverities = [
@@ -23,9 +23,9 @@ export const AlertSeverities = [
 ] as const satisfies ReadonlyArray<TObjectValues<typeof AlertSeverity>>;
 
 export const AlertStatus = {
-  NEW: 'New',
-  PENDING: 'Pending',
-  COMPLETED: 'Completed',
+  NEW: 'new',
+  PENDING: 'pending',
+  COMPLETED: 'completed',
 } as const;
 
 export const AlertStatuses = [
@@ -35,9 +35,9 @@ export const AlertStatuses = [
 ] as const satisfies ReadonlyArray<TObjectValues<typeof AlertStatus>>;
 
 export const AlertType = {
-  HIGH_RISK_TRANSACTION: 'HighRiskTransaction',
-  DORMANT_ACCOUNT_ACTIVITY: 'DormantAccountActivity',
-  UNUSUAL_PATTERN: 'UnusualPattern',
+  HIGH_RISK_TRANSACTION: 'high_risk_transaction',
+  DORMANT_ACCOUNT_ACTIVITY: 'dormant_account_activity',
+  UNUSUAL_PATTERN: 'unusual_pattern',
 } as const;
 
 export const AlertTypes = [
@@ -47,12 +47,12 @@ export const AlertTypes = [
 ] as const satisfies ReadonlyArray<TObjectValues<typeof AlertType>>;
 
 export const AlertState = {
-  TRIGGERED: 'Triggered',
-  UNDER_REVIEW: 'UnderReview',
-  ESCALATED: 'Escalated',
-  REJECTED: 'Rejected',
-  DISMISSED: 'Dismissed',
-  CLEARED: 'Cleared',
+  TRIGGERED: 'triggered',
+  UNDER_REVIEW: 'under_review',
+  ESCALATED: 'escalated',
+  REJECTED: 'rejected',
+  DISMISSED: 'dismissed',
+  CLEARED: 'cleared',
 } as const;
 
 export const AlertStates = [
@@ -65,15 +65,15 @@ export const AlertStates = [
 ] as const satisfies ReadonlyArray<TObjectValues<typeof AlertState>>;
 
 export const alertStateToDecision = {
-  REJECTED: 'Reject',
-  CLEARED: 'Clear',
-  REVERT_DECISION: 'Revert Decision',
+  REJECTED: 'reject',
+  CLEARED: 'clear',
+  REVERT_DECISION: 'revert decision',
 } as const satisfies Partial<Record<keyof typeof AlertState | (string & {}), string>>;
 
 export const alertDecisionToState = {
-  REJECT: 'Rejected',
-  CLEAR: 'Cleared',
-  REVERT_DECISION: 'Triggered',
+  REJECT: 'rejected',
+  CLEAR: 'cleared',
+  REVERT_DECISION: 'triggered',
 } as const satisfies Partial<Record<keyof typeof AlertState | (string & {}), string>>;
 
 export type TAlertSeverity = (typeof AlertSeverities)[number];
