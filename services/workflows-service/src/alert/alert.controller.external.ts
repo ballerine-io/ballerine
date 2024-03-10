@@ -65,10 +65,22 @@ export class AlertControllerExternal {
             lastName: true,
           },
         },
-        business: {
+        counterparty: {
           select: {
             id: true,
-            companyName: true,
+            business: {
+              select: {
+                id: true,
+                companyName: true,
+              },
+            },
+            endUser: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
           },
         },
       },
