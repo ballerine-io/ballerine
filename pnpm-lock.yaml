@@ -2639,7 +2639,7 @@ importers:
         version: 4.0.2
       testcontainers:
         specifier: ^9.8.0
-        version: 9.12.0
+        version: 9.8.0
       ts-jest:
         specifier: 29.1.1
         version: 29.1.1(@babel/core@7.23.7)(jest@29.7.0)(typescript@4.9.3)
@@ -15621,7 +15621,7 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.23.3(@babel/core@7.23.3)
       '@types/babel__core': 7.20.4
       react-refresh: 0.14.0
-      vite: 4.5.0(@types/node@18.17.19)
+      vite: 4.5.0(@types/node@20.9.2)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -19165,11 +19165,11 @@ packages:
   /dlv@1.1.3:
     resolution: {integrity: sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==}
 
-  /docker-compose@0.24.3:
-    resolution: {integrity: sha512-x3/QN3AIOMe7j2c8f/jcycizMft7dl8MluoB9OGPAYCyKHHiPUFqI9GjCcsU0kYy24vYKMCcfR6+5ZaEyQlrxg==}
+  /docker-compose@0.23.19:
+    resolution: {integrity: sha512-v5vNLIdUqwj4my80wxFDkNH+4S85zsRuH29SO7dCWVWPCMt/ohZBsGN6g6KXWifT0pzQ7uOxqEKCYCDPJ8Vz4g==}
     engines: {node: '>= 6.0.0'}
     dependencies:
-      yaml: 2.3.4
+      yaml: 1.10.2
     dev: true
 
   /docker-modem@3.0.8:
@@ -27479,14 +27479,6 @@ packages:
     engines: {node: '>= 8'}
     dev: true
 
-  /proper-lockfile@4.1.2:
-    resolution: {integrity: sha512-TjNPblN4BwAWMXU8s9AEz4JmQxnD1NNL7bNOY/AKUzyamc379FWASUhc/K1pL2noVb+XmZKLL68cjzLsiOAMaA==}
-    dependencies:
-      graceful-fs: 4.2.11
-      retry: 0.12.0
-      signal-exit: 3.0.7
-    dev: true
-
   /properties-reader@2.3.0:
     resolution: {integrity: sha512-z597WicA7nDZxK12kZqHr2TcvwNU1GCfA5UwfDY/HDp3hXPoPlb5rlEx9bwGTiJnc0OqbBTkU975jDToth8Gxw==}
     engines: {node: '>=14'}
@@ -28584,11 +28576,6 @@ packages:
       retext-stringify: 3.1.0
       unified: 10.1.2
     dev: false
-
-  /retry@0.12.0:
-    resolution: {integrity: sha512-9LkiTwjUh6rT555DtE9rTX+BKByPfrMzEAtnlEtdEwr3Nkffwiihqe2bWADg+OQRjt9gl6ICdmB/ZFDCGAtSow==}
-    engines: {node: '>= 4'}
-    dev: true
 
   /reusify@1.0.4:
     resolution: {integrity: sha512-U9nH88a3fc/ekCF1l0/UP1IosiuIjyTh7hBvXVMHYgVcfGvt897Xguj2UOLDeI5BG2m7/uwyaLVT6fbtCwTyzw==}
@@ -30331,8 +30318,8 @@ packages:
       minimatch: 3.1.2
     dev: true
 
-  /testcontainers@9.12.0:
-    resolution: {integrity: sha512-zmjLTAUqCiDvhDq7TCwcyhI3m/cXXKGnhyLLJ9pgh53VgG9O+P+opX1pIx28aYTUQ7Yu6b5sJf0xoIuxoiclWg==}
+  /testcontainers@9.8.0:
+    resolution: {integrity: sha512-61IlJeVrUbS5JlAgM/N0koFnRxsID+vDap7CUmgaHXSGxmFofCiokB7kD96c1BtDWGOznrd7lTAPGSkd3RVkPA==}
     engines: {node: '>= 10.16'}
     dependencies:
       '@balena/dockerignore': 1.0.2
@@ -30342,15 +30329,13 @@ packages:
       async-lock: 1.4.0
       byline: 5.0.0
       debug: 4.3.4(supports-color@8.1.1)
-      docker-compose: 0.24.3
+      docker-compose: 0.23.19
       dockerode: 3.3.5
       get-port: 5.1.1
       node-fetch: 2.7.0
-      proper-lockfile: 4.1.2
       properties-reader: 2.3.0
       ssh-remote-port-forward: 1.0.4
       tar-fs: 2.1.1
-      tmp: 0.2.1
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -31869,7 +31854,7 @@ packages:
       strip-ansi: 6.0.1
       tiny-invariant: 1.3.1
       typescript: 5.1.6
-      vite: 4.5.0(@types/node@18.17.19)
+      vite: 4.5.0(@types/node@20.9.2)
       vscode-languageclient: 7.0.0
       vscode-languageserver: 7.0.0
       vscode-languageserver-textdocument: 1.0.11
@@ -32019,7 +32004,7 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
       globrex: 0.1.2
       tsconfck: 2.1.2(typescript@5.1.6)
-      vite: 4.5.0(@types/node@18.17.19)
+      vite: 4.5.0(@types/node@20.9.2)
     transitivePeerDependencies:
       - supports-color
       - typescript
