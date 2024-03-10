@@ -1,0 +1,9 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+WORKDIR /app
+RUN git submodule update --init --recursive
+
+EXPOSE 3000
+
+CMD [ "dumb-init", "npm", "run", "prod" ]
