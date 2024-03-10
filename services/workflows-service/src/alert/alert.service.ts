@@ -208,7 +208,7 @@ export class AlertService {
 
   private createAlert(
     alertDef: AlertDefinition,
-    data: Pick<Prisma.AlertUncheckedCreateInput, 'businessId' | 'endUserId' | 'counterpartyId'>,
+    data: Pick<Prisma.AlertUncheckedCreateInput, 'counterpartyId'>,
   ): Promise<Alert> {
     return this.alertRepository.create({
       data: {

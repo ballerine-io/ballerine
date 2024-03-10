@@ -100,7 +100,6 @@ export class TransactionControllerExternal {
   @Get()
   // @UseGuards(CustomerAuthGuard)
   @swagger.ApiOkResponse({ description: 'Returns an array of transactions.' })
-  @swagger.ApiQuery({ name: 'businessId', description: 'Filter by business ID.', required: false })
   @swagger.ApiQuery({
     name: 'counterpartyId',
     description: 'Filter by counterparty ID.',
@@ -143,8 +142,28 @@ export class TransactionControllerExternal {
   ) {
     return this.service.getTransactions(getTransactionsParameters, projectId, {
       include: {
+        counterpartyBeneficiary: {
+          select: {
+            business: {
+              select: {
+                companyName: true,
+              },
+            },
+            endUser: {
+              select: {
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
         counterpartyOriginator: {
           select: {
+            business: {
+              select: {
+                companyName: true,
+              },
+            },
             endUser: {
               select: {
                 firstName: true,
