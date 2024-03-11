@@ -1,4 +1,8 @@
-import { InlineRule, TransactionsAgainstDynamicRulesType } from '../../src/data-analytics/types';
+import {
+  InlineRule,
+  TCustomersTransactionTypeOptions,
+  TransactionsAgainstDynamicRulesType,
+} from '../../src/data-analytics/types';
 import {
   AlertSeverity,
   AlertState,
@@ -9,6 +13,7 @@ import {
   Prisma,
   PrismaClient,
   Project,
+  TransactionRecordType,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { AggregateType } from '../../src/data-analytics/consts';
@@ -134,6 +139,175 @@ export const ALERT_INLINE_RULES = [
     },
   },
 ] as const satisfies readonly { inlineRule: InlineRule; defaultSeverity: AlertSeverity }[];
+
+  const _HCAI_CC = {
+    id: 'HCAI_CC',
+    fnName: 'evaluateTransactionsAgainstDynamicRules',
+    subjects: ['businessId', 'counterpartyOriginatorId'],
+    options: {
+      groupByBusiness: true,
+      groupByCounterparty: true,
+
+      havingAggregate: AggregateType.SUM,
+
+      direction: 'inbound',
+      excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+
+      paymentMethods: [PaymentMethod.credit_card],
+      excludePaymentMethods: false,
+
+      timeAmount: 7,
+      timeUnit: 'days',
+
+      amountThreshold: 3000,
+    } as TransactionsAgainstDynamicRulesType,
+  } as const satisfies InlineRule;
+
+  const _HACI_APM = {
+    id: 'HACI_APM',
+    fnName: 'evaluateTransactionsAgainstDynamicRules',
+    subjects: ['businessId', 'counterpartyOriginatorId'],
+    options: {
+      groupByBusiness: true,
+      groupByCounterparty: true,
+      havingAggregate: AggregateType.SUM,
+
+      direction: 'inbound',
+      excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+
+      paymentMethods: [PaymentMethod.credit_card],
+      excludePaymentMethods: true,
+
+      timeAmount: 7,
+      timeUnit: 'days',
+
+      amountThreshold: 3000,
+    } as TransactionsAgainstDynamicRulesType,
+  } as const satisfies InlineRule;
+
+  const _HVIC_CC = {
+    id: 'HVIC_CC',
+    fnName: 'evaluateTransactionsAgainstDynamicRules',
+    subjects: ['businessId', 'counterpartyOriginatorId'],
+    options: {
+      groupByBusiness: true,
+      havingAggregate: AggregateType.COUNT,
+
+      direction: 'inbound',
+      excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+
+      paymentMethods: [PaymentMethod.credit_card],
+      excludePaymentMethods: false,
+
+      timeAmount: 7,
+      timeUnit: 'days',
+
+      amountThreshold: 2,
+    } as TransactionsAgainstDynamicRulesType,
+  } as const satisfies InlineRule;
+
+  const _HVIC_APM = {
+    id: 'HVIC_CC',
+    fnName: 'evaluateTransactionsAgainstDynamicRules',
+    subjects: ['businessId', 'counterpartyOriginatorId'],
+    options: {
+      groupByBusiness: true,
+      havingAggregate: AggregateType.COUNT,
+
+      direction: 'inbound',
+      excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+
+      paymentMethods: [PaymentMethod.credit_card],
+      excludePaymentMethods: true,
+
+      timeAmount: 7,
+      timeUnit: 'days',
+
+      amountThreshold: 2,
+    } as TransactionsAgainstDynamicRulesType,
+  } as const satisfies InlineRule;
+
+  const _CHVC_C = {
+    id: 'CHVC_C',
+    fnName: 'evaluateCustomersTransactionType',
+    subjects: ['businessId'],
+    options: {
+      transactionType: [TransactionRecordType.chargeback],
+      threshold: 14,
+      timeAmount: 7,
+      timeUnit: 'days',
+      isPerBrand: false,
+      havingAggregate: AggregateType.COUNT,
+    } as TCustomersTransactionTypeOptions,
+  } as const satisfies InlineRule;
+
+  const _SHCAC_C = {
+    id: 'HVIC_CC',
+    fnName: 'evaluateCustomersTransactionType',
+    subjects: ['businessId'],
+    options: {
+      transactionType: [TransactionRecordType.chargeback],
+      threshold: 5_000,
+      timeAmount: 7,
+      timeUnit: 'days',
+      isPerBrand: false,
+      havingAggregate: AggregateType.SUM,
+    } as TCustomersTransactionTypeOptions,
+  } as const satisfies InlineRule;
+
+  const _CHCR_C = {
+    id: 'CHCR_C',
+    fnName: 'evaluateCustomersTransactionType',
+    subjects: ['businessId'],
+    options: {
+      transactionType: [TransactionRecordType.refund],
+      paymentMethods: [PaymentMethod.credit_card],
+      threshold: 14,
+      timeAmount: 7,
+      timeUnit: 'days',
+      isPerBrand: false,
+      havingAggregate: AggregateType.COUNT,
+    } as TCustomersTransactionTypeOptions,
+  } as const satisfies InlineRule;
+
+  const _SHCAR_C = {
+    id: 'SHCAR_C',
+    fnName: 'evaluateCustomersTransactionType',
+    subjects: ['businessId'],
+    options: {
+      transactionType: [TransactionRecordType.refund],
+      paymentMethods: [PaymentMethod.credit_card],
+      threshold: 5_000,
+      timeAmount: 7,
+      timeUnit: 'days',
+      isPerBrand: false,
+      havingAggregate: AggregateType.SUM,
+    } as TCustomersTransactionTypeOptions,
+  } as const satisfies InlineRule;
+
+  const rules = [
+    _PAY_HCA_CC,
+    _PAY_HCA_APM,
+    // _STRUC_CC,
+    // _STRUC_APM,
+    // _HCAI_CC,
+    // _HACI_APM,
+    // _HVIC_CC,
+    // _HVIC_APM,
+    // _CHVC_C,
+    // _SHCAC_C,
+    // _CHCR_C,
+    // _SHCAR_C,
+  ];
+
+  const mergedRules: Record<string, InlineRule> = {};
+
+  rules.forEach(rule => {
+    mergedRules[rule.id] = rule;
+  });
+
+  return mergedRules;
+};
 
 export const generateAlertDefinitions = async (
   prisma: PrismaClient | PrismaTransaction,
