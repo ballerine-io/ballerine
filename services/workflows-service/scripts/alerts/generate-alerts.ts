@@ -177,14 +177,21 @@ export const generateAlertDefinitions = async (
 
 const generateFakeAlert = ({
   severity,
-  ids,
+  counterparyIds,
+  agentUserIds,
 }: {
   severity: AlertSeverity;
-  ids: string[];
+  counterparyIds: string[];
+  agentUserIds: string[];
 }): Omit<Prisma.AlertCreateManyAlertDefinitionInput, 'projectId'> => {
-  const businessIdCounterpartyOriginatorIdOrBoth = faker.helpers.arrayElement(
-    ids.map(id => ({ counterpartyId: id })),
+  const counterypartyId = faker.helpers.arrayElement(
+    counterparyIds.map(id => ({ counterpartyId: id })),
   );
+  // In chance of 1 to 5, assign an agent to the alert
+  const assigneeId =
+    faker.datatype.number({ min: 1, max: 5 }) === 1
+      ? faker.helpers.arrayElement(agentUserIds)
+      : undefined;
 
   return {
     dataTimestamp: faker.date.past(),
@@ -193,13 +200,8 @@ const generateFakeAlert = ({
     tags: [faker.random.word(), faker.random.word(), faker.random.word()],
     executionDetails: JSON.parse(faker.datatype.json()) as InputJsonValue,
     severity,
-    ...businessIdCounterpartyOriginatorIdOrBoth,
-    // TODO: Assign assigneeId value to a valid user id
-    // TODO: Assign counterpart value to a valid user id
-    // businessId: faker.datatype.uuid(),
-    // endUserId: faker.datatype.uuid(),
-    // assigneeId: faker.datatype.uuid(),
-    // workflowRuntimeDataId: faker.datatype.uuid()
+    assigneeId,
+    ...counterypartyId,
   };
 };
 
@@ -207,11 +209,12 @@ export const generateFakeAlertsAndDefinitions = async (
   prisma: PrismaClient,
   {
     project,
-    ids,
+    counterparyIds,
+    agentUserIds,
   }: {
     project: Project;
-    customer: Customer;
-    ids: string[];
+    counterparyIds: string[];
+    agentUserIds: string[];
   },
 ) => {
   const alertDefinitions = await generateAlertDefinitions(prisma, {
@@ -230,7 +233,8 @@ export const generateFakeAlertsAndDefinitions = async (
             alertDefinitionId: alertDefinition.id,
             projectId: project.id,
             ...generateFakeAlert({
-              ids,
+              counterparyIds,
+              agentUserIds,
               severity: faker.helpers.arrayElement(Object.values(AlertSeverity)),
             }),
           }),
