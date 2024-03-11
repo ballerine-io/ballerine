@@ -643,6 +643,7 @@ enum AlertType {
 
 model AlertDefinition {
   id          String     @id @default(cuid())
+  label       String
   type        AlertType?
   name        String
   enabled     Boolean    @default(true)
@@ -671,6 +672,7 @@ model AlertDefinition {
 
   alert Alert[]
 
+  @@unique([label, projectId])
   @@index([projectId])
 }
 
