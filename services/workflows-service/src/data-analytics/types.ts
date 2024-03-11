@@ -15,7 +15,7 @@ export type InlineRule = {
 export type TAggregations = keyof typeof AggregateType;
 
 export type TransactionsAgainstDynamicRulesType = {
-  projectId: string;
+  projectId?: string;
   havingAggregate?: TAggregations;
   amountBetween?: { min: number; max: number };
   timeAmount?: number;
@@ -26,8 +26,7 @@ export type TransactionsAgainstDynamicRulesType = {
   excludePaymentMethods?: boolean;
   days?: number;
   amountThreshold?: number;
-  groupByBusiness?: boolean;
-  groupByCounterparty?: boolean;
+  groupBy?: string[];
 };
 
 export type TDormantAccountOption = {
@@ -49,6 +48,6 @@ export type EvaluateFunctions = {
   evaluateTransactionsAgainstDynamicRules: (
     options: TransactionsAgainstDynamicRulesType,
   ) => Promise<any>;
-  evaluateDormantAccount: (options: TDormantAccountOption) => Promise<any>;
-  evaluateCustomersTransactionType: (options: TCustomersTransactionTypeOptions) => Promise<any>;
+  // evaluateDormantAccount: (options: TDormantAccountOption) => Promise<any>;
+  // evaluateCustomersTransactionType: (options: TCustomersTransactionTypeOptions) => Promise<any>;
 };
