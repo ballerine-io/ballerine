@@ -19,6 +19,6 @@ export class WebhookPlugin extends ApiPlugin {
       console.error(err);
     }
 
-    return {};
+    return { invokeTime: Date.now() };
   }
 }
