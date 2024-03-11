@@ -36,7 +36,7 @@ export type TDormantAccountOption = {
 
 export type TCustomersTransactionTypeOptions = {
   projectId: string; // TODO: make it required
-  transactionType: TransactionRecordType[];
+  transactionType?: TransactionRecordType[];
   threshold?: number;
   paymentMethods?: PaymentMethod[];
   timeAmount?: number;
