@@ -76,6 +76,7 @@ export class EndUserService {
       projectIds,
     );
   }
+
   async updateById(id: string, endUser: Omit<Prisma.EndUserUpdateArgs, 'where'>) {
     return await this.repository.updateById(id, endUser);
   }

@@ -27,6 +27,7 @@ const userService = {
     if (email === VALID_CREDENTIALS.email) {
       return USER;
     }
+
     return null;
   },
   getByEmailUnscoped(email: any) {

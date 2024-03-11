@@ -9,5 +9,6 @@ export const getInvalidAttributes = (
   data: Record<string, unknown>,
 ): string[] => {
   const filteredData = permission.filter(data) as Record<string, unknown>;
+
   return Object.keys(data).filter(key => !(key in filteredData));
 };

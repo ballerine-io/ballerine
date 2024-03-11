@@ -39,6 +39,7 @@ import { WorkflowModule } from '@/workflow/workflow.module';
 import { TransactionModule } from '@/transaction/transaction.module';
 import { AlertModule } from '@/alert/alert.module';
 import { SwaggerController } from './swagger/swagger.controller';
+import { WebhooksModule } from '@/webhooks/webhooks.module';
 
 @Module({
   controllers: [SwaggerController],
@@ -52,6 +53,7 @@ import { SwaggerController } from './swagger/swagger.controller';
     EventEmitterModule.forRoot(),
     UserModule,
     WorkflowModule,
+    WebhooksModule,
     UiDefinitionModule,
     StorageModule,
     DataMigrationModule,

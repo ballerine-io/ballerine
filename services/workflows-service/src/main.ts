@@ -1,3 +1,5 @@
+import '@total-typescript/ts-reset';
+
 import passport from 'passport';
 import dayjs from 'dayjs';
 import cookieSession from 'cookie-session';
@@ -13,8 +15,8 @@ import { ClsMiddleware } from 'nestjs-cls';
 import * as Sentry from '@sentry/node';
 import { ConfigService } from '@nestjs/config';
 import { AppLoggerService } from './common/app-logger/app-logger.service';
-import { ValidationError } from 'class-validator';
-import { BadValidationException } from './errors';
+import { ValidationError as ClassValidatorValidationError } from 'class-validator';
+import { ValidationError } from './errors';
 import swagger from '@/swagger/swagger';
 
 // This line is used to improve Sentry's stack traces
@@ -89,12 +91,14 @@ const main = async () => {
         cb();
       };
     }
+
     if (req.session && !req.session.save) {
       // eslint-disable-next-line @typescript-eslint/ban-types
       req.session.save = (cb: Function) => {
         cb();
       };
     }
+
     next();
   });
 
@@ -106,6 +110,7 @@ const main = async () => {
     ) {
       return next();
     }
+
     req.session.nowInMinutes = Math.floor(dayjs().unix() / 60);
     req.session.passport.user.expires = dayjs()
       .add(env.SESSION_EXPIRATION_IN_MINUTES, 'minute')
@@ -121,8 +126,8 @@ const main = async () => {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      exceptionFactory: (errors: ValidationError[]) => {
-        return BadValidationException.fromClassValidator(errors);
+      exceptionFactory: (errors: ClassValidatorValidationError[]) => {
+        return ValidationError.fromClassValidator(errors);
       },
     }),
   );

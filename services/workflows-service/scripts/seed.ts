@@ -18,7 +18,7 @@ import { generateKycSessionDefinition } from './workflows/kyc-email-process-exam
 import { env } from '../src/env';
 import { generateKybKycWorkflowDefinition } from './workflows/kyb-kyc-workflow-definition';
 import { generateBaseTaskLevelStates } from './workflows/generate-base-task-level-states';
-import { generateBaseCaseLevelStates } from './workflows/generate-base-case-level-states';
+import { generateBaseCaseLevelStatesAutoTransitionOnRevision } from './workflows/generate-base-case-level-states';
 import type { InputJsonValue } from '../src/types';
 import { generateWebsiteMonitoringExample } from './workflows/website-monitoring-workflow';
 import { generateCollectionKybWorkflow } from './workflows/generate-collection-kyb-workflow';
@@ -530,7 +530,7 @@ async function seed() {
   // KYB Manual Review (workflowLevelResolution true)
   await client.workflowDefinition.create({
     data: {
-      ...baseReviewDefinition(generateBaseCaseLevelStates()),
+      ...baseReviewDefinition(generateBaseCaseLevelStatesAutoTransitionOnRevision()),
       id: kybManualMachineId,
       config: {
         workflowLevelResolution: true,
@@ -852,7 +852,7 @@ async function seed() {
         context: {
           documents: [],
         },
-        states: generateBaseCaseLevelStates(),
+        states: generateBaseCaseLevelStatesAutoTransitionOnRevision(),
       },
     },
   });

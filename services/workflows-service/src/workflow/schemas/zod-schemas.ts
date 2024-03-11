@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 export const ConfigSchema = z
   .object({
+    isAssociatedCompanyKybEnabled: z.boolean().optional(),
     isCaseOverviewEnabled: z.boolean().optional(),
     isLegacyReject: z.boolean().optional(),
     isLockedDocumentCategoryAndType: z.boolean().optional(),

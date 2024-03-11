@@ -1,5 +1,5 @@
 import { t } from 'i18next';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { ComponentProps, useCallback, useRef, useState } from 'react';
 
 import { IDocumentsProps } from '../../interfaces';

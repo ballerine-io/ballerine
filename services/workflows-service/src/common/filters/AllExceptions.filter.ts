@@ -4,7 +4,7 @@ import { ArgumentsHost, Catch, HttpException, InternalServerErrorException } fro
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import type { Request, Response } from 'express';
 import { HttpStatusCode } from 'axios';
-import { BadValidationException } from '@/errors';
+import { ValidationError } from '@/errors';
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
@@ -21,8 +21,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   }
 
   private _handleHttpErrorResponse(exception: unknown, request: Request, response: Response) {
-    const errors =
-      exception instanceof BadValidationException ? { errors: exception.getErrors() } : {};
+    const errors = exception instanceof ValidationError ? { errors: exception.getErrors() } : {};
 
     const serverError = this.getHttpException(exception);
 
@@ -88,6 +87,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     } else if (status >= 500) {
       message = message + ' - Server Error:';
     }
+
     return message;
   }
 }

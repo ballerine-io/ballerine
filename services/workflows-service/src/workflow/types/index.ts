@@ -7,8 +7,8 @@ import {
   WorkflowDefinition,
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
+  User,
 } from '@prisma/client';
-import { User } from '@sentry/node';
 import type { TProjectIds } from '@/types';
 
 export interface RunnableWorkflowData {
@@ -59,6 +59,8 @@ export interface IWorkflowContextChangedEventData {
   state: string | null;
   entityId: string;
   correlationId: string;
+  assignee: User | null;
+  assignedAt: Date | null;
 }
 
 export interface IWorkflowCompletedEventData {
