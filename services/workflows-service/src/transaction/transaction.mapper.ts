@@ -5,6 +5,10 @@ import { HttpException } from '@nestjs/common';
 
 export class TransactionEntityMapper {
   static toCreateData({ dto, projectId }: { dto: TransactionCreateDto; projectId: TProjectId }) {
+    if (!dto.originator || !dto.beneficiary) {
+      throw new HttpException('Originator and beneficiary are required.', 400);
+    }
+
     return {
       transactionCorrelationId: dto.correlationId,
       transactionDate: dto.date,
@@ -92,16 +96,17 @@ export class TransactionEntityMapper {
     counterpartyInfo,
     projectId,
   }: {
-    counterpartyInfo: CounterpartyInfo | undefined;
+    counterpartyInfo: CounterpartyInfo;
     projectId: string;
   }):
     | Prisma.TransactionRecordCreateInput['counterpartyOriginator']
     | Prisma.TransactionRecordCreateInput['counterpartyBeneficiary'] {
+    if (!counterpartyInfo?.businessData && !counterpartyInfo?.endUserData) {
+      throw new HttpException('Counterparty must have either business or end user data.', 400);
+    }
+
     if (counterpartyInfo?.businessData && counterpartyInfo?.endUserData) {
-      throw new HttpException(
-        'Counterparty must have either business or end user data, not both.',
-        400,
-      );
+      throw new HttpException('Counterparty must have either business or end user data.', 400);
     }
 
     return counterpartyInfo

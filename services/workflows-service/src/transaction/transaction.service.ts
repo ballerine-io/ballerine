@@ -24,16 +24,18 @@ export class TransactionService {
     transactionsPayload: TransactionCreateDto[];
     projectId: TProjectId;
   }) {
+    const mappedTransactions = transactionsPayload.map(transactionPayload =>
+      TransactionEntityMapper.toCreateData({
+        dto: transactionPayload,
+        projectId,
+      }),
+    );
+
     const response: Array<TransactionCreatedDto | { error: Error; correlationId: string }> = [];
 
-    for (const transactionPayload of transactionsPayload) {
+    for (const transactionPayload of mappedTransactions) {
       try {
-        const transaction = await this.repository.create({
-          data: TransactionEntityMapper.toCreateData({
-            dto: transactionPayload,
-            projectId,
-          }),
-        });
+        const transaction = await this.repository.create({ data: transactionPayload });
 
         response.push({
           id: transaction.id,
@@ -50,7 +52,7 @@ export class TransactionService {
 
         response.push({
           error: errorToLog,
-          correlationId: transactionPayload.correlationId,
+          correlationId: transactionPayload.transactionCorrelationId,
         });
       }
     }

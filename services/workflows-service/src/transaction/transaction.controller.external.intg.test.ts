@@ -489,5 +489,87 @@ describe('#TransactionControllerExternal', () => {
         message: [expect.any(String)],
       });
     });
+
+    it('returns 400 when counterparty is missing from the body', async () => {
+      // Arrange
+      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
+      const validTransaction = getBaseTransactionData();
+      const transactions = [
+        {
+          ...validTransaction,
+          originator: undefined as unknown as TransactionCreateDto['originator'],
+        },
+      ] as const satisfies readonly TransactionCreateDto[];
+
+      // Act
+      const response = await request(app.getHttpServer())
+        .post('/external/transactions/bulk')
+        .send(transactions)
+        .set('authorization', `Bearer ${apiKey}`);
+
+      // Assert
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        statusCode: 400,
+        message: 'Originator and beneficiary are required.',
+      });
+    });
+
+    it('returns 400 when counterparty is missing an entity', async () => {
+      // Arrange
+      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
+      const validTransaction = getBaseTransactionData();
+      const transactions = [
+        {
+          ...validTransaction,
+          beneficiary: {
+            correlationId: faker.datatype.uuid(),
+            // Missing endUserData or businessData
+          },
+        },
+      ] as const satisfies readonly TransactionCreateDto[];
+
+      // Act
+      const response = await request(app.getHttpServer())
+        .post('/external/transactions/bulk')
+        .send(transactions)
+        .set('authorization', `Bearer ${apiKey}`);
+
+      // Assert
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        statusCode: 400,
+        message: 'Counterparty must have either business or end user data.',
+      });
+    });
+  });
+
+  it('returns 400 when counterparty has both business and end user', async () => {
+    // Arrange
+    const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
+    const validTransaction = getBaseTransactionData();
+    const transactions = [
+      {
+        ...validTransaction,
+        originator: getBusinessCounterpartyData(),
+        beneficiary: {
+          ...getBusinessCounterpartyData(),
+          ...getEndUserCounterpartyData(),
+        },
+      },
+    ] as const satisfies readonly TransactionCreateDto[];
+
+    // Act
+    const response = await request(app.getHttpServer())
+      .post('/external/transactions/bulk')
+      .send(transactions)
+      .set('authorization', `Bearer ${apiKey}`);
+
+    // Assert
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({
+      statusCode: 400,
+      message: 'Counterparty must have either business or end user data.',
+    });
   });
 });
