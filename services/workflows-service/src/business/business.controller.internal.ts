@@ -12,7 +12,6 @@ import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import type { InputJsonValue, TProjectIds } from '@/types';
 import type { JsonValue } from 'type-fest';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import { ProjectScopeService } from '@/project/project-scope.service';
 
 @swagger.ApiTags('internal/businesses')
 @swagger.ApiExcludeController()

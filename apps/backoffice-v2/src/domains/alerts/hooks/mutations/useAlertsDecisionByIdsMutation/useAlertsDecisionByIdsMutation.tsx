@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { t } from 'i18next';
 import { AlertState, TAlertState, updateAlertsDecisionByIds } from '@/domains/alerts/fetchers';
 import { TToastKeyWithSuccessAndError } from '@/common/types';
