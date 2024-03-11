@@ -542,34 +542,34 @@ describe('#TransactionControllerExternal', () => {
         message: 'Counterparty must have either business or end user data.',
       });
     });
-  });
 
-  it('returns 400 when counterparty has both business and end user', async () => {
-    // Arrange
-    const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
-    const validTransaction = getBaseTransactionData();
-    const transactions = [
-      {
-        ...validTransaction,
-        originator: getBusinessCounterpartyData(),
-        beneficiary: {
-          ...getBusinessCounterpartyData(),
-          ...getEndUserCounterpartyData(),
+    it('returns 400 when counterparty has both business and end user', async () => {
+      // Arrange
+      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
+      const validTransaction = getBaseTransactionData();
+      const transactions = [
+        {
+          ...validTransaction,
+          originator: getBusinessCounterpartyData(),
+          beneficiary: {
+            ...getBusinessCounterpartyData(),
+            ...getEndUserCounterpartyData(),
+          },
         },
-      },
-    ] as const satisfies readonly TransactionCreateDto[];
+      ] as const satisfies readonly TransactionCreateDto[];
 
-    // Act
-    const response = await request(app.getHttpServer())
-      .post('/external/transactions/bulk')
-      .send(transactions)
-      .set('authorization', `Bearer ${apiKey}`);
+      // Act
+      const response = await request(app.getHttpServer())
+        .post('/external/transactions/bulk')
+        .send(transactions)
+        .set('authorization', `Bearer ${apiKey}`);
 
-    // Assert
-    expect(response.status).toBe(400);
-    expect(response.body).toEqual({
-      statusCode: 400,
-      message: 'Counterparty must have either business or end user data.',
+      // Assert
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        statusCode: 400,
+        message: 'Counterparty must have either business or end user data.',
+      });
     });
   });
 });
