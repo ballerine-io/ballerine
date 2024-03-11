@@ -1,8 +1,6 @@
 name: CI
 
 on:
-  pull_request:
-    branches: [ main, dev, epic/* ]
   push:
     branches-ignore:
       - main

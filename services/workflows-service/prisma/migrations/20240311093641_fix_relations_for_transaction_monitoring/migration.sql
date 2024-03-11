@@ -17,12 +17,6 @@ DROP INDEX "Alert_businessId_idx";
 -- DropIndex
 DROP INDEX "Alert_endUserId_idx";
 
--- DropIndex
-DROP INDEX "EndUsersOnBusinesses_businessId_idx";
-
--- DropIndex
-DROP INDEX "EndUsersOnBusinesses_endUserId_idx";
-
 -- AlterTable
 ALTER TABLE "Alert" DROP COLUMN "businessId",
 DROP COLUMN "endUserId";
