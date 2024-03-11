@@ -134,31 +134,20 @@ async function seed() {
     `webhook-shared-secret-${env.API_KEY}2`,
   )) as Customer;
   const project1 = (await createProject(client, customer, '1')) as Project;
-  const business1 = await client.business.create({
-    data: generateBusiness({
-      projectId: project1.id,
-    }),
-  });
-
-  const business2 = await client.business.create({
-    data: generateBusiness({
-      projectId: project1.id,
-    }),
-  });
 
   const ids1 = await generateTransactions(client, {
     projectId: project1.id,
-    businessId: business1.id,
   });
   const ids2 = await generateTransactions(client, {
     projectId: project1.id,
-    businessId: business2.id,
   });
 
   await generateFakeAlertDefinitions(client, {
     project: project1,
     customer: customer,
-    ids: [...ids1, ...ids2],
+    ids: [...ids1, ...ids2]
+      .map(({ counterpartyOriginatorId }) => counterpartyOriginatorId)
+      .filter(Boolean) as string[],
   });
 
   const project2 = await createProject(client, customer2, '2');

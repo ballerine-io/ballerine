@@ -23,6 +23,7 @@ import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import type { TProjectId, TProjectIds } from '@/types';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { EndUserCreateWithBusinessDto } from '@/end-user/dtos/end-user-create-with-business';
 
 @swagger.ApiTags('End Users')
 @common.Controller('external/end-users')
@@ -65,7 +66,7 @@ export class EndUserControllerExternal {
   @common.Post('/create-with-business')
   @UseCustomerAuthGuard()
   async createWithBusiness(
-    @common.Body() data: EndUserCreateDto,
+    @common.Body() data: EndUserCreateWithBusinessDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
     const { companyName, ...endUserInfo } = data;

@@ -10,7 +10,6 @@ export type TAuthenticationConfiguration = {
 
 export const BulkStatus = {
   SUCCESS: 'success',
-  PARTIAL: 'partial',
   FAILED: 'failed',
 } as const;
 
@@ -40,7 +39,4 @@ type FailedResponse = {
     message: string;
   }>;
 };
-export type TBulkAssignAlertsResponse = {
-  response: Array<SuccessResponse | FailedResponse>;
-  overallStatus: TBulkStatus;
-};
+export type TBulkAssignAlertsResponse = Array<SuccessResponse | FailedResponse>;

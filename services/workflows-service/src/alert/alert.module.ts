@@ -22,12 +22,14 @@ import { WebhookEventEmitterService } from './webhook-manager/webhook-event-emit
 import { ProjectModule } from '@/project/project.module';
 import { UserRepository } from '@/user/user.repository';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
+import { SentryModule } from '@/sentry/sentry.module';
 
 @Module({
   imports: [
     DataAnalyticsModule,
     ACLModule,
     PrismaModule,
+    SentryModule,
     ProjectModule,
     HttpModule.register({
       timeout: 5000,

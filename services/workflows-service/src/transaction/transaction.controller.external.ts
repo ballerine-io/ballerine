@@ -9,9 +9,22 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import express from 'express';
-import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  ParseArrayPipe,
+  Post,
+  Query,
+  Res,
+  ValidationPipe,
+} from '@nestjs/common';
 import { GetTransactionsDto } from '@/transaction/dtos/get-transactions.dto';
 import { PaymentMethod } from '@prisma/client';
+import { BulkTransactionsCreatedDto } from '@/transaction/dtos/bulk-transactions-created.dto';
+import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
+import { BulkStatus } from '@/alert/types';
+import * as errors from '@/errors';
 
 @swagger.ApiTags('Transactions')
 @Controller('external/transactions')
@@ -24,38 +37,65 @@ export class TransactionControllerExternal {
 
   @Post()
   @UseCustomerAuthGuard()
-  @swagger.ApiCreatedResponse({ type: TransactionCreateDto })
+  @swagger.ApiCreatedResponse({ type: TransactionCreatedDto })
   @swagger.ApiForbiddenResponse()
   async create(
-    @Body() body: TransactionCreateDto,
+    @Body(new ValidationPipe()) body: TransactionCreateDto,
+    @Res() res: express.Response,
     @CurrentProject() currentProjectId: types.TProjectId,
   ) {
-    this.logger.log('create transaction');
-    const transaction: TransactionCreateDto = {
-      ...body,
+    const creationResponses = await this.service.createBulk({
+      transactionsPayload: [body],
       projectId: currentProjectId,
-    };
+    });
+    const creationResponse = creationResponses[0]!;
 
-    const createdTransaction = await this.service.create(transaction);
-
-    return createdTransaction;
-  }
-
-  @Post('/batch')
-  @UseCustomerAuthGuard()
-  @swagger.ApiCreatedResponse({ type: [TransactionCreateDto] })
-  @swagger.ApiForbiddenResponse()
-  async createBatch(
-    @Body() body: TransactionCreateDto[],
-    @Res() response: express.Response,
-    @CurrentProject() currentProjectId: types.TProjectId,
-  ) {
-    const batchCreateResponse = await this.service.createBatch(body);
-    if (batchCreateResponse.overallStatus === 'partial') {
-      response.status(207);
+    if ('error' in creationResponse) {
+      throw creationResponse.error;
     }
 
-    response.json(batchCreateResponse.txCreationResponse);
+    res.status(201).json(creationResponse);
+  }
+
+  @Post('/bulk')
+  @UseCustomerAuthGuard()
+  @swagger.ApiCreatedResponse({ type: [BulkTransactionsCreatedDto] })
+  @swagger.ApiResponse({ type: [BulkTransactionsCreatedDto], status: 207 })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiBody({ type: () => [TransactionCreateDto] })
+  async createBulk(
+    @Body(new ParseArrayPipe({ items: TransactionCreateDto })) body: TransactionCreateDto[],
+    @Res() res: express.Response,
+    @CurrentProject() currentProjectId: types.TProjectId,
+  ) {
+    const creationResponses = await this.service.createBulk({
+      transactionsPayload: body,
+      projectId: currentProjectId,
+    });
+
+    let hasErrors = false;
+
+    const response = creationResponses.map(creationResponse => {
+      if ('error' in creationResponse) {
+        hasErrors = true;
+
+        return {
+          status: BulkStatus.FAILED,
+          error: creationResponse.error.message,
+          data: {
+            correlationId: creationResponse.correlationId,
+          },
+        };
+      }
+
+      return {
+        status: BulkStatus.SUCCESS,
+        data: creationResponse,
+      };
+    });
+
+    res.status(hasErrors ? 207 : 201).json(response);
   }
 
   @Get()
@@ -104,11 +144,6 @@ export class TransactionControllerExternal {
   ) {
     return this.service.getTransactions(getTransactionsParameters, projectId, {
       include: {
-        business: {
-          select: {
-            companyName: true,
-          },
-        },
         counterpartyOriginator: {
           select: {
             endUser: {

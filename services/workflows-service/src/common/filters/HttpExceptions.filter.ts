@@ -1,6 +1,7 @@
 import { ArgumentsHost, Catch, HttpException, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
+import { PRISMA_UNIQUE_CONSTRAINT_ERROR } from '@/prisma/prisma.util';
 
 export type ErrorCodesStatusMapping = {
   [key: string]: number;
@@ -43,8 +44,7 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
     if (host.getType() === 'http') {
       // for http requests (REST)
       // Todo : Add all other exception types and also add mapping
-      if (exception.code === 'P2002') {
-        // Handling Unique Key Constraint Violation Error
+      if (exception.code === PRISMA_UNIQUE_CONSTRAINT_ERROR) {
         const fields = (exception.meta as { target: string[] }).target;
         message = `Another record with the requested (${fields.join(', ')}) already exists`;
       } else {

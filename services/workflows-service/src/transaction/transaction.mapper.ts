@@ -1,23 +1,14 @@
-import { TransactionRecord } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { CounterpartyInfo, TransactionCreateDto } from './dtos/transaction-create.dto';
-import { cleanUndefinedValues } from '@/common/utils/clean-undefined-values';
+import { InputJsonValue, TProjectId } from '@/types';
+import { HttpException } from '@nestjs/common';
 
 export class TransactionEntityMapper {
-  static toEntity(
-    dto: TransactionCreateDto,
-  ): Omit<
-    TransactionRecord,
-    | 'createdAt'
-    | 'updatedAt'
-    | 'id'
-    | 'originatorIpAddress'
-    | 'originatorGeoLocation'
-    | 'originatorUserAgent'
-    | 'auditTrail'
-    | 'riskScore'
-    | 'endUserId'
-    | 'businessId'
-  > {
+  static toCreateData({ dto, projectId }: { dto: TransactionCreateDto; projectId: TProjectId }) {
+    if (!dto.originator || !dto.beneficiary) {
+      throw new HttpException('Originator and beneficiary are required.', 400);
+    }
+
     return {
       transactionCorrelationId: dto.correlationId,
       transactionDate: dto.date,
@@ -59,7 +50,7 @@ export class TransactionEntityMapper {
       reviewerComments: dto.reviewerComments ?? null,
 
       regulatoryAuthority: dto.regulatoryAuthority ?? null,
-      additionalInfo: dto.additionalInfo ?? null,
+      additionalInfo: (dto.additionalInfo ?? null) as unknown as InputJsonValue,
 
       productName: dto.product?.name ?? null,
       productDescription: dto.product?.description ?? null,
@@ -67,102 +58,115 @@ export class TransactionEntityMapper {
       productId: dto.product?.id ?? null,
       productSku: dto.product?.sku ?? null,
 
-      projectId: dto.projectId,
-      counterpartyOriginatorId: dto.originator?.id ?? null,
-      counterpartyBeneficiaryId: dto.beneficiary?.id ?? null,
+      counterpartyOriginator: this.getCounterpartyCreateInput({
+        counterpartyInfo: dto.originator,
+        projectId,
+      }),
+
+      counterpartyBeneficiary: this.getCounterpartyCreateInput({
+        counterpartyInfo: dto.beneficiary,
+        projectId,
+      }),
+
       unusualActivityFlags: dto.unusualActivityFlags ?? {},
 
       originatorSortCode: dto.originator?.sortCode ?? null,
-
       originatorBankCountry: dto.originator?.bankCountry ?? null,
 
       cardBin: dto.cardDetails?.cardBin ?? null,
       productPriceCurrency: dto.product?.currency ?? null,
-    };
+
+      project: { connect: { id: projectId } },
+    } as const satisfies Omit<
+      Prisma.TransactionRecordCreateArgs['data'],
+      | 'createdAt'
+      | 'updatedAt'
+      | 'id'
+      | 'originatorIpAddress'
+      | 'originatorGeoLocation'
+      | 'originatorUserAgent'
+      | 'auditTrail'
+      | 'riskScore'
+      | 'endUserId'
+      | 'businessId'
+    >;
   }
 
-  static toDto(record: TransactionRecord): TransactionCreateDto & {
-    id: string;
-    createdAt: Date;
-    updatedAt: Date;
-    originator: Partial<CounterpartyInfo | undefined>;
-    beneficiary: Partial<CounterpartyInfo | undefined>;
-  } {
-    const dto: TransactionCreateDto & {
-      id: string;
-      createdAt: Date;
-      updatedAt: Date;
-      originator: Partial<CounterpartyInfo> | undefined;
-      beneficiary: Partial<CounterpartyInfo> | undefined;
-    } = {
-      id: record.id,
-      correlationId: record.transactionCorrelationId,
-      date: record.transactionDate,
-      amount: record.transactionAmount,
-      currency: record.transactionCurrency,
-      description: record.transactionDescription || undefined,
-      category: record.transactionCategory || undefined,
-      type: record.transactionType || undefined,
-      status: record.transactionStatus || undefined,
-      statusReason: record.transactionStatusReason || undefined,
-      baseAmount: record.transactionBaseAmount,
-      baseCurrency: record.transactionBaseCurrency,
-      projectId: record.projectId,
-      direction: record.transactionDirection || undefined,
-      reference: record.transactionReference || undefined,
-      originator: record.counterpartyOriginatorId
-        ? {
-            id: record.counterpartyOriginatorId,
-            correlationId: '', // TODO: Add the required correlationId property here (should come from the countryparty table)
-          }
-        : undefined,
+  private static getCounterpartyCreateInput({
+    counterpartyInfo,
+    projectId,
+  }: {
+    counterpartyInfo: CounterpartyInfo;
+    projectId: string;
+  }):
+    | Prisma.TransactionRecordCreateInput['counterpartyOriginator']
+    | Prisma.TransactionRecordCreateInput['counterpartyBeneficiary'] {
+    if (!counterpartyInfo?.businessData && !counterpartyInfo?.endUserData) {
+      throw new HttpException('Counterparty must have either business or end user data.', 400);
+    }
 
-      beneficiary: record.counterpartyBeneficiaryId
-        ? {
-            id: record.counterpartyBeneficiaryId,
-            correlationId: '', // TODO: Add the required correlationId property here
-          }
-        : undefined,
+    if (counterpartyInfo?.businessData && counterpartyInfo?.endUserData) {
+      throw new HttpException('Counterparty must have either business or end user data.', 400);
+    }
 
-      payment: {
-        method: record.paymentMethod || undefined,
-        type: record.paymentType || undefined,
-        channel: record.paymentChannel || undefined,
-        issuer: record.paymentIssuer || undefined,
-        gateway: record.paymentGateway || undefined,
-        acquirer: record.paymentAcquirer || undefined,
-        processor: record.paymentProcessor || undefined,
-      },
-      product: {
-        name: record.productName || undefined,
-        description: record.productDescription || undefined,
-        price: record.productPrice || undefined,
-        sku: record.productSku || undefined,
-        id: record.productId || undefined,
-      },
-      // business: {
-      //   id: record.businessId || undefined,
-      // },
-      tags: record.tags,
-      reviewStatus: record.reviewStatus || undefined,
-      reviewerComments: record.reviewerComments || undefined,
-      riskScore: record.riskScore || undefined,
-      regulatoryAuthority: record.regulatoryAuthority || undefined,
-      additionalInfo: record.additionalInfo,
-      createdAt: record.createdAt,
-      updatedAt: record.updatedAt,
-      auditTrail: record.auditTrail,
-      unusualActivityFlags: record.unusualActivityFlags,
-    };
-
-    return cleanUndefinedValues<
-      TransactionCreateDto & {
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        originator: Partial<CounterpartyInfo | undefined>;
-        beneficiary: Partial<CounterpartyInfo | undefined>;
-      }
-    >(dto);
+    return counterpartyInfo
+      ? {
+          connectOrCreate: {
+            where: {
+              projectId_correlationId: {
+                correlationId: counterpartyInfo.correlationId,
+                projectId: projectId,
+              },
+            },
+            create: {
+              project: { connect: { id: projectId } },
+              correlationId: counterpartyInfo.correlationId,
+              business: counterpartyInfo.businessData
+                ? {
+                    connectOrCreate: {
+                      where: {
+                        projectId_correlationId: {
+                          correlationId: counterpartyInfo.correlationId,
+                          projectId: projectId,
+                        },
+                      },
+                      create: {
+                        project: { connect: { id: projectId } },
+                        correlationId: counterpartyInfo.correlationId,
+                        companyName: counterpartyInfo.businessData.companyName,
+                        registrationNumber: counterpartyInfo.businessData.registrationNumber,
+                        mccCode: counterpartyInfo.businessData.mccCode,
+                        businessType: counterpartyInfo.businessData.businessType,
+                      },
+                    },
+                  }
+                : {},
+              endUser: counterpartyInfo.endUserData
+                ? {
+                    connectOrCreate: {
+                      where: {
+                        projectId_correlationId: {
+                          correlationId: counterpartyInfo.correlationId,
+                          projectId: projectId,
+                        },
+                      },
+                      create: {
+                        project: { connect: { id: projectId } },
+                        correlationId: counterpartyInfo.correlationId,
+                        firstName: counterpartyInfo.endUserData.firstName,
+                        lastName: counterpartyInfo.endUserData.lastName,
+                        email: counterpartyInfo.endUserData.email,
+                        isContactPerson: counterpartyInfo.endUserData.isContactPerson,
+                        phone: counterpartyInfo.endUserData.phone,
+                        dateOfBirth: counterpartyInfo.endUserData.dateOfBirth,
+                        avatarUrl: counterpartyInfo.endUserData.avatarUrl,
+                      },
+                    },
+                  }
+                : {},
+            },
+          },
+        }
+      : undefined;
   }
 }

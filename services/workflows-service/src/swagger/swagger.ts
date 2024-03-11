@@ -35,7 +35,7 @@ class SwaggerSingleton {
       .setVersion('1.3.10')
       .setTermsOfService('https://www.ballerine.com/terms-of-service')
       .setContact('Ballerine', 'https://ballerine.com', 'support@ballerine.com')
-      .addServer('https:ç//api-sb.eu.ballerine.com', 'Sandbox Server')
+      .addServer('https://api-sb.eu.ballerine.com', 'Sandbox Server')
       .setBasePath('api/v1')
       .setExternalDoc('Ballerine Website', 'https://ballerine.com')
       .setExternalDoc('Ballerine API Documentation', 'https://docs.ballerine.com')
