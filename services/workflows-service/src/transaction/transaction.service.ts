@@ -8,6 +8,7 @@ import { TProjectId } from '@/types';
 import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
 import { Prisma } from '@prisma/client';
 import { SentryService } from '@/sentry/sentry.service';
+import { PRISMA_UNIQUE_CONSTRAINT_ERROR } from '@/prisma/prisma.util';
 
 @Injectable()
 export class TransactionService {
@@ -44,7 +45,10 @@ export class TransactionService {
       } catch (error) {
         let errorToLog: Error = new Error('Unknown error', { cause: error });
 
-        if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        if (
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          error.code === PRISMA_UNIQUE_CONSTRAINT_ERROR
+        ) {
           errorToLog = new Error('Transaction already exists', { cause: error });
         } else {
           this.sentry.captureException(errorToLog);
