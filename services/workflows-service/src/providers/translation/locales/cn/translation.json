@@ -42,7 +42,7 @@
     "name": "姓名",
     "firstName": "名字",
     "lastName": "姓氏",
-    "legalName": "法定名称",
+    "legalName": "姓名",
     "phoneNumber": "电话号码",
     "country": "国家",
     "nationality": "国籍",
