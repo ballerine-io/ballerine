@@ -638,7 +638,7 @@
       "firstName": "First name should not exceed 50 characters.",
       "lastName": "Last name should not exceed 50 characters.",
       "email": "Email should not exceed 100 characters.",
-      "businessType": "Business type should not exceed 50 characters.",
+      "businessType": "Business type should not exceed 100 characters.",
       "taxIdentificationNumber": "Tax ID should not exceed 15 characters.",
       "companyName": "Company name should not exceed 100 characters.",
       "country": "Country code should have exactly 2 characters.",

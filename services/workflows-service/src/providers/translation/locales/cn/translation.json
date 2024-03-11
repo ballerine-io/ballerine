@@ -634,7 +634,7 @@
       "firstName": "名字不得超过50个字符。",
       "lastName": "姓氏不得超过50个字符。",
       "email": "电子邮件不得超过100个字符。",
-      "businessType": "业务类型不得超过50个字符。",
+      "businessType": "业务类型不得超过100个字符。",
       "taxIdentificationNumber": "税务识别号不得超过15个字符。",
       "companyName": "公司名称不得超过100个字符。",
       "country": "国家代码应为2个字符。",
