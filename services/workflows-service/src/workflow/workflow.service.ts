@@ -286,7 +286,7 @@ export class WorkflowService {
         pluginsOutput: Object.fromEntries(
           Object.entries(workflow.context.pluginsOutput || {}).map(([pluginName, pluginValue]) => {
             if (isObject(pluginValue) && pluginValue.status === ProcessStatus.IN_PROGRESS) {
-              const parsedDate = new Date(pluginValue.invokeTime);
+              const parsedDate = new Date(pluginValue.invokedAt);
 
               const TIMEOUT_IN_MS = 24 * 60 * 60 * 1000;
 
