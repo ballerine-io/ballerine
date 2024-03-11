@@ -314,7 +314,8 @@ export const generateAlertDefinitions = async (
   },
 ) =>
   Promise.all(
-    ALERT_INLINE_RULES.map(({ inlineRule, defaultSeverity }) =>
+    // TODO: remove slice once all rules are ready
+    ALERT_INLINE_RULES.slice(0, 2).map(({ inlineRule, defaultSeverity }) =>
       prisma.alertDefinition.create({
         include: {
           alert: true,
