@@ -34,6 +34,7 @@ import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.re
 import { ClsModule } from 'nestjs-cls';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
+import { BusinessService } from '@/business/business.service';
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
@@ -57,6 +58,7 @@ describe('#EndUserControllerExternal', () => {
       StorageService,
       WorkflowEventEmitterService,
       BusinessRepository,
+      BusinessService,
       WorkflowDefinitionRepository,
       WorkflowRuntimeDataRepository,
       WorkflowService,
@@ -91,7 +93,7 @@ describe('#EndUserControllerExternal', () => {
 
     customer = await createCustomer(
       await app.get(PrismaService),
-      'someRandomId',
+      faker.datatype.uuid(),
       'secret3',
       '',
       '',

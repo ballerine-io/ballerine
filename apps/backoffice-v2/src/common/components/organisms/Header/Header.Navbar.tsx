@@ -23,13 +23,9 @@ export const Navbar: FunctionComponent = () => {
         const isActiveFilterGroup = checkIsActiveFilterGroup(navItem);
 
         return (
-          <Fragment key={navItem.key}>
+          <Fragment key={`${navItem.key}-${isActiveFilterGroup}`}>
             {!!navItem.children && (
-              <Collapsible
-                key={`${navItem.key}-${isActiveFilterGroup}`}
-                defaultOpen={isActiveFilterGroup}
-                className={`space-y-2`}
-              >
+              <Collapsible defaultOpen={isActiveFilterGroup} className={`space-y-2`}>
                 <CollapsibleTrigger
                   className={ctw(
                     `flex w-full items-center justify-between gap-x-2 rounded-lg p-2 text-sm font-semibold text-[#8990AC] hover:bg-[#EBEEF9] [&[data-state=open]>svg]:rotate-0`,

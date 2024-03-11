@@ -51,8 +51,4 @@ export class WorkflowDefinitionUpdateInput {
   @IsString()
   @IsOptional()
   assigneeId?: string;
-
-  @IsString()
-  @IsOptional()
-  postUpdateEventName?: string;
 }

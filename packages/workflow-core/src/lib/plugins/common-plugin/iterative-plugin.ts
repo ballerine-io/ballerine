@@ -21,13 +21,10 @@ export class IterativePlugin {
     console.log(`Constructed IterativePlugin with params: ${JSON.stringify(pluginParams)}`);
   }
 
-  async invoke(context: TContext, config: unknown) {
+  async invoke(context: TContext) {
     console.log('invoke() method called');
 
-    const iterationParams = await this.transformData(this.iterateOn, {
-      ...context,
-      workflowRuntimeConfig: config,
-    });
+    const iterationParams = await this.transformData(this.iterateOn, context);
 
     if (!Array.isArray(iterationParams)) {
       console.error('Iterative plugin could not find iterate on param');
@@ -44,6 +41,7 @@ export class IterativePlugin {
     }
 
     console.log('All actions completed successfully');
+
     return { callbackAction: this.successAction };
   }
 
@@ -54,11 +52,14 @@ export class IterativePlugin {
     for (const transformer of transformers) {
       mutatedRecord = await this.transformByTransformer(transformer, mutatedRecord);
     }
+
     return mutatedRecord;
   }
 
   async transformByTransformer(transformer: Transformer, record: AnyRecord) {
-    console.log(`transformByTransformer() called for mapping: ${transformer.mapping}`);
+    console.log(
+      `transformByTransformer() called for mapping: ${JSON.stringify(transformer.mapping)}`,
+    );
 
     try {
       return (await transformer.transform(record, { input: 'json', output: 'json' })) as AnyRecord;
@@ -74,6 +75,7 @@ export class IterativePlugin {
 
   composeErrorResponse(errorMessage: string) {
     console.error(`Composing error response with message: ${errorMessage}`);
+
     return { callbackAction: this.errorAction, error: errorMessage };
   }
 }

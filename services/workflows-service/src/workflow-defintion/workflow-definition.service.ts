@@ -49,6 +49,7 @@ export class WorkflowDefinitionService {
       const { where: whereQuery } = filter.query as {
         where: { workflowDefinitionId: string | { in: string[] } };
       };
+
       if (typeof whereQuery.workflowDefinitionId === 'string') {
         return whereQuery.workflowDefinitionId === id;
       }
@@ -80,12 +81,8 @@ export class WorkflowDefinitionService {
 
   async getLatestVersion(id: string, projectIds: TProjectIds) {
     const workflowDefinition = await this.repository.findById(id, {}, projectIds);
-    const latestVersion = await this.repository.findByLatestVersion(
-      workflowDefinition.name,
-      projectIds,
-    );
 
-    return latestVersion;
+    return await this.repository.findByLatestVersion(workflowDefinition.name, projectIds);
   }
 
   async getLatestDefinitionWithTransitionSchema(

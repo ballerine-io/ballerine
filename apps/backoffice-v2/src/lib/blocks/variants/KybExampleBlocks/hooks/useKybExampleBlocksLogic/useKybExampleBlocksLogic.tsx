@@ -9,14 +9,13 @@ import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirecto
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { Button } from '@/common/components/atoms/Button/Button';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { ExternalLink, Send } from 'lucide-react';
 import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
 import { associatedCompanyAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-adapter';
-import { getPostDecisionEventName } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
@@ -79,9 +78,8 @@ export const useKybExampleBlocksLogic = () => {
     },
     [mutateEvent],
   );
-  const postDecisionEventName = getPostDecisionEventName(workflow);
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingReuploadNeeded } =
-    useRevisionTaskByIdMutation(postDecisionEventName);
+    useRevisionTaskByIdMutation();
   const onReuploadNeeded = useCallback(
     ({
         workflowId,
@@ -258,6 +256,8 @@ export const useKybExampleBlocksLogic = () => {
         </>
       ),
     },
+    isAssociatedCompanyKybEnabled:
+      !!workflow?.workflowDefinition?.config?.isAssociatedCompanyKybEnabled,
   });
   const associatedCompaniesInformationBlock = useAssociatedCompaniesInformationBlock(
     kybChildWorkflows ?? [],

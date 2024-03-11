@@ -59,17 +59,7 @@ export class HookCallbackHandlerService {
       );
     }
 
-    set(workflowRuntime.context, resultDestinationPath, data);
-
-    await this.workflowService.updateWorkflowRuntimeData(
-      workflowRuntime.id,
-      {
-        context: workflowRuntime.context,
-      },
-      currentProjectId,
-    );
-
-    return data;
+    return set({}, resultDestinationPath, data);
   }
   async mapCallbackDataToIndividual(
     data: AnyRecord,
@@ -78,7 +68,7 @@ export class HookCallbackHandlerService {
     currentProjectId: TProjectId,
   ) {
     const attributePath = resultDestinationPath.split('.');
-    const context = workflowRuntime.context;
+    const context = JSON.parse(JSON.stringify(workflowRuntime.context));
     const kycDocument = data.document as AnyRecord;
     const entity = this.formatEntityData(data);
     const issuer = this.formatIssuerData(kycDocument);
@@ -96,6 +86,7 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
     const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
       documents as TDocumentsWithoutPageType,
+      // @ts-expect-error - we don't validate `context` is an object1
       context.entity.id || context.entity.ballerineEntityId,
       currentProjectId,
       customer.name,
@@ -107,13 +98,12 @@ export class HookCallbackHandlerService {
       aml: data.aml,
     };
 
+    // @ts-expect-error - we don't validate `context` is an object
     this.setNestedProperty(context, attributePath, result);
+    // @ts-expect-error - we don't validate `context` is an object
     context.documents = persistedDocuments;
-    await this.workflowService.updateWorkflowRuntimeData(
-      workflowRuntime.id,
-      { context: context },
-      currentProjectId,
-    );
+
+    return context;
   }
 
   private formatDocuments(
@@ -139,6 +129,7 @@ export class HookCallbackHandlerService {
 
   private formatDecision(data: AnyRecord) {
     const insights = data.insights as AnyRecord[]; // Explicitly type 'insights' as 'AnyRecord[]'
+
     return {
       status: data.decision,
       decisionReason: data.reason,
@@ -196,6 +187,7 @@ export class HookCallbackHandlerService {
       // name: kycDocument['issuedBy'],
       city: (kycDocument['placeOfIssue'] as any)?.value,
     };
+
     return issuer;
   }
 
@@ -235,6 +227,7 @@ export class HookCallbackHandlerService {
       validUntil: (kycDocument['validUntil'] as any)?.value,
       firstIssue: (kycDocument['firstIssue'] as any)?.value,
     };
+
     return properties;
   }
 

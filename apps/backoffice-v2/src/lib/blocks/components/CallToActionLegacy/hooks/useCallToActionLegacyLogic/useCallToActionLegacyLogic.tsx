@@ -1,6 +1,6 @@
 import { CommonWorkflowEvent } from '@ballerine/common';
 import { ComponentProps, FunctionComponent, useCallback, useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { useApproveTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
 import { useRejectTaskByIdMutation } from '../../../../../../domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
@@ -29,14 +29,6 @@ export interface IUseCallToActionLogicParams {
   };
 }
 
-export const getPostDecisionEventName = (workflow: TWorkflowById) => {
-  if (
-    !workflow?.workflowDefinition?.config?.workflowLevelResolution &&
-    workflow?.nextEvents?.includes(CommonWorkflowEvent.TASK_REVIEWED)
-  ) {
-    return CommonWorkflowEvent.TASK_REVIEWED;
-  }
-};
 export const useCallToActionLegacyLogic = ({
   contextUpdateMethod = 'base',
   rejectionReasons,
@@ -48,12 +40,10 @@ export const useCallToActionLegacyLogic = ({
   isLoadingReuploadNeeded,
   dialog,
 }: IUseCallToActionLogicParams) => {
-  const postUpdateEventName = getPostDecisionEventName(workflow);
-
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
-    useApproveTaskByIdMutation(workflow?.id, postUpdateEventName);
+    useApproveTaskByIdMutation(workflow?.id);
   const { mutate: mutateRejectTaskById, isLoading: isLoadingRejectTaskById } =
-    useRejectTaskByIdMutation(workflow?.id, postUpdateEventName);
+    useRejectTaskByIdMutation(workflow?.id);
 
   const isLoadingTaskDecisionById =
     isLoadingApproveTaskById || isLoadingRejectTaskById || isLoadingReuploadNeeded;

@@ -13,7 +13,7 @@ import { createDemoMockData } from '../../scripts/workflows/workflow-runtime';
 import { PrismaService } from '@/prisma/prisma.service';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { CustomerSubscriptionDto } from './dtos/customer-config-create.dto';
-import { BadValidationException } from '@/errors';
+import { ValidationError } from '@/errors';
 
 @swagger.ApiTags('Customers')
 @swagger.ApiExcludeController()
@@ -30,6 +30,7 @@ export class CustomerControllerExternal {
   @swagger.ApiForbiddenResponse()
   async create(@common.Body() customerCreateModel: CustomerCreateDto) {
     const { projectName, ...customer } = customerCreateModel;
+
     if (projectName) {
       (customer as Prisma.CustomerCreateInput).projects = {
         create: { name: customerCreateModel.projectName! },
@@ -73,7 +74,7 @@ export class CustomerControllerExternal {
   @common.Post('subscriptions')
   @swagger.ApiOkResponse({ type: CustomerSubscriptionDto })
   @swagger.ApiForbiddenResponse()
-  @swagger.ApiBadRequestResponse({ type: BadValidationException })
+  @swagger.ApiBadRequestResponse({ type: ValidationError })
   @UseGuards(CustomerAuthGuard)
   @UsePipes(new ZodValidationPipe(CustomerSubscriptionSchema, 'body'))
   async createSubscriptions(

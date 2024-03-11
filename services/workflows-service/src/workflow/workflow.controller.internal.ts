@@ -28,7 +28,7 @@ import * as common from '@nestjs/common';
 import { UseGuards, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
-import * as nestAccessControl from 'nest-access-control';
+// import * as nestAccessControl from 'nest-access-control';
 import * as errors from '../errors';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
@@ -48,8 +48,8 @@ export class WorkflowControllerInternal {
   constructor(
     protected readonly service: WorkflowService,
     protected readonly filterService: FilterService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    // @nestAccessControl.InjectRolesBuilder()
+    // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
@@ -130,6 +130,7 @@ export class WorkflowControllerInternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found`);
       }
+
       throw error;
     }
   }
@@ -176,6 +177,7 @@ export class WorkflowControllerInternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
   }
@@ -197,6 +199,7 @@ export class WorkflowControllerInternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
   }
@@ -236,6 +239,7 @@ export class WorkflowControllerInternal {
     if (data.systemEventName !== 'workflow.context.changed') {
       throw new common.BadRequestException(`Invalid system event name: ${data.systemEventName}`);
     }
+
     return await this.service.emitSystemWorkflowEvent({
       workflowRuntimeId: params.id,
       projectId: data.projectId,
@@ -269,12 +273,12 @@ export class WorkflowControllerInternal {
         },
         projectIds,
         currentProjectId,
-        data.postUpdateEventName,
       );
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
   }
@@ -300,15 +304,16 @@ export class WorkflowControllerInternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
   }
 
-  @nestAccessControl.UseRoles({
-    resource: 'Workflow',
-    action: 'delete',
-    possession: 'own',
-  })
+  // @nestAccessControl.UseRoles({
+  //   resource: 'Workflow',
+  //   action: 'delete',
+  //   possession: 'own',
+  // })
   @common.Delete('/:id')
   @swagger.ApiOkResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
@@ -341,6 +346,7 @@ export class WorkflowControllerInternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
   }

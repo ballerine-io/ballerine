@@ -56,6 +56,7 @@ export class CollectionFlowFilesController {
           if (error.includes('expected size')) {
             throw new UnprocessableEntityException(FILE_SIZE_EXCEEDED_MSG);
           }
+
           throw new UnprocessableEntityException(error);
         },
       }),

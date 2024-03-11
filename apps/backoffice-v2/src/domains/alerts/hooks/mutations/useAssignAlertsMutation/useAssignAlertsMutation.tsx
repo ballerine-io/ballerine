@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { t } from 'i18next';
 import { assignAlertsByIds } from '@/domains/alerts/fetchers';
 import { TToastKeyWithSuccessAndError } from '@/common/types';

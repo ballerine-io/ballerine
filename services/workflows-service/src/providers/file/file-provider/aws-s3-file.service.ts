@@ -64,6 +64,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
     try {
       const headObjectCommand = new HeadObjectCommand(getObjectParams);
       await this.client.send(headObjectCommand);
+
       return Promise.resolve(true);
     } catch (error) {
       if (
@@ -72,6 +73,7 @@ export class AwsS3FileService implements IStreamableFileProvider {
       ) {
         return Promise.resolve(false);
       }
+
       console.error('Error checking remote file existence:', error);
       throw error;
     }

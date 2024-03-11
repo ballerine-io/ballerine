@@ -1,5 +1,6 @@
 import type { JsonValue } from 'type-fest';
-import { Customer, Project, User, UserToProject } from '@prisma/client';
+import { Customer, PrismaClient, Project, User, UserToProject } from '@prisma/client';
+import * as runtime from '@prisma/client/runtime/library';
 
 export type InputJsonValue = Omit<JsonValue, 'null'>;
 
@@ -34,3 +35,5 @@ export type AnyRecord = Record<PropertyKey, any>;
 export type GenericFunction = (...args: AnyArray) => any;
 
 export type GenericAsyncFunction = (...args: AnyArray) => Promise<any>;
+
+export type PrismaTransaction = Omit<PrismaClient, runtime.ITXClientDenyList>;

@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { BusinessModel } from './business.model';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import type { TProjectIds } from '@/types';
+import { PrismaTransaction } from '@/types';
+import { BusinessCreateInputSchema } from '@/business/schemas';
+import { ValidationError } from '@/errors';
 
 @Injectable()
 export class BusinessRepository {
@@ -15,7 +18,16 @@ export class BusinessRepository {
   async create<T extends Prisma.BusinessCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessCreateArgs>,
   ) {
-    return await this.prisma.business.create(args);
+    const result = BusinessCreateInputSchema.safeParse(args.data);
+
+    if (!result.success) {
+      throw ValidationError.fromZodError(result.error);
+    }
+
+    return await this.prisma.business.create({
+      ...args,
+      data: result.data,
+    });
   }
 
   async findMany<T extends Prisma.BusinessFindManyArgs>(
@@ -74,8 +86,9 @@ export class BusinessRepository {
   async updateById<T extends Omit<Prisma.BusinessUpdateArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.BusinessUpdateArgs, 'where'>>,
+    transaction: PrismaClient | PrismaTransaction = this.prisma,
   ): Promise<BusinessModel> {
-    return await this.prisma.business.update({
+    return await transaction.business.update({
       where: { id },
       ...args,
     });

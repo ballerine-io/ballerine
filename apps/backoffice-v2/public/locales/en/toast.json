@@ -1,4 +1,12 @@
 {
+  "dismiss_case": {
+    "success": "The case has been dismissed successfully.",
+    "error": "Error occurred while dismissing the case."
+  },
+  "flag_case": {
+    "success": "The case has been flagged successfully.",
+    "error": "Error occurred while flagging the case."
+  },
   "approve_case": {
     "success": "The case has been approved successfully.",
     "error": "Error occurred while approving the case."

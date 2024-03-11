@@ -12,7 +12,7 @@ import { UIElementComponent } from '@/components/organisms/UIRenderer/types';
 import { UIPage } from '@/domains/collection-flow';
 import { useFlowTracking } from '@/hooks/useFlowTracking';
 import { Button } from '@ballerine/ui';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition }) => {
   const { helpers } = useDynamicUIContext();
@@ -21,6 +21,7 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
   const { state: uiElementState } = useUIElementState(definition);
   const { currentPage, pages } = usePageResolverContext();
   const { errors } = usePageContext();
+  const isValid = useMemo(() => !Object.values(errors).length, [errors]);
 
   const setPageElementsTouched = useCallback(
     (page: UIPage, state: UIState) => {
@@ -67,10 +68,10 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
 
     const isFinishPage = currentPage?.name === pages.at(-1)?.name;
 
-    if (isFinishPage) {
+    if (isFinishPage && isValid) {
       trackFinish();
     }
-  }, [currentPage, pages, state, setPageElementsTouched, onClickHandler, trackFinish]);
+  }, [currentPage, pages, state, isValid, setPageElementsTouched, onClickHandler, trackFinish]);
 
   return (
     <Button

@@ -8,7 +8,7 @@ import type { Request } from 'express';
 
 import { ApiNestedQuery } from '@/common/decorators/api-nested-query.decorator';
 import * as errors from '../errors';
-import * as nestAccessControl from 'nest-access-control';
+// import * as nestAccessControl from 'nest-access-control';
 import { EndUserCreateDto } from './dtos/end-user-create';
 import { EndUserFindManyArgs } from './dtos/end-user-find-many-args';
 import { EndUserWhereUniqueInput } from './dtos/end-user-where-unique-input';
@@ -30,9 +30,7 @@ import { EndUserCreateWithBusinessDto } from '@/end-user/dtos/end-user-create-wi
 export class EndUserControllerExternal {
   constructor(
     protected readonly service: EndUserService,
-    protected readonly workflowService: WorkflowService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    protected readonly workflowService: WorkflowService, // @nestAccessControl.InjectRolesBuilder() // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
 
   @common.Post()
@@ -60,6 +58,7 @@ export class EndUserControllerExternal {
         avatarUrl: true,
       },
     });
+
     return endUser;
   }
 
@@ -93,6 +92,7 @@ export class EndUserControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<EndUserModel[]> {
     const args = plainToClass(EndUserFindManyArgs, request.query);
+
     return this.service.list(args, projectIds);
   }
 

@@ -103,6 +103,17 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
               transformer: 'jmespath',
               mapping: `{entity: {data: @, type: 'individual'}}`,
             },
+            {
+              transformer: 'helper',
+              mapping: [
+                {
+                  source: 'entity.data',
+                  target: 'entity.data',
+                  method: 'omit',
+                  value: ['workflowRuntimeId', 'workflowRuntimeConfig'],
+                },
+              ],
+            },
           ],
         },
         {
@@ -113,6 +124,17 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
             {
               transformer: 'jmespath',
               mapping: `{entity: {data: @, type: 'business'}}`,
+            },
+            {
+              transformer: 'helper',
+              mapping: [
+                {
+                  source: 'entity.data',
+                  target: 'entity.data',
+                  method: 'omit',
+                  value: ['workflowRuntimeId', 'workflowRuntimeConfig'],
+                },
+              ],
             },
           ],
         },
