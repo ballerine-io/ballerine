@@ -44,6 +44,10 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         },
       ],
     });
+
+    BigInt.prototype.toJSON = function () {
+      return this.toString();
+    };
   }
 
   async onModuleInit() {

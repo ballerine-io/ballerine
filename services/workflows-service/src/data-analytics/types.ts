@@ -9,7 +9,8 @@ export type InlineRule = {
     | TransactionsAgainstDynamicRulesType
     | TDormantAccountOption
     | TCustomersTransactionTypeOptions;
-  subjects: readonly string[];
+  subjects: any;
+  // subjects: readonly string[];
 };
 
 export type TAggregations = keyof typeof AggregateType;
@@ -21,7 +22,10 @@ export type TransactionsAgainstDynamicRulesType = {
   timeAmount?: number;
   timeUnit?: 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years';
   direction?: TransactionDirection;
-  excludedCounterpartyIds?: string[];
+  excludedCounterparty?: {
+    counterpartyBeneficiaryIds: string[];
+    counterpartyOriginatorIds: string[];
+  };
   paymentMethods?: PaymentMethod[];
   excludePaymentMethods?: boolean;
   days?: number;

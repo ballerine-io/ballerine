@@ -36,13 +36,15 @@ export const ALERT_INLINE_RULES = [
     inlineRule: {
       id: 'PAY_HCA_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId'],
+      subjects: ['counterpartyBeneficiaryId'],
       options: {
-        groupByBusiness: true,
         havingAggregate: AggregateType.SUM,
 
         direction: 'inbound',
-        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
@@ -51,6 +53,8 @@ export const ALERT_INLINE_RULES = [
         timeUnit: 'days',
 
         amountThreshold: 1000,
+
+        groupBy: ['counterpartyBeneficiaryId'],
       } as TransactionsAgainstDynamicRulesType,
     },
   },
@@ -63,13 +67,15 @@ export const ALERT_INLINE_RULES = [
     inlineRule: {
       id: 'PAY_HCA_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId'],
+      subjects: [],
       options: {
-        groupByBusiness: true,
         havingAggregate: AggregateType.SUM,
 
         direction: 'inbound',
-        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: true,
@@ -78,6 +84,8 @@ export const ALERT_INLINE_RULES = [
         timeUnit: 'days',
 
         amountThreshold: 1000,
+
+        groupBy: ['counterpartyBeneficiaryId'],
       } as TransactionsAgainstDynamicRulesType,
     },
   },
@@ -96,7 +104,7 @@ export const ALERT_INLINE_RULES = [
         havingAggregate: AggregateType.COUNT,
 
         direction: 'inbound',
-        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+        // excludedCounterparty: ['9999999999999999', '999999******9999'],
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
@@ -124,7 +132,7 @@ export const ALERT_INLINE_RULES = [
         havingAggregate: AggregateType.COUNT,
 
         direction: 'inbound',
-        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+        // excludedCounterparty: ['9999999999999999', '999999******9999'],
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
@@ -152,7 +160,7 @@ export const ALERT_INLINE_RULES = [
         havingAggregate: AggregateType.SUM,
 
         direction: 'inbound',
-        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+        // excludedCounterparty: ['9999999999999999', '999999******9999'],
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
@@ -176,7 +184,7 @@ export const ALERT_INLINE_RULES = [
         havingAggregate: AggregateType.SUM,
 
         direction: 'inbound',
-        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+        // excludedCounterparty: ['9999999999999999', '999999******9999'],
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: true,
@@ -199,7 +207,7 @@ export const ALERT_INLINE_RULES = [
         havingAggregate: AggregateType.COUNT,
 
         direction: 'inbound',
-        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+        // excludedCounterparty: ['9999999999999999', '999999******9999'],
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
@@ -222,7 +230,7 @@ export const ALERT_INLINE_RULES = [
         havingAggregate: AggregateType.COUNT,
 
         direction: 'inbound',
-        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+        // excludedCounterparty: ['9999999999999999', '999999******9999'],
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: true,

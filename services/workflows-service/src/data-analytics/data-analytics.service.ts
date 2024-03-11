@@ -54,7 +54,10 @@ export class DataAnalyticsService {
     amountThreshold,
     amountBetween,
     direction = 'inbound',
-    excludedCounterpartyIds = [],
+    excludedCounterparty = {
+      counterpartyBeneficiaryIds: [],
+      counterpartyOriginatorIds: [],
+    },
     paymentMethods = [],
     excludePaymentMethods = false,
     timeAmount = 7,
@@ -64,6 +67,9 @@ export class DataAnalyticsService {
   }: TransactionsAgainstDynamicRulesType) {
     if (!projectId) {
       throw new Error('projectId is required');
+    }
+    if (!Array.isArray(groupBy) || groupBy.length === 0) {
+      throw new Error('groupBy is required');
     }
 
     const conditions: Prisma.Sql[] = [
@@ -75,12 +81,18 @@ export class DataAnalyticsService {
       )}'`,
     ];
 
-    if (excludedCounterpartyIds.length) {
-      const conditions = excludedCounterpartyIds
-        .map(id => `counterpartyOriginatorId NOT LIKE '${id}'`)
-        .join(' AND ');
+    const excludeCounterPartyClause: Prisma.Sql[] = [Prisma.empty];
 
-      conditions.concat(conditions);
+    if (excludedCounterparty) {
+      const excludedBeneficiaryConditions = (
+        excludedCounterparty.counterpartyBeneficiaryIds || []
+      ).map(id => Prisma.sql`"counterpartyBeneficiaryId" NOT LIKE ${id}`);
+
+      const excludedOriginatorConditions = (
+        excludedCounterparty.counterpartyOriginatorIds || []
+      ).map(id => Prisma.sql`"counterpartyOriginatorId" NOT LIKE ${id}`);
+
+      conditions.push(...excludedBeneficiaryConditions, ...excludedOriginatorConditions);
     }
     if (paymentMethods.length) {
       const methodCondition = excludePaymentMethods ? `NOT IN` : `IN`;
@@ -102,12 +114,15 @@ export class DataAnalyticsService {
     let selectClause: Prisma.Sql = Prisma.empty;
     let groupByClause: Prisma.Sql = Prisma.empty;
     if (groupBy) {
-      selectClause = Prisma.join(
-        groupBy.map(groupByField => Prisma.sql`"${Prisma.raw(groupByField)}"`),
-        ',',
-      );
+      try {
+        selectClause = Prisma.join(
+          groupBy.map(groupByField => Prisma.sql`"${Prisma.raw(groupByField)}"`),
+        );
+      } catch (err) {
+        console.log(err);
+      }
       conditions.push(
-        ...groupBy.map(groupByField => Prisma.sql`"${Prisma.raw(groupByField)} IS NOT NULL"`),
+        ...groupBy.map(groupByField => Prisma.sql`"${Prisma.raw(groupByField)}" IS NOT NULL`),
       );
       groupByClause = Prisma.join(
         groupBy.map(groupByField => Prisma.sql`"${Prisma.raw(groupByField)}"`),
@@ -118,30 +133,23 @@ export class DataAnalyticsService {
     const whereClause = Prisma.join(conditions, ' AND ');
 
     let havingClause = '';
+    let query: Prisma.Sql;
+
     switch (havingAggregate) {
       case AggregateType.COUNT:
         havingClause = `${AggregateType.COUNT}(id)`;
-        break;
+        query = Prisma.sql`SELECT ${selectClause}, COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
+          havingClause,
+        )} > ${amountThreshold}`;
       case AggregateType.SUM:
         havingClause = `${AggregateType.SUM}(tr."transactionBaseAmount")`;
+        query = Prisma.sql`SELECT ${selectClause}, SUM(tr."transactionBaseAmount") AS "totalAmount", COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr
+        WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
+          havingClause,
+        )} > ${amountThreshold}`;
         break;
       default:
-        throw new Error(`Invalid aggregate type: ${havingAggregate}`);
-    }
-
-    let query: Prisma.Sql;
-    if (havingAggregate === AggregateType.COUNT) {
-      query = Prisma.sql`SELECT ${selectClause}, COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
-        havingClause,
-      )} > ${amountThreshold}`;
-    } else if (havingAggregate === AggregateType.SUM) {
-      query = Prisma.sql`SELECT ${selectClause}, SUM(tr."transactionBaseAmount") AS "totalAmount" FROM "TransactionRecord" tr
-        WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
-        havingClause,
-      )} > ${amountThreshold}`;
-    } else {
-      query = Prisma.sql`SELECT ${selectClause}, SUM(tr."transactionBaseAmount") AS "totalAmount" FROM "TransactionRecord" tr
-        WHERE ${whereClause} GROUP BY ${groupByClause}`;
+        query = Prisma.sql`SELECT ${selectClause}, COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr WHERE ${whereClause} GROUP BY ${groupByClause}`;
     }
 
     return await this._executeQuery(query);

@@ -6,9 +6,9 @@ import { ClsService } from 'nestjs-cls';
 import { PaymentMethod, TransactionDirection } from '@prisma/client';
 import { DataAnalyticsService } from './data-analytics.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
-import { InlineRule } from './types';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { ALERT_INLINE_RULES } from '../../scripts/alerts/generate-alerts';
+import { before } from 'lodash';
 
 const PROJECT_ID = 'project-id';
 
@@ -88,6 +88,7 @@ describe('TransactionRulesEvaluationService', () => {
         {
           transactionDirection: TransactionDirection.inbound,
           counterpartyOriginatorId: 'counterparty-1',
+          counterpartyBeneficiaryId: 'counterparty-2',
           paymentMethod: PaymentMethod.credit_card,
           transactionDate: new Date(),
           transactionAmount: 500,
@@ -100,6 +101,7 @@ describe('TransactionRulesEvaluationService', () => {
         {
           transactionDirection: TransactionDirection.inbound,
           counterpartyOriginatorId: 'counterparty-1',
+          counterpartyBeneficiaryId: 'counterparty-2',
           paymentMethod: PaymentMethod.credit_card,
           transactionDate: new Date(),
           transactionAmount: 505,
@@ -112,6 +114,7 @@ describe('TransactionRulesEvaluationService', () => {
         {
           transactionDirection: 'inbound',
           counterpartyOriginatorId: 'counterparty-1',
+          counterpartyBeneficiaryId: 'counterparty-2',
           paymentMethod: PaymentMethod.credit_card,
           transactionDate: new Date(),
           transactionAmount: 1005,
@@ -124,6 +127,7 @@ describe('TransactionRulesEvaluationService', () => {
         {
           transactionDirection: 'inbound',
           counterpartyOriginatorId: 'counterparty-2',
+          counterpartyBeneficiaryId: 'counterparty-1',
           paymentMethod: PaymentMethod.credit_card,
           transactionDate: new Date(),
           transactionAmount: 1500,
@@ -310,7 +314,7 @@ describe('TransactionRulesEvaluationService', () => {
   //   });
   // });
 
-  describe('Rule ID: PAY_HCA_CC', () => {
+  describe('Rule ID: PAY_HCA', () => {
     const transactionIdsForCleanup: string[] = [];
 
     afterAll(async () => {
@@ -319,20 +323,20 @@ describe('TransactionRulesEvaluationService', () => {
       });
     });
 
-    describe('', () => {
+    describe.only('', () => {
       const transactionIdsForCleanup: string[] = [];
 
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      beforeEach(async () => {
+      beforeAll(async () => {
         const transactionsSeeds = [
           {
             id: 'transaction-id-1',
-            counterpartyOriginatorId: '9999999999999999',
+            counterpartyBeneficiaryId: '9999999999999999',
             paymentMethod: PaymentMethod.credit_card,
           },
           {
             id: 'transaction-id-2',
-            counterpartyOriginatorId: '999999******9999',
+            counterpartyBeneficiaryId: '999999******9999',
             paymentMethod: PaymentMethod.bank_transfer,
           },
         ];
@@ -340,7 +344,7 @@ describe('TransactionRulesEvaluationService', () => {
         const data1 = Array.from({ length: 10 }).map((_, index) => ({
           id: `id-${index}`,
           transactionDirection: TransactionDirection.inbound,
-          counterpartyOriginatorId: '9999999999999999',
+          counterpartyBeneficiaryId: '9999999999999999',
           paymentMethod: PaymentMethod.debit_card, // Assume these are non-credit card payment methods. Adjust as necessary.
           transactionDate: new Date(),
           transactionAmount: 555,
@@ -352,10 +356,10 @@ describe('TransactionRulesEvaluationService', () => {
         }));
 
         const data2 = transactionsSeeds.map(
-          ({ id, counterpartyOriginatorId, paymentMethod }, index) => ({
+          ({ id, counterpartyBeneficiaryId, paymentMethod }, index) => ({
             id,
             transactionDirection: TransactionDirection.inbound,
-            counterpartyOriginatorId,
+            counterpartyBeneficiaryId,
             paymentMethod: paymentMethod || PaymentMethod.debit_card, // Assume these are non-credit card payment methods. Adjust as necessary.
             transactionDate: new Date(),
             transactionAmount: 555,
@@ -366,46 +370,86 @@ describe('TransactionRulesEvaluationService', () => {
             projectId: PROJECT_ID,
           }),
         );
-        const tranactions = await prismaService.transactionRecord.createMany({
-          data: [...data1, ...data2],
+
+        const data3 = Array.from({ length: 10 }).map((_, index) => ({
+          id: `id-data2-${index}`,
+          transactionDirection: TransactionDirection.inbound,
+          counterpartyBeneficiaryId: ['counterparty-1', 'counterparty-2'][index % 2],
+          paymentMethod: PaymentMethod.debit_card,
+          transactionDate: new Date(),
+          transactionAmount: 990 * index * 10,
+          transactionCorrelationId: `temp-${index}`,
+          transactionCurrency: 'USD',
+          transactionBaseAmount: 990 * index * 10,
+          transactionBaseCurrency: 'USD',
+          projectId: PROJECT_ID,
+        }));
+
+        await prismaService.transactionRecord.createMany({
+          data: [...data1, ...data2, ...data3],
         });
 
-        transactionIdsForCleanup.concat([...data1, ...data2].map(({ id }) => id));
+        transactionIdsForCleanup.concat([...data1, ...data2, ...data3].map(({ id }) => id));
       });
 
-      it('should correctly evaluate sum of incoming transactions over a set period of time is greater than a limit of credit card.', async () => {
-        // Assert
-        const rule = ALERT_INLINE_RULES.find(({ inlineRule }) => inlineRule.id === 'PAY_HCA_CC');
-        expect(rule).toBeDefined();
+      describe('should correctly evaluate sum of incoming transactions over a set period of time is greater than a limit of', () => {
+        it('credit card.', async () => {
+          // Assert
+          const rule = ALERT_INLINE_RULES.find(({ inlineRule }) => inlineRule.id === 'PAY_HCA_CC');
+          expect(rule).toBeDefined();
 
-        // Act
-        const results = await dataAnalyticsService.evaluateTransactionsAgainstDynamicRules({
-          ...rule,
-          projectId: PROJECT_ID,
-          groupBy: ['counterpartyBeneficiaryId'],
+          // Act
+          const results = await dataAnalyticsService.evaluateTransactionsAgainstDynamicRules({
+            ...rule?.inlineRule.options,
+            projectId: PROJECT_ID,
+          });
+
+          // Assert
+          expect(results as any[]).toBeDefined();
+          expect((results as any[]).length).toBeGreaterThan(0);
+
+          expect(results).toMatchObject([
+            {
+              counterpartyBeneficiaryId: 'counterparty-1',
+              totalAmount: 1500,
+              transactionCount: 1n,
+            },
+            {
+              counterpartyBeneficiaryId: 'counterparty-2',
+              totalAmount: 2010,
+              transactionCount: 3n,
+            },
+          ]);
         });
 
-        // Assert
-        expect(results as any[]).toBeDefined();
-        expect((results as any[]).length).toBeGreaterThan(0);
+        it('non credit card.', async () => {
+          // Assert
+          const rule = ALERT_INLINE_RULES.find(({ inlineRule }) => inlineRule.id === 'PAY_HCA_APM');
+          expect(rule).toBeDefined();
 
-        expect(results).toMatchObject([
-          {
-            businessId: 'business-id-1',
-            counterpartyOriginatorId: 'counterparty-1',
-            totalAmount: 1005,
-          },
-          {
-            businessId: 'business-id-2',
-            counterpartyOriginatorId: 'counterparty-1',
-            totalAmount: 1005,
-          },
-          {
-            businessId: 'business-id-2',
-            counterpartyOriginatorId: 'counterparty-2',
-            totalAmount: 1500,
-          },
-        ]);
+          // Act
+          const results = await dataAnalyticsService.evaluateTransactionsAgainstDynamicRules({
+            ...rule?.inlineRule.options,
+            projectId: PROJECT_ID,
+          });
+
+          // Assert
+          expect(results as any[]).toBeDefined();
+          expect((results as any[]).length).toBeGreaterThan(0);
+
+          expect(results).toMatchObject([
+            {
+              counterpartyBeneficiaryId: 'counterparty-1',
+              totalAmount: 198000,
+              transactionCount: 5n,
+            },
+            {
+              counterpartyBeneficiaryId: 'counterparty-2',
+              totalAmount: 247500,
+              transactionCount: 5n,
+            },
+          ]);
+        });
       });
     });
   });
