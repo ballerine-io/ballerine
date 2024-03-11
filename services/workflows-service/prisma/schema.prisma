@@ -84,7 +84,6 @@ model EndUser {
   projectId                String
   project                  Project                    @relation(fields: [projectId], references: [id])
   WorkflowRuntimeDataToken WorkflowRuntimeDataToken[]
-  Alert                    Alert[]
   Counterparty             Counterparty[]
 
   @@unique([projectId, correlationId])
@@ -101,8 +100,6 @@ model EndUsersOnBusinesses {
   businessId String
 
   @@id([endUserId, businessId])
-  @@index([businessId])
-  @@index([endUserId])
 }
 
 model Business {
@@ -141,7 +138,6 @@ model Business {
 
   projectId    String
   project      Project        @relation(fields: [projectId], references: [id])
-  Alert        Alert[]
   Counterparty Counterparty[]
 
   @@unique([projectId, correlationId])
@@ -684,12 +680,6 @@ model Alert {
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  businessId String?
-  business   Business? @relation(fields: [businessId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-
-  endUserId String?
-  endUser   EndUser? @relation(fields: [endUserId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-
   dataTimestamp DateTime
   state         AlertState
   status        AlertStatus
@@ -712,8 +702,6 @@ model Alert {
   counterparty   Counterparty? @relation(fields: [counterpartyId], references: [id])
 
   @@index([assigneeId])
-  @@index([businessId])
-  @@index([endUserId])
   @@index([projectId])
   @@index([alertDefinitionId])
   @@index([counterpartyId])
