@@ -12,7 +12,7 @@ import {
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { AggregateType } from '../../src/data-analytics/consts';
-import { InputJsonValue } from '@/types';
+import { InputJsonValue, PrismaTransaction } from '@/types';
 
 const tags = [
   ...new Set([
@@ -27,116 +27,126 @@ const tags = [
 
 export const ALERT_INLINE_RULES = [
   {
-    id: 'PAY_HCA_CC',
-    fnName: 'evaluateTransactionsAgainstDynamicRules',
-    subjects: ['businessId'],
-    options: {
-      groupByBusiness: true,
-      havingAggregate: AggregateType.SUM,
+    defaultSeverity: AlertSeverity.medium,
+    inlineRule: {
+      id: 'PAY_HCA_CC',
+      fnName: 'evaluateTransactionsAgainstDynamicRules',
+      subjects: ['businessId'],
+      options: {
+        groupByBusiness: true,
+        havingAggregate: AggregateType.SUM,
 
-      direction: 'inbound',
-      excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+        direction: 'inbound',
+        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
 
-      paymentMethods: [PaymentMethod.credit_card],
-      excludePaymentMethods: false,
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: false,
 
-      timeAmount: 7,
-      timeUnit: 'days',
+        timeAmount: 7,
+        timeUnit: 'days',
 
-      amountThreshold: 1000,
-    } as TransactionsAgainstDynamicRulesType,
+        amountThreshold: 1000,
+      } as TransactionsAgainstDynamicRulesType,
+    },
   },
 
   // Rule ID: PAY_HCA_APM
   // Description: High Cumulative Amount - inbound - Customer (APM)
   // Condition: Sum of incoming transactions over a set period of time is greater than a limit of APM.
   {
-    id: 'PAY_HCA_APM',
-    fnName: 'evaluateTransactionsAgainstDynamicRules',
-    subjects: ['businessId'],
-    options: {
-      groupByBusiness: true,
-      havingAggregate: AggregateType.SUM,
+    defaultSeverity: AlertSeverity.medium,
+    inlineRule: {
+      id: 'PAY_HCA_APM',
+      fnName: 'evaluateTransactionsAgainstDynamicRules',
+      subjects: ['businessId'],
+      options: {
+        groupByBusiness: true,
+        havingAggregate: AggregateType.SUM,
 
-      direction: 'inbound',
-      excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+        direction: 'inbound',
+        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
 
-      paymentMethods: [PaymentMethod.credit_card],
-      excludePaymentMethods: true,
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: true,
 
-      timeAmount: 7,
-      timeUnit: 'days',
+        timeAmount: 7,
+        timeUnit: 'days',
 
-      amountThreshold: 1000,
-    } as TransactionsAgainstDynamicRulesType,
+        amountThreshold: 1000,
+      } as TransactionsAgainstDynamicRulesType,
+    },
   },
 
   // Rule ID: STRUC_CC
   // Description: Structuring - inbound - Customer (Credit Card)
   // Condition: Significant number of low value incoming transactions just below a threshold of credit card.
   {
-    id: 'STRUC_CC',
-    fnName: 'evaluateTransactionsAgainstDynamicRules',
-    subjects: ['businessId'],
-    options: {
-      groupByBusiness: true,
-      havingAggregate: AggregateType.COUNT,
+    defaultSeverity: AlertSeverity.medium,
+    inlineRule: {
+      id: 'STRUC_CC',
+      fnName: 'evaluateTransactionsAgainstDynamicRules',
+      subjects: ['businessId'],
+      options: {
+        groupByBusiness: true,
+        havingAggregate: AggregateType.COUNT,
 
-      direction: 'inbound',
-      excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+        direction: 'inbound',
+        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
 
-      paymentMethods: [PaymentMethod.credit_card],
-      excludePaymentMethods: false,
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: false,
 
-      timeAmount: 7,
-      timeUnit: 'days',
+        timeAmount: 7,
+        timeUnit: 'days',
 
-      amountThreshold: 5,
-      amountBetween: { min: 500, max: 1000 },
-    } as TransactionsAgainstDynamicRulesType,
+        amountThreshold: 5,
+        amountBetween: { min: 500, max: 1000 },
+      } as TransactionsAgainstDynamicRulesType,
+    },
   },
 
   // Rule ID: STRUC_APM
   // Description: Structuring - inbound - Customer (APM)
   // Condition: Significant number of low value incoming transactions just below a threshold of APM.
   {
-    id: 'STRUC_APM',
-    fnName: 'evaluateTransactionsAgainstDynamicRules',
-    subjects: ['businessId'],
-    options: {
-      groupByBusiness: true,
-      havingAggregate: AggregateType.COUNT,
+    defaultSeverity: AlertSeverity.medium,
+    inlineRule: {
+      id: 'STRUC_APM',
+      fnName: 'evaluateTransactionsAgainstDynamicRules',
+      subjects: ['businessId'],
+      options: {
+        groupByBusiness: true,
+        havingAggregate: AggregateType.COUNT,
 
-      direction: 'inbound',
-      excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+        direction: 'inbound',
+        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
 
-      paymentMethods: [PaymentMethod.credit_card],
-      excludePaymentMethods: false,
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: false,
 
-      timeAmount: 7,
-      timeUnit: 'days',
+        timeAmount: 7,
+        timeUnit: 'days',
 
-      amountBetween: { min: 500, max: 1000 },
+        amountBetween: { min: 500, max: 1000 },
 
-      amountThreshold: 5,
-    } as TransactionsAgainstDynamicRulesType,
+        amountThreshold: 5,
+      } as TransactionsAgainstDynamicRulesType,
+    },
   },
-] as const satisfies readonly InlineRule[];
+] as const satisfies readonly { inlineRule: InlineRule; defaultSeverity: AlertSeverity }[];
 
 export const generateAlertDefinitions = async (
-  prisma: PrismaClient,
+  prisma: PrismaClient | PrismaTransaction,
   {
     createdBy = 'SYSTEM',
     project,
-    defaultSeverity,
   }: {
     createdBy?: string;
     project: Project;
-    defaultSeverity: AlertSeverity;
   },
 ) =>
   Promise.all(
-    ALERT_INLINE_RULES.map(rule =>
+    ALERT_INLINE_RULES.map(({ inlineRule, defaultSeverity }) =>
       prisma.alertDefinition.create({
         include: {
           alert: true,
@@ -146,9 +156,9 @@ export const generateAlertDefinitions = async (
           name: faker.lorem.words(3),
           enabled: faker.datatype.boolean(),
           description: faker.lorem.sentence(),
-          rulesetId: `set-${rule.id}`,
+          rulesetId: `set-${inlineRule.id}`,
           defaultSeverity,
-          ruleId: rule.id,
+          ruleId: inlineRule.id,
           createdBy: createdBy,
           modifiedBy: createdBy,
           dedupeStrategies: {
@@ -156,7 +166,7 @@ export const generateAlertDefinitions = async (
             cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
           },
           config: { config: {} },
-          inlineRule: rule,
+          inlineRule,
           tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
           additionalInfo: {},
           projectId: project.id,
@@ -207,7 +217,6 @@ export const generateFakeAlertsAndDefinitions = async (
   const alertDefinitions = await generateAlertDefinitions(prisma, {
     project,
     createdBy: faker.internet.userName(),
-    defaultSeverity: faker.helpers.arrayElement(Object.values(AlertSeverity)),
   });
 
   await Promise.all(

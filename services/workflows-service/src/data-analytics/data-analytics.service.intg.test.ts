@@ -375,7 +375,7 @@ describe('TransactionRulesEvaluationService', () => {
 
       it('should correctly evaluate sum of incoming transactions over a set period of time is greater than a limit of credit card.', async () => {
         // Assert
-        const rule = ALERT_INLINE_RULES.find((rule: InlineRule) => rule.id === 'PAY_HCA_CC');
+        const rule = ALERT_INLINE_RULES.find(({ inlineRule }) => inlineRule.id === 'PAY_HCA_CC');
         expect(rule).toBeDefined();
 
         // Act
