@@ -25,8 +25,8 @@ const tags = [
   ]),
 ];
 
-export const getRuleDefinitions = () => {
-  const _PAY_HCA_CC = {
+export const ALERT_INLINE_RULES = [
+  {
     id: 'PAY_HCA_CC',
     fnName: 'evaluateTransactionsAgainstDynamicRules',
     subjects: ['businessId'],
@@ -45,12 +45,12 @@ export const getRuleDefinitions = () => {
 
       amountThreshold: 1000,
     } as TransactionsAgainstDynamicRulesType,
-  } as const satisfies InlineRule;
+  },
 
   // Rule ID: PAY_HCA_APM
   // Description: High Cumulative Amount - inbound - Customer (APM)
   // Condition: Sum of incoming transactions over a set period of time is greater than a limit of APM.
-  const _PAY_HCA_APM = {
+  {
     id: 'PAY_HCA_APM',
     fnName: 'evaluateTransactionsAgainstDynamicRules',
     subjects: ['businessId'],
@@ -69,12 +69,12 @@ export const getRuleDefinitions = () => {
 
       amountThreshold: 1000,
     } as TransactionsAgainstDynamicRulesType,
-  } as const satisfies InlineRule;
+  },
 
   // Rule ID: STRUC_CC
   // Description: Structuring - inbound - Customer (Credit Card)
   // Condition: Significant number of low value incoming transactions just below a threshold of credit card.
-  const _STRUC_CC = {
+  {
     id: 'STRUC_CC',
     fnName: 'evaluateTransactionsAgainstDynamicRules',
     subjects: ['businessId'],
@@ -94,12 +94,12 @@ export const getRuleDefinitions = () => {
       amountThreshold: 5,
       amountBetween: { min: 500, max: 1000 },
     } as TransactionsAgainstDynamicRulesType,
-  } as const satisfies InlineRule;
+  },
 
   // Rule ID: STRUC_APM
   // Description: Structuring - inbound - Customer (APM)
   // Condition: Significant number of low value incoming transactions just below a threshold of APM.
-  const _STRUC_APM = {
+  {
     id: 'STRUC_APM',
     fnName: 'evaluateTransactionsAgainstDynamicRules',
     subjects: ['businessId'],
@@ -120,83 +120,24 @@ export const getRuleDefinitions = () => {
 
       amountThreshold: 5,
     } as TransactionsAgainstDynamicRulesType,
-  } as const satisfies InlineRule;
+  },
+] as const satisfies readonly InlineRule[];
 
-  const rules = [_PAY_HCA_CC, _PAY_HCA_APM, _STRUC_CC, _STRUC_APM];
-
-  const mergedRules: Record<string, InlineRule> = {};
-
-  rules.forEach(rule => {
-    mergedRules[rule.id] = rule;
-  });
-
-  return mergedRules;
-};
-
-export const generateFakeAlertDefinition = async (
+export const generateAlertDefinitions = async (
   prisma: PrismaClient,
   {
+    createdBy = 'SYSTEM',
     project,
-    ids,
-  }: {
-    project: Project;
-    customer: Customer;
-    ids: string[];
-  },
-) => {
-  const generateFakeAlert = ({
     defaultSeverity,
-    ids,
   }: {
+    createdBy?: string;
+    project: Project;
     defaultSeverity: AlertSeverity;
-    ids: string[];
-  }) => {
-    const businessIdCounterpartyOriginatorIdOrBoth = faker.helpers.arrayElement(
-      ids.map(id => ({ counterpartyId: id })),
-    );
-
-    return {
-      dataTimestamp: faker.date.past(),
-      state: faker.helpers.arrayElement(Object.values(AlertState)),
-      status: faker.helpers.arrayElement(Object.values(AlertStatus)),
-      tags: [faker.random.word(), faker.random.word(), faker.random.word()],
-      executionDetails: JSON.parse(faker.datatype.json()) as InputJsonValue,
-      severity: defaultSeverity,
-      ...businessIdCounterpartyOriginatorIdOrBoth,
-      // TODO: Assign assigneeId value to a valid user id
-      // TODO: Assign counterpart value to a valid user id
-      // businessId: faker.datatype.uuid(),
-      // endUserId: faker.datatype.uuid(),
-      // assigneeId: faker.datatype.uuid(),
-      // workflowRuntimeDataId: faker.datatype.uuid()
-    } satisfies Omit<Prisma.AlertCreateManyAlertDefinitionInput, 'projectId'>;
-  };
-
-  const rules = Object.values(getRuleDefinitions());
-
-  await Promise.all(
-    rules.map(async rule => {
-      const defaultSeverity = faker.helpers.arrayElement(Object.values(AlertSeverity));
-
-      // Create alerts
-      const alerts = Array.from(
-        {
-          length: faker.datatype.number({ min: 3, max: 5 }),
-        },
-        () => {
-          return {
-            projectId: project.id,
-            ...generateFakeAlert({
-              defaultSeverity,
-              ids,
-            }),
-          };
-        },
-      );
-
-      const createdBy = faker.internet.userName();
-
-      await prisma.alertDefinition.create({
+  },
+) =>
+  Promise.all(
+    ALERT_INLINE_RULES.map(rule =>
+      prisma.alertDefinition.create({
         include: {
           alert: true,
         },
@@ -219,14 +160,74 @@ export const generateFakeAlertDefinition = async (
           tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
           additionalInfo: {},
           projectId: project.id,
-          alert: {
-            createMany: {
-              data: alerts,
-              skipDuplicates: true,
-            },
-          },
         },
-      });
-    }),
+      }),
+    ),
+  );
+
+const generateFakeAlert = ({
+  severity,
+  ids,
+}: {
+  severity: AlertSeverity;
+  ids: string[];
+}): Omit<Prisma.AlertCreateManyAlertDefinitionInput, 'projectId'> => {
+  const businessIdCounterpartyOriginatorIdOrBoth = faker.helpers.arrayElement(
+    ids.map(id => ({ counterpartyId: id })),
+  );
+
+  return {
+    dataTimestamp: faker.date.past(),
+    state: faker.helpers.arrayElement(Object.values(AlertState)),
+    status: faker.helpers.arrayElement(Object.values(AlertStatus)),
+    tags: [faker.random.word(), faker.random.word(), faker.random.word()],
+    executionDetails: JSON.parse(faker.datatype.json()) as InputJsonValue,
+    severity,
+    ...businessIdCounterpartyOriginatorIdOrBoth,
+    // TODO: Assign assigneeId value to a valid user id
+    // TODO: Assign counterpart value to a valid user id
+    // businessId: faker.datatype.uuid(),
+    // endUserId: faker.datatype.uuid(),
+    // assigneeId: faker.datatype.uuid(),
+    // workflowRuntimeDataId: faker.datatype.uuid()
+  };
+};
+
+export const generateFakeAlertsAndDefinitions = async (
+  prisma: PrismaClient,
+  {
+    project,
+    ids,
+  }: {
+    project: Project;
+    customer: Customer;
+    ids: string[];
+  },
+) => {
+  const alertDefinitions = await generateAlertDefinitions(prisma, {
+    project,
+    createdBy: faker.internet.userName(),
+    defaultSeverity: faker.helpers.arrayElement(Object.values(AlertSeverity)),
+  });
+
+  await Promise.all(
+    alertDefinitions.map(alertDefinition =>
+      prisma.alert.createMany({
+        data: Array.from(
+          {
+            length: faker.datatype.number({ min: 3, max: 5 }),
+          },
+          () => ({
+            alertDefinitionId: alertDefinition.id,
+            projectId: project.id,
+            ...generateFakeAlert({
+              ids,
+              severity: faker.helpers.arrayElement(Object.values(AlertSeverity)),
+            }),
+          }),
+        ),
+        skipDuplicates: true,
+      }),
+    ),
   );
 };

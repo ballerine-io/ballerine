@@ -1,4 +1,3 @@
-import { getRuleDefinitions } from './../../scripts/alerts/generate-alerts';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@/prisma/prisma.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
@@ -9,6 +8,7 @@ import { DataAnalyticsService } from './data-analytics.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { InlineRule } from './types';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
+import { ALERT_INLINE_RULES } from '../../scripts/alerts/generate-alerts';
 
 const PROJECT_ID = 'project-id';
 
@@ -375,9 +375,7 @@ describe('TransactionRulesEvaluationService', () => {
 
       it('should correctly evaluate sum of incoming transactions over a set period of time is greater than a limit of credit card.', async () => {
         // Assert
-        const rule = Object.values(getRuleDefinitions()).find(
-          (rule: InlineRule) => rule.id === 'PAY_HCA_CC',
-        );
+        const rule = ALERT_INLINE_RULES.find((rule: InlineRule) => rule.id === 'PAY_HCA_CC');
         expect(rule).toBeDefined();
 
         // Act

@@ -33,7 +33,7 @@ import {
 import { generateTransactions } from './alerts/generate-transactions';
 import { generateKycManualReviewRuntimeAndToken } from './workflows/runtime/geneate-kyc-manual-review-runtime-and-token';
 import { Type } from '@sinclair/typebox';
-import { generateFakeAlertDefinition as generateFakeAlertDefinitions } from './alerts/generate-alerts';
+import { generateFakeAlertsAndDefinitions as generateFakeAlertDefinitions } from './alerts/generate-alerts';
 
 const BCRYPT_SALT: string | number = 10;
 
