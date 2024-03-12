@@ -34,6 +34,13 @@ export class FilterDto {
     isArray: true,
   })
   state?: AlertState[];
+
+  @ApiProperty({
+    type: [String],
+    required: false,
+    name: 'filter[label][0]',
+  })
+  label?: string[];
 }
 
 export class FindAlertsDto {
@@ -95,6 +102,7 @@ export const FindAlertsSchema = z.object({
         .optional(),
       status: z.array(z.nativeEnum(AlertStatus)).optional(),
       state: z.array(z.nativeEnum(AlertState)).optional(),
+      label: z.array(z.string()).optional(),
     })
     .optional(),
 });

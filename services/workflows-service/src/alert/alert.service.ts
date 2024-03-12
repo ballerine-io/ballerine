@@ -83,6 +83,11 @@ export class AlertService {
           status: {
             in: findAlertsDto.filter?.status,
           },
+          alertDefinition: {
+            label: {
+              in: findAlertsDto.filter?.label,
+            },
+          },
           ...(findAlertsDto.filter?.assigneeId && {
             OR: [
               {
@@ -253,5 +258,18 @@ export class AlertService {
     }
 
     return status;
+  }
+
+  async getAlertLabels({ projectId }: { projectId: TProjectId }) {
+    const alertDefinitions = await this.alertDefinitionRepository.findMany(
+      {
+        select: {
+          label: true,
+        },
+      },
+      [projectId],
+    );
+
+    return alertDefinitions.map(({ label }) => label);
   }
 }

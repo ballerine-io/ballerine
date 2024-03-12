@@ -23,10 +23,11 @@ export const decisionToClassName = {
 
 export const AlertsHeader: FunctionComponent<{
   assignees: TUsers;
+  labels: string[];
   authenticatedUser: TUsers[number];
   search: ComponentProps<typeof Search>['value'];
   onSearch: (search: string) => void;
-}> = ({ assignees, authenticatedUser, search, onSearch }) => {
+}> = ({ assignees, labels, authenticatedUser, search, onSearch }) => {
   const { selected, onClearSelect } = useSelect();
   const isNoAlertsSelected = Object.keys(selected ?? {}).length === 0;
   const { mutate: mutateAssignAlerts } = useAssignAlertsByIdsMutation({
@@ -92,7 +93,11 @@ export const AlertsHeader: FunctionComponent<{
       <div className="flex gap-6">
         {/*  Uncomment when search is implemented server-side */}
         {/*<Search value={search} onChange={onSearch} />*/}
-        <AlertsFilters assignees={assignees} authenticatedUserId={authenticatedUser?.id} />
+        <AlertsFilters
+          assignees={assignees}
+          labels={labels}
+          authenticatedUserId={authenticatedUser?.id}
+        />
       </div>
       <div className="flex gap-4">
         <AlertsAssignDropdown

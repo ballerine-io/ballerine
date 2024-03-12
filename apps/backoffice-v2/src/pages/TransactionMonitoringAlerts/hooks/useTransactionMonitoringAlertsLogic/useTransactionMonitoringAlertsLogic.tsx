@@ -6,6 +6,7 @@ import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUs
 import { useMemo } from 'react';
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
 import { useSearch } from '@/common/hooks/useSearch/useSearch';
+import { useAlertLabelsQuery } from '@/domains/alerts/hooks/queries/useAlertLabelsQuery/useAlertLabelsQuery';
 
 export const useTransactionMonitoringAlertsLogic = () => {
   const { data: session } = useAuthenticatedUserQuery();
@@ -29,6 +30,8 @@ export const useTransactionMonitoringAlertsLogic = () => {
         ?.sort((a, b) => (a?.id === session?.user?.id ? -1 : b?.id === session?.user?.id ? 1 : 0)),
     [assignees, session?.user?.id],
   );
+  const { data: labels } = useAlertLabelsQuery();
+  const sortedLabels = useMemo(() => labels?.sort(), [labels]);
   const { onPaginate, onPrevPage, onNextPage } = usePagination();
   const isLastPage = (alerts?.length ?? 0) < pageSize || alerts?.length === 0;
   const { search, onSearch } = useSearch({
@@ -39,6 +42,7 @@ export const useTransactionMonitoringAlertsLogic = () => {
     alerts,
     isLoadingAlerts,
     assignees: sortedAssignees,
+    labels: sortedLabels,
     authenticatedUser: session?.user,
     page,
     pageSize,

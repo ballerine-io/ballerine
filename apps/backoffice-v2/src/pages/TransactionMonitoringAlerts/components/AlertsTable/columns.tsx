@@ -44,6 +44,10 @@ export const columns = [
     },
     header: 'Date & Time',
   }),
+  columnHelper.accessor('label', {
+    cell: info => <Badge variant={'secondary'}>{info.getValue()}</Badge>,
+    header: 'Label',
+  }),
   columnHelper.accessor('merchant.name', {
     cell: info => {
       const merchant = info.getValue();
