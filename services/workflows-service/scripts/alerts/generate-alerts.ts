@@ -143,6 +143,34 @@ export const ALERT_INLINE_RULES = [
   defaultSeverity: AlertSeverity;
 }[];
 
+function createData(
+  { inlineRule, defaultSeverity, label }: (typeof ALERT_INLINE_RULES)[number],
+  createdBy: string,
+  project: Project,
+) {
+  return {
+    label: label,
+    type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
+    name: faker.lorem.words(3),
+    enabled: faker.datatype.boolean(),
+    description: faker.lorem.sentence(),
+    rulesetId: `set-${inlineRule.id}`,
+    defaultSeverity,
+    ruleId: inlineRule.id,
+    createdBy: createdBy,
+    modifiedBy: createdBy,
+    dedupeStrategies: {
+      strategy: {},
+      cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
+    },
+    config: { config: {} },
+    inlineRule,
+    tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
+    additionalInfo: {},
+    projectId: project.id,
+  };
+}
+
 export const generateAlertDefinitions = async (
   prisma: PrismaClient | PrismaTransaction,
   {
@@ -154,31 +182,13 @@ export const generateAlertDefinitions = async (
   },
 ) =>
   Promise.all(
-    ALERT_INLINE_RULES.map(({ inlineRule, defaultSeverity, label }) =>
-      prisma.alertDefinition.create({
+    ALERT_INLINE_RULES.map(inlineRule =>
+      prisma.alertDefinition.upsert({
+        where: { label_projectId: { label: inlineRule.label, projectId: project.id } },
+        create: createData(inlineRule, createdBy, project),
+        update: createData(inlineRule, createdBy, project),
         include: {
           alert: true,
-        },
-        data: {
-          label,
-          type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
-          name: faker.lorem.words(3),
-          enabled: faker.datatype.boolean(),
-          description: faker.lorem.sentence(),
-          rulesetId: `set-${inlineRule.id}`,
-          defaultSeverity,
-          ruleId: inlineRule.id,
-          createdBy: createdBy,
-          modifiedBy: createdBy,
-          dedupeStrategies: {
-            strategy: {},
-            cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
-          },
-          config: { config: {} },
-          inlineRule,
-          tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
-          additionalInfo: {},
-          projectId: project.id,
         },
       }),
     ),
