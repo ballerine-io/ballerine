@@ -34,6 +34,8 @@ import {
   DefaultContextSchema,
   getDocumentId,
   isErrorWithMessage,
+  isObject,
+  ProcessStatus,
 } from '@ballerine/common';
 import {
   ARRAY_MERGE_OPTION,
@@ -280,6 +282,27 @@ export class WorkflowService {
               workflow.workflowDefinition.documentsSchema,
             );
           },
+        ),
+        pluginsOutput: Object.fromEntries(
+          Object.entries(workflow.context.pluginsOutput || {}).map(([pluginName, pluginValue]) => {
+            if (isObject(pluginValue) && pluginValue.status === ProcessStatus.IN_PROGRESS) {
+              const parsedDate = new Date(pluginValue.invokedAt);
+
+              const TIMEOUT_IN_MS = 24 * 60 * 60 * 1000;
+
+              return [
+                pluginName,
+                {
+                  ...pluginValue,
+                  ...(parsedDate && !isNaN(parsedDate.getTime())
+                    ? { isRequestTimedOut: Date.now() - parsedDate.getTime() > TIMEOUT_IN_MS }
+                    : {}),
+                },
+              ];
+            }
+
+            return [pluginName, pluginValue];
+          }),
         ),
       },
       entity: getEntity(workflow),
