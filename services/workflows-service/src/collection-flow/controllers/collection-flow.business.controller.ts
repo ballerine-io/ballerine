@@ -1,10 +1,8 @@
 import { BusinessService } from '@/business/business.service';
-import { Public } from '@/common/decorators/public.decorator';
 import { UseTokenAuthGuard } from '@/common/guards/token-guard/use-token-auth.decorator';
 import { Controller, Get, Query } from '@nestjs/common';
 import { GetBusinessInformationDto } from '../dto/get-business-information-input.dto';
 
-@Public()
 @UseTokenAuthGuard()
 @Controller('collection-flow/business')
 export class CollectionFlowBusinessController {
