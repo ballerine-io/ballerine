@@ -16,7 +16,7 @@ import { AlertExecutionStatus } from './consts';
 
 // TODO: move to utils
 
-const findValNoCase = (obj: { [key: string]: unknown }, prop: string) => {
+const findByKeyNoCase = (obj: { [key: string]: unknown }, prop: string) => {
   prop = (prop + '').toLowerCase();
   for (let p in obj) {
     if (p in obj && prop === `${p}`.toLowerCase()) {
