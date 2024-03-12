@@ -32,6 +32,7 @@ export const useProcessTrackerLogic = ({
     () => tags?.find(tag => tagToAccordionCardItem[tag as keyof typeof tagToAccordionCardItem]),
     [tags],
   );
+
   const steps = useMemo(() => {
     return Object.keys(context?.flowConfig?.stepsProgress ?? {})?.sort((a, b) => {
       return (
@@ -51,6 +52,7 @@ export const useProcessTrackerLogic = ({
     },
     [context?.flowConfig?.stepsProgress],
   );
+
   const getPluginByName = useCallback(
     (name: string) => {
       let plugin: NonNullable<TWorkflowById['context']['pluginsOutput']>[string];
@@ -67,6 +69,7 @@ export const useProcessTrackerLogic = ({
     },
     [context?.pluginsOutput],
   );
+
   const getUboFlowStatus = useCallback((tags: TWorkflowById['tags']) => {
     const tag = tags?.find(tag => tagToIcon[tag as keyof typeof tagToIcon]);
 
@@ -85,11 +88,21 @@ export const useProcessTrackerLogic = ({
       };
     });
   }, [getCollectionFlowStatus, steps]);
+
   const thirdPartyProcessesSubitems = useMemo(() => {
     return plugins
       ?.filter(({ name }) => pluginsWhiteList.includes(name as (typeof pluginsWhiteList)[number]))
       ?.map(({ displayName, name }) => {
-        const pluginStatus = getPluginByName(name)?.status ?? ProcessStatus.DEFAULT;
+        const plugin = getPluginByName(name);
+
+        if (plugin?.isRequestTimedOut) {
+          return {
+            text: <span className={`text-slate-400/40 line-through`}>{displayName}</span>,
+            leftIcon: processStatusToIcon[ProcessStatus.CANCELED],
+          };
+        }
+
+        const pluginStatus = plugin?.status ?? ProcessStatus.DEFAULT;
 
         return {
           text:
@@ -102,6 +115,7 @@ export const useProcessTrackerLogic = ({
         };
       });
   }, [getPluginByName, plugins]);
+
   const uboFlowsSubitems = useMemo(() => {
     return kycChildWorkflows?.map(({ context, tags }) => {
       return {
@@ -115,7 +129,7 @@ export const useProcessTrackerLogic = ({
 
   useEffect(() => {
     onValueChange(tagToAccordionCardItem[tag as keyof typeof tagToAccordionCardItem]);
-  }, [tag]);
+  }, [onValueChange, tag]);
 
   return {
     uncollapsedItemValue,
