@@ -13,17 +13,7 @@ import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.r
 import { InlineRule } from '@/data-analytics/types';
 import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
-
-// TODO: move to utils
-
-const findValNoCase = (obj: { [key: string]: unknown }, prop: string) => {
-  prop = (prop + '').toLowerCase();
-  for (let p in obj) {
-    if (p in obj && prop === `${p}`.toLowerCase()) {
-      return obj[p];
-    }
-  }
-};
+import { findByKeyCaseInsensitive } from '@/common/schemas';
 
 @Injectable()
 export class AlertService {
@@ -167,13 +157,12 @@ export class AlertService {
     const alertsPromises = ruleExecutionResults.map(
       async (executionRow: Record<string, unknown>) => {
         try {
-          if (
-            _.some(inlineRule.subjects, field => {
-              const val = findValNoCase(executionRow, field);
+          const isAnySubjectUndefinedOrNull = _.some(inlineRule.subjects, field => {
+            const val = findByKeyCaseInsensitive(executionRow, field);
+            return _.isNull(val) || _.isUndefined(val);
+          });
 
-              return _.isNull(val) || _.isUndefined(val);
-            })
-          ) {
+          if (isAnySubjectUndefinedOrNull) {
             this.logger.error(`Alert aggregated row is missing properties `, {
               inlineRule,
               aggregatedRow: executionRow,

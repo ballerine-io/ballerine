@@ -45,6 +45,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
       ],
     });
 
+    // This is a workaround for the issue with BigInt serialization in Prisma
+    // https://stackoverflow.com/questions/75947475/prisma-typeerror-do-not-know-how-to-serialize-a-bigint
     BigInt.prototype.toJSON = function () {
       return this.toString();
     };

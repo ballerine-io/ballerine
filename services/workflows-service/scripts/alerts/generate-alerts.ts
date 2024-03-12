@@ -104,6 +104,7 @@ export const ALERT_INLINE_RULES = [
         havingAggregate: AggregateType.COUNT,
 
         direction: 'inbound',
+        // TODO: add excludedCounterparty
         // excludedCounterparty: ['9999999999999999', '999999******9999'],
 
         paymentMethods: [PaymentMethod.credit_card],
@@ -132,6 +133,7 @@ export const ALERT_INLINE_RULES = [
         havingAggregate: AggregateType.COUNT,
 
         direction: 'inbound',
+        // TODO: add excludedCounterparty
         // excludedCounterparty: ['9999999999999999', '999999******9999'],
 
         paymentMethods: [PaymentMethod.credit_card],
@@ -160,6 +162,7 @@ export const ALERT_INLINE_RULES = [
         havingAggregate: AggregateType.SUM,
 
         direction: 'inbound',
+        // TODO: add excludedCounterparty
         // excludedCounterparty: ['9999999999999999', '999999******9999'],
 
         paymentMethods: [PaymentMethod.credit_card],
@@ -184,6 +187,7 @@ export const ALERT_INLINE_RULES = [
         havingAggregate: AggregateType.SUM,
 
         direction: 'inbound',
+        // TODO: add excludedCounterparty
         // excludedCounterparty: ['9999999999999999', '999999******9999'],
 
         paymentMethods: [PaymentMethod.credit_card],
@@ -207,6 +211,7 @@ export const ALERT_INLINE_RULES = [
         havingAggregate: AggregateType.COUNT,
 
         direction: 'inbound',
+        // TODO: add excludedCounterparty
         // excludedCounterparty: ['9999999999999999', '999999******9999'],
 
         paymentMethods: [PaymentMethod.credit_card],
@@ -230,6 +235,7 @@ export const ALERT_INLINE_RULES = [
         havingAggregate: AggregateType.COUNT,
 
         direction: 'inbound',
+        // TODO: add excludedCounterparty
         // excludedCounterparty: ['9999999999999999', '999999******9999'],
 
         paymentMethods: [PaymentMethod.credit_card],
