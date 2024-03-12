@@ -31,7 +31,7 @@ export const useTransactionMonitoringAlertsLogic = () => {
     [assignees, session?.user?.id],
   );
   const { data: labels } = useAlertLabelsQuery();
-  const sortedLabels = useMemo(() => labels?.sort(), [labels]);
+  const sortedLabels = useMemo(() => labels?.slice()?.sort(), [labels]);
   const { onPaginate, onPrevPage, onNextPage } = usePagination();
   const isLastPage = (alerts?.length ?? 0) < pageSize || alerts?.length === 0;
   const { search, onSearch } = useSearch({
