@@ -11,6 +11,7 @@ const prismaExtendedClient = (prismaClient: PrismaClient) =>
           // Get the current model at runtime
           const context = Prisma.getExtensionContext(this);
           const result = await (context as any).findFirst({ where });
+
           return result !== null;
         },
         async softDelete<M, A>(
@@ -44,6 +45,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
         },
       ],
     });
+
+    // This is a workaround for the issue with BigInt serialization in Prisma
+    // https://stackoverflow.com/questions/75947475/prisma-typeerror-do-not-know-how-to-serialize-a-bigint
+    BigInt.prototype.toJSON = function () {
+      return this.toString();
+    };
   }
 
   async onModuleInit() {

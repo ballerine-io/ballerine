@@ -409,6 +409,7 @@ describe('#TransactionControllerExternal', () => {
       // Assert
       expect(response.status).toBe(201);
       expect(response.body).toHaveLength(5);
+
       for (const [i, transaction] of transactions.entries()) {
         expect(response.body[i]).toEqual({
           status: BulkStatus.SUCCESS,

@@ -46,13 +46,13 @@ export const columns = [
   }),
   columnHelper.accessor('label', {
     cell: info => {
-    const label = info.getValue();
-    
-    return (
-      <Badge variant="secondary" className="max-w-[8rem]" title={label}>
-        <div className="truncate">{label}</div>
-      </Badge>
-    )
+      const label = info.getValue();
+
+      return (
+        <Badge variant="secondary" className="max-w-[8rem]" title={label}>
+          <div className="truncate">{label}</div>
+        </Badge>
+      );
     },
     header: 'Label',
   }),

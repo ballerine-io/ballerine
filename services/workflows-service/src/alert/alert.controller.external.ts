@@ -179,6 +179,7 @@ export class AlertControllerExternal {
           status: BulkStatus.SUCCESS,
         };
       }
+
       return {
         alertId,
         status: BulkStatus.FAILED,

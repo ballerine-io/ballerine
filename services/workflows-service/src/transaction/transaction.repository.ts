@@ -78,6 +78,7 @@ export class TransactionRepository {
         gte: getTransactionsParameters.startDate,
       };
     }
+
     if (getTransactionsParameters.endDate) {
       whereClause.transactionDate = {
         ...(whereClause.transactionDate as DateTimeFilter),

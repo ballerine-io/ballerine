@@ -122,6 +122,7 @@ class SwaggerSingleton {
   initialize(app: INestApplication, version: string = SWAGGER_VERSION.V3) {
     this._setup(app);
     this.document.openapi = version;
+
     return this;
   }
 }

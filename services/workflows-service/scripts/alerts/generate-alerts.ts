@@ -1,4 +1,8 @@
-import { InlineRule, TransactionsAgainstDynamicRulesType } from '../../src/data-analytics/types';
+import {
+  InlineRule,
+  TCustomersTransactionTypeOptions,
+  TransactionsAgainstDynamicRulesType,
+} from '../../src/data-analytics/types';
 import {
   AlertSeverity,
   AlertState,
@@ -9,6 +13,7 @@ import {
   Prisma,
   PrismaClient,
   Project,
+  TransactionRecordType,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { AggregateType } from '../../src/data-analytics/consts';
@@ -32,13 +37,15 @@ export const ALERT_INLINE_RULES = [
     inlineRule: {
       id: 'PAY_HCA_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId'],
+      subjects: ['counterpartyid'],
       options: {
-        groupByBusiness: true,
         havingAggregate: AggregateType.SUM,
 
         direction: 'inbound',
-        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
@@ -47,6 +54,8 @@ export const ALERT_INLINE_RULES = [
         timeUnit: 'days',
 
         amountThreshold: 1000,
+
+        groupBy: ['counterpartyBeneficiaryId'],
       } as TransactionsAgainstDynamicRulesType,
     },
   },
@@ -60,13 +69,15 @@ export const ALERT_INLINE_RULES = [
     inlineRule: {
       id: 'PAY_HCA_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId'],
+      subjects: ['counterpartyid'],
       options: {
-        groupByBusiness: true,
         havingAggregate: AggregateType.SUM,
 
         direction: 'inbound',
-        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: true,
@@ -75,6 +86,8 @@ export const ALERT_INLINE_RULES = [
         timeUnit: 'days',
 
         amountThreshold: 1000,
+
+        groupBy: ['counterpartyBeneficiaryId'],
       } as TransactionsAgainstDynamicRulesType,
     },
   },
@@ -94,7 +107,8 @@ export const ALERT_INLINE_RULES = [
         havingAggregate: AggregateType.COUNT,
 
         direction: 'inbound',
-        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+        // TODO: add excludedCounterparty
+        // excludedCounterparty: ['9999999999999999', '999999******9999'],
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
@@ -123,7 +137,8 @@ export const ALERT_INLINE_RULES = [
         havingAggregate: AggregateType.COUNT,
 
         direction: 'inbound',
-        excludedCounterpartyIds: ['9999999999999999', '999999******9999'],
+        // TODO: add excludedCounterparty
+        // excludedCounterparty: ['9999999999999999', '999999******9999'],
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
@@ -136,6 +151,155 @@ export const ALERT_INLINE_RULES = [
         amountThreshold: 5,
       } as TransactionsAgainstDynamicRulesType,
     },
+  },
+  {
+    label: 'HCAI_CC',
+    defaultSeverity: AlertSeverity.medium,
+    inlineRule: {
+      id: 'HCAI_CC',
+      fnName: 'evaluateTransactionsAgainstDynamicRules',
+      subjects: ['businessId', 'counterpartyOriginatorId'],
+      options: {
+        groupByBusiness: true,
+        groupByCounterparty: true,
+
+        havingAggregate: AggregateType.SUM,
+
+        direction: 'inbound',
+        // TODO: add excludedCounterparty
+        // excludedCounterparty: ['9999999999999999', '999999******9999'],
+
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: false,
+
+        timeAmount: 7,
+        timeUnit: 'days',
+
+        amountThreshold: 3000,
+      } as TransactionsAgainstDynamicRulesType,
+    },
+  },
+  {
+    label: 'HACI_APM',
+    defaultSeverity: AlertSeverity.medium,
+    inlineRule: {
+      id: 'HACI_APM',
+      fnName: 'evaluateTransactionsAgainstDynamicRules',
+      subjects: ['businessId', 'counterpartyOriginatorId'],
+      options: {
+        groupByBusiness: true,
+        groupByCounterparty: true,
+        havingAggregate: AggregateType.SUM,
+
+        direction: 'inbound',
+        // TODO: add excludedCounterparty
+        // excludedCounterparty: ['9999999999999999', '999999******9999'],
+
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: true,
+
+        timeAmount: 7,
+        timeUnit: 'days',
+
+        amountThreshold: 3000,
+      } as TransactionsAgainstDynamicRulesType,
+    },
+  },
+  {
+    label: 'HVIC_CC',
+    defaultSeverity: AlertSeverity.medium,
+    inlineRule: {
+      id: 'HVIC_CC',
+      fnName: 'evaluateTransactionsAgainstDynamicRules',
+      subjects: ['businessId', 'counterpartyOriginatorId'],
+      options: {
+        groupByBusiness: true,
+        havingAggregate: AggregateType.COUNT,
+
+        direction: 'inbound',
+        // TODO: add excludedCounterparty
+        // excludedCounterparty: ['9999999999999999', '999999******9999'],
+
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: false,
+
+        timeAmount: 7,
+        timeUnit: 'days',
+
+        amountThreshold: 2,
+      } as TransactionsAgainstDynamicRulesType,
+    },
+  },
+  {
+    label: 'CHVC_C',
+    defaultSeverity: AlertSeverity.medium,
+    inlineRule: {
+      id: 'CHVC_C',
+      fnName: 'evaluateCustomersTransactionType',
+      subjects: ['businessId'],
+      options: {
+        transactionType: [TransactionRecordType.chargeback],
+        threshold: 14,
+        timeAmount: 7,
+        timeUnit: 'days',
+        isPerBrand: false,
+        havingAggregate: AggregateType.COUNT,
+      } as TCustomersTransactionTypeOptions,
+    },
+  },
+  {
+    label: 'SHCAC_C',
+    defaultSeverity: AlertSeverity.medium,
+    inlineRule: {
+      id: 'SHCAC_C',
+      fnName: 'evaluateCustomersTransactionType',
+      subjects: ['businessId'],
+      options: {
+        transactionType: [TransactionRecordType.chargeback],
+        threshold: 5_000,
+        timeAmount: 7,
+        timeUnit: 'days',
+        isPerBrand: false,
+        havingAggregate: AggregateType.SUM,
+      } as TCustomersTransactionTypeOptions,
+    },
+  },
+
+  {
+    label: 'CHCR_C',
+    defaultSeverity: AlertSeverity.medium,
+    inlineRule: {
+      id: 'CHCR_C',
+      fnName: 'evaluateCustomersTransactionType',
+      subjects: ['businessId'],
+      options: {
+        transactionType: [TransactionRecordType.refund],
+        paymentMethods: [PaymentMethod.credit_card],
+        threshold: 14,
+        timeAmount: 7,
+        timeUnit: 'days',
+        isPerBrand: false,
+        havingAggregate: AggregateType.COUNT,
+      } as TCustomersTransactionTypeOptions,
+    },
+  },
+  {
+    label: 'SHCAR_C',
+    defaultSeverity: AlertSeverity.medium,
+    inlineRule: {
+      id: 'SHCAR_C',
+      fnName: 'evaluateCustomersTransactionType',
+      subjects: ['businessId'],
+      options: {
+        transactionType: [TransactionRecordType.refund],
+        paymentMethods: [PaymentMethod.credit_card],
+        threshold: 5_000,
+        timeAmount: 7,
+        timeUnit: 'days',
+        isPerBrand: false,
+        havingAggregate: AggregateType.SUM,
+      } as TCustomersTransactionTypeOptions,
+    } as const satisfies InlineRule,
   },
 ] as const satisfies ReadonlyArray<{
   inlineRule: InlineRule;
@@ -179,7 +343,8 @@ export const generateAlertDefinitions = async (
   },
 ) =>
   Promise.all(
-    ALERT_INLINE_RULES.map(inlineRule =>
+    // TODO: remove slice once all rules are ready
+    ALERT_INLINE_RULES.slice(0, 2).map(inlineRule =>
       prisma.alertDefinition.upsert({
         where: { label_projectId: { label: inlineRule.label, projectId: project.id } },
         create: createData(inlineRule, createdBy, project),

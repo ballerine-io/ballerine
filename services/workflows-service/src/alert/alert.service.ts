@@ -5,7 +5,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { isFkConstraintError } from '@/prisma/prisma.util';
 import { ObjectValues, TProjectId } from '@/types';
 import { Injectable } from '@nestjs/common';
-import { Alert, AlertDefinition, AlertState, AlertStatus, Prisma } from '@prisma/client';
+import { Alert, AlertDefinition, AlertState, AlertStatus } from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
@@ -13,8 +13,7 @@ import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.r
 import { InlineRule } from '@/data-analytics/types';
 import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
-
-// TODO: move to utils
+import { findByKeyCaseInsensitive } from '@/common/schemas';
 
 @Injectable()
 export class AlertService {
@@ -121,10 +120,17 @@ export class AlertService {
     const alertDefinitions = await this.getAllAlertDefinitions();
 
     for (const definition of alertDefinitions) {
-      const triggered = await this.checkAlert(definition);
+      try {
+        const triggered = await this.checkAlert(definition);
 
-      if (triggered) {
-        this.logger.log(`Alert triggered for alert definition '${definition.id}'`);
+        if (triggered) {
+          this.logger.log(`Alert triggered for alert definition '${definition.id}'`);
+        }
+      } catch (error) {
+        this.logger.error('Error while checking alert', {
+          error,
+          definitionId: definition.id,
+        });
       }
     }
   }
@@ -156,12 +162,13 @@ export class AlertService {
     const alertsPromises = ruleExecutionResults.map(
       async (executionRow: Record<string, unknown>) => {
         try {
-          if (
-            _.some(
-              inlineRule.subjects,
-              field => _.isNull(executionRow[field]) || _.isUndefined(executionRow[field]),
-            )
-          ) {
+          const isAnySubjectUndefinedOrNull = _.some(inlineRule.subjects, field => {
+            const val = findByKeyCaseInsensitive(executionRow, field);
+
+            return _.isNull(val) || _.isUndefined(val);
+          });
+
+          if (isAnySubjectUndefinedOrNull) {
             this.logger.error(`Alert aggregated row is missing properties `, {
               inlineRule,
               aggregatedRow: executionRow,
@@ -175,7 +182,11 @@ export class AlertService {
             });
           }
 
-          const subjectResult = _.pick(executionRow, inlineRule.subjects);
+          const subjectResult = _.map(_.pick(executionRow, inlineRule.subjects), (value, key) => {
+            key = key.toLowerCase() === 'counterpartyid' ? 'counterpartyId' : key;
+
+            return { [key]: value };
+          });
 
           if (await this.isDuplicateAlert(alertDefinition, subjectResult)) {
             return alertResponse.skipped.push({
@@ -213,7 +224,7 @@ export class AlertService {
 
   private createAlert(
     alertDef: AlertDefinition,
-    data: Pick<Prisma.AlertUncheckedCreateInput, 'counterpartyId'>,
+    data: Array<{ [key: string]: unknown }>,
   ): Promise<Alert> {
     return this.alertRepository.create({
       data: {
@@ -224,18 +235,19 @@ export class AlertService {
         state: AlertState.triggered,
         status: AlertStatus.new,
         executionDetails: {},
-        ...data,
+        ...Object.assign({}, ...(data || [])),
       },
     });
   }
 
-  private async isDuplicateAlert(alertDef: AlertDefinition, data: object): Promise<boolean> {
-    const filters = _.map(data, (value, key) => ({ [key]: value })) || [];
-
+  private async isDuplicateAlert(
+    alertDef: AlertDefinition,
+    data: Array<{ [key: string]: unknown }>,
+  ): Promise<boolean> {
     return await this.alertRepository.exists(
       {
         where: {
-          AND: [{ alertDefinitionId: alertDef.id }, ...filters],
+          AND: [{ alertDefinitionId: alertDef.id }, ...data],
         },
       },
       [alertDef.projectId],

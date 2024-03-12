@@ -1,5 +1,15 @@
 import z from 'zod';
 
+export const findByKeyCaseInsensitive = (obj: { [key: string]: unknown }, prop: string) => {
+  const lowerProp = `${prop}`.toLowerCase();
+
+  for (const p in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, p) && lowerProp === `${p}`.toLowerCase()) {
+      return obj[p];
+    }
+  }
+};
+
 export const PropertyKeySchema = z.union([z.string(), z.number(), z.symbol()]);
 
 export const RecordAnySchema = z.record(PropertyKeySchema, z.any());

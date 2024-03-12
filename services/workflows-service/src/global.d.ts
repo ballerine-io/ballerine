@@ -2,7 +2,6 @@ declare module '@prisma/client' {
   import type {
     WorkflowRuntimeData as _WorkflowRuntimeData,
     WorkflowDefinition as _WorkflowDefinition,
-    Customer as Customer_,
     Alert as _Alert,
   } from '@prisma/client/index';
   import type { WorkflowConfig } from '@/workflow/schemas/zod-schemas';
