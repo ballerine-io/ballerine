@@ -16,12 +16,14 @@ export const getAlertsSearchSchema = (authenticatedUserId: string | null) =>
         status: z.array(z.enum(AlertStatuses)).catch([AlertStatus.NEW]),
         state: z.array(z.string().nullable()).catch([]),
         alertType: z.array(z.enum(AlertTypes)).catch([]),
+        label: z.array(z.string()).catch([]),
       })
       .catch({
         assigneeId: [],
         status: [AlertStatus.NEW],
         state: [],
         alertType: [],
+        label: [],
       }),
     selected: BooleanishSchema.optional(),
     businessId: z.string().optional(),

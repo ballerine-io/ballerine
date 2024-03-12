@@ -142,28 +142,17 @@ async function seed() {
     projectId: project1.id,
   });
 
+  const project2 = await createProject(client, customer2, '2');
+
+  const [adminUser, ...agentUsers] = await createUsers({ project1, project2 }, client);
+
   await generateFakeAlertDefinitions(client, {
     project: project1,
-    customer: customer,
-    ids: [...ids1, ...ids2]
+    counterparyIds: [...ids1, ...ids2]
       .map(({ counterpartyOriginatorId }) => counterpartyOriginatorId)
       .filter(Boolean) as string[],
+    agentUserIds: agentUsers.map(({ id }) => id),
   });
-
-  const project2 = await createProject(client, customer2, '2');
-  const adminUser = {
-    email: 'admin@admin.com',
-    firstName: faker.name.firstName(),
-    lastName: faker.name.lastName(),
-    password: await hash('admin', BCRYPT_SALT),
-    roles: ['user'],
-    avatarUrl: faker.image.people(200, 200, true),
-    userToProjects: {
-      create: { projectId: project1.id },
-    },
-  };
-
-  const [dbAdminUser, ...restDbUsers] = await createUsers({ project1, project2 }, client);
 
   const kycManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
   const kybManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9bbb';
