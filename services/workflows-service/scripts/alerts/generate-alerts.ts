@@ -137,40 +137,37 @@ export const ALERT_INLINE_RULES = [
       } as TransactionsAgainstDynamicRulesType,
     },
   },
-] as const satisfies readonly {
+] as const satisfies ReadonlyArray<{
   inlineRule: InlineRule;
   label: string;
   defaultSeverity: AlertSeverity;
-}[];
+}>;
 
-function createData(
+const createData = (
   { inlineRule, defaultSeverity, label }: (typeof ALERT_INLINE_RULES)[number],
   createdBy: string,
   project: Project,
-) {
-  return {
-    label: label,
-    type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
-    name: faker.lorem.words(3),
-    enabled: faker.datatype.boolean(),
-    description: faker.lorem.sentence(),
-    rulesetId: `set-${inlineRule.id}`,
-    defaultSeverity,
-    ruleId: inlineRule.id,
-    createdBy: createdBy,
-    modifiedBy: createdBy,
-    dedupeStrategies: {
-      strategy: {},
-      cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
-    },
-    config: { config: {} },
-    inlineRule,
-    tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
-    additionalInfo: {},
-    projectId: project.id,
-  };
-}
-
+) => ({
+  label: label,
+  type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
+  name: faker.lorem.words(3),
+  enabled: faker.datatype.boolean(),
+  description: faker.lorem.sentence(),
+  rulesetId: `set-${inlineRule.id}`,
+  defaultSeverity,
+  ruleId: inlineRule.id,
+  createdBy: createdBy,
+  modifiedBy: createdBy,
+  dedupeStrategies: {
+    strategy: {},
+    cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
+  },
+  config: { config: {} },
+  inlineRule,
+  tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
+  additionalInfo: {},
+  projectId: project.id,
+});
 export const generateAlertDefinitions = async (
   prisma: PrismaClient | PrismaTransaction,
   {
