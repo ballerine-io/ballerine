@@ -22,13 +22,14 @@ export const getTabsDefinition = (blocks: any[]) => {
     parentDocumentBlocks,
     associatedCompaniesBlock,
     associatedCompaniesInformationBlock,
+    processTrackerBlock,
   ] = blocks;
 
   const tabs: TCaseTabDefinition[] = [
     {
       name: 'summary',
       displayName: 'Summary',
-      blocks: [...websiteMonitoringBlock, ...entityInfoBlock],
+      blocks: [...processTrackerBlock, ...websiteMonitoringBlock, ...entityInfoBlock],
     },
     {
       name: 'company_information',

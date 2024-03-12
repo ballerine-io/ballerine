@@ -1,11 +1,3 @@
-import { Block } from '@ballerine/blocks';
-import { ComponentProps, ReactNode } from 'react';
-import { MotionBadge } from '@/common/components/molecules/MotionBadge/MotionBadge';
-import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { GenericAsyncFunction, GenericFunction } from '@/common/types';
-import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { AnyObject } from '@ballerine/ui';
-import { CommonWorkflowStates } from '@ballerine/common';
 import {
   Table,
   TableBody,
@@ -15,11 +7,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/common/components/atoms/Table';
-import { ColumnDef, TableOptions } from '@tanstack/react-table';
 import { Dialog } from '@/common/components/molecules/Dialog/Dialog';
-import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
+import { MotionBadge } from '@/common/components/molecules/MotionBadge/MotionBadge';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { IProcessTrackerProps } from '@/common/components/molecules/ProcessTracker/interfaces';
+import { GenericAsyncFunction, GenericFunction } from '@/common/types';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ICallToActionLegacyProps } from '@/lib/blocks/components/CallToActionLegacy/interfaces';
+import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
 import { IEditableDetailsDocument } from '@/lib/blocks/components/EditableDetails/interfaces';
+import { Block } from '@ballerine/blocks';
+import { CommonWorkflowStates } from '@ballerine/common';
+import { AnyObject } from '@ballerine/ui';
+import { ColumnDef, TableOptions } from '@tanstack/react-table';
+import { ComponentProps, ReactNode } from 'react';
 
 export type TBlockCell = {
   type: 'block';
@@ -188,7 +189,7 @@ export type TTableCell = {
   value: {
     caption?: ComponentProps<typeof TableCaption>['children'];
     columns: Array<ColumnDef<unknown>>;
-    data: Array<unknown>;
+    data: unknown[];
     props?: {
       table?: ComponentProps<typeof Table>;
       header?: ComponentProps<typeof TableHeader>;
@@ -213,6 +214,10 @@ export type TDialogCell = {
   value: ComponentProps<typeof Dialog>;
 };
 
+export type TProcessTrackerBlock = {
+  type: 'processTracker';
+} & IProcessTrackerProps;
+
 export type TCell =
   | TBlockCell
   | TContainerCell
@@ -231,4 +236,5 @@ export type TCell =
   | TCaseCallToActionLegacyCell
   | TTableCell
   | TParagraphCell
-  | TDialogCell;
+  | TDialogCell
+  | TProcessTrackerBlock;

@@ -25,6 +25,7 @@ import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBl
 import { useMainContactBlock } from '@/lib/blocks/hooks/useMainContactBlock/useMainContactBlock';
 import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
 import { useMapBlock } from '@/lib/blocks/hooks/useMapBlock/useMapBlock';
+import { useProcessTrackerBlock } from '@/lib/blocks/hooks/useProcessTrackerBlock/useProcessTrackerBlock';
 import { useProcessingDetailsBlock } from '@/lib/blocks/hooks/useProcessingDetailsBlock/useProcessingDetailsBlock';
 import { useRegistryInfoBlock } from '@/lib/blocks/hooks/useRegistryInfoBlock/useRegistryInfoBlock';
 import { useStoreInfoBlock } from '@/lib/blocks/hooks/useStoreInfoBlock/useStoreInfoBlock';
@@ -312,6 +313,8 @@ export const useDefaultBlocksLogic = () => {
     [mutateEvent],
   );
 
+  const processTrackerBlock = useProcessTrackerBlock();
+
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
     workflows: kybChildWorkflows,
     onClose,
@@ -386,6 +389,7 @@ export const useDefaultBlocksLogic = () => {
       parentDocumentBlocks,
       associatedCompaniesBlock,
       associatedCompaniesInformationBlock,
+      processTrackerBlock,
     ];
   }, [
     associatedCompaniesBlock,
@@ -408,6 +412,7 @@ export const useDefaultBlocksLogic = () => {
     ubosRegistryProvidedBlock,
     websiteBasicRequirementBlock,
     websiteMonitoringBlock,
+    processTrackerBlock,
     workflow?.context?.entity,
   ]);
 

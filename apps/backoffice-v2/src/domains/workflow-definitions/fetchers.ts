@@ -1,11 +1,11 @@
-import { WorkflowDefinitionVariant } from '@ballerine/common';
-import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
-import { z } from 'zod';
 import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
-import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { env } from '@/common/env/env';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
+import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
+import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
+import { WorkflowDefinitionVariant } from '@ballerine/common';
+import { z } from 'zod';
 
 export const PluginSchema = z.object({
   name: z.string(),
@@ -19,6 +19,14 @@ export const WorkflowDefinitionConfigSchema = z
     enableManualCreation: z.boolean().default(false),
     isManualCreation: z.boolean().default(false),
     isAssociatedCompanyKybEnabled: z.boolean().default(false),
+    theme: z
+      .object({
+        type: z.union([z.literal('kyb'), z.literal('kyc'), z.literal('documents-review')]),
+        tabsOverride: z.array(z.string()).optional(),
+      })
+      .default({
+        type: 'kyb',
+      }),
   })
   .passthrough()
   .nullable();
