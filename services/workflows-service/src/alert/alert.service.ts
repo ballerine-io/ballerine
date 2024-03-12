@@ -170,7 +170,8 @@ export class AlertService {
           if (
             _.some(inlineRule.subjects, field => {
               const val = findValNoCase(executionRow, field);
-              _.isNull(val) || _.isUndefined(val);
+
+              return _.isNull(val) || _.isUndefined(val);
             })
           ) {
             this.logger.error(`Alert aggregated row is missing properties `, {
