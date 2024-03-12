@@ -10,6 +10,7 @@ import {
 import { AggregateType } from './consts';
 import { PaymentMethod, Prisma, TransactionDirection, TransactionRecordType } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { flatMap } from 'lodash';
 
 @Injectable()
 export class DataAnalyticsService {
@@ -81,19 +82,16 @@ export class DataAnalyticsService {
       )}'`,
     ];
 
-    const excludeCounterPartyClause: Prisma.Sql[] = [Prisma.empty];
-
     if (excludedCounterparty) {
-      const excludedBeneficiaryConditions = (
-        excludedCounterparty.counterpartyBeneficiaryIds || []
-      ).map(id => Prisma.sql`"counterpartyBeneficiaryId" NOT LIKE ${id}`);
+      (excludedCounterparty.counterpartyBeneficiaryIds || []).forEach(id =>
+        conditions.push(Prisma.sql`"counterpartyBeneficiaryId" NOT LIKE ${id}`),
+      );
 
-      const excludedOriginatorConditions = (
-        excludedCounterparty.counterpartyOriginatorIds || []
-      ).map(id => Prisma.sql`"counterpartyOriginatorId" NOT LIKE ${id}`);
-
-      conditions.push(...excludedBeneficiaryConditions, ...excludedOriginatorConditions);
+      (excludedCounterparty.counterpartyOriginatorIds || []).forEach(id =>
+        conditions.push(Prisma.sql`"counterpartyOriginatorId" NOT LIKE ${id}`),
+      );
     }
+
     if (paymentMethods.length) {
       const methodCondition = excludePaymentMethods ? `NOT IN` : `IN`;
 
@@ -115,9 +113,18 @@ export class DataAnalyticsService {
     let groupByClause: Prisma.Sql = Prisma.empty;
     if (groupBy) {
       try {
-        selectClause = Prisma.join(
-          groupBy.map(groupByField => Prisma.sql`"${Prisma.raw(groupByField)}"`),
-        );
+        selectClause = Prisma.join([
+          ...groupBy
+            .slice(0)
+            .map(groupByField => [
+              Prisma.sql`"${Prisma.raw(groupByField)}" as counterpartyId`,
+              Prisma.sql`"${Prisma.raw(groupByField)}"`,
+            ])
+            .flat(),
+          ...groupBy
+            .slice(1, groupBy.length - 1)
+            .map(groupByField => Prisma.sql`"${Prisma.raw(groupByField)}"`),
+        ]);
       } catch (err) {
         console.log(err);
       }

@@ -36,7 +36,7 @@ export const ALERT_INLINE_RULES = [
     inlineRule: {
       id: 'PAY_HCA_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyBeneficiaryId'],
+      subjects: ['counterpartyid'],
       options: {
         havingAggregate: AggregateType.SUM,
 
@@ -67,7 +67,7 @@ export const ALERT_INLINE_RULES = [
     inlineRule: {
       id: 'PAY_HCA_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: [],
+      subjects: ['counterpartyid'],
       options: {
         havingAggregate: AggregateType.SUM,
 

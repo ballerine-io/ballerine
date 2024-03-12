@@ -16,6 +16,15 @@ import { AlertExecutionStatus } from './consts';
 
 // TODO: move to utils
 
+const findValNoCase = (obj: { [key: string]: unknown }, prop: string) => {
+  prop = (prop + '').toLowerCase();
+  for (let p in obj) {
+    if (obj.hasOwnProperty(p) && prop == (p + '').toLowerCase()) {
+      return obj[p];
+    }
+  }
+};
+
 @Injectable()
 export class AlertService {
   constructor(
@@ -159,10 +168,10 @@ export class AlertService {
       async (executionRow: Record<string, unknown>) => {
         try {
           if (
-            _.some(
-              inlineRule.subjects,
-              field => _.isNull(executionRow[field]) || _.isUndefined(executionRow[field]),
-            )
+            _.some(inlineRule.subjects, field => {
+              const val = findValNoCase(executionRow, field);
+              _.isNull(val) || _.isUndefined(val);
+            })
           ) {
             this.logger.error(`Alert aggregated row is missing properties `, {
               inlineRule,
@@ -176,8 +185,10 @@ export class AlertService {
               error: new Error('Aggregated row is missing properties'),
             });
           }
-
-          const subjectResult = _.pick(executionRow, inlineRule.subjects);
+          const subjectResult = _.map(_.pick(executionRow, inlineRule.subjects), (value, key) => {
+            key = key.toLowerCase() === 'counterpartyid' ? 'counterpartyId' : key;
+            return { [key]: value };
+          });
 
           if (await this.isDuplicateAlert(alertDefinition, subjectResult)) {
             return alertResponse.skipped.push({
@@ -215,7 +226,7 @@ export class AlertService {
 
   private createAlert(
     alertDef: AlertDefinition,
-    data: Pick<Prisma.AlertUncheckedCreateInput, 'counterpartyId'>,
+    data: { [key: string]: unknown }[],
   ): Promise<Alert> {
     return this.alertRepository.create({
       data: {
@@ -226,18 +237,19 @@ export class AlertService {
         state: AlertState.triggered,
         status: AlertStatus.new,
         executionDetails: {},
-        ...data,
+        ...Object.assign({}, ...(data || [])),
       },
     });
   }
 
-  private async isDuplicateAlert(alertDef: AlertDefinition, data: object): Promise<boolean> {
-    const filters = _.map(data, (value, key) => ({ [key]: value })) || [];
-
+  private async isDuplicateAlert(
+    alertDef: AlertDefinition,
+    data: { [key: string]: unknown }[],
+  ): Promise<boolean> {
     return await this.alertRepository.exists(
       {
         where: {
-          AND: [{ alertDefinitionId: alertDef.id }, ...filters],
+          AND: [{ alertDefinitionId: alertDef.id }, ...data],
         },
       },
       [alertDef.projectId],

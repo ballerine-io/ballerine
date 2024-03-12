@@ -15,6 +15,11 @@ export type InlineRule = {
 
 export type TAggregations = keyof typeof AggregateType;
 
+export type TExcludedCounterparty = {
+  counterpartyBeneficiaryIds: string[];
+  counterpartyOriginatorIds: string[];
+};
+
 export type TransactionsAgainstDynamicRulesType = {
   projectId?: string;
   havingAggregate?: TAggregations;
@@ -22,10 +27,7 @@ export type TransactionsAgainstDynamicRulesType = {
   timeAmount?: number;
   timeUnit?: 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years';
   direction?: TransactionDirection;
-  excludedCounterparty?: {
-    counterpartyBeneficiaryIds: string[];
-    counterpartyOriginatorIds: string[];
-  };
+  excludedCounterparty?: TExcludedCounterparty;
   paymentMethods?: PaymentMethod[];
   excludePaymentMethods?: boolean;
   days?: number;
