@@ -7,6 +7,8 @@ import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/Pro
 export const Entity = () => {
   const { workflow, selectedEntity, plugins } = useEntityLogic();
 
+  console.log('THEME', workflow?.workflowDefinition?.config);
+
   // Selected entity
   return (
     <Case key={workflow?.id}>

@@ -1,18 +1,13 @@
+import { TCaseTabDefinition } from '@/lib/blocks/variants/DefaultBlocks/types/case-tab';
 import { useCallback, useMemo, useState } from 'react';
 
-export type TCaseTabDefinition = {
-  name: string;
-  displayName: string;
-  blocks: any[];
-};
-
-export const useCaseTabs = (tabs: TCaseTabDefinition[], initialTab?: string) => {
-  const [activeTabName, setActiveTabName] = useState<string>(() => {
-    return initialTab ? initialTab : (tabs.at(0)?.name as string);
+export const useCaseTabs = (tabs: TCaseTabDefinition[]) => {
+  const [activeTabName, setActiveTabName] = useState<string | null>(() => {
+    return tabs.length ? (tabs.at(0)?.name as string) : null;
   });
 
   const activeTab = useMemo(
-    () => tabs.find(tab => tab.name === activeTabName)!,
+    () => tabs?.find(tab => tab.name === activeTabName),
     [tabs, activeTabName],
   );
 
@@ -31,7 +26,6 @@ export const useCaseTabs = (tabs: TCaseTabDefinition[], initialTab?: string) => 
 
   return {
     activeTab,
-    blocks: activeTab?.blocks,
     setTab,
   };
 };

@@ -14,19 +14,21 @@ export const PluginSchema = z.object({
 
 export type TPlugin = z.infer<typeof PluginSchema>;
 
+export const WorkflowDefinitionConfigTheme = z.object({
+  type: z.union([z.literal('kyb'), z.literal('kyc'), z.literal('documents-review')]),
+  tabsOverride: z.array(z.string()).optional(),
+});
+
+export type WorkflowDefinitionConfigTheme = z.infer<typeof WorkflowDefinitionConfigTheme>;
+
 export const WorkflowDefinitionConfigSchema = z
   .object({
     enableManualCreation: z.boolean().default(false),
     isManualCreation: z.boolean().default(false),
     isAssociatedCompanyKybEnabled: z.boolean().default(false),
-    theme: z
-      .object({
-        type: z.union([z.literal('kyb'), z.literal('kyc'), z.literal('documents-review')]),
-        tabsOverride: z.array(z.string()).optional(),
-      })
-      .default({
-        type: 'kyb',
-      }),
+    theme: WorkflowDefinitionConfigTheme.default({
+      type: 'kyb',
+    }),
   })
   .passthrough()
   .nullable();

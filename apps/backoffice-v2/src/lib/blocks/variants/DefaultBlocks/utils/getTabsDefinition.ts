@@ -1,4 +1,4 @@
-import { TCaseTabDefinition } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseTabs/useCaseTabs';
+import { TCaseTabDefinition } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocks/useCaseBlocks';
 
 export const getTabsDefinition = (blocks: any[]) => {
   const [

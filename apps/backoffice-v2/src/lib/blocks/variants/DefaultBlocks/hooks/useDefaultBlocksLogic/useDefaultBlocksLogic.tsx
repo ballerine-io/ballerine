@@ -33,7 +33,7 @@ import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistry
 import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvidedBlock/useUbosUserProvidedBlock';
 import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
 import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
-import { useCaseTabs } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseTabs/useCaseTabs';
+import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocks/useCaseBlocks';
 import { getTabsDefinition } from '@/lib/blocks/variants/DefaultBlocks/utils/getTabsDefinition';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
@@ -417,7 +417,11 @@ export const useDefaultBlocksLogic = () => {
   ]);
 
   const tabsDefinition = useMemo(() => getTabsDefinition(allBlocks), [allBlocks]);
-  const { activeTab, blocks = [], setTab } = useCaseTabs(tabsDefinition);
+  const {
+    activeTab,
+    blocks = [],
+    setTab,
+  } = useCaseBlocks(allBlocks, workflow!.workflowDefinition?.config);
 
   // const blocks = useMemo(() => {
   //   if (!workflow?.context?.entity) return [];
