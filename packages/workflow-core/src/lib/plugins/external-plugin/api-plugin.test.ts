@@ -5,7 +5,7 @@ import { ISerializableHttpPluginParams } from './types';
 
 function createWorkflowRunner(
   definition: WorkflowRunnerArgs['definition'],
-  apiPluginsSchemas: Array<ISerializableHttpPluginParams>,
+  apiPluginsSchemas: ISerializableHttpPluginParams[],
 ) {
   return new WorkflowRunner({
     definition,
@@ -79,6 +79,7 @@ describe('workflow-runner', () => {
           ).pluginsOutput,
         ).toEqual({
           ballerineEnrichment: {
+            invokedAt: expect.any(Number),
             result: {
               companyInfo: {
                 companyName: 'TestCorp Ltd',

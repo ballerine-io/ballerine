@@ -51,15 +51,17 @@ export class HookCallbackHandlerService {
     const resultDestinationPathWithoutLastKey = removeLastKeyFromPath(resultDestinationPath);
     const result = get(workflowRuntime.context, resultDestinationPathWithoutLastKey);
 
+    const resultWithData = set({}, resultDestinationPath, data);
+
     if (isObject(result) && result.status) {
-      set(
-        workflowRuntime.context,
+      return set(
+        resultWithData,
         `${resultDestinationPathWithoutLastKey}.status`,
         ProcessStatus.SUCCESS,
       );
     }
 
-    return set({}, resultDestinationPath, data);
+    return resultWithData;
   }
   async mapCallbackDataToIndividual(
     data: AnyRecord,
