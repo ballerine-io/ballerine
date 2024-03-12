@@ -2,8 +2,9 @@ import z from 'zod';
 
 export const findByKeyCaseInsensitive = (obj: { [key: string]: unknown }, prop: string) => {
   const lowerProp = `${prop}`.toLowerCase();
-  for (let p in obj) {
-    if (obj.hasOwnProperty(p) && lowerProp === `${p}`.toLowerCase()) {
+
+  for (const p in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, p) && lowerProp === `${p}`.toLowerCase()) {
       return obj[p];
     }
   }

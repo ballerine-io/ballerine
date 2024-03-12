@@ -11,6 +11,7 @@ const prismaExtendedClient = (prismaClient: PrismaClient) =>
           // Get the current model at runtime
           const context = Prisma.getExtensionContext(this);
           const result = await (context as any).findFirst({ where });
+
           return result !== null;
         },
         async softDelete<M, A>(

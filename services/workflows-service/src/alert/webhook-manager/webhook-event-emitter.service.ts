@@ -17,6 +17,7 @@ export class WebhookEventEmitterService {
     config?: EventConfig,
   ) {
     config = { ...DEFAULT_CONFIG, ...(config || {}) };
+
     if (!eventName) {
       throw new Error('Event name is required');
     }

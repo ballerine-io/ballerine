@@ -5,7 +5,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { isFkConstraintError } from '@/prisma/prisma.util';
 import { ObjectValues, TProjectId } from '@/types';
 import { Injectable } from '@nestjs/common';
-import { Alert, AlertDefinition, AlertState, AlertStatus, Prisma } from '@prisma/client';
+import { Alert, AlertDefinition, AlertState, AlertStatus } from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
@@ -159,6 +159,7 @@ export class AlertService {
         try {
           const isAnySubjectUndefinedOrNull = _.some(inlineRule.subjects, field => {
             const val = findByKeyCaseInsensitive(executionRow, field);
+
             return _.isNull(val) || _.isUndefined(val);
           });
 
@@ -175,8 +176,10 @@ export class AlertService {
               error: new Error('Aggregated row is missing properties'),
             });
           }
+
           const subjectResult = _.map(_.pick(executionRow, inlineRule.subjects), (value, key) => {
             key = key.toLowerCase() === 'counterpartyid' ? 'counterpartyId' : key;
+
             return { [key]: value };
           });
 
@@ -216,7 +219,7 @@ export class AlertService {
 
   private createAlert(
     alertDef: AlertDefinition,
-    data: { [key: string]: unknown }[],
+    data: Array<{ [key: string]: unknown }>,
   ): Promise<Alert> {
     return this.alertRepository.create({
       data: {
@@ -234,7 +237,7 @@ export class AlertService {
 
   private async isDuplicateAlert(
     alertDef: AlertDefinition,
-    data: { [key: string]: unknown }[],
+    data: Array<{ [key: string]: unknown }>,
   ): Promise<boolean> {
     return await this.alertRepository.exists(
       {

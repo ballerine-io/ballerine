@@ -76,6 +76,7 @@ export const interceptAxiosRequests = (
       method: response.config.method?.toUpperCase(),
       // TODO: should we add also response's headers?
     });
+
     return response;
   });
 };

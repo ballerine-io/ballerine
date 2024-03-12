@@ -4,13 +4,11 @@ import {
   InlineRule,
   TransactionsAgainstDynamicRulesType,
   EvaluateFunctions,
-  TAggregations,
   TCustomersTransactionTypeOptions,
 } from './types';
 import { AggregateType } from './consts';
-import { PaymentMethod, Prisma, TransactionDirection, TransactionRecordType } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { flatMap } from 'lodash';
 
 @Injectable()
 export class DataAnalyticsService {
@@ -69,6 +67,7 @@ export class DataAnalyticsService {
     if (!projectId) {
       throw new Error('projectId is required');
     }
+
     if (!Array.isArray(groupBy) || groupBy.length === 0) {
       throw new Error('groupBy is required');
     }
@@ -111,6 +110,7 @@ export class DataAnalyticsService {
     // build conditional select, businessId alone, counterpartyOriginatorId alone, or both
     let selectClause: Prisma.Sql = Prisma.empty;
     let groupByClause: Prisma.Sql = Prisma.empty;
+
     if (groupBy) {
       try {
         selectClause = Prisma.join([
@@ -148,6 +148,7 @@ export class DataAnalyticsService {
         query = Prisma.sql`SELECT ${selectClause}, COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
           havingClause,
         )} > ${amountThreshold}`;
+        break;
       case AggregateType.SUM:
         havingClause = `${AggregateType.SUM}(tr."transactionBaseAmount")`;
         query = Prisma.sql`SELECT ${selectClause}, SUM(tr."transactionBaseAmount") AS "totalAmount", COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr
@@ -172,13 +173,13 @@ export class DataAnalyticsService {
     customerExpectedAmount?: number;
   }) {
     // TODO: get the customer expected amount from the customer's config
-    let conditions: Prisma.Sql[] = [
+    const conditions: Prisma.Sql[] = [
       Prisma.sql`tr."projectId" = ${projectId}`,
       Prisma.sql`jsonb_exists(config, 'customer_expected_amount') AND ((config ->> 'customer_expected_amount')::numeric * ${factor}) != ${customerExpectedAmount}`,
       Prisma.sql`tr."transactionAmount" > (config ->> 'customer_expected_amount')::numeric`,
     ];
 
-    let query: Prisma.Sql = Prisma.sql`SELECT tr."businessId" , tr."transactionAmount" FROM "TransactionRecord" as tr
+    const query: Prisma.Sql = Prisma.sql`SELECT tr."businessId" , tr."transactionAmount" FROM "TransactionRecord" as tr
     WHERE ${Prisma.join(conditions, ' AND ')} `;
 
     const results = await this.prisma.$queryRaw(query);
@@ -266,7 +267,7 @@ export class DataAnalyticsService {
       throw new Error('transactionType is required');
     }
 
-    let conditions: Prisma.Sql[] = [
+    const conditions: Prisma.Sql[] = [
       Prisma.sql`tr."projectId" = '${projectId}'`,
       Prisma.sql`tr."businessId" IS NOT NULL`,
       // TODO: should we use equation instead of IN clause?
@@ -293,6 +294,7 @@ export class DataAnalyticsService {
     };
 
     let havingClause = '';
+
     switch (havingAggregate) {
       case AggregateType.COUNT:
         havingClause = `${AggregateType.COUNT}(id)`;
@@ -304,7 +306,7 @@ export class DataAnalyticsService {
         throw new Error(`Invalid aggregate type: ${havingAggregate}`);
     }
 
-    let query = Prisma.sql`
+    const query = Prisma.sql`
       SELECT ${groupBy.clause},
       FROM "TransactionRecord" as tr
       WHERE ${Prisma.join(conditions, ' AND ')}
@@ -324,6 +326,7 @@ export class DataAnalyticsService {
     this.logger.debug('evaluateTransactionsAgainstDynamicRules results', {
       results,
     });
+
     return results;
   }
 

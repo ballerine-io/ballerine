@@ -22,6 +22,7 @@ export class AlertRepository {
     projectIds: TProjectIds,
   ) {
     const queryArgs = this.scopeService.scopeFindFirst(args, projectIds);
+
     return await this.prisma.extendedClient.alert.exists(queryArgs.where);
   }
 
@@ -31,6 +32,7 @@ export class AlertRepository {
     projectIds: TProjectIds,
   ): Promise<Alert[]> {
     const queryArgs = this.scopeService.scopeFindMany(args, projectIds);
+
     return await this.prisma.alert.findMany(queryArgs);
   }
 

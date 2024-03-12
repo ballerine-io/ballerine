@@ -1,6 +1,5 @@
 import { TransactionDirection, PaymentMethod, TransactionRecordType } from '@prisma/client';
 import { AggregateType } from './consts';
-import { GenericAsyncFunction } from '@/types';
 
 export type InlineRule = {
   id: string;

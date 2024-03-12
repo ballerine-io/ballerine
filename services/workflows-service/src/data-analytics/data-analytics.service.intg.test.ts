@@ -1,14 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from '@/prisma/prisma.service';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
-import { ClsService } from 'nestjs-cls';
 import { PaymentMethod, TransactionDirection } from '@prisma/client';
 import { DataAnalyticsService } from './data-analytics.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { ALERT_INLINE_RULES } from '../../scripts/alerts/generate-alerts';
-import { before } from 'lodash';
 
 const PROJECT_ID = 'project-id';
 
