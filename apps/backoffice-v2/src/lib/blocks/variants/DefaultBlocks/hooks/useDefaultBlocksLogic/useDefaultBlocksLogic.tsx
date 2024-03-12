@@ -1,45 +1,47 @@
-import { useParams } from 'react-router-dom';
+import { Button } from '@/common/components/atoms/Button/Button';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
-import { useCallback, useMemo } from 'react';
-import { toast } from 'sonner';
-import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
-import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { Button } from '@/common/components/atoms/Button/Button';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { Send } from 'lucide-react';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useAssociatedCompaniesInformationBlock } from '@/lib/blocks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
-import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
-import { useRegistryInfoBlock } from '@/lib/blocks/hooks/useRegistryInfoBlock/useRegistryInfoBlock';
-import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBlock/useKybRegistryInfoBlock';
-import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
-import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
-import { useMapBlock } from '@/lib/blocks/hooks/useMapBlock/useMapBlock';
-import { useStoreInfoBlock } from '@/lib/blocks/hooks/useStoreInfoBlock/useStoreInfoBlock';
-import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
-import { useBankingDetailsBlock } from '@/lib/blocks/hooks/useBankingDetailsBlock/useBankingDetailsBlock';
-import { useProcessingDetailsBlock } from '@/lib/blocks/hooks/useProcessingDetailsBlock/useProcessingDetailsBlock';
-import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
-import { useMainContactBlock } from '@/lib/blocks/hooks/useMainContactBlock/useMainContactBlock';
-import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
-import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/useUbosRegistryProvidedBlock';
-import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvidedBlock/useUbosUserProvidedBlock';
-import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
-import { useDirectorsBlocks } from '@/lib/blocks/hooks/useDirectorsBlocks';
-import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
-import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
 import { associatedCompanyAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-adapter';
 import {
   motionButtonProps,
   useAssociatedCompaniesBlock,
 } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { useBankingDetailsBlock } from '@/lib/blocks/hooks/useBankingDetailsBlock/useBankingDetailsBlock';
+import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
+import { useDirectorsBlocks } from '@/lib/blocks/hooks/useDirectorsBlocks';
+import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
+import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
+import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
+import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
+import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
+import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBlock/useKybRegistryInfoBlock';
+import { useMainContactBlock } from '@/lib/blocks/hooks/useMainContactBlock/useMainContactBlock';
+import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
+import { useMapBlock } from '@/lib/blocks/hooks/useMapBlock/useMapBlock';
+import { useProcessingDetailsBlock } from '@/lib/blocks/hooks/useProcessingDetailsBlock/useProcessingDetailsBlock';
+import { useRegistryInfoBlock } from '@/lib/blocks/hooks/useRegistryInfoBlock/useRegistryInfoBlock';
+import { useStoreInfoBlock } from '@/lib/blocks/hooks/useStoreInfoBlock/useStoreInfoBlock';
+import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/useUbosRegistryProvidedBlock';
+import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvidedBlock/useUbosUserProvidedBlock';
+import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
+import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
+import { useCaseTabs } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseTabs/useCaseTabs';
+import { getTabsDefinition } from '@/lib/blocks/variants/DefaultBlocks/utils/getTabsDefinition';
+import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
+import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
+import { Send } from 'lucide-react';
+import { useCallback, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -360,30 +362,30 @@ export const useDefaultBlocksLogic = () => {
     kybChildWorkflows ?? [],
   );
 
-  const blocks = useMemo(() => {
+  const allBlocks = useMemo(() => {
     if (!workflow?.context?.entity) return [];
 
     return [
-      ...websiteMonitoringBlock,
-      ...entityInfoBlock,
-      ...registryInfoBlock,
-      ...kybRegistryInfoBlock,
-      ...companySanctionsBlock,
-      ...ubosUserProvidedBlock,
-      ...ubosRegistryProvidedBlock,
-      ...directorsUserProvidedBlock,
-      ...directorsRegistryProvidedBlock,
-      ...directorsDocumentsBlocks,
-      ...storeInfoBlock,
-      ...websiteBasicRequirementBlock,
-      ...bankingDetailsBlock,
-      ...processingDetailsBlock,
-      ...mainContactBlock,
-      ...mainRepresentativeBlock,
-      ...mapBlock,
-      ...parentDocumentBlocks,
-      ...associatedCompaniesBlock,
-      ...associatedCompaniesInformationBlock,
+      websiteMonitoringBlock,
+      entityInfoBlock,
+      registryInfoBlock,
+      kybRegistryInfoBlock,
+      companySanctionsBlock,
+      ubosUserProvidedBlock,
+      ubosRegistryProvidedBlock,
+      directorsUserProvidedBlock,
+      directorsRegistryProvidedBlock,
+      directorsDocumentsBlocks,
+      storeInfoBlock,
+      websiteBasicRequirementBlock,
+      bankingDetailsBlock,
+      processingDetailsBlock,
+      mainContactBlock,
+      mainRepresentativeBlock,
+      mapBlock,
+      parentDocumentBlocks,
+      associatedCompaniesBlock,
+      associatedCompaniesInformationBlock,
     ];
   }, [
     associatedCompaniesBlock,
@@ -409,6 +411,58 @@ export const useDefaultBlocksLogic = () => {
     workflow?.context?.entity,
   ]);
 
+  const tabsDefinition = useMemo(() => getTabsDefinition(allBlocks), [allBlocks]);
+  const { activeTab, blocks = [], setTab } = useCaseTabs(tabsDefinition);
+
+  // const blocks = useMemo(() => {
+  //   if (!workflow?.context?.entity) return [];
+
+  //   return [
+  //     ...websiteMonitoringBlock,
+  //     ...entityInfoBlock,
+  //     ...registryInfoBlock,
+  //     ...kybRegistryInfoBlock,
+  //     ...companySanctionsBlock,
+  //     ...ubosUserProvidedBlock,
+  //     ...ubosRegistryProvidedBlock,
+  //     ...directorsUserProvidedBlock,
+  //     ...directorsRegistryProvidedBlock,
+  //     ...directorsDocumentsBlocks,
+  //     ...storeInfoBlock,
+  //     ...websiteBasicRequirementBlock,
+  //     ...bankingDetailsBlock,
+  //     ...processingDetailsBlock,
+  //     ...mainContactBlock,
+  //     ...mainRepresentativeBlock,
+  //     ...mapBlock,
+  //     ...parentDocumentBlocks,
+  //     ...associatedCompaniesBlock,
+  //     ...associatedCompaniesInformationBlock,
+  //   ];
+  // }, [
+  //   associatedCompaniesBlock,
+  //   associatedCompaniesInformationBlock,
+  //   bankingDetailsBlock,
+  //   companySanctionsBlock,
+  //   directorsDocumentsBlocks,
+  //   directorsRegistryProvidedBlock,
+  //   directorsUserProvidedBlock,
+  //   entityInfoBlock,
+  //   kybRegistryInfoBlock,
+  //   mainContactBlock,
+  //   mainRepresentativeBlock,
+  //   mapBlock,
+  //   parentDocumentBlocks,
+  //   processingDetailsBlock,
+  //   registryInfoBlock,
+  //   storeInfoBlock,
+  //   ubosUserProvidedBlock,
+  //   ubosRegistryProvidedBlock,
+  //   websiteBasicRequirementBlock,
+  //   websiteMonitoringBlock,
+  //   workflow?.context?.entity,
+  // ]);
+
   return {
     blocks,
     kybChildWorkflows,
@@ -417,5 +471,8 @@ export const useDefaultBlocksLogic = () => {
     isLoadingReuploadNeeded,
     kycChildWorkflows,
     isLoading,
+    tabs: tabsDefinition,
+    activeTab,
+    setTab,
   };
 };
