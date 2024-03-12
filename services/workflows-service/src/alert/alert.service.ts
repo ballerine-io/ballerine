@@ -19,7 +19,7 @@ import { AlertExecutionStatus } from './consts';
 const findValNoCase = (obj: { [key: string]: unknown }, prop: string) => {
   prop = (prop + '').toLowerCase();
   for (let p in obj) {
-    if (obj.hasOwnProperty(p) && prop == (p + '').toLowerCase()) {
+    if (p in obj && prop === `${p}`.toLowerCase()) {
       return obj[p];
     }
   }
