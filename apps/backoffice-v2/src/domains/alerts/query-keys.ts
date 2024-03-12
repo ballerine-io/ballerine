@@ -40,7 +40,7 @@ export const alertsQueryKeys = createQueryKeys('alerts', {
     };
   },
   alertLabels: () => ({
-    queryKey: ['alertLabels'],
+    queryKey: [{}],
     queryFn: () => fetchAlertLabels(),
   }),
 });
