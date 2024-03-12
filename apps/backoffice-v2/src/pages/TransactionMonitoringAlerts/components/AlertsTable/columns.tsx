@@ -44,6 +44,18 @@ export const columns = [
     },
     header: 'Date & Time',
   }),
+  columnHelper.accessor('label', {
+    cell: info => {
+      const label = info.getValue();
+
+      return (
+        <Badge variant="secondary" className="max-w-[8rem]" title={label}>
+          <div className="truncate">{label}</div>
+        </Badge>
+      );
+    },
+    header: 'Label',
+  }),
   columnHelper.accessor('merchant.name', {
     cell: info => {
       const merchant = info.getValue();

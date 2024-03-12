@@ -95,6 +95,7 @@ export const AlertsListSchema = z.array(
       name: z.string(),
     }).nullable(),
     severity: z.enum(AlertSeverities),
+    label: z.string(),
     alertDetails: z.string(),
     // amountOfTxs: z.number(),
     assignee: ObjectWithIdSchema.extend({
@@ -179,6 +180,18 @@ export const fetchAlertDefinitionByAlertId = async ({ alertId }: { alertId: stri
     url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts/${alertId}/alert-definition`,
     method: Method.GET,
     schema: AlertDefinitionByAlertIdSchema,
+  });
+
+  return handleZodError(error, alertDefinition);
+};
+
+export const AlertLabelsSchema = z.array(z.string());
+
+export const fetchAlertLabels = async () => {
+  const [alertDefinition, error] = await apiClient({
+    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/internal/alerts/labels`,
+    method: Method.GET,
+    schema: AlertLabelsSchema,
   });
 
   return handleZodError(error, alertDefinition);

@@ -55,6 +55,7 @@ export class AlertControllerExternal {
       include: {
         alertDefinition: {
           select: {
+            label: true,
             description: true,
           },
         },
@@ -91,13 +92,14 @@ export class AlertControllerExternal {
 
       return {
         ...alertWithoutDefinition,
+        label: alertDefinition.label,
         assignee: assignee
           ? {
               id: assignee?.id,
               fullName: `${assignee?.firstName} ${assignee?.lastName}`,
             }
           : null,
-        alertDetails: alertDefinition?.description,
+        alertDetails: alertDefinition.description,
         merchant: business ? { id: business.id, name: business.companyName } : null,
         decision: state,
       };

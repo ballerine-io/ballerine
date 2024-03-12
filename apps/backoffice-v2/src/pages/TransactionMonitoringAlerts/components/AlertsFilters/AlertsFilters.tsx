@@ -8,8 +8,9 @@ import { keyFactory } from '@/common/utils/key-factory/key-factory';
 
 export const AlertsFilters: FunctionComponent<{
   assignees: TUsers;
+  labels: string[];
   authenticatedUserId: string | null;
-}> = ({ assignees, authenticatedUserId }) => {
+}> = ({ assignees, labels, authenticatedUserId }) => {
   const assigneeOptions = useMemo(
     () =>
       assignees?.map(assignee => ({
@@ -55,6 +56,14 @@ export const AlertsFilters: FunctionComponent<{
       title: 'Status',
       accessor: 'status',
       options: statusOptions,
+    },
+    {
+      title: 'Label',
+      accessor: 'label',
+      options: labels.map(label => ({
+        label,
+        value: label,
+      })),
     },
   ] satisfies Array<{
     title: string;

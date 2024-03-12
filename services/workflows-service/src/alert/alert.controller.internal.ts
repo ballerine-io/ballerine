@@ -1,9 +1,12 @@
 import * as common from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { AlertService } from '@/alert/alert.service';
+import type { TProjectId } from '@/types';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import type { Response } from 'express';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import * as errors from '@/errors';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
 @common.Controller('internal/alerts')
 @swagger.ApiExcludeController()
@@ -36,5 +39,12 @@ export class AlertControllerInternal {
 
       throw new common.InternalServerErrorException();
     }
+  }
+
+  @common.Get('labels')
+  @swagger.ApiOkResponse({ type: [String] })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async getAlertLabels(@CurrentProject() currentProjectId: TProjectId): Promise<string[]> {
+    return this.service.getAlertLabels({ projectId: currentProjectId });
   }
 }

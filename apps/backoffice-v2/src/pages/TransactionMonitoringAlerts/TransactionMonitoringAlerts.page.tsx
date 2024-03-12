@@ -11,6 +11,7 @@ export const TransactionMonitoringAlerts = () => {
     alerts,
     isLoadingAlerts,
     assignees,
+    labels,
     authenticatedUser,
     page,
     onPrevPage,
@@ -27,6 +28,7 @@ export const TransactionMonitoringAlerts = () => {
       <div className="flex flex-1 flex-col gap-6 overflow-auto">
         <AlertsHeader
           assignees={assignees ?? []}
+          labels={labels ?? []}
           authenticatedUser={authenticatedUser}
           search={search}
           onSearch={onSearch}
