@@ -102,6 +102,14 @@ export class WorkflowDefinitionRepository {
     });
   }
 
+  async findByCrossEnvKey(crossEnvKey: string) {
+    return await this.prisma.workflowDefinition.findFirst({
+      where: {
+        crossEnvKey,
+      },
+    });
+  }
+
   async deleteById<T extends Omit<Prisma.WorkflowDefinitionDeleteArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionDeleteArgs, 'where'>>,

@@ -6,6 +6,7 @@ import * as fs from 'fs';
 import { INestApplicationContext } from '@nestjs/common';
 import { env } from '@/env';
 import { DataMigrationRepository } from '@/data-migration/data-migration.repository';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import console from 'console';
 import { DATA_MIGRATION_FOLDER_RELATIVE_PATH } from './consts';
 
@@ -14,93 +15,43 @@ interface IMigrationProcess {
   migrate: (client: PrismaClient, app: INestApplicationContext) => Promise<void>;
   fileName: string;
 }
-
-const fetchMigrationFiles = async (migrationFolderPath: string) => {
-  if (!fs.existsSync(migrationFolderPath)) {
-    console.log(`Missing Migration Folder ${migrationFolderPath}`);
-    return [];
-  }
-
-  const fullFilePath = (await fs.promises.readdir(migrationFolderPath)).map(fileName =>
-    path.join(migrationFolderPath, fileName),
-  );
-
-  return fullFilePath;
-};
-
-const fetchEnvMigrationFiles = async () => {
-  let migrationFiles: Array<string> = [];
-  const commonMigrations = path.join(__dirname, DATA_MIGRATION_FOLDER_RELATIVE_PATH, 'common');
-  migrationFiles = migrationFiles.concat(await fetchMigrationFiles(commonMigrations));
-
-  const environmentName = env.ENVIRONMENT_NAME || '';
-
-  if (['local'].includes(environmentName)) {
-    migrationFiles = migrationFiles.concat(
-      await fetchMigrationFiles(path.join(__dirname, DATA_MIGRATION_FOLDER_RELATIVE_PATH, 'local')),
-    );
-  }
-
-  if (['dev', 'development', 'demo'].includes(environmentName)) {
-    migrationFiles = migrationFiles.concat(
-      await fetchMigrationFiles(path.join(__dirname, DATA_MIGRATION_FOLDER_RELATIVE_PATH, 'dev')),
-    );
-  }
-
-  if (['sandbox', 'sb', 'staging'].includes(environmentName)) {
-    migrationFiles = migrationFiles.concat(
-      await fetchMigrationFiles(path.join(__dirname, DATA_MIGRATION_FOLDER_RELATIVE_PATH, 'sb')),
-    );
-  }
-
-  if (['prod', 'production'].includes(environmentName)) {
-    migrationFiles = migrationFiles.concat(
-      await fetchMigrationFiles(path.join(__dirname, DATA_MIGRATION_FOLDER_RELATIVE_PATH, 'prod')),
-    );
-  }
-
-  return migrationFiles;
-};
-
-export const sync = async () => {
-  console.log('Starting migration process');
-};
-
-const calculateMigrationProcessToRun = async (
-  migrationFilesPath: string[],
-  latestSuccessfulMigration: DataMigrationVersion,
-) => {
-  return (
-    await Promise.all(
-      migrationFilesPath
-        .filter(filePath => filePath.match(/\d{14}/)?.[0] !== null)
-        .filter(filePath => !filePath.includes('.map'))
-        .map(async filePath => {
-          const { migrate } = (await import(filePath)) as {
-            migrate: IMigrationProcess['migrate'];
-          };
-
-          const version = filePath.match(/\d{14}/)![0]!;
-          return {
-            version: version,
-            fileName: filePath,
-            migrate,
-          } satisfies IMigrationProcess;
-        }),
-    )
-  )
-    .filter(migrationProcess => {
-      const latestMigrationVersion = latestSuccessfulMigration?.version
-        ? Number(latestSuccessfulMigration?.version)
-        : 0;
-      return Number(migrationProcess.version) > latestMigrationVersion;
-    })
-    .sort((a, b) => Number(a.version) - Number(b.version));
+const sync = async () => {
+  console.log('Migration started');
 };
 
 sync()
-  .then(() => {
-    console.log('Migration finished');
+  .then(async () => {
+    const client = new PrismaClient();
+    const appContext = await NestFactory.createApplicationContext(AppModule);
+
+    const workflowDefinitionRepository = appContext.get(WorkflowDefinitionRepository);
+    const filePath = path.join(
+      __dirname,
+      DATA_MIGRATION_FOLDER_RELATIVE_PATH,
+      'synced-objects/index.js',
+    );
+    const syncService = await import(filePath);
+    const objectToSync = [
+      {
+        crossEnvKey: 'DEFAULT_KYB_DEFINITION_V1',
+        tableName: 'WorkflowDefinition',
+        columns: {
+          definition: {},
+        },
+        syncConfig: {
+          stragety: 'replace',
+        },
+        syncedEnvs: ['local'],
+      },
+    ]; //syncService.getSyncedObjects();
+
+    for (const object of objectToSync) {
+      console.log('Syncing object', object);
+      workflowDefinitionRepository.findByCrossEnvKey(object.crossEnvKey);
+      workflowDefinitionRepository.updateById(object);
+    }
+
+    console.log('Migration finished', objectToSync);
     process.exit(0);
   })
   .catch(err => {
