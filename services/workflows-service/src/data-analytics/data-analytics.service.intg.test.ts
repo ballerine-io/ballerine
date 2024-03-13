@@ -392,7 +392,7 @@ describe('TransactionRulesEvaluationService', () => {
       describe('should correctly evaluate sum of incoming transactions over a set period of time is greater than a limit of', () => {
         it('credit card.', async () => {
           // Assert
-          const rule = ALERT_DEFINITIONS.HSUMICC;
+          const rule = ALERT_DEFINITIONS.PAY_HCA_CC;
           expect(rule).toBeDefined();
 
           // Act
@@ -421,7 +421,7 @@ describe('TransactionRulesEvaluationService', () => {
 
         it('non credit card.', async () => {
           // Assert
-          const rule = ALERT_DEFINITIONS.HSUMIAPM;
+          const rule = ALERT_DEFINITIONS.PAY_HCA_APM;
           expect(rule).toBeDefined();
 
           // Act
