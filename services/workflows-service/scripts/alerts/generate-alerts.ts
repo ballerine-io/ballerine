@@ -1,3 +1,4 @@
+import { Input } from '@ballerine/ui';
 import {
   InlineRule,
   TCustomersTransactionTypeOptions,
@@ -307,7 +308,7 @@ export const ALERT_INLINE_RULES = [
   defaultSeverity: AlertSeverity;
 }>;
 
-const createData = (
+const generateAlertData = (
   { inlineRule, defaultSeverity, label }: (typeof ALERT_INLINE_RULES)[number],
   createdBy: string,
   project: Project,
@@ -322,8 +323,8 @@ const createData = (
   ruleId: inlineRule.id,
   createdBy: createdBy,
   modifiedBy: createdBy,
-  dedupeStrategies: {
-    strategy: {},
+  dedupeStrategy: {
+    mute: false,
     cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
   },
   config: { config: {} },
@@ -342,13 +343,13 @@ export const generateAlertDefinitions = async (
     project: Project;
   },
 ) =>
-  Promise.all(
+  await Promise.all(
     // TODO: remove slice once all rules are ready
     ALERT_INLINE_RULES.slice(0, 2).map(inlineRule =>
       prisma.alertDefinition.upsert({
         where: { label_projectId: { label: inlineRule.label, projectId: project.id } },
-        create: createData(inlineRule, createdBy, project),
-        update: createData(inlineRule, createdBy, project),
+        create: generateAlertData(inlineRule, createdBy, project),
+        update: generateAlertData(inlineRule, createdBy, project),
         include: {
           alert: true,
         },
@@ -379,7 +380,12 @@ const generateFakeAlert = ({
     state: faker.helpers.arrayElement(Object.values(AlertState)),
     status: faker.helpers.arrayElement(Object.values(AlertStatus)),
     tags: [faker.random.word(), faker.random.word(), faker.random.word()],
-    executionDetails: JSON.parse(faker.datatype.json()) as InputJsonValue,
+    executionDetails: {
+      checkpoint: {
+        hash: faker.datatype.uuid(),
+      },
+      executionRow: JSON.parse(faker.datatype.json()),
+    } as InputJsonValue,
     severity,
     assigneeId,
     ...counterypartyId,

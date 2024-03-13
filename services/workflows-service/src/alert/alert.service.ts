@@ -13,7 +13,13 @@ import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.r
 import { InlineRule } from '@/data-analytics/types';
 import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
+import { computeHash } from '@/common/utils/sign/sign';
+import { TDedupeStrategy, TExecutionDetails } from './types';
 import { findByKeyCaseInsensitive } from '@/common/schemas';
+
+const DEFAULT_DEDUPE_STRATEGIES = {
+  cooldownTimeframeInMinutes: 1440,
+};
 
 @Injectable()
 export class AlertService {
@@ -136,7 +142,7 @@ export class AlertService {
   }
 
   // Specific alert check logic based on the definition
-  private async checkAlert(alertDefinition: AlertDefinition): Promise<boolean> {
+  private async checkAlert(alertDefinition: AlertDefinition) {
     const unknownData: unknown = alertDefinition.inlineRule;
 
     const inlineRule: InlineRule = unknownData as InlineRule;
@@ -162,13 +168,12 @@ export class AlertService {
     const alertsPromises = ruleExecutionResults.map(
       async (executionRow: Record<string, unknown>) => {
         try {
-          const isAnySubjectUndefinedOrNull = _.some(inlineRule.subjects, field => {
-            const val = findByKeyCaseInsensitive(executionRow, field);
-
-            return _.isNull(val) || _.isUndefined(val);
-          });
-
-          if (isAnySubjectUndefinedOrNull) {
+          if (
+            _.some(
+              inlineRule.subjects,
+              field => _.isNull(executionRow[field]) || _.isUndefined(executionRow[field]),
+            )
+          ) {
             this.logger.error(`Alert aggregated row is missing properties `, {
               inlineRule,
               aggregatedRow: executionRow,
@@ -188,7 +193,7 @@ export class AlertService {
             return { [key]: value };
           });
 
-          if (await this.isDuplicateAlert(alertDefinition, subjectResult)) {
+          if (await this.isDuplicateAlert(alertDefinition, subjectResult, executionRow)) {
             return alertResponse.skipped.push({
               status: AlertExecutionStatus.SKIPPED,
               alertDefinition,
@@ -199,7 +204,7 @@ export class AlertService {
               status: AlertExecutionStatus.SUCCEEDED,
               alertDefinition,
               executionRow,
-              alert: await this.createAlert(alertDefinition, subjectResult),
+              alert: await this.createAlert(alertDefinition, subjectResult, executionRow),
             });
           }
         } catch (error) {
@@ -219,12 +224,13 @@ export class AlertService {
 
     this.logger.debug('Finished to run check alerts', alertResponse);
 
-    return alertResponse;
+    return !!alertResponse.fulfilled.length;
   }
 
   private createAlert(
     alertDef: AlertDefinition,
-    data: Array<{ [key: string]: unknown }>,
+    subject: Array<{ [key: string]: unknown }>,
+    executionRow: Record<string, unknown>,
   ): Promise<Alert> {
     return this.alertRepository.create({
       data: {
@@ -234,24 +240,72 @@ export class AlertService {
         dataTimestamp: new Date(),
         state: AlertState.triggered,
         status: AlertStatus.new,
-        executionDetails: {},
-        ...Object.assign({}, ...(data || [])),
+        executionDetails: {
+          checkpoint: {
+            hash: computeHash(executionRow),
+            transactionCount: findByKeyCaseInsensitive(executionRow, 'transactionCount'),
+          },
+          executionRow,
+        } as TExecutionDetails,
+        ...Object.assign({}, ...(subject || [])),
       },
     });
   }
 
   private async isDuplicateAlert(
-    alertDef: AlertDefinition,
-    data: Array<{ [key: string]: unknown }>,
+    alertDefinition: AlertDefinition,
+    subjectPayload: Record<string, unknown>[],
+    executionRow: Record<string, unknown>,
   ): Promise<boolean> {
-    return await this.alertRepository.exists(
+    if (!alertDefinition.dedupeStrategy) {
+      return false;
+    }
+
+    const dedupeStrategy = alertDefinition.dedupeStrategy as TDedupeStrategy;
+
+    if (dedupeStrategy.mute) {
+      return true;
+    }
+
+    // TODO: Fix types for jsonb fields
+    const { cooldownTimeframeInMinutes } = dedupeStrategy || DEFAULT_DEDUPE_STRATEGIES;
+
+    const existingAlert = await this.alertRepository.findFirst(
       {
         where: {
-          AND: [{ alertDefinitionId: alertDef.id }, ...data],
+          AND: [{ alertDefinitionId: alertDefinition.id }, ...subjectPayload],
         },
       },
-      [alertDef.projectId],
+      [alertDefinition.projectId],
     );
+
+    if (!existingAlert) {
+      return false;
+    }
+
+    // We already have an alert for the same definition and subject, check if it's within the cooldown period
+
+    // Convert minutes to milliseconds
+    const cooldownDurationInMs = cooldownTimeframeInMinutes * 60 * 1000;
+
+    const { hash } = (existingAlert.executionDetails as TExecutionDetails)?.checkpoint || {
+      hash: '',
+    };
+
+    // Calculate the timestamp after which alerts will be considered outside the cooldown period
+    if (
+      Date.now() < existingAlert.createdAt.getTime() + cooldownDurationInMs &&
+      existingAlert.status !== AlertStatus.completed &&
+      // hash or deep comparison on executionRow
+      hash === computeHash(executionRow)
+    ) {
+      // Its Duplicate
+      this.logger.warn('Duplicate alert', { existingAlert });
+
+      return true;
+    }
+
+    return false;
   }
 
   private getStatusFromState(newState: AlertState): ObjectValues<typeof AlertStatus> {

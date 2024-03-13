@@ -1,5 +1,17 @@
 import { Alert, AlertDefinition, Business, User } from '@prisma/client';
 
+export type TExecutionDetails = {
+  checkpoint: {
+    hash: string;
+  };
+  executionRow: any;
+};
+
+export type TDedupeStrategy = {
+  mute: boolean;
+  cooldownTimeframeInMinutes: number;
+};
+
 export type TAuthenticationConfiguration = {
   apiType: 'API_KEY' | 'OAUTH2' | 'BASIC_AUTH';
   authValue: string;

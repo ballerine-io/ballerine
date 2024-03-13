@@ -17,13 +17,18 @@ export class AlertRepository {
     return await this.prisma.alert.create<T>(args);
   }
 
-  async exists<T extends Pick<Prisma.AlertFindFirstArgs, 'where'>>(
+  async findFirst<T extends Pick<Prisma.AlertFindFirstArgs, 'where'>>(
     args: Prisma.SelectSubset<T, Pick<Prisma.AlertFindFirstArgs, 'where'>>,
     projectIds: TProjectIds,
   ) {
     const queryArgs = this.scopeService.scopeFindFirst(args, projectIds);
 
-    return await this.prisma.extendedClient.alert.exists(queryArgs.where);
+    return await this.prisma.extendedClient.alert.findFirst({
+      where: queryArgs.where,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 
   // Method to find many alerts
