@@ -168,12 +168,13 @@ export class AlertService {
     const alertsPromises = ruleExecutionResults.map(
       async (executionRow: Record<string, unknown>) => {
         try {
-          if (
-            _.some(
-              inlineRule.subjects,
-              field => _.isNull(executionRow[field]) || _.isUndefined(executionRow[field]),
-            )
-          ) {
+          const isAnySubjectUndefinedOrNull = _.some(inlineRule.subjects, field => {
+            const val = findByKeyCaseInsensitive(executionRow, field);
+
+            return _.isNull(val) || _.isUndefined(val);
+          });
+
+          if (isAnySubjectUndefinedOrNull) {
             this.logger.error(`Alert aggregated row is missing properties `, {
               inlineRule,
               aggregatedRow: executionRow,
