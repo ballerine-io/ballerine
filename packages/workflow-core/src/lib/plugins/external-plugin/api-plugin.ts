@@ -83,16 +83,13 @@ export class ApiPlugin {
           return this.returnErrorResponse(errorMessage!);
         }
 
-        const invokedAt = Date.now();
-
         if (this.successAction) {
           return this.returnSuccessResponse(this.successAction, {
             ...responseBody,
-            invokedAt,
           });
         }
 
-        return { invokedAt };
+        return {};
       } else {
         const errorResponse = await apiResponse.json();
 
