@@ -286,7 +286,7 @@ export class AlertService {
 
     // Calculate the timestamp after which alerts will be considered outside the cooldown period
     if (existingAlert.status !== AlertStatus.completed) {
-      this.alertRepository.updateById(existingAlert.id, {
+      await this.alertRepository.updateById(existingAlert.id, {
         data: {
           updatedAt: new Date(),
         },
