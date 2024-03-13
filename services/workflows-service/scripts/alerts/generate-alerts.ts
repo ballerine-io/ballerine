@@ -34,10 +34,12 @@ export const ALERT_DEFINITIONS = {
   PAY_HCA_CC: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
+    description:
+      'High Cumulative Amount - Sum of incoming credit card transactions over a set period of time of time is greater than a limit',
     inlineRule: {
       id: 'PAY_HCA_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyid'],
+      subjects: ['counterpartyId'],
       options: {
         havingAggregate: AggregateType.SUM,
 
@@ -59,15 +61,15 @@ export const ALERT_DEFINITIONS = {
       } as TransactionsAgainstDynamicRulesType,
     },
   },
-
-  // Description: High Cumulative Amount - Sum of incoming transactions over a set period of time is greater than a limit of APM.
   PAY_HCA_APM: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
+    description:
+      'High Cumulative Amount - Sum of incoming non credit card transactions over a set period of time is greater than a limit of APM',
     inlineRule: {
       id: 'PAY_HCA_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyid'],
+      subjects: ['counterpartyId'],
       options: {
         havingAggregate: AggregateType.SUM,
 
@@ -90,9 +92,10 @@ export const ALERT_DEFINITIONS = {
     },
   },
 
-  // Description: Structuring - Significant number of low value incoming transactions just below a threshold of credit card.
   STRUC_CC: {
     defaultSeverity: AlertSeverity.medium,
+    description:
+      'Structuring - Significant number of low value incoming transactions just below a threshold of credit card',
     inlineRule: {
       id: 'STRUC_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
@@ -116,11 +119,10 @@ export const ALERT_DEFINITIONS = {
       } as TransactionsAgainstDynamicRulesType,
     },
   },
-
-  // Rule ID: STRUC_APM
-  // Description: Structuring - Significant number of low value incoming transactions just below a threshold of APM.
   STRUC_APM: {
     defaultSeverity: AlertSeverity.medium,
+    description:
+      'Structuring - Significant number of low value incoming transactions just below a threshold of APM',
     inlineRule: {
       id: 'STRUC_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
@@ -220,10 +222,10 @@ export const ALERT_DEFINITIONS = {
       } as TransactionsAgainstDynamicRulesType,
     },
   },
-  // High Velocity - Chargeback
   CHVC_C: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
+    description: 'Chargeback - Significant number of chargebacks over a set period of time',
     inlineRule: {
       id: 'CHVC_C',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
@@ -239,10 +241,11 @@ export const ALERT_DEFINITIONS = {
       } as TransactionsAgainstDynamicRulesType,
     },
   },
-  // High Cumulative Amount - Chargeback
   SHCAC_C: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
+    description:
+      'High Cumulative Amount - Chargeback - High sum of chargebacks over a set period of time',
     inlineRule: {
       id: 'SHCAC_C',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
@@ -258,10 +261,10 @@ export const ALERT_DEFINITIONS = {
       } as TransactionsAgainstDynamicRulesType,
     },
   },
-  // High Velocity - Refund
   CHCR_C: {
-    defaultSeverity: AlertSeverity.medium,
     enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: 'Refund - Significant number of refunds over a set period of time',
     inlineRule: {
       id: 'CHCR_C',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
@@ -277,10 +280,10 @@ export const ALERT_DEFINITIONS = {
       } as TransactionsAgainstDynamicRulesType,
     },
   },
-  // High Cumulative Amount - Refund
   SHCAR_C: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
+    description: 'High Cumulative Amount - Refund - High sum of refunds over a set period of time',
     inlineRule: {
       id: 'SHCAR_C',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
@@ -298,7 +301,12 @@ export const ALERT_DEFINITIONS = {
   },
 } as const satisfies Record<
   string,
-  { inlineRule: InlineRule; defaultSeverity: AlertSeverity; enabled?: boolean }
+  {
+    inlineRule: InlineRule;
+    defaultSeverity: AlertSeverity;
+    enabled?: boolean;
+    description?: string;
+  }
 >;
 
 export const getAlertDefinitionCreateData = (
@@ -306,12 +314,14 @@ export const getAlertDefinitionCreateData = (
     inlineRule,
     defaultSeverity,
     label,
+    description,
     enabled = false,
   }: {
     label: string;
     inlineRule: InlineRule;
     defaultSeverity: AlertSeverity;
     enabled?: boolean;
+    description?: string;
   },
   project: Project,
   createdBy: string = 'SYSTEM',
@@ -319,8 +329,8 @@ export const getAlertDefinitionCreateData = (
   label: label,
   type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
   name: faker.lorem.words(3),
-  enabled,
-  description: faker.lorem.sentence(),
+  enabled: enabled ?? false,
+  description: description || faker.lorem.sentence(),
   rulesetId: `set-${inlineRule.id}`,
   defaultSeverity,
   ruleId: inlineRule.id,
