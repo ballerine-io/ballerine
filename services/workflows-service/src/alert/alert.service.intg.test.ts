@@ -37,14 +37,13 @@ describe('AlertService', () => {
         ProjectScopeService,
         AlertRepository,
         AlertDefinitionRepository,
-        PrismaService,
         AlertService,
       ],
     }).compile();
 
-    prismaService = module.get<PrismaService>(PrismaService);
+    prismaService = module.get(PrismaService);
 
-    alertService = module.get<AlertService>(AlertService);
+    alertService = module.get(AlertService);
   });
 
   beforeEach(async () => {
@@ -60,11 +59,30 @@ describe('AlertService', () => {
     );
 
     project = await createProject(prismaService, customer, faker.datatype.uuid());
+
+    const alerts = await prismaService.alert.findMany();
+    const alertDefinitions = await prismaService.alertDefinition.findMany();
+    console.log('alerts', alerts);
+    console.log('alertDefinitions', alertDefinitions);
+
+    // Assert DB is clean
+    expect(await prismaService.alert.count()).toBe(0);
+    expect(await prismaService.alertDefinition.count()).toBe(0);
   });
 
-  afterEach(tearDownDatabase);
+  afterAll(tearDownDatabase);
 
   describe('checkAllAlerts', () => {
+    let baseTransactionFactory: TransactionFactory;
+
+    beforeEach(() => {
+      baseTransactionFactory = TransactionFactory.make(prismaService, project.id)
+        .paymentMethod(PaymentMethod.credit_card)
+        .withBusinessOriginator()
+        .withEndUserBeneficiary()
+        .transactionDate(faker.date.recent(7));
+    });
+
     describe('Rule: NUMCHRG', () => {
       let alertDefinition: AlertDefinition;
 
@@ -81,30 +99,13 @@ describe('AlertService', () => {
       });
 
       it('When there are more than or equal to 15 chargeback transactions, an alert should be created', async () => {
-        // @TODO: Remove this section
-        // Assert DB is clean
-        expect(await prismaService.alert.count()).toBe(0);
-        expect(await prismaService.alertDefinition.count()).toBe(1);
-
         // Arrange
-        const business1Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .count(15)
-          .create({
-            transactionType: TransactionRecordType.chargeback,
-          });
-        const business2Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .count(14)
-          .create({
-            transactionType: TransactionRecordType.chargeback,
-          });
+        const business1Transactions = await baseTransactionFactory.count(15).create({
+          transactionType: TransactionRecordType.chargeback,
+        });
+        const business2Transactions = await baseTransactionFactory.count(14).create({
+          transactionType: TransactionRecordType.chargeback,
+        });
 
         // Act
         await alertService.checkAllAlerts();
@@ -112,36 +113,20 @@ describe('AlertService', () => {
         // Assert
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
-        expect(alerts[0]!.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]!.counterpartyId).toEqual(
-          business1Transactions[0]!.counterpartyOriginatorId,
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(
+          business1Transactions[0]?.counterpartyOriginatorId,
         );
       });
 
       it('When there are less than 15 chargeback transactions, no alert should be created', async () => {
-        // Assert DB is clean
-        expect(await prismaService.alert.count()).toBe(0);
-        expect(await prismaService.alertDefinition.count()).toBe(1);
-
         // Arrange
-        const business1Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .count(14)
-          .create({
-            transactionType: TransactionRecordType.chargeback,
-          });
-        const business2Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .count(14)
-          .create({
-            transactionType: TransactionRecordType.chargeback,
-          });
+        const business1Transactions = await baseTransactionFactory.count(14).create({
+          transactionType: TransactionRecordType.chargeback,
+        });
+        const business2Transactions = await baseTransactionFactory.count(14).create({
+          transactionType: TransactionRecordType.chargeback,
+        });
 
         // Act
         await alertService.checkAllAlerts();
@@ -168,31 +153,13 @@ describe('AlertService', () => {
       });
 
       it('When the sum of chargebacks amount is greater than 5000, an alert should be created', async () => {
-        // Assert DB is clean
-        expect(await prismaService.alert.count()).toBe(0);
-        expect(await prismaService.alertDefinition.count()).toBe(1);
-
         // Arrange
-        const business1Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .amount(100)
-          .count(50)
-          .create({
-            transactionType: TransactionRecordType.chargeback,
-          });
-        const business2Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .amount(100)
-          .count(49)
-          .create({
-            transactionType: TransactionRecordType.chargeback,
-          });
+        const business1Transactions = await baseTransactionFactory.amount(100).count(50).create({
+          transactionType: TransactionRecordType.chargeback,
+        });
+        const business2Transactions = await baseTransactionFactory.amount(100).count(49).create({
+          transactionType: TransactionRecordType.chargeback,
+        });
 
         // Act
         await alertService.checkAllAlerts();
@@ -200,38 +167,20 @@ describe('AlertService', () => {
         // Assert
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
-        expect(alerts[0]!.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]!.counterpartyId).toEqual(
-          business1Transactions[0]!.counterpartyOriginatorId,
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(
+          business1Transactions[0]?.counterpartyOriginatorId,
         );
       });
 
       it('When the sum of chargebacks amount is less than 5000, no alert should be created', async () => {
-        // Assert DB is clean
-        expect(await prismaService.alert.count()).toBe(0);
-        expect(await prismaService.alertDefinition.count()).toBe(1);
-
         // Arrange
-        const business1Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .amount(100)
-          .count(49)
-          .create({
-            transactionType: TransactionRecordType.chargeback,
-          });
-        const business2Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .amount(100)
-          .count(49)
-          .create({
-            transactionType: TransactionRecordType.chargeback,
-          });
+        const business1Transactions = await baseTransactionFactory.amount(100).count(49).create({
+          transactionType: TransactionRecordType.chargeback,
+        });
+        const business2Transactions = await baseTransactionFactory.amount(100).count(49).create({
+          transactionType: TransactionRecordType.chargeback,
+        });
 
         // Act
         await alertService.checkAllAlerts();
@@ -258,29 +207,13 @@ describe('AlertService', () => {
       });
 
       it('When there are more than or equal to 15 refund transactions, an alert should be created', async () => {
-        // Assert DB is clean
-        expect(await prismaService.alert.count()).toBe(0);
-        expect(await prismaService.alertDefinition.count()).toBe(1);
-
         // Arrange
-        const business1Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .count(15)
-          .create({
-            transactionType: TransactionRecordType.refund,
-          });
-        const business2Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .count(14)
-          .create({
-            transactionType: TransactionRecordType.refund,
-          });
+        const business1Transactions = await baseTransactionFactory.count(15).create({
+          transactionType: TransactionRecordType.refund,
+        });
+        const business2Transactions = await baseTransactionFactory.count(14).create({
+          transactionType: TransactionRecordType.refund,
+        });
 
         // Act
         await alertService.checkAllAlerts();
@@ -288,36 +221,20 @@ describe('AlertService', () => {
         // Assert
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
-        expect(alerts[0]!.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]!.counterpartyId).toEqual(
-          business1Transactions[0]!.counterpartyOriginatorId,
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(
+          business1Transactions[0]?.counterpartyOriginatorId,
         );
       });
 
       it('When there are less than 15 refund transactions, no alert should be created', async () => {
-        // Assert DB is clean
-        expect(await prismaService.alert.count()).toBe(0);
-        expect(await prismaService.alertDefinition.count()).toBe(1);
-
         // Arrange
-        const business1Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .count(14)
-          .create({
-            transactionType: TransactionRecordType.refund,
-          });
-        const business2Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .count(14)
-          .create({
-            transactionType: TransactionRecordType.refund,
-          });
+        const business1Transactions = await baseTransactionFactory.count(14).create({
+          transactionType: TransactionRecordType.refund,
+        });
+        const business2Transactions = await baseTransactionFactory.count(14).create({
+          transactionType: TransactionRecordType.refund,
+        });
 
         // Act
         await alertService.checkAllAlerts();
@@ -344,31 +261,13 @@ describe('AlertService', () => {
       });
 
       it('When the sum of refunds amount is greater than 5000, an alert should be created', async () => {
-        // Assert DB is clean
-        expect(await prismaService.alert.count()).toBe(0);
-        expect(await prismaService.alertDefinition.count()).toBe(1);
-
         // Arrange
-        const business1Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .amount(100)
-          .count(50)
-          .create({
-            transactionType: TransactionRecordType.refund,
-          });
-        const business2Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .amount(100)
-          .count(49)
-          .create({
-            transactionType: TransactionRecordType.refund,
-          });
+        const business1Transactions = await baseTransactionFactory.amount(100).count(50).create({
+          transactionType: TransactionRecordType.refund,
+        });
+        const business2Transactions = await baseTransactionFactory.amount(100).count(49).create({
+          transactionType: TransactionRecordType.refund,
+        });
 
         // Act
         await alertService.checkAllAlerts();
@@ -376,38 +275,20 @@ describe('AlertService', () => {
         // Assert
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
-        expect(alerts[0]!.alertDefinitionId).toEqual(alertDefinition.id);
-        expect(alerts[0]!.counterpartyId).toEqual(
-          business1Transactions[0]!.counterpartyOriginatorId,
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(
+          business1Transactions[0]?.counterpartyOriginatorId,
         );
       });
 
       it('When the sum of refunds amount is less than 5000, no alert should be created', async () => {
-        // Assert DB is clean
-        expect(await prismaService.alert.count()).toBe(0);
-        expect(await prismaService.alertDefinition.count()).toBe(1);
-
         // Arrange
-        const business1Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .amount(100)
-          .count(49)
-          .create({
-            transactionType: TransactionRecordType.refund,
-          });
-        const business2Transactions = await TransactionFactory.make(prismaService, project.id)
-          .paymentMethod(PaymentMethod.credit_card)
-          .withBusinessOriginator()
-          .withEndUserBeneficiary()
-          .transactionDate(faker.date.recent(7))
-          .amount(100)
-          .count(49)
-          .create({
-            transactionType: TransactionRecordType.refund,
-          });
+        const business1Transactions = await baseTransactionFactory.amount(100).count(49).create({
+          transactionType: TransactionRecordType.refund,
+        });
+        const business2Transactions = await baseTransactionFactory.amount(100).count(49).create({
+          transactionType: TransactionRecordType.refund,
+        });
 
         // Act
         await alertService.checkAllAlerts();
