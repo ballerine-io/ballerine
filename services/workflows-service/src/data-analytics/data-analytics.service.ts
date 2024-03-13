@@ -24,8 +24,9 @@ export class DataAnalyticsService {
       this.evaluateTransactionsAgainstDynamicRules.name as keyof EvaluateFunctions
     ] = this.evaluateTransactionsAgainstDynamicRules.bind(this);
 
-    // this._evaluateNameToFunction[this.evaluateCustomersTransactionType.name] =
-    //   this.evaluateCustomersTransactionType.bind(this);
+    this._evaluateNameToFunction[
+      this.evaluateCustomersTransactionType.name as keyof EvaluateFunctions
+    ] = this.evaluateCustomersTransactionType.bind(this);
 
     // this._evaluateNameToFunction[this.evaluateDormantAccount.name] =
     //   this.evaluateDormantAccount.bind(this);

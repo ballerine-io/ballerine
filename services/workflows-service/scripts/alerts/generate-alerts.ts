@@ -31,7 +31,8 @@ const tags = [
 ];
 
 export const ALERT_DEFINITIONS = {
-  HSUMICC: {
+  PAY_HCA_CC: {
+    enabled: true,
     defaultSeverity: AlertSeverity.medium,
     inlineRule: {
       id: 'PAY_HCA_CC',
@@ -59,10 +60,9 @@ export const ALERT_DEFINITIONS = {
     },
   },
 
-  // Rule ID: PAY_HCA_APM
-  // Description: High Cumulative Amount - inbound - Customer (APM)
-  // Condition: Sum of incoming transactions over a set period of time is greater than a limit of APM.
-  HSUMIAPM: {
+  // Description: High Cumulative Amount - Sum of incoming transactions over a set period of time is greater than a limit of APM.
+  PAY_HCA_APM: {
+    enabled: true,
     defaultSeverity: AlertSeverity.medium,
     inlineRule: {
       id: 'PAY_HCA_APM',
@@ -90,10 +90,8 @@ export const ALERT_DEFINITIONS = {
     },
   },
 
-  // Rule ID: STRUC_CC
-  // Description: Structuring - inbound - Customer (Credit Card)
-  // Condition: Significant number of low value incoming transactions just below a threshold of credit card.
-  STRINCC: {
+  // Description: Structuring - Significant number of low value incoming transactions just below a threshold of credit card.
+  STRUC_CC: {
     defaultSeverity: AlertSeverity.medium,
     inlineRule: {
       id: 'STRUC_CC',
@@ -120,9 +118,8 @@ export const ALERT_DEFINITIONS = {
   },
 
   // Rule ID: STRUC_APM
-  // Description: Structuring - inbound - Customer (APM)
-  // Condition: Significant number of low value incoming transactions just below a threshold of APM.
-  STRINAPM: {
+  // Description: Structuring - Significant number of low value incoming transactions just below a threshold of APM.
+  STRUC_APM: {
     defaultSeverity: AlertSeverity.medium,
     inlineRule: {
       id: 'STRUC_APM',
@@ -223,78 +220,12 @@ export const ALERT_DEFINITIONS = {
       } as TransactionsAgainstDynamicRulesType,
     },
   },
+  // High Velocity - Chargeback
   CHVC_C: {
+    enabled: true,
     defaultSeverity: AlertSeverity.medium,
     inlineRule: {
       id: 'CHVC_C',
-      fnName: 'evaluateCustomersTransactionType',
-      subjects: ['businessId'],
-      options: {
-        transactionType: [TransactionRecordType.chargeback],
-        threshold: 14,
-        timeAmount: 7,
-        timeUnit: 'days',
-        isPerBrand: false,
-        havingAggregate: AggregateType.COUNT,
-      } as TCustomersTransactionTypeOptions,
-    },
-  },
-  SHCAC_C: {
-    defaultSeverity: AlertSeverity.medium,
-    inlineRule: {
-      id: 'SHCAC_C',
-      fnName: 'evaluateCustomersTransactionType',
-      subjects: ['businessId'],
-      options: {
-        transactionType: [TransactionRecordType.chargeback],
-        threshold: 5_000,
-        timeAmount: 7,
-        timeUnit: 'days',
-        isPerBrand: false,
-        havingAggregate: AggregateType.SUM,
-      } as TCustomersTransactionTypeOptions,
-    },
-  },
-
-  CHCR_C: {
-    defaultSeverity: AlertSeverity.medium,
-    inlineRule: {
-      id: 'CHCR_C',
-      fnName: 'evaluateCustomersTransactionType',
-      subjects: ['businessId'],
-      options: {
-        transactionType: [TransactionRecordType.refund],
-        paymentMethods: [PaymentMethod.credit_card],
-        threshold: 14,
-        timeAmount: 7,
-        timeUnit: 'days',
-        isPerBrand: false,
-        havingAggregate: AggregateType.COUNT,
-      } as TCustomersTransactionTypeOptions,
-    },
-  },
-  SHCAR_C: {
-    defaultSeverity: AlertSeverity.medium,
-    inlineRule: {
-      id: 'SHCAR_C',
-      fnName: 'evaluateCustomersTransactionType',
-      subjects: ['businessId'],
-      options: {
-        transactionType: [TransactionRecordType.refund],
-        paymentMethods: [PaymentMethod.credit_card],
-        threshold: 5_000,
-        timeAmount: 7,
-        timeUnit: 'days',
-        isPerBrand: false,
-        havingAggregate: AggregateType.SUM,
-      } as TCustomersTransactionTypeOptions,
-    } as const satisfies InlineRule,
-  },
-  // High Velocity - Chargeback
-  NUMCHRG: {
-    defaultSeverity: AlertSeverity.medium,
-    inlineRule: {
-      id: 'NUMCHRG',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
       subjects: ['counterpartyId'],
       options: {
@@ -309,10 +240,11 @@ export const ALERT_DEFINITIONS = {
     },
   },
   // High Cumulative Amount - Chargeback
-  SUMCHRG: {
+  SHCAC_C: {
+    enabled: true,
     defaultSeverity: AlertSeverity.medium,
     inlineRule: {
-      id: 'SUMCHRG',
+      id: 'SHCAC_C',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
       subjects: ['counterpartyId'],
       options: {
@@ -327,10 +259,11 @@ export const ALERT_DEFINITIONS = {
     },
   },
   // High Velocity - Refund
-  NUMREFCC: {
+  CHCR_C: {
     defaultSeverity: AlertSeverity.medium,
+    enabled: true,
     inlineRule: {
-      id: 'NUMREFCC',
+      id: 'CHCR_C',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
       subjects: ['counterpartyId'],
       options: {
@@ -345,10 +278,11 @@ export const ALERT_DEFINITIONS = {
     },
   },
   // High Cumulative Amount - Refund
-  SUMREFCC: {
+  SHCAR_C: {
+    enabled: true,
     defaultSeverity: AlertSeverity.medium,
     inlineRule: {
-      id: 'SUMREFCC',
+      id: 'SHCAR_C',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
       subjects: ['counterpartyId'],
       options: {
@@ -362,17 +296,22 @@ export const ALERT_DEFINITIONS = {
       } as TransactionsAgainstDynamicRulesType,
     },
   },
-} as const satisfies Record<string, { inlineRule: InlineRule; defaultSeverity: AlertSeverity }>;
+} as const satisfies Record<
+  string,
+  { inlineRule: InlineRule; defaultSeverity: AlertSeverity; enabled?: boolean }
+>;
 
 export const getAlertDefinitionCreateData = (
   {
     inlineRule,
     defaultSeverity,
     label,
+    enabled = false,
   }: {
     label: string;
     inlineRule: InlineRule;
     defaultSeverity: AlertSeverity;
+    enabled?: boolean;
   },
   project: Project,
   createdBy: string = 'SYSTEM',
@@ -380,7 +319,7 @@ export const getAlertDefinitionCreateData = (
   label: label,
   type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
   name: faker.lorem.words(3),
-  enabled: true,
+  enabled,
   description: faker.lorem.sentence(),
   rulesetId: `set-${inlineRule.id}`,
   defaultSeverity,

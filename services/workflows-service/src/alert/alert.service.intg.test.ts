@@ -89,7 +89,7 @@ describe('AlertService', () => {
           data: getAlertDefinitionCreateData(
             {
               label: 'NUMCHRG',
-              ...ALERT_DEFINITIONS.NUMCHRG,
+              ...ALERT_DEFINITIONS.CHVC_C,
             },
             project,
           ),
@@ -143,7 +143,7 @@ describe('AlertService', () => {
           data: getAlertDefinitionCreateData(
             {
               label: 'SUMCHRG',
-              ...ALERT_DEFINITIONS.SUMCHRG,
+              ...ALERT_DEFINITIONS.SHCAC_C,
             },
             project,
           ),
@@ -197,7 +197,7 @@ describe('AlertService', () => {
           data: getAlertDefinitionCreateData(
             {
               label: 'NUMREFCC',
-              ...ALERT_DEFINITIONS.NUMREFCC,
+              ...ALERT_DEFINITIONS.CHCR_C,
             },
             project,
           ),
@@ -251,7 +251,7 @@ describe('AlertService', () => {
           data: getAlertDefinitionCreateData(
             {
               label: 'SUMREFCC',
-              ...ALERT_DEFINITIONS.SUMREFCC,
+              ...ALERT_DEFINITIONS.SHCAR_C,
             },
             project,
           ),
