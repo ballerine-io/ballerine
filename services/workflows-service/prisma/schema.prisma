@@ -658,7 +658,7 @@ model AlertDefinition {
   inlineRule Json
   createdBy  String @default("SYSTEM")
 
-  dedupeStrategies Json
+  dedupeStrategy   Json
   config           Json
   defaultSeverity  AlertSeverity
 
@@ -678,7 +678,7 @@ model AlertDefinition {
 
 model Alert {
   id String @id @default(cuid())
-
+  
   alertDefinitionId String
   alertDefinition   AlertDefinition @relation(fields: [alertDefinitionId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
@@ -691,7 +691,7 @@ model Alert {
   tags          String[]
   severity      AlertSeverity?
 
-  executionDetails Json // Execution details
+  executionDetails Json
 
   assignee   User?     @relation(fields: [assigneeId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   assigneeId String?
@@ -710,6 +710,7 @@ model Alert {
   @@index([projectId])
   @@index([alertDefinitionId])
   @@index([counterpartyId])
+  @@index([createdAt(sort: Desc)])
 }
 
 enum RiskCategory {

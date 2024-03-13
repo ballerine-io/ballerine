@@ -387,8 +387,8 @@ export const getAlertDefinitionCreateData = (
   ruleId: inlineRule.id,
   createdBy: createdBy,
   modifiedBy: createdBy,
-  dedupeStrategies: {
-    strategy: {},
+  dedupeStrategy: {
+    mute: false,
     cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
   },
   config: { config: {} },
@@ -444,7 +444,12 @@ const generateFakeAlert = ({
     state: faker.helpers.arrayElement(Object.values(AlertState)),
     status: faker.helpers.arrayElement(Object.values(AlertStatus)),
     tags: [faker.random.word(), faker.random.word(), faker.random.word()],
-    executionDetails: JSON.parse(faker.datatype.json()) as InputJsonValue,
+    executionDetails: {
+      checkpoint: {
+        hash: faker.datatype.uuid(),
+      },
+      executionRow: JSON.parse(faker.datatype.json()),
+    } as InputJsonValue,
     severity,
     assigneeId,
     ...counterypartyId,
