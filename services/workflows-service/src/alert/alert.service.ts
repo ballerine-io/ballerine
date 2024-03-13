@@ -254,7 +254,7 @@ export class AlertService {
 
   private async isDuplicateAlert(
     alertDefinition: AlertDefinition,
-    subjectPayload: Record<string, unknown>[],
+    subjectPayload: Array<Record<string, unknown>>,
     executionRow: Record<string, unknown>,
   ): Promise<boolean> {
     if (!alertDefinition.dedupeStrategy) {

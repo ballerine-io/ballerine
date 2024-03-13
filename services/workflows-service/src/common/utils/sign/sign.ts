@@ -10,5 +10,6 @@ export const sign = ({ payload, key }: { payload: unknown; key: string }) => {
 export const computeHash = (data: any): string => {
   const md5hash = createHash('md5');
   md5hash.update(JSON.stringify(data));
+
   return md5hash.digest('hex');
 };
