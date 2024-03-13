@@ -244,7 +244,6 @@ export class AlertService {
         executionDetails: {
           checkpoint: {
             hash: computeHash(executionRow),
-            transactionCount: findByKeyCaseInsensitive(executionRow, 'transactionCount'),
           },
           executionRow,
         } as TExecutionDetails,

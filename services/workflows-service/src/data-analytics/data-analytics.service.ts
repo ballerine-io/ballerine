@@ -145,19 +145,19 @@ export class DataAnalyticsService {
     switch (havingAggregate) {
       case AggregateType.COUNT:
         havingClause = `${AggregateType.COUNT}(id)`;
-        query = Prisma.sql`SELECT ${selectClause}, COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
+        query = Prisma.sql`SELECT ${selectClause} FROM "TransactionRecord" tr WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
           havingClause,
         )} > ${amountThreshold}`;
         break;
       case AggregateType.SUM:
         havingClause = `${AggregateType.SUM}(tr."transactionBaseAmount")`;
-        query = Prisma.sql`SELECT ${selectClause}, SUM(tr."transactionBaseAmount") AS "totalAmount", COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr
+        query = Prisma.sql`SELECT ${selectClause}, SUM(tr."transactionBaseAmount") AS "totalAmount" FROM "TransactionRecord" tr
         WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
           havingClause,
         )} > ${amountThreshold}`;
         break;
       default:
-        query = Prisma.sql`SELECT ${selectClause}, COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr WHERE ${whereClause} GROUP BY ${groupByClause}`;
+        query = Prisma.sql`SELECT ${selectClause} FROM "TransactionRecord" tr WHERE ${whereClause} GROUP BY ${groupByClause}`;
     }
 
     return await this._executeQuery(query);
