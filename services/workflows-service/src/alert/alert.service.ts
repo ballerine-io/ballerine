@@ -18,7 +18,7 @@ import { TDedupeStrategy, TExecutionDetails } from './types';
 import { findByKeyCaseInsensitive } from '@/common/schemas';
 
 const DEFAULT_DEDUPE_STRATEGIES = {
-  cooldownTimeframeInMinutes: 1440,
+  cooldownTimeframeInMinutes: 60 * 24,
 };
 
 @Injectable()
@@ -246,7 +246,7 @@ export class AlertService {
             hash: computeHash(executionRow),
           },
           executionRow,
-        } as TExecutionDetails,
+        } satisfies TExecutionDetails,
         ...Object.assign({}, ...(subject || [])),
       },
     });
@@ -267,7 +267,6 @@ export class AlertService {
       return true;
     }
 
-    // TODO: Fix types for jsonb fields
     const { cooldownTimeframeInMinutes } = dedupeStrategy || DEFAULT_DEDUPE_STRATEGIES;
 
     const existingAlert = await this.alertRepository.findFirst(

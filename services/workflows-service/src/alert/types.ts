@@ -4,7 +4,7 @@ export type TExecutionDetails = {
   checkpoint: {
     hash: string;
   };
-  executionRow: any;
+  executionRow: unknown;
 };
 
 export type TDedupeStrategy = {
