@@ -29,20 +29,23 @@ import { JsonValue } from 'type-fest';
 import { BusinessCreateDto } from '@/business/dtos/business-create';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
 
+class CounterpartyBusinessCreateDto extends OmitType(BusinessCreateDto, ['correlationId']) {}
+class CounterpartyEndUserCreateDto extends OmitType(EndUserCreateDto, ['correlationId']) {}
+
 export class CounterpartyInfo {
   @ApiProperty({ required: true }) @IsString() correlationId!: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() sortCode?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() bankCountry?: string;
 
-  @ApiProperty({ type: OmitType(BusinessCreateDto, ['correlationId']) })
+  @ApiProperty({ type: CounterpartyBusinessCreateDto })
   @ValidateIf(obj => !obj.endUserData)
   @ValidateNested()
-  businessData?: Omit<BusinessCreateDto, 'correlationId'>;
+  businessData?: CounterpartyBusinessCreateDto;
 
-  @ApiProperty({ type: OmitType(EndUserCreateDto, ['correlationId']) })
+  @ApiProperty({ type: CounterpartyEndUserCreateDto })
   @ValidateIf(obj => !obj.businessData)
   @ValidateNested()
-  endUserData?: Omit<EndUserCreateDto, 'correlationId'>;
+  endUserData?: CounterpartyEndUserCreateDto;
 }
 
 class PaymentInfo {
@@ -102,20 +105,11 @@ export class TransactionCreateDto {
   @ApiProperty({ required: false }) @IsString() @IsOptional() reference?: string;
 
   @ApiProperty({ required: false, type: 'object' }) @IsOptional() tags?: JsonValue | null;
-  @ApiProperty({ required: false, type: 'object' }) @IsOptional() auditTrail?: JsonValue | null;
-  @ApiProperty({ required: false, type: 'object' })
-  @IsOptional()
-  unusualActivityFlags?: JsonValue | null;
 
   @ApiProperty({ required: false })
   @IsEnum(TransactionRecordType)
   @IsOptional()
   type?: TransactionRecordType;
-  @ApiProperty({ required: false })
-  @IsEnum(TransactionRecordStatus)
-  @IsOptional()
-  status?: TransactionRecordStatus;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() statusReason?: string;
 
   @ApiProperty({ type: CounterpartyInfo })
   @ValidateNested()
@@ -145,10 +139,6 @@ export class TransactionCreateDto {
   @IsOptional()
   cardDetails?: CardInfo;
 
-  @ApiProperty({ required: false }) @IsEnum(ReviewStatus) @IsOptional() reviewStatus?: ReviewStatus;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() reviewerComments?: string;
-
-  @ApiProperty({ required: false }) @IsNumber() @IsOptional() riskScore?: number;
   @ApiProperty({ required: false }) @IsString() @IsOptional() regulatoryAuthority?: string;
   @ApiProperty({ required: false, type: 'object' }) @IsOptional() additionalInfo?: JsonValue | null;
 }

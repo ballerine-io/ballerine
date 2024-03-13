@@ -87,8 +87,6 @@ const getBaseTransactionData = () => {
     description: faker.lorem.sentence(),
     category: faker.commerce.product(),
     type: faker.helpers.arrayElement(Object.values(TransactionRecordType)),
-    status: faker.helpers.arrayElement(Object.values(TransactionRecordStatus)),
-    statusReason: faker.lorem.sentence(),
     direction: faker.helpers.arrayElement(Object.values(TransactionDirection)),
     reference: faker.lorem.sentence(),
     cardDetails: {
@@ -123,16 +121,11 @@ const getBaseTransactionData = () => {
       id: faker.datatype.uuid(),
     },
     tags: JSON.stringify(faker.random.words(5).split(' ')),
-    reviewStatus: faker.helpers.arrayElement(Object.values(ReviewStatus)),
-    reviewerComments: faker.lorem.sentence(),
-    auditTrail: JSON.stringify({ action: faker.lorem.word(), date: faker.date.recent() }),
-    unusualActivityFlags: JSON.stringify({ flag: faker.lorem.word() }),
-    riskScore: faker.datatype.number({ min: 0, max: 100 }),
     regulatoryAuthority: faker.company.name(),
     additionalInfo: JSON.stringify({ note: faker.lorem.sentence() }),
     originator: getBusinessCounterpartyData(),
     beneficiary: getEndUserCounterpartyData(),
-  } as const;
+  } as const satisfies TransactionCreateDto;
 };
 
 describe('#TransactionControllerExternal', () => {

@@ -17,8 +17,6 @@ export class TransactionEntityMapper {
       transactionDescription: dto.description ?? null,
       transactionCategory: dto.category ?? null,
       transactionType: dto.type ?? null,
-      transactionStatus: dto.status ?? null,
-      transactionStatusReason: dto.statusReason ?? null,
       transactionBaseAmount: dto.baseAmount,
       transactionBaseCurrency: dto.baseCurrency,
       transactionDirection: dto.direction ?? null,
@@ -46,8 +44,6 @@ export class TransactionEntityMapper {
       cardTokenized: dto.cardDetails?.tokenized ?? null,
 
       tags: dto.tags ?? {},
-      reviewStatus: dto.reviewStatus ?? null,
-      reviewerComments: dto.reviewerComments ?? null,
 
       regulatoryAuthority: dto.regulatoryAuthority ?? null,
       additionalInfo: (dto.additionalInfo ?? null) as unknown as InputJsonValue,
@@ -67,8 +63,6 @@ export class TransactionEntityMapper {
         counterpartyInfo: dto.beneficiary,
         projectId,
       }),
-
-      unusualActivityFlags: dto.unusualActivityFlags ?? {},
 
       originatorSortCode: dto.originator?.sortCode ?? null,
       originatorBankCountry: dto.originator?.bankCountry ?? null,
