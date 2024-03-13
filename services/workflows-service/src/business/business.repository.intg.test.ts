@@ -1,6 +1,6 @@
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 import { fetchServiceFromModule } from '@/test/helpers/nest-app-helper';
-import { PrismaModule } from 'nestjs-prisma';
+import { PrismaModule } from '@/prisma/prisma.module';
 import { BusinessRepository } from '@/business/business.repository';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Project } from '@prisma/client';
