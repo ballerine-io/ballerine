@@ -52,7 +52,7 @@ export class DataAnalyticsService {
     projectId,
     amountThreshold,
     amountBetween,
-    direction = 'inbound',
+    direction,
     excludedCounterparty = {
       counterpartyBeneficiaryIds: [],
       counterpartyOriginatorIds: [],
@@ -74,12 +74,15 @@ export class DataAnalyticsService {
 
     const conditions: Prisma.Sql[] = [
       Prisma.sql`"projectId" = ${projectId}`,
-      Prisma.sql`"transactionDirection"::text = ${direction}`,
       Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${this.getIntervalTime(
         timeUnit,
         timeAmount,
       )}'`,
     ];
+
+    if (direction) {
+      conditions.push(Prisma.sql`"transactionDirection"::text = ${direction}`);
+    }
 
     if (excludedCounterparty) {
       (excludedCounterparty.counterpartyBeneficiaryIds || []).forEach(id =>
