@@ -6,7 +6,7 @@ import {
   Project,
   TransactionRecordType,
 } from '@prisma/client';
-import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
+import { tearDownDatabase } from '@/test/helpers/database-helper';
 import { createCustomer } from '@/test/helpers/create-customer';
 import { faker } from '@faker-js/faker';
 import { createProject } from '@/test/helpers/create-project';
@@ -28,6 +28,7 @@ describe('AlertService', () => {
   let alertService: AlertService;
   let customer: Customer;
   let project: Project;
+  let transactionFactory: TransactionFactory;
 
   beforeAll(async () => {
     const module = await Test.createTestingModule({
@@ -38,16 +39,21 @@ describe('AlertService', () => {
         AlertRepository,
         AlertDefinitionRepository,
         AlertService,
+        TransactionFactory,
       ],
     }).compile();
 
     prismaService = module.get(PrismaService);
 
     alertService = module.get(AlertService);
+
+    transactionFactory = module.get(TransactionFactory);
   });
 
   beforeEach(async () => {
-    await cleanupDatabase();
+    await prismaService.$executeRaw`TRUNCATE TABLE "public"."Alert" CASCADE;`;
+    await prismaService.$executeRaw`TRUNCATE TABLE "public"."AlertDefinition" CASCADE;`;
+    await prismaService.$executeRaw`TRUNCATE TABLE "public"."TransactionRecord" CASCADE;`;
 
     customer = await createCustomer(
       prismaService,
@@ -59,15 +65,6 @@ describe('AlertService', () => {
     );
 
     project = await createProject(prismaService, customer, faker.datatype.uuid());
-
-    const alerts = await prismaService.alert.findMany();
-    const alertDefinitions = await prismaService.alertDefinition.findMany();
-    console.log('alerts', alerts);
-    console.log('alertDefinitions', alertDefinitions);
-
-    // Assert DB is clean
-    expect(await prismaService.alert.count()).toBe(0);
-    expect(await prismaService.alertDefinition.count()).toBe(0);
   });
 
   afterAll(tearDownDatabase);
@@ -76,7 +73,8 @@ describe('AlertService', () => {
     let baseTransactionFactory: TransactionFactory;
 
     beforeEach(() => {
-      baseTransactionFactory = TransactionFactory.make(prismaService, project.id)
+      baseTransactionFactory = transactionFactory
+        .project(project)
         .paymentMethod(PaymentMethod.credit_card)
         .withBusinessOriginator()
         .withEndUserBeneficiary()

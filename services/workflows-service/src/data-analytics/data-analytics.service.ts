@@ -120,7 +120,7 @@ export class DataAnalyticsService {
           ...groupBy
             .slice(0)
             .map(groupByField => [
-              Prisma.sql`"${Prisma.raw(groupByField)}" as counterpartyId`,
+              Prisma.sql`"${Prisma.raw(groupByField)}" as "counterpartyId"`,
               Prisma.sql`"${Prisma.raw(groupByField)}"`,
             ])
             .flat(),
@@ -182,7 +182,7 @@ export class DataAnalyticsService {
       Prisma.sql`tr."transactionAmount" > (config ->> 'customer_expected_amount')::numeric`,
     ];
 
-    const query: Prisma.Sql = Prisma.sql`SELECT tr."businessId" , tr."transactionAmount" FROM "TransactionRecord" as tr
+    const query: Prisma.Sql = Prisma.sql`SELECT tr."businessId" , tr."transactionAmount" FROM "TransactionRecord" as "tr"
     WHERE ${Prisma.join(conditions, ' AND ')} `;
 
     const results = await this.prisma.$queryRaw(query);
@@ -191,7 +191,7 @@ export class DataAnalyticsService {
   }
 
   async evaluateDormantAccount({ projectId }: { projectId: string }) {
-    const _V1: Prisma.Sql = Prisma.sql`SELECT 
+    const _V1: Prisma.Sql = Prisma.sql`SELECT
     "totalTrunsactionAllTime"."businessId",
     "totalTrunsactionAllTime"."totalTrunsactionAllTime",
     "totalTransactionWithinSixMonths"."totalTransactionWithinSixMonths"
@@ -202,7 +202,7 @@ export class DataAnalyticsService {
             COUNT(tr."id") AS "totalTrunsactionAllTime"
         FROM
             "TransactionRecord" AS "tr"
-        WHERE 
+        WHERE
           tr."projectId" = '${projectId}'
           AND tr."businessId" IS NOT NULL
         GROUP BY
@@ -235,7 +235,7 @@ export class DataAnalyticsService {
       END) AS "totalTransactionWithinSixMonths",
     COUNT(tr."id") AS "totalTrunsactionAllTime"
   FROM
-    "TransactionRecord" AS tr
+    "TransactionRecord" AS "tr"
   WHERE
     tr."projectId" = '${projectId}'
     AND tr."businessId" IS NOT NULL
@@ -246,7 +246,7 @@ export class DataAnalyticsService {
       CASE WHEN tr."transactionDate" >= CURRENT_DATE - INTERVAL '1 days' THEN
         tr."id"
       END) = 1
-    AND COUNT(tr."id") > 1;  
+    AND COUNT(tr."id") > 1;
   `;
 
     return await this._executeQuery(query);
@@ -311,7 +311,7 @@ export class DataAnalyticsService {
 
     const query = Prisma.sql`
       SELECT ${groupBy.clause},
-      FROM "TransactionRecord" as tr
+      FROM "TransactionRecord" as "tr"
       WHERE ${Prisma.join(conditions, ' AND ')}
       GROUP BY ${groupBy.clause}  HAVING ${Prisma.raw(havingClause)} > ${threshold}`;
 

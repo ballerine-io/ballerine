@@ -10,9 +10,11 @@ import {
   TransactionDirection,
   TransactionRecordType,
   Prisma,
+  Project,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { PrismaService } from '@/prisma/prisma.service';
+import { Injectable } from '@nestjs/common';
 
 const getNestedCounterpartyBusinessData = ({
   projectId,
@@ -128,6 +130,7 @@ type TransactionCreateData = Parameters<
   InstanceType<typeof PrismaService>['transactionRecord']['create']
 >[0]['data'];
 
+@Injectable()
 export class TransactionFactory {
   private number = 1;
 
@@ -135,10 +138,14 @@ export class TransactionFactory {
 
   private runBeforeCreate: Array<() => Promise<void>> = [];
 
-  constructor(private readonly prisma: PrismaService, private readonly projectId: string) {}
+  private projectId!: string;
 
-  public static make(prisma: PrismaService, projectId: string) {
-    return new TransactionFactory(prisma, projectId);
+  constructor(private readonly prisma: PrismaService) {}
+
+  project(project: Project) {
+    this.projectId = project.id;
+
+    return this;
   }
 
   count(number: number) {
