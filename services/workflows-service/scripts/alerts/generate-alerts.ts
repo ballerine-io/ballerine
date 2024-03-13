@@ -1,4 +1,3 @@
-import { Input } from '@ballerine/ui';
 import {
   InlineRule,
   TCustomersTransactionTypeOptions,

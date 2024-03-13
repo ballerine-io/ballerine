@@ -284,25 +284,20 @@ export class AlertService {
       return false;
     }
 
-    // We already have an alert for the same definition and subject, check if it's within the cooldown period
-
-    // Convert minutes to milliseconds
     const cooldownDurationInMs = cooldownTimeframeInMinutes * 60 * 1000;
 
-    const { hash } = (existingAlert.executionDetails as TExecutionDetails)?.checkpoint || {
-      hash: '',
-    };
-
     // Calculate the timestamp after which alerts will be considered outside the cooldown period
-    if (
-      Date.now() < existingAlert.createdAt.getTime() + cooldownDurationInMs &&
-      existingAlert.status !== AlertStatus.completed &&
-      // hash or deep comparison on executionRow
-      hash === computeHash(executionRow)
-    ) {
-      // Its Duplicate
-      this.logger.warn('Duplicate alert', { existingAlert });
+    if (existingAlert.status !== AlertStatus.completed) {
+      this.alertRepository.updateById(existingAlert.id, {
+        data: {
+          updatedAt: new Date(),
+        },
+      });
 
+      return true;
+    }
+
+    if (Date.now() < existingAlert.createdAt.getTime() + cooldownDurationInMs) {
       return true;
     }
 
