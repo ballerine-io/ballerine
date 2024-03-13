@@ -78,7 +78,7 @@ describe('AlertService', () => {
         .paymentMethod(PaymentMethod.credit_card)
         .withBusinessOriginator()
         .withEndUserBeneficiary()
-        .transactionDate(faker.date.recent(7));
+        .transactionDate(faker.date.recent(6));
     });
 
     describe('Rule: NUMCHRG', () => {
@@ -152,7 +152,7 @@ describe('AlertService', () => {
 
       it('When the sum of chargebacks amount is greater than 5000, an alert should be created', async () => {
         // Arrange
-        const business1Transactions = await baseTransactionFactory.amount(100).count(50).create({
+        const business1Transactions = await baseTransactionFactory.amount(100).count(51).create({
           transactionType: TransactionRecordType.chargeback,
         });
         const business2Transactions = await baseTransactionFactory.amount(100).count(49).create({
@@ -260,7 +260,7 @@ describe('AlertService', () => {
 
       it('When the sum of refunds amount is greater than 5000, an alert should be created', async () => {
         // Arrange
-        const business1Transactions = await baseTransactionFactory.amount(100).count(50).create({
+        const business1Transactions = await baseTransactionFactory.amount(100).count(51).create({
           transactionType: TransactionRecordType.refund,
         });
         const business2Transactions = await baseTransactionFactory.amount(100).count(49).create({

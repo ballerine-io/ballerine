@@ -74,10 +74,12 @@ export class DataAnalyticsService {
 
     const conditions: Prisma.Sql[] = [
       Prisma.sql`"projectId" = ${projectId}`,
-      Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${this.getIntervalTime(
-        timeUnit,
-        timeAmount,
-      )}'`,
+      Prisma.raw(
+        `"transactionDate" >= CURRENT_DATE - INTERVAL '${this.getIntervalTime(
+          timeUnit,
+          timeAmount,
+        )}'`,
+      ),
     ];
 
     if (direction) {
@@ -336,25 +338,19 @@ export class DataAnalyticsService {
   private getIntervalTime(timeUnit: string, timeAmount: number) {
     switch (timeUnit) {
       case 'minutes':
-        return Prisma.sql`${timeAmount} minutes`;
-        break;
+        return `${timeAmount} minutes`;
       case 'hours':
-        return Prisma.sql`${timeAmount} hours`;
-        break;
+        return `${timeAmount} hours`;
       case 'days':
-        return Prisma.sql`${timeAmount} days`;
-        break;
+        return `${timeAmount} days`;
       case 'weeks':
-        return Prisma.sql`${timeAmount} weeks`;
-        break;
+        return `${timeAmount} weeks`;
       case 'months':
-        return Prisma.sql`${timeAmount} months`;
-        break;
+        return `${timeAmount} months`;
       case 'years':
-        return Prisma.sql`${timeAmount} years`;
-        break;
+        return `${timeAmount} years`;
       default:
-        return Prisma.sql`${timeAmount} days`;
+        return `${timeAmount} days`;
     }
   }
 }
