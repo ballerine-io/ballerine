@@ -173,8 +173,8 @@ describe('WorkflowService', () => {
 
     const documentChangedWebhookCaller = new DocumentChangedWebhookCaller(
       fakeHttpService,
-      eventEmitter as any,
       configService as unknown as ConfigService,
+      eventEmitter as unknown as any,
       testingModule.get(AppLoggerService),
       customerService,
     );
