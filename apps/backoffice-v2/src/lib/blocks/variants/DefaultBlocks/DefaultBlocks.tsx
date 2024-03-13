@@ -26,7 +26,7 @@ export const DefaultBlocks = () => {
   return (
     <div className="relative flex flex-col gap-4">
       <div className="sticky top-0 z-[100] w-full bg-white pb-1">
-        <Tabs value={activeTab.name} onValueChange={setTab}>
+        <Tabs value={activeTab?.name} onValueChange={setTab}>
           <TabsList>
             {tabs.map(tab => (
               <TabsTrigger key={tab.name} value={tab.name}>

@@ -19,6 +19,7 @@ export const useCaseBlocks = (
   return {
     activeTab,
     blocks: themeBlocks,
+    tabs,
     setTab,
   };
 };

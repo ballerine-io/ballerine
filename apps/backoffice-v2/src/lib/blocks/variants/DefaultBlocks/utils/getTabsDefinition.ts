@@ -29,12 +29,17 @@ export const getTabsDefinition = (blocks: any[]) => {
     {
       name: 'summary',
       displayName: 'Summary',
-      blocks: [...processTrackerBlock, ...websiteMonitoringBlock, ...entityInfoBlock],
+      blocks: [...processTrackerBlock, ...entityInfoBlock],
     },
     {
       name: 'company_information',
       displayName: 'Full Company Information',
-      blocks: [...registryInfoBlock, ...kybRegistryInfoBlock, ...companySanctionsBlock],
+      blocks: [
+        ...entityInfoBlock,
+        ...registryInfoBlock,
+        ...companySanctionsBlock,
+        ...bankingDetailsBlock,
+      ],
     },
     {
       name: 'store_info',

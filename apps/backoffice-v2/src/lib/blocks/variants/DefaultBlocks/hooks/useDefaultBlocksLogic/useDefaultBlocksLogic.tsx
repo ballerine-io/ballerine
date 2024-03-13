@@ -34,7 +34,6 @@ import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvided
 import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
 import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
 import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocks/useCaseBlocks';
-import { getTabsDefinition } from '@/lib/blocks/variants/DefaultBlocks/utils/getTabsDefinition';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
@@ -416,61 +415,12 @@ export const useDefaultBlocksLogic = () => {
     workflow?.context?.entity,
   ]);
 
-  const tabsDefinition = useMemo(() => getTabsDefinition(allBlocks), [allBlocks]);
   const {
     activeTab,
     blocks = [],
+    tabs,
     setTab,
   } = useCaseBlocks(allBlocks, workflow!.workflowDefinition?.config);
-
-  // const blocks = useMemo(() => {
-  //   if (!workflow?.context?.entity) return [];
-
-  //   return [
-  //     ...websiteMonitoringBlock,
-  //     ...entityInfoBlock,
-  //     ...registryInfoBlock,
-  //     ...kybRegistryInfoBlock,
-  //     ...companySanctionsBlock,
-  //     ...ubosUserProvidedBlock,
-  //     ...ubosRegistryProvidedBlock,
-  //     ...directorsUserProvidedBlock,
-  //     ...directorsRegistryProvidedBlock,
-  //     ...directorsDocumentsBlocks,
-  //     ...storeInfoBlock,
-  //     ...websiteBasicRequirementBlock,
-  //     ...bankingDetailsBlock,
-  //     ...processingDetailsBlock,
-  //     ...mainContactBlock,
-  //     ...mainRepresentativeBlock,
-  //     ...mapBlock,
-  //     ...parentDocumentBlocks,
-  //     ...associatedCompaniesBlock,
-  //     ...associatedCompaniesInformationBlock,
-  //   ];
-  // }, [
-  //   associatedCompaniesBlock,
-  //   associatedCompaniesInformationBlock,
-  //   bankingDetailsBlock,
-  //   companySanctionsBlock,
-  //   directorsDocumentsBlocks,
-  //   directorsRegistryProvidedBlock,
-  //   directorsUserProvidedBlock,
-  //   entityInfoBlock,
-  //   kybRegistryInfoBlock,
-  //   mainContactBlock,
-  //   mainRepresentativeBlock,
-  //   mapBlock,
-  //   parentDocumentBlocks,
-  //   processingDetailsBlock,
-  //   registryInfoBlock,
-  //   storeInfoBlock,
-  //   ubosUserProvidedBlock,
-  //   ubosRegistryProvidedBlock,
-  //   websiteBasicRequirementBlock,
-  //   websiteMonitoringBlock,
-  //   workflow?.context?.entity,
-  // ]);
 
   return {
     blocks,
@@ -480,8 +430,8 @@ export const useDefaultBlocksLogic = () => {
     isLoadingReuploadNeeded,
     kycChildWorkflows,
     isLoading,
-    tabs: tabsDefinition,
     activeTab,
+    tabs,
     setTab,
   };
 };

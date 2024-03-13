@@ -36,7 +36,12 @@ export const getThemeBlocks = (
     }
 
     if (activeTab.name === 'company_information') {
-      return [...registryInfoBlock, ...kybRegistryInfoBlock, ...companySanctionsBlock];
+      return [
+        ...registryInfoBlock,
+        ...kybRegistryInfoBlock,
+        ...companySanctionsBlock,
+        ...bankingDetailsBlock,
+      ];
     }
 
     if (activeTab.name === 'store_info') {
