@@ -74,12 +74,9 @@ export class DataAnalyticsService {
 
     const conditions: Prisma.Sql[] = [
       Prisma.sql`"projectId" = ${projectId}`,
-      Prisma.raw(
-        `"transactionDate" >= CURRENT_DATE - INTERVAL '${this.getIntervalTime(
-          timeUnit,
-          timeAmount,
-        )}'`,
-      ),
+      Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+        `${timeAmount} ${timeUnit}`,
+      )}'`,
     ];
 
     if (direction) {
@@ -280,9 +277,8 @@ export class DataAnalyticsService {
         transactionType.map(type => `'${type}'::"TransactionRecordType"`),
         ',',
       )})`,
-      Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${this.getIntervalTime(
-        timeUnit,
-        timeAmount,
+      Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+        `${timeAmount} ${timeUnit}`,
       )}'`,
     ];
 
@@ -326,31 +322,6 @@ export class DataAnalyticsService {
       values: query.values,
     });
 
-    const results = await this.prisma.$queryRaw(query);
-
-    this.logger.debug('evaluateTransactionsAgainstDynamicRules results', {
-      results,
-    });
-
-    return results;
-  }
-
-  private getIntervalTime(timeUnit: string, timeAmount: number) {
-    switch (timeUnit) {
-      case 'minutes':
-        return `${timeAmount} minutes`;
-      case 'hours':
-        return `${timeAmount} hours`;
-      case 'days':
-        return `${timeAmount} days`;
-      case 'weeks':
-        return `${timeAmount} weeks`;
-      case 'months':
-        return `${timeAmount} months`;
-      case 'years':
-        return `${timeAmount} years`;
-      default:
-        return `${timeAmount} days`;
-    }
+    return await this.prisma.$queryRaw(query);
   }
 }
