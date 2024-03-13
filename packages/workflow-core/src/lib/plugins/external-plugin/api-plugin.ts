@@ -6,7 +6,7 @@ export class ApiPlugin {
   public static pluginType = 'http';
   public static pluginKind = 'api';
   name: string;
-  stateNames: Array<string>;
+  stateNames: string[];
   url: string;
   method: IApiPluginParams['method'];
   headers: IApiPluginParams['headers'];
@@ -84,7 +84,9 @@ export class ApiPlugin {
         }
 
         if (this.successAction) {
-          return this.returnSuccessResponse(this.successAction, responseBody);
+          return this.returnSuccessResponse(this.successAction, {
+            ...responseBody,
+          });
         }
 
         return {};
@@ -140,6 +142,7 @@ export class ApiPlugin {
     }
 
     const res = await fetch(url, requestParams);
+
     if ([204, 202].includes(res.status)) {
       return {
         ok: true,
@@ -184,9 +187,11 @@ export class ApiPlugin {
     validationContext: TValidationContext,
   ) {
     const returnArgKey = `isValid${validationContext}`;
+
     if (!schemaValidator) return { [returnArgKey]: true };
 
     const { isValid, errorMessage } = await schemaValidator.validate(transformedRequest);
+
     return { [returnArgKey]: isValid, errorMessage };
   }
 
@@ -202,6 +207,7 @@ export class ApiPlugin {
 
   replaceValuePlaceholders(content: string, context: TContext) {
     const placeholders = content.match(/{(.*?)}/g);
+
     if (!placeholders) return content;
 
     let replacedContent = content;
