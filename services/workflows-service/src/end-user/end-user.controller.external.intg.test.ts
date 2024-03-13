@@ -5,7 +5,7 @@ import { fetchServiceFromModule, initiateNestApp } from '@/test/helpers/nest-app
 import { EndUserControllerExternal } from '@/end-user/end-user.controller.external';
 import { faker } from '@faker-js/faker';
 import { EndUserService } from '@/end-user/end-user.service';
-import { PrismaModule } from 'nestjs-prisma';
+import { PrismaModule } from '@/prisma/prisma.module';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
