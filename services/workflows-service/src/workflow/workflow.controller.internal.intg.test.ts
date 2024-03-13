@@ -3,7 +3,7 @@ import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helpe
 import { INestApplication } from '@nestjs/common';
 import { fetchServiceFromModule, initiateNestApp } from '@/test/helpers/nest-app-helper';
 import { EndUserService } from '@/end-user/end-user.service';
-import { PrismaModule } from 'nestjs-prisma';
+import { PrismaModule } from '@/prisma/prisma.module';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
