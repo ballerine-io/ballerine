@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.5.51
+
+### Patch Changes
+
+- added set time helper
+
 ## 0.5.50
 
 ### Patch Changes
