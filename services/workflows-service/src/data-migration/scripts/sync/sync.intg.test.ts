@@ -3,7 +3,7 @@ import { AppModule } from '@/app.module';
 import { DataSyncTables, PrismaClient } from '@prisma/client';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { SyncedObject } from './sync';
+import { SyncedObject, sync } from './sync';
 import { InputJsonValue, NullableJsonNullValueInput } from '@/types';
 import { env } from '@/env';
 import deepDiff from 'deep-diff';
