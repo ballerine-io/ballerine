@@ -39,6 +39,22 @@ export const PaymentMethods = [
   PaymentMethod.APN,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof PaymentMethod>>;
 
+const CounterpartySchema = z.object({
+  correlationId: z.string(),
+  endUser: z
+    .object({
+      correlationId: z.string(),
+      firstName: z.string(),
+      lastName: z.string(),
+    })
+    .nullable(),
+  business: z
+    .object({
+      correlationId: z.string(),
+      companyName: z.string(),
+    })
+    .nullable(),
+});
 export const TransactionsListSchema = z.array(
   ObjectWithIdSchema.extend({
     transactionDate: z.string().datetime(),
@@ -46,25 +62,33 @@ export const TransactionsListSchema = z.array(
     transactionBaseAmount: z.number(),
     transactionBaseCurrency: z.string(),
 
-    counterpartyOriginator: z
-      .object({
-        endUser: z
-          .object({
-            firstName: z.string(),
-            lastName: z.string(),
-          })
-          .nullable(),
-      })
-      .nullable(),
+    counterpartyOriginator: CounterpartySchema.nullable(),
     counterpartyOriginatorId: z.string().nullable(),
+    counterpartyBeneficiary: CounterpartySchema.nullable(),
+    counterpartyBeneficiaryId: z.string().nullable(),
     paymentMethod: z.enum(PaymentMethods),
-  }).transform(({ counterpartyOriginator, ...data }) => ({
-    ...data,
-    counterpartyOriginatorName:
-      noNullish`${counterpartyOriginator?.endUser?.firstName} ${counterpartyOriginator?.endUser?.lastName}`.trim(),
-    transactionBaseAmountWithCurrency:
-      noNullish`${data.transactionBaseAmount} ${data.transactionBaseCurrency}`.trim(),
-  })),
+  }).transform(({ counterpartyBeneficiary, counterpartyOriginator, ...data }) => {
+    const counterpartyBeneficiaryName = counterpartyBeneficiary?.business
+      ? counterpartyBeneficiary.business.companyName.trim()
+      : counterpartyBeneficiary?.endUser
+      ? `${counterpartyBeneficiary?.endUser?.firstName} ${counterpartyBeneficiary?.endUser?.lastName}`.trim()
+      : null;
+    const counterpartyBeneficiaryCorrelationId = counterpartyBeneficiary?.correlationId;
+    const counterpartyOriginatorName = counterpartyOriginator?.business
+      ? counterpartyOriginator.business.companyName.trim()
+      : counterpartyOriginator?.endUser
+      ? `${counterpartyOriginator?.endUser?.firstName} ${counterpartyOriginator?.endUser?.lastName}`.trim()
+      : null;
+    const counterpartyOriginatorCorrelationId = counterpartyOriginator?.correlationId;
+
+    return {
+      ...data,
+      counterpartyBeneficiaryName,
+      counterpartyBeneficiaryCorrelationId,
+      counterpartyOriginatorName,
+      counterpartyOriginatorCorrelationId,
+    };
+  }),
 );
 
 export type TTransactionsList = z.output<typeof TransactionsListSchema>;

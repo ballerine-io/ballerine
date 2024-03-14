@@ -67,24 +67,6 @@ export const columns = [
     },
     header: 'Amount',
   }),
-  columnHelper.accessor('business', {
-    cell: info => {
-      const business = info.getValue();
-
-      return <TextWithNAFallback className="text-sm font-semibold">{business}</TextWithNAFallback>;
-    },
-    header: 'Business',
-  }),
-  columnHelper.accessor('businessId', {
-    cell: info => {
-      const businessId = info.getValue();
-
-      return (
-        <TextWithNAFallback className="text-sm font-semibold">{businessId}</TextWithNAFallback>
-      );
-    },
-    header: 'Business ID',
-  }),
   columnHelper.accessor('counterpartyOriginatorName', {
     cell: info => {
       const counterpartyOriginatorName = info.getValue();
@@ -95,19 +77,43 @@ export const columns = [
         </TextWithNAFallback>
       );
     },
-    header: 'Counterparty Name',
+    header: 'Counterparty Originator Name',
   }),
-  columnHelper.accessor('counterpartyOriginatorId', {
+  columnHelper.accessor('counterpartyOriginatorCorrelationId', {
     cell: info => {
-      const counterpartyOriginatorId = info.getValue();
+      const counterpartyOriginatorCorrelationId = info.getValue();
 
       return (
         <TextWithNAFallback className="text-sm font-semibold">
-          {counterpartyOriginatorId}
+          {counterpartyOriginatorCorrelationId}
         </TextWithNAFallback>
       );
     },
-    header: 'Counterparty ID',
+    header: 'Counterparty Originator Name',
+  }),
+  columnHelper.accessor('counterpartyBeneficiaryName', {
+    cell: info => {
+      const counterpartyBeneficiaryName = info.getValue();
+
+      return (
+        <TextWithNAFallback className="text-sm font-semibold">
+          {counterpartyBeneficiaryName}
+        </TextWithNAFallback>
+      );
+    },
+    header: 'Counterparty Beneficiary Name',
+  }),
+  columnHelper.accessor('counterpartyBeneficiaryCorrelationId', {
+    cell: info => {
+      const counterpartyBeneficiaryCorrelationId = info.getValue();
+
+      return (
+        <TextWithNAFallback className="text-sm font-semibold">
+          {counterpartyBeneficiaryCorrelationId}
+        </TextWithNAFallback>
+      );
+    },
+    header: 'Counterparty Beneficiary Name',
   }),
   columnHelper.accessor('paymentMethod', {
     cell: info => {

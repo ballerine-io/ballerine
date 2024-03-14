@@ -146,6 +146,7 @@ export class TransactionControllerExternal {
       include: {
         counterpartyBeneficiary: {
           select: {
+            correlationId: true,
             business: {
               select: {
                 correlationId: true,
@@ -163,6 +164,7 @@ export class TransactionControllerExternal {
         },
         counterpartyOriginator: {
           select: {
+            correlationId: true,
             business: {
               select: {
                 correlationId: true,
