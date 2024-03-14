@@ -365,16 +365,18 @@ export const generateAlertDefinitions = async (
   },
 ) =>
   Promise.all(
-    Object.entries(ALERT_DEFINITIONS).map(([label, data]) =>
-      prisma.alertDefinition.upsert({
-        where: { label_projectId: { label: label, projectId: project.id } },
-        create: getAlertDefinitionCreateData({ label, ...data }, project, createdBy),
-        update: getAlertDefinitionCreateData({ label, ...data }, project, createdBy),
-        include: {
-          alert: true,
-        },
-      }),
-    ),
+    Object.entries(ALERT_DEFINITIONS)
+      .filter(([_, alert]) => 'enabled' in alert && alert.enabled)
+      .map(([label, data]) =>
+        prisma.alertDefinition.upsert({
+          where: { label_projectId: { label: label, projectId: project.id } },
+          create: getAlertDefinitionCreateData({ label, ...data }, project, createdBy),
+          update: getAlertDefinitionCreateData({ label, ...data }, project, createdBy),
+          include: {
+            alert: true,
+          },
+        }),
+      ),
   );
 
 const generateFakeAlert = ({
