@@ -77,7 +77,7 @@ export const columns = [
         </TextWithNAFallback>
       );
     },
-    header: 'Counterparty Originator Name',
+    header: 'Originator Name',
   }),
   columnHelper.accessor('counterpartyOriginatorCorrelationId', {
     cell: info => {
@@ -89,7 +89,7 @@ export const columns = [
         </TextWithNAFallback>
       );
     },
-    header: 'Counterparty Originator Name',
+    header: 'Originator ID',
   }),
   columnHelper.accessor('counterpartyBeneficiaryName', {
     cell: info => {
@@ -101,7 +101,7 @@ export const columns = [
         </TextWithNAFallback>
       );
     },
-    header: 'Counterparty Beneficiary Name',
+    header: 'Beneficiary Name',
   }),
   columnHelper.accessor('counterpartyBeneficiaryCorrelationId', {
     cell: info => {
@@ -113,7 +113,7 @@ export const columns = [
         </TextWithNAFallback>
       );
     },
-    header: 'Counterparty Beneficiary Name',
+    header: 'Beneficiary ID',
   }),
   columnHelper.accessor('paymentMethod', {
     cell: info => {
