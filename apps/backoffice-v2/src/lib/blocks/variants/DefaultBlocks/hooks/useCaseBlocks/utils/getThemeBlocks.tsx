@@ -1,10 +1,40 @@
 import { WorkflowDefinitionConfigTheme } from '@/domains/workflow-definitions/fetchers';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { KycBlock } from '@/lib/blocks/components/KycBlock/KycBlock';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { TCaseBlocksParams } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocks/useCaseBlocks';
 import { TCaseTabDefinition } from '@/lib/blocks/variants/DefaultBlocks/types/case-tab';
+
+const createKycBlocks = (workflow: TWorkflowById) => {
+  const blocks = createBlocksTyped().addBlock();
+
+  const childWorkflows = workflow?.childWorkflows?.filter(
+    childWorkflow => childWorkflow?.context?.entity?.type === 'individual',
+  );
+
+  if (!childWorkflows?.length) return;
+
+  childWorkflows.forEach(childWorkflow => {
+    blocks.addCell({
+      type: 'nodeBlock',
+      value: (
+        <KycBlock
+          parentWorkflowId={workflow.id}
+          childWorkflow={childWorkflow}
+          key={childWorkflow?.id}
+        />
+      ),
+    });
+  });
+
+  return blocks.build();
+};
 
 export const getThemeBlocks = (
   blocks: any[],
   theme: WorkflowDefinitionConfigTheme,
-  activeTab?: TCaseTabDefinition,
+  activeTab: TCaseTabDefinition,
+  { workflow }: TCaseBlocksParams,
 ) => {
   const [
     websiteMonitoringBlock,
@@ -58,6 +88,7 @@ export const getThemeBlocks = (
         ...ubosRegistryProvidedBlock,
         ...directorsUserProvidedBlock,
         ...directorsRegistryProvidedBlock,
+        ...(createKycBlocks(workflow as TWorkflowById) || []),
       ];
     }
   }

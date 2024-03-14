@@ -16,6 +16,7 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ICallToActionLegacyProps } from '@/lib/blocks/components/CallToActionLegacy/interfaces';
 import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
 import { IEditableDetailsDocument } from '@/lib/blocks/components/EditableDetails/interfaces';
+import { INodeBlockProps } from '@/lib/blocks/components/NodeBlock/interfaces';
 import { Block } from '@ballerine/blocks';
 import { CommonWorkflowStates } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
@@ -218,6 +219,10 @@ export type TProcessTrackerBlock = {
   type: 'processTracker';
 } & IProcessTrackerProps;
 
+export type TNodeBlock = {
+  type: 'nodeBlock';
+} & INodeBlockProps;
+
 export type TCell =
   | TBlockCell
   | TContainerCell
@@ -237,4 +242,5 @@ export type TCell =
   | TTableCell
   | TParagraphCell
   | TDialogCell
-  | TProcessTrackerBlock;
+  | TProcessTrackerBlock
+  | TNodeBlock;
