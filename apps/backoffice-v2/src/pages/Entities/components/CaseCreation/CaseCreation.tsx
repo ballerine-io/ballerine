@@ -8,10 +8,13 @@ import { useCaseCreationWorkflowDefinition } from '@/pages/Entities/components/C
 import { Plus } from 'lucide-react';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { ctw } from '@/common/utils/ctw/ctw';
+import { titleCase } from 'string-ts';
 
 export const CaseCreation = withCaseCreation(() => {
   const { workflowDefinition, isLoading, error } = useCaseCreationWorkflowDefinition();
   const { isOpen, setIsOpen: setOpen } = useCaseCreationContext();
+  const workflowDefinitionName =
+    workflowDefinition?.displayName || titleCase(workflowDefinition?.name ?? '');
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
@@ -31,20 +34,20 @@ export const CaseCreation = withCaseCreation(() => {
             <div className="flex flex-col">
               <span
                 className={ctw('pb-3 text-base font-bold capitalize', {
-                  'text-slate-400': !workflowDefinition?.displayName,
+                  'text-slate-400': !workflowDefinitionName,
                 })}
               >
-                {valueOrNA(workflowDefinition?.displayName)}
+                {valueOrNA(workflowDefinitionName)}
               </span>
               <h1 className="leading-0 pb-5 text-3xl font-bold">Add a Case</h1>
               <p className="pb-10">
                 Create a{' '}
                 <span
                   className={ctw({
-                    'text-slate-400': !workflowDefinition?.displayName,
+                    'text-slate-400': !workflowDefinitionName,
                   })}
                 >
-                  {valueOrNA(workflowDefinition?.displayName)}
+                  {valueOrNA(workflowDefinitionName)}
                 </span>{' '}
                 case by filling in the information below. Please ensure all the required fields are
                 filled out correctly.
