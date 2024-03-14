@@ -36,4 +36,29 @@ describe('Helper transform', () => {
       });
     });
   });
+
+  describe('#setTimeToRecordUTC', () => {
+    it('sets the time to the path', async () => {
+      const data = { data: { object: 'test', test: 'object' }, mergeValue: 'test' };
+
+      const transformer = new HelpersTransformer([
+        {
+          source: 'data.invokedAt',
+          target: 'data.invokedAt',
+          method: 'setTimeToRecordUTC',
+        },
+      ]);
+
+      const response = await transformer.transform(data);
+
+      expect(response).toEqual({
+        data: { object: 'test', test: 'object', invokedAt: expect.any(Number) },
+        mergeValue: 'test',
+      });
+
+      expect(new Date((response as { data: { invokedAt: number } }).data.invokedAt)).toEqual(
+        expect.any(Date),
+      );
+    });
+  });
 });

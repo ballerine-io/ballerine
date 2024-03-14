@@ -37,7 +37,7 @@ npm start
 
 ## Getting Started - Docker Compose
 
-In the `server` subdirectory, run:
+In the `server` subdirectory, run: 
 
 ```console
 npm run compose:up
