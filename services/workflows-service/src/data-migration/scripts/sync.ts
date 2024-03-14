@@ -30,7 +30,7 @@ export type SyncedObject = {
 // @TODO: map to repositories after adding transaction support - its important since we have addtional validation there
 const tableNamesMap = {
   WorkflowDefinition: 'workflowDefinition',
-};
+} as const;
 
 const sync = async () => {
   const client = new PrismaClient();
