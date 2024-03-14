@@ -1,4 +1,3 @@
-import { Description } from './../../../../packages/react-pdf-toolkit/src/templates/report/components/Section/components/SummaryBlock/SummaryBlock.Description';
 import {
   InlineRule,
   TCustomersTransactionTypeOptions,
