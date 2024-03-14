@@ -8,17 +8,17 @@ import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { PrismaService } from '@/prisma/prisma.service';
 import type { AuthenticatedEntity, TProjectId } from '@/types';
 import * as common from '@nestjs/common';
+import { Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { Alert, AlertDefinition } from '@prisma/client';
 import * as errors from '../errors';
 import { AlertAssigneeUniqueDto, AlertUpdateResponse } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto, FindAlertsSchema } from './dtos/get-alerts.dto';
-import { BulkStatus, TBulkAssignAlertsResponse, TAlertResponse } from './types';
+import { BulkStatus, TAlertResponse, TBulkAssignAlertsResponse } from './types';
 import { AlertDecisionDto } from './dtos/decision-alert.dto';
 import { UserData } from '@/user/user-data.decorator';
 import { AlertDefinitionService } from '@/alert-definition/alert-definition.service';
-import { Res } from '@nestjs/common';
 import express from 'express';
 
 @swagger.ApiBearerAuth()
@@ -86,8 +86,9 @@ export class AlertControllerExternal {
         },
       },
     });
-    const formattedAlerts = alerts.map(alert => {
-      const { alertDefinition, assignee, business, state, ...alertWithoutDefinition } =
+
+    return alerts.map(alert => {
+      const { alertDefinition, assignee, counterparty, state, ...alertWithoutDefinition } =
         alert as TAlertResponse;
 
       return {
@@ -100,12 +101,18 @@ export class AlertControllerExternal {
             }
           : null,
         alertDetails: alertDefinition.description,
-        merchant: business ? { id: business.id, name: business.companyName } : null,
+        subject: counterparty.business
+          ? {
+              id: counterparty.business.id,
+              name: counterparty.business.companyName,
+            }
+          : {
+              id: counterparty.endUser.id,
+              name: `${counterparty.endUser.firstName} ${counterparty.endUser.lastName}`,
+            },
         decision: state,
       };
     });
-
-    return formattedAlerts;
   }
 
   @common.Patch('assign')

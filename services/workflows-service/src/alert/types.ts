@@ -30,7 +30,10 @@ export type TBulkStatus = (typeof BulkStatus)[keyof typeof BulkStatus];
 export type TAlertResponse = Alert & {
   alertDefinition: Pick<AlertDefinition, 'description' | 'label'>;
   assignee: Pick<User, 'id' | 'firstName' | 'lastName'>;
-  business: Pick<Business, 'id' | 'companyName'>;
+  counterparty: {
+    business: Pick<Business, 'id' | 'companyName'>;
+    endUser: Pick<User, 'id' | 'firstName' | 'lastName'>;
+  };
 };
 
 export type TAlertUpdateResponse = Array<{

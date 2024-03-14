@@ -56,13 +56,13 @@ export const columns = [
     },
     header: 'Label',
   }),
-  columnHelper.accessor('merchant.name', {
+  columnHelper.accessor('subject', {
     cell: info => {
-      const merchant = info.getValue();
+      const subject = info.getValue();
 
-      return <TextWithNAFallback>{merchant}</TextWithNAFallback>;
+      return <TextWithNAFallback>{subject.name}</TextWithNAFallback>;
     },
-    header: 'Merchant',
+    header: 'Subject',
   }),
   columnHelper.accessor('severity', {
     cell: info => {
