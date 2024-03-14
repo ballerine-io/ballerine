@@ -15,7 +15,6 @@ import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
 import { computeHash } from '@/common/utils/sign/sign';
 import { TDedupeStrategy, TExecutionDetails } from './types';
-import { findByKeyCaseInsensitive } from '@/common/schemas';
 
 const DEFAULT_DEDUPE_STRATEGIES = {
   cooldownTimeframeInMinutes: 60 * 24,
@@ -169,7 +168,7 @@ export class AlertService {
       async (executionRow: Record<string, unknown>) => {
         try {
           const isAnySubjectUndefinedOrNull = _.some(inlineRule.subjects, field => {
-            const val = findByKeyCaseInsensitive(executionRow, field);
+            const val = executionRow[field];
 
             return _.isNull(val) || _.isUndefined(val);
           });
@@ -188,11 +187,9 @@ export class AlertService {
             });
           }
 
-          const subjectResult = _.map(_.pick(executionRow, inlineRule.subjects), (value, key) => {
-            key = key.toLowerCase() === 'counterpartyid' ? 'counterpartyId' : key;
-
-            return { [key]: value };
-          });
+          const subjectResult = _.map(_.pick(executionRow, inlineRule.subjects), (value, key) => ({
+            [key]: value,
+          }));
 
           if (await this.isDuplicateAlert(alertDefinition, subjectResult, executionRow)) {
             return alertResponse.skipped.push({

@@ -30,14 +30,16 @@ const tags = [
   ]),
 ];
 
-export const ALERT_INLINE_RULES = [
-  {
-    label: 'HSUMICC',
+export const ALERT_DEFINITIONS = {
+  PAY_HCA_CC: {
+    enabled: true,
     defaultSeverity: AlertSeverity.medium,
+    description:
+      'High Cumulative Amount - Sum of incoming credit card transactions over a set period of time of time is greater than a limit',
     inlineRule: {
       id: 'PAY_HCA_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyid'],
+      subjects: ['counterpartyId'],
       options: {
         havingAggregate: AggregateType.SUM,
 
@@ -59,17 +61,15 @@ export const ALERT_INLINE_RULES = [
       } as TransactionsAgainstDynamicRulesType,
     },
   },
-
-  // Rule ID: PAY_HCA_APM
-  // Description: High Cumulative Amount - inbound - Customer (APM)
-  // Condition: Sum of incoming transactions over a set period of time is greater than a limit of APM.
-  {
-    label: 'HSUMIAPM',
+  PAY_HCA_APM: {
+    enabled: true,
     defaultSeverity: AlertSeverity.medium,
+    description:
+      'High Cumulative Amount - Sum of incoming non credit card transactions over a set period of time is greater than a limit of APM',
     inlineRule: {
       id: 'PAY_HCA_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyid'],
+      subjects: ['counterpartyId'],
       options: {
         havingAggregate: AggregateType.SUM,
 
@@ -92,12 +92,10 @@ export const ALERT_INLINE_RULES = [
     },
   },
 
-  // Rule ID: STRUC_CC
-  // Description: Structuring - inbound - Customer (Credit Card)
-  // Condition: Significant number of low value incoming transactions just below a threshold of credit card.
-  {
-    label: 'STRINCC',
+  STRUC_CC: {
     defaultSeverity: AlertSeverity.medium,
+    description:
+      'Structuring - Significant number of low value incoming transactions just below a threshold of credit card',
     inlineRule: {
       id: 'STRUC_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
@@ -121,13 +119,10 @@ export const ALERT_INLINE_RULES = [
       } as TransactionsAgainstDynamicRulesType,
     },
   },
-
-  // Rule ID: STRUC_APM
-  // Description: Structuring - inbound - Customer (APM)
-  // Condition: Significant number of low value incoming transactions just below a threshold of APM.
-  {
-    label: 'STRINAPM',
+  STRUC_APM: {
     defaultSeverity: AlertSeverity.medium,
+    description:
+      'Structuring - Significant number of low value incoming transactions just below a threshold of APM',
     inlineRule: {
       id: 'STRUC_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
@@ -152,8 +147,7 @@ export const ALERT_INLINE_RULES = [
       } as TransactionsAgainstDynamicRulesType,
     },
   },
-  {
-    label: 'HCAI_CC',
+  HCAI_CC: {
     defaultSeverity: AlertSeverity.medium,
     inlineRule: {
       id: 'HCAI_CC',
@@ -179,8 +173,7 @@ export const ALERT_INLINE_RULES = [
       } as TransactionsAgainstDynamicRulesType,
     },
   },
-  {
-    label: 'HACI_APM',
+  HACI_APM: {
     defaultSeverity: AlertSeverity.medium,
     inlineRule: {
       id: 'HACI_APM',
@@ -205,8 +198,7 @@ export const ALERT_INLINE_RULES = [
       } as TransactionsAgainstDynamicRulesType,
     },
   },
-  {
-    label: 'HVIC_CC',
+  HVIC_CC: {
     defaultSeverity: AlertSeverity.medium,
     inlineRule: {
       id: 'HVIC_CC',
@@ -230,93 +222,115 @@ export const ALERT_INLINE_RULES = [
       } as TransactionsAgainstDynamicRulesType,
     },
   },
-  {
-    label: 'CHVC_C',
+  CHVC_C: {
+    enabled: true,
     defaultSeverity: AlertSeverity.medium,
+    description: 'Chargeback - Significant number of chargebacks over a set period of time',
     inlineRule: {
       id: 'CHVC_C',
-      fnName: 'evaluateCustomersTransactionType',
-      subjects: ['businessId'],
+      fnName: 'evaluateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyId'],
       options: {
         transactionType: [TransactionRecordType.chargeback],
-        threshold: 14,
+        paymentMethods: [PaymentMethod.credit_card],
+        amountThreshold: 14,
         timeAmount: 7,
         timeUnit: 'days',
-        isPerBrand: false,
+        groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.COUNT,
-      } as TCustomersTransactionTypeOptions,
+      } as TransactionsAgainstDynamicRulesType,
     },
   },
-  {
-    label: 'SHCAC_C',
+  SHCAC_C: {
+    enabled: true,
     defaultSeverity: AlertSeverity.medium,
+    description:
+      'High Cumulative Amount - Chargeback - High sum of chargebacks over a set period of time',
     inlineRule: {
       id: 'SHCAC_C',
-      fnName: 'evaluateCustomersTransactionType',
-      subjects: ['businessId'],
+      fnName: 'evaluateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyId'],
       options: {
         transactionType: [TransactionRecordType.chargeback],
-        threshold: 5_000,
+        paymentMethods: [PaymentMethod.credit_card],
+        amountThreshold: 5_000,
         timeAmount: 7,
         timeUnit: 'days',
-        isPerBrand: false,
+        groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.SUM,
-      } as TCustomersTransactionTypeOptions,
+      } as TransactionsAgainstDynamicRulesType,
     },
   },
-
-  {
-    label: 'CHCR_C',
+  CHCR_C: {
+    enabled: true,
     defaultSeverity: AlertSeverity.medium,
+    description: 'Refund - Significant number of refunds over a set period of time',
     inlineRule: {
       id: 'CHCR_C',
-      fnName: 'evaluateCustomersTransactionType',
-      subjects: ['businessId'],
+      fnName: 'evaluateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyId'],
       options: {
         transactionType: [TransactionRecordType.refund],
         paymentMethods: [PaymentMethod.credit_card],
-        threshold: 14,
+        amountThreshold: 14,
         timeAmount: 7,
         timeUnit: 'days',
-        isPerBrand: false,
+        groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.COUNT,
-      } as TCustomersTransactionTypeOptions,
+      } as TransactionsAgainstDynamicRulesType,
     },
   },
-  {
-    label: 'SHCAR_C',
+  SHCAR_C: {
+    enabled: true,
     defaultSeverity: AlertSeverity.medium,
+    description: 'High Cumulative Amount - Refund - High sum of refunds over a set period of time',
     inlineRule: {
       id: 'SHCAR_C',
-      fnName: 'evaluateCustomersTransactionType',
-      subjects: ['businessId'],
+      fnName: 'evaluateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyId'],
       options: {
         transactionType: [TransactionRecordType.refund],
         paymentMethods: [PaymentMethod.credit_card],
-        threshold: 5_000,
+        amountThreshold: 5_000,
         timeAmount: 7,
         timeUnit: 'days',
-        isPerBrand: false,
+        groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.SUM,
-      } as TCustomersTransactionTypeOptions,
-    } as const satisfies InlineRule,
+      } as TransactionsAgainstDynamicRulesType,
+    },
   },
-] as const satisfies ReadonlyArray<{
-  inlineRule: InlineRule;
-  label: string;
-  defaultSeverity: AlertSeverity;
-}>;
+} as const satisfies Record<
+  string,
+  {
+    inlineRule: InlineRule;
+    defaultSeverity: AlertSeverity;
+    enabled?: boolean;
+    description?: string;
+  }
+>;
 
-const generateAlertData = (
-  { inlineRule, defaultSeverity, label }: (typeof ALERT_INLINE_RULES)[number],
-  createdBy: string,
+export const getAlertDefinitionCreateData = (
+  {
+    inlineRule,
+    defaultSeverity,
+    label,
+    description,
+    enabled = false,
+  }: {
+    label: string;
+    inlineRule: InlineRule;
+    defaultSeverity: AlertSeverity;
+    enabled?: boolean;
+    description?: string;
+  },
   project: Project,
+  createdBy: string = 'SYSTEM',
 ) => ({
   label: label,
   type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
   name: faker.lorem.words(3),
-  enabled: faker.datatype.boolean(),
-  description: faker.lorem.sentence(),
+  enabled: enabled ?? false,
+  description: description || faker.lorem.sentence(),
   rulesetId: `set-${inlineRule.id}`,
   defaultSeverity,
   ruleId: inlineRule.id,
@@ -332,6 +346,7 @@ const generateAlertData = (
   additionalInfo: {},
   projectId: project.id,
 });
+
 export const generateAlertDefinitions = async (
   prisma: PrismaClient | PrismaTransaction,
   {
@@ -342,13 +357,12 @@ export const generateAlertDefinitions = async (
     project: Project;
   },
 ) =>
-  await Promise.all(
-    // TODO: remove slice once all rules are ready
-    ALERT_INLINE_RULES.slice(0, 2).map(inlineRule =>
+  Promise.all(
+    Object.entries(ALERT_DEFINITIONS).map(([label, data]) =>
       prisma.alertDefinition.upsert({
-        where: { label_projectId: { label: inlineRule.label, projectId: project.id } },
-        create: generateAlertData(inlineRule, createdBy, project),
-        update: generateAlertData(inlineRule, createdBy, project),
+        where: { label_projectId: { label: label, projectId: project.id } },
+        create: getAlertDefinitionCreateData({ label, ...data }, project, createdBy),
+        update: getAlertDefinitionCreateData({ label, ...data }, project, createdBy),
         include: {
           alert: true,
         },

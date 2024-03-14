@@ -39,7 +39,7 @@ export type TDormantAccountOption = {
 };
 
 export type TCustomersTransactionTypeOptions = {
-  projectId: string; // TODO: make it required
+  projectId?: string; // TODO: make it required
   transactionType?: TransactionRecordType[];
   threshold?: number;
   paymentMethods?: PaymentMethod[];
@@ -53,6 +53,6 @@ export type EvaluateFunctions = {
   evaluateTransactionsAgainstDynamicRules: (
     options: TransactionsAgainstDynamicRulesType,
   ) => Promise<any>;
+  evaluateCustomersTransactionType: (options: TCustomersTransactionTypeOptions) => Promise<any>;
   // evaluateDormantAccount: (options: TDormantAccountOption) => Promise<any>;
-  // evaluateCustomersTransactionType: (options: TCustomersTransactionTypeOptions) => Promise<any>;
 };

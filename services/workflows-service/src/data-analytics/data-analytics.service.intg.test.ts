@@ -5,7 +5,7 @@ import { PaymentMethod, TransactionDirection } from '@prisma/client';
 import { DataAnalyticsService } from './data-analytics.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
-import { ALERT_INLINE_RULES } from '../../scripts/alerts/generate-alerts';
+import { ALERT_DEFINITIONS } from '../../scripts/alerts/generate-alerts';
 
 const PROJECT_ID = 'project-id';
 
@@ -392,7 +392,7 @@ describe('TransactionRulesEvaluationService', () => {
       describe('should correctly evaluate sum of incoming transactions over a set period of time is greater than a limit of', () => {
         it('credit card.', async () => {
           // Assert
-          const rule = ALERT_INLINE_RULES.find(({ inlineRule }) => inlineRule.id === 'PAY_HCA_CC');
+          const rule = ALERT_DEFINITIONS.PAY_HCA_CC;
           expect(rule).toBeDefined();
 
           // Act
@@ -421,7 +421,7 @@ describe('TransactionRulesEvaluationService', () => {
 
         it('non credit card.', async () => {
           // Assert
-          const rule = ALERT_INLINE_RULES.find(({ inlineRule }) => inlineRule.id === 'PAY_HCA_APM');
+          const rule = ALERT_DEFINITIONS.PAY_HCA_APM;
           expect(rule).toBeDefined();
 
           // Act

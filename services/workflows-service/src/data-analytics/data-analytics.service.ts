@@ -24,8 +24,9 @@ export class DataAnalyticsService {
       this.evaluateTransactionsAgainstDynamicRules.name as keyof EvaluateFunctions
     ] = this.evaluateTransactionsAgainstDynamicRules.bind(this);
 
-    // this._evaluateNameToFunction[this.evaluateCustomersTransactionType.name] =
-    //   this.evaluateCustomersTransactionType.bind(this);
+    this._evaluateNameToFunction[
+      this.evaluateCustomersTransactionType.name as keyof EvaluateFunctions
+    ] = this.evaluateCustomersTransactionType.bind(this);
 
     // this._evaluateNameToFunction[this.evaluateDormantAccount.name] =
     //   this.evaluateDormantAccount.bind(this);
@@ -52,7 +53,7 @@ export class DataAnalyticsService {
     projectId,
     amountThreshold,
     amountBetween,
-    direction = 'inbound',
+    direction,
     excludedCounterparty = {
       counterpartyBeneficiaryIds: [],
       counterpartyOriginatorIds: [],
@@ -74,12 +75,14 @@ export class DataAnalyticsService {
 
     const conditions: Prisma.Sql[] = [
       Prisma.sql`"projectId" = ${projectId}`,
-      Prisma.sql`"transactionDirection"::text = ${direction}`,
-      Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${this.getIntervalTime(
-        timeUnit,
-        timeAmount,
+      Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+        `${timeAmount} ${timeUnit}`,
       )}'`,
     ];
+
+    if (direction) {
+      conditions.push(Prisma.sql`"transactionDirection"::text = ${direction}`);
+    }
 
     if (excludedCounterparty) {
       (excludedCounterparty.counterpartyBeneficiaryIds || []).forEach(id =>
@@ -117,7 +120,7 @@ export class DataAnalyticsService {
           ...groupBy
             .slice(0)
             .map(groupByField => [
-              Prisma.sql`"${Prisma.raw(groupByField)}" as counterpartyId`,
+              Prisma.sql`"${Prisma.raw(groupByField)}" as "counterpartyId"`,
               Prisma.sql`"${Prisma.raw(groupByField)}"`,
             ])
             .flat(),
@@ -179,7 +182,7 @@ export class DataAnalyticsService {
       Prisma.sql`tr."transactionAmount" > (config ->> 'customer_expected_amount')::numeric`,
     ];
 
-    const query: Prisma.Sql = Prisma.sql`SELECT tr."businessId" , tr."transactionAmount" FROM "TransactionRecord" as tr
+    const query: Prisma.Sql = Prisma.sql`SELECT tr."businessId" , tr."transactionAmount" FROM "TransactionRecord" as "tr"
     WHERE ${Prisma.join(conditions, ' AND ')} `;
 
     const results = await this.prisma.$queryRaw(query);
@@ -188,7 +191,7 @@ export class DataAnalyticsService {
   }
 
   async evaluateDormantAccount({ projectId }: { projectId: string }) {
-    const _V1: Prisma.Sql = Prisma.sql`SELECT 
+    const _V1: Prisma.Sql = Prisma.sql`SELECT
     "totalTrunsactionAllTime"."businessId",
     "totalTrunsactionAllTime"."totalTrunsactionAllTime",
     "totalTransactionWithinSixMonths"."totalTransactionWithinSixMonths"
@@ -199,7 +202,7 @@ export class DataAnalyticsService {
             COUNT(tr."id") AS "totalTrunsactionAllTime"
         FROM
             "TransactionRecord" AS "tr"
-        WHERE 
+        WHERE
           tr."projectId" = '${projectId}'
           AND tr."businessId" IS NOT NULL
         GROUP BY
@@ -232,7 +235,7 @@ export class DataAnalyticsService {
       END) AS "totalTransactionWithinSixMonths",
     COUNT(tr."id") AS "totalTrunsactionAllTime"
   FROM
-    "TransactionRecord" AS tr
+    "TransactionRecord" AS "tr"
   WHERE
     tr."projectId" = '${projectId}'
     AND tr."businessId" IS NOT NULL
@@ -243,7 +246,7 @@ export class DataAnalyticsService {
       CASE WHEN tr."transactionDate" >= CURRENT_DATE - INTERVAL '1 days' THEN
         tr."id"
       END) = 1
-    AND COUNT(tr."id") > 1;  
+    AND COUNT(tr."id") > 1;
   `;
 
     return await this._executeQuery(query);
@@ -275,9 +278,8 @@ export class DataAnalyticsService {
         transactionType.map(type => `'${type}'::"TransactionRecordType"`),
         ',',
       )})`,
-      Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${this.getIntervalTime(
-        timeUnit,
-        timeAmount,
+      Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+        `${timeAmount} ${timeUnit}`,
       )}'`,
     ];
 
@@ -308,7 +310,7 @@ export class DataAnalyticsService {
 
     const query = Prisma.sql`
       SELECT ${groupBy.clause},
-      FROM "TransactionRecord" as tr
+      FROM "TransactionRecord" as "tr"
       WHERE ${Prisma.join(conditions, ' AND ')}
       GROUP BY ${groupBy.clause}  HAVING ${Prisma.raw(havingClause)} > ${threshold}`;
 
@@ -321,37 +323,6 @@ export class DataAnalyticsService {
       values: query.values,
     });
 
-    const results = await this.prisma.$queryRaw(query);
-
-    this.logger.debug('evaluateTransactionsAgainstDynamicRules results', {
-      results,
-    });
-
-    return results;
-  }
-
-  private getIntervalTime(timeUnit: string, timeAmount: number) {
-    switch (timeUnit) {
-      case 'minutes':
-        return Prisma.sql`${timeAmount} minutes`;
-        break;
-      case 'hours':
-        return Prisma.sql`${timeAmount} hours`;
-        break;
-      case 'days':
-        return Prisma.sql`${timeAmount} days`;
-        break;
-      case 'weeks':
-        return Prisma.sql`${timeAmount} weeks`;
-        break;
-      case 'months':
-        return Prisma.sql`${timeAmount} months`;
-        break;
-      case 'years':
-        return Prisma.sql`${timeAmount} years`;
-        break;
-      default:
-        return Prisma.sql`${timeAmount} days`;
-    }
+    return await this.prisma.$queryRaw(query);
   }
 }
