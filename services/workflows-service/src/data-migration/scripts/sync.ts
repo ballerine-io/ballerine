@@ -21,7 +21,7 @@ export type SyncedObject = {
     [key: string]: any;
   };
   syncConfig: {
-    stragety: 'replace' | 'partial-deep-merge' | 'upsert';
+    strategy: 'replace' | 'partial-deep-merge' | 'upsert';
   };
   syncedEnvironments: string[];
   dryRunEnvironments: string[];
@@ -169,7 +169,7 @@ const sync = async () => {
           }
         }
 
-        if (syncConfig.stragety === 'replace') {
+        if (syncConfig.strategy === 'replace') {
           await (transaction as { [key: string]: any })[
             tableNamesMap[tableName as keyof typeof tableNamesMap]
           ].update({
@@ -179,7 +179,7 @@ const sync = async () => {
           appLoggerService.log(`Replaced ${crossEnvKey} in ${tableName}`, {
             columns: Object.keys,
           });
-        } else if (syncConfig.stragety === 'upsert') {
+        } else if (syncConfig.strategy === 'upsert') {
           await (transaction as { [key: string]: any })[
             tableNamesMap[tableName as keyof typeof tableNamesMap]
           ].upsert({
