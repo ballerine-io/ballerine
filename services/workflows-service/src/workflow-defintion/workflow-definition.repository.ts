@@ -110,6 +110,18 @@ export class WorkflowDefinitionRepository {
     });
   }
 
+  async updateByCrossEnvKey<T extends Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>(
+    crossEnvKey: string,
+    args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionUpdateArgs, 'where'>>,
+  ): Promise<WorkflowDefinition> {
+    args.data.definition && validateDefinitionLogic(args.data);
+
+    return await this.prisma.workflowDefinition.update({
+      where: { crossEnvKey },
+      ...args,
+    });
+  }
+
   async deleteById<T extends Omit<Prisma.WorkflowDefinitionDeleteArgs, 'where'>>(
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionDeleteArgs, 'where'>>,
