@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-service",
   "private": false,
-  "version": "0.5.51",
+  "version": "0.5.50",
   "description": "workflow-service",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -37,7 +37,7 @@
     "prepare": "npm run prisma:generate",
     "db:data-migration:generate": "plop --plopfile ./prisma/data-migrations/plopfile.js --dest ./",
     "db:data-migration:migrate": "rimraf ./dist && npm run build && nest start --entryFile ./src/data-migration/scripts/migrate",
-    "db:data-sync": "nest start --entryFile ./src/data-migration/scripts/sync",
+    "db:data-sync": "nest start --entryFile ./src/data-migration/scripts/sync/run",
     "db:data-migration:import": "tsx ./src/data-migration/scripts/import"
   },
   "dependencies": {
@@ -45,8 +45,8 @@
     "@aws-sdk/lib-storage": "3.347.1",
     "@aws-sdk/s3-request-presigner": "3.347.1",
     "@ballerine/common": "0.7.49",
-    "@ballerine/workflow-core": "0.5.51",
-    "@ballerine/workflow-node-sdk": "0.5.51",
+    "@ballerine/workflow-core": "0.5.50",
+    "@ballerine/workflow-node-sdk": "0.5.50",
     "@faker-js/faker": "^7.6.0",
     "@nestjs/axios": "^2.0.0",
     "@nestjs/common": "^9.3.12",

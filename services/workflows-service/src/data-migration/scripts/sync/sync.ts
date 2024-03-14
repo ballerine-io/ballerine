@@ -3,8 +3,6 @@ import { AppModule } from '@/app.module';
 import { DataSyncTables, PrismaClient } from '@prisma/client';
 import * as path from 'path';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
-import console from 'console';
-import { DATA_MIGRATION_FOLDER_RELATIVE_PATH } from './consts';
 import { MD5 as objectMd5 } from 'object-hash';
 import deepDiff from 'deep-diff';
 import stableStringify from 'json-stable-stringify';
@@ -32,7 +30,7 @@ const tableNamesMap = {
   WorkflowDefinition: 'workflowDefinition',
 } as const;
 
-const sync = async () => {
+export const sync = async () => {
   const client = new PrismaClient();
   const appContext = await NestFactory.createApplicationContext(AppModule);
 
@@ -41,8 +39,7 @@ const sync = async () => {
 
   const filePath = path.join(
     __dirname,
-    DATA_MIGRATION_FOLDER_RELATIVE_PATH,
-    'synced-objects/index.js',
+    '../../../../prisma/data-migrations/synced-objects/index.js',
   );
   const syncService = await import(filePath);
 
@@ -296,12 +293,3 @@ const sync = async () => {
 
   appLoggerService.log('Sync completed successfully');
 };
-
-sync()
-  .then(() => {
-    process.exit(0);
-  })
-  .catch(err => {
-    console.error('Error during sync process:', err);
-    process.exit(1);
-  });
