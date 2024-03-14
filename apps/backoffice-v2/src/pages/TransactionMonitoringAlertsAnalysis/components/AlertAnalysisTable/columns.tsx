@@ -55,15 +55,11 @@ export const columns = [
     },
     header: 'Direction',
   }),
-  columnHelper.accessor('transactionBaseAmountWithCurrency', {
+  columnHelper.accessor('transactionBaseAmount', {
     cell: info => {
-      const transactionBaseAmountWithCurrency = info.getValue();
+      const transactionBaseAmount = info.getValue();
 
-      return (
-        <TextWithNAFallback className="text-sm">
-          {transactionBaseAmountWithCurrency}
-        </TextWithNAFallback>
-      );
+      return <TextWithNAFallback className="text-sm">{transactionBaseAmount}</TextWithNAFallback>;
     },
     header: 'Amount',
   }),
