@@ -431,7 +431,7 @@ model DataSync {
   syncedColumns Json
 
   createdAt     DateTime       @default(now())
-  lastRunAt     DateTime?
+  lastCheckAt     DateTime?
   lastSyncAt    DateTime?
 
   @@unique([table, crossEnvKey])
