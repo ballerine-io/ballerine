@@ -2,8 +2,6 @@ import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { ChildDocumentBlocks } from '@/lib/blocks/components/ChildDocumentBlocks/ChildDocumentBlocks';
-import { KycBlock } from '@/lib/blocks/components/KycBlock/KycBlock';
-import { NoBlocks } from '@/lib/blocks/components/NoBlocks/NoBlocks';
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { useDefaultBlocksLogic } from '@/lib/blocks/variants/DefaultBlocks/hooks/useDefaultBlocksLogic/useDefaultBlocksLogic';
 import { BlocksComponent } from '@ballerine/blocks';
@@ -29,7 +27,7 @@ export const DefaultBlocks = () => {
         <Tabs value={activeTab?.name} onValueChange={setTab}>
           <TabsList>
             {tabs.map(tab => (
-              <TabsTrigger key={tab.name} value={tab.name}>
+              <TabsTrigger key={tab.name} value={tab.name} disabled={tab.disabled}>
                 {tab.displayName}
               </TabsTrigger>
             ))}
@@ -51,7 +49,7 @@ export const DefaultBlocks = () => {
             isLoadingReuploadNeeded={isLoadingReuploadNeeded}
           />
         ))}
-      {Array.isArray(kycChildWorkflows) &&
+      {/* {Array.isArray(kycChildWorkflows) &&
         !!kycChildWorkflows?.length &&
         kycChildWorkflows?.map(childWorkflow => (
           <KycBlock
@@ -63,7 +61,7 @@ export const DefaultBlocks = () => {
       {!isLoading &&
         !blocks?.length &&
         !kybChildWorkflows?.length &&
-        !kycChildWorkflows?.length && <NoBlocks />}
+        !kycChildWorkflows?.length && <NoBlocks />} */}
     </div>
   );
 };
