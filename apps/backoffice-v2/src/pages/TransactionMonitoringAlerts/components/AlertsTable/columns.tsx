@@ -42,7 +42,27 @@ export const columns = [
         </div>
       );
     },
-    header: 'Date & Time',
+    header: 'Created At',
+  }),
+  columnHelper.accessor('updatedAt', {
+    cell: info => {
+      const updatedAt = info.getValue();
+
+      if (!updatedAt) {
+        return <TextWithNAFallback>{updatedAt}</TextWithNAFallback>;
+      }
+
+      const date = dayjs(updatedAt).format('MMM DD, YYYY');
+      const time = dayjs(updatedAt).format('hh:mm');
+
+      return (
+        <div className={`flex flex-col space-y-0.5`}>
+          <span className={`font-semibold`}>{date}</span>
+          <span className={`text-xs text-[#999999]`}>{time}</span>
+        </div>
+      );
+    },
+    header: 'Updated At',
   }),
   columnHelper.accessor('label', {
     cell: info => {

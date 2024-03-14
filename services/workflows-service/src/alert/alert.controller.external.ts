@@ -72,12 +72,14 @@ export class AlertControllerExternal {
             business: {
               select: {
                 id: true,
+                correlationId: true,
                 companyName: true,
               },
             },
             endUser: {
               select: {
                 id: true,
+                correlationId: true,
                 firstName: true,
                 lastName: true,
               },

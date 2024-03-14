@@ -149,6 +149,8 @@ export const ALERT_DEFINITIONS = {
   },
   HCAI_CC: {
     defaultSeverity: AlertSeverity.medium,
+    description:
+      'High Cumulative Amount - Total sum of inbound credit card transactions received from counterparty is greater than a limit over a set period of time',
     inlineRule: {
       id: 'HCAI_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
@@ -175,6 +177,8 @@ export const ALERT_DEFINITIONS = {
   },
   HACI_APM: {
     defaultSeverity: AlertSeverity.medium,
+    description:
+      'High Cumulative Amount - Total sum of inbound non-traditional payment transactions received from counterparty is greater than a limit over a set period of time',
     inlineRule: {
       id: 'HACI_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
@@ -200,6 +204,8 @@ export const ALERT_DEFINITIONS = {
   },
   HVIC_CC: {
     defaultSeverity: AlertSeverity.medium,
+    description:
+      'High Velocity - High number of inbound credit card transactions received from a Counterparty over a set period of time',
     inlineRule: {
       id: 'HVIC_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
@@ -225,7 +231,8 @@ export const ALERT_DEFINITIONS = {
   CHVC_C: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
-    description: 'Chargeback - Significant number of chargebacks over a set period of time',
+    description:
+      'High Cumulative Amount - Chargeback - Significant number of chargebacks over a set period of time',
     inlineRule: {
       id: 'CHVC_C',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
@@ -264,7 +271,7 @@ export const ALERT_DEFINITIONS = {
   CHCR_C: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
-    description: 'Refund - Significant number of refunds over a set period of time',
+    description: 'High Velocity - Refund - Significant number of refunds over a set period of time',
     inlineRule: {
       id: 'CHCR_C',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
@@ -358,16 +365,18 @@ export const generateAlertDefinitions = async (
   },
 ) =>
   Promise.all(
-    Object.entries(ALERT_DEFINITIONS).map(([label, data]) =>
-      prisma.alertDefinition.upsert({
-        where: { label_projectId: { label: label, projectId: project.id } },
-        create: getAlertDefinitionCreateData({ label, ...data }, project, createdBy),
-        update: getAlertDefinitionCreateData({ label, ...data }, project, createdBy),
-        include: {
-          alert: true,
-        },
-      }),
-    ),
+    Object.entries(ALERT_DEFINITIONS)
+      .filter(([_, alert]) => 'enabled' in alert && alert.enabled)
+      .map(([label, data]) =>
+        prisma.alertDefinition.upsert({
+          where: { label_projectId: { label: label, projectId: project.id } },
+          create: getAlertDefinitionCreateData({ label, ...data }, project, createdBy),
+          update: getAlertDefinitionCreateData({ label, ...data }, project, createdBy),
+          include: {
+            alert: true,
+          },
+        }),
+      ),
   );
 
 const generateFakeAlert = ({

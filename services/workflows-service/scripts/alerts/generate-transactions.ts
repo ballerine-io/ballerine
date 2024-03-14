@@ -76,19 +76,11 @@ export const generateTransactions = async (
   // Create transactions with a random counterparty ID for each
   for (let i = 0; i < 1000; i++) {
     const getRandomCounterpartyId = () => faker.helpers.arrayElement(counterpartyIds);
-    const businessIdCounterpartyIdOrBoth = faker.helpers.arrayElement([
-      {},
-      {
-        counterpartyOriginatorId: getRandomCounterpartyId(),
-      },
-      {
-        counterpartyBeneficiaryId: getRandomCounterpartyId(),
-      },
-      {
-        counterpartyOriginatorId: getRandomCounterpartyId(),
-        counterpartyBeneficiaryId: getRandomCounterpartyId(),
-      },
-    ]);
+
+    const businessIdCounterpartyIdOrBoth = {
+      counterpartyOriginatorId: getRandomCounterpartyId(),
+      counterpartyBeneficiaryId: getRandomCounterpartyId(),
+    };
 
     ids.push(businessIdCounterpartyIdOrBoth);
 
