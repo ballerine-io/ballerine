@@ -24,7 +24,7 @@ export const Entities: FunctionComponent = () => {
     totalPages,
     caseCount,
     skeletonEntities,
-    showCaseCreation,
+    isManualCaseCreationEnabled,
   } = useEntities();
 
   return (
@@ -39,8 +39,8 @@ export const Entities: FunctionComponent = () => {
       >
         <MotionScrollArea
           className={ctw({
-            'h-[calc(100vh-300px)]': showCaseCreation,
-            'h-[calc(100vh-240px)]': !showCaseCreation,
+            'h-[calc(100vh-300px)]': isManualCaseCreationEnabled,
+            'h-[calc(100vh-240px)]': !isManualCaseCreationEnabled,
           })}
         >
           <Cases.List>
@@ -72,7 +72,7 @@ export const Entities: FunctionComponent = () => {
         <div className={`divider my-0 px-4`}></div>
         <div className="flex flex-col gap-5 px-4">
           <Pagination onPaginate={onPaginate} page={page} totalPages={totalPages} />
-          <CaseCreation />
+          {isManualCaseCreationEnabled && <CaseCreation />}
         </div>
       </Cases>
       {/* Display skeleton individual when loading the entities list */}

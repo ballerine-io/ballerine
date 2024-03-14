@@ -6,12 +6,15 @@ import { withCaseCreation } from '@/pages/Entities/components/CaseCreation/conte
 import { useCaseCreationContext } from '@/pages/Entities/components/CaseCreation/context/case-creation-context/hooks/useCaseCreationContext';
 import { useCaseCreationWorkflowDefinition } from '@/pages/Entities/components/CaseCreation/hooks/useCaseCreationWorkflowDefinition';
 import { Plus } from 'lucide-react';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { ctw } from '@/common/utils/ctw/ctw';
+import { titleCase } from 'string-ts';
 
 export const CaseCreation = withCaseCreation(() => {
   const { workflowDefinition, isLoading, error } = useCaseCreationWorkflowDefinition();
   const { isOpen, setIsOpen: setOpen } = useCaseCreationContext();
-
-  if (!workflowDefinition?.config?.enableManualCreation) return null;
+  const workflowDefinitionName =
+    workflowDefinition?.displayName || titleCase(workflowDefinition?.name ?? '');
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
@@ -29,13 +32,25 @@ export const CaseCreation = withCaseCreation(() => {
         {!isLoading && workflowDefinition ? (
           <div className="flex flex-col px-[60px] py-[72px]">
             <div className="flex flex-col">
-              <span className="pb-3 text-base font-bold capitalize">
-                {workflowDefinition?.name?.replaceAll('_', ' ')}
+              <span
+                className={ctw('pb-3 text-base font-bold capitalize', {
+                  'text-slate-400': !workflowDefinitionName,
+                })}
+              >
+                {valueOrNA(workflowDefinitionName)}
               </span>
               <h1 className="leading-0 pb-5 text-3xl font-bold">Add a Case</h1>
               <p className="pb-10">
-                Create a {workflowDefinition?.name} case by filling in the information below. Please
-                ensure all the required fields are filled out correctly.
+                Create a{' '}
+                <span
+                  className={ctw({
+                    'text-slate-400': !workflowDefinitionName,
+                  })}
+                >
+                  {valueOrNA(workflowDefinitionName)}
+                </span>{' '}
+                case by filling in the information below. Please ensure all the required fields are
+                filled out correctly.
               </p>
               <div className="flex flex-col gap-6">
                 <h2 className="fontbold text-2xl">Case information</h2>
