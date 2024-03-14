@@ -144,10 +144,34 @@ export class TransactionControllerExternal {
   ) {
     return this.service.getTransactions(getTransactionsParameters, projectId, {
       include: {
-        counterpartyOriginator: {
+        counterpartyBeneficiary: {
           select: {
+            business: {
+              select: {
+                correlationId: true,
+                companyName: true,
+              },
+            },
             endUser: {
               select: {
+                correlationId: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+        counterpartyOriginator: {
+          select: {
+            business: {
+              select: {
+                correlationId: true,
+                companyName: true,
+              },
+            },
+            endUser: {
+              select: {
+                correlationId: true,
                 firstName: true,
                 lastName: true,
               },
