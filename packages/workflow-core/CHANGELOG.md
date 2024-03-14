@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.5.52
+
+### Patch Changes
+
+- fix invoked at
+
 ## 0.5.51
 
 ### Patch Changes
