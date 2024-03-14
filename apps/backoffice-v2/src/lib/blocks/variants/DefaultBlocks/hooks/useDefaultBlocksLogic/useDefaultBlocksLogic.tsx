@@ -420,7 +420,7 @@ export const useDefaultBlocksLogic = () => {
     blocks = [],
     tabs,
     setTab,
-  } = useCaseBlocks(allBlocks, workflow!.workflowDefinition?.config);
+  } = useCaseBlocks(allBlocks, workflow!.workflowDefinition?.config, { workflow });
 
   return {
     blocks,

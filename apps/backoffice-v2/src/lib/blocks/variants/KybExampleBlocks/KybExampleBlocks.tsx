@@ -1,8 +1,10 @@
-import { BlocksComponent } from '@ballerine/blocks';
-import { useKybExampleBlocksLogic } from '@/lib/blocks/variants/KybExampleBlocks/hooks/useKybExampleBlocksLogic/useKybExampleBlocksLogic';
-import { NoBlocks } from '@/lib/blocks/components/NoBlocks/NoBlocks';
+import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
 import { ChildDocumentBlocks } from '@/lib/blocks/components/ChildDocumentBlocks/ChildDocumentBlocks';
+import { NoBlocks } from '@/lib/blocks/components/NoBlocks/NoBlocks';
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { useKybExampleBlocksLogic } from '@/lib/blocks/variants/KybExampleBlocks/hooks/useKybExampleBlocksLogic/useKybExampleBlocksLogic';
+import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
+import { BlocksComponent } from '@ballerine/blocks';
 
 export const KybExampleBlocks = () => {
   const {
@@ -14,9 +16,18 @@ export const KybExampleBlocks = () => {
     isLoadingReuploadNeeded,
     isLoading,
   } = useKybExampleBlocksLogic();
+  const { workflow, plugins } = useEntityLogic();
 
   return (
     <>
+      {workflow?.workflowDefinition?.config?.isCaseOverviewEnabled && (
+        <ProcessTracker
+          tags={workflow?.tags ?? []}
+          plugins={plugins}
+          context={workflow?.context}
+          childWorkflows={workflow?.childWorkflows ?? []}
+        />
+      )}
       <BlocksComponent blocks={blocks} cells={cells}>
         {(Cell, cell) => <Cell {...cell} />}
       </BlocksComponent>
