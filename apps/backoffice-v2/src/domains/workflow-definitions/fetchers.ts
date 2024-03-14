@@ -25,7 +25,7 @@ export const WorkflowDefinitionConfigSchema = z
 
 export const WorkflowDefinitionByIdSchema = ObjectWithIdSchema.extend({
   name: z.string(),
-  displayName: z.string().nullable(),
+  displayName: z.string().nullable().optional(),
   version: z.number(),
   variant: z.string().default(WorkflowDefinitionVariant.DEFAULT),
   contextSchema: z.record(z.any(), z.any()).nullable(),
