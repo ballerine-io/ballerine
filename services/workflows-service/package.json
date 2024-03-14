@@ -37,7 +37,7 @@
     "prepare": "npm run prisma:generate",
     "db:data-migration:generate": "plop --plopfile ./prisma/data-migrations/plopfile.js --dest ./",
     "db:data-migration:migrate": "rimraf ./dist && npm run build && nest start --entryFile ./src/data-migration/scripts/migrate",
-    "db:data-migration:sync": "nest start --entryFile ./src/data-migration/scripts/sync",
+    "db:data-sync": "nest start --entryFile ./src/data-migration/scripts/sync",
     "db:data-migration:import": "tsx ./src/data-migration/scripts/import"
   },
   "dependencies": {
