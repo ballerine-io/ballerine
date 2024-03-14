@@ -25,7 +25,7 @@ CREATE TABLE "DataSync" (
     "auditLog" JSONB,
     "syncedColumns" JSONB NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "lastRunAt" TIMESTAMP(3),
+    "lastCheckAt" TIMESTAMP(3),
     "lastSyncAt" TIMESTAMP(3),
 
     CONSTRAINT "DataSync_pkey" PRIMARY KEY ("id")

@@ -11,7 +11,7 @@
     "lint": "eslint . --fix",
     "start": "nest start",
     "dev": "npm run start:watch",
-    "prod": "npm run db:migrate-up && npm run db:data-migration:sync && node dist/src/main",
+    "prod": "npm run db:migrate-up && npm run db:data-sync && node dist/src/main",
     "start:watch": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "build": "nest build --path=tsconfig.build.json",

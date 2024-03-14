@@ -23,8 +23,8 @@ export type SyncedObject = {
   syncConfig: {
     strategy: 'replace' | 'partial-deep-merge' | 'upsert';
   };
-  syncedEnvironments: string[];
-  dryRunEnvironments: string[];
+  syncedEnvironments: Envionment[];
+  dryRunEnvironments: Envionment[];
 };
 
 // @TODO: map to repositories after adding transaction support - its important since we have addtional validation there
@@ -202,7 +202,7 @@ const sync = async () => {
             status: 'synced',
             diff: diff as InputJsonValue | undefined,
             fullDataHash: columnsHash,
-            lastRunAt: new Date(),
+            lastCheckAt: new Date(),
             lastSyncAt: new Date(),
             auditLog: {
               ...(existingRecord.auditLog && typeof existingRecord.auditLog === 'object'
@@ -233,7 +233,7 @@ const sync = async () => {
           update: {
             status: 'failed',
             failureReason: (error as Error).message,
-            lastRunAt: new Date(),
+            lastCheckAt: new Date(),
             auditLog: {
               ...(existingRecord?.auditLog && typeof existingRecord.auditLog === 'object'
                 ? existingRecord.auditLog
@@ -284,7 +284,7 @@ const sync = async () => {
       },
       data: {
         status: 'unsynced',
-        lastRunAt: new Date(),
+        lastCheckAt: new Date(),
         auditLog: {
           [`${new Date().toISOString()}`]: {
             action: 'unsynced',
