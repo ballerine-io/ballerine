@@ -1,6 +1,6 @@
 import { AlertAnalysisSheet } from '@/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisSheet';
 import { useTransactionMonitoringAlertsAnalysisPageLogic } from '@/pages/TransactionMonitoringAlertsAnalysis/hooks/useTransactionMonitoringAlertsAnalysisPageLogic/useTransactionMonitoringAlertsAnalysisPageLogic';
-import { titleCase } from 'string-ts';
+import { capitalize, titleCase } from 'string-ts';
 import { Skeleton } from '@/common/components/atoms/Skeleton/Skeleton';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { ctw } from '@/common/utils/ctw/ctw';
@@ -31,7 +31,7 @@ export const TransactionMonitoringAlertsAnalysisPage = () => {
           })}
         >
           {isLoadingAlertDefinition && <Skeleton className={`h-5 w-[50ch]`} />}
-          {!isLoadingAlertDefinition && valueOrNA(titleCase(alertDefinition?.description ?? ''))}
+          {!isLoadingAlertDefinition && valueOrNA(capitalize(alertDefinition?.description ?? ''))}
         </span>
       }
     />
