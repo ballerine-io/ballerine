@@ -5,18 +5,20 @@ import { getThemeBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCas
 import { getThemeTabs } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocks/utils/getThemeTabs';
 import { useMemo } from 'react';
 
-export type TCaseBlocksParams = {
+export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
+  onReuploadNeeded: any;
+  isLoadingReuploadNeeded: boolean;
 };
 
 export const useCaseBlocks = (
   allBlocks: any[],
   config: TWorkflowById['workflowDefinition']['config'],
-  { workflow }: TCaseBlocksParams,
+  { workflow, onReuploadNeeded, isLoadingReuploadNeeded }: TCaseBlocksCreationProps,
 ) => {
   const tabBlocks = useMemo(
-    () => getTabsToBlocksMap(allBlocks, { workflow }),
-    [workflow, allBlocks],
+    () => getTabsToBlocksMap(allBlocks, { workflow, onReuploadNeeded, isLoadingReuploadNeeded }),
+    [workflow, allBlocks, onReuploadNeeded, isLoadingReuploadNeeded],
   );
   const tabs = useMemo(
     () => (config?.theme ? getThemeTabs(config.theme, tabBlocks) : []),

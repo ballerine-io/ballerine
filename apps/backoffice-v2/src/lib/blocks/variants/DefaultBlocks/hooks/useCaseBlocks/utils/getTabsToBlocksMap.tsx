@@ -1,7 +1,8 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { ChildDocumentBlocks } from '@/lib/blocks/components/ChildDocumentBlocks/ChildDocumentBlocks';
 import { KycBlock } from '@/lib/blocks/components/KycBlock/KycBlock';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { TCaseBlocksParams } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocks/useCaseBlocks';
+import { TCaseBlocksCreationProps } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocks/useCaseBlocks';
 
 const createKycBlocks = (workflow: TWorkflowById) => {
   const blocks = createBlocksTyped().addBlock();
@@ -10,7 +11,7 @@ const createKycBlocks = (workflow: TWorkflowById) => {
     childWorkflow => childWorkflow?.context?.entity?.type === 'individual',
   );
 
-  if (!childWorkflows?.length) return;
+  if (!childWorkflows?.length) return [];
 
   childWorkflows.forEach(childWorkflow => {
     blocks.addCell({
@@ -28,7 +29,43 @@ const createKycBlocks = (workflow: TWorkflowById) => {
   return blocks.build();
 };
 
-export const getTabsToBlocksMap = (blocks: any[], { workflow }: TCaseBlocksParams) => {
+const createAssociatedCompanyDocumentBlocks = (
+  workflow: TWorkflowById,
+  { onReuploadNeeded, isLoadingReuploadNeeded }: TCaseBlocksCreationProps,
+) => {
+  const blocks = createBlocksTyped().addBlock();
+
+  const childWorkflows = workflow?.childWorkflows?.filter(
+    childWorkflow => childWorkflow?.context?.entity?.type === 'business',
+  );
+
+  if (!childWorkflows?.length) return [];
+
+  childWorkflows.forEach(childWorkflow => {
+    blocks.addCell({
+      type: 'nodeBlock',
+      value: (
+        <ChildDocumentBlocks
+          parentWorkflowId={workflow.id}
+          childWorkflow={childWorkflow}
+          parentMachine={workflow?.context?.parentMachine}
+          key={childWorkflow?.id}
+          onReuploadNeeded={onReuploadNeeded}
+          isLoadingReuploadNeeded={isLoadingReuploadNeeded}
+        />
+      ),
+    });
+  });
+
+  return blocks.build();
+};
+
+export const getTabsToBlocksMap = (
+  blocks: any[],
+  blocksCreationParams: TCaseBlocksCreationProps,
+) => {
+  const { workflow } = blocksCreationParams;
+
   const [
     websiteMonitoringBlock,
     entityInfoBlock,
@@ -71,7 +108,8 @@ export const getTabsToBlocksMap = (blocks: any[], { workflow }: TCaseBlocksParam
     associated_companies: [
       ...associatedCompaniesBlock,
       ...associatedCompaniesInformationBlock,
-      ...(createKycBlocks(workflow as TWorkflowById) || []),
+      ...createKycBlocks(workflow as TWorkflowById),
+      ...createAssociatedCompanyDocumentBlocks(workflow, blocksCreationParams),
     ],
     directors: [
       ...directorsUserProvidedBlock,

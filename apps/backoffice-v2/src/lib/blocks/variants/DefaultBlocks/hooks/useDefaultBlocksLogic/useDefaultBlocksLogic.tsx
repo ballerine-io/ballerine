@@ -424,11 +424,8 @@ export const useDefaultBlocksLogic = () => {
 
   return {
     blocks,
-    kybChildWorkflows,
-    workflowId,
     onReuploadNeeded,
     isLoadingReuploadNeeded,
-    kycChildWorkflows,
     isLoading,
     activeTab,
     tabs,

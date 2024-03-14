@@ -1,25 +1,12 @@
 import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
-import { ChildDocumentBlocks } from '@/lib/blocks/components/ChildDocumentBlocks/ChildDocumentBlocks';
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { useDefaultBlocksLogic } from '@/lib/blocks/variants/DefaultBlocks/hooks/useDefaultBlocksLogic/useDefaultBlocksLogic';
 import { BlocksComponent } from '@ballerine/blocks';
 
 export const DefaultBlocks = () => {
-  const {
-    blocks,
-    kybChildWorkflows,
-    workflowId,
-    parentMachine,
-    onReuploadNeeded,
-    isLoadingReuploadNeeded,
-    kycChildWorkflows,
-    isLoading,
-    tabs,
-    activeTab,
-    setTab,
-  } = useDefaultBlocksLogic();
+  const { blocks, tabs, activeTab, setTab } = useDefaultBlocksLogic();
 
   return (
     <div className="relative flex flex-col gap-4">
@@ -37,7 +24,7 @@ export const DefaultBlocks = () => {
       <BlocksComponent blocks={blocks} cells={cells}>
         {(Cell, cell) => <Cell {...cell} />}
       </BlocksComponent>
-      {Array.isArray(kybChildWorkflows) &&
+      {/* {Array.isArray(kybChildWorkflows) &&
         !!kybChildWorkflows?.length &&
         kybChildWorkflows?.map(childWorkflow => (
           <ChildDocumentBlocks
@@ -48,7 +35,7 @@ export const DefaultBlocks = () => {
             onReuploadNeeded={onReuploadNeeded}
             isLoadingReuploadNeeded={isLoadingReuploadNeeded}
           />
-        ))}
+        ))} */}
       {/* {Array.isArray(kycChildWorkflows) &&
         !!kycChildWorkflows?.length &&
         kycChildWorkflows?.map(childWorkflow => (
