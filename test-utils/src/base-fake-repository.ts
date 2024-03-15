@@ -1,80 +1,80 @@
-const { validate } = require('class-validator');
+import { validate, ValidationError } from 'class-validator';
 
-export class BaseFakeRepository {
-  #__rows: Array<any> = [];
-  #__ModelClass: any;
+interface BaseModel {
+  [key: string]: any;
+}
 
-  constructor(ModelClass: any) {
-    this.#__ModelClass = ModelClass;
+export class BaseFakeRepository<T extends BaseModel> {
+  private rows: T[] = [];
+  private ModelClass: new () => T;
+
+  constructor(ModelClass: new () => T) {
+    this.ModelClass = ModelClass;
   }
 
-  async create(args: any) {
-    const model = await this.__initModel(args.data);
-    this.#__rows.push(model);
-
-    return __deepCopy(model, args.select);
+  async create(args: { data: Partial<T>; select?: Record<string, boolean> }): Promise<T> {
+    const model = await this.initModel(args.data);
+    this.rows.push(model);
+    return this.deepCopy(model, args.select);
   }
 
-  async createUnscoped(args: any) {
-    const model = await this.__initModel(args.data);
-    this.#__rows.push(model);
-
-    return __deepCopy(model, args.select);
+  async findMany(args: { where: Partial<T>; select?: Record<string, boolean> }): Promise<T[]> {
+    const rows = this.rows.filter(row => this.matchWhereCondition(row, args.where));
+    return rows.map(row => this.deepCopy(row, args.select));
   }
 
-  async __initModel(data: any) {
-    const model = new this.#__ModelClass();
+  async findById(id: string): Promise<T> {
+    const row = this.findByIdInternal(id);
+    return this.deepCopy(row);
+  }
+
+  async updateById(id: string, args: { data: Partial<T> }): Promise<T> {
+    const row = this.findByIdInternal(id);
+    Object.assign(row, args.data);
+    return this.deepCopy(row);
+  }
+
+  private async initModel(data: Partial<T>): Promise<T> {
+    const model = new this.ModelClass();
     Object.assign(model, data);
-
-    const errors = await validate(model);
-    if (errors.length) throw new Error('\n' + errors);
-
+    await this.validateModel(model);
     return model;
   }
 
-  async findMany(args: any) {
-    return this.__findMany(args).map(row => __deepCopy(row, args.select));
-  }
-
-  __findMany(args: any) {
-    return this.#__rows.filter(row => {
-      for (const key in args.where) {
-        if (row[key] !== args.where[key]) return false;
-      }
-      return true;
-    });
-  }
-
-  __findById(id: string) {
-    const rows = this.__findMany({ where: { id: id } });
-    if (rows.length === 0) throw new Error(`could not find id ${id}`);
-    return rows[0];
-  }
-
-  async findById(id: string) {
-    const row = this.__findById(id);
-    return __deepCopy(row);
-  }
-
-  async updateById(id: string, args: any) {
-    const row = this.__findById(id);
-    Object.assign(row, args.data);
-    return __deepCopy(row);
-  }
-}
-
-function __deepCopy(row: Record<PropertyKey, unknown>, select?: Record<PropertyKey, unknown>) {
-  let modelCopy = JSON.parse(JSON.stringify(row));
-
-  if (select) {
-    // @ts-expect-error - we don't validate `modelCopy` is an object
-    for (let key of Object.keys(modelCopy)) {
-      if (select?.[key] !== true) {
-        // @ts-expect-error - we don't validate `modelCopy` is an object
-        delete modelCopy[key];
-      }
+  private async validateModel(model: T): Promise<void> {
+    const errors: ValidationError[] = await validate(model);
+    if (errors.length > 0) {
+      const errorMessage = errors.map(error => Object.values(error.constraints ?? {})).join('\n');
+      throw new Error(`Validation error: \n${errorMessage}`);
     }
   }
 
-  return modelCopy;
+  private findByIdInternal(id: string): T {
+    const row = this.rows.find(row => row.id === id);
+    if (!row) {
+      throw new Error(`Could not find model with id: ${id}`);
+    }
+    return row;
+  }
+
+  private deepCopy(row: T, select?: Record<string, boolean>): T {
+    const modelCopy = { ...row };
+    if (select) {
+      for (const key of Object.keys(modelCopy)) {
+        if (!select[key]) {
+          delete modelCopy[key];
+        }
+      }
+    }
+    return modelCopy;
+  }
+
+  private matchWhereCondition(row: T, where: Partial<T>): boolean {
+    for (const key in where) {
+      if (row[key] !== where[key]) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
