@@ -74,39 +74,41 @@ We believe in enabling companies to manage user  identity  and risk according to
 **Parts of the system you might look for but are not in THIS demo:**
 - Our Rule Engine is still under construction and will soon be released.
 
-**Getting started**
+# **Getting started**
 To set up a local environment, follow these steps:
 1. #### Install prerequisites:
-   - Node.js ([Install NVM](https://github.com/nvm-sh/nvm))
-   - Latest PNPM version ([Install PNPM](https://pnpm.io/installation))
-   - Docker and docker compose ([Docker](https://docs.docker.com/desktop), [Docker Compose](https://docs.docker.com/compose/install))
+   1.1. Node.js ([Install NVM](https://github.com/nvm-sh/nvm))
+   
+   1.2. Latest PNPM version ([Install PNPM](https://pnpm.io/installation))
+   
+   1.3. Docker and docker compose ([Docker](https://docs.docker.com/desktop), [Docker Compose](https://docs.docker.com/compose/install))
 
-2. #### Clone and install the project:
-  1. Clone the project:
+3. #### Clone and install the project:
+    2.1. Clone the project:
    ```sh
    git clone https://github.com/ballerine-io/ballerine.git
    ```
-  2. Install npm dependencies:
+    2.2. Install npm dependencies:
    ```sh
    pnpm install
    ```
-  3. Initialize monorepo:
+    2.3. Initialize monorepo:
    ```sh
    pnpm monorepo:init
    ```
-3. #### Run an example
-   * KYB
+4. #### Run an example
+   3.1. KYB
    ```sh
    pnpm kyb-manual-review-example
    ```
-   * KYC
+   3.2. KYC
     ```sh
    pnpm kyc-manual-review-example
    ```
 Once the process is complete,  _2 tabs_   will open in your browser:
-1. http://localhost:5173/ - for the _KYB document collection flow_
+* http://localhost:5173/ - for the _KYB document collection flow_
    OR http://localhost:5202 - for the _KYC document collection flow_
-2. http://localhost:5137/ - for the  _backoffice_
+* http://localhost:5137/ - for the  _backoffice_
    (It's recommended to have them positioned side-by-side).
 
    <sub>If the required tabs have not opened automatically, please use the links we have provided above.</sub>
