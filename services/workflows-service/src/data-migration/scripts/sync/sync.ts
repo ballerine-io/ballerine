@@ -30,28 +30,12 @@ const tableNamesMap = {
   WorkflowDefinition: 'workflowDefinition',
 } as const;
 
-export const sync = async () => {
+export const sync = async (objectsToSync: SyncedObject[]) => {
   const client = new PrismaClient();
   const appContext = await NestFactory.createApplicationContext(AppModule);
 
   const workflowDefinitionRepository = appContext.get(WorkflowDefinitionRepository);
   const appLoggerService = appContext.get(AppLoggerService);
-
-  const filePath = path.join(
-    __dirname,
-    '../../../../prisma/data-migrations/synced-objects/index.js',
-  );
-  const syncService = await import(filePath);
-
-  if (!syncService.getSyncedObjects) {
-    appLoggerService.warn('No getSyncedObjects function found in', {
-      filePath,
-    });
-
-    return;
-  }
-
-  const objectsToSync: SyncedObject[] = syncService.getSyncedObjects();
 
   appLoggerService.log('Starting sync process', {
     objectsToSync: objectsToSync.map(obj => ({
