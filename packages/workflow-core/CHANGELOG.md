@@ -1,5 +1,23 @@
 # @ballerine/workflow-core
 
+## 0.5.52
+
+### Patch Changes
+
+- fix invoked at
+
+## 0.5.51
+
+### Patch Changes
+
+- added set time helper
+
+## 0.5.50
+
+### Patch Changes
+
+- fixed invokedAt
+
 ## 0.5.49
 
 ### Patch Changes

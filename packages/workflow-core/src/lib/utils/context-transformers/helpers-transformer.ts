@@ -9,7 +9,8 @@ export type THelperMethod =
   | 'imageUrlToBase64'
   | 'remove'
   | 'mergeArrayEachItemWithValue'
-  | 'omit';
+  | 'omit'
+  | 'setTimeToRecordUTC';
 export class HelpersTransformer extends BaseContextTransformer {
   name = 'helpers-transformer';
   mapping: THelperFormatingLogic;
@@ -69,6 +70,15 @@ export class HelpersTransformer extends BaseContextTransformer {
 
   remove(..._args: any[]) {
     return undefined;
+  }
+
+  setTimeToRecordUTC(
+    _context: Parameters<typeof this.transform>[0],
+    attribute: string,
+    value: string,
+    _options: unknown,
+  ) {
+    return new Date().getUTCDate();
   }
 
   regex(

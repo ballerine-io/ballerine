@@ -152,6 +152,7 @@ model Business {
 
 model WorkflowDefinition {
   id              String  @id @default(cuid())
+  displayName     String?
   reviewMachineId String?
   name            String
   version         Int     @default(1)

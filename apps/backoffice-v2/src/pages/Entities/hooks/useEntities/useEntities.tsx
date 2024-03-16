@@ -92,7 +92,6 @@ export const useEntities = () => {
     onFilter: onFilterChange,
     onSortBy: onSortByChange,
     onSortDirToggle,
-    showCaseCreation: workflowDefinition?.config?.enableManualCreation,
     search: searchValue,
     cases: data?.data,
     caseCount: data?.meta?.totalItems || 0,
@@ -101,5 +100,6 @@ export const useEntities = () => {
     totalPages,
     skeletonEntities,
     entity,
+    isManualCaseCreationEnabled: workflowDefinition?.config?.enableManualCreation,
   };
 };
