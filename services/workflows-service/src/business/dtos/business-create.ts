@@ -16,9 +16,30 @@ export class BusinessCreateDto {
   companyName!: string;
 
   @ApiProperty({
-    required: true,
+    required: false,
     type: String,
   })
   @IsString()
   registrationNumber!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  correlationId!: string;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsString()
+  mccCode!: number;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  businessType!: string;
 }

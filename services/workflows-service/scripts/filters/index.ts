@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client';
+
 export const baseFilterDefinitionSelect = {
   workflowDefinition: {
     select: {
@@ -9,9 +11,9 @@ export const baseFilterDefinitionSelect = {
       definition: true,
       variant: true,
       version: true,
-    },
+    } as const satisfies Prisma.WorkflowDefinitionSelect,
   },
-} as const;
+};
 
 export const baseFilterBusinessSelect = {
   business: {
@@ -36,9 +38,9 @@ export const baseFilterBusinessSelect = {
       approvalState: true,
       createdAt: true,
       updatedAt: true,
-    },
+    } as const satisfies Prisma.BusinessSelect,
   },
-} as const;
+};
 
 export const baseFilterEndUserSelect = {
   endUser: {

@@ -4,5 +4,9 @@ import { useSelectEntityFilterOnMount } from '@/domains/entities/hooks/useSelect
 export const CaseManagement = () => {
   useSelectEntityFilterOnMount();
 
-  return <Outlet />;
+  return (
+    <div className={`grid h-full grid-cols-[300px_1fr]`}>
+      <Outlet />
+    </div>
+  );
 };
