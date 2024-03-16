@@ -15,10 +15,12 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { FinishFlowDto } from '@/collection-flow/dto/finish-flow.dto';
 import { GetFlowConfigurationInputDto } from '@/collection-flow/dto/get-flow-configuration-input.dto';
 import { UpdateContextInputDto } from '@/collection-flow/dto/update-context-input.dto';
+import { ApiExcludeController } from '@nestjs/swagger';
 import { BUILT_IN_EVENT, ARRAY_MERGE_OPTION } from '@ballerine/workflow-core';
 
 @Public()
 @UseTokenAuthGuard()
+@ApiExcludeController()
 @common.Controller('collection-flow')
 export class ColectionFlowController {
   constructor(

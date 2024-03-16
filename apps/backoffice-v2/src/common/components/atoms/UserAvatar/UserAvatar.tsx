@@ -15,7 +15,7 @@ export const UserAvatar: React.FC<IUserAvatarProps> = ({ avatarUrl, fullName, cl
     alt={`${fullName}'s avatar`}
     placeholder={!avatarUrl ? createInitials(fullName) : undefined}
     className={ctw(
-      `bg-[#DCE1E8] text-[10px] font-semibold leading-3 text-black d-[22px] ${className}`,
+      `bg-[#DCE1E8] text-[10px] font-semibold leading-3 text-black d-[1.375rem] ${className}`,
     )}
   />
 );

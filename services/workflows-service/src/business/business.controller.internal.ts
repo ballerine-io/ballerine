@@ -14,6 +14,7 @@ import type { JsonValue } from 'type-fest';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 
 @swagger.ApiTags('internal/businesses')
+@swagger.ApiExcludeController()
 @common.Controller('internal/businesses')
 export class BusinessControllerInternal {
   constructor(protected readonly service: BusinessService) {}

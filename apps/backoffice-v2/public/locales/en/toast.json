@@ -57,5 +57,25 @@
   "case_creation": {
     "success": "Case created successfully.",
     "error": "Error occurred while creating a case."
+  },
+  "assign_alerts": {
+    "success": "The alerts have been assigned to {{assignee}} successfully.",
+    "error": "Error occurred while assigning the alerts to {{assignee}}."
+  },
+  "unassign_alerts": {
+    "success": "The alerts have been unassigned successfully.",
+    "error": "Error occurred while unassigning the alerts."
+  },
+  "reject_alerts": {
+    "success": "The alerts have been rejected successfully.",
+    "error": "Error occurred while rejecting the alerts."
+  },
+  "clear_alerts": {
+    "success": "The alerts have been marked as cleared successfully.",
+    "error": "Error occurred while marking the alerts as cleared."
+  },
+  "revert_decision_alerts": {
+    "success": "The alerts decision have been reverted successfully.",
+    "error": "Error occurred while reverting the alerts decision."
   }
 }

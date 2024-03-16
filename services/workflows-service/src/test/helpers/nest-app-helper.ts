@@ -1,12 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { ACLModule } from '@/common/access-control/acl.module';
-// import { ACGuard } from 'nest-access-control';
-// import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
-// import { AclValidateRequestInterceptor } from '@/common/access-control/interceptors/acl-validate-request.interceptor';
 import {
-  CallHandler,
   DynamicModule,
-  ExecutionContext,
   ForwardReference,
   INestApplication,
   NestMiddleware,
@@ -28,24 +23,6 @@ export const commonTestingModules = [
   CustomerModule,
   HttpModule,
 ];
-
-const acGuard = {
-  canActivate: () => {
-    return true;
-  },
-};
-
-const aclValidateRequestInterceptor = {
-  intercept: (_context: ExecutionContext, next: CallHandler) => {
-    return next.handle();
-  },
-};
-
-const aclFilterResponseInterceptor = {
-  intercept: (_context: ExecutionContext, next: CallHandler) => {
-    return next.handle();
-  },
-};
 
 export const fetchServiceFromModule = async <T>(
   service: Type<T>,
@@ -73,14 +50,7 @@ export const initiateNestApp = async (
     providers: providers,
     controllers: controllers,
     imports: [ACLModule, ...modules, ...commonTestingModules],
-  })
-    // .overrideGuard(ACGuard)
-    // .useValue(acGuard)
-    // .overrideInterceptor(AclFilterResponseInterceptor)
-    // .useValue(aclFilterResponseInterceptor)
-    // .overrideInterceptor(AclValidateRequestInterceptor)
-    // .useValue(aclValidateRequestInterceptor)
-    .compile();
+  }).compile();
 
   app = moduleRef.createNestApplication();
   const middlewareInstnace = new AuthKeyMiddleware(app.get(CustomerService), app.get(ClsService));

@@ -42,7 +42,7 @@ import { WorkflowService } from './workflow.service';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { FilterQuery } from '@/workflow/types';
 
-@swagger.ApiTags('internal/workflows')
+@swagger.ApiExcludeController()
 @common.Controller('internal/workflows')
 export class WorkflowControllerInternal {
   constructor(

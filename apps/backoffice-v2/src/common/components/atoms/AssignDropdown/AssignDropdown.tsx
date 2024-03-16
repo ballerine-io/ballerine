@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { FunctionComponent, useMemo } from 'react';
 
 import { CheckSvg, DoubleCaretSvg, UnassignedAvatarSvg } from '../icons';
 import { DropdownMenu } from '../../molecules/DropdownMenu/DropdownMenu';
@@ -8,20 +8,22 @@ import { DropdownMenuContent } from '../../molecules/DropdownMenu/DropdownMenu.C
 import { UserAvatar } from '../UserAvatar/UserAvatar';
 import { TAuthenticatedUser } from '../../../../domains/auth/types';
 
-export type Assignee = Pick<TAuthenticatedUser, 'id' | 'fullName' | 'avatarUrl'>;
+export type TAssignee = Pick<TAuthenticatedUser, 'id' | 'fullName' | 'avatarUrl'>;
 
 interface IAssignDropdownProps {
-  assignees: Assignee[];
-  assignedUser?: Assignee;
+  assignees: TAssignee[];
+  assignedUser?: TAssignee;
   authenticatedUserId: string;
   onAssigneeSelect: (id: string) => void;
+  isDisabled?: boolean;
 }
 
-export const AssignDropdown: React.FC<IAssignDropdownProps> = ({
+export const AssignDropdown: FunctionComponent<IAssignDropdownProps> = ({
   assignedUser,
   assignees,
   onAssigneeSelect,
   authenticatedUserId,
+  isDisabled,
 }) => {
   const sortedAssignees = useMemo(
     () =>
@@ -36,8 +38,8 @@ export const AssignDropdown: React.FC<IAssignDropdownProps> = ({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <div className="form-control flex w-[200px] cursor-pointer rounded-lg border border-neutral/10 px-4 py-[6px] text-sm theme-dark:border-neutral/60">
+      <DropdownMenuTrigger disabled={isDisabled} className={'disabled:opacity-50'}>
+        <div className="form-control flex w-[200px] rounded-lg border border-neutral/10 px-4 py-[6px] text-sm theme-dark:border-neutral/60">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               {assignedUser?.fullName ? (

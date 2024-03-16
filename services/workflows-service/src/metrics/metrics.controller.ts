@@ -18,7 +18,7 @@ import { ApiNoContentResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } fro
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import type { TProjectIds } from '@/types';
 
-@ApiTags('/metrics')
+@ApiTags('Metrics')
 @Controller('/metrics')
 export class MetricsController {
   constructor(private readonly metricsService: MetricsService) {}

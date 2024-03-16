@@ -26,12 +26,7 @@ export const useEntities = () => {
     data: workflows,
   } = data || { meta: { totalPages: 0 }, data: [] };
   const entity = useEntityType();
-  const individualsSearchOptions = ['entity.name', 'entity.email'];
-  const businessesSearchOptions = ['entity.name'];
-  const { onSearch, search: searchValue } = useSearch({
-    data: workflows,
-    searchBy: entity === 'individuals' ? individualsSearchOptions : businessesSearchOptions,
-  });
+  const { onSearch, search: searchValue } = useSearch();
 
   const onSortDirToggle = useCallback(() => {
     setSearchParams({

@@ -19,7 +19,7 @@ import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 
-@swagger.ApiTags('external/filters')
+@swagger.ApiTags('Filters')
 @common.Controller('external/filters')
 export class FilterControllerExternal {
   constructor(

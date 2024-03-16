@@ -13,6 +13,7 @@ import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.ser
 import { EndUserService } from '@/end-user/end-user.service';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
 // import { AclFilterResponseInterceptor } from '@/common/access-control/interceptors/acl-filter-response.interceptor';
@@ -71,6 +72,10 @@ describe('Workflow (external)', () => {
         {
           provide: WorkflowTokenService,
           useValue: {} as WorkflowTokenService,
+        },
+        {
+          provide: AppLoggerService,
+          useValue: {} as AppLoggerService,
         },
         {
           provide: 'LOGGER',

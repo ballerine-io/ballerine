@@ -5,7 +5,7 @@ import { Documents } from './Case.Documents';
 import { Info } from './Case.Info';
 import { Content } from './Case.Content';
 import { FaceMatch } from './Case.FaceMatch';
-import { Assignee } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
+import { TAssignee } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
 import { TStateTags } from '@ballerine/common';
 
 export interface IItemProps {
@@ -13,13 +13,13 @@ export interface IItemProps {
   fullName: string;
   createdAt: string;
   entityAvatarUrl: string;
-  assignee: Assignee | null;
+  assignee: TAssignee | null;
   tags: TStateTags;
 }
 
 export interface IInfoProps {
   info: Record<PropertyKey, unknown>;
-  whitelist: Array<string>;
+  whitelist: string[];
   isLoading?: boolean;
 }
 

@@ -55,3 +55,5 @@ storybook-static
 deploy/caddy/site
 deploy/caddy/caddy_data
 deploy/caddy/caddy_config
+
+todo.md
