@@ -36,7 +36,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 
 @swagger.ApiBearerAuth()
-@swagger.ApiTags('external/workflows')
+@swagger.ApiTags('Workflows')
 @common.Controller('external/workflows')
 export class WorkflowControllerExternal {
   constructor(

@@ -19,6 +19,7 @@ export {
   uniqueArray,
   zodErrorToReadable,
   isNonEmptyArray,
+  isType,
   zodBuilder,
 } from './utils';
 
