@@ -26,12 +26,7 @@ export const useEntities = () => {
     data: workflows,
   } = data || { meta: { totalPages: 0 }, data: [] };
   const entity = useEntityType();
-  const individualsSearchOptions = ['entity.name', 'entity.email'];
-  const businessesSearchOptions = ['entity.name'];
-  const { onSearch, search: searchValue } = useSearch({
-    data: workflows,
-    searchBy: entity === 'individuals' ? individualsSearchOptions : businessesSearchOptions,
-  });
+  const { onSearch, search: searchValue } = useSearch();
 
   const onSortDirToggle = useCallback(() => {
     setSearchParams({
@@ -97,7 +92,6 @@ export const useEntities = () => {
     onFilter: onFilterChange,
     onSortBy: onSortByChange,
     onSortDirToggle,
-    showCaseCreation: workflowDefinition?.config?.enableManualCreation,
     search: searchValue,
     cases: data?.data,
     caseCount: data?.meta?.totalItems || 0,
@@ -106,5 +100,6 @@ export const useEntities = () => {
     totalPages,
     skeletonEntities,
     entity,
+    isManualCaseCreationEnabled: workflowDefinition?.config?.enableManualCreation,
   };
 };

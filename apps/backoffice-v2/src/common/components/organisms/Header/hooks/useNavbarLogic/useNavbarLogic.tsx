@@ -3,6 +3,7 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useCallback, useMemo } from 'react';
 import { Building, Goal, Users } from 'lucide-react';
 import { TRoutes, TRouteWithChildren } from '@/Router/types';
+import { useLocation } from 'react-router-dom';
 
 export const useNavbarLogic = () => {
   const { data: filters } = useFiltersQuery();
@@ -53,11 +54,14 @@ export const useNavbarLogic = () => {
       key: 'nav-item-transaction-monitoring',
     },
   ] satisfies TRoutes;
+  const { pathname } = useLocation();
   const checkIsActiveFilterGroup = useCallback(
     (navItem: TRouteWithChildren) => {
-      return navItem.children?.some(childNavItem => childNavItem.filterId === filterId);
+      return navItem.children?.some(
+        childNavItem => childNavItem.filterId === filterId || childNavItem.href === pathname,
+      );
     },
-    [filterId],
+    [filterId, pathname],
   );
 
   return {

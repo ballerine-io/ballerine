@@ -1,6 +1,5 @@
 import { env } from '@/env';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { inspect } from 'util';
 import { ArgumentsHost, Catch, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import type { Request, Response } from 'express';
@@ -53,7 +52,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     }
 
     return new InternalServerErrorException({
-      cause: inspect(exception),
+      cause: exception,
     });
   }
 

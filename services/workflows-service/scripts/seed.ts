@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { Business, Customer, EndUser, Prisma, PrismaClient } from '@prisma/client';
+import { Business, Customer, EndUser, Prisma, PrismaClient, Project } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import {
@@ -30,10 +30,14 @@ import {
   baseFilterDefinitionSelect,
   baseFilterEndUserSelect,
 } from './filters';
+import { generateTransactions } from './alerts/generate-transactions';
 import { generateKycManualReviewRuntimeAndToken } from './workflows/runtime/geneate-kyc-manual-review-runtime-and-token';
 import { Type } from '@sinclair/typebox';
+import { generateFakeAlertsAndDefinitions as generateFakeAlertDefinitions } from './alerts/generate-alerts';
 
-seed(10).catch(error => {
+const BCRYPT_SALT: string | number = 10;
+
+seed().catch(error => {
   console.error(error);
   process.exit(1);
 });
@@ -108,81 +112,47 @@ const DEFAULT_TOKENS = {
   KYC: '12345678-1234-1234-1234-123456789000',
 };
 
-async function seed(bcryptSalt: string | number) {
+async function seed() {
   console.info('Seeding database...');
   const client = new PrismaClient();
   await generateDynamicDefinitionForE2eTest(client);
-  const customer = await createCustomer(
+  const customer = (await createCustomer(
     client,
     '1',
     env.API_KEY,
     'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/images/ballerine_logo.svg',
     '',
     `webhook-shared-secret-${env.API_KEY}`,
-  );
-  const customer2 = await createCustomer(
+  )) as Customer;
+
+  const customer2 = (await createCustomer(
     client,
     '2',
     `${env.API_KEY}2`,
     'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/images/ballerine_logo.svg',
     '',
     `webhook-shared-secret-${env.API_KEY}2`,
-  );
-  const project1 = await createProject(client, customer, '1');
+  )) as Customer;
+  const project1 = (await createProject(client, customer, '1')) as Project;
+
+  const ids1 = await generateTransactions(client, {
+    projectId: project1.id,
+  });
+  const ids2 = await generateTransactions(client, {
+    projectId: project1.id,
+  });
+
   const project2 = await createProject(client, customer2, '2');
-  const users = [
-    {
-      email: 'admin@admin.com',
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      password: await hash('admin', bcryptSalt),
-      roles: ['user'],
-      avatarUrl: faker.image.people(200, 200, true),
-      userToProjects: {
-        create: { projectId: project1.id },
-      },
-    },
-    {
-      email: 'agent1@ballerine.com',
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      password: await hash('agent1', bcryptSalt),
-      roles: ['user'],
-      avatarUrl: faker.image.people(200, 200, true),
-      userToProjects: {
-        create: { projectId: project2.id },
-      },
-    },
-    {
-      email: 'agent2@ballerine.com',
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      password: await hash('agent2', bcryptSalt),
-      roles: ['user'],
-      avatarUrl: faker.image.people(200, 200, true),
-      userToProjects: {
-        create: { projectId: project2.id },
-      },
-    },
-    {
-      email: 'agent3@ballerine.com',
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      password: await hash('agent3', bcryptSalt),
-      roles: ['user'],
-      avatarUrl: null,
-      userToProjects: {
-        create: { projectId: project1.id },
-      },
-    },
-  ];
-  for (const user of users) {
-    await client.user.upsert({
-      where: { email: user.email },
-      update: {},
-      create: user,
-    });
-  }
+
+  const [adminUser, ...agentUsers] = await createUsers({ project1, project2 }, client);
+
+  await generateFakeAlertDefinitions(client, {
+    project: project1,
+    counterparyIds: [...ids1, ...ids2]
+      .map(({ counterpartyOriginatorId }) => counterpartyOriginatorId)
+      .filter(Boolean) as string[],
+    agentUserIds: agentUsers.map(({ id }) => id),
+  });
 
   const kycManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
   const kybManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9bbb';
@@ -1086,4 +1056,65 @@ async function seed(bcryptSalt: string | number) {
   });
 
   console.info('Seeded database successfully');
+}
+async function createUsers({ project1, project2 }: any, client: PrismaClient) {
+  const adminUser = {
+    email: 'admin@admin.com',
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    password: await hash('admin', BCRYPT_SALT),
+    roles: ['user'],
+    avatarUrl: faker.image.people(200, 200, true),
+    userToProjects: {
+      create: { projectId: project1.id },
+    },
+  };
+
+  const users = [
+    adminUser,
+    {
+      email: 'agent1@ballerine.com',
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      password: await hash('agent1', BCRYPT_SALT),
+      roles: ['user'],
+      avatarUrl: faker.image.people(200, 200, true),
+      userToProjects: {
+        create: { projectId: project2.id },
+      },
+    },
+    {
+      email: 'agent2@ballerine.com',
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      password: await hash('agent2', BCRYPT_SALT),
+      roles: ['user'],
+      avatarUrl: faker.image.people(200, 200, true),
+      userToProjects: {
+        create: { projectId: project2.id },
+      },
+    },
+    {
+      email: 'agent3@ballerine.com',
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      password: await hash('agent3', BCRYPT_SALT),
+      roles: ['user'],
+      avatarUrl: null,
+      userToProjects: {
+        create: { projectId: project1.id },
+      },
+    },
+  ] as const;
+
+  return Promise.all(
+    users.map(
+      async user =>
+        await client.user.upsert({
+          where: { email: user.email },
+          update: {},
+          create: user,
+        }),
+    ),
+  );
 }

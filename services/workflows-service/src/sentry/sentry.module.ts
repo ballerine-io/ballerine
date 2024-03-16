@@ -5,14 +5,17 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { SentryInterceptor } from '@/sentry/sentry.interceptor';
 import { RewriteFrames } from '@sentry/integrations';
 import { PrismaService } from '@/prisma/prisma.service';
+import { SentryService } from '@/sentry/sentry.service';
 
 @Module({
   providers: [
+    SentryService,
     {
       provide: APP_INTERCEPTOR,
       useClass: SentryInterceptor,
     },
   ],
+  exports: [SentryService],
 })
 export class SentryModule implements OnModuleInit, OnModuleDestroy {
   _envName: string;

@@ -31,4 +31,12 @@ export type AuthenticatedEntityWithProjects = AuthenticatedEntity & { projectIds
 
 export type ObjectValues<TObject extends Record<PropertyKey, any>> = TObject[keyof TObject];
 
+export type AnyArray = any[];
+
+export type AnyRecord = Record<PropertyKey, any>;
+
+export type GenericFunction = (...args: AnyArray) => any;
+
+export type GenericAsyncFunction = (...args: AnyArray) => Promise<any>;
+
 export type PrismaTransaction = Omit<PrismaClient, runtime.ITXClientDenyList>;
