@@ -17,7 +17,7 @@ EXPOSE 5137
 
 CMD ["npm", "run", "dev", "--host"]
 
-FROM nginx:stable-alpine as prod
+FROM nginx:1.24-alpine3.17 as prod
 
 COPY --from=dev /app/dist /usr/share/nginx/html
 
