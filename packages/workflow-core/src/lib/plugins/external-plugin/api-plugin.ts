@@ -1,6 +1,7 @@
 import { TContext, Transformer, Transformers, Validator } from '../../utils';
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
 import { IApiPluginParams } from './types';
+import { logger } from '@/lib';
 
 export class ApiPlugin {
   public static pluginType = 'http';
@@ -52,7 +53,10 @@ export class ApiPlugin {
 
       const urlWithoutPlaceholders = this.replaceValuePlaceholders(this.url, context);
 
-      console.log(`API Plugin :: Sending ${this.method} API request to ${urlWithoutPlaceholders}`);
+      logger.log('API Plugin - Sending API request', {
+        url: urlWithoutPlaceholders,
+        method: this.method,
+      });
 
       const apiResponse = await this.makeApiRequest(
         urlWithoutPlaceholders,
@@ -61,9 +65,10 @@ export class ApiPlugin {
         this.composeRequestHeaders(this.headers!, context),
       );
 
-      console.log(
-        `API Plugin :: Received ${apiResponse.statusText} response from ${urlWithoutPlaceholders}`,
-      );
+      logger.log('API Plugin - Received response', {
+        status: apiResponse.statusText,
+        url: urlWithoutPlaceholders,
+      });
 
       if (apiResponse.ok) {
         const result = await apiResponse.json();

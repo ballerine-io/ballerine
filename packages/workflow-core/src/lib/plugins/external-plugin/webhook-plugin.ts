@@ -1,6 +1,7 @@
 import { ApiPlugin } from './api-plugin';
 import { TContext } from '../../utils/types';
 import { IApiPluginParams } from './types';
+import { logger } from '@/lib';
 
 export class WebhookPlugin extends ApiPlugin {
   public static pluginType = 'http';
@@ -16,7 +17,7 @@ export class WebhookPlugin extends ApiPlugin {
     try {
       await this.makeApiRequest(this.url, this.method, requestPayload, this.headers!);
     } catch (err) {
-      console.error(err);
+      logger.error('Error occurred while sending an API request', { err });
     }
 
     return {};
