@@ -95,13 +95,6 @@
     "rxjs": "^7.8.0",
     "tmp": "^0.2.1",
     "winston": "^3.9.0",
-<<<<<<< HEAD
-    "zod": "^3.22.3"
-  },
-  "devDependencies": {
-    "@ballerine/config": "^1.0.8",
-    "@ballerine/eslint-config": "^1.0.8",
-=======
     "yaml": "^2.3.4",
     "zod": "^3.22.3",
     "dayjs": "^1.11.6"
@@ -110,7 +103,6 @@
     "@types/tmp": "^0.2.3",
     "@ballerine/config": "^1.1.0",
     "@ballerine/eslint-config": "^1.1.0",
->>>>>>> dev
     "@cspell/cspell-types": "^6.31.1",
     "@nestjs/cli": "9.3.0",
     "@nestjs/swagger": "6.2.1",
