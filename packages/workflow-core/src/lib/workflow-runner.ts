@@ -52,8 +52,7 @@ import {
 } from './plugins/common-plugin/transformer-plugin';
 import { deepMergeWithOptions } from './utils';
 import { BUILT_IN_EVENT } from './index';
-import { logger } from '@/lib';
-
+import { logger } from './logger';
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
 }

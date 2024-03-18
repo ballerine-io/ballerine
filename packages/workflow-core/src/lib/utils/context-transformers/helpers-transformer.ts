@@ -3,7 +3,7 @@ import { TContext } from '../types';
 import { search } from 'jmespath';
 import { AnyRecord } from '@ballerine/common';
 import merge from 'lodash.merge';
-import { logger } from '@/lib';
+import { logger } from '../../logger';
 
 export type THelperMethod =
   | 'regex'

@@ -1,7 +1,7 @@
 import { TContext, Transformer, Transformers } from '../../utils';
 import { IterativePluginParams } from './types';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
-import { logger } from '@/lib';
+import { logger } from '../../logger';
 
 export class IterativePlugin {
   public static pluginType = 'iterative';

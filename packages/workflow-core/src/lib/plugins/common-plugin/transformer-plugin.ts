@@ -1,7 +1,7 @@
 import { ISerializableMappingPluginParams } from '../../plugins/common-plugin/types';
 import { SerializableValidatableTransformer } from '../../plugins/external-plugin';
 import { HelpersTransformer, TContext, THelperFormatingLogic } from '../../utils';
-import { logger } from '@/lib';
+import { logger } from '../../logger';
 
 export interface HelpersTransformerParams {
   mapping: THelperFormatingLogic;

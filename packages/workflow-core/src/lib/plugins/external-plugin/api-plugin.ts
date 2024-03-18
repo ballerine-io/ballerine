@@ -1,7 +1,7 @@
 import { TContext, Transformer, Transformers, Validator } from '../../utils';
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
 import { IApiPluginParams } from './types';
-import { logger } from '@/lib';
+import { logger } from '../../logger';
 
 export class ApiPlugin {
   public static pluginType = 'http';

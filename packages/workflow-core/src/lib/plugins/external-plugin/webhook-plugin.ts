@@ -1,7 +1,7 @@
 import { ApiPlugin } from './api-plugin';
 import { TContext } from '../../utils/types';
 import { IApiPluginParams } from './types';
-import { logger } from '@/lib';
+import { logger } from '../../logger';
 
 export class WebhookPlugin extends ApiPlugin {
   public static pluginType = 'http';

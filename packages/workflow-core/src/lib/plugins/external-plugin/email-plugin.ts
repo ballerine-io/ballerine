@@ -1,7 +1,7 @@
 import { ApiPlugin } from './api-plugin';
 import { IApiPluginParams } from './types';
 import { AnyRecord } from '@ballerine/common';
-import { logger } from '@/lib';
+import { logger } from '../../logger';
 export class EmailPlugin extends ApiPlugin {
   public static pluginType = 'http';
   public static pluginKind = 'email';
