@@ -26,6 +26,7 @@ import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.re
 import { HttpModule } from '@nestjs/axios';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
+import { BusinessService } from '@/business/business.service';
 
 @Module({
   imports: [ProjectModule, CustomerModule, HttpModule],
@@ -41,6 +42,7 @@ import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository
     StorageService,
     WorkflowEventEmitterService,
     BusinessRepository,
+    BusinessService,
     WorkflowDefinitionRepository,
     WorkflowRuntimeDataRepository,
     WorkflowService,

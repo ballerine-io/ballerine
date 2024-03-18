@@ -1,0 +1,15 @@
+{{ backoffice_url }} {
+  reverse_proxy backoffice:80
+}
+
+{{ workflow_svc_url }} {
+  reverse_proxy workflow-service:3000
+}
+
+{{ kyb_url }} {
+  reverse_proxy kyb-app:80
+}
+
+{{ workflow_dashboard_url }} {
+  reverse_proxy workflows-dashboard:80
+}

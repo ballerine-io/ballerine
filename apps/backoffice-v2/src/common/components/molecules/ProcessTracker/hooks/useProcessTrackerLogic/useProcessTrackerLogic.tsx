@@ -51,7 +51,7 @@ export const useProcessTrackerLogic = ({
 
   useEffect(() => {
     onValueChange(tagToAccordionCardItem[tag as keyof typeof tagToAccordionCardItem]);
-  }, [tag]);
+  }, [onValueChange, tag]);
 
   return {
     trackedProcesses,

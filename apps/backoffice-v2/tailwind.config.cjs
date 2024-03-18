@@ -138,6 +138,6 @@ module.exports = {
         },
       });
     }),
-    require('daisyui'),
+    require('ballerine-daisyui'),
   ],
 };

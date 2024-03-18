@@ -19,7 +19,7 @@ const validationSchema = {
             businessType: {
               type: 'string',
               minLength: 3,
-              maxLength: 50,
+              maxLength: 100,
               errorMessage: {
                 minLength: 'errorMessage.minLength.businessType',
                 maxLength: 'errorMessage.maxLength.businessType',

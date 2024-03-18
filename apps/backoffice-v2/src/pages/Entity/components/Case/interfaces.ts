@@ -2,7 +2,7 @@ import { ComponentProps } from 'react';
 
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { TStateTags } from '@ballerine/common';
-import { Assignee } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
+import { TAssignee } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
 import { Actions } from './Case.Actions';
 import { Content } from './Case.Content';
 import { Documents } from './Case.Documents';
@@ -14,7 +14,7 @@ export interface IItemProps {
   fullName: string;
   createdAt: string;
   entityAvatarUrl: string;
-  assignee: Assignee | null;
+  assignee: TAssignee | null;
   tags: TStateTags;
 }
 

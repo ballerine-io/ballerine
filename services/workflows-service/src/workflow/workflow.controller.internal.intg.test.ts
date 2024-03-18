@@ -3,7 +3,7 @@ import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helpe
 import { INestApplication } from '@nestjs/common';
 import { fetchServiceFromModule, initiateNestApp } from '@/test/helpers/nest-app-helper';
 import { EndUserService } from '@/end-user/end-user.service';
-import { PrismaModule } from 'nestjs-prisma';
+import { PrismaModule } from '@/prisma/prisma.module';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
@@ -19,7 +19,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { createCustomer } from '@/test/helpers/create-customer';
-import { PrismaClient, Project, User } from '@prisma/client';
+import { Business, PrismaClient, Project, User } from '@prisma/client';
 import { createProject } from '@/test/helpers/create-project';
 import { UserService } from '@/user/user.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
@@ -33,11 +33,13 @@ import { Request } from 'express';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
+import { BusinessService } from '@/business/business.service';
 
 describe('/api/v1/internal/workflows #api #integration', () => {
   let app: INestApplication;
   let workflowService: WorkflowService;
   let project: Project;
+  let business: Business;
   let assignee: User;
   const db = new PrismaClient();
 
@@ -59,6 +61,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       StorageService,
       WorkflowEventEmitterService,
       BusinessRepository,
+      BusinessService,
       WorkflowDefinitionRepository,
       WorkflowRuntimeDataRepository,
       WorkflowService,
@@ -101,6 +104,11 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       [PrismaModule],
       [userAuthOverrideMiddleware],
     );
+    const businessRepository = (await fetchServiceFromModule(
+      BusinessRepository,
+      servicesProviders,
+      [PrismaModule],
+    )) as unknown as BusinessRepository;
 
     const customer = await createCustomer(
       await app.get(PrismaService),
@@ -111,6 +119,16 @@ describe('/api/v1/internal/workflows #api #integration', () => {
       'webhook-shared-secret',
     );
     project = await createProject(await app.get(PrismaService), customer, '4');
+    business = await businessRepository.create({
+      data: {
+        companyName: 'Test Company',
+        project: {
+          connect: {
+            id: project.id,
+          },
+        },
+      },
+    });
   });
 
   describe('PATCH /:id/decision/:documentId', () => {
@@ -121,7 +139,10 @@ describe('/api/v1/internal/workflows #api #integration', () => {
           data: {
             name: 'test',
             definitionType: 'statechart-json',
-            definition: {},
+            definition: {
+              initial: 'idle',
+              states: { idle: {} },
+            },
             isPublic: true,
           },
         } satisfies Parameters<(typeof db)['workflowDefinition']['create']>[0];
@@ -150,6 +171,7 @@ describe('/api/v1/internal/workflows #api #integration', () => {
               ],
             },
             projectId: project.id,
+            businessId: business.id,
           },
         } satisfies Parameters<(typeof db)['workflowRuntimeData']['create']>[0];
         const createUserPayload = {

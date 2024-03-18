@@ -33,7 +33,7 @@ export class EndUserService {
       endUser,
       business,
     }: {
-      endUser: Omit<EndUserCreateDto, 'companyName'>;
+      endUser: Omit<EndUserCreateDto, 'companyName' | 'correlationId'>;
       business: Prisma.BusinessUncheckedCreateWithoutEndUsersInput;
     },
     projectId: TProjectId,
@@ -76,6 +76,7 @@ export class EndUserService {
       projectIds,
     );
   }
+
   async updateById(id: string, endUser: Omit<Prisma.EndUserUpdateArgs, 'where'>) {
     return await this.repository.updateById(id, endUser);
   }

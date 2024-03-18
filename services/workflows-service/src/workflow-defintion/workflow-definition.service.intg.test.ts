@@ -4,7 +4,6 @@ import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-defi
 import { FilterService } from '@/filter/filter.service';
 import { CustomerService } from '@/customer/customer.service';
 import { PrismaService } from '@/prisma/prisma.service';
-import { buildWorkflowDefinition } from '@/workflow/workflow.controller.internal.unit.test';
 import { createCustomer } from '@/test/helpers/create-customer';
 import { createProject } from '@/test/helpers/create-project';
 import { Project } from '@prisma/client';
@@ -14,6 +13,36 @@ import { CustomerRepository } from '@/customer/customer.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
 import { ClsService } from 'nestjs-cls';
+
+const buildWorkflowDefinition = (sequenceNum: number, projectId?: string) => {
+  return {
+    id: sequenceNum.toString(),
+    name: `name ${sequenceNum}`,
+    version: sequenceNum,
+    definition: {
+      initial: 'initial',
+      states: {
+        initial: {
+          on: {
+            COMPLETE: 'completed',
+          },
+        },
+        completed: {
+          type: 'final',
+        },
+      },
+    },
+    definitionType: `definitionType ${sequenceNum}`,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    contextSchema: {
+      type: 'json-schema',
+      schema: {},
+    },
+    projectId: projectId,
+    isPublic: false,
+  };
+};
 
 describe('WorkflowDefinitionService', () => {
   let workflowDefinitionService: WorkflowDefinitionService;
@@ -176,8 +205,8 @@ describe('WorkflowDefinitionService', () => {
       );
 
       // Assert
-      const updatedFilter1 = await filterService.getById(filter1.id, {}, [filter1.id]);
-      const updatedFilter2 = await filterService.getById(filter2.id, {}, [filter2.id]);
+      const updatedFilter1 = await filterService.getById(filter1.id, {}, [project.id]);
+      const updatedFilter2 = await filterService.getById(filter2.id, {}, [project.id]);
       const otherProjectId = await filterService.getById(otherProjectFilter.id, {}, [
         otherProjectFilter.projectId,
       ]);

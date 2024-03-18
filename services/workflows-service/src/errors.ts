@@ -4,6 +4,7 @@ import { ErrorObject } from 'ajv';
 import startCase from 'lodash/startCase';
 import lowerCase from 'lodash/lowerCase';
 import { ZodError } from 'zod';
+import { ValidationError as ClassValidatorValidationError } from 'class-validator';
 
 export class ForbiddenException extends common.ForbiddenException {
   @ApiProperty()
@@ -38,12 +39,12 @@ export class ValidationError extends common.BadRequestException {
   @ApiProperty()
   statusCode!: number;
   @ApiProperty()
-  static message: string = 'Validation error';
+  static message = 'Validation error';
 
   @ApiProperty({ type: DetailedValidationError })
-  errors!: { message: string; path: string }[];
+  errors!: Array<{ message: string; path: string }>;
 
-  constructor(errors: { message: string; path: string }[]) {
+  constructor(errors: Array<{ message: string; path: string }>) {
     super(
       {
         statusCode: common.HttpStatus.BAD_REQUEST,
@@ -60,7 +61,7 @@ export class ValidationError extends common.BadRequestException {
     return this.errors;
   }
 
-  static fromAjvError(error: ErrorObject<string, Record<string, any>, unknown>[]) {
+  static fromAjvError(error: Array<ErrorObject<string, Record<string, any>, unknown>>) {
     const errors = error.map(({ instancePath, message }) => ({
       message: `${startCase(lowerCase(instancePath)).replace('/', '.')} ${message}.`,
       path: instancePath,
@@ -76,5 +77,14 @@ export class ValidationError extends common.BadRequestException {
     }));
 
     return new ValidationError(errors);
+  }
+
+  static fromClassValidator(error: ClassValidatorValidationError[]) {
+    return new ValidationError(
+      error.map(({ property, constraints = {} }) => ({
+        message: `${Object.values(constraints).join(', ')}.`,
+        path: property,
+      })),
+    );
   }
 }

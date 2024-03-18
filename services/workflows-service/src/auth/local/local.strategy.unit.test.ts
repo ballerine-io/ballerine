@@ -28,6 +28,7 @@ describe('Testing the localStrategyBase.validate()', () => {
     authService.validateUser.mockReturnValue(Promise.resolve(null));
     //ACT
     const result = localStrategy.validate('noUsername', TEST_PASSWORD);
+
     //ASSERT
     return expect(result).rejects.toThrowError(UnauthorizedException);
   });

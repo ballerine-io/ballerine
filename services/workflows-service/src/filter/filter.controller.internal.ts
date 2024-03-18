@@ -4,7 +4,7 @@ import * as swagger from '@nestjs/swagger';
 import * as errors from '../errors';
 import { plainToClass } from 'class-transformer';
 import type { Request } from 'express';
-import * as nestAccessControl from 'nest-access-control';
+// import * as nestAccessControl from 'nest-access-control';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { FilterFindManyArgs } from '@/filter/dtos/filter-find-many-args';
 import { FilterModel } from '@/filter/filter.model';
@@ -13,13 +13,11 @@ import { FilterService } from '@/filter/filter.service';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import type { TProjectIds } from '@/types';
 
-@swagger.ApiTags('internal/filters')
+@swagger.ApiExcludeController()
 @common.Controller('internal/filters')
 export class FilterControllerInternal {
   constructor(
-    protected readonly service: FilterService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    protected readonly service: FilterService, // @nestAccessControl.InjectRolesBuilder() // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
 
   @common.Get()
@@ -31,6 +29,7 @@ export class FilterControllerInternal {
     @common.Req() request: Request,
   ): Promise<FilterModel[]> {
     const args = plainToClass(FilterFindManyArgs, request.query);
+
     return this.service.list(args, projectIds);
   }
 

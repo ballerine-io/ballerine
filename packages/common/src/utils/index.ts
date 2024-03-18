@@ -18,4 +18,6 @@ export { log } from './log';
 export { replaceNullsWithUndefined } from './replace-null-with-undefined';
 export { dump } from './dump';
 export { isNonEmptyArray } from './is-non-empty-array';
+export { isType } from './is-type';
+export { zodBuilder } from './zod-builder';
 export { type IErrorWithMessage } from './is-error-with-message';

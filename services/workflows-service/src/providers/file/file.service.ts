@@ -1,6 +1,5 @@
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
-import { isType } from '@/common/is-type/is-type';
 import { streamToBuffer } from '@/common/stream-to-buffer/stream-to-buffer';
 import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
 import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.service';
@@ -10,7 +9,7 @@ import { LocalFileService } from '@/providers/file/file-provider/local-file.serv
 import { extractBase64Payload } from '@/providers/file/utils/extract-base64-payload';
 import { StorageService } from '@/storage/storage.service';
 import type { TProjectId } from '@/types';
-import { getDocumentId, isErrorWithMessage } from '@ballerine/common';
+import { getDocumentId, isErrorWithMessage, isType } from '@ballerine/common';
 import { HttpService } from '@nestjs/axios';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
@@ -59,6 +58,7 @@ export class FileService {
           mimeType,
         };
       }
+
       const filePaths = await this.copyThroughFileSystem(
         sourceServiceProvider,
         sourceRemoteFileConfig,

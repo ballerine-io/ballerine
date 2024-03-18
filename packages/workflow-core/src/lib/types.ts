@@ -60,11 +60,6 @@ export interface WorkflowContext {
   lockKey?: string;
 }
 
-export interface IUpdateContextEvent {
-  type: string;
-  payload: Record<PropertyKey, unknown>;
-}
-
 export interface WorkflowOptions {
   runtimeId: string;
   definitionType: 'statechart-json' | 'bpmn-json';

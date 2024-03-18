@@ -1,11 +1,79 @@
 # @ballerine/workflow-core
 
-## 0.5.44-11210907c.0
+## 0.6.0
+
+### Minor Changes
+
+- version bump
 
 ### Patch Changes
 
 - Updated dependencies
-  - @ballerine/common@0.7.44-11210907c.0
+  - @ballerine/common@0.8.0
+
+## 0.5.52
+
+### Patch Changes
+
+- fix invoked at
+
+## 0.5.51
+
+### Patch Changes
+
+- added set time helper
+
+## 0.5.50
+
+### Patch Changes
+
+- fixed invokedAt
+
+## 0.5.49
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.7.49
+
+## 0.5.48
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.48
+
+## 0.5.47
+
+### Patch Changes
+
+- Version bump existing changes
+- Updated dependencies
+  - @ballerine/common@0.7.47
+
+## 0.5.46
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.7.46
+
+## 0.5.45
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.7.45
+
+## 0.5.44
+
+### Patch Changes
+
+- Fixes for concurrency fixes
+- Updated dependencies
+  - @ballerine/common@0.7.44
 
 ## 0.5.43
 

@@ -4,7 +4,9 @@ import { WorkflowControllerExternal } from '@/workflow/workflow.controller.exter
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [HttpModule],
+  imports: [
+    HttpModule, // TODO: register with config and set retry mechanisem for http calls
+  ],
   controllers: [WorkflowControllerExternal],
   providers: [FileService],
   exports: [FileService],

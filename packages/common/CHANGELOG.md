@@ -1,10 +1,46 @@
 # @ballerine/common
 
-## 0.7.44-11210907c.0
+## 0.8.0
+
+### Minor Changes
+
+- version bump
+
+## 0.7.49
 
 ### Patch Changes
 
-- Version bump
+- version bump
+
+## 0.7.48
+
+### Patch Changes
+
+- Updated context schema
+
+## 0.7.47
+
+### Patch Changes
+
+- Version bump existing changes
+
+## 0.7.46
+
+### Patch Changes
+
+- version bump
+
+## 0.7.45
+
+### Patch Changes
+
+- Updated common enums
+
+## 0.7.44
+
+### Patch Changes
+
+- Fixes for concurrency fixes
 
 ## 0.7.43
 
