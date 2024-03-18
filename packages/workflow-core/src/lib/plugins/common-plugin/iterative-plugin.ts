@@ -69,7 +69,7 @@ export class IterativePlugin {
       } for transformer mapping: ${transformer.mapping}`;
 
       console.error(errorMessage);
-      throw new Error(errorMessage);
+      return Promise.reject(new Error(errorMessage));
     }
   }
 
