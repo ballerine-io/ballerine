@@ -11,16 +11,17 @@ export function traverseObjectAndPickValue<T>(
       return value ? value : defaultValue;
     } else {
       for (const prop in object) {
-        // TODO: handle case where object[prop] is not an object
-        const nestedResult = traverseObjectAndPickValue(
-          key,
-          // @ts-ignore
-          object[prop],
-          defaultValue,
-        );
+        if (typeof object[prop] === 'object' && object[prop]) {
+          const nestedResult = traverseObjectAndPickValue(
+            key,
+            // @ts-ignore
+            object[prop],
+            defaultValue,
+          );
 
-        if (nestedResult) {
-          return nestedResult;
+          if (nestedResult) {
+            return nestedResult;
+          }
         }
       }
     }
