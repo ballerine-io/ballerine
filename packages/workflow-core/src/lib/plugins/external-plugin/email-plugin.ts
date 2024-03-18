@@ -32,6 +32,7 @@ export class EmailPlugin extends ApiPlugin {
         payload[key] = this.replaceValuePlaceholders(payload[key] as string, payload);
       }
     });
+
     const emailPayload = {
       ...from,
       personalizations: [
@@ -39,7 +40,7 @@ export class EmailPlugin extends ApiPlugin {
           ...preheader,
           ...subject,
           ...to,
-          ...{ dynamic_template_data: payload },
+          dynamic_template_data: payload,
         },
       ],
       ...templateId,
@@ -48,7 +49,7 @@ export class EmailPlugin extends ApiPlugin {
     payload.adapter ??= 'sendgrid';
 
     if (payload.adapter === 'log') {
-      console.log('Skipping email vendor reuqest, Email payload: ', emailPayload);
+      console.log('Skipping email vendor request, Email payload: ', emailPayload);
 
       return {
         ok: true,
