@@ -1,4 +1,4 @@
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
 import { Customer, Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { CustomerWithProjects } from '@/types';
@@ -22,6 +22,7 @@ export class CustomerRepository {
     if (apiKey.length < 4) throw new Error('Invalid API key');
 
     const customerApiAlreadyExists = await this.findByApiKey(apiKey);
+
     if (customerApiAlreadyExists) throw new Error('API key already exists');
   }
 

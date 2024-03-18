@@ -67,6 +67,7 @@ export const JSONForm: UIElementComponent<JSONFormElementBaseParams> = ({ defini
         payload,
         // @ts-ignore
         definition.valueDestination,
+        // @ts-expect-error - we do not validate `obj` is an object
         elementValue.map((obj: AnyObject) => ({
           ...obj,
           additionalInfo: {

@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { t } from 'i18next';
 import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import { Action } from '../../../../../common/enums';
 
-export const useRevisionTaskByIdMutation = (postUpdateEventName?: string) => {
+export const useRevisionTaskByIdMutation = () => {
   const queryClient = useQueryClient();
   const filterId = useFilterId();
 
@@ -29,7 +29,6 @@ export const useRevisionTaskByIdMutation = (postUpdateEventName?: string) => {
         body: {
           decision: Action.REVISION,
           reason,
-          postUpdateEventName,
         },
       }),
     onMutate: async ({ workflowId, documentId, reason }) => {

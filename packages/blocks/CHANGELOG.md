@@ -1,11 +1,31 @@
 # @ballerine/blocks
 
-## 0.1.28-11210907c.0
+## 0.2.0
+
+### Minor Changes
+
+- version bump
 
 ### Patch Changes
 
 - Updated dependencies
-  - @ballerine/common@0.7.44-11210907c.0
+  - @ballerine/common@0.8.0
+
+## 0.1.29
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.7.49
+
+## 0.1.28
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/common@0.7.46
 
 ## 0.1.27
 

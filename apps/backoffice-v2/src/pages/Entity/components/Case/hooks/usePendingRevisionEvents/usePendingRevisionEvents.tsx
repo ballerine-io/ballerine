@@ -1,7 +1,7 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useCallback, useMemo } from 'react';
 import { calculateAllWorkflowPendingEvents } from '@/pages/Entity/components/Case/hooks/usePendingRevisionEvents/utils/calculate-pending-workflow-events';
-import { CommonWorkflowEvent } from '@ballerine/common';
+import { CommonWorkflowEvent, CommonWorkflowStates } from '@ballerine/common';
 import { checkIsKybExampleVariant } from '@/lib/blocks/variants/variant-checkers';
 import { useRevisionCaseMutation } from '@/domains/workflows/hooks/mutations/useRevisionCaseMutation/useRevisionCaseMutation';
 import { IPendingEvent } from './interfaces';
@@ -18,7 +18,7 @@ const composeUniqueWorkflowEvents = (
 
 const isPendingEventIsRevision = (pendingWorkflowEvent: IPendingEvent) =>
   pendingWorkflowEvent?.eventName === CommonWorkflowEvent.REVISION ||
-  pendingWorkflowEvent?.eventName === CommonWorkflowEvent.TASK_REVIEWED;
+  pendingWorkflowEvent?.workflowState === CommonWorkflowStates.MANUAL_REVIEW;
 
 export const usePendingRevisionEvents = (
   mutateRevisionCase: ReturnType<typeof useRevisionCaseMutation>['mutate'],

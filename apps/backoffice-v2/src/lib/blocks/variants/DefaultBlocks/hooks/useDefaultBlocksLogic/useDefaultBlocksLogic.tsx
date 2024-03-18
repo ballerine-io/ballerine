@@ -6,7 +6,7 @@ import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { useCallback, useMemo } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
@@ -16,7 +16,6 @@ import { Button } from '@/common/components/atoms/Button/Button';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { Send } from 'lucide-react';
 import { useAssociatedCompaniesInformationBlock } from '@/lib/blocks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
-import { getPostDecisionEventName } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
 import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
 import { useRegistryInfoBlock } from '@/lib/blocks/hooks/useRegistryInfoBlock/useRegistryInfoBlock';
 import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBlock/useKybRegistryInfoBlock';
@@ -63,9 +62,8 @@ export const useDefaultBlocksLogic = () => {
   const isWorkflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??
     workflow?.context?.entity?.type === 'business';
-  const postDecisionEventName = getPostDecisionEventName(workflow);
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingReuploadNeeded } =
-    useRevisionTaskByIdMutation(postDecisionEventName);
+    useRevisionTaskByIdMutation();
   const onReuploadNeeded = useCallback(
     ({
         workflowId,
@@ -282,6 +280,7 @@ export const useDefaultBlocksLogic = () => {
   const ubosRegistryProvidedBlock = useUbosRegistryProvidedBlock(
     ubosRegistryProvided,
     workflow?.context?.pluginsOutput?.ubo?.message,
+    workflow?.context?.pluginsOutput?.ubo?.isRequestTimedOut,
   );
 
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
@@ -354,6 +353,8 @@ export const useDefaultBlocksLogic = () => {
         </Button>
       ),
     },
+    isAssociatedCompanyKybEnabled:
+      !!workflow?.workflowDefinition?.config?.isAssociatedCompanyKybEnabled,
   });
 
   const associatedCompaniesInformationBlock = useAssociatedCompaniesInformationBlock(

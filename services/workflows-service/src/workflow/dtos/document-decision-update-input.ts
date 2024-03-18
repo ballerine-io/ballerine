@@ -18,8 +18,4 @@ export class DocumentDecisionUpdateInput {
   @IsOptional()
   @IsString()
   reason?: string;
-
-  @IsOptional()
-  @IsString()
-  postUpdateEventName?: string;
 }

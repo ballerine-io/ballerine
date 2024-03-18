@@ -63,12 +63,14 @@ export class BaseFakeRepository {
   }
 }
 
-function __deepCopy(row: Object, select?: Object) {
+function __deepCopy(row: Record<PropertyKey, unknown>, select?: Record<PropertyKey, unknown>) {
   let modelCopy = JSON.parse(JSON.stringify(row));
 
   if (select) {
+    // @ts-expect-error - we don't validate `modelCopy` is an object
     for (let key of Object.keys(modelCopy)) {
       if (select?.[key] !== true) {
+        // @ts-expect-error - we don't validate `modelCopy` is an object
         delete modelCopy[key];
       }
     }

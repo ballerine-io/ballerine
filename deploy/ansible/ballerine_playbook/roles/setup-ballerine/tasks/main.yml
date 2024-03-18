@@ -1,0 +1,10 @@
+---
+- name: Gather the package facts
+  package_facts:
+    manager: auto
+
+- include_tasks: install-docker.yml
+
+- import_tasks: start-docker.yml
+
+- import_tasks: setup-ballerine.yml

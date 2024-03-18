@@ -27,7 +27,7 @@ export class TransformerPlugin implements ISerializableMappingPluginParams {
     this.stateNames = params.stateNames;
   }
 
-  async invoke(context: TContext, config: unknown) {
+  async invoke(context: TContext) {
     console.log('invoke() method called');
 
     for (const transformParams of this.transformers) {
@@ -36,7 +36,7 @@ export class TransformerPlugin implements ISerializableMappingPluginParams {
         transformParams.mapping,
       );
 
-      transformer.transform({ ...context, workflowRuntimeConfig: config });
+      transformer.transform(context);
     }
 
     console.log('Transform performed successfully.');

@@ -22,7 +22,6 @@ import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { ClsModule } from 'nestjs-cls';
 import { FiltersModule } from '@/common/filters/filters.module';
 import { UserSessionAuditMiddleware } from '@/common/middlewares/user-session-audit.middleware';
-import { MetricsController } from '@/metrics/metrics.controller';
 import { MetricsModule } from '@/metrics/metrics.module';
 import { CustomerModule } from '@/customer/customer.module';
 import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
@@ -37,9 +36,13 @@ import { initHttpMoudle } from '@/common/http-service/http-config.service';
 import { DataMigrationModule } from '@/data-migration/data-migration.module';
 import { CaseManagementModule } from '@/case-management/case-management.module';
 import { WorkflowModule } from '@/workflow/workflow.module';
+import { TransactionModule } from '@/transaction/transaction.module';
+import { AlertModule } from '@/alert/alert.module';
+import { SwaggerController } from './swagger/swagger.controller';
+import { WebhooksModule } from '@/webhooks/webhooks.module';
 
 @Module({
-  controllers: [MetricsController],
+  controllers: [SwaggerController],
   imports: [
     SentryModule,
     MulterModule.registerAsync({
@@ -50,11 +53,14 @@ import { WorkflowModule } from '@/workflow/workflow.module';
     EventEmitterModule.forRoot(),
     UserModule,
     WorkflowModule,
+    WebhooksModule,
     UiDefinitionModule,
     StorageModule,
     DataMigrationModule,
     EndUserModule,
     CustomerModule,
+    TransactionModule,
+    AlertModule,
     BusinessModule,
     ProjectModule,
     SalesforceModule,

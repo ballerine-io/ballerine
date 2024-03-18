@@ -16,6 +16,7 @@ const entitySchema = Type.Object(
 );
 
 export const defaultContextSchema = Type.Object({
+  aml: Type.Optional(Type.Unknown()),
   entity: Type.Union([
     Type.Composite([entitySchema, Type.Object({ id: Type.String() })]),
     Type.Composite([entitySchema, Type.Object({ ballerineEntityId: Type.String() })]),
@@ -86,9 +87,10 @@ export const defaultContextSchema = Type.Object({
                       'Password protected',
                       'Blurry image',
                       'Short statement period',
-                      'Statement out of range',
+                      'Document out of range',
                       'Outside restricted area',
                       'Other',
+                      'Partial information',
                     ],
                   }),
                 ]),

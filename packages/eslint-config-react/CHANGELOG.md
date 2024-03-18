@@ -1,5 +1,33 @@
 # @ballerine/eslint-config-react
 
+## 2.0.0
+
+### Minor Changes
+
+- version bump
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/eslint-config@1.1.0
+
+## 1.0.9
+
+### Patch Changes
+
+- version bump
+- Updated dependencies
+  - @ballerine/eslint-config@1.0.8
+
+## 1.0.8
+
+### Patch Changes
+
+- version bump
+- added rules to enforce spacing
+- Updated dependencies
+  - @ballerine/eslint-config@1.0.7
+
 ## 1.0.7
 
 ### Patch Changes

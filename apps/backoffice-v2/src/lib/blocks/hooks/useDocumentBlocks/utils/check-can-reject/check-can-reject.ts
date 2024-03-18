@@ -1,7 +1,6 @@
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { CommonWorkflowEvent, DefaultContextSchema } from '@ballerine/common';
-import { getPostDecisionEventName } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
+import { CommonWorkflowEvent, CommonWorkflowStates, DefaultContextSchema } from '@ballerine/common';
 import { checkCanMakeDecision } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-make-decision/check-can-make-decision';
 
 export const checkCanReject = ({
@@ -17,7 +16,8 @@ export const checkCanReject = ({
   decision: DefaultContextSchema['documents'][number]['decision'];
   isLoadingReject: boolean;
 }) => {
-  const hasTaskReviewedEvent = !!getPostDecisionEventName(workflow);
+  const isStateManualReview = workflow.state === CommonWorkflowStates.MANUAL_REVIEW;
+
   const hasRejectEvent = workflow?.nextEvents?.includes(CommonWorkflowEvent.REJECT);
   const canMakeDecision = checkCanMakeDecision({
     caseState,
@@ -25,5 +25,5 @@ export const checkCanReject = ({
     decision,
   });
 
-  return !isLoadingReject && canMakeDecision && (hasTaskReviewedEvent || hasRejectEvent);
+  return !isLoadingReject && canMakeDecision && (isStateManualReview || hasRejectEvent);
 };

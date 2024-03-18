@@ -16,15 +16,11 @@ export class EndUserCreateDto {
   @IsString()
   lastName!: string;
 
-  @IsOptional()
-  companyName!: string;
-
-  @IsOptional()
   @ApiProperty({
     type: String,
   })
   @IsString()
-  correlationId?: string;
+  correlationId!: string;
 
   @IsOptional()
   @ApiProperty({

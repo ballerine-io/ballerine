@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { t } from 'i18next';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
 import { TWorkflowById, updateWorkflowDocumentById } from '../../../fetchers';
 import { workflowsQueryKeys } from '../../../query-keys';

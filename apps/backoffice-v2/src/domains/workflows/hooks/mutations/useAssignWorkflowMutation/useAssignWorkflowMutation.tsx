@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { t } from 'i18next';
 import { updateWorkflowSetAssignById } from '../../../fetchers';
 import { useUsersQuery } from '../../../../users/hooks/queries/useUsersQuery/useUsersQuery';
+import { TToastKeyWithSuccessAndError } from '@/common/types';
 
 const getToastActionAndContext = ({
   assigneeId,
@@ -12,7 +13,10 @@ const getToastActionAndContext = ({
   assigneeId: string | null;
   assigneeName: string | null;
   isAssignedToMe: boolean;
-}) => {
+}): {
+  action: TToastKeyWithSuccessAndError;
+  context: Record<string, string>;
+} => {
   const action = assigneeId ? 'assign_case' : 'unassign_case';
   const context = assigneeId
     ? {

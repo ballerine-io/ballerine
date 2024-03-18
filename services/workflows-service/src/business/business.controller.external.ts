@@ -5,7 +5,7 @@ import * as swagger from '@nestjs/swagger';
 import { plainToClass } from 'class-transformer';
 import type { Request } from 'express';
 import * as errors from '../errors';
-import * as nestAccessControl from 'nest-access-control';
+// import * as nestAccessControl from 'nest-access-control';
 import { BusinessFindManyArgs } from './dtos/business-find-many-args';
 import { BusinessWhereUniqueInput } from './dtos/business-where-unique-input';
 import { BusinessModel } from './business.model';
@@ -24,14 +24,12 @@ import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 
-@swagger.ApiTags('external/businesses')
+@swagger.ApiTags('Businesses')
 @common.Controller('external/businesses')
 export class BusinessControllerExternal {
   constructor(
     protected readonly service: BusinessService,
-    protected readonly workflowService: WorkflowService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    protected readonly workflowService: WorkflowService, // @nestAccessControl.InjectRolesBuilder() // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
   ) {}
 
   @common.Post()
@@ -68,6 +66,7 @@ export class BusinessControllerExternal {
     @ProjectIds() projectIds: TProjectIds,
   ): Promise<BusinessModel[]> {
     const args = plainToClass(BusinessFindManyArgs, request.query);
+
     return this.service.list(args, projectIds);
   }
 

@@ -22,12 +22,12 @@ import type { Response } from 'express';
 import * as errors from '../../errors';
 import { RemoveTempFileInterceptor } from '@/common/interceptors/remove-temp-file.interceptor';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
-
-export const COLLECTION_FLOW_FILES_API_PATH = 'collection-flow/files';
+import { ApiExcludeController } from '@nestjs/swagger';
 
 @Public()
 @UseTokenAuthGuard()
-@Controller(COLLECTION_FLOW_FILES_API_PATH)
+@ApiExcludeController()
+@Controller('collection-flow/files')
 export class CollectionFlowFilesController {
   private readonly logger = new Logger(CollectionFlowFilesController.name);
 
@@ -56,6 +56,7 @@ export class CollectionFlowFilesController {
           if (error.includes('expected size')) {
             throw new UnprocessableEntityException(FILE_SIZE_EXCEEDED_MSG);
           }
+
           throw new UnprocessableEntityException(error);
         },
       }),

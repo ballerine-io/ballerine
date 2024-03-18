@@ -1,0 +1,51 @@
+---
+# Edition can be one of: 'ce' (Community Edition) or 'ee' (Enterprise Edition).
+docker_edition: 'ce'
+docker_package: 'docker-{{ docker_edition }}'
+docker_package_state: present
+
+# Service options.
+docker_service_state: started
+docker_service_enabled: true
+docker_restart_handler_state: restarted
+
+# Docker Compose options.
+docker_install_compose: true
+docker_compose_version: 'v2.1.1'
+docker_compose_path: /usr/local/bin/docker-compose
+
+# Used only for Debian/Ubuntu. Switch 'stable' to 'edge' if needed.
+docker_apt_release_channel: stable
+docker_apt_arch: amd64
+docker_apt_repository: 'deb [arch={{ docker_apt_arch }}] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} {{ docker_apt_release_channel }}'
+docker_apt_ignore_key_error: true
+docker_apt_gpg_key: https://download.docker.com/linux/{{ ansible_distribution | lower }}/gpg
+
+# A list of users who will be added to the docker group.
+docker_users: []
+
+template_file_name: 'docker-compose-dep.yml'
+install_dir: '/home/ubuntu/ballerine'
+postgres_user: 'admin'
+postgres_password: 'admin'
+
+backoffice_port: 5137
+workflow_svc_port: 3000
+workflow_dashboard_port: 5200
+postgres_port: 5432
+kyb_app_port: 5201
+headless_svc_port: 5173
+
+
+session_secret: "secret"
+session_expiration_in_minutes: 60
+node_env: "development"
+bcrypt_salt: 10
+api_key: "secret"
+compose_project_name: "ballerine-x"
+
+vite_api_url: ''
+backoffice_url: ''
+kyb_url: ''
+workflow_dashboard_url: ''
+workflow_svc_url: ''

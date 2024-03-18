@@ -2,8 +2,9 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import type { TProjectIds } from '@/types';
 import { Injectable } from '@nestjs/common';
-import { Prisma, WorkflowDefinition } from '@prisma/client';
+import { Prisma, PrismaClient, WorkflowDefinition } from '@prisma/client';
 import { validateDefinitionLogic } from '@ballerine/workflow-core';
+import { PrismaTransaction } from '@/types';
 
 @Injectable()
 export class WorkflowDefinitionRepository {
@@ -24,6 +25,7 @@ export class WorkflowDefinitionRepository {
     args: Prisma.SelectSubset<T, Prisma.WorkflowDefinitionCreateArgs>,
   ): Promise<WorkflowDefinition> {
     validateDefinitionLogic(args.data);
+
     return await this.prisma.workflowDefinition.create<T>(args);
   }
 
@@ -55,6 +57,7 @@ export class WorkflowDefinitionRepository {
     id: string,
     args: Prisma.SelectSubset<T, Omit<Prisma.WorkflowDefinitionFindFirstOrThrowArgs, 'where'>>,
     projectIds: TProjectIds,
+    transaction: PrismaTransaction | PrismaClient = this.prisma,
   ): Promise<WorkflowDefinition> {
     const queryArgs = args as Prisma.WorkflowDefinitionFindFirstOrThrowArgs;
 
@@ -71,7 +74,8 @@ export class WorkflowDefinitionRepository {
         },
       ],
     };
-    return await this.prisma.workflowDefinition.findFirstOrThrow(queryArgs);
+
+    return await transaction.workflowDefinition.findFirstOrThrow(queryArgs);
   }
 
   async findTemplateByIdUnscoped<

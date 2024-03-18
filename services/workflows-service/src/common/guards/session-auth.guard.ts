@@ -22,6 +22,7 @@ export class SessionAuthGuard implements CanActivate {
     const req = context.switchToHttp().getRequest<Request>();
 
     const authenticatedEntity = req.user as AuthenticatedEntity | undefined;
+
     if (
       req.isAuthenticated() ||
       !!authenticatedEntity?.customer ||

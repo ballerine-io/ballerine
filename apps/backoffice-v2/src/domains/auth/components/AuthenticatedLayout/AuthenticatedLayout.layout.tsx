@@ -26,7 +26,7 @@ export const AuthenticatedLayout: FunctionComponent = () => {
     <div className="drawer drawer-mobile">
       <input id="app-drawer" type="checkbox" className="drawer-toggle" />
       <div className={`drawer-content`}>
-        <main className={`grid h-full grid-cols-[300px_1fr]`}>
+        <main className={`h-full`}>
           <Outlet />
         </main>
       </div>

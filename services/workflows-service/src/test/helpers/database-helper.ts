@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { z } from 'zod';
+
 const databaseHelper = new PrismaClient();
 // should never be unset - default test in order not to delete default db
 const TEST_DATABASE_SCHEMA_NAME = z
@@ -12,6 +13,7 @@ const __getTables = async (prisma: PrismaClient): Promise<string[]> => {
     tablename: string;
   }> =
     await prisma.$queryRaw`SELECT tablename from pg_tables where schemaname = '${TEST_DATABASE_SCHEMA_NAME}';`;
+
   return results.map(result => result.tablename);
 };
 

@@ -6,13 +6,10 @@ import { DataMigrationVersion, Prisma } from '@prisma/client';
 export class DataMigrationRepository {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async getLatestTimestamp() {
-    return await this.prisma.dataMigrationVersion.findFirst({
-      where: { status: 'completed' },
-      orderBy: {
-        version: 'desc',
-      },
-    });
+  async list<T extends Prisma.DataMigrationVersionFindManyArgs>(
+    args?: Prisma.SelectSubset<T, Prisma.DataMigrationVersionFindManyArgs>,
+  ) {
+    return await this.prisma.dataMigrationVersion.findMany(args);
   }
 
   async create<T extends Prisma.DataMigrationVersionCreateArgs>(

@@ -48,7 +48,8 @@ export const businessIds = [
 ];
 
 export const generateBusiness = ({
-  id,
+  id: id = faker.datatype.uuid(),
+  correlationId = faker.datatype.uuid(),
   companyName = faker.company.name(),
   registrationNumber = faker.datatype.uuid(),
   legalForm = faker.company.companySuffix(),
@@ -76,7 +77,8 @@ export const generateBusiness = ({
   workflow,
   projectId,
 }: {
-  id: string;
+  id?: string;
+  correlationId?: string;
   companyName?: string;
   registrationNumber?: string;
   legalForm?: string;
@@ -99,7 +101,7 @@ export const generateBusiness = ({
     registrationDocument: string;
     financialStatement: string;
   };
-  workflow: {
+  workflow?: {
     runtimeId?: string;
     workflowDefinitionId: string;
     workflowDefinitionVersion: number;
@@ -108,10 +110,9 @@ export const generateBusiness = ({
   };
   projectId: string;
 }): Prisma.BusinessCreateInput => {
-  const { runtimeId, workflowDefinitionId, workflowDefinitionVersion, context, state } = workflow;
-
-  return {
+  const data: Prisma.BusinessCreateInput = {
     id,
+    correlationId,
     companyName,
     registrationNumber,
     legalForm,
@@ -130,7 +131,11 @@ export const generateBusiness = ({
     shareholderStructure: JSON.stringify(shareholderStructure),
     project: { connect: { id: projectId } },
     approvalState: 'PROCESSING',
-    workflowRuntimeData: {
+  };
+
+  if (workflow) {
+    const { runtimeId, workflowDefinitionId, workflowDefinitionVersion, context, state } = workflow;
+    data.workflowRuntimeData = {
       create: {
         id: runtimeId,
         workflowDefinitionVersion,
@@ -141,12 +146,14 @@ export const generateBusiness = ({
         state: state,
         tags: [StateTag.MANUAL_REVIEW],
       },
-    },
-  };
+    };
+  }
+
+  return data;
 };
 
 export const generateEndUser = ({
-  id,
+  id = faker.datatype.uuid(),
   correlationId = faker.datatype.uuid(),
   firstName = faker.name.firstName(),
   lastName = faker.name.lastName(),
@@ -157,7 +164,7 @@ export const generateEndUser = ({
   workflow,
   projectId,
 }: {
-  id: string;
+  id?: string;
   correlationId?: string;
   firstName?: string;
   lastName?: string;
@@ -165,7 +172,7 @@ export const generateEndUser = ({
   phone?: string;
   dateOfBirth?: Date;
   avatarUrl?: string;
-  workflow: {
+  workflow?: {
     workflowDefinitionId: string;
     workflowDefinitionVersion: number;
     context: Prisma.InputJsonValue;
@@ -174,7 +181,6 @@ export const generateEndUser = ({
   };
   projectId: string;
 }): Prisma.EndUserCreateInput => {
-  const { workflowDefinitionId, workflowDefinitionVersion, context, state } = workflow;
   let res: Prisma.EndUserCreateInput = {
     id,
     correlationId,
@@ -188,25 +194,31 @@ export const generateEndUser = ({
     project: { connect: { id: projectId } },
   };
 
-  if (workflowDefinitionId) {
-    res = {
-      ...res,
-      workflowRuntimeData: {
-        create: {
-          state,
-          context,
-          projectId,
-          workflowDefinitionId,
-          workflowDefinitionVersion,
-          createdAt: faker.date.recent(2),
-          parentRuntimeDataId: workflow.parentRuntimeId,
-          tags: [StateTag.MANUAL_REVIEW],
-        },
-      },
-    };
-  }
-
   res.project = { connect: { id: projectId } };
 
-  return res;
+  if (!workflow) {
+    return res;
+  }
+
+  const { workflowDefinitionId, workflowDefinitionVersion, context, state } = workflow;
+
+  if (!workflowDefinitionId) {
+    return res;
+  }
+
+  return {
+    ...res,
+    workflowRuntimeData: {
+      create: {
+        state,
+        context,
+        projectId,
+        workflowDefinitionId,
+        workflowDefinitionVersion,
+        createdAt: faker.date.recent(2),
+        parentRuntimeDataId: workflow.parentRuntimeId,
+        tags: [StateTag.MANUAL_REVIEW],
+      },
+    },
+  };
 };

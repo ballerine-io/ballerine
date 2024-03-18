@@ -10,15 +10,20 @@ import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { UserStatus } from '@prisma/client';
 
-@swagger.ApiTags('internal/users')
+@swagger.ApiExcludeController()
 @common.Controller('internal/users')
+@swagger.ApiExcludeController()
 export class UserControllerInternal {
   constructor(protected readonly service: UserService) {}
 
   @common.Get()
+  @swagger.ApiQuery({ name: 'projectId', type: String })
   @swagger.ApiOkResponse({ type: [UserModel] })
   @swagger.ApiForbiddenResponse()
-  async list(@ProjectIds() projectIds: TProjectIds): Promise<UserModel[]> {
+  async list(
+    @ProjectIds() projectIds: TProjectIds,
+    @common.Query('projectId') projectId: string,
+  ): Promise<UserModel[]> {
     return this.service.list(
       {
         where: { status: UserStatus.Active },
@@ -33,7 +38,7 @@ export class UserControllerInternal {
           createdAt: true,
         },
       },
-      projectIds,
+      projectId ? [projectId] : projectIds,
     );
   }
 

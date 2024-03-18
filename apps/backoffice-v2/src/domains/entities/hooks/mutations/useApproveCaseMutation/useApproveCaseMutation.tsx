@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { t } from 'i18next';
 import { fetchWorkflowEvent } from '../../../../workflows/fetchers';
 import { workflowsQueryKeys } from '../../../../workflows/query-keys';
@@ -8,10 +8,10 @@ import { Action } from '../../../../../common/enums';
 // @TODO: Refactor to be under cases/workflows domain
 export const useApproveCaseMutation = ({
   workflowId,
-  onSelectNextEntity,
+  onSelectNextCase,
 }: {
   workflowId: string;
-  onSelectNextEntity?: VoidFunction;
+  onSelectNextCase?: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
 
