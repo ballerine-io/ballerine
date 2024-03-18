@@ -11,6 +11,29 @@ import {
   mergeTranslationsOverrides,
 } from './lib/services/configuration-manager';
 
+const initConfigAndTranslations = (config, _translations) => {
+  configuration.set(defaultConfiguration);
+
+  const { translations: _translations, ...configWithoutTranslations } = config;
+
+  // Extract config from query params
+  const { clientId, flowName, ...endUserInfoFromQueryParams } = getConfigFromQueryParams();
+
+  // Merge the two config objects
+  const mergedConfig: FlowsInitOptions = {
+    ...configWithoutTranslations,
+    endUserInfo: {
+      ...configWithoutTranslations.endUserInfo,
+      ...endUserInfoFromQueryParams,
+    },
+  };
+
+  const configPromise = appInit(mergedConfig);
+  const translationsPromise = mergeTranslationsOverrides(_translations);
+
+  return Promise.all([configPromise, translationsPromise]);
+};
+
 export const flows: BallerineSDKFlows = {
   init: config => {
     return new Promise((resolve, reject) => {
@@ -23,53 +46,34 @@ export const flows: BallerineSDKFlows = {
       // Always init with no state. This ensures using init to reset the flow returns to the first step with no data.
       void resetAppState();
 
-      configuration.set(defaultConfiguration);
-
-      const { translations: _translations, ...configWithoutTranslations } = config;
-
-      // Extract config from query params
-      const { clientId, flowName, ...endUserInfoFromQueryParams } = getConfigFromQueryParams();
-
-      // Merge the two config objects
-      const mergedConfig: FlowsInitOptions = {
-        ...configWithoutTranslations,
-        endUserInfo: {
-          ...configWithoutTranslations.endUserInfo,
-          ...endUserInfoFromQueryParams,
-        },
-      };
-
-      const configPromise = appInit(mergedConfig);
-      const translationsPromise = mergeTranslationsOverrides(_translations);
-
-      Promise.all([configPromise, translationsPromise])
+      initConfigAndTranslations(config)
         .then(() => resolve())
         .catch(reject);
     });
   },
 
   mount({
-    flowName = getConfigFromQueryParams().flowName,
-    callbacks,
-    jwt,
-    useModal = false,
-    elementId = '',
-  }) {
+          flowName = getConfigFromQueryParams().flowName,
+          callbacks,
+          jwt,
+          useModal = false,
+          elementId = '',
+        }) {
     const hostElement = useModal
       ? document.querySelector('body')
       : document.getElementById(elementId);
 
-    if (hostElement) {
-      hostElement.innerHTML = `
-        <div class="loader-container" id="blrn-loader">
-            <div class="loader"></div>
-        </div>
-      `;
-    } else {
+    if (!hostElement) {
       const message = useModal ? 'body' : `with id ${elementId}`;
 
-      console.error(`BallerineSDK: Could not find element ${message}`);
+      throw new Error(`BallerineSDK: Could not find element ${message}`);
     }
+
+    hostElement.innerHTML = `
+      <div class="loader-container" id="blrn-loader">
+          <div class="loader"></div>
+      </div>
+    `;
 
     // Merge the passed in callbacks into the Svelte configuration store of the specified flow.
     // Calling setFlowCallbacks below ConfigurationProvider results in stale state for instances of get(configuration).
@@ -80,7 +84,7 @@ export const flows: BallerineSDKFlows = {
     }
 
     new ConfigurationProvider({
-      target: hostElement as HTMLElement,
+      target: hostElement,
       props: {
         flowName,
         useModal,
