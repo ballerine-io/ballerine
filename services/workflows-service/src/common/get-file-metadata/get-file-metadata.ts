@@ -2,6 +2,7 @@ import { getFileExtension } from '@/common/get-file-extension/get-file-extension
 import { getFileType } from '@/common/get-file-type/get-file-type';
 import { log } from '@ballerine/common';
 import { MimeType } from 'file-type';
+import { Base64 } from 'js-base64';
 import mime from 'mime';
 
 /**
@@ -43,6 +44,10 @@ export const getFileMetadata = async ({
   if (extension && !mimeType) {
     mimeType = mime.getType(extension) ?? undefined;
   }
+
+  const isBaseFileName = Base64.isValid(fileName?.split(',')[1]);
+  // Avoiding logging of base64 string which destroys console output.
+  fileName = isBaseFileName ? 'Base64' : fileName;
 
   log(!mimeType, `Could not extract mime type from file: ${file} with a file name of: ${fileName}`);
   log(
