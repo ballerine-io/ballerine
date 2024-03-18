@@ -6,7 +6,6 @@ import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.ser
 import { Base64FileService } from '@/providers/file/file-provider/base64-file.service';
 import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
 import { LocalFileService } from '@/providers/file/file-provider/local-file.service';
-import { extractBase64Payload } from '@/providers/file/utils/extract-base64-payload';
 import { StorageService } from '@/storage/storage.service';
 import type { TProjectId } from '@/types';
 import { getDocumentId, isErrorWithMessage, isType } from '@ballerine/common';
@@ -222,10 +221,7 @@ export class FileService {
       };
     }
 
-    if (
-      provider == 'base64' &&
-      z.string().refine(Base64.isValid).parse(extractBase64Payload(uri))
-    ) {
+    if (provider == 'base64' && z.string().refine(Base64.isValid).parse(uri?.split(',')[1])) {
       return {
         sourceServiceProvider: new Base64FileService(),
         sourceRemoteFileConfig: uri as TRemoteFileConfig,
