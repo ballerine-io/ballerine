@@ -35,6 +35,25 @@ describe('Helper transform', () => {
         mergeValue: 'test',
       });
     });
+
+    // Add a test for error handling
+    it('should throw an error if the data is not an array', async () => {
+      const data = { data: 'not an array', mergeValue: 'test' };
+
+      const transformer = new HelpersTransformer([
+        {
+          source: 'data',
+          target: 'data',
+          method: 'mergeArrayEachItemWithValue',
+          value: '_',
+          options: {
+            mapJmespath: 'data',
+            mergeWithJmespath: '{theValueToMerge: mergeValue}',
+          },
+        },
+      ]);
+
+      await expect(transformer.transform(data)).rejects.toThrow();
   });
 
   describe('#setTimeToRecordUTC', () => {
