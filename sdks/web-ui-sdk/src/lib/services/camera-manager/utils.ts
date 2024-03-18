@@ -11,6 +11,6 @@ export const checkIsCameraAvailable = async (): Promise<boolean> => {
   } catch (error) {
     console.error(error);
     toast.push(t('general', 'errorCameraAccess'));
-    return false;
+    throw error;
   }
 };
