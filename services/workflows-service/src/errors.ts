@@ -4,6 +4,7 @@ import { ErrorObject } from 'ajv';
 import startCase from 'lodash/startCase';
 import lowerCase from 'lodash/lowerCase';
 import { ZodError } from 'zod';
+import { ValidationError as ClassValidatorValidationError } from 'class-validator';
 
 export class ForbiddenException extends common.ForbiddenException {
   @ApiProperty()
@@ -76,5 +77,14 @@ export class ValidationError extends common.BadRequestException {
     }));
 
     return new ValidationError(errors);
+  }
+
+  static fromClassValidator(error: ClassValidatorValidationError[]) {
+    return new ValidationError(
+      error.map(({ property, constraints = {} }) => ({
+        message: `${Object.values(constraints).join(', ')}.`,
+        path: property,
+      })),
+    );
   }
 }

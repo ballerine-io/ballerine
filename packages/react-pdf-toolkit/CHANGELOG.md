@@ -1,5 +1,17 @@
 # @ballerine/react-pdf-toolkit
 
+## 1.1.0
+
+### Minor Changes
+
+- version bump
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/config@1.1.0
+  - @ballerine/ui@0.4.0
+
 ## 1.0.16
 
 ### Patch Changes
