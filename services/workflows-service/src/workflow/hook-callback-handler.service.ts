@@ -90,7 +90,7 @@ export class HookCallbackHandlerService {
       pages: [
         {
           provider: 'base64',
-          uri: base64Pdf,
+          uri: `data:application/pdf;base64,${base64Pdf}`,
           type: 'application/pdf',
           fileName: 'report.pdf',
         },
