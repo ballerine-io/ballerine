@@ -13,6 +13,8 @@ import { lastValueFrom } from 'rxjs';
 import { plainToClass } from 'class-transformer';
 import { AxiosError } from 'axios';
 import type { TProjectIds } from '@/types';
+import { Business } from '@prisma/client';
+import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
 
 @Injectable()
 export class BusinessService {
@@ -26,7 +28,9 @@ export class BusinessService {
   }
 
   async list(args: Parameters<BusinessRepository['findMany']>[0], projectIds: TProjectIds) {
-    return await this.repository.findMany(args, projectIds);
+    return (await this.repository.findMany(args, projectIds)) as (Business & {
+      definitionConfigs: TCustomerWithDefinitionsFeatures['definitionConfigs'];
+    })[];
   }
 
   async getById(
