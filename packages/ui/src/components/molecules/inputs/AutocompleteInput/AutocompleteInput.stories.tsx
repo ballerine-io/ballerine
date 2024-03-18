@@ -18,26 +18,24 @@ const storyOptions: AutocompleteOption[] = [
   { value: 'cucumber' },
 ];
 
-export const Default = {
-  render: () => <AutocompleteInput options={storyOptions} onChange={() => {}} />,
-};
+// Default story with direct component rendering
+export const Default = () => <AutocompleteInput options={storyOptions} onChange={() => {}} />;
 
-const ControlledAutocomplete = () => {
-  const [value, setValue] = useState('');
+// Controlled component using useState hook for managing the input state
+const ControlledComponent = () => {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => setInputValue(event.target.value);
 
   return (
     <AutocompleteInput
       options={storyOptions}
-      value={value}
-      onChange={event => setValue(event.target.value)}
+      value={inputValue}
+      onChange={handleChange}
     />
   );
 };
+export const Controlled = ControlledComponent;
 
-export const Controlled = {
-  render: ControlledAutocomplete,
-};
-
-export const Disabled = {
-  render: () => <AutocompleteInput disabled options={[]} onChange={() => {}} />,
-};
+// Story for demonstrating the disabled state of the AutocompleteInput component
+export const Disabled = () => <AutocompleteInput disabled options={[]} onChange={() => {}} />;
