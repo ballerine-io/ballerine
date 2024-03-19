@@ -1,7 +1,7 @@
 import { processStatusToIcon } from '@/common/components/molecules/ProcessTracker/constants';
 import {
   IProcessTracker,
-  ProcessTrackerItem,
+  IProcessTrackerItem,
 } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/process-tracker-adapters/process-tracker.abstract';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ProcessStatus } from '@ballerine/common';
@@ -12,7 +12,7 @@ export class CollectionFlowProcessTracker implements IProcessTracker {
 
   constructor(readonly workflow: TWorkflowById) {}
 
-  buildItems(): ProcessTrackerItem[] {
+  buildItems(): IProcessTrackerItem[] {
     return (
       this.getSteps()?.map(step => {
         return {

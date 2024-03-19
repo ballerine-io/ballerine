@@ -19,7 +19,11 @@ export class Base64FileService implements IFileProvider {
   async download(remoteFileConfig: TRemoteFileConfig): Promise<TLocalFilePath> {
     const tmpFile = tmp.fileSync();
 
-    writeFileSync(tmpFile.name, remoteFileConfig as string, { encoding: 'base64' });
+    if (typeof remoteFileConfig !== 'string') {
+      throw new Error(`Invalid removeFileConfig provided, excepted string.`);
+    }
+
+    writeFileSync(tmpFile.name, remoteFileConfig, { encoding: 'base64' });
 
     return tmpFile.name;
   }
