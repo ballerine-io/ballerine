@@ -59,39 +59,20 @@ export class OngoingMonitoringCron {
         definitionConfig: customerProcessConfig,
       } of processConfiguration) {
         const businesses = await this.businessService.list({}, projectIds);
-
         for (const business of businesses) {
           const businessProcessConfig =
             business.metadata &&
             business.metadata.featureConfig &&
             this.findDefinitionConfig(business.metadata.featureConfig);
-          const { options: processConfig } = (businessProcessConfig || customerProcessConfig)!;
 
+          const { options: processConfig } = (businessProcessConfig || customerProcessConfig)!;
           const intervalInDays = processConfig.intervalInDays;
-          const lastReceivedReport = (
-            await this.businessReportService.findMany(
-              {
-                where: {
-                  businessId: business.id,
-                  projectId: business.projectId,
-                },
-                orderBy: {
-                  createdAt: 'desc',
-                },
-                take: 1,
-              },
-              projectIds,
-            )
-          )[0];
+          const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
 
           if (!lastReceivedReport) {
-            return this.invokeOngoingAuditReport({
-              business,
-              workflowDefinitionConfig: processConfig,
-              workflowDefinitionId: workflowDefinition.id,
-              currentProjectId: business.projectId,
-              projectIds: projectIds,
-            });
+            this.logger.error(`No initial report found for business: ${business.id}`);
+
+            continue;
           }
 
           const lastReportFinishedDate = lastReceivedReport.createdAt;
@@ -101,7 +82,9 @@ export class OngoingMonitoringCron {
 
           if (dateToRunReport <= new Date()) {
             await this.invokeOngoingAuditReport({
-              business,
+              business: business as Business & {
+                metadata?: { featureConfig?: Record<string, TCustomerFeatures> };
+              },
               workflowDefinitionConfig: processConfig,
               workflowDefinitionId: workflowDefinition.id,
               currentProjectId: business.projectId,
@@ -116,6 +99,27 @@ export class OngoingMonitoringCron {
     } finally {
       await this.prisma.releaseLock(this.lockKey);
     }
+  }
+
+  private async findLastBusinessReport(business: Business, projectIds: TProjectIds) {
+    return (
+      await this.businessReportService.findMany(
+        {
+          where: {
+            businessId: business.id,
+            projectId: business.projectId,
+            type: {
+              in: ['merchant_audit_t1', 'merchant_audit_t2', 'merchant_audit_t1_ongoing'],
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          take: 1,
+        },
+        projectIds,
+      )
+    )[0];
   }
 
   private async fetchCustomerFeatureConfiguration(customers: TCustomerWithDefinitionsFeatures[]) {
@@ -168,12 +172,12 @@ export class OngoingMonitoringCron {
     currentProjectId,
     lastReportId,
   }: {
-    business: Business;
+    business: Business & { metadata?: { featureConfig?: Record<string, TCustomerFeatures> } };
     workflowDefinitionConfig: TOngoingAuditReportDefinitionConfig;
     workflowDefinitionId: string;
     projectIds: TProjectIds;
     currentProjectId: string;
-    lastReportId?: string;
+    lastReportId: string;
   }) {
     const context = {
       entity: {
@@ -183,7 +187,7 @@ export class OngoingMonitoringCron {
           websiteUrl: business.website,
           companyName: business.companyName,
           proxyViaCountry: workflowDefinitionConfig.proxyViaCountry,
-          previousReportId: lastReportId || null,
+          previousReportId: lastReportId,
         },
         documents: [],
       },
@@ -197,12 +201,21 @@ export class OngoingMonitoringCron {
       throw ValidationError.fromAjvError(validate.errors!);
     }
 
-    return this.workflowService.createOrUpdateWorkflowRuntime({
+    await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId: workflowDefinitionId,
       projectIds: projectIds,
       currentProjectId: currentProjectId,
       config: { reportConfig: workflowDefinitionConfig },
       context: context as unknown as DefaultContextSchema,
+    });
+
+    await this.businessService.updateById(business.id, {
+      data: {
+        metadata: {
+          ...((business.metadata ?? {}) as Record<string, unknown>),
+          lastOngoingAuditReportInvokedAt: new Date().getTime(),
+        },
+      },
     });
   }
 }

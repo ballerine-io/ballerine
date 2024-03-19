@@ -10,27 +10,40 @@ export type TAuthenticationConfiguration = {
 
 export const FEATURE_LIST = {
   ONGOING_AUDIT_REPORT_T1: 'ONGOING_AUDIT_REPORT_T1',
+  ONGOING_AUDIT_REPORT_T2: 'ONGOING_AUDIT_REPORT_T2',
 } as const;
-
-export type TOngoingAuditReportDefinitionConfig = {
-  definitionVariation: string;
-  intervalInDays: number;
-  active: boolean;
-  checkType: string[];
-  proxyViaCountry: string;
-};
 
 export type TCustomerFeatures = {
   name: keyof typeof FEATURE_LIST;
   enabled: boolean;
   options: TOngoingAuditReportDefinitionConfig;
 };
+
+export type TOngoingAuditReportDefinitionConfig = {
+  definitionVariation: string;
+  intervalInDays: number;
+  active: boolean;
+  checkType: readonly string[];
+  proxyViaCountry: string;
+};
+
 export const CUSTOMER_FEATURES = {
   [FEATURE_LIST.ONGOING_AUDIT_REPORT_T1]: {
     name: 'ONGOING_AUDIT_REPORT_T1',
     enabled: false, // show option in UI
     options: {
       definitionVariation: 'ongoing_merchant_audit_t1',
+      intervalInDays: 7,
+      active: false,
+      checkType: ['lob', 'content', 'reputation'],
+      proxyViaCountry: 'GB',
+    },
+  },
+  [FEATURE_LIST.ONGOING_AUDIT_REPORT_T2]: {
+    name: 'ONGOING_AUDIT_REPORT_T2',
+    enabled: false, // show option in UI
+    options: {
+      definitionVariation: 'ongoing_merchant_audit_t2',
       intervalInDays: 7,
       active: false,
       checkType: ['lob', 'content', 'reputation'],

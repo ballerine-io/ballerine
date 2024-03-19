@@ -31,6 +31,7 @@ export class BusinessService {
     return (await this.repository.findMany(args, projectIds)) as (Business & {
       metadata?: {
         featureConfig?: TCustomerWithDefinitionsFeatures['features'];
+        lastOngoingAuditReportInvokedAt?: number;
       };
     })[];
   }
