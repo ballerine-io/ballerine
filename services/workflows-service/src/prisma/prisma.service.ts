@@ -1,8 +1,8 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 
-import { Prisma, PrismaClient } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isErrorWithMessage } from '@ballerine/common';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 const prismaExtendedClient = (prismaClient: PrismaClient) =>
   prismaClient.$extends({
