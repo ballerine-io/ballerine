@@ -1,10 +1,10 @@
-import { ProcessStatus, StateTag } from '@ballerine/common';
-import { RefreshCircle } from '@/common/components/atoms/RefreshCircle/RefreshCircle';
-import { ClockCircle } from '@/common/components/atoms/ClockCircle/ClockCircle';
-import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
-import { MinusCircle } from '@/common/components/atoms/MinusCircle/MinusCircle';
 import { CheckCircle } from '@/common/components/atoms/CheckCircle/CheckCircle';
+import { ClockCircle } from '@/common/components/atoms/ClockCircle/ClockCircle';
 import { IndicatorCircle } from '@/common/components/atoms/IndicatorCircle/IndicatorCircle';
+import { MinusCircle } from '@/common/components/atoms/MinusCircle/MinusCircle';
+import { RefreshCircle } from '@/common/components/atoms/RefreshCircle/RefreshCircle';
+import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
+import { ProcessStatus, StateTag } from '@ballerine/common';
 
 export const tagToAccordionCardItem = {
   [StateTag.COLLECTION_FLOW]: 'Collection flow',

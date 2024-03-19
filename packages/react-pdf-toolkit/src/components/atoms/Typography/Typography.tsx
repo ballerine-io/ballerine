@@ -13,7 +13,7 @@ export const typographyCva = cva(['font-inter', 'leading-0'], {
       medium: 'text-[11px]',
       large: 'text-[14px]',
       heading: 'text-[14px]',
-      title: 'text-[24px]',
+      title: 'text-[18px]',
     },
     weight: {
       bold: 'font-bold',

@@ -4,4 +4,4 @@ export type RJSFInputProps<TWrappedComponentProps = object> = FieldProps & TWrap
 export type RJSFInputAdapter<
   TValueType = string,
   TWrappedComponentProps = object,
-> = React.ComponentType<FieldProps<TValueType> & TWrappedComponentProps>;
+> = React.FunctionComponent<FieldProps<TValueType> & TWrappedComponentProps>;
