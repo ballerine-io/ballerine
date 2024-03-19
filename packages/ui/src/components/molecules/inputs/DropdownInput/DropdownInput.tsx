@@ -105,6 +105,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent
+        disablePortal
         align={props?.content?.align || 'center'}
         style={{ width: 'var(--radix-popover-trigger-width)' }}
         className={clsx('p-2', props?.content?.className)}

@@ -1,4 +1,10 @@
 import { PrismaService } from '@/prisma/prisma.service';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import type { PrismaTransaction, TProjectIds } from '@/types';
+import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
+import { TEntityType } from '@/workflow/types';
+import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
+import { ARRAY_MERGE_OPTION, ArrayMergeOption } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import {
   Prisma,
@@ -6,13 +12,7 @@ import {
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
-import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
-import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
-import { ProjectScopeService } from '@/project/project-scope.service';
-import type { PrismaTransaction, TProjectIds } from '@/types';
-import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
-import { ARRAY_MERGE_OPTION, ArrayMergeOption } from '@ballerine/workflow-core';
 
 /**
  * Columns that are related to the state of the workflow runtime data.

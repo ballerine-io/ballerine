@@ -104,3 +104,5 @@ export const DynamicForm = forwardRef(
     );
   },
 );
+
+DynamicForm.displayName = 'DynamicForm';
