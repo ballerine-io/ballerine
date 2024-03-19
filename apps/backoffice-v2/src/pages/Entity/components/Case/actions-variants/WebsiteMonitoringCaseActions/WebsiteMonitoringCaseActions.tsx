@@ -7,7 +7,7 @@ import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
 import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
 import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
-import { useWebsiteMonitoringCaseActions } from '@/pages/Entity/components/Case/actions-variants/WebsiteMonitoringCaseActions/hooks/useWebsiteMonitoringCaseActions/useWebsiteMonitoringCaseActions';
+import { useWebsiteMonitoringCaseActionsLogic } from '@/pages/Entity/components/Case/actions-variants/WebsiteMonitoringCaseActions/hooks/useWebsiteMonitoringCaseActions/useWebsiteMonitoringCaseActions';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { Button } from '../../../../../../common/components/atoms/Button/Button';
 import { Dialog } from '../../../../../../common/components/organisms/Dialog/Dialog';
@@ -27,7 +27,7 @@ export const WebsiteMonitoringCaseActions: FunctionComponent = () => {
     handleResolutionActionChange,
     handleResolutionCommentChange,
     handleSubmit,
-  } = useWebsiteMonitoringCaseActions();
+  } = useWebsiteMonitoringCaseActionsLogic();
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 space-y-2 bg-base-100 px-4 pt-4`}>

@@ -11,7 +11,7 @@ export interface IResolutionActionsFormValues {
   comment: string;
 }
 
-export const useWebsiteMonitoringCaseActions = () => {
+export const useWebsiteMonitoringCaseActionsLogic = () => {
   const { workflow } = useEntityLogic();
   const { data: session } = useAuthenticatedUserQuery();
   const authenticatedUser = session?.user;
