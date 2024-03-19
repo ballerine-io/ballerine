@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.6.1-11210907c.1
+
+### Patch Changes
+
+- Add logger
+
 ## 0.6.1-11210907c.0
 
 ### Patch Changes
