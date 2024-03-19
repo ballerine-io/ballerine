@@ -113,11 +113,7 @@ export class HookCallbackHandlerService {
     set(workflowRuntime.context, resultDestinationPath, { reportData, base64Pdf });
     workflowRuntime.context.documents = persistedDocuments;
 
-    await this.workflowService.updateWorkflowRuntimeData(
-      workflowRuntime.id,
-      { context: context },
-      currentProjectId,
-    );
+    return context;
   }
 
   async mapCallbackDataToIndividual(
