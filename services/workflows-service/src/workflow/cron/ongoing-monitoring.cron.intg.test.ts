@@ -11,6 +11,9 @@ import {
   TCustomerWithDefinitionsFeatures,
   TOngoingAuditReportDefinitionConfig,
 } from '@/customer/types';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { WorkflowService } from '@/workflow/workflow.service';
 
 describe('OngoingMonitoringCron', () => {
   let service: OngoingMonitoringCron;
@@ -25,9 +28,12 @@ describe('OngoingMonitoringCron', () => {
       providers: [
         OngoingMonitoringCron,
         { provide: PrismaService, useValue: mockPrismaService() },
+        { provide: AppLoggerService, useValue: mockLoggerService() },
         { provide: CustomerService, useValue: mockCustomerService() },
         { provide: BusinessService, useValue: mockBusinessService() },
-        { provide: AppLoggerService, useValue: mockLoggerService() },
+        { provide: WorkflowService, useValue: mockWorkflowService },
+        { provide: WorkflowDefinitionService, useValue: mockWorkflowDefinitionService },
+        { provide: BusinessReportService, useValue: mockBusinessReportService },
       ],
     }).compile();
 
@@ -47,9 +53,7 @@ describe('OngoingMonitoringCron', () => {
 
       await service.handleCron();
 
-      // Assert that businesses were processed
       expect(businessService.list).toHaveBeenCalledTimes(1);
-      // Add additional assertions to verify the flow within the method
     });
 
     it('should handle errors correctly', async () => {
@@ -72,39 +76,50 @@ describe('OngoingMonitoringCron', () => {
 
       expect(releaseLockSpy).toHaveBeenCalledTimes(1);
     });
-
-    // Add more tests to cover other scenarios and functionalities within handleCron
   });
 
   function mockPrismaService() {
     return {
       acquireLock: jest.fn(),
       releaseLock: jest.fn(),
-      // Mock other methods as needed
     };
   }
 
-  function mockCustomerService() {
-    return {
-      list: jest.fn(),
-      // Mock other methods as needed
-    };
-  }
+  const mockWorkflowService = {
+    createOrUpdateWorkflowRuntime: jest.fn().mockImplementation(params => {
+      return Promise.resolve(true);
+    }),
+  };
 
-  function mockBusinessService() {
-    return {
-      list: jest.fn(),
-      // Mock other methods as needed
-    };
-  }
+  const mockCustomerService = () => ({
+    list: jest.fn(),
+  });
 
-  function mockLoggerService() {
-    return {
-      log: jest.fn(),
-      error: jest.fn(),
-      // Mock other methods as needed
-    };
-  }
+  const mockBusinessService = () => ({
+    list: jest.fn(),
+  });
+
+  const mockLoggerService = () => ({
+    log: jest.fn(),
+    error: jest.fn(),
+  });
+
+  const mockWorkflowDefinitionService = {
+    getLastVersionByVariant: jest.fn().mockImplementation((variant, projectIds) => {
+      return Promise.resolve({ id: 'mockWorkflowDefinitionId', variant, projectIds });
+    }),
+  };
+
+  const mockBusinessReportService = {
+    findMany: jest.fn().mockImplementation(criteria => {
+      // Return an array of mock reports or a Promise of such an array
+      return Promise.resolve([{ id: 'mockReport1' }, { id: 'mockReport2' }]); // Example, adjust as needed
+    }),
+    // Simulate other needed service methods
+    createReport: jest.fn().mockImplementation(reportDetails => {
+      return Promise.resolve({ id: 'newMockReport', ...reportDetails });
+    }),
+  };
 
   // Mock data generators
   const mockCustomers = async () => {
