@@ -1,9 +1,10 @@
 import { TPlugin } from '@/domains/workflow-definitions/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { ReactNode } from 'react';
 
-export interface ProcessTrackerItem {
-  text: string | JSX.Element | undefined;
-  leftIcon: JSX.Element | undefined;
+export interface IProcessTrackerItem {
+  text: string | ReactNode | undefined;
+  leftIcon: ReactNode | undefined;
 }
 
 export abstract class IProcessTracker {
@@ -11,7 +12,7 @@ export abstract class IProcessTracker {
 
   constructor(readonly workflow: TWorkflowById, readonly plugins?: TPlugin[]) {}
 
-  abstract buildItems(): ProcessTrackerItem[];
+  abstract buildItems(): IProcessTrackerItem[];
 
   abstract getReadableName(): string;
 }

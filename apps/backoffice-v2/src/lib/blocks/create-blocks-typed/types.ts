@@ -15,7 +15,7 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ICallToActionLegacyProps } from '@/lib/blocks/components/CallToActionLegacy/interfaces';
 import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
 import { IEditableDetailsDocument } from '@/lib/blocks/components/EditableDetails/interfaces';
-import { TPDFViewerCell } from '@/lib/blocks/components/PDFViewerCell/interfaces';
+import { IPDFViewerCell } from '@/lib/blocks/components/PDFViewerCell/interfaces';
 import { Block } from '@ballerine/blocks';
 import { CommonWorkflowStates } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
@@ -233,4 +233,4 @@ export type TCell =
   | TTableCell
   | TParagraphCell
   | TDialogCell
-  | TPDFViewerCell;
+  | IPDFViewerCell;

@@ -1,7 +1,7 @@
 import { tagToIcon } from '@/common/components/molecules/ProcessTracker/constants';
 import {
   IProcessTracker,
-  ProcessTrackerItem,
+  IProcessTrackerItem,
 } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/process-tracker-adapters/process-tracker.abstract';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
@@ -11,7 +11,7 @@ export class UBOFlowsProcessTracker implements IProcessTracker {
 
   constructor(readonly workflow: TWorkflowById) {}
 
-  buildItems(): ProcessTrackerItem[] {
+  buildItems(): IProcessTrackerItem[] {
     return this.getChildWorkflows().map(({ context, tags }) => {
       return {
         text: `${valueOrNA(context?.entity?.data?.firstName)} ${valueOrNA(

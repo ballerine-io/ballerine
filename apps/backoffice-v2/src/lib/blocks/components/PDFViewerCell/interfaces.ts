@@ -3,8 +3,8 @@ export interface IPDFViewerProps {
   height: string;
 }
 
-export type TPDFViewerCell = {
+export interface IPDFViewerCell {
   type: 'pdfViewer';
   value: string;
   props: IPDFViewerProps;
-};
+}

@@ -4,7 +4,7 @@ import {
 } from '@/common/components/molecules/ProcessTracker/constants';
 import {
   IProcessTracker,
-  ProcessTrackerItem,
+  IProcessTrackerItem,
 } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/process-tracker-adapters/process-tracker.abstract';
 import { TPlugin } from '@/domains/workflow-definitions/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
@@ -15,10 +15,10 @@ export class ThirdPartyProcessTracker implements IProcessTracker {
 
   constructor(readonly workflow: TWorkflowById, readonly plugins?: TPlugin[]) {}
 
-  buildItems(): ProcessTrackerItem[] {
+  buildItems(): IProcessTrackerItem[] {
     return (
       this.plugins
-        ?.filter(({ name }) => pluginsWhiteList.includes(name as (typeof pluginsWhiteList)[number]))
+        ?.filter(({ name }) => pluginsWhiteList.includes(name))
         ?.map(({ displayName, name }) => {
           const pluginStatus = this.getPluginByName(name)?.status ?? ProcessStatus.DEFAULT;
 
