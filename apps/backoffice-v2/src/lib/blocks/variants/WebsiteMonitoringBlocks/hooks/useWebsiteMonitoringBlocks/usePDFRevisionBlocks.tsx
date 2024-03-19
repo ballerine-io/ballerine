@@ -4,7 +4,7 @@ import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-block
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
-export const usePDFRevisionBlocks = () => {
+export const useWebsiteMonitoringBlocks = () => {
   const { entityId: workflowId } = useParams();
   const filterId = useFilterId();
   const { data: workflow } = useWorkflowByIdQuery({
