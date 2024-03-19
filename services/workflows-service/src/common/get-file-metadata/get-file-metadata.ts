@@ -45,14 +45,21 @@ export const getFileMetadata = async ({
     mimeType = mime.getType(extension) ?? undefined;
   }
 
-  const isBaseFileName = Base64.isValid(fileName?.split(',')[1]);
-  // Avoiding logging of base64 string which destroys console output.
-  fileName = isBaseFileName ? 'Base64' : fileName;
+  const isBase64FileName = Base64.isValid(fileName?.split(',')[1]);
 
-  log(!mimeType, `Could not extract mime type from file: ${file} with a file name of: ${fileName}`);
+  log(
+    !mimeType,
+    `Could not extract mime type from file: ${file} with a file name of: ${
+      // Avoiding logging of base64 string which destroys console output.
+      isBase64FileName ? 'Base64' : fileName
+    }`,
+  );
   log(
     !extension,
-    `Could not extract file extension from file: ${file} with a file name of: ${fileName}`,
+    `Could not extract file extension from file: ${file} with a file name of: ${
+      // Avoiding logging of base64 string which destroys console output.
+      isBase64FileName ? 'Base64' : fileName
+    }`,
   );
 
   return {

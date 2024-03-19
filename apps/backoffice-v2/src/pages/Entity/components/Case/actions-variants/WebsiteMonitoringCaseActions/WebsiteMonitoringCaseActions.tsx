@@ -19,7 +19,7 @@ import { DialogTitle } from '../../../../../../common/components/organisms/Dialo
 import { DialogTrigger } from '../../../../../../common/components/organisms/Dialog/Dialog.Trigger';
 import { ctw } from '../../../../../../common/utils/ctw/ctw';
 
-export const WebsiteMonitoringCaseActions: FunctionComponent = () => {
+export const WebsiteMonitoringActions: FunctionComponent = () => {
   const {
     formValues,
     isLoading,
