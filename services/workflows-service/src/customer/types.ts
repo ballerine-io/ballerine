@@ -8,28 +8,37 @@ export type TAuthenticationConfiguration = {
   webhookSharedSecret: string;
 };
 
-export const CUSTOMER_FEATURES = {
-  ONGOING_AUDIT_REPORT: {
-    name: 'ONGOING_AUDIT_REPORT',
-    definitionName: 'ongoing_audit_report',
-  },
+export const FEATURE_LIST = {
+  ONGOING_AUDIT_REPORT_T1: 'ONGOING_AUDIT_REPORT_T1',
 } as const;
 
-export type TCustomerFeatures = {
-  name: keyof typeof CUSTOMER_FEATURES;
-  enabled: boolean;
-  definitionName?: string;
-};
-
 export type TOngoingAuditReportDefinitionConfig = {
-  definitionName: string;
+  definitionVariation: string;
   intervalInDays: number;
   active: boolean;
   checkType: string[];
   proxyViaCountry: string;
 };
 
+export type TCustomerFeatures = {
+  name: keyof typeof FEATURE_LIST;
+  enabled: boolean;
+  options: TOngoingAuditReportDefinitionConfig;
+};
+export const CUSTOMER_FEATURES = {
+  [FEATURE_LIST.ONGOING_AUDIT_REPORT_T1]: {
+    name: 'ONGOING_AUDIT_REPORT_T1',
+    enabled: false, // show option in UI
+    options: {
+      definitionVariation: 'ongoing_merchant_audit_t1',
+      intervalInDays: 7,
+      active: false,
+      checkType: ['lob', 'content', 'reputation'],
+      proxyViaCountry: 'GB',
+    },
+  },
+} satisfies Record<string, TCustomerFeatures>;
+
 export type TCustomerWithDefinitionsFeatures = Partial<Customer> & {
-  features?: TCustomerFeatures[] | null;
-  definitionConfigs?: TOngoingAuditReportDefinitionConfig[] | null;
+  features?: Record<string, TCustomerFeatures> | null;
 };

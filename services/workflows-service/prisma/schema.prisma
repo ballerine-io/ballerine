@@ -133,7 +133,6 @@ model Business {
   bankInformation         Json?
   approvalState           ApprovalState @default(NEW) // Current status of the KYB process for the business entity
   mccCode                 Int?
-  definitionConfigs       Json? // Configurations for specific definitions
   metadata                Json? // Additional metadata for the business entity and processes
 
   workflowRuntimeData  WorkflowRuntimeData[]
@@ -185,6 +184,8 @@ model WorkflowDefinition {
 
   @@unique([name, version, projectId, definitionType])
   @@index([projectId, name, definitionType])
+  @@index([variant, projectId])
+  @@index(version)
 }
 
 enum WorkflowRuntimeDataStatus {
@@ -287,6 +288,14 @@ enum CustomerStatuses {
   terminated
 }
 
+enum BusinessReportType {
+  merchant_audit_t1
+  merchant_audit_t2
+  merchant_audit_t1_ongoing
+  merchant_audit_t2_ongoing
+}
+
+
 model Customer {
   id                          String           @id @default(cuid())
   name                        String           @unique
@@ -300,7 +309,6 @@ model Customer {
   language                    String?
   websiteUrl                  String?
   subscriptions               Json?
-  definitionConfigs           Json?   // Configurations for specific definitions
   features                    Json?   // Features enabled for the customer
 
   createdAt DateTime @default(now())
@@ -769,7 +777,7 @@ model Counterparty {
 
 model BusinessReport {
   id         String   @id @default(cuid())
-  type       String
+  type       BusinessReportType
   report     Json
 
   businessId String

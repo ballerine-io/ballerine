@@ -29,7 +29,9 @@ export class BusinessService {
 
   async list(args: Parameters<BusinessRepository['findMany']>[0], projectIds: TProjectIds) {
     return (await this.repository.findMany(args, projectIds)) as (Business & {
-      definitionConfigs: TCustomerWithDefinitionsFeatures['definitionConfigs'];
+      metadata?: {
+        featureConfig?: TCustomerWithDefinitionsFeatures['features'];
+      };
     })[];
   }
 
