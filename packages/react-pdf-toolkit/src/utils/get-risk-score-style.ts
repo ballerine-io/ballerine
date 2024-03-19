@@ -1,15 +1,13 @@
 export const getRiskScoreStyle = (score: number | null = 0) => {
-  score = score === null ? 0 : score;
-
-  if (score <= 39) {
+  if (Number(score) <= 39) {
     return 'success';
   }
 
-  if (score <= 69) {
+  if (Number(score) <= 69) {
     return 'moderate';
   }
 
-  if (score <= 84) {
+  if (Number(score) <= 84) {
     return 'warning';
   }
 

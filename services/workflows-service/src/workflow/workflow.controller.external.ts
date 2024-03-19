@@ -344,7 +344,6 @@ export class WorkflowControllerExternal {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
 
-      console.log('error', error);
       throw error;
     }
 

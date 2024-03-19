@@ -5,10 +5,10 @@ import { ManualReviewBlocks } from '@/lib/blocks/variants/ManualReviewBlocks/Man
 import { OngoingBlocks } from '@/lib/blocks/variants/OngoingBlocks/OngoingBlocks';
 import { PDFRevisionBlocks } from '@/lib/blocks/variants/PDFRevisionBlocks';
 import {
-  checkIfWebsiteMonitoringVariant,
   checkIsKybExampleVariant,
   checkIsManualReviewVariant,
   checkIsOngoingVariant,
+  checkIsWebsiteMonitoringVariant,
 } from '@/lib/blocks/variants/variant-checkers';
 import { FunctionComponent } from 'react';
 
@@ -20,7 +20,7 @@ export const BlocksVariant: FunctionComponent<{
 }> = ({ workflowDefinition }) => {
   const isKybExampleVariant = checkIsKybExampleVariant(workflowDefinition);
   const isManualReviewVariant = checkIsManualReviewVariant(workflowDefinition);
-  const isPDFReviewVariant = checkIfWebsiteMonitoringVariant(workflowDefinition);
+  const isPDFReviewVariant = checkIsWebsiteMonitoringVariant(workflowDefinition);
   const isOngoingVariant = checkIsOngoingVariant(workflowDefinition);
 
   if (isPDFReviewVariant) {

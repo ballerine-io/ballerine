@@ -1,4 +1,4 @@
-export const isLink = (value: string): boolean => {
+export const isLink = (value: string) => {
   try {
     new URL(value);
 

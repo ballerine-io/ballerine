@@ -6,11 +6,6 @@ import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLog
 import { StateTag } from '@ballerine/common';
 import { useCallback, useState } from 'react';
 
-export interface IResolutionActionsFormValues {
-  action: string;
-  comment: string;
-}
-
 export const useWebsiteMonitoringCaseActionsLogic = () => {
   const { workflow } = useEntityLogic();
   const { data: session } = useAuthenticatedUserQuery();
@@ -24,7 +19,7 @@ export const useWebsiteMonitoringCaseActionsLogic = () => {
     workflowId: workflow?.id as string,
   });
 
-  const [formValues, setValues] = useState<IResolutionActionsFormValues>({
+  const [formValues, setValues] = useState({
     action: '',
     comment: '',
   });
