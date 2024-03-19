@@ -1,11 +1,4 @@
-import { AnyRecord } from '@ballerine/common';
-
-export type LoggerInterface = {
-  log: (message: string, logData?: AnyRecord) => void;
-  error: (message: string, logData?: AnyRecord) => void;
-  warn: (message: string, logData?: AnyRecord) => void;
-  debug: (message: string, logData?: AnyRecord) => void;
-};
+import type { AnyRecord, LoggerInterface } from '@ballerine/common';
 
 /* eslint-disable no-console */
 export let logger: LoggerInterface = {
