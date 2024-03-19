@@ -5,7 +5,7 @@ on:
   push:
     paths:
       # Run this pipeline only if there are changes in specified path
-      - "services/workflows-service/**"
+      - 'services/workflows-service/**'
     branches:
       - dev
       - test
@@ -108,11 +108,11 @@ jobs:
           exit-code: 1
           vuln-type: 'os,library'
           severity: 'CRITICAL'
-      
+
       - name: Set outputs
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-      
+
       - name: Checkout cloud-infra-config repository
         uses: actions/checkout@v4
         with:
@@ -155,3 +155,71 @@ jobs:
                 "image.tag": "${{ steps.get_version.outputs.version }}-prod"
               }
             }
+
+  build-and-push-ee-image:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          token: ${{ secrets.SUBMODULES_TOKEN }}
+
+      - name: Get package version from package.json
+        id: get_version
+        run: |
+          PACKAGE_VERSION=$(jq -r '.version' services/workflows-service/package.json)
+          echo "::set-output name=version::$PACKAGE_VERSION"
+      - name: Print the version
+        run: echo "The version was ${{ steps.get_version.outputs.version }}"
+
+      - name: Checkout submodule branch
+        run: |
+          git submodule update --init --recursive
+          cd services/workflows-service/prisma/data-migrations
+          git checkout ${{ github.ref_name }}
+          cd ../../..
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: 'arm64,arm'
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for ee Docker images
+        id: eemeta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-ee
+          tags: |
+            type=raw,value=${{ github.head_ref || github.ref_name }}
+            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
+            type=raw,value=${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
+            type=sha
+
+      - name: Build and push ee Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: services/workflows-service
+          file: services/workflows-service/Dockerfile.ee
+          platforms: linux/amd64
+          push: true
+          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-ee:${{ github.head_ref || github.ref_name }}'
+          tags: ${{ steps.eemeta.outputs.tags }}
+          build-args: |
+            BASE_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}

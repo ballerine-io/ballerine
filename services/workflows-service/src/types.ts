@@ -3,6 +3,9 @@ import { Customer, PrismaClient, Project, User, UserToProject } from '@prisma/cl
 import * as runtime from '@prisma/client/runtime/library';
 
 export type InputJsonValue = Omit<JsonValue, 'null'>;
+export type NullableJsonNullValueInput = {
+  set: null;
+};
 
 export interface IObjectWithId {
   id: string;
