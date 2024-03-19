@@ -1,11 +1,12 @@
-import { Case } from './components/Case/Case';
-import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
 import { BlocksVariant } from '@/lib/blocks/variants/BlocksVariant/BlocksVariant';
+import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
+import { Case } from './components/Case/Case';
 
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 
 export const Entity = () => {
-  const { workflow, selectedEntity, plugins } = useEntityLogic();
+  const { workflow, selectedEntity, plugins, processTrackerProcesses } = useEntityLogic();
 
   // Selected entity
   return (
@@ -19,14 +20,14 @@ export const Entity = () => {
           workflow?.workflowDefinition?.config?.workflowLevelResolution ??
           workflow?.context?.entity?.type === 'business'
         }
+        workflow={workflow as TWorkflowById}
       />
       <Case.Content key={selectedEntity?.id}>
         {workflow?.workflowDefinition?.config?.isCaseOverviewEnabled && (
           <ProcessTracker
-            tags={workflow?.tags ?? []}
             plugins={plugins}
-            context={workflow?.context}
-            childWorkflows={workflow?.childWorkflows ?? []}
+            workflow={workflow}
+            processes={processTrackerProcesses}
           />
         )}
         {workflow?.workflowDefinition && (
@@ -35,6 +36,7 @@ export const Entity = () => {
               version: workflow?.workflowDefinition?.version,
               variant: workflow?.workflowDefinition?.variant,
               config: workflow?.workflowDefinition?.config,
+              name: workflow?.workflowDefinition?.name,
             }}
           />
         )}
