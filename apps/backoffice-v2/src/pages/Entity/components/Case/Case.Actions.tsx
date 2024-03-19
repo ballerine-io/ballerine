@@ -1,13 +1,13 @@
-import React, { FunctionComponent } from 'react';
-import { Badge } from '@ballerine/ui';
 import { StateTag } from '@ballerine/common';
+import { Badge } from '@ballerine/ui';
+import { FunctionComponent } from 'react';
 
-import { IActionsProps } from './interfaces';
-import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
-import { ctw } from '../../../../common/utils/ctw/ctw';
-import { AssignDropdown } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
-import { tagToBadgeData } from './consts';
 import { ActionsVariant } from '@/pages/Entity/components/Case/actions-variants/ActionsVariant/ActionsVariant';
+import { AssignDropdown } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { tagToBadgeData } from './consts';
+import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
+import { IActionsProps } from './interfaces';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.

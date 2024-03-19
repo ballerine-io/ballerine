@@ -1,5 +1,5 @@
-import { AnyObject } from '@/common/types';
 import { DropdownInput, DropdownOption } from '@/components/molecules';
+import { TOneOfItem } from '@/components/organisms/DynamicForm/types/one-of';
 import { FieldProps } from '@rjsf/utils';
 import { useCallback, useMemo } from 'react';
 
@@ -15,7 +15,7 @@ export const SelectField = ({
   const options = useMemo((): DropdownOption[] => {
     if (!Array.isArray(schema.oneOf)) return [];
 
-    return (schema.oneOf as AnyObject[]).map(item => {
+    return (schema.oneOf as TOneOfItem[]).map(item => {
       return {
         label: item.title as string,
         value: item.const as string,
