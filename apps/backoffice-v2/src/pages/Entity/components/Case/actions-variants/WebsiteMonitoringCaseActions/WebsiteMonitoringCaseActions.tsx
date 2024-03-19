@@ -7,7 +7,7 @@ import { SelectContent } from '@/common/components/atoms/Select/Select.Content';
 import { SelectItem } from '@/common/components/atoms/Select/Select.Item';
 import { SelectTrigger } from '@/common/components/atoms/Select/Select.Trigger';
 import { SelectValue } from '@/common/components/atoms/Select/Select.Value';
-import { useWebsiteMonitoringCaseActionsLogic } from '@/pages/Entity/components/Case/actions-variants/WebsiteMonitoringCaseActions/hooks/useWebsiteMonitoringCaseActions/useWebsiteMonitoringCaseActions';
+import { useWebsiteMonitoringCaseActionsLogic } from '@/pages/Entity/components/Case/actions-variants/WebsiteMonitoringCaseActions/hooks/useWebsiteMonitoringCaseActionsLogic/useWebsiteMonitoringCaseActionsLogic';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { Button } from '../../../../../../common/components/atoms/Button/Button';
 import { Dialog } from '../../../../../../common/components/organisms/Dialog/Dialog';

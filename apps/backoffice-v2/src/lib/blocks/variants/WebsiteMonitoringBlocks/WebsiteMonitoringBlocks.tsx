@@ -1,5 +1,5 @@
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { useWebsiteMonitoringBlocks } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringBlocks/usePDFRevisionBlocks';
+import { useWebsiteMonitoringBlocks } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringBlocks/useWebsiteMonitoringBlocks';
 import { BlocksComponent } from '@ballerine/blocks';
 
 export const WebsiteMonitoringBlocks = () => {

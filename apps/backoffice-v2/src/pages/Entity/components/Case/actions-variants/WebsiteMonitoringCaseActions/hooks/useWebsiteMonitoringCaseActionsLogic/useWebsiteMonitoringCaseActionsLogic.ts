@@ -5,6 +5,7 @@ import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/
 import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
 import { StateTag } from '@ballerine/common';
 import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
 
 export const useWebsiteMonitoringCaseActionsLogic = () => {
   const { workflow } = useEntityLogic();
@@ -39,11 +40,17 @@ export const useWebsiteMonitoringCaseActionsLogic = () => {
   const handleSubmit = useCallback(() => {
     if (formValues.action === 'resolved') {
       onMutateApproveEntity();
+
+      return;
     }
 
     if (formValues.action === 'suspend') {
       onMutateRejectEntity();
+
+      return;
     }
+
+    toast.error(`Action: ${String(formValues.action)} is unsupported.`);
   }, [formValues, onMutateApproveEntity, onMutateRejectEntity]);
 
   const isActionsDisabled =
