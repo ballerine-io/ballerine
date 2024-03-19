@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.0-11210907c.0
+
+### Minor Changes
+
+- Bump
+
 ## 0.8.0
 
 ### Minor Changes
