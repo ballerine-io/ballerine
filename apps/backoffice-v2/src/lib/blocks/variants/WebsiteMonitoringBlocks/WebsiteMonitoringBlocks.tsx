@@ -1,9 +1,9 @@
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { usePDFRevisionBlocks } from '@/lib/blocks/variants/PDFRevisionBlocks/hooks/usePDFRevisionBlocks/usePDFRevisionBlocks';
+import { useWebsiteMonitoringBlocks } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringBlocks/usePDFRevisionBlocks';
 import { BlocksComponent } from '@ballerine/blocks';
 
-export const PDFRevisionBlocks = () => {
-  const { blocks } = usePDFRevisionBlocks();
+export const WebsiteMonitoringBlocks = () => {
+  const { blocks } = useWebsiteMonitoringBlocks();
 
   return (
     <div className="h-full">

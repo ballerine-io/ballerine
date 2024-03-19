@@ -3,7 +3,7 @@ import { DefaultBlocks } from '@/lib/blocks/variants/DefaultBlocks/DefaultBlocks
 import { KybExampleBlocks } from '@/lib/blocks/variants/KybExampleBlocks/KybExampleBlocks';
 import { ManualReviewBlocks } from '@/lib/blocks/variants/ManualReviewBlocks/ManualReviewBlocks';
 import { OngoingBlocks } from '@/lib/blocks/variants/OngoingBlocks/OngoingBlocks';
-import { PDFRevisionBlocks } from '@/lib/blocks/variants/PDFRevisionBlocks';
+import { WebsiteMonitoringBlocks } from '@/lib/blocks/variants/WebsiteMonitoringBlocks';
 import {
   checkIsKybExampleVariant,
   checkIsManualReviewVariant,
@@ -20,11 +20,11 @@ export const BlocksVariant: FunctionComponent<{
 }> = ({ workflowDefinition }) => {
   const isKybExampleVariant = checkIsKybExampleVariant(workflowDefinition);
   const isManualReviewVariant = checkIsManualReviewVariant(workflowDefinition);
-  const isPDFReviewVariant = checkIsWebsiteMonitoringVariant(workflowDefinition);
+  const isWebsiteMonitoringVariant = checkIsWebsiteMonitoringVariant(workflowDefinition);
   const isOngoingVariant = checkIsOngoingVariant(workflowDefinition);
 
-  if (isPDFReviewVariant) {
-    return <PDFRevisionBlocks />;
+  if (isWebsiteMonitoringVariant) {
+    return <WebsiteMonitoringBlocks />;
   }
 
   if (isKybExampleVariant) {
