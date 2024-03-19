@@ -212,7 +212,7 @@ export class WorkflowRunner {
     if (pluginKind === 'iterative') return IterativePlugin;
     if (pluginKind === 'transformer') return TransformerPlugin;
 
-    logger.log('Plugin kind is not supplied or not supported, falling back to Iterative plugin.');
+    logger.log('Plugin kind is not supplied or not supported, falling back to Iterative plugin.', { pluginKind });
     return IterativePlugin;
   }
 
