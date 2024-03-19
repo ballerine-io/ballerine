@@ -4,8 +4,13 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CustomerService } from '@/customer/customer.service';
 import { BusinessService } from '@/business/business.service';
-import { Project } from '@prisma/client';
-import { FEATURE_LIST, TCustomerWithDefinitionsFeatures } from '@/customer/types';
+import { Business, Project } from '@prisma/client';
+import {
+  FEATURE_LIST,
+  TCustomerFeatures,
+  TCustomerWithDefinitionsFeatures,
+  TOngoingAuditReportDefinitionConfig,
+} from '@/customer/types';
 
 describe('OngoingMonitoringCron', () => {
   let service: OngoingMonitoringCron;
@@ -23,7 +28,6 @@ describe('OngoingMonitoringCron', () => {
         { provide: CustomerService, useValue: mockCustomerService() },
         { provide: BusinessService, useValue: mockBusinessService() },
         { provide: AppLoggerService, useValue: mockLoggerService() },
-        // Mock other services similarly
       ],
     }).compile();
 
@@ -32,7 +36,6 @@ describe('OngoingMonitoringCron', () => {
     customerService = module.get<CustomerService>(CustomerService);
     businessService = module.get<BusinessService>(BusinessService);
     loggerService = module.get<AppLoggerService>(AppLoggerService);
-    // Initialize other mocked services
   });
 
   describe('handleCron', () => {
@@ -189,11 +192,70 @@ describe('OngoingMonitoringCron', () => {
     ] as TCustomerWithDefinitionsFeatures[];
   };
 
-  function mockBusinesses() {
+  const mockBusinesses = () => {
     return [
-      // Generate mock businesses based on your schema
-    ];
-  }
-
-  // Mock other services similarly
+      {
+        id: 'business1',
+        metadata: {
+          featureConfig: {
+            [FEATURE_LIST.ONGOING_AUDIT_REPORT_T1]: {
+              name: FEATURE_LIST.ONGOING_AUDIT_REPORT_T1,
+              enabled: false,
+              options: {
+                definitionVariation: 'variation1',
+                intervalInDays: 30,
+                active: true, // active false
+                checkType: ['type1', 'type2'],
+                proxyViaCountry: 'US',
+              } as TOngoingAuditReportDefinitionConfig,
+            },
+          } as Record<string, TCustomerFeatures>,
+        },
+      },
+      {
+        id: 'business2',
+      },
+      {
+        id: 'business3',
+        metadata: {
+          featureConfig: {
+            [FEATURE_LIST.ONGOING_AUDIT_REPORT_T1]: {
+              name: FEATURE_LIST.ONGOING_AUDIT_REPORT_T1,
+              enabled: true,
+              options: {
+                definitionVariation: 'variation2',
+                intervalInDays: 1,
+                active: true,
+                checkType: ['lob', 'content', 'reputation', 'businessConfig'],
+                proxyViaCountry: 'GB',
+              } as TOngoingAuditReportDefinitionConfig,
+            },
+          } as Record<string, TCustomerFeatures>,
+        },
+      },
+      {
+        id: 'business4',
+        metadata: {
+          featureConfig: {
+            [FEATURE_LIST.ONGOING_AUDIT_REPORT_T1]: {
+              name: FEATURE_LIST.ONGOING_AUDIT_REPORT_T1,
+              enabled: true,
+              options: {
+                definitionVariation: 'variation3',
+                intervalInDays: 14,
+                active: false,
+                checkType: ['type5', 'type6'],
+                proxyViaCountry: 'CA',
+              } as TOngoingAuditReportDefinitionConfig,
+            },
+          } as Record<string, TCustomerFeatures>,
+        },
+      },
+    ] as unknown as (Business & {
+      metadata?: {
+        featureConfig?: TCustomerWithDefinitionsFeatures['features'];
+        lastOngoingAuditReportInvokedAt?: number;
+      };
+    })[];
+  };
 });
