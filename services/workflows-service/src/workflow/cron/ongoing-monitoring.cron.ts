@@ -63,7 +63,7 @@ export class OngoingMonitoringCron {
           const businessProcessConfig =
             business.metadata &&
             business.metadata.featureConfig &&
-            this.findDefinitionConfig(business.metadata.featureConfig);
+            this.extractDefinitionConfig(business.metadata.featureConfig);
 
           const { options: processConfig } = (businessProcessConfig || customerProcessConfig)!;
           const intervalInDays = processConfig.intervalInDays;
@@ -77,7 +77,9 @@ export class OngoingMonitoringCron {
 
           const lastReportFinishedDate = lastReceivedReport.createdAt;
           const dateToRunReport = new Date(
-            new Date().setDate(lastReportFinishedDate.getDate() + intervalInDays),
+            new Date().setTime(
+              lastReportFinishedDate.getTime() + intervalInDays * 24 * 60 * 60 * 1000,
+            ),
           );
 
           if (dateToRunReport <= new Date()) {
@@ -125,17 +127,19 @@ export class OngoingMonitoringCron {
   private async fetchCustomerFeatureConfiguration(customers: TCustomerWithDefinitionsFeatures[]) {
     const customersWithDefinitionsPromise = customers
       .filter(customer => {
-        customer.features &&
+        return (
+          customer.features &&
           Object.entries(customer.features).find(([featureName, featureConfig]) => {
             return (
               featureName === FEATURE_LIST.ONGOING_AUDIT_REPORT_T1 &&
               featureConfig.enabled &&
               featureConfig.options.active
             );
-          });
+          })
+        );
       })
       .map(async customer => {
-        const processConfig = this.findDefinitionConfig(customer.features);
+        const processConfig = this.extractDefinitionConfig(customer.features);
         const projectIds = customer.projects.map((project: Project) => project.id);
 
         const workflowDefinition = await this.workflowDefinitionService.getLastVersionByVariant(
@@ -150,18 +154,21 @@ export class OngoingMonitoringCron {
         };
       });
 
-    return Promise.all(customersWithDefinitionsPromise);
+    return await Promise.all(customersWithDefinitionsPromise);
   }
 
-  private findDefinitionConfig(
+  private extractDefinitionConfig(
     featureConfig: Record<string, TCustomerFeatures> | null | undefined,
   ) {
-    return (featureConfig &&
-      Object.entries(featureConfig).find(([featureName, featureConfig]) => {
+    if (!featureConfig) return null;
+
+    return Object.entries(featureConfig).find(([featureName, featureConfig]) => {
+      return (
         featureName === FEATURE_LIST.ONGOING_AUDIT_REPORT_T1 &&
-          featureConfig.enabled &&
-          featureConfig!.options!.active;
-      }))?.[1];
+        featureConfig.enabled &&
+        featureConfig.options.active
+      );
+    })?.[1];
   }
 
   private async invokeOngoingAuditReport({
@@ -189,8 +196,8 @@ export class OngoingMonitoringCron {
           proxyViaCountry: workflowDefinitionConfig.proxyViaCountry,
           previousReportId: lastReportId,
         },
-        documents: [],
       },
+      documents: [],
     };
 
     const validate = ajv.compile(defaultContextSchema);
