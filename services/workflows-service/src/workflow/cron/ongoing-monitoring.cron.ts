@@ -23,7 +23,7 @@ import { ValidationError } from '@/errors';
 @Injectable()
 export class OngoingMonitoringCron {
   private readonly lockKey = ONGOING_MONITORING_LOCK_KEY;
-
+  private readonly processFeatureName = FEATURE_LIST.ONGOING_AUDIT_REPORT_T1;
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly logger: AppLoggerService,
@@ -59,6 +59,7 @@ export class OngoingMonitoringCron {
         definitionConfig: customerProcessConfig,
       } of processConfiguration) {
         const businesses = await this.businessService.list({}, projectIds);
+
         for (const business of businesses) {
           const businessProcessConfig =
             business.metadata &&
@@ -92,6 +93,8 @@ export class OngoingMonitoringCron {
               currentProjectId: business.projectId,
               projectIds: projectIds,
               lastReportId: lastReceivedReport.id,
+              checkTypes: processConfig?.checkTypes,
+              reportType: this.processFeatureName,
             });
           }
         }
@@ -111,7 +114,7 @@ export class OngoingMonitoringCron {
             businessId: business.id,
             projectId: business.projectId,
             type: {
-              in: ['merchant_audit_t1', 'merchant_audit_t2', 'merchant_audit_t1_ongoing'],
+              in: ['ONGOING_AUDIT_REPORT_T1', 'ONGOING_AUDIT_REPORT_T2', 'AUDIT_REPORT_T1'],
             },
           },
           orderBy: {
@@ -131,7 +134,7 @@ export class OngoingMonitoringCron {
           customer.features &&
           Object.entries(customer.features).find(([featureName, featureConfig]) => {
             return (
-              featureName === FEATURE_LIST.ONGOING_AUDIT_REPORT_T1 &&
+              featureName === this.processFeatureName &&
               featureConfig.enabled &&
               featureConfig.options.active
             );
@@ -164,7 +167,7 @@ export class OngoingMonitoringCron {
 
     return Object.entries(featureConfig).find(([featureName, featureConfig]) => {
       return (
-        featureName === FEATURE_LIST.ONGOING_AUDIT_REPORT_T1 &&
+        featureName === this.processFeatureName &&
         featureConfig.enabled &&
         featureConfig.options.active
       );
@@ -178,6 +181,8 @@ export class OngoingMonitoringCron {
     projectIds,
     currentProjectId,
     lastReportId,
+    checkTypes,
+    reportType,
   }: {
     business: Business & { metadata?: { featureConfig?: Record<string, TCustomerFeatures> } };
     workflowDefinitionConfig: TOngoingAuditReportDefinitionConfig;
@@ -185,16 +190,24 @@ export class OngoingMonitoringCron {
     projectIds: TProjectIds;
     currentProjectId: string;
     lastReportId: string;
+    reportType: string;
+    checkTypes: string[] | undefined;
   }) {
     const context = {
       entity: {
         id: business.id,
         type: 'business',
         data: {
-          websiteUrl: business.website,
+          website: business.website,
           companyName: business.companyName,
-          proxyViaCountry: workflowDefinitionConfig.proxyViaCountry,
-          previousReportId: lastReportId,
+          additionalIfo: {
+            report: {
+              proxyViaCountry: workflowDefinitionConfig.proxyViaCountry,
+              previousReportId: lastReportId,
+              checkTypes: checkTypes,
+              reportType: this.processFeatureName,
+            },
+          },
         },
       },
       documents: [],

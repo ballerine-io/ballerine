@@ -23,7 +23,7 @@ export type TOngoingAuditReportDefinitionConfig = {
   definitionVariation: string;
   intervalInDays: number;
   active: boolean;
-  checkType: readonly string[];
+  checkTypes: string[];
   proxyViaCountry: string;
 };
 
@@ -35,7 +35,7 @@ export const CUSTOMER_FEATURES = {
       definitionVariation: 'ongoing_merchant_audit_t1',
       intervalInDays: 7,
       active: false,
-      checkType: ['lob', 'content', 'reputation'],
+      checkTypes: ['lob', 'content', 'reputation'],
       proxyViaCountry: 'GB',
     },
   },
@@ -46,12 +46,12 @@ export const CUSTOMER_FEATURES = {
       definitionVariation: 'ongoing_merchant_audit_t2',
       intervalInDays: 7,
       active: false,
-      checkType: ['lob', 'content', 'reputation'],
+      checkTypes: ['lob', 'content', 'reputation'],
       proxyViaCountry: 'GB',
     },
   },
 } satisfies Record<string, TCustomerFeatures>;
 
-export type TCustomerWithDefinitionsFeatures = Partial<Customer> & {
+export type TCustomerWithDefinitionsFeatures = Customer & {
   features?: Record<string, TCustomerFeatures> | null;
 };

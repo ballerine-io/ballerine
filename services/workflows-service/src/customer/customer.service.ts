@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CustomerRepository } from '@/customer/customer.repository';
-import { Prisma } from '@prisma/client';
+import { Prisma, Project } from '@prisma/client';
 import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class CustomerService {
   async getByApiKey(apiKey: string) {
     return (await this.repository.findByApiKey(
       apiKey,
-    )) as unknown as TCustomerWithDefinitionsFeatures;
+    )) as unknown as TCustomerWithDefinitionsFeatures & { projects: Project[] };
   }
 
   async getByProjectId(projectId: string, args?: Omit<Prisma.CustomerFindFirstArgsBase, 'where'>) {
