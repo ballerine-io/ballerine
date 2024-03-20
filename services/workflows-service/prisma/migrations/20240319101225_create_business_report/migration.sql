@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "BusinessReportType" AS ENUM ('merchant_audit_t1', 'merchant_audit_t2', 'merchant_audit_t1_ongoing', 'merchant_audit_t2_ongoing');
+CREATE TYPE "BusinessReportType" AS ENUM ('ONGOING_AUDIT_REPORT_T1', 'ONGOING_AUDIT_REPORT_T2', 'AUDIT_REPORT_T1', 'AUDIT_REPORT_T2');
 
 -- AlterTable
 ALTER TABLE "Business" ADD COLUMN     "metadata" JSONB;

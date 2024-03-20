@@ -92,6 +92,7 @@ export class OngoingMonitoringCron {
               currentProjectId: business.projectId,
               projectIds: projectIds,
               lastReportId: lastReceivedReport.id,
+              reportType: businessProcessConfig,
             });
           }
         }
@@ -178,6 +179,7 @@ export class OngoingMonitoringCron {
     projectIds,
     currentProjectId,
     lastReportId,
+    reportType,
   }: {
     business: Business & { metadata?: { featureConfig?: Record<string, TCustomerFeatures> } };
     workflowDefinitionConfig: TOngoingAuditReportDefinitionConfig;
@@ -185,16 +187,22 @@ export class OngoingMonitoringCron {
     projectIds: TProjectIds;
     currentProjectId: string;
     lastReportId: string;
+    reportType: string;
   }) {
     const context = {
       entity: {
         id: business.id,
         type: 'business',
         data: {
-          websiteUrl: business.website,
+          website: business.website,
           companyName: business.companyName,
-          proxyViaCountry: workflowDefinitionConfig.proxyViaCountry,
-          previousReportId: lastReportId,
+          additionalIfo: {
+            report: {
+              proxyViaCountry: workflowDefinitionConfig.proxyViaCountry,
+              previousReportId: lastReportId,
+              reportType: reportType,
+            },
+          },
         },
       },
       documents: [],

@@ -289,12 +289,11 @@ enum CustomerStatuses {
 }
 
 enum BusinessReportType {
-  merchant_audit_t1
-  merchant_audit_t2
-  merchant_audit_t1_ongoing
-  merchant_audit_t2_ongoing
+  ONGOING_AUDIT_REPORT_T1
+  ONGOING_AUDIT_REPORT_T2
+  AUDIT_REPORT_T1
+  AUDIT_REPORT_T2
 }
-
 
 model Customer {
   id                          String           @id @default(cuid())
