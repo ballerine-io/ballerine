@@ -7,3 +7,4 @@ export type Serializable =
   | undefined
   | Array<Serializable>
   | { [key: PropertyKey]: Serializable };
+export type { LoggerInterface } from './logger.interface';

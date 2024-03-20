@@ -61,19 +61,19 @@ importers:
   apps/backoffice-v2:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.2.1-11210907c.0
+        specifier: 0.2.2
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: 0.9.0-11210907c.0
+        specifier: 0.9.1
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: ^0.5.0-11210907c.0
+        specifier: ^0.5.1
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.1-11210907c.0
+        specifier: 0.6.3
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.1-11210907c.0
+        specifier: 0.6.3
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -242,10 +242,10 @@ importers:
         version: 3.22.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.0
+        specifier: ^2.0.2
         version: link:../../packages/eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -383,16 +383,16 @@ importers:
   apps/kyb-app:
     dependencies:
       '@ballerine/blocks':
-        specifier: 0.2.1-11210907c.0
+        specifier: 0.2.2
         version: link:../../packages/blocks
       '@ballerine/common':
-        specifier: ^0.9.0-11210907c.0
+        specifier: ^0.9.1
         version: link:../../packages/common
       '@ballerine/ui':
-        specifier: 0.5.0-11210907c.0
+        specifier: 0.5.1
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.1-11210907c.0
+        specifier: 0.6.3
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -510,10 +510,10 @@ importers:
         version: 3.22.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.0
+        specifier: ^2.0.2
         version: link:../../packages/eslint-config-react
       '@jest/globals':
         specifier: ^29.7.0
@@ -727,10 +727,10 @@ importers:
         version: 3.22.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../../packages/config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.0
+        specifier: ^2.0.2
         version: link:../../packages/eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -817,10 +817,10 @@ importers:
   examples/headless-example:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.0-11210907c.0
+        specifier: 0.9.1
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.1-11210907c.0
+        specifier: 0.6.3
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -914,7 +914,7 @@ importers:
   examples/report-generation-example:
     dependencies:
       '@ballerine/react-pdf-toolkit':
-        specifier: ^1.2.0-11210907c.0
+        specifier: ^1.2.1
         version: link:../../packages/react-pdf-toolkit
       react:
         specifier: ^18.2.0
@@ -957,7 +957,7 @@ importers:
   packages/blocks:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.9.0-11210907c.0
+        specifier: ^0.9.1
         version: link:../common
     devDependencies:
       '@babel/core':
@@ -973,10 +973,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../eslint-config
       '@rollup/plugin-babel':
         specifier: 5.3.1
@@ -1133,10 +1133,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1276,7 +1276,7 @@ importers:
   packages/eslint-config-react:
     dependencies:
       '@ballerine/eslint-config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../eslint-config
       eslint-plugin-react:
         specifier: ^7.33.2
@@ -1288,10 +1288,10 @@ importers:
   packages/react-pdf-toolkit:
     dependencies:
       '@ballerine/config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../config
       '@ballerine/ui':
-        specifier: 0.5.0-11210907c.0
+        specifier: 0.5.1
         version: link:../ui
       '@react-pdf/renderer':
         specifier: ^3.1.14
@@ -1410,10 +1410,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1515,7 +1515,7 @@ importers:
   packages/ui:
     dependencies:
       '@ballerine/common':
-        specifier: ^0.9.0-11210907c.0
+        specifier: ^0.9.1
         version: link:../common
       '@emotion/react':
         specifier: ^11.11.1
@@ -1612,10 +1612,10 @@ importers:
         version: 1.14.0
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../config
       '@ballerine/eslint-config-react':
-        specifier: ^2.0.0
+        specifier: ^2.0.2
         version: link:../eslint-config-react
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1720,7 +1720,7 @@ importers:
   packages/workflow-core:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.0-11210907c.0
+        specifier: 0.9.1
         version: link:../common
       ajv:
         specifier: ^8.12.0
@@ -1748,10 +1748,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../config
       '@ballerine/eslint-config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -1883,7 +1883,7 @@ importers:
   sdks/web-ui-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.0-11210907c.0
+        specifier: 0.9.1
         version: link:../../packages/common
       '@zerodevx/svelte-toast':
         specifier: ^0.8.0
@@ -2010,10 +2010,10 @@ importers:
   sdks/workflow-browser-sdk:
     dependencies:
       '@ballerine/common':
-        specifier: 0.9.0-11210907c.0
+        specifier: 0.9.1
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.1-11210907c.0
+        specifier: 0.6.3
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -2029,10 +2029,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2152,7 +2152,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.6.1-11210907c.0
+        specifier: 0.6.3
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2171,10 +2171,10 @@ importers:
         specifier: 7.16.7
         version: 7.16.7(@babel/core@7.17.9)
       '@ballerine/config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2394,13 +2394,13 @@ importers:
         specifier: 3.347.1
         version: 3.347.1
       '@ballerine/common':
-        specifier: 0.9.0-11210907c.0
+        specifier: 0.9.1
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.1-11210907c.0
+        specifier: 0.6.3
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.1-11210907c.0
+        specifier: 0.6.3
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
@@ -2429,9 +2429,6 @@ importers:
       '@nestjs/platform-express':
         specifier: ^9.3.12
         version: 9.4.3(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)
-      '@nestjs/schedule':
-        specifier: ^4.0.1
-        version: 4.0.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)
       '@nestjs/serve-static':
         specifier: 3.0.1
         version: 3.0.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)
@@ -2495,6 +2492,9 @@ importers:
       dayjs:
         specifier: ^1.11.6
         version: 1.11.10
+      deep-diff:
+        specifier: ^1.0.2
+        version: 1.0.2
       file-type:
         specifier: ^16.5.4
         version: 16.5.4
@@ -2513,6 +2513,9 @@ importers:
       js-base64:
         specifier: ^3.7.6
         version: 3.7.6
+      json-stable-stringify:
+        specifier: ^1.1.1
+        version: 1.1.1
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -2525,6 +2528,9 @@ importers:
       nestjs-cls:
         specifier: ^3.5.0
         version: 3.6.0(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+      object-hash:
+        specifier: ^3.0.0
+        version: 3.0.0
       passport:
         specifier: 0.6.0
         version: 0.6.0
@@ -2554,10 +2560,10 @@ importers:
         version: 3.22.4
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../../packages/eslint-config
       '@cspell/cspell-types':
         specifier: ^6.31.1
@@ -2583,6 +2589,9 @@ importers:
       '@types/cookie-session':
         specifier: ^2.0.44
         version: 2.0.47
+      '@types/deep-diff':
+        specifier: ^1.0.5
+        version: 1.0.5
       '@types/express':
         specifier: 4.17.9
         version: 4.17.9
@@ -2592,6 +2601,9 @@ importers:
       '@types/js-base64':
         specifier: ^3.3.1
         version: 3.3.1
+      '@types/json-stable-stringify':
+        specifier: ^1.0.36
+        version: 1.0.36
       '@types/lodash':
         specifier: ^4.14.191
         version: 4.14.201
@@ -2607,6 +2619,9 @@ importers:
       '@types/node':
         specifier: ^18.14.6
         version: 18.17.19
+      '@types/object-hash':
+        specifier: ^3.0.6
+        version: 3.0.6
       '@types/passport':
         specifier: ^1.0.12
         version: 1.0.15
@@ -2698,7 +2713,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(astro@3.3.3)(tailwindcss@3.3.5)(ts-node@10.9.1)
       '@ballerine/common':
-        specifier: ^0.9.0-11210907c.0
+        specifier: ^0.9.1
         version: link:../../packages/common
       astro:
         specifier: 3.3.3
@@ -2711,10 +2726,10 @@ importers:
         version: 0.14.5
     devDependencies:
       '@ballerine/config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../../packages/config
       '@ballerine/eslint-config':
-        specifier: ^1.1.0
+        specifier: ^1.1.2
         version: link:../../packages/eslint-config
       eslint:
         specifier: ^8.46.0
@@ -9419,18 +9434,6 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@nestjs/schedule@4.0.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3):
-    resolution: {integrity: sha512-cz2FNjsuoma+aGsG0cMmG6Dqg/BezbBWet1UTHtAuu6d2mXNTVcmoEQM2DIVG5Lfwb2hfSE2yZt8Moww+7y+mA==}
-    peerDependencies:
-      '@nestjs/common': ^8.0.0 || ^9.0.0 || ^10.0.0
-      '@nestjs/core': ^8.0.0 || ^9.0.0 || ^10.0.0
-    dependencies:
-      '@nestjs/common': 9.4.3(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
-      '@nestjs/core': 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(@nestjs/websockets@9.4.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)
-      cron: 3.1.6
-      uuid: 9.0.1
-    dev: false
-
   /@nestjs/schematics@9.2.0(chokidar@3.5.3)(typescript@4.9.5):
     resolution: {integrity: sha512-wHpNJDPzM6XtZUOB3gW0J6mkFCSJilzCM3XrHI1o0C8vZmFE1snbmkIXNyoi1eV0Nxh1BMymcgz5vIMJgQtTqw==}
     peerDependencies:
@@ -15337,6 +15340,10 @@ packages:
     dependencies:
       '@types/ms': 0.7.34
 
+  /@types/deep-diff@1.0.5:
+    resolution: {integrity: sha512-PQyNSy1YMZU1hgZA5tTYfHPpUAo9Dorn1PZho2/budQLfqLu3JIP37JAavnwYpR1S2yFZTXa3hxaE4ifGW5jaA==}
+    dev: true
+
   /@types/detect-port@1.3.5:
     resolution: {integrity: sha512-Rf3/lB9WkDfIL9eEKaSYKc+1L/rNVYBjThk22JTqQw0YozXarX8YljFAz+HCoC6h4B4KwCMsBPZHaFezwT4BNA==}
     dev: true
@@ -15554,6 +15561,10 @@ packages:
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
+  /@types/json-stable-stringify@1.0.36:
+    resolution: {integrity: sha512-b7bq23s4fgBB76n34m2b3RBf6M369B0Z9uRR8aHTMd8kZISRkmDEpPD8hhpYvDFzr3bJCPES96cm3Q6qRNDbQw==}
+    dev: true
+
   /@types/json5@0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: true
@@ -15602,10 +15613,6 @@ packages:
   /@types/lodash@4.14.201:
     resolution: {integrity: sha512-y9euML0cim1JrykNxADLfaG0FgD1g/yTHwUs/Jg9ZIU7WKj2/4IW9Lbb1WZbvck78W/lfGXFfe+u2EGfIJXdLQ==}
     dev: true
-
-  /@types/luxon@3.3.8:
-    resolution: {integrity: sha512-jYvz8UMLDgy3a5SkGJne8H7VA7zPV2Lwohjx0V8V31+SqAjNmurWMkk9cQhfvlcnXWudBpK9xPM1n4rljOcHYQ==}
-    dev: false
 
   /@types/mdast@3.0.15:
     resolution: {integrity: sha512-LnwD+mUEfxWMa1QpDraczIn6k0Ee3SMicuYSSzS6ZYl2gKS09EClnJYGd8Du6rfc5r/GZEk5o1mRb8TaTj03sQ==}
@@ -15704,6 +15711,10 @@ packages:
 
   /@types/normalize-package-data@2.4.4:
     resolution: {integrity: sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==}
+    dev: true
+
+  /@types/object-hash@3.0.6:
+    resolution: {integrity: sha512-fOBV8C1FIu2ELinoILQ+ApxcUKz4ngq+IWUYrxSGjXzzjUALijilampwkMgEtJ+h2njAW3pi853QpzNVCHB73w==}
     dev: true
 
   /@types/offscreencanvas@2019.3.0:
@@ -19651,13 +19662,6 @@ packages:
   /create-require@1.1.1:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
 
-  /cron@3.1.6:
-    resolution: {integrity: sha512-cvFiQCeVzsA+QPM6fhjBtlKGij7tLLISnTSvFxVdnFGLdz+ZdXN37kNe0i2gefmdD17XuZA6n2uPVwzl4FxW/w==}
-    dependencies:
-      '@types/luxon': 3.3.8
-      luxon: 3.4.4
-    dev: false
-
   /cross-env@7.0.3:
     resolution: {integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==}
     engines: {node: '>=10.14', npm: '>=6', yarn: '>=1'}
@@ -20124,6 +20128,10 @@ packages:
       babel-plugin-macros:
         optional: true
     dev: true
+
+  /deep-diff@1.0.2:
+    resolution: {integrity: sha512-aWS3UIVH+NPGCD1kki+DCU9Dua032iSsO43LqQpcs4R3+dVv7tX0qBGjiVHJHjplsoUM2XRO/KB92glqc68awg==}
+    dev: false
 
   /deep-eql@4.1.3:
     resolution: {integrity: sha512-WaEtAOpRA1MQ0eohqZjpGD8zdI0Ovsm8mmFhaDN8dvDZzyoUMcYDnf5Y6iu7HTXxf8JDS23qWa4a+hKCDyOPzw==}
@@ -25398,6 +25406,16 @@ packages:
   /json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
 
+  /json-stable-stringify@1.1.1:
+    resolution: {integrity: sha512-SU/971Kt5qVQfJpyDveVhQ/vya+5hvrjClFOcr8c0Fq5aODJjMwutrOfCU+eCnVD5gpx1Q3fEqkyom77zH1iIg==}
+    engines: {node: '>= 0.4'}
+    dependencies:
+      call-bind: 1.0.5
+      isarray: 2.0.5
+      jsonify: 0.0.1
+      object-keys: 1.1.1
+    dev: false
+
   /json-stringify-safe@5.0.1:
     resolution: {integrity: sha512-ZClg6AaYvamvYEE82d3Iyd3vSSIjQ+odgjaTzRuO3s7toCdFKczob2i0zCh7JE8kWn17yvAWhUVxvqGwUalsRA==}
     dev: true
@@ -25428,6 +25446,10 @@ packages:
       universalify: 2.0.1
     optionalDependencies:
       graceful-fs: 4.2.11
+
+  /jsonify@0.0.1:
+    resolution: {integrity: sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==}
+    dev: false
 
   /jsonparse@1.3.1:
     resolution: {integrity: sha512-POQXvpdL69+CluYsillJ7SUhKvytYjW9vG/GKpnf+xP8UWgYEM/RaMzHHofbALDiKbbP1W8UEYmgGl39WkPZsg==}
@@ -25859,11 +25881,6 @@ packages:
   /lunr@2.3.9:
     resolution: {integrity: sha512-zTU3DaZaF3Rt9rhN3uBMGQD3dD2/vFQqnvZCDv4dl5iOzq2IZQqTxu90r4E5J+nP70J3ilqVCrbho2eWaeW8Ow==}
     dev: true
-
-  /luxon@3.4.4:
-    resolution: {integrity: sha512-zobTr7akeGHnv7eBOXcRgMeCP6+uyYsczwmeRCauvpvaAltgNyTbLH/+VaEAPUeWBT+1GuNmz4wC/6jtQzbbVA==}
-    engines: {node: '>=12'}
-    dev: false
 
   /lz-string@1.5.0:
     resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}

@@ -153,7 +153,9 @@ model Business {
 }
 
 model WorkflowDefinition {
-  id              String  @id @default(cuid())
+  id String @id @default(cuid())
+
+  crossEnvKey     String? @unique
   displayName     String?
   reviewMachineId String?
   name            String
@@ -428,6 +430,39 @@ model DataMigrationVersion {
   @@index([status, version])
 }
 
+enum DataSyncStatus {
+  new
+  synced
+  unsynced
+  pending_approval
+  failed
+}
+
+enum DataSyncTables {
+  WorkflowDefinition
+  UiDefinition
+}
+
+model DataSync {
+  id           String         @id @default(cuid())
+  table        DataSyncTables
+  crossEnvKey  String
+  fullDataHash String
+
+  status        DataSyncStatus @default(new)
+  diff          Json?
+  failureReason String?
+  auditLog      Json?
+  syncedColumns Json
+
+  createdAt   DateTime  @default(now())
+  lastCheckAt DateTime?
+  lastSyncAt  DateTime?
+
+  @@unique([table, crossEnvKey])
+  @@index([status])
+}
+
 enum TransactionRecordType {
   deposit
   withdrawal
@@ -671,9 +706,9 @@ model AlertDefinition {
   inlineRule Json
   createdBy  String @default("SYSTEM")
 
-  dedupeStrategy   Json
-  config           Json
-  defaultSeverity  AlertSeverity
+  dedupeStrategy  Json
+  config          Json
+  defaultSeverity AlertSeverity
 
   tags           String[] // Tags for the alert
   additionalInfo Json // Additional information
