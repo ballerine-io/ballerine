@@ -6,7 +6,6 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { env } from '@/common/env/env';
 import { TObjectValues } from '@/common/types';
-import { noNullish } from '@ballerine/common';
 import qs from 'qs';
 
 export const TransactionDirection = {
@@ -58,7 +57,7 @@ const CounterpartySchema = z.object({
 export const TransactionsListSchema = z.array(
   ObjectWithIdSchema.extend({
     transactionDate: z.string().datetime(),
-    transactionDirection: z.enum(TransactionDirections),
+    transactionDirection: z.enum(TransactionDirections).nullable(),
     transactionBaseAmount: z.number(),
     transactionBaseCurrency: z.string(),
 
