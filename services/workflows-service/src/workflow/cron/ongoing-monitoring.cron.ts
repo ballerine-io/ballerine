@@ -92,7 +92,8 @@ export class OngoingMonitoringCron {
               currentProjectId: business.projectId,
               projectIds: projectIds,
               lastReportId: lastReceivedReport.id,
-              reportType: businessProcessConfig,
+              checkTypes: businessProcessConfig?.options?.checkTypes,
+              reportType: businessProcessConfig!.name,
             });
           }
         }
@@ -112,7 +113,7 @@ export class OngoingMonitoringCron {
             businessId: business.id,
             projectId: business.projectId,
             type: {
-              in: ['merchant_audit_t1', 'merchant_audit_t2', 'merchant_audit_t1_ongoing'],
+              in: ['ONGOING_AUDIT_REPORT_T1', 'ONGOING_AUDIT_REPORT_T2', 'AUDIT_REPORT_T1'],
             },
           },
           orderBy: {
@@ -179,6 +180,7 @@ export class OngoingMonitoringCron {
     projectIds,
     currentProjectId,
     lastReportId,
+    checkTypes,
     reportType,
   }: {
     business: Business & { metadata?: { featureConfig?: Record<string, TCustomerFeatures> } };
@@ -188,6 +190,7 @@ export class OngoingMonitoringCron {
     currentProjectId: string;
     lastReportId: string;
     reportType: string;
+    checkTypes: string[] | undefined;
   }) {
     const context = {
       entity: {
@@ -200,6 +203,7 @@ export class OngoingMonitoringCron {
             report: {
               proxyViaCountry: workflowDefinitionConfig.proxyViaCountry,
               previousReportId: lastReportId,
+              checkTypes: checkTypes,
               reportType: reportType,
             },
           },
