@@ -48,6 +48,30 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
         }
       >;
     }
+
+    if (pluginsOutput?.businessInformation?.isRequestTimedOut) {
+      return {
+        type: 'paragraph',
+        value: (
+          <span className="flex text-sm text-black/60">
+            <WarningFilledSvg
+              className={'mr-[8px] mt-px text-black/20'}
+              width={'20'}
+              height={'20'}
+            />
+            <span>
+              The request timed out either because the company was not found in the registry, or the
+              information is currently unavailable.
+            </span>
+          </span>
+        ),
+      } satisfies Extract<
+        Parameters<ReturnType<typeof createBlocksTyped>['addCell']>[0],
+        {
+          type: 'paragraph';
+        }
+      >;
+    }
   }, [pluginsOutput, workflow]);
 
   return useMemo(() => {

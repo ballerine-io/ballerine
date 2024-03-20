@@ -1,17 +1,16 @@
-import { set } from 'lodash';
-import { Injectable } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { AnyRecord, isObject, ProcessStatus } from '@ballerine/common';
-import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
-import { WorkflowService } from '@/workflow/workflow.service';
-import { WorkflowRuntimeData } from '@prisma/client';
-import * as tmp from 'tmp';
-import fs from 'fs';
+import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
+import { TDocumentsWithoutPageType } from '@/common/types';
 import { CustomerService } from '@/customer/customer.service';
 import type { TProjectId, TProjectIds } from '@/types';
-import { TDocumentsWithoutPageType } from '@/common/types';
-import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
-import get from 'lodash/get';
+import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
+import { WorkflowService } from '@/workflow/workflow.service';
+import { AnyRecord, ProcessStatus, TDocument } from '@ballerine/common';
+import { Injectable } from '@nestjs/common';
+import { WorkflowRuntimeData } from '@prisma/client';
+import fs from 'fs';
+import { get, isObject, set } from 'lodash';
+import * as tmp from 'tmp';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -44,6 +43,15 @@ export class HookCallbackHandlerService {
       );
     }
 
+    if (processName === 'website-monitoring') {
+      return await this.prepareWebsiteMonitoringContext(
+        data,
+        workflowRuntime,
+        resultDestinationPath,
+        currentProjectId,
+      );
+    }
+
     const removeLastKeyFromPath = (path: string) => {
       return path?.split('.')?.slice(0, -1)?.join('.');
     };
@@ -51,16 +59,62 @@ export class HookCallbackHandlerService {
     const resultDestinationPathWithoutLastKey = removeLastKeyFromPath(resultDestinationPath);
     const result = get(workflowRuntime.context, resultDestinationPathWithoutLastKey);
 
+    const resultWithData = set({}, resultDestinationPath, data);
+
+    //@ts-ignore
     if (isObject(result) && result.status) {
-      set(
-        workflowRuntime.context,
+      return set(
+        resultWithData,
         `${resultDestinationPathWithoutLastKey}.status`,
         ProcessStatus.SUCCESS,
       );
     }
 
-    return set({}, resultDestinationPath, data);
+    return resultWithData;
   }
+
+  async prepareWebsiteMonitoringContext(
+    data: AnyRecord,
+    workflowRuntime: WorkflowRuntimeData,
+    resultDestinationPath: string,
+    currentProjectId: TProjectId,
+  ) {
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+
+    const { context } = workflowRuntime;
+    const { reportData, base64Pdf } = data;
+
+    const pdfDocument: TDocument = {
+      category: 'website-monitoring',
+      type: 'pdf-report',
+      pages: [
+        {
+          provider: 'base64',
+          uri: `data:application/pdf;base64,${base64Pdf}`,
+          fileName: 'report.pdf',
+        },
+      ],
+      issuer: {
+        // TODO: use real company country?
+        country: 'GB',
+      },
+      propertiesSchema: {},
+      properties: {},
+    };
+
+    const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
+      [pdfDocument] as unknown as TDocumentsWithoutPageType,
+      context.entity.id || context.entity.ballerineEntityId,
+      currentProjectId,
+      customer.name,
+    );
+
+    set(workflowRuntime.context, resultDestinationPath, { reportData, base64Pdf });
+    workflowRuntime.context.documents = persistedDocuments;
+
+    return context;
+  }
+
   async mapCallbackDataToIndividual(
     data: AnyRecord,
     workflowRuntime: WorkflowRuntimeData,

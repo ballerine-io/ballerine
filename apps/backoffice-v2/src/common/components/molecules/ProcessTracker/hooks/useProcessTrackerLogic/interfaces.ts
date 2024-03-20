@@ -1,8 +1,7 @@
-import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { TWorkflowDefinitionById } from '@/domains/workflow-definitions/fetchers';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 
 export interface IUseProcessTrackerLogicParams {
-  tags: TWorkflowById['tags'];
   plugins: Array<
     | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['apiPlugins']>[number]
     | NonNullable<
@@ -10,6 +9,6 @@ export interface IUseProcessTrackerLogicParams {
       >[number]
     | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['commonPlugins']>[number]
   >;
-  context: TWorkflowById['context'];
-  childWorkflows: TWorkflowById['childWorkflows'];
+  workflow: TWorkflowById;
+  processes?: string[];
 }

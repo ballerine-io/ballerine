@@ -13,6 +13,7 @@ import { Heading } from '@/lib/blocks/components/Heading/Heading';
 import { MapCell } from '@/lib/blocks/components/MapCell/MapCell';
 import { MultiDocuments } from '@/lib/blocks/components/MultiDocuments/MultiDocuments';
 import { NestedDetails } from '@/lib/blocks/components/NestedDetails/NestedDetails';
+import { PDFViewerCell } from '@/lib/blocks/components/PDFViewerCell/PDFViewer';
 import { Paragraph } from '@/lib/blocks/components/Paragraph/Paragraph';
 import { Subheading } from '@/lib/blocks/components/Subheading/Subheading';
 import { TableCell } from '@/lib/blocks/components/TableCell/TableCell';
@@ -48,4 +49,5 @@ export const cells: CellsMap = {
   dialog: DialogCell,
   block: BlockCell,
   processTracker: ProcessTracker,
+  pdfViewer: PDFViewerCell,
 };

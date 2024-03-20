@@ -17,6 +17,7 @@ import { ICallToActionLegacyProps } from '@/lib/blocks/components/CallToActionLe
 import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
 import { IEditableDetailsDocument } from '@/lib/blocks/components/EditableDetails/interfaces';
 import { INodeBlockProps } from '@/lib/blocks/components/NodeBlock/interfaces';
+import { TPDFViewerCell } from '@/lib/blocks/components/PDFViewerCell/interfaces';
 import { Block } from '@ballerine/blocks';
 import { CommonWorkflowStates } from '@ballerine/common';
 import { AnyObject } from '@ballerine/ui';
@@ -243,4 +244,5 @@ export type TCell =
   | TParagraphCell
   | TDialogCell
   | TProcessTrackerBlock
-  | TNodeBlock;
+  | TNodeBlock
+  | TPDFViewerCell;

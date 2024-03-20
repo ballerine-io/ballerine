@@ -3,6 +3,9 @@ import { Customer, PrismaClient, Project, User, UserToProject } from '@prisma/cl
 import * as runtime from '@prisma/client/runtime/library';
 
 export type InputJsonValue = Omit<JsonValue, 'null'>;
+export type NullableJsonNullValueInput = {
+  set: null;
+};
 
 export interface IObjectWithId {
   id: string;
@@ -27,5 +30,13 @@ export type AuthenticatedEntity = {
 export type AuthenticatedEntityWithProjects = AuthenticatedEntity & { projectIds: TProjectIds };
 
 export type ObjectValues<TObject extends Record<PropertyKey, any>> = TObject[keyof TObject];
+
+export type AnyArray = any[];
+
+export type AnyRecord = Record<PropertyKey, any>;
+
+export type GenericFunction = (...args: AnyArray) => any;
+
+export type GenericAsyncFunction = (...args: AnyArray) => Promise<any>;
 
 export type PrismaTransaction = Omit<PrismaClient, runtime.ITXClientDenyList>;

@@ -15,7 +15,8 @@ import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { CustomerSubscriptionDto } from './dtos/customer-config-create.dto';
 import { ValidationError } from '@/errors';
 
-@swagger.ApiTags('external/customers')
+@swagger.ApiTags('Customers')
+@swagger.ApiExcludeController()
 @common.Controller('external/customers')
 export class CustomerControllerExternal {
   constructor(

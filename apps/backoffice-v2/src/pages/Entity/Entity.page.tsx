@@ -3,7 +3,7 @@ import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLog
 import { Case } from './components/Case/Case';
 
 export const Entity = () => {
-  const { workflow, selectedEntity, plugins } = useEntityLogic();
+  const { workflow, selectedEntity } = useEntityLogic();
 
   console.log('THEME', workflow?.workflowDefinition?.config);
 
@@ -19,6 +19,7 @@ export const Entity = () => {
           workflow?.workflowDefinition?.config?.workflowLevelResolution ??
           workflow?.context?.entity?.type === 'business'
         }
+        workflow={workflow as TWorkflowById}
       />
       <Case.Content key={selectedEntity?.id}>
         {workflow?.workflowDefinition && (
@@ -27,6 +28,7 @@ export const Entity = () => {
               version: workflow?.workflowDefinition?.version,
               variant: workflow?.workflowDefinition?.variant,
               config: workflow?.workflowDefinition?.config,
+              name: workflow?.workflowDefinition?.name,
             }}
           />
         )}

@@ -25,3 +25,23 @@ export const getWebhooks = (
       }),
     );
 };
+
+export const getCustomerWebhooks = (
+  subscriptions: any, // TODO: replace with SubscriptionSchema
+  envName: string | undefined,
+  event: string,
+): Webhook[] => {
+  return (subscriptions ?? [])
+    .filter(
+      ({ type, events }: { type: string; events: string }) =>
+        type === 'webhook' && events.includes(event),
+    )
+    .map(
+      ({ url }: { url: string }): Webhook => ({
+        id: randomUUID(),
+        url,
+        environment: envName,
+        apiVersion: packageJson.version,
+      }),
+    );
+};

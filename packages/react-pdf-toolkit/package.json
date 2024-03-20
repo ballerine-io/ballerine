@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/react-pdf-toolkit",
   "private": false,
-  "version": "1.0.15",
+  "version": "1.2.1",
   "types": "./dist/build.d.ts",
   "main": "./dist/react-pdf-toolkit.js",
   "module": "./dist/react-pdf-toolkit.mjs",
@@ -21,21 +21,32 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@ballerine/config": "^1.0.7",
-    "@ballerine/ui": "0.3.30",
+    "@ballerine/config": "^1.1.2",
+    "@ballerine/ui": "0.5.1",
     "@react-pdf/renderer": "^3.1.14",
     "@sinclair/typebox": "^0.31.7",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
     "class-variance-authority": "^0.7.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-pdf-tailwind": "^2.2.1",
+    "dayjs": "^1.11.6",
+    "string-ts": "^1.2.0",
     "tailwindcss": "^3.4.0",
     "vite-plugin-dts": "^1.6.6"
   },
   "devDependencies": {
+    "@storybook/addon-essentials": "^7.0.26",
+    "@storybook/addon-interactions": "^7.0.26",
+    "@storybook/addon-links": "^7.0.26",
+    "@storybook/blocks": "^7.0.26",
+    "@storybook/builder-vite": "^7.0.26",
+    "@storybook/react": "^7.0.26",
+    "@storybook/react-vite": "^7.0.26",
+    "@storybook/testing-library": "^0.0.14-next.2",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
@@ -44,7 +55,16 @@
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-pdf-tailwind": "^2.2.1",
+    "storybook": "^7.0.26",
     "typescript": "^5.2.2",
     "vite": "^5.0.8"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-pdf-tailwind": "^2.2.1"
   }
 }

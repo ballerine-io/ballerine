@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/report-generation-example",
   "private": false,
-  "version": "0.0.4",
+  "version": "0.2.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ballerine/react-pdf-toolkit": "^1.0.15",
+    "@ballerine/react-pdf-toolkit": "^1.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
