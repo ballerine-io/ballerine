@@ -1,5 +1,36 @@
 # @ballerine/report-generation-example
 
+## 0.2.1
+
+### Patch Changes
+
+- bumo
+- Updated dependencies
+  - @ballerine/react-pdf-toolkit@1.2.1
+
+## 0.2.0
+
+### Minor Changes
+
+- 9fe7a5c10: Bump
+
+### Patch Changes
+
+- ver bump
+- 9fe7a5c10: bump
+- Updated dependencies
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+  - @ballerine/react-pdf-toolkit@1.2.0
+
 ## 0.2.0-11210907c.0
 
 ### Minor Changes
