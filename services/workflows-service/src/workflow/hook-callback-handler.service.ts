@@ -12,7 +12,6 @@ import fs from 'fs';
 import { get, isObject, set } from 'lodash';
 import * as tmp from 'tmp';
 import { BusinessReportService } from '@/business-report/business-report.service';
-import { InputJsonObject } from '.prisma/client';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -145,12 +144,12 @@ export class HookCallbackHandlerService {
       reportContent: report.data,
       proxyViaCountry: proxyViaCountry,
       summary: report.summary,
-    };
+    } as Record<string, object | string>;
 
     await this.businessReportService.create({
       data: {
         type: reportType,
-        report: reportContent as InputJsonObject,
+        report: reportContent,
         businessId: businessId,
         projectId: currentProjectId,
       },
