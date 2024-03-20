@@ -1,11 +1,10 @@
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { BlocksVariant } from '@/lib/blocks/variants/BlocksVariant/BlocksVariant';
 import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
 import { Case } from './components/Case/Case';
 
 export const Entity = () => {
   const { workflow, selectedEntity } = useEntityLogic();
-
-  console.log('THEME', workflow?.workflowDefinition?.config);
 
   // Selected entity
   return (

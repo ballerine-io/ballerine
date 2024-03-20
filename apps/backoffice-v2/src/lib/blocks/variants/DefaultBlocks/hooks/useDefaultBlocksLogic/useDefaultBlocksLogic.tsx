@@ -34,6 +34,7 @@ import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvided
 import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
 import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
 import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocks/useCaseBlocks';
+import { useWebsiteMonitoringBlocks } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringBlocks/useWebsiteMonitoringBlocks';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
@@ -365,6 +366,8 @@ export const useDefaultBlocksLogic = () => {
     kybChildWorkflows ?? [],
   );
 
+  const websiteMonitoringBlocks = useWebsiteMonitoringBlocks();
+
   const allBlocks = useMemo(() => {
     if (!workflow?.context?.entity) return [];
 
@@ -390,6 +393,7 @@ export const useDefaultBlocksLogic = () => {
       associatedCompaniesBlock,
       associatedCompaniesInformationBlock,
       processTrackerBlock,
+      websiteMonitoringBlocks,
     ];
   }, [
     associatedCompaniesBlock,
@@ -413,6 +417,7 @@ export const useDefaultBlocksLogic = () => {
     websiteBasicRequirementBlock,
     websiteMonitoringBlock,
     processTrackerBlock,
+    websiteMonitoringBlocks,
     workflow?.context?.entity,
   ]);
 

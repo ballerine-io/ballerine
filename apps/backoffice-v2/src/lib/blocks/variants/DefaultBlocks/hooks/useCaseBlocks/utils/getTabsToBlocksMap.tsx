@@ -88,6 +88,7 @@ export const getTabsToBlocksMap = (
     associatedCompaniesBlock,
     associatedCompaniesInformationBlock,
     processTrackerBlock,
+    websiteMonitoringBlocks,
   ] = blocks;
 
   return {
@@ -116,5 +117,6 @@ export const getTabsToBlocksMap = (
       ...directorsRegistryProvidedBlock,
       ...(createKycBlocks(workflow as TWorkflowById) || []),
     ],
+    website_monitoring: [...websiteMonitoringBlocks],
   };
 };

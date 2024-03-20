@@ -42,6 +42,11 @@ export const getThemeTabs = (
         displayName: 'Directors',
         disabled: !tabBlocks['directors']?.length,
       },
+      {
+        name: 'website_monitoring',
+        displayName: 'Monitoring Reports',
+        disabled: !tabBlocks['website_monitoring']?.length,
+      },
     ];
 
     return theme.tabsOverride
