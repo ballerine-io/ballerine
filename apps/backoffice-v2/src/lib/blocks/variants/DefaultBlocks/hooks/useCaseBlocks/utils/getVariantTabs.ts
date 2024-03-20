@@ -1,9 +1,9 @@
 import { WorkflowDefinitionConfigTheme } from '@/domains/workflow-definitions/fetchers';
 import { TCaseTabDefinition } from '@/lib/blocks/variants/DefaultBlocks/types/case-tab';
 
-export const getThemeTabs = (
+export const getVariantTabs = (
   theme: WorkflowDefinitionConfigTheme,
-  tabBlocks: Record<string, any[]>,
+  tabBlocks: Record<string, any[] | undefined>,
 ): TCaseTabDefinition[] => {
   if (theme?.type === 'kyb') {
     const baseTabs = [
@@ -46,6 +46,34 @@ export const getThemeTabs = (
         name: 'website_monitoring',
         displayName: 'Monitoring Reports',
         disabled: !tabBlocks['website_monitoring']?.length,
+      },
+    ];
+
+    return theme.tabsOverride
+      ? theme.tabsOverride.map(tabName => baseTabs.find(tab => tab.name === tabName)!)
+      : baseTabs;
+  }
+
+  if (theme?.type === 'documents-review') {
+    const baseTabs = [
+      {
+        name: 'documents',
+        displayName: 'Documents Review',
+        hidden: true,
+      },
+    ];
+
+    return theme.tabsOverride
+      ? theme.tabsOverride.map(tabName => baseTabs.find(tab => tab.name === tabName)!)
+      : baseTabs;
+  }
+
+  if (theme?.type === 'kyc') {
+    const baseTabs = [
+      {
+        name: 'kyc',
+        displayName: 'KYC',
+        hidden: true,
       },
     ];
 

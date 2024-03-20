@@ -1,3 +1,4 @@
+import { WorkflowDefinitionConfigTheme } from '@/domains/workflow-definitions/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ChildDocumentBlocks } from '@/lib/blocks/components/ChildDocumentBlocks/ChildDocumentBlocks';
 import { KycBlock } from '@/lib/blocks/components/KycBlock/KycBlock';
@@ -63,6 +64,7 @@ const createAssociatedCompanyDocumentBlocks = (
 export const getTabsToBlocksMap = (
   blocks: any[],
   blocksCreationParams: TCaseBlocksCreationProps,
+  theme?: WorkflowDefinitionConfigTheme,
 ) => {
   const { workflow } = blocksCreationParams;
 
@@ -89,9 +91,11 @@ export const getTabsToBlocksMap = (
     associatedCompaniesInformationBlock,
     processTrackerBlock,
     websiteMonitoringBlocks,
+    documentReviewBlocks,
+    businessInformationBlocks,
   ] = blocks;
 
-  return {
+  const defaultTabsMap = {
     summary: [...processTrackerBlock, ...websiteMonitoringBlock, ...entityInfoBlock],
     company_information: [
       ...registryInfoBlock,
@@ -119,4 +123,22 @@ export const getTabsToBlocksMap = (
     ],
     website_monitoring: [...websiteMonitoringBlocks],
   };
+
+  if (theme?.type === 'kyb') {
+    return defaultTabsMap;
+  }
+
+  if (theme?.type === 'documents-review') {
+    return {
+      documents: [...documentReviewBlocks],
+    };
+  }
+
+  if (theme?.type === 'kyc') {
+    return {
+      kyc: [...businessInformationBlocks, ...createKycBlocks(workflow)],
+    };
+  }
+
+  return defaultTabsMap;
 };

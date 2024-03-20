@@ -15,7 +15,7 @@ export const PluginSchema = z.object({
 export type TPlugin = z.infer<typeof PluginSchema>;
 
 export const WorkflowDefinitionConfigTheme = z.object({
-  type: z.union([z.literal('kyb'), z.literal('kyc'), z.literal('documents-review')]),
+  type: z.union([z.literal('kyb'), z.literal('kyc'), z.literal('documents-review')]).default('kyb'),
   tabsOverride: z.array(z.string()).optional(),
 });
 

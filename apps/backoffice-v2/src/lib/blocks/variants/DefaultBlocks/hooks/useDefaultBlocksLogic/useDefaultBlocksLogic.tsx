@@ -20,7 +20,9 @@ import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirecto
 import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
 import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
+import { useDocumentReviewBlocks } from '@/lib/blocks/hooks/useDocumentReviewBlocks/useDocumentReviewBlocks';
 import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
+import { useKYCBusinessInformationBlock } from '@/lib/blocks/hooks/useKYCBusinessInformationBlock/useKYCBusinessInformationBlock';
 import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBlock/useKybRegistryInfoBlock';
 import { useMainContactBlock } from '@/lib/blocks/hooks/useMainContactBlock/useMainContactBlock';
 import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
@@ -367,6 +369,8 @@ export const useDefaultBlocksLogic = () => {
   );
 
   const websiteMonitoringBlocks = useWebsiteMonitoringBlocks();
+  const documentReviewBlocks = useDocumentReviewBlocks();
+  const businessInformationBlocks = useKYCBusinessInformationBlock();
 
   const allBlocks = useMemo(() => {
     if (!workflow?.context?.entity) return [];
@@ -394,6 +398,8 @@ export const useDefaultBlocksLogic = () => {
       associatedCompaniesInformationBlock,
       processTrackerBlock,
       websiteMonitoringBlocks,
+      documentReviewBlocks,
+      businessInformationBlocks,
     ];
   }, [
     associatedCompaniesBlock,
@@ -418,6 +424,8 @@ export const useDefaultBlocksLogic = () => {
     websiteMonitoringBlock,
     processTrackerBlock,
     websiteMonitoringBlocks,
+    documentReviewBlocks,
+    businessInformationBlocks,
     workflow?.context?.entity,
   ]);
 

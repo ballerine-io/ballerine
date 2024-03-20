@@ -107,6 +107,8 @@ export const useManualReviewBlocksLogic = () => {
 
   return {
     blocks,
+    businessInformationBlock: businessInformation,
+    documentsBlocks,
     isLoading,
   };
 };
