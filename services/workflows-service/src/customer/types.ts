@@ -52,6 +52,6 @@ export const CUSTOMER_FEATURES = {
   },
 } satisfies Record<string, TCustomerFeatures>;
 
-export type TCustomerWithDefinitionsFeatures = Partial<Customer> & {
+export type TCustomerWithDefinitionsFeatures = Customer & {
   features?: Record<string, TCustomerFeatures> | null;
 };

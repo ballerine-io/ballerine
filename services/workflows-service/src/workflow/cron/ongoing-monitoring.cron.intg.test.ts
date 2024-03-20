@@ -79,12 +79,10 @@ describe('OngoingMonitoringCron', () => {
     });
   });
 
-  function mockPrismaService() {
-    return {
-      acquireLock: jest.fn(),
-      releaseLock: jest.fn(),
-    };
-  }
+  const mockPrismaService = () => ({
+    acquireLock: jest.fn(),
+    releaseLock: jest.fn(),
+  });
 
   const mockWorkflowService = {
     createOrUpdateWorkflowRuntime: jest.fn().mockImplementation(params => {
@@ -141,7 +139,7 @@ describe('OngoingMonitoringCron', () => {
               definitionVariation: 'ongoing_merchant_audit_t1',
               intervalInDays: 7,
               active: true,
-              checkType: ['lob', 'content', 'reputation'],
+              checkTypes: ['lob', 'content', 'reputation'],
               proxyViaCountry: 'GB',
             },
           },
@@ -161,7 +159,7 @@ describe('OngoingMonitoringCron', () => {
               definitionVariation: 'ongoing_merchant_audit_t2',
               intervalInDays: 0,
               active: true,
-              checkType: ['lob', 'content', 'reputation'],
+              checkTypes: ['lob', 'content', 'reputation'],
               proxyViaCountry: 'GB',
             },
           },
@@ -181,7 +179,7 @@ describe('OngoingMonitoringCron', () => {
               definitionVariation: 'ongoing_merchant_audit_t2',
               intervalInDays: 0,
               active: true,
-              checkType: ['lob', 'content', 'reputation'],
+              checkTypes: ['lob', 'content', 'reputation'],
               proxyViaCountry: 'GB',
             },
           },
@@ -201,14 +199,14 @@ describe('OngoingMonitoringCron', () => {
               definitionVariation: 'ongoing_merchant_audit_t2',
               intervalInDays: 0,
               active: false,
-              checkType: ['lob', 'content', 'reputation'],
+              checkTypes: ['lob', 'content', 'reputation'],
               proxyViaCountry: 'GB',
             },
           },
         },
         projects: [{ id: 4 } as unknown as Project],
       },
-    ] as TCustomerWithDefinitionsFeatures[];
+    ] as unknown as TCustomerWithDefinitionsFeatures[];
   };
 
   const mockBusinesses = () => {
@@ -224,7 +222,7 @@ describe('OngoingMonitoringCron', () => {
                 definitionVariation: 'variation1',
                 intervalInDays: 30,
                 active: true, // active false
-                checkType: ['type1', 'type2'],
+                checkTypes: ['type1', 'type2'],
                 proxyViaCountry: 'US',
               } as TOngoingAuditReportDefinitionConfig,
             },
@@ -245,7 +243,7 @@ describe('OngoingMonitoringCron', () => {
                 definitionVariation: 'variation2',
                 intervalInDays: 1,
                 active: true,
-                checkType: ['lob', 'content', 'reputation', 'businessConfig'],
+                checkTypes: ['lob', 'content', 'reputation', 'businessConfig'],
                 proxyViaCountry: 'GB',
               } as TOngoingAuditReportDefinitionConfig,
             },
@@ -263,18 +261,20 @@ describe('OngoingMonitoringCron', () => {
                 definitionVariation: 'variation3',
                 intervalInDays: 14,
                 active: false,
-                checkType: ['type5', 'type6'],
+                checkTypes: ['type5', 'type6'],
                 proxyViaCountry: 'CA',
               } as TOngoingAuditReportDefinitionConfig,
             },
           } as Record<string, TCustomerFeatures>,
         },
       },
-    ] as unknown as (Business & {
-      metadata?: {
-        featureConfig?: TCustomerWithDefinitionsFeatures['features'];
-        lastOngoingAuditReportInvokedAt?: number;
-      };
-    })[];
+    ] as unknown as Array<
+      Business & {
+        metadata?: {
+          featureConfig?: TCustomerWithDefinitionsFeatures['features'];
+          lastOngoingAuditReportInvokedAt?: number;
+        };
+      }
+    >;
   };
 });

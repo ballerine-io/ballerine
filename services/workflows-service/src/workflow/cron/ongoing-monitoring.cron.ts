@@ -23,7 +23,7 @@ import { ValidationError } from '@/errors';
 @Injectable()
 export class OngoingMonitoringCron {
   private readonly lockKey = ONGOING_MONITORING_LOCK_KEY;
-
+  private readonly processFeatureName = FEATURE_LIST.ONGOING_AUDIT_REPORT_T1;
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly logger: AppLoggerService,
@@ -59,6 +59,7 @@ export class OngoingMonitoringCron {
         definitionConfig: customerProcessConfig,
       } of processConfiguration) {
         const businesses = await this.businessService.list({}, projectIds);
+
         for (const business of businesses) {
           const businessProcessConfig =
             business.metadata &&
@@ -92,8 +93,8 @@ export class OngoingMonitoringCron {
               currentProjectId: business.projectId,
               projectIds: projectIds,
               lastReportId: lastReceivedReport.id,
-              checkTypes: businessProcessConfig?.options?.checkTypes,
-              reportType: businessProcessConfig!.name,
+              checkTypes: processConfig?.checkTypes,
+              reportType: this.processFeatureName,
             });
           }
         }
@@ -133,7 +134,7 @@ export class OngoingMonitoringCron {
           customer.features &&
           Object.entries(customer.features).find(([featureName, featureConfig]) => {
             return (
-              featureName === FEATURE_LIST.ONGOING_AUDIT_REPORT_T1 &&
+              featureName === this.processFeatureName &&
               featureConfig.enabled &&
               featureConfig.options.active
             );
@@ -166,7 +167,7 @@ export class OngoingMonitoringCron {
 
     return Object.entries(featureConfig).find(([featureName, featureConfig]) => {
       return (
-        featureName === FEATURE_LIST.ONGOING_AUDIT_REPORT_T1 &&
+        featureName === this.processFeatureName &&
         featureConfig.enabled &&
         featureConfig.options.active
       );
@@ -204,7 +205,7 @@ export class OngoingMonitoringCron {
               proxyViaCountry: workflowDefinitionConfig.proxyViaCountry,
               previousReportId: lastReportId,
               checkTypes: checkTypes,
-              reportType: reportType,
+              reportType: this.processFeatureName,
             },
           },
         },
