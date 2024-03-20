@@ -3,6 +3,7 @@ import { TContext } from '../types';
 import { search } from 'jmespath';
 import { AnyRecord } from '@ballerine/common';
 import merge from 'lodash.merge';
+import { logger } from '../../logger';
 
 export type THelperMethod =
   | 'regex'
@@ -50,17 +51,16 @@ export class HelpersTransformer extends BaseContextTransformer {
     const mergeWithResult = search(context, options.mergeWithJmespath);
 
     if (!jmespathResult || !mergeWithResult) {
-      console.warn(
-        'mergeArrayEachItemWithValue: jmespathResult or mergeWithResult is null',
-        options.mergeWithJmespath,
-        options.mapJmespath,
-      );
+      logger.warn('mergeArrayEachItemWithValue: jmespathResult or mergeWithResult is null', {
+        mergeWithJmespath: options.mergeWithJmespath,
+        mapJmespath: options.mapJmespath,
+      });
 
       return attribute;
     }
 
     if (jmespathResult.length == 0) {
-      console.log('jmespathResult: is 0', options.mapJmespath);
+      logger.log('jmespathResult: is 0', { mapJmespath: options.mapJmespath });
 
       return attribute;
     }

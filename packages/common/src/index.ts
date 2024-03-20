@@ -25,7 +25,7 @@ export {
 
 export type { IErrorWithMessage } from './utils';
 
-export type { Serializable, AnyRecord } from './types';
+export type { Serializable, AnyRecord, LoggerInterface } from './types';
 export type {
   DefaultContextSchema,
   TDefaultSchemaDocumentPage,

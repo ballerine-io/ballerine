@@ -1,13 +1,21 @@
 import { IAppLogger, LogPayload } from '@/common/abstract-logger/abstract-logger';
 import { Inject, Injectable, LoggerService, OnModuleDestroy } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
+import { setLogger } from '@ballerine/workflow-core';
 
 @Injectable()
 export class AppLoggerService implements LoggerService, OnModuleDestroy {
   constructor(
     @Inject('LOGGER') private readonly logger: IAppLogger,
     private readonly cls: ClsService,
-  ) {}
+  ) {
+    setLogger({
+      log: this.log.bind(this),
+      error: this.error.bind(this),
+      warn: this.warn.bind(this),
+      debug: this.debug.bind(this),
+    });
+  }
 
   async onModuleDestroy() {
     await this.logger.close();
