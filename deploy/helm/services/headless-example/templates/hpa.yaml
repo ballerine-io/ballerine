@@ -1,0 +1,41 @@
+{{- if .Values.headlessexample.autoscaling.enabled }}
+apiVersion: {{ ternary "autoscaling/v2" "autoscaling/v2beta2" (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Values.headlessexample.nameOverride }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ .Values.headlessexample.nameOverride }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Values.headlessexample.nameOverride }}
+  minReplicas: {{ .Values.headlessexample.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.headlessexample.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.headlessexample.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+    {{- if .Capabilities.APIVersions.Has "autoscaling/v2"}}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.headlessexample.autoscaling.targetCPUUtilizationPercentage }}
+    {{- else }}
+        targetAverageUtilization: {{ .Values.headlessexample.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- end }}
+    {{- if .Values.headlessexample.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+    {{- if .Capabilities.APIVersions.Has "autoscaling/v2"}}
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.headlessexample.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- else }}
+        targetAverageUtilization: {{ .Values.headlessexample.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+    {{- end }}
+{{- end }}
