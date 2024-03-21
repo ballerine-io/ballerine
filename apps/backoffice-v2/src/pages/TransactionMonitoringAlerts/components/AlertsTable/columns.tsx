@@ -98,7 +98,7 @@ export const columns = [
             'w-20 py-0.5 font-bold',
           )}
         >
-          {severity}
+          {titleCase(severity ?? '')}
         </TextWithNAFallback>
       );
     },
