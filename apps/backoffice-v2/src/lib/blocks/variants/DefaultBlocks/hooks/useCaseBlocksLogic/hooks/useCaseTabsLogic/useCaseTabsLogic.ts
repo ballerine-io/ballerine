@@ -6,6 +6,7 @@ export const useCaseTabsLogic = (tabs: TCaseTabDefinition[]) => {
     return tabs.length ? (tabs.at(0)?.name as string) : null;
   });
 
+  console.log('tabs', tabs);
   const activeTab = useMemo(
     () => tabs?.find(tab => tab.name === activeTabName),
     [tabs, activeTabName],
