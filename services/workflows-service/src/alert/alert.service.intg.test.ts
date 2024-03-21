@@ -81,14 +81,14 @@ describe('AlertService', () => {
         .transactionDate(faker.date.recent(6));
     });
 
-    describe('Rule: NUMCHRG', () => {
+    describe('Rule: CHVC_C', () => {
       let alertDefinition: AlertDefinition;
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              label: 'NUMCHRG',
+              label: 'CHVC_C',
               ...ALERT_DEFINITIONS.CHVC_C,
             },
             project,
@@ -135,14 +135,14 @@ describe('AlertService', () => {
       });
     });
 
-    describe('Rule: SUMCHRG', () => {
+    describe('Rule: SHCAC_C', () => {
       let alertDefinition: AlertDefinition;
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              label: 'SUMCHRG',
+              label: 'SHCAC_C',
               ...ALERT_DEFINITIONS.SHCAC_C,
             },
             project,
@@ -189,14 +189,14 @@ describe('AlertService', () => {
       });
     });
 
-    describe('Rule: NUMREFCC', () => {
+    describe('Rule: CHCR_C', () => {
       let alertDefinition: AlertDefinition;
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              label: 'NUMREFCC',
+              label: 'CHCR_C',
               ...ALERT_DEFINITIONS.CHCR_C,
             },
             project,
@@ -243,14 +243,14 @@ describe('AlertService', () => {
       });
     });
 
-    describe('Rule: SUMREFCC', () => {
+    describe('Rule: SHCAR_C', () => {
       let alertDefinition: AlertDefinition;
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              label: 'SUMREFCC',
+              label: 'SHCAR_C',
               ...ALERT_DEFINITIONS.SHCAR_C,
             },
             project,

@@ -243,9 +243,14 @@ describe('#TransactionControllerExternal', () => {
       // Assert
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
+        errors: [
+          {
+            message: 'amount must be a number conforming to the specified constraints.',
+            path: 'amount',
+          },
+        ],
+        message: 'Validation error',
         statusCode: 400,
-        error: 'Bad Request',
-        message: [expect.any(String)],
       });
     });
   });
@@ -478,9 +483,14 @@ describe('#TransactionControllerExternal', () => {
       // Assert
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
+        errors: [
+          {
+            message: 'amount must be a number conforming to the specified constraints.',
+            path: 'amount',
+          },
+        ],
+        message: 'Validation error',
         statusCode: 400,
-        error: 'Bad Request',
-        message: [expect.any(String)],
       });
     });
 

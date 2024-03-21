@@ -19,12 +19,14 @@ import {
   Res,
   ValidationPipe,
 } from '@nestjs/common';
+
 import { GetTransactionsDto } from '@/transaction/dtos/get-transactions.dto';
 import { PaymentMethod } from '@prisma/client';
 import { BulkTransactionsCreatedDto } from '@/transaction/dtos/bulk-transactions-created.dto';
 import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
 import { BulkStatus } from '@/alert/types';
 import * as errors from '@/errors';
+import { ValidationError, exceptionValidationFactory } from '@/errors';
 
 @swagger.ApiTags('Transactions')
 @Controller('external/transactions')
@@ -40,7 +42,12 @@ export class TransactionControllerExternal {
   @swagger.ApiCreatedResponse({ type: TransactionCreatedDto })
   @swagger.ApiForbiddenResponse()
   async create(
-    @Body(new ValidationPipe()) body: TransactionCreateDto,
+    @Body(
+      new ValidationPipe({
+        exceptionFactory: exceptionValidationFactory,
+      }),
+    )
+    body: TransactionCreateDto,
     @Res() res: express.Response,
     @CurrentProject() currentProjectId: types.TProjectId,
   ) {
@@ -65,7 +72,13 @@ export class TransactionControllerExternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @swagger.ApiBody({ type: () => [TransactionCreateDto] })
   async createBulk(
-    @Body(new ParseArrayPipe({ items: TransactionCreateDto })) body: TransactionCreateDto[],
+    @Body(
+      new ParseArrayPipe({
+        items: TransactionCreateDto,
+        exceptionFactory: exceptionValidationFactory,
+      }),
+    )
+    body: TransactionCreateDto[],
     @Res() res: express.Response,
     @CurrentProject() currentProjectId: types.TProjectId,
   ) {

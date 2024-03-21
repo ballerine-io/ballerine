@@ -35,6 +35,10 @@ class DetailedValidationError {
   path!: string;
 }
 
+export const exceptionValidationFactory = (errors: ClassValidatorValidationError[]) => {
+  return ValidationError.fromClassValidator(errors);
+};
+
 export class ValidationError extends common.BadRequestException {
   @ApiProperty()
   statusCode!: number;
