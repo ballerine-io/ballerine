@@ -1,3 +1,4 @@
+import { trace, context } from '@opentelemetry/api';
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { NextFunction, Request, Response } from 'express';
@@ -21,7 +22,7 @@ export class RequestIdMiddleware implements NestMiddleware {
 
     if (isRelevantReq) {
       reqMetadata = getReqMetadataObj(req);
-      this.setReqId(req, res);
+      this.setTraceId(req, res);
       this.logger.debug(`Incoming request`, reqMetadata);
     }
 
@@ -65,11 +66,19 @@ export class RequestIdMiddleware implements NestMiddleware {
     next();
   }
 
-  private setReqId(req: Request<unknown>, res: Response<unknown>) {
+  private setTraceId(req: Request<unknown>, res: Response<unknown>) {
+    const activeSpan = trace.getSpan(context.active());
+
     try {
-      req.id = randomUUID();
-      this.cls.set('requestId', req.id);
-      res.setHeader('X-Request-ID', req.id);
+      const traceId = activeSpan?.spanContext().traceId;
+
+      this.cls.set('traceId', traceId);
+
+      if (traceId) {
+        res.setHeader('X-Request-ID', traceId);
+      } else {
+        this.logger.error('traceId is undefined');
+      }
     } catch (e) {
       // Mainly for debugging purposes. See https://github.com/Papooch/nestjs-cls/issues/67
       this.logger.error('Could not set requestId');

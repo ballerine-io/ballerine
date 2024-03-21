@@ -1,3 +1,4 @@
+import api from '@opentelemetry/api';
 import { ClsService } from 'nestjs-cls';
 import { HttpException, Injectable } from '@nestjs/common';
 import * as Sentry from '@sentry/node';
@@ -39,7 +40,13 @@ export class SentryService {
   }
 
   private _setExtraData(scope: Sentry.Scope, request?: Request) {
-    scope.setExtra('reqId', this.cls.get('requestId'));
+    let traceId = this.cls.get('traceId');
+    if (!traceId) {
+      const activeSpan = api.trace.getSpan(api.context.active());
+      traceId = activeSpan?.spanContext().traceId;
+    }
+
+    scope.setExtra('traceId', traceId);
     scope.setExtra('assigneeId', this.cls.get('assigneeId'));
     scope.setExtra('workflowId', this.cls.get('workflowId'));
 
