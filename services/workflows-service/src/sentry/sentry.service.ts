@@ -46,7 +46,7 @@ export class SentryService {
       traceId = activeSpan?.spanContext().traceId;
     }
 
-    scope.setExtra('traceId', traceId);
+    scope.setExtra('traceId', traceId ?? 'N/A');
     scope.setExtra('assigneeId', this.cls.get('assigneeId'));
     scope.setExtra('workflowId', this.cls.get('workflowId'));
 
