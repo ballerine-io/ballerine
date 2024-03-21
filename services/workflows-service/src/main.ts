@@ -1,3 +1,7 @@
+import { tracingSdk } from './traces/tracer';
+
+tracingSdk.start();
+
 import '@total-typescript/ts-reset';
 
 import passport from 'passport';
