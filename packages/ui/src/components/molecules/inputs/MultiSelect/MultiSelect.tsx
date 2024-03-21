@@ -1,11 +1,11 @@
-import { FocusEvent, useCallback, useMemo, useRef, useState } from 'react';
-import { Command, CommandGroup, CommandInput, CommandItem } from '@/components/atoms/Command';
-import keyBy from 'lodash/keyBy';
 import { Popover, PopoverContent, PopoverTrigger, ScrollArea } from '@/components/atoms';
-import { ClickAwayListener } from '@mui/material';
-import { SelectedElementParams } from '@/components/molecules/inputs/MultiSelect/types';
+import { Command, CommandGroup, CommandInput, CommandItem } from '@/components/atoms/Command';
 import { UnselectButtonProps } from '@/components/molecules/inputs/MultiSelect/components/Chip/UnselectButton';
+import { SelectedElementParams } from '@/components/molecules/inputs/MultiSelect/types';
 import { ctw } from '@/utils/ctw';
+import { ClickAwayListener } from '@mui/material';
+import keyBy from 'lodash/keyBy';
+import { FocusEvent, useCallback, useMemo, useRef, useState } from 'react';
 
 export type MultiSelectValue = string | number;
 
@@ -25,6 +25,7 @@ export interface MultiSelectProps {
   options: MultiSelectOption[];
   searchPlaceholder?: string;
   disabled?: boolean;
+  testId?: string;
   renderSelected: MultiSelectSelectedItemRenderer;
   onChange: (selected: MultiSelectValue[], inputName: string) => void;
   onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
@@ -36,6 +37,7 @@ export const MultiSelect = ({
   options,
   searchPlaceholder = 'Select more...',
   disabled,
+  testId,
   renderSelected,
   onChange,
   onBlur,
@@ -170,6 +172,7 @@ export const MultiSelect = ({
                   className="h-6"
                   onFocus={() => setOpen(true)}
                   onBlur={onBlur}
+                  data-test-id={testId ? `${testId}-search-input` : undefined}
                 />
               </div>
             </div>
@@ -189,6 +192,7 @@ export const MultiSelect = ({
                         }}
                         onSelect={() => handleSelect(option)}
                         className={'cursor-pointer'}
+                        data-test-id={testId ? `${testId}-option` : undefined}
                       >
                         {option.title}
                       </CommandItem>

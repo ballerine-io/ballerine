@@ -10,8 +10,9 @@ export const SelectField = ({
   formData,
   uiSchema,
   disabled,
+  testId,
   onBlur,
-}: FieldProps<string>) => {
+}: FieldProps<string> & { testId?: string }) => {
   const options = useMemo((): DropdownOption[] => {
     if (!Array.isArray(schema.oneOf)) return [];
 
@@ -37,6 +38,7 @@ export const SelectField = ({
       options={options}
       value={formData}
       disabled={disabled}
+      testId={testId}
       onChange={onChange}
       onBlur={handleBlur}
     />

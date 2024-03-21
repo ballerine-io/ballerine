@@ -6,6 +6,7 @@ export const PhoneInputAdapter: RJSFInputAdapter = ({
   id,
   formData,
   disabled,
+  testId,
   onChange,
   onBlur,
 }) => {
@@ -21,6 +22,7 @@ export const PhoneInputAdapter: RJSFInputAdapter = ({
       disabled={disabled}
       enableSearch
       onChange={value => void onChange(value)}
+      data-test-id={testId}
       onBlur={handleBlur}
     />
   );

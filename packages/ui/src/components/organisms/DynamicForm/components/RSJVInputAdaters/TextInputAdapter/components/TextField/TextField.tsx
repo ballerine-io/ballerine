@@ -9,9 +9,10 @@ export const TextField = ({
   formData,
   disabled,
   schema,
+  testId,
   onChange,
   onBlur,
-}: FieldProps<string | number>) => {
+}: FieldProps<string | number> & { testId?: string }) => {
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const serializedValue =
@@ -42,8 +43,12 @@ export const TextField = ({
   };
 
   return uiSchema?.['ui:widget'] === 'textarea' ? (
-    <TextArea {...inputProps} />
+    <TextArea {...inputProps} data-test-id={testId} />
   ) : (
-    <Input {...inputProps} type={schema.type === 'number' ? 'number' : 'text'} />
+    <Input
+      {...inputProps}
+      type={schema.type === 'number' ? 'number' : 'text'}
+      data-test-id={testId}
+    />
   );
 };

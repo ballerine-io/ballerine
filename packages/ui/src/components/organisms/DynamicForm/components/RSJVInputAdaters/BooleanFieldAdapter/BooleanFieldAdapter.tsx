@@ -8,6 +8,7 @@ export const BooleanFieldAdapter: RJSFInputAdapter<boolean> = ({
   formData,
   schema,
   disabled,
+  testId,
   onChange,
   onBlur,
 }) => {
@@ -27,6 +28,7 @@ export const BooleanFieldAdapter: RJSFInputAdapter<boolean> = ({
         color="primary"
         checked={formData}
         disabled={disabled}
+        data-test-id={testId}
         onCheckedChange={e => {
           onChange(Boolean(e));
         }}

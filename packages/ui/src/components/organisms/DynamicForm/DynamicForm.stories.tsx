@@ -464,3 +464,15 @@ export const CustomSubmitButtonsLayout = {
     />
   ),
 };
+
+export const WithCustomFormPrefix = {
+  render: () => (
+    <DynamicForm
+      schema={customSubmitLayoutSchema}
+      uiSchema={customSubmitLayoutUISchema}
+      onSubmit={() => {}}
+      disabled
+      testId="rjsf-form-test-id"
+    />
+  ),
+};

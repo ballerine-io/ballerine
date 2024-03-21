@@ -8,6 +8,7 @@ export const FileInputAdapter: RJSFInputAdapter<File> = ({
   uiSchema,
   formData,
   disabled,
+  testId,
   onChange,
   onBlur,
 }) => {
@@ -55,6 +56,7 @@ export const FileInputAdapter: RJSFInputAdapter<File> = ({
         className="line-1 flex items-center"
         disabled={disabled}
         onBlur={handleBlur}
+        data-test-id={testId}
       />
     </div>
   );
