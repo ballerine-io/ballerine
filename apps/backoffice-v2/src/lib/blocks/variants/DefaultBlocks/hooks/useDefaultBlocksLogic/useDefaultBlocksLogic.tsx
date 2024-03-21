@@ -35,7 +35,7 @@ import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistry
 import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvidedBlock/useUbosUserProvidedBlock';
 import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
 import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
-import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocks/useCaseBlocks';
+import { useCaseBlocksLogic } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/useCaseBlocksLogic';
 import { useWebsiteMonitoringBlocks } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringBlocks/useWebsiteMonitoringBlocks';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
@@ -434,7 +434,7 @@ export const useDefaultBlocksLogic = () => {
     blocks = [],
     tabs,
     setTab,
-  } = useCaseBlocks(allBlocks, workflow!.workflowDefinition?.config, { workflow });
+  } = useCaseBlocksLogic(allBlocks, workflow!.workflowDefinition?.config, { workflow });
 
   return {
     blocks,

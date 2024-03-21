@@ -3,7 +3,7 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ChildDocumentBlocks } from '@/lib/blocks/components/ChildDocumentBlocks/ChildDocumentBlocks';
 import { KycBlock } from '@/lib/blocks/components/KycBlock/KycBlock';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { TCaseBlocksCreationProps } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocks/useCaseBlocks';
+import { TCaseBlocksCreationProps } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/useCaseBlocksLogic';
 
 const createKycBlocks = (workflow: TWorkflowById) => {
   const blocks = createBlocksTyped().addBlock();

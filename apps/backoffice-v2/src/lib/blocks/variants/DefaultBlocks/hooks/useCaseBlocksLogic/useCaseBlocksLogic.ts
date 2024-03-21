@@ -1,8 +1,8 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { useCaseTabs } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocks/hooks/useCaseTabs/useCaseTabs';
-import { getTabsToBlocksMap } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocks/utils/getTabsToBlocksMap';
-import { getVariantBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocks/utils/getVariantBlocks';
-import { getVariantTabs } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocks/utils/getVariantTabs';
+import { useCaseTabsLogic } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/hooks/useCaseTabsLogic/useCaseTabsLogic';
+import { getTabsToBlocksMap } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/getTabsToBlocksMap';
+import { getVariantBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/getVariantBlocks';
+import { getVariantTabs } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/getVariantTabs';
 import { useMemo } from 'react';
 
 export type TCaseBlocksCreationProps = {
@@ -11,7 +11,7 @@ export type TCaseBlocksCreationProps = {
   isLoadingReuploadNeeded: boolean;
 };
 
-export const useCaseBlocks = (
+export const useCaseBlocksLogic = (
   allBlocks: any[],
   config: TWorkflowById['workflowDefinition']['config'],
   { workflow, onReuploadNeeded, isLoadingReuploadNeeded }: TCaseBlocksCreationProps,
@@ -29,7 +29,7 @@ export const useCaseBlocks = (
     () => (config?.theme ? getVariantTabs(config.theme, tabBlocks) : []),
     [tabBlocks, config?.theme],
   );
-  const { activeTab, setTab } = useCaseTabs(tabs);
+  const { activeTab, setTab } = useCaseTabsLogic(tabs);
 
   const themeBlocks = useMemo(
     () => (config?.theme ? getVariantBlocks(tabBlocks, activeTab) : []),
