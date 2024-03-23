@@ -307,7 +307,23 @@ model Customer {
 
   @@index(name)
   @@index(customerStatus)
-  @@index([authenticationConfiguration(ops: JsonbPathOps)], type: Gin)
+}
+
+model ApiKey {
+  id           String @id @default(cuid())
+  projectId    String    
+  hashedKey    String
+  salt         String
+  validUntil   DateTime?
+  rotationInfo String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+  
+  project   Project @relation(fields: [projectId], references: [id])
+
+  @@unique([hashedKey])
 }
 
 model Project {
@@ -319,6 +335,7 @@ model Project {
   userToProjects UserToProject[]
 
   filters                  Filter[]
+  apiKeys                  ApiKey[]
   endUsers                 EndUser[]
   business                 Business[]
   workflowRuntimeData      WorkflowRuntimeData[]
