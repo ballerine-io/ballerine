@@ -63,9 +63,14 @@ export const fetcher: IFetcher = async ({
       return await handlePromise(res.blob());
     }
 
-    if (!res.headers.get('content-length') || res.headers.get('content-length') > '0') {
-      // TODO: make sure its json by checking the content-type in order to safe access to json method
-      return await handlePromise(res.json());
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.indexOf('application/json') !== -1) {
+      if (!res.headers.get('content-length') || res.headers.get('content-length') > '0') {
+        return await handlePromise(res.json());
+      }
+    } else {
+      console.error('Invalid content type. Expected application/json, got', contentType);
+      throw new Error('Invalid content type. Expected application/json');
     }
 
     return [undefined, undefined];
