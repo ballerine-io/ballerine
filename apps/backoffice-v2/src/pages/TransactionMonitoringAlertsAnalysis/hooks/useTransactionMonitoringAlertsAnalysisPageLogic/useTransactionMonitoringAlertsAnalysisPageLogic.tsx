@@ -13,6 +13,8 @@ export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
       alertId: alertId ?? '',
     });
   const { data: transactions } = useTransactionsQuery({
+    businessId: businessId ?? '',
+    // @TODO: Remove
     counterpartyId: counterpartyId ?? '',
     page: 1,
     pageSize: 50,
