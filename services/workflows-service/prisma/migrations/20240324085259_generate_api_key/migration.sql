@@ -1,11 +1,15 @@
+-- CreateEnum
+CREATE TYPE "ApiKeyType" AS ENUM ('hashed_api_key');
+
 -- CreateTable
 CREATE TABLE "ApiKey" (
     "id" TEXT NOT NULL,
-    "projectId" TEXT NOT NULL,
+    "customerId" TEXT NOT NULL,
+    "type" "ApiKeyType" NOT NULL,
     "hashedKey" TEXT NOT NULL,
-    "salt" TEXT NOT NULL,
     "validUntil" TIMESTAMP(3),
-    "rotationInfo" TEXT,
+    "additionalInfo" JSONB,
+    "rotationInfo" JSONB,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
@@ -17,4 +21,4 @@ CREATE TABLE "ApiKey" (
 CREATE UNIQUE INDEX "ApiKey_hashedKey_key" ON "ApiKey"("hashedKey");
 
 -- AddForeignKey
-ALTER TABLE "ApiKey" ADD CONSTRAINT "ApiKey_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ApiKey" ADD CONSTRAINT "ApiKey_customerId_fkey" FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

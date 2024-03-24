@@ -1,0 +1,1 @@
+ALTER TABLE "ApiKey" ADD CONSTRAINT apikey_min_length CHECK (char_length("hashedKey") >= 5);

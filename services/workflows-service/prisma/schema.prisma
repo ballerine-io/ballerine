@@ -304,24 +304,34 @@ model Customer {
   updatedAt DateTime @updatedAt
 
   projects Project[]
+  apiKeys                  ApiKey[]
 
   @@index(name)
   @@index(customerStatus)
 }
 
+enum ApiKeyType {
+  hashed_api_key
+}
+
 model ApiKey {
   id           String @id @default(cuid())
-  projectId    String    
+
+  customerId    String    
+
+  type         ApiKeyType
   hashedKey    String
-  salt         String
+  
   validUntil   DateTime?
-  rotationInfo String?
+
+  additionalInfo Json?
+  rotationInfo Json?
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   deletedAt    DateTime?
   
-  project   Project @relation(fields: [projectId], references: [id])
+  customer   Customer @relation(fields: [customerId], references: [id])
 
   @@unique([hashedKey])
 }
@@ -335,7 +345,6 @@ model Project {
   userToProjects UserToProject[]
 
   filters                  Filter[]
-  apiKeys                  ApiKey[]
   endUsers                 EndUser[]
   business                 Business[]
   workflowRuntimeData      WorkflowRuntimeData[]

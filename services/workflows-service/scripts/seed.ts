@@ -1,5 +1,14 @@
+import { encryptApiKey, generateApiKey } from './../src/auth/api-key/utils';
 import { faker } from '@faker-js/faker';
-import { Business, Customer, EndUser, Prisma, PrismaClient, Project } from '@prisma/client';
+import {
+  ApiKeyType,
+  Business,
+  Customer,
+  EndUser,
+  Prisma,
+  PrismaClient,
+  Project,
+} from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import {
@@ -80,11 +89,13 @@ async function createCustomer(
       id: `customer-${id}`,
       name: `customer-${id}`,
       displayName: `Customer ${id}`,
+      apiKeys: {
+        create: {
+          type: ApiKeyType.hashed_api_key,
+          hashedKey: encryptApiKey(apiKey),
+        },
+      },
       authenticationConfiguration: {
-        apiType: 'API_KEY',
-        authValue: apiKey,
-        validUntil: '',
-        isValid: '',
         webhookSharedSecret,
       },
       logoImageUri: logoImageUri,
@@ -93,6 +104,24 @@ async function createCustomer(
       language: 'en',
     },
   });
+  // return client.customer.create({
+  //   data: {
+  //     id: `customer-${id}`,
+  //     name: `customer-${id}`,
+  //     displayName: `Customer ${id}`,
+  //     authenticationConfiguration: {
+  //       apiType: 'API_KEY',
+  //       authValue: apiKey,
+  //       validUntil: '',
+  //       isValid: '',
+  //       webhookSharedSecret,
+  //     },
+  //     logoImageUri: logoImageUri,
+  //     faviconImageUri,
+  //     country: 'GB',
+  //     language: 'en',
+  //   },
+  // });
 }
 
 async function createProject(client: PrismaClient, customer: Customer, id: string) {
