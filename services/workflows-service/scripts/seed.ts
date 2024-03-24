@@ -104,24 +104,6 @@ async function createCustomer(
       language: 'en',
     },
   });
-  // return client.customer.create({
-  //   data: {
-  //     id: `customer-${id}`,
-  //     name: `customer-${id}`,
-  //     displayName: `Customer ${id}`,
-  //     authenticationConfiguration: {
-  //       apiType: 'API_KEY',
-  //       authValue: apiKey,
-  //       validUntil: '',
-  //       isValid: '',
-  //       webhookSharedSecret,
-  //     },
-  //     logoImageUri: logoImageUri,
-  //     faviconImageUri,
-  //     country: 'GB',
-  //     language: 'en',
-  //   },
-  // });
 }
 
 async function createProject(client: PrismaClient, customer: Customer, id: string) {
