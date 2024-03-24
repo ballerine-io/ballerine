@@ -65,7 +65,10 @@ export const fetcher: IFetcher = async ({
 
     if (!res.headers.get('content-length') || res.headers.get('content-length') > '0') {
       // TODO: make sure its json by checking the content-type in order to safe access to json method
-      return await handlePromise(res.json());
+      const contentType = res.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        return await handlePromise(res.json());
+      }
     }
 
     return [undefined, undefined];
