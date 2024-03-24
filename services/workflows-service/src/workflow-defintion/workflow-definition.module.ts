@@ -8,17 +8,16 @@ import { ProjectScopeService } from '@/project/project-scope.service';
 import { FilterRepository } from '@/filter/filter.repository';
 import { CustomerService } from '@/customer/customer.service';
 import { CustomerRepository } from '@/customer/customer.repository';
+import { CustomerModule } from '@/customer/customer.module';
 
 @Module({
-  imports: [PrismaModule, FilterModule],
+  imports: [PrismaModule, FilterModule, CustomerModule],
   providers: [
     WorkflowDefinitionRepository,
     FilterService,
     WorkflowDefinitionService,
     ProjectScopeService,
     FilterRepository,
-    CustomerService,
-    CustomerRepository,
   ],
   exports: [WorkflowDefinitionRepository, WorkflowDefinitionService],
 })
