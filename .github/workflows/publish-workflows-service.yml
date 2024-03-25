@@ -13,6 +13,7 @@ on:
       - staging
       - sb
       - demo
+      - alonp-gh-actions1
 
 env:
   REGISTRY: ghcr.io
