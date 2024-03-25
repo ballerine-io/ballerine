@@ -1,4 +1,4 @@
-import { generateSalt, hashKey } from './utils';
+import { KEY_MIN_LENGTH, generateSalt, hashKey } from './utils';
 
 describe('Checks hashing utils', () => {
   it('should generate random salt', async () => {
@@ -42,5 +42,19 @@ describe('Checks hashing utils', () => {
     const key = 'test';
 
     await expect(async () => hashKey(key)).rejects.toThrow('Invalid key length');
+  });
+
+  it('accepts key with minimum acceptable length', async () => {
+    const key = 'a'.repeat(KEY_MIN_LENGTH); // Generates a string with 'minKeyLength' characters
+    const salt = await generateSalt();
+    const hashedKey = await hashKey(key, salt);
+    expect(hashedKey).toBeDefined();
+    expect(typeof hashedKey).toBe('string');
+  });
+
+  it('rejects key one character shorter than minimum length', async () => {
+    const shortKey = 'a'.repeat(KEY_MIN_LENGTH - 1); // Assuming MIN_KEY_LENGTH is defined
+    const salt = await generateSalt();
+    await expect(async () => hashKey(shortKey, salt)).rejects.toThrow('Invalid key length');
   });
 });
