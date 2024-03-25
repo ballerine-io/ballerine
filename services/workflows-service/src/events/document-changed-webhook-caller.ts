@@ -13,7 +13,6 @@ import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { ConfigService } from '@nestjs/config';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
-import { env } from '@/env';
 import { sign } from '@/common/utils/sign/sign';
 
 const getExtensionFromMimeType = (mimeType: string) => {
@@ -201,7 +200,7 @@ export class DocumentChangedWebhookCaller {
 
       const res = await this.#__axios.post(url, payload, {
         headers: {
-          'X-Authorization': env.WEBHOOK_SECRET,
+          'X-Authorization': webhookSharedSecret,
           'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
         },
       });

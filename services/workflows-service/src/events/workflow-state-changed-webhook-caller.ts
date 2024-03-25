@@ -8,7 +8,6 @@ import { alertWebhookFailure } from '@/events/alert-webhook-failure';
 import { ExtractWorkflowEventData } from '@/workflow/types';
 import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { sign } from '@/common/utils/sign/sign';
-import { env } from '@/env';
 import { CustomerService } from '@/customer/customer.service';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 
@@ -93,7 +92,7 @@ export class WorkflowStateChangedWebhookCaller {
     try {
       const res = await this.#__axios.post(url, payload, {
         headers: {
-          'X-Authorization': env.WEBHOOK_SECRET,
+          'X-Authorization': webhookSharedSecret,
           'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
         },
       });

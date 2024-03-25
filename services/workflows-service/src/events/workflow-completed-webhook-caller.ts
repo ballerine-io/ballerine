@@ -10,7 +10,6 @@ import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeData } from '@prisma/client';
 import { StateTag } from '@ballerine/common';
-import { env } from '@/env';
 import { sign } from '@/common/utils/sign/sign';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
@@ -111,7 +110,7 @@ export class WorkflowCompletedWebhookCaller {
 
       const res = await this.#__axios.post(url, payload, {
         headers: {
-          'X-Authorization': env.WEBHOOK_SECRET,
+          'X-Authorization': webhookSharedSecret,
           'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
         },
       });
