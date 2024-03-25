@@ -1,39 +1,39 @@
 ---
 - name: Replace VITE URL for backoffice
   lineinfile:
-    path: '~/ballerine/apps/backoffice-v2/.env.example'
+    path: '{{ install_dir }}/apps/backoffice-v2/.env.example'
     regexp: '^(.*)VITE_API_URL(.*)$'
     line: "VITE_API_URL=https://{{ vite_api_url }}/api/v1/internal"
     backrefs: yes
-  when: vite_api_url is defined
+  when: vite_api_url|length > 0
 
 - name: Replace VITE URL for kyb-app
   lineinfile:
-    path: '~/ballerine/apps/kyb-app/.env.example'
+    path: '{{ install_dir }}/apps/kyb-app/.env.example'
     regexp: '^(.*)VITE_API_URL(.*)$'
     line: "VITE_API_URL=https://{{ vite_api_url }}/api/v1/"
     backrefs: yes
-  when: vite_api_url is defined
+  when: vite_api_url|length > 0
 
 - name: Replace VITE URL for workflow-dashboard
   lineinfile:
-    path: '~/ballerine/apps/workflows-dashboard/.env.example'
+    path: '{{ install_dir }}/apps/workflows-dashboard/.env.example'
     regexp: '^(.*)VITE_API_URL(.*)$'
     line: "VITE_API_URL=https://{{ vite_api_url }}/api/v1/"
     backrefs: yes
-  when: vite_api_url is defined
+  when: vite_api_url|length > 0
 
 - name: Create Caddy directory for https
   ansible.builtin.file:
     path: "{{ install_dir }}/deploy/caddy"
     state: directory
-  when: vite_api_url is defined
+  when: vite_api_url|length > 0
 
 - name: create Caddyfile for https
   ansible.builtin.template:
     src: templates/Caddyfile.j2
     dest: "{{ install_dir }}/deploy/caddy/Caddyfile"
-  when: vite_api_url is defined
+  when: vite_api_url|length > 0
 
 - name: Deploy Ballerine with https
   community.docker.docker_compose:
@@ -136,7 +136,7 @@
         postgres15: ~
   become: true
   register: output
-  when: vite_api_url is defined
+  when: vite_api_url|length > 0
 
 - name: Deploy Ballerine locally
   community.docker.docker_compose:
@@ -227,4 +227,4 @@
         postgres15: ~
   become: true
   register: output
-  when: vite_api_url is not defined
+  when: vite_api_url|length == 0
