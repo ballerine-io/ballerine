@@ -32,5 +32,5 @@ export const generateApiKey = (options?: {
     ? new Date(Date.now() + expiresInDays * ONE_DAY_IN_MS)
     : undefined;
 
-  return { apiKey: _apiKey, hashedKey, validUntil, type: ApiKeyType.hashed_api_key };
+  return { apiKey: _apiKey, hashedKey, validUntil, type: ApiKeyType.one_way };
 };

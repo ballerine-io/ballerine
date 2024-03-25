@@ -311,7 +311,8 @@ model Customer {
 }
 
 enum ApiKeyType {
-  hashed_api_key
+  one_way
+  two_way
 }
 
 model ApiKey {

@@ -91,7 +91,7 @@ async function createCustomer(
       displayName: `Customer ${id}`,
       apiKeys: {
         create: {
-          type: ApiKeyType.hashed_api_key,
+          type: ApiKeyType.one_way,
           hashedKey: encryptApiKey(apiKey),
         },
       },
