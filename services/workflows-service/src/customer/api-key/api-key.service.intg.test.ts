@@ -42,7 +42,7 @@ describe('#ApiKeyService', () => {
     await createProject(prismaClient, customer, faker.datatype.uuid());
   });
 
-  it('creates same a api key for customer using a salt should throw a unique constraint error', async () => {
+  it('Creating an API key for a customer using the same salt should throw a unique constraint error', async () => {
     const apiKey1 = await apiKeyService.createHashedApiKey(customer.id, {
       key: 'blabla',
       salt: `$2b$10$FovZTB91/QQ4Yu28nvL8e.`,
@@ -110,7 +110,7 @@ describe('#ApiKeyService', () => {
     await expect(apiKeyService.find(apiKey.hashedKey)).resolves.toBe(null);
   });
 
-  it('api key should be less than 5 chars', async () => {
+  it('API key should not be less than 5 characters', async () => {
     const apiKeyVal = 'aaaa';
 
     await expect(async () =>
