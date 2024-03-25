@@ -1,6 +1,6 @@
 import { PrismaModule } from '@/prisma/prisma.module';
 import { PrismaService } from '@/prisma/prisma.service';
-import { createCustomerOnly } from '@/test/helpers/create-customer';
+import { createCustomer } from '@/test/helpers/create-customer';
 import { createProject } from '@/test/helpers/create-project';
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 import { initiateNestApp } from '@/test/helpers/nest-app-helper';
@@ -31,9 +31,10 @@ describe('#ApiKeyService', () => {
   });
 
   beforeEach(async () => {
-    customer = await createCustomerOnly(
+    customer = await createCustomer(
       prismaClient,
       faker.datatype.uuid(),
+      undefined, // do not create an api key
       '',
       '',
       'webhook-shared-secret',

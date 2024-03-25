@@ -1,7 +1,7 @@
 import { generateSalt, hashKey } from './utils';
 
 describe('Checks hashing utils', () => {
-  it('should genereate random salt', async () => {
+  it('should generate random salt', async () => {
     const salt1 = await generateSalt();
     const salt2 = await generateSalt();
 
@@ -11,7 +11,7 @@ describe('Checks hashing utils', () => {
     expect(salt1).not.toEqual(salt2);
   });
 
-  it('should genereate key with a random salt', async () => {
+  it('should generate key with a random salt', async () => {
     const salt1 = await generateSalt();
     const salt2 = await generateSalt();
 
@@ -24,7 +24,7 @@ describe('Checks hashing utils', () => {
     expect(hashedKey1).not.toEqual(hashedKey2);
   });
 
-  it('should genereate same hashed key with same salt', async () => {
+  it('should generate same hashed key with same salt', async () => {
     const salt = await generateSalt();
 
     const key = 'test_key';

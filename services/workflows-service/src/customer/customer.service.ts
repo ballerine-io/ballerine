@@ -14,7 +14,7 @@ export class CustomerService {
   async create(args: Parameters<CustomerRepository['create']>[0]) {
     // @ts-expect-error - prisma json not updated
     const authValue = args.data?.authenticationConfiguration?.authValue;
-    const { hashedKey, validUntil, type } = await generateHashedKey({ key: authValue });
+    const { hashedKey, validUntil } = await generateHashedKey({ key: authValue });
 
     const dbCustomer = await this.repository.create({
       ...args,
@@ -22,7 +22,6 @@ export class CustomerService {
         ...args.data,
         apiKeys: {
           create: {
-            type,
             hashedKey,
             validUntil,
           },

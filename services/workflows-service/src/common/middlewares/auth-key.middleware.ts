@@ -24,16 +24,15 @@ export class AuthKeyMiddleware implements NestMiddleware {
 
       this.cls.set('entity', {
         customer: {
-          id: dbApiKey.customer.id,
-          name: dbApiKey.customer.name,
+          id,
+          name,
         },
         type: 'customer',
       });
 
       req.user = {
         customer: customerWithoutProjects,
-        // @ts-expect-error `User`'s type does not match the `Customer`'s type
-        projectIds: customer.projects?.map(project => project.id),
+        projectIds: projects?.map(project => project.id),
         type: 'customer',
       };
     }

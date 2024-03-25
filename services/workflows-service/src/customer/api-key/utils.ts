@@ -1,15 +1,19 @@
 import { env } from '@/env';
 import { faker } from '@faker-js/faker';
-import { ApiKeyType } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const ONE_DAY_IN_MS = 1000 * 60 * 60 * 24;
+
 const PASSWORD_REGEX = /[!@#$%^&*a-zA-Z]/;
+
 const API_KEY_LEN = 50;
+
+const SALT = env.HASHING_KEY_SECRET ?? '$2b$10$FovZTB91/QQ4Yu28nvL8e.';
+
 const DEFAULT_HASHIING_OPTIONS = {
   key: undefined,
   expiresInDays: undefined,
-  salt: env.HASHING_KEY_SECRET ?? env.BCRYPT_SALT,
+  salt: SALT,
 };
 
 export const hashKey = async (apiKey: string, salt?: string) => {
@@ -18,7 +22,7 @@ export const hashKey = async (apiKey: string, salt?: string) => {
       return reject(new Error('Invalid key length'));
     }
 
-    bcrypt.hash(apiKey, salt ?? env.HASHING_KEY_SECRET, (err, hashedKey) => {
+    bcrypt.hash(apiKey, salt ?? SALT, (err, hashedKey) => {
       if (err) {
         reject(err);
       } else {
@@ -43,7 +47,7 @@ export const generateHashedKey = async (options?: {
     ? new Date(Date.now() + expiresInDays * ONE_DAY_IN_MS)
     : undefined;
 
-  return { apiKey: _key, hashedKey, validUntil, type: ApiKeyType.one_way };
+  return { apiKey: _key, hashedKey, validUntil };
 };
 
 export const generateSalt = (rounds?: number): Promise<string> => {

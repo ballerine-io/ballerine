@@ -310,17 +310,11 @@ model Customer {
   @@index(customerStatus)
 }
 
-enum ApiKeyType {
-  one_way
-  two_way
-}
-
 model ApiKey {
   id           String @id @default(cuid())
 
   customerId    String    
 
-  type         ApiKeyType
   hashedKey    String
   
   validUntil   DateTime?

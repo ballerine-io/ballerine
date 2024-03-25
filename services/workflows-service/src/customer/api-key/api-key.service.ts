@@ -12,12 +12,11 @@ export class ApiKeyService {
     customerId: string,
     options?: { key?: string; expiresInDays?: number; salt?: string },
   ): Promise<ApiKey> {
-    const { hashedKey, validUntil, type } = await generateHashedKey(options);
+    const { hashedKey, validUntil } = await generateHashedKey(options);
 
     const dbApiKey = await this.apiKeyRepository.create({
       data: {
         customerId,
-        type,
         hashedKey,
         validUntil,
       },
