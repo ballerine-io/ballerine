@@ -2,7 +2,7 @@ import { ApiKeyRepository } from './api-key.repository';
 
 import { Injectable } from '@nestjs/common';
 import { ApiKey } from '@prisma/client';
-import { encryptApiKey, generateApiKey } from './utils';
+import { hashKey, generateHashedKey } from './utils';
 
 @Injectable()
 export class ApiKeyService {
@@ -10,9 +10,9 @@ export class ApiKeyService {
 
   async createHashedApiKey(
     customerId: string,
-    options?: { apiKey?: string; expiresInDays?: number },
+    options?: { key?: string; expiresInDays?: number },
   ): Promise<ApiKey> {
-    const { hashedKey, validUntil, type } = generateApiKey(options);
+    const { hashedKey, validUntil, type } = await generateHashedKey(options);
 
     const dbApiKey = await this.apiKeyRepository.create({
       data: {
@@ -27,16 +27,12 @@ export class ApiKeyService {
   }
 
   async find(apiKey: string) {
-    const hashedKey = encryptApiKey(apiKey);
+    const hashedKey = await hashKey(apiKey);
 
     return await this.apiKeyRepository.find(hashedKey);
   }
 
   async deleteApiKey(hashedKey: string) {
     return await this.apiKeyRepository.delete(hashedKey);
-  }
-
-  verifyHashedApiKey(apiKey: string, hashedApiKey: string) {
-    return encryptApiKey(hashedApiKey) === apiKey;
   }
 }

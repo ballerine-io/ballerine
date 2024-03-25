@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import type { TProjectId, TProjectIds } from '@/types';
 import { ApiKey, Prisma } from '@prisma/client';
-import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Injectable()
 export class ApiKeyRepository {
@@ -14,6 +12,7 @@ export class ApiKeyRepository {
     return await this.prisma.apiKey.create<T>(args);
   }
 
+  // eslint-disable-next-line ballerine/verify-repository-project-scoped
   async find(hashedKey: string) {
     return await this.prisma.apiKey.findFirst({
       include: {
@@ -30,16 +29,7 @@ export class ApiKeyRepository {
     });
   }
 
-  async findMany<T extends Omit<Prisma.ApiKeyFindManyArgs, 'where'>>(customerId: string, args?: T) {
-    return await this.prisma.apiKey.findMany({
-      ...(args || {}),
-      where: {
-        customerId,
-        deletedAt: null,
-      },
-    });
-  }
-
+  // eslint-disable-next-line ballerine/verify-repository-project-scoped
   async delete(hashedKey: string): Promise<void> {
     await this.prisma.apiKey.update({
       where: {

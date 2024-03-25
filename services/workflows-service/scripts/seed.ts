@@ -1,4 +1,4 @@
-import { encryptApiKey, generateApiKey } from './../src/auth/api-key/utils';
+import { hashApiKey } from './../src/customer/api-key/utils';
 import { faker } from '@faker-js/faker';
 import {
   ApiKeyType,
@@ -92,7 +92,7 @@ async function createCustomer(
       apiKeys: {
         create: {
           type: ApiKeyType.one_way,
-          hashedKey: encryptApiKey(apiKey),
+          hashedKey: await hashApiKey(apiKey),
         },
       },
       authenticationConfiguration: {

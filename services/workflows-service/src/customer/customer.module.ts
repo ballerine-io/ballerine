@@ -7,7 +7,6 @@ import { CustomerControllerExternal } from '@/customer/customer.controller.exter
 import { PrismaModule } from '@/prisma/prisma.module';
 import { ApiKeyRepository } from '@/customer/api-key/api-key.repository';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
-import { ProjectScopeService } from '@/project/project-scope.service';
 
 @Module({
   imports: [ACLModule, PrismaModule],
