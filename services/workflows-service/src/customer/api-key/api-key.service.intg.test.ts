@@ -17,7 +17,6 @@ describe('#ApiKeyService', () => {
   let prismaClient: PrismaClient;
   let customer: Customer;
 
-  beforeAll(cleanupDatabase);
   afterEach(tearDownDatabase);
 
   beforeAll(async () => {
