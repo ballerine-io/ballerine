@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "ApiKeyType" AS ENUM ('hashed_api_key');
+CREATE TYPE "ApiKeyType" AS ENUM ('one_way', 'two_way');
 
 -- CreateTable
 CREATE TABLE "ApiKey" (
