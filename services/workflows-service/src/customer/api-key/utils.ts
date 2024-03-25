@@ -16,13 +16,13 @@ const DEFAULT_HASHIING_OPTIONS = {
   salt: SALT,
 };
 
-export const hashKey = async (apiKey: string, salt?: string) => {
+export const hashKey = async (key: string, salt?: string) => {
   return new Promise<string>((resolve, reject) => {
-    if (apiKey && apiKey.length < 5) {
+    if (key && key.length < 5) {
       return reject(new Error('Invalid key length'));
     }
 
-    bcrypt.hash(apiKey, salt ?? SALT, (err, hashedKey) => {
+    bcrypt.hash(key, salt ?? SALT, (err, hashedKey) => {
       if (err) {
         reject(err);
       } else {
