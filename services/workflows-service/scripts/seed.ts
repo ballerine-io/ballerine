@@ -1,14 +1,6 @@
-import { hashApiKey } from './../src/customer/api-key/utils';
+import { hashKey } from './../src/customer/api-key/utils';
 import { faker } from '@faker-js/faker';
-import {
-  ApiKeyType,
-  Business,
-  Customer,
-  EndUser,
-  Prisma,
-  PrismaClient,
-  Project,
-} from '@prisma/client';
+import { Business, Customer, EndUser, Prisma, PrismaClient, Project } from '@prisma/client';
 import { hash } from 'bcrypt';
 import { customSeed } from './custom-seed';
 import {
@@ -91,8 +83,7 @@ async function createCustomer(
       displayName: `Customer ${id}`,
       apiKeys: {
         create: {
-          type: ApiKeyType.one_way,
-          hashedKey: await hashApiKey(apiKey),
+          hashedKey: await hashKey(apiKey),
         },
       },
       authenticationConfiguration: {

@@ -1,11 +1,7 @@
--- CreateEnum
-CREATE TYPE "ApiKeyType" AS ENUM ('one_way', 'two_way');
-
 -- CreateTable
 CREATE TABLE "ApiKey" (
     "id" TEXT NOT NULL,
     "customerId" TEXT NOT NULL,
-    "type" "ApiKeyType" NOT NULL,
     "hashedKey" TEXT NOT NULL,
     "validUntil" TIMESTAMP(3),
     "additionalInfo" JSONB,
