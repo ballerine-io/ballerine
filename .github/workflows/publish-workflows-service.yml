@@ -3,6 +3,9 @@ name: Publish workflows-service image
 on:
   workflow_dispatch:
   push:
+    paths:
+      # Run this pipeline only if there are changes in specified path
+      - 'services/workflows-service/**'
     branches:
       - dev
       - test
@@ -10,7 +13,6 @@ on:
       - staging
       - sb
       - demo
-      - alonp-gh-actions
 
 env:
   REGISTRY: ghcr.io
@@ -163,14 +165,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
         with:
-          limit-access-to-users: alonp99
-
-      - name: Clone submodule repository
-        run: git clone --recursive git@github.com:ballerine-io/wf-data-migration.git services/workflows-service/prisma/data-migrations
+          fetch-depth: 0
+    
+      - name: Checkout submodule repository
+        uses: actions/checkout@v3
+        with:
+          repository: ballerine-io/data-migrations
+          token: ${{ secrets.SUBMODULES_TOKEN }}
+          path: services/workflows-service/prisma/data-migrations
+          ref: ${{ github.ref_name }}
 
       - name: Get package version from package.json
         id: get_version
