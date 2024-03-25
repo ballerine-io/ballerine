@@ -30,7 +30,6 @@ export const createCustomer = async (
       name: `Customer ${id}`,
       displayName: `Customer ${id}`,
       authenticationConfiguration: {
-        authValue: apiKey, // TODO: Remove this field
         webhookSharedSecret,
       },
       apiKeys,
