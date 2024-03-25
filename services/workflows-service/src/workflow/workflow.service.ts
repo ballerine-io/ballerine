@@ -71,7 +71,7 @@ import { isEqual, merge } from 'lodash';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
-import { WorkflowEventInput } from './dtos/workflow-event-input';
+import { WorkflowEventInputSchema } from './dtos/workflow-event-input';
 import { ConfigSchema, WorkflowConfig } from './schemas/zod-schemas';
 import {
   ListRuntimeDataResult,
@@ -94,6 +94,7 @@ import {
   defaultPrismaTransactionOptions,
 } from '@/prisma/prisma.util';
 import { BusinessService } from '@/business/business.service';
+import { Static } from '@sinclair/typebox';
 
 type TEntityId = string;
 
@@ -1815,7 +1816,7 @@ export class WorkflowService {
   }
 
   async event(
-    { name: type, id, payload }: WorkflowEventInput & IObjectWithId,
+    { name: type, id, payload }: Static<typeof WorkflowEventInputSchema> & IObjectWithId,
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
     transaction?: PrismaTransaction,

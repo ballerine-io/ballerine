@@ -17,15 +17,15 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    return this._handleHttpErrorResponse(exception, request, response);
+    return this.__handleHttpErrorResponse(exception, request, response);
   }
 
-  private _handleHttpErrorResponse(exception: unknown, request: Request, response: Response) {
+  private __handleHttpErrorResponse(exception: unknown, request: Request, response: Response) {
     const errors = exception instanceof ValidationError ? { errors: exception.getErrors() } : {};
 
     const serverError = this.getHttpException(exception);
 
-    if (this._logErrorIfRelevant(serverError.getStatus())) {
+    if (this.__logErrorIfRelevant(serverError.getStatus())) {
       this.logError(request, serverError);
     }
 
@@ -60,14 +60,14 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     return error instanceof HttpException;
   }
 
-  private _logErrorIfRelevant(status: number) {
+  private __logErrorIfRelevant(status: number) {
     // Dont log 401/403 errors or log every error if debug
     return (status >= 400 && ![401, 403].includes(status)) || env.LOG_LEVEL === 'debug';
   }
 
   private logError(request: Request<unknown>, error: HttpException) {
     const status = error.getStatus();
-    const message = this.composeLogMesesageForStatus(status);
+    const message = this.composeLogMessageForStatus(status);
     const errorRes = error.getResponse() as HttpException | undefined;
 
     this.logger.error(message, {
@@ -79,7 +79,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     });
   }
 
-  private composeLogMesesageForStatus(status: number) {
+  private composeLogMessageForStatus(status: number) {
     let message = `Outgoing response - Failure`;
 
     if (status >= 400 && status < 500) {

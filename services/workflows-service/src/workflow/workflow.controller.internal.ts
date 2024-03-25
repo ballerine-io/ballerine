@@ -35,12 +35,17 @@ import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
 import { DocumentUpdateInput } from './dtos/document-update-update-input';
 import { EmitSystemBodyInput, EmitSystemParamInput } from './dtos/emit-system-event-input';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
-import { WorkflowEventInput } from './dtos/workflow-event-input';
-import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
+import { WorkflowEventInputSchema } from './dtos/workflow-event-input';
+import {
+  WorkflowDefinitionWhereUniqueInput,
+  WorkflowDefinitionWhereUniqueInputSchema,
+} from './dtos/workflow-where-unique-input';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
 import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { FilterQuery } from '@/workflow/types';
+import { Validate } from 'nestjs-typebox';
+import { type Static, Type } from '@sinclair/typebox';
 
 @swagger.ApiExcludeController()
 @common.Controller('internal/workflows')
@@ -139,16 +144,30 @@ export class WorkflowControllerInternal {
   @swagger.ApiOkResponse()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @Validate({
+    request: [
+      {
+        type: 'param',
+        name: 'id',
+        schema: WorkflowDefinitionWhereUniqueInputSchema,
+      },
+      {
+        type: 'body',
+        schema: WorkflowEventInputSchema,
+      },
+    ],
+    response: Type.Any(),
+  })
   async event(
-    @common.Param() params: WorkflowDefinitionWhereUniqueInput,
-    @common.Body() data: WorkflowEventInput,
+    @common.Param('id') id: Static<typeof WorkflowDefinitionWhereUniqueInputSchema>,
+    @common.Body() data: Static<typeof WorkflowEventInputSchema>,
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
   ): Promise<void> {
     await this.service.event(
       {
         ...data,
-        id: params.id,
+        id,
       },
       projectIds,
       currentProjectId,

@@ -3,12 +3,12 @@ import { UseGuards } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UserModel } from './user.model';
-import { UserCreateDto } from '@/user/dtos/user-create';
 import { AdminAuthGuard } from '@/common/guards/admin-auth.guard';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { UserStatus } from '@prisma/client';
+import { UserCreateDto } from '@/user/dtos/user-create';
 
 @swagger.ApiExcludeController()
 @common.Controller('internal/users')
@@ -47,10 +47,10 @@ export class UserControllerInternal {
   @UseGuards(AdminAuthGuard)
   @swagger.ApiForbiddenResponse()
   async create(
-    @common.Body() userCreatInfo: UserCreateDto,
+    @common.Body() userCreateInfo: UserCreateDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const { projectIds, ...userInfo } = userCreatInfo;
+    const { projectIds, ...userInfo } = userCreateInfo;
 
     return this.service.create(
       {

@@ -4,12 +4,14 @@ import { PrismaClientValidationFilter } from '@/common/filters/prisma-client-val
 import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { SessionExpiredExceptionFilter } from './session-exception.filter';
+import { TypeboxValidationExceptionFilter } from '@/common/filters/TypeboxExceptions.filter';
 
 @Module({
   providers: [
     { provide: APP_FILTER, useClass: HttpExceptionFilter },
     { provide: APP_FILTER, useClass: SessionExpiredExceptionFilter },
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
+    { provide: APP_FILTER, useClass: TypeboxValidationExceptionFilter },
     { provide: APP_FILTER, useClass: PrismaClientValidationFilter },
   ],
 })
