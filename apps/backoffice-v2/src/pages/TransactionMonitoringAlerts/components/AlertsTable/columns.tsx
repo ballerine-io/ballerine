@@ -98,7 +98,7 @@ export const columns = [
             'w-20 py-0.5 font-bold',
           )}
         >
-          {severity}
+          {titleCase(severity ?? '')}
         </TextWithNAFallback>
       );
     },
@@ -129,7 +129,7 @@ export const columns = [
           {!assignee && <UserCircle2 className={'stroke-[#E4E4E7]'} size={22} />}
           {assignee && (
             <Avatar className={`d-[1.375rem]`}>
-              <AvatarImage />
+              <AvatarImage src={assignee?.avatarUrl} />
               <AvatarFallback className={'bg-[#DCE1E8] text-xs'}>
                 {createInitials(assignee?.fullName)}
               </AvatarFallback>
