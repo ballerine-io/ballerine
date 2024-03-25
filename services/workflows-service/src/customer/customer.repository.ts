@@ -1,7 +1,6 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { Customer, Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
-import { CustomerWithProjects } from '@/types';
 
 @Injectable()
 export class CustomerRepository {
@@ -61,31 +60,6 @@ export class CustomerRepository {
       ...args,
     });
   }
-
-  // async findByApiKey<T extends Omit<Prisma.CustomerFindFirstArgs, 'where'>>(
-  //   apiKey: string,
-  // ): Promise<CustomerWithProjects | null> {
-  //   return this.prisma.customer.findFirst({
-  //     where: {
-  //       authenticationConfiguration: {
-  //         path: ['authValue'],
-  //         equals: apiKey,
-  //       },
-  //     },
-  //     select: {
-  //       id: true,
-  //       name: true,
-  //       authenticationConfiguration: true,
-  //       displayName: true,
-  //       logoImageUri: true,
-  //       faviconImageUri: true,
-  //       customerStatus: true,
-  //       country: true,
-  //       language: true,
-  //       projects: true,
-  //     },
-  //   });
-  // }
 
   async updateById<T extends Omit<Prisma.CustomerUpdateArgs, 'where'>>(
     id: string,

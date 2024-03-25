@@ -117,7 +117,7 @@ describe('AlertService', () => {
         );
       });
 
-      it.only('When there are less than 15 chargeback transactions, no alert should be created', async () => {
+      it('When there are less than 15 chargeback transactions, no alert should be created', async () => {
         // Arrange
         const business1Transactions = await baseTransactionFactory.count(14).create({
           transactionType: TransactionRecordType.chargeback,

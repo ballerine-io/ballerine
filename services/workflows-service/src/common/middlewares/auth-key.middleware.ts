@@ -1,9 +1,7 @@
 import { isEmpty } from 'lodash';
 import { Injectable, NestMiddleware, Scope } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
-import { CustomerService } from '@/customer/customer.service';
 import { ClsService } from 'nestjs-cls';
-import { ApiKey } from '@prisma/client';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
 
 @Injectable({ scope: Scope.REQUEST })

@@ -1,4 +1,4 @@
-import { generateApiKey } from '@/customer/api-key/utils';
+import { generateHashedKey } from '@/customer/api-key/utils';
 import { PrismaClient } from '@prisma/client';
 
 export const createCustomerOnly = async (
@@ -19,7 +19,7 @@ export const createCustomer = async (
   faviconImageUri: string,
   webhookSharedSecret: string,
 ) => {
-  const { hashedKey, type } = generateApiKey({ apiKey });
+  const { hashedKey, type } = await generateHashedKey({ key: apiKey });
 
   const apiKeys = apiKey
     ? {

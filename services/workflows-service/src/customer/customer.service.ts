@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CustomerRepository } from '@/customer/customer.repository';
 import { Prisma } from '@prisma/client';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
-import { generateApiKey } from '@/customer/api-key/utils';
+import { generateHashedKey } from '@/customer/api-key/utils';
 
 @Injectable()
 export class CustomerService {
@@ -14,7 +14,7 @@ export class CustomerService {
   async create(args: Parameters<CustomerRepository['create']>[0]) {
     // @ts-expect-error - prisma json not updated
     const authValue = args.data?.authenticationConfiguration?.authValue;
-    const { hashedKey, validUntil, type } = generateApiKey({ apiKey: authValue });
+    const { hashedKey, validUntil, type } = await generateHashedKey({ key: authValue });
 
     const dbCustomer = await this.repository.create({
       ...args,
