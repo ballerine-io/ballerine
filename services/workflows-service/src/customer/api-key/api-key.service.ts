@@ -10,7 +10,7 @@ export class ApiKeyService {
 
   async createHashedApiKey(
     customerId: string,
-    options?: { key?: string; expiresInDays?: number },
+    options?: { key?: string; expiresInDays?: number; salt?: string },
   ): Promise<ApiKey> {
     const { hashedKey, validUntil, type } = await generateHashedKey(options);
 

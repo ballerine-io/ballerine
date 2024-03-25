@@ -10,9 +10,6 @@ import { Customer, PrismaClient } from '@prisma/client';
 import { ClsModule } from 'nestjs-cls';
 import { ApiKeyService } from './api-key.service';
 import { ApiKeyRepository } from './api-key.repository';
-import { hashKey } from './utils';
-import * as bcrypt from 'bcrypt';
-import { env } from '@/env';
 
 describe('#ApiKeyService', () => {
   let app: INestApplication;
@@ -47,7 +44,10 @@ describe('#ApiKeyService', () => {
   });
 
   it('creates same a api key for customer using a salt should throw a unique constraint error', async () => {
-    const apiKey1 = await apiKeyService.createHashedApiKey(customer.id, { key: 'blabla' });
+    const apiKey1 = await apiKeyService.createHashedApiKey(customer.id, {
+      key: 'blabla',
+      salt: `$2b$10$FovZTB91/QQ4Yu28nvL8e.`,
+    });
 
     expect(apiKey1).toBeDefined();
     expect(apiKey1).toMatchObject({
@@ -84,13 +84,13 @@ describe('#ApiKeyService', () => {
 
     await apiKeyService.deleteApiKey(apiKey1.hashedKey);
 
-    expect(
-      await prismaClient.apiKey.count({
+    await expect(
+      prismaClient.apiKey.count({
         where: {
           customerId: customer.id,
         },
       }),
-    ).toEqual(1);
+    ).resolves.toEqual(1);
 
     const dbApiKey = await prismaClient.apiKey.findFirstOrThrow({
       where: {
@@ -108,20 +108,14 @@ describe('#ApiKeyService', () => {
 
     await apiKeyService.deleteApiKey(apiKey.hashedKey);
 
-    expect(await apiKeyService.find(apiKey.hashedKey)).toBe(null);
+    await expect(apiKeyService.find(apiKey.hashedKey)).resolves.toBe(null);
   });
 
   it('api key should be less than 5 chars', async () => {
     const apiKeyVal = 'aaaa';
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    expect(
-      async () => await apiKeyService.createHashedApiKey(customer.id, { key: apiKeyVal }),
+    await expect(async () =>
+      apiKeyService.createHashedApiKey(customer.id, { key: apiKeyVal }),
     ).rejects.toThrow('Invalid key length');
-  });
-
-  it.skip('generate salt', async () => {
-    const salt = bcrypt.genSaltSync(Number.parseInt(`${env.BCRYPT_SALT}`));
-    console.log(salt);
   });
 });
