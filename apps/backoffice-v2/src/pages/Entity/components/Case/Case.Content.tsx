@@ -1,6 +1,6 @@
-import React, { FunctionComponent, PropsWithChildren } from 'react';
-import { MotionScrollArea } from '../../../../common/components/molecules/MotionScrollArea/MotionScrollArea';
 import { motion } from 'framer-motion';
+import { FunctionComponent, PropsWithChildren } from 'react';
+import { MotionScrollArea } from '../../../../common/components/molecules/MotionScrollArea/MotionScrollArea';
 
 /**
  * @description To be used by {@link Case}. Serves as a container for ${@link Case.Info} and {@link Case.Documents}.
@@ -24,7 +24,7 @@ export const Content: FunctionComponent<PropsWithChildren> = ({ children }) => {
           opacity: 1,
         }}
         transition={{ duration: 0.3 }}
-        className={`mx-2 flex flex-col space-y-3 p-1 pt-2`}
+        className={`mx-2 flex h-full flex-col space-y-3 p-1 pt-2`}
       >
         {children}
       </motion.div>

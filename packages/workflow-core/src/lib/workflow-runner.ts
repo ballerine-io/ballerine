@@ -52,7 +52,7 @@ import {
 } from './plugins/common-plugin/transformer-plugin';
 import { deepMergeWithOptions } from './utils';
 import { BUILT_IN_EVENT } from './index';
-
+import { logger } from './logger';
 export interface ChildCallabackable {
   invokeChildWorkflowAction?: (childParams: ChildPluginCallbackOutput) => Promise<void>;
 }
@@ -212,7 +212,9 @@ export class WorkflowRunner {
     if (pluginKind === 'iterative') return IterativePlugin;
     if (pluginKind === 'transformer') return TransformerPlugin;
 
-    console.log('Plugin kind is not supplied or not supported, falling back to Iterative plugin.');
+    logger.log('Plugin kind is not supplied or not supported, falling back to Iterative plugin.', {
+      pluginKind,
+    });
     return IterativePlugin;
   }
 
@@ -485,7 +487,10 @@ export class WorkflowRunner {
   async sendEvent(event: WorkflowEventWithoutState) {
     const workflow = this.#__workflow.withContext(this.#__context);
 
-    console.log('Received event:', event, ', Current state:', this.#__currentState);
+    logger.log('Received event', {
+      event,
+      currentState: this.#__currentState,
+    });
 
     const previousState = this.#__currentState;
 
@@ -493,14 +498,17 @@ export class WorkflowRunner {
       .start(this.#__currentState)
       .onTransition((state, context) => {
         if (state.changed) {
-          console.log('Old state:', previousState, 'Transitioned into', state.value);
+          logger.log('State transitioned', {
+            previousState,
+            nextState: state.value,
+          });
 
           if (state.done) {
-            console.log('Reached final state');
+            logger.log('Reached final state');
           }
 
           if (state.tags.has('failure')) {
-            console.log('Reached failure state', {
+            logger.log('Reached failure state', {
               correlationId: context?.entity?.id,
               ballerineEntityId: context?.entity?.ballerineEntityId,
             });
@@ -541,7 +549,7 @@ export class WorkflowRunner {
     const snapshot = service.getSnapshot();
 
     for (const prePlugin of prePlugins) {
-      console.log('Pre plugins are about to be deprecated. Please contact the team for more info');
+      logger.log('Pre plugins are about to be deprecated. Please contact the team for more info');
 
       await this.#__handleAction({
         type: 'STATE_ACTION_STATUS',
@@ -556,7 +564,7 @@ export class WorkflowRunner {
     this.#__context = postSendSnapshot.context;
 
     if (previousState === postSendSnapshot.value) {
-      console.log('No transition occurred, skipping plugins');
+      logger.log('No transition occurred, skipping plugins');
       return;
     }
 
@@ -580,7 +588,7 @@ export class WorkflowRunner {
     }
 
     if (this.#__debugMode) {
-      console.log('context:', this.#__context);
+      logger.log('context:', this.#__context);
     }
 
     // Intentionally positioned after service.start() and service.send()
@@ -631,11 +639,17 @@ export class WorkflowRunner {
     });
 
     if (error) {
-      console.error('Error invoking plugin: ', apiPlugin.name, this.#__context, error);
+      logger.error('Error invoking plugin', {
+        error,
+        name: apiPlugin.name,
+        context: this.#__context,
+      });
     }
 
     if (!this.isPluginWithCallbackAction(apiPlugin)) {
-      console.log('Plugin does not have callback action: ', apiPlugin.name);
+      logger.log('Plugin does not have callback action', {
+        name: apiPlugin.name,
+      });
       return;
     }
 

@@ -1,5 +1,31 @@
 # @ballerine/common
 
+## 0.9.1
+
+### Patch Changes
+
+- bumo
+
+## 0.9.0
+
+### Minor Changes
+
+- 9fe7a5c10: Bump
+
+### Patch Changes
+
+- ver bump
+- 9fe7a5c10: bump
+- 9fe7a5c10: Added base64 provider type
+- 9fe7a5c10: bump
+- 9fe7a5c10: Version bump
+
+## 0.9.0-11210907c.0
+
+### Minor Changes
+
+- Bump
+
 ## 0.8.0
 
 ### Minor Changes

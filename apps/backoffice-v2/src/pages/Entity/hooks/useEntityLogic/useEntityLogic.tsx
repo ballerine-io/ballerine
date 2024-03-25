@@ -1,7 +1,9 @@
-import { useParams } from 'react-router-dom';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useWorkflowDefinitionByIdQuery } from '@/domains/workflow-definitions/hooks/queries/useWorkflowDefinitionByQuery/useWorkflowDefinitionByIdQuery';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
+import { getProcessTrackerProcesses } from '@/pages/Entity/hooks/useEntityLogic/utils/get-process-tracker-processes';
+import { useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 
 export const useEntityLogic = () => {
   const { entityId } = useParams();
@@ -20,9 +22,12 @@ export const useEntityLogic = () => {
     ...(workflowDefinition?.extensions?.commonPlugins ?? []),
   ];
 
+  const processTrackerProcesses = useMemo(() => getProcessTrackerProcesses(workflow), [workflow]);
+
   return {
     selectedEntity,
     workflow,
     plugins,
+    processTrackerProcesses,
   };
 };

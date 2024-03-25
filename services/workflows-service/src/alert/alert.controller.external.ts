@@ -64,6 +64,7 @@ export class AlertControllerExternal {
             id: true,
             firstName: true,
             lastName: true,
+            avatarUrl: true,
           },
         },
         counterparty: {
@@ -100,6 +101,7 @@ export class AlertControllerExternal {
           ? {
               id: assignee?.id,
               fullName: `${assignee?.firstName} ${assignee?.lastName}`,
+              avatarUrl: assignee?.avatarUrl,
             }
           : null,
         alertDetails: alertDefinition.description,

@@ -28,6 +28,8 @@ export {
   JsonSchemaValidator,
   HelpersTransformer,
   validateDefinitionLogic,
+  logger,
+  setLogger,
   BUILT_IN_EVENT,
   ARRAY_MERGE_OPTION,
 } from './lib';
