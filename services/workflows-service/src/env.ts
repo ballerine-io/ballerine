@@ -25,7 +25,7 @@ export const env = createEnv({
     PORT: z.coerce.number(),
     DB_URL: z.string().url(),
     SESSION_SECRET: z.string(),
-    API_KEY_SECRET: z.string(),
+    API_KEY_SECRET: z.string().describe('A key used for hashing API keys in the database'),
     SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().nonnegative().gt(0).default(60),
     BACKOFFICE_CORS_ORIGIN: z.string().transform(urlArrayTransformer),
     WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().transform(urlArrayTransformer),
