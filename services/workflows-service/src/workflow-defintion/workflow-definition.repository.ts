@@ -1,10 +1,10 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import type { TProjectIds } from '@/types';
+import { PrismaTransaction } from '@/types';
 import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient, WorkflowDefinition } from '@prisma/client';
 import { validateDefinitionLogic } from '@ballerine/workflow-core';
-import { PrismaTransaction } from '@/types';
 
 @Injectable()
 export class WorkflowDefinitionRepository {
@@ -128,6 +128,25 @@ export class WorkflowDefinitionRepository {
           },
           {
             name,
+            projectId: null,
+            isPublic: true,
+          },
+        ],
+      },
+      orderBy: { version: 'desc' },
+    });
+  }
+
+  async findLatestVersionByVariant(variant: string, projectIds: TProjectIds) {
+    return await this.prisma.workflowDefinition.findFirstOrThrow({
+      where: {
+        OR: [
+          {
+            variant,
+            projectId: { in: projectIds },
+          },
+          {
+            variant,
             projectId: null,
             isPublic: true,
           },

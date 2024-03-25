@@ -36,6 +36,7 @@ import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { forwardRef, Module } from '@nestjs/common';
 import { BusinessService } from '@/business/business.service';
+import { BusinessReportModule } from '@/business-report/business-report.module';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
@@ -46,6 +47,7 @@ import { BusinessService } from '@/business/business.service';
     ProjectModule,
     PrismaModule,
     CustomerModule,
+    BusinessReportModule,
     WorkflowDefinitionModule,
   ],
   providers: [

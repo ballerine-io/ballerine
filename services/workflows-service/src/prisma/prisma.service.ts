@@ -1,6 +1,7 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { isErrorWithMessage } from '@ballerine/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 
 const prismaExtendedClient = (prismaClient: PrismaClient) =>
@@ -66,5 +67,29 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
   async onModuleDestroy() {
     await this.$disconnect();
+  }
+
+  async acquireLock(lockId: number) {
+    try {
+      const result = await this.$queryRaw<
+        Array<{ acquired: boolean }>
+      >`SELECT pg_try_advisory_lock(${lockId}) AS acquired;`;
+      const aquiredResult = result[0];
+
+      return aquiredResult ? aquiredResult.acquired : false;
+    } catch (error) {
+      this.logger.error(`Failed to acquire lock: ${isErrorWithMessage(error) && error.message}`);
+
+      return false;
+    }
+  }
+
+  async releaseLock(lockId: number): Promise<void> {
+    try {
+      await this.$queryRaw`SELECT pg_advisory_unlock(${lockId});`;
+      this.logger.debug('Lock released.');
+    } catch (error) {
+      this.logger.error(`Failed to release lock: ${isErrorWithMessage(error) && error.message}`);
+    }
   }
 }

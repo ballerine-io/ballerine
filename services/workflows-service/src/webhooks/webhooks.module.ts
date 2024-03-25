@@ -5,7 +5,7 @@ import { PrismaModule } from '@/prisma/prisma.module';
 import { ProjectModule } from '@/project/project.module';
 import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definition.module';
 import { HttpModule } from '@nestjs/axios';
-import { Module, forwardRef } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { EndUserRepository } from '@/end-user/end-user.repository';
@@ -30,6 +30,7 @@ import { FilterRepository } from '@/filter/filter.repository';
 import { WebhooksController } from '@/webhooks/webhooks.controller';
 import { WebhooksService } from '@/webhooks/webhooks.service';
 import { BusinessService } from '@/business/business.service';
+import { BusinessReportModule } from '@/business-report/business-report.module';
 
 @Module({
   controllers: [WebhooksController],
@@ -40,6 +41,7 @@ import { BusinessService } from '@/business/business.service';
     ProjectModule,
     PrismaModule,
     CustomerModule,
+    BusinessReportModule,
     WorkflowDefinitionModule,
   ],
   providers: [

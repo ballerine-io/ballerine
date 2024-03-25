@@ -7,16 +7,18 @@ import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-nam
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord, ProcessStatus, TDocument } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
-import { WorkflowRuntimeData } from '@prisma/client';
+import { BusinessReportType, WorkflowRuntimeData } from '@prisma/client';
 import fs from 'fs';
 import { get, isObject, set } from 'lodash';
 import * as tmp from 'tmp';
+import { BusinessReportService } from '@/business-report/business-report.service';
 
 @Injectable()
 export class HookCallbackHandlerService {
   constructor(
     protected readonly workflowService: WorkflowService,
     protected readonly customerService: CustomerService,
+    protected readonly businessReportService: BusinessReportService,
     private readonly logger: AppLoggerService,
   ) {}
 
@@ -45,6 +47,15 @@ export class HookCallbackHandlerService {
 
     if (processName === 'website-monitoring') {
       return await this.prepareWebsiteMonitoringContext(
+        data,
+        workflowRuntime,
+        resultDestinationPath,
+        currentProjectId,
+      );
+    }
+
+    if (processName === 'merchant-audit-report') {
+      return await this.prepareMerchantAuditReportContext(
         data,
         workflowRuntime,
         resultDestinationPath,
@@ -111,6 +122,38 @@ export class HookCallbackHandlerService {
 
     set(workflowRuntime.context, resultDestinationPath, { reportData, base64Pdf });
     workflowRuntime.context.documents = persistedDocuments;
+
+    return context;
+  }
+
+  async prepareMerchantAuditReportContext(
+    data: AnyRecord,
+    workflowRuntime: WorkflowRuntimeData,
+    resultDestinationPath: string,
+    currentProjectId: TProjectId,
+  ) {
+    const { context } = workflowRuntime;
+    const report = data.report as { data: AnyRecord; summary: AnyRecord };
+    const comparedToReportId = data.comparedToReportId;
+    const businessId = data.businessId as string;
+    const proxyViaCountry = data.proxyViaCountry;
+    const reportType = data.reportType as BusinessReportType;
+
+    const reportContent = {
+      comparedToReportId: comparedToReportId,
+      reportContent: report.data,
+      proxyViaCountry: proxyViaCountry,
+      summary: report.summary,
+    } as Record<string, object | string>;
+
+    await this.businessReportService.create({
+      data: {
+        type: reportType,
+        report: reportContent,
+        businessId: businessId,
+        projectId: currentProjectId,
+      },
+    });
 
     return context;
   }
