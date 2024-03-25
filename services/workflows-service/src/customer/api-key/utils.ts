@@ -8,6 +8,8 @@ const PASSWORD_REGEX = /[!@#$%^&*a-zA-Z]/;
 
 const API_KEY_LEN = 50;
 
+export const KEY_MIN_LENGTH = 5;
+
 const SALT = env.HASHING_KEY_SECRET;
 
 const DEFAULT_HASHIING_OPTIONS = {
@@ -18,7 +20,7 @@ const DEFAULT_HASHIING_OPTIONS = {
 
 export const hashKey = async (key: string, salt?: string) => {
   return new Promise<string>((resolve, reject) => {
-    if (key && key.length < 5) {
+    if (key && key.length < KEY_MIN_LENGTH) {
       return reject(new Error('Invalid key length'));
     }
 

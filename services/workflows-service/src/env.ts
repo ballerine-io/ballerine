@@ -86,8 +86,6 @@ export const env = createEnv({
   runtimeEnv: process.env,
 });
 
-console.log(env);
-
 export const configs = () => {
   return env;
 };
