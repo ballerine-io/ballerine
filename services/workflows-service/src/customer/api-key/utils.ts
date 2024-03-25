@@ -8,7 +8,7 @@ const PASSWORD_REGEX = /[!@#$%^&*a-zA-Z]/;
 
 const API_KEY_LEN = 50;
 
-const SALT = env.HASHING_KEY_SECRET ?? '$2b$10$FovZTB91/QQ4Yu28nvL8e.';
+const SALT = env.HASHING_KEY_SECRET;
 
 const DEFAULT_HASHIING_OPTIONS = {
   key: undefined,
