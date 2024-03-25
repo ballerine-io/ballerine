@@ -128,7 +128,7 @@ describe('#ApiKeyService', () => {
     expect(apiKeyService.find(apiKey.hashedKey)).resolves.toBe(null);
   });
 
-  it('api key should be less than 5 chars', async () => {
+  it('API key should not be less than 5 characters', async () => {
     const apiKeyVal = 'aaaa';
 
     expect(apiKeyService.createHashedApiKey(customer.id, { apiKey: apiKeyVal })).rejects.toThrow(
