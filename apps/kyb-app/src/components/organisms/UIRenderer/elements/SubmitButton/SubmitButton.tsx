@@ -78,6 +78,7 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
       variant="secondary"
       onClick={handleClick}
       disabled={state.isLoading || uiElementState.isLoading}
+      data-test-id={definition.name}
     >
       {definition.options.text || 'Submit'}
     </Button>

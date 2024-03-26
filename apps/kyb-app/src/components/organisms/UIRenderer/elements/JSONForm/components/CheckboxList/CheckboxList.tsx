@@ -6,16 +6,19 @@ interface CheckboxListOption {
   value: string;
 }
 
-export const CheckboxList = (props: RJSFInputProps) => {
+export const CheckboxList = (props: RJSFInputProps & { testId?: string }) => {
   //@ts-nocheck
-  const { uiSchema, formData = [], onChange, disabled } = props;
+  const { uiSchema, formData = [], onChange, disabled, testId } = props;
 
   const options = useMemo(() => {
     return (uiSchema?.['options'] as CheckboxListOption[]) || [];
   }, [uiSchema]);
 
   return (
-    <div className={ctw('flex flex-col gap-4', { 'pointer-events-none opacity-50': disabled })}>
+    <div
+      className={ctw('flex flex-col gap-4', { 'pointer-events-none opacity-50': disabled })}
+      data-test-id={testId}
+    >
       {options.map(option => (
         <label className="flex items-center gap-2" key={option.value}>
           <Checkbox
@@ -23,6 +26,7 @@ export const CheckboxList = (props: RJSFInputProps) => {
             color="primary"
             value={option.value}
             checked={Array.isArray(formData) && formData.includes(option.value)}
+            data-test-id={testId ? `${testId}-checkbox` : undefined}
             onCheckedChange={checked => {
               let value = (formData as string[]) || [];
 

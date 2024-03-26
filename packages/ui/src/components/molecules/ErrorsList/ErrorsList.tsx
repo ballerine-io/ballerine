@@ -5,13 +5,20 @@ interface Props {
   errors: string[];
   type?: 'error' | 'warning';
   className?: string;
+  testId?: string;
 }
 
-export const ErrorsList = ({ errors, type = 'error', className }: Props) => {
+export const ErrorsList = ({ errors, type = 'error', className, testId }: Props) => {
   return (
-    <ul className={clsx('pl-1', className)}>
+    <ul
+      className={clsx('pl-1', className)}
+      data-test-id={testId ? `${testId}-errors-list` : undefined}
+    >
       {errors.map((error, index) => (
-        <li key={`error-list-item-${index}`}>
+        <li
+          key={`error-list-item-${index}`}
+          data-test-id={testId ? `${testId}-error-list-item-${index}` : undefined}
+        >
           <ErrorMessage
             text={error}
             className={type === 'warning' ? 'text-amber-400' : undefined}

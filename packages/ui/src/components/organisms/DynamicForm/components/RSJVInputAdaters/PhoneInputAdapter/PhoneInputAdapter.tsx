@@ -22,7 +22,7 @@ export const PhoneInputAdapter: RJSFInputAdapter = ({
       disabled={disabled}
       enableSearch
       onChange={value => void onChange(value)}
-      data-test-id={testId}
+      testId={testId}
       onBlur={handleBlur}
     />
   );
