@@ -436,13 +436,15 @@ export const useDefaultBlocksLogic = () => {
     setActiveTab,
   } = useCaseBlocksLogic(allBlocks, workflow!.workflowDefinition?.config, { workflow });
 
+  const availableTabs = useMemo(() => tabs.filter(tab => !tab.hidden), [tabs]);
+
   return {
     blocks,
     onReuploadNeeded,
     isLoadingReuploadNeeded,
     isLoading,
     activeTab,
-    tabs,
+    tabs: availableTabs,
     setActiveTab,
   };
 };

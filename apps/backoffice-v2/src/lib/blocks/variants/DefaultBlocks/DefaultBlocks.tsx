@@ -10,19 +10,16 @@ export const DefaultBlocks = () => {
 
   return (
     <div className="relative flex flex-col">
-      {!tabs.every(tab => tab.hidden) && (
+      {!!tabs.length && (
         <div className="mb-12">
           <div className="fixed z-[50] mt-[-8px] h-12 w-full bg-white pb-10 pt-2">
             <Tabs value={activeTab?.name} onValueChange={setActiveTab}>
               <TabsList>
-                {tabs.map(
-                  tab =>
-                    !tab.hidden && (
-                      <TabsTrigger key={tab.name} value={tab.name} disabled={tab.disabled}>
-                        {tab.displayName}
-                      </TabsTrigger>
-                    ),
-                )}
+                {tabs.map(tab => (
+                  <TabsTrigger key={tab.name} value={tab.name} disabled={tab.disabled}>
+                    {tab.displayName}
+                  </TabsTrigger>
+                ))}
               </TabsList>
             </Tabs>
           </div>
