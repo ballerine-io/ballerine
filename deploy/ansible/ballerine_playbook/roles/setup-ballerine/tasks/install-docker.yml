@@ -93,3 +93,4 @@
     name:
       - docker-compose
       - docker==6.1.3
+  become: true
