@@ -8,7 +8,7 @@ const SERVE_STATIC_ROOT_PATH_VAR = 'SERVE_STATIC_ROOT_PATH';
 const DEFAULT_STATIC_MODULE_OPTIONS_LIST: ServeStaticModuleOptions[] = [
   {
     serveRoot: '/swagger',
-    rootPath: path.join(__dirname, 'swagger'),
+    rootPath: path.resolve(__dirname, 'swagger'),
   },
 ];
 
@@ -19,22 +19,23 @@ export class ServeStaticOptionsService implements ServeStaticModuleOptionsFactor
     private readonly logger: AppLoggerService,
   ) {}
 
-  createLoggerOptions(): ServeStaticModuleOptions[] {
-    const serveStaticRootPath = this.configService.get(SERVE_STATIC_ROOT_PATH_VAR) as string;
+  createServeStaticOptions(): ServeStaticModuleOptions[] {
+    const serveStaticRootPath = this.configService.get(SERVE_STATIC_ROOT_PATH_VAR);
 
-    if (serveStaticRootPath) {
-      const resolvedPath = path.resolve(serveStaticRootPath);
-      this.logger.log('Serving static files', { resolvedPath });
-
-      return [
-        ...DEFAULT_STATIC_MODULE_OPTIONS_LIST,
-        {
-          rootPath: resolvedPath,
-          exclude: ['/api*'],
-        },
-      ];
+    if (!serveStaticRootPath) {
+      this.logger.error(`Environment variable ${SERVE_STATIC_ROOT_PATH_VAR} is not set.`);
+      return DEFAULT_STATIC_MODULE_OPTIONS_LIST;
     }
 
-    return DEFAULT_STATIC_MODULE_OPTIONS_LIST;
+    const resolvedPath = path.resolve(serveStaticRootPath);
+    this.logger.log('Serving static files', { resolvedPath });
+
+    return [
+      ...DEFAULT_STATIC_MODULE_OPTIONS_LIST,
+      {
+        rootPath: resolvedPath,
+        exclude: ['/api*'],
+      },
+    ];
   }
 }
