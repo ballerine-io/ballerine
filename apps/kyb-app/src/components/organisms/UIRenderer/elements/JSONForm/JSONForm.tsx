@@ -13,6 +13,7 @@ import { DefinitionInsertionParams } from '@/components/organisms/UIRenderer/hoo
 import { useUIElementErrors } from '@/components/organisms/UIRenderer/hooks/useUIElementErrors/useUIElementErrors';
 import { useUIElementProps } from '@/components/organisms/UIRenderer/hooks/useUIElementProps';
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
+import { Rule } from '@/domains/collection-flow';
 import { CollectionFlowContext } from '@/domains/collection-flow/types/flow-context.types';
 import { transformRJSFErrors } from '@/helpers/transform-errors';
 import { AnyObject, DynamicForm, ErrorsList } from '@ballerine/ui';
@@ -20,7 +21,6 @@ import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import get from 'lodash/get';
 import set from 'lodash/set';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Rule } from '@/domains/collection-flow';
 
 export interface JSONFormElementBaseParams extends DefinitionInsertionParams {
   jsonFormDefinition: RJSFSchema;
@@ -95,6 +95,7 @@ export const JSONForm: UIElementComponent<JSONFormElementBaseParams> = ({ defini
             layouts={jsonFormLayouts}
             formData={formData}
             ref={formRef}
+            testId={definition?.name ? `${definition.name}-form` : undefined}
             transformErrors={transformRJSFErrors}
             onSubmit={handleSubmit}
           />
