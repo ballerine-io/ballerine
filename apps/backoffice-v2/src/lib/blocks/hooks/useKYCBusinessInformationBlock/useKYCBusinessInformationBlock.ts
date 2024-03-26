@@ -1,7 +1,24 @@
-import { useManualReviewBlocksLogic } from '@/lib/blocks/variants/ManualReviewBlocks/hooks/useManualReviewBlocksLogic/useManualReviewBlocksLogic';
+import { useCaseInfoBlock } from '@/lib/blocks/hooks/useCaseInfoBlock/useCaseInfoBlock';
+import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
 
 export const useKYCBusinessInformationBlock = () => {
-  const { businessInformationBlock } = useManualReviewBlocksLogic();
+  const { workflow } = useEntityLogic();
+  const {
+    store,
+    bank,
+    ubos,
+    directors,
+    mainRepresentative,
+    mainContact,
+    openCorporate,
+    ...entityDataAdditionalInfo
+  } = workflow?.context?.entity?.data?.additionalInfo ?? {};
 
-  return businessInformationBlock;
+  const blocks = useCaseInfoBlock({
+    entityDataAdditionalInfo,
+    entity: workflow?.context?.entity,
+    workflow,
+  });
+
+  return blocks;
 };
