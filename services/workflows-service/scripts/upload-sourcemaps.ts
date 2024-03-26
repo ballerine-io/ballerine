@@ -1,26 +1,35 @@
-import * as dotenv from 'dotenv';
-import * as child_process from 'child_process';
+import dotenv from 'dotenv';
+import { execSync } from 'child_process';
 
-if (require.main === module) {
-  dotenv.config();
-
-  uploadSourceMaps().catch(error => {
-    console.error(error);
+async function main() {
+  try {
+    dotenv.config();
+  } catch (error) {
+    console.error('Failed to load .env file:', error);
     process.exit(1);
-  });
+  }
+
+  try {
+    await uploadSourceMaps();
+  } catch (error) {
+    console.error('Failed to upload source maps:', error);
+    process.exit(1);
+  }
 }
 
 async function uploadSourceMaps() {
-  return new Promise<void>((resolve, reject) => {
-    if (!process.env.SENTRY_AUTH_TOKEN) {
-      return resolve();
-    }
+  if (!process.env.SENTRY_AUTH_TOKEN) {
+    console.log('SENTRY_AUTH_TOKEN not provided. Skipping source maps upload.');
+    return;
+  }
 
-    try {
-      child_process.execSync('sentry-cli sourcemaps upload ./dist', { stdio: 'inherit' });
-      resolve();
-    } catch (error) {
-      reject(error);
-    }
-  });
+  try {
+    execSync('sentry-cli sourcemaps upload ./dist', { stdio: 'inherit' });
+  } catch (error) {
+    throw new Error(`Failed to upload source maps: ${error.message}`);
+  }
+}
+
+if (require.main === module) {
+  main();
 }
