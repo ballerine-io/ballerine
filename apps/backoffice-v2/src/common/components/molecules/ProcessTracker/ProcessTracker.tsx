@@ -2,7 +2,7 @@ import { AccordionCard, HoverCard, HoverCardContent, HoverCardTrigger } from '@b
 import { FunctionComponent } from 'react';
 
 import { Icon } from '@/common/components/molecules/ProcessTracker/constants';
-import { useProcessTrackerLogic } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/useProcessTrackerLogic';
+import { useProcessTracker } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/useProcessTracker';
 import { ExtractCellProps } from '@ballerine/blocks';
 import { HelpCircle } from 'lucide-react';
 
@@ -11,7 +11,7 @@ export const ProcessTracker: FunctionComponent<ExtractCellProps<'processTracker'
   workflow,
   processes,
 }) => {
-  const { uncollapsedItemValue, onValueChange, trackedProcesses } = useProcessTrackerLogic({
+  const { uncollapsedItemValue, onValueChange, trackedProcesses } = useProcessTracker({
     plugins,
     workflow,
     processes,
