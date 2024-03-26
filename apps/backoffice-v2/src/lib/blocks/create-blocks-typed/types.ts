@@ -11,7 +11,6 @@ import { Dialog } from '@/common/components/molecules/Dialog/Dialog';
 import { MotionBadge } from '@/common/components/molecules/MotionBadge/MotionBadge';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { GenericAsyncFunction, GenericFunction } from '@/common/types';
-import { TWorkflowDefinitionById } from '@/domains/workflow-definitions/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ICallToActionLegacyProps } from '@/lib/blocks/components/CallToActionLegacy/interfaces';
 import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
@@ -215,19 +214,6 @@ export type TDialogCell = {
   value: ComponentProps<typeof Dialog>;
 };
 
-export type TProcessTrackerBlock = {
-  type: 'processTracker';
-  workflow: TWorkflowById;
-  plugins: Array<
-    | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['apiPlugins']>[number]
-    | NonNullable<
-        NonNullable<TWorkflowDefinitionById['extensions']>['childWorkflowPlugins']
-      >[number]
-    | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['commonPlugins']>[number]
-  >;
-  processes?: string[];
-};
-
 export type TNodeCell = {
   type: 'nodeCell';
   value: AnyChildren;
@@ -252,6 +238,5 @@ export type TCell =
   | TTableCell
   | TParagraphCell
   | TDialogCell
-  | TProcessTrackerBlock
   | TNodeCell
   | TPDFViewerCell;

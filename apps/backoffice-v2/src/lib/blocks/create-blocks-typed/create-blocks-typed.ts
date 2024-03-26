@@ -1,5 +1,4 @@
 import { Alert } from '@/common/components/atoms/Alert/Alert';
-import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
 import { BadgeCell } from '@/lib/blocks/components/BadgeCell/BadgeCell';
 import { BlockCell } from '@/lib/blocks/components/BlockCell/BlockCell';
 import { CallToAction } from '@/lib/blocks/components/CallToAction/CallToAction';
@@ -49,7 +48,6 @@ export const cells: CellsMap = {
   paragraph: Paragraph,
   dialog: DialogCell,
   block: BlockCell,
-  processTracker: ProcessTracker,
   nodeCell: NodeCell,
   pdfViewer: PDFViewerCell,
 };
