@@ -16,7 +16,7 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ICallToActionLegacyProps } from '@/lib/blocks/components/CallToActionLegacy/interfaces';
 import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
 import { IEditableDetailsDocument } from '@/lib/blocks/components/EditableDetails/interfaces';
-import { INodeBlockProps } from '@/lib/blocks/components/NodeBlock/interfaces';
+import { INodeCellProps } from '@/lib/blocks/components/NodeCell/interfaces';
 import { TPDFViewerCell } from '@/lib/blocks/components/PDFViewerCell/interfaces';
 import { Block } from '@ballerine/blocks';
 import { CommonWorkflowStates } from '@ballerine/common';
@@ -220,9 +220,9 @@ export type TProcessTrackerBlock = {
   type: 'processTracker';
 } & IProcessTrackerProps;
 
-export type TNodeBlock = {
-  type: 'nodeBlock';
-} & INodeBlockProps;
+export type TNodeCell = {
+  type: 'nodeCell';
+} & INodeCellProps;
 
 export type TCell =
   | TBlockCell
@@ -244,5 +244,5 @@ export type TCell =
   | TParagraphCell
   | TDialogCell
   | TProcessTrackerBlock
-  | TNodeBlock
+  | TNodeCell
   | TPDFViewerCell;

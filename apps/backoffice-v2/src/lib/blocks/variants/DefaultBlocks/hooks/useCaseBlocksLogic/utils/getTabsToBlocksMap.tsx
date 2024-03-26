@@ -16,7 +16,7 @@ const createKycBlocks = (workflow: TWorkflowById) => {
 
   childWorkflows.forEach(childWorkflow => {
     blocks.addCell({
-      type: 'nodeBlock',
+      type: 'nodeCell',
       value: (
         <KycBlock
           parentWorkflowId={workflow.id}
@@ -44,7 +44,7 @@ const createAssociatedCompanyDocumentBlocks = (
 
   childWorkflows.forEach(childWorkflow => {
     blocks.addCell({
-      type: 'nodeBlock',
+      type: 'nodeCell',
       value: (
         <ChildDocumentBlocks
           parentWorkflowId={workflow.id}

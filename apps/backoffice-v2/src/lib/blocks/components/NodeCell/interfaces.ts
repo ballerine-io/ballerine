@@ -1,5 +1,5 @@
 import { AnyChildren } from '@ballerine/ui';
 
-export interface INodeBlockProps {
+export interface INodeCellProps {
   value: AnyChildren;
 }
