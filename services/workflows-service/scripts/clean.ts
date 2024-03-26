@@ -1,38 +1,40 @@
-/**
- * Clean all the tables and types created by Prisma in the database
- */
-import * as dotenv from 'dotenv';
+import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 
-if (require.main === module) {
-  dotenv.config();
-  clean().catch(error => {
+async function main() {
+  try {
+    dotenv.config();
+    await clean();
+  } catch (error) {
     console.error(error);
     process.exit(1);
-  });
+  }
 }
 
 async function clean() {
   console.info('Dropping all tables in the database...');
   const prisma = new PrismaClient();
-  const tables = await getTables(prisma);
-  const types = await getTypes(prisma);
-  await dropTables(prisma, tables);
-  await dropTypes(prisma, types.sort());
-  console.info('Cleaned database successfully');
-  await prisma.$disconnect();
-}
-
-async function dropTables(prisma: PrismaClient, tables: string[]): Promise<void> {
-  for (const table of tables) {
-    await prisma.$executeRawUnsafe(`DROP TABLE public."${table}" CASCADE;`);
+  try {
+    const [tables, types] = await Promise.all([getTables(prisma), getTypes(prisma)]);
+    await Promise.all([
+      ...tables.map(table => dropTable(prisma, table)),
+      ...types.map(type => dropType(prisma, type)),
+    ]);
+    console.info('Cleaned database successfully');
+  } catch (error) {
+    console.error('Failed to clean database:', error);
+    throw error;
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
-async function dropTypes(prisma: PrismaClient, types: string[]) {
-  for (const type of types) {
-    await prisma.$executeRawUnsafe(`DROP TYPE IF EXISTS "${type}" CASCADE;`);
-  }
+async function dropTable(prisma: PrismaClient, table: string): Promise<void> {
+  await prisma.$executeRawUnsafe(`DROP TABLE public."${table}" CASCADE;`);
+}
+
+async function dropType(prisma: PrismaClient, type: string): Promise<void> {
+  await prisma.$executeRawUnsafe(`DROP TYPE IF EXISTS "${type}" CASCADE;`);
 }
 
 async function getTables(prisma: PrismaClient): Promise<string[]> {
@@ -52,4 +54,8 @@ async function getTypes(prisma: PrismaClient): Promise<string[]> {
  WHERE n.nspname = 'public';
  `;
   return results.map(result => result.typname);
+}
+
+if (require.main === module) {
+  main();
 }
