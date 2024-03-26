@@ -6,14 +6,14 @@ import { useDefaultBlocksLogic } from '@/lib/blocks/variants/DefaultBlocks/hooks
 import { BlocksComponent } from '@ballerine/blocks';
 
 export const DefaultBlocks = () => {
-  const { blocks, tabs, activeTab, setTab } = useDefaultBlocksLogic();
+  const { blocks, tabs, activeTab, setActiveTab } = useDefaultBlocksLogic();
 
   return (
     <div className="relative flex flex-col">
       {!tabs.every(tab => tab.hidden) && (
         <div className="mb-12">
           <div className="fixed z-[50] mt-[-8px] h-12 w-full bg-white pb-10 pt-2">
-            <Tabs value={activeTab?.name} onValueChange={setTab}>
+            <Tabs value={activeTab?.name} onValueChange={setActiveTab}>
               <TabsList>
                 {tabs.map(
                   tab =>

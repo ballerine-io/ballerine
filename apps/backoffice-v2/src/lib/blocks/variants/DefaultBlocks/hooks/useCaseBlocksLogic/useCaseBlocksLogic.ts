@@ -29,7 +29,7 @@ export const useCaseBlocksLogic = (
     () => (config?.theme ? getVariantTabs(config.theme, tabBlocks) : []),
     [tabBlocks, config?.theme],
   );
-  const { activeTab, setTab } = useCaseTabsLogic(tabs);
+  const { activeTab, setActiveTab } = useCaseTabsLogic(tabs);
 
   const themeBlocks = useMemo(
     () => (config?.theme ? getVariantBlocks(tabBlocks, activeTab) : []),
@@ -40,6 +40,6 @@ export const useCaseBlocksLogic = (
     activeTab,
     blocks: themeBlocks,
     tabs,
-    setTab,
+    setActiveTab,
   };
 };

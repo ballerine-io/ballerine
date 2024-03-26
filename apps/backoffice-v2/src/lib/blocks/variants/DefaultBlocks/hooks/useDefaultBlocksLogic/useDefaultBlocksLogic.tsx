@@ -433,7 +433,7 @@ export const useDefaultBlocksLogic = () => {
     activeTab,
     blocks = [],
     tabs,
-    setTab,
+    setActiveTab,
   } = useCaseBlocksLogic(allBlocks, workflow!.workflowDefinition?.config, { workflow });
 
   return {
@@ -443,6 +443,6 @@ export const useDefaultBlocksLogic = () => {
     isLoading,
     activeTab,
     tabs,
-    setTab,
+    setActiveTab,
   };
 };
