@@ -1,5 +1,18 @@
 import { WorkflowDefinitionConfigTheme } from '@/domains/workflow-definitions/fetchers';
+import { applyTabsOverride } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/apply-tabs-override';
 import { TCaseTabDefinition } from '@/lib/blocks/variants/DefaultBlocks/types/case-tab';
+
+export const Tab = {
+  SUMMARY: 'summary',
+  COMPANY_INFORMATION: 'company_information',
+  STORE_INFO: 'store_info',
+  DOCUMENTS: 'documents',
+  UBOS: 'ubos',
+  ASSOCIATED_COMPANIES: 'associated_companies',
+  DIRECTORS: 'directors',
+  WEBSITE_MONITORING: 'website_monitoring',
+  KYC: 'kyc',
+} as const;
 
 export const getVariantTabs = (
   theme: WorkflowDefinitionConfigTheme,
@@ -8,78 +21,72 @@ export const getVariantTabs = (
   if (theme?.type === 'kyb') {
     const baseTabs = [
       {
-        name: 'summary',
+        name: Tab.SUMMARY,
         displayName: 'Summary',
-        disabled: !tabBlocks['summary']?.length,
+        disabled: !tabBlocks[Tab.SUMMARY]?.length,
       },
       {
-        name: 'company_information',
+        name: Tab.COMPANY_INFORMATION,
         displayName: 'Company Information',
-        disabled: !tabBlocks['company_information']?.length,
+        disabled: !tabBlocks[Tab.COMPANY_INFORMATION]?.length,
       },
       {
-        name: 'store_info',
+        name: Tab.STORE_INFO,
         displayName: 'Store Info',
-        disabled: !tabBlocks['store_info']?.length,
+        disabled: !tabBlocks[Tab.STORE_INFO]?.length,
       },
       {
-        name: 'documents',
+        name: Tab.DOCUMENTS,
         displayName: 'Documents',
-        disabled: !tabBlocks['documents']?.length,
+        disabled: !tabBlocks[Tab.DOCUMENTS]?.length,
       },
       {
-        name: 'ubos',
+        name: Tab.UBOS,
         displayName: 'UBOs',
-        disabled: !tabBlocks['ubos']?.length,
+        disabled: !tabBlocks[Tab.UBOS]?.length,
       },
       {
-        name: 'associated_companies',
+        name: Tab.ASSOCIATED_COMPANIES,
         displayName: 'Associated Companies',
-        disabled: !tabBlocks['associated_companies']?.length,
+        disabled: !tabBlocks[Tab.ASSOCIATED_COMPANIES]?.length,
       },
       {
-        name: 'directors',
+        name: Tab.DIRECTORS,
         displayName: 'Directors',
-        disabled: !tabBlocks['directors']?.length,
+        disabled: !tabBlocks[Tab.DIRECTORS]?.length,
       },
       {
-        name: 'website_monitoring',
+        name: Tab.WEBSITE_MONITORING,
         displayName: 'Monitoring Reports',
-        disabled: !tabBlocks['website_monitoring']?.length,
+        disabled: !tabBlocks[Tab.WEBSITE_MONITORING]?.length,
       },
     ];
 
-    return theme.tabsOverride
-      ? theme.tabsOverride.map(tabName => baseTabs.find(tab => tab.name === tabName)!)
-      : baseTabs;
+    return applyTabsOverride(baseTabs, theme.tabsOverride);
   }
 
   if (theme?.type === 'documents-review') {
     const baseTabs = [
       {
-        name: 'documents',
+        name: Tab.DOCUMENTS,
         displayName: 'Documents Review',
         hidden: true,
       },
     ];
 
-    return theme.tabsOverride
-      ? theme.tabsOverride.map(tabName => baseTabs.find(tab => tab.name === tabName)!)
-      : baseTabs;
+    return applyTabsOverride(baseTabs, theme.tabsOverride);
   }
 
   if (theme?.type === 'kyc') {
     const baseTabs = [
       {
-        name: 'kyc',
+        name: Tab.KYC,
         displayName: 'KYC',
         hidden: true,
       },
     ];
 
-    return theme.tabsOverride
-      ? theme.tabsOverride.map(tabName => baseTabs.find(tab => tab.name === tabName)!)
-      : baseTabs;
+    return applyTabsOverride(baseTabs, theme.tabsOverride);
   }
 
   return [];

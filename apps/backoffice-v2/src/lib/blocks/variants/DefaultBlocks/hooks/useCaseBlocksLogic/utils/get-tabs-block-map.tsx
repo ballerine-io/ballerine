@@ -1,7 +1,9 @@
+import { WorkflowDefinitionConfigThemeEnum } from '@/domains/workflow-definitions/enums/workflow-definition-config-theme';
 import { WorkflowDefinitionConfigTheme } from '@/domains/workflow-definitions/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createAssociatedCompanyDocumentBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/create-assosiacted-company-document-blocks';
 import { createKycBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/create-kyc-blocks';
+import { Blocks } from '@ballerine/blocks';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
@@ -10,7 +12,7 @@ export type TCaseBlocksCreationProps = {
 };
 
 export const getTabsToBlocksMap = (
-  blocks: any[],
+  blocks: Blocks[],
   blocksCreationParams: TCaseBlocksCreationProps,
   theme?: WorkflowDefinitionConfigTheme,
 ) => {
@@ -70,22 +72,22 @@ export const getTabsToBlocksMap = (
       ...(createKycBlocks(workflow as TWorkflowById) || []),
     ],
     website_monitoring: [...websiteMonitoringBlocks],
-  };
+  } as const;
 
-  if (theme?.type === 'kyb') {
+  if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYB) {
     return defaultTabsMap;
   }
 
-  if (theme?.type === 'documents-review') {
+  if (theme?.type === WorkflowDefinitionConfigThemeEnum.DOCUMENTS_REVIEW) {
     return {
       documents: [...documentReviewBlocks],
-    };
+    } as const;
   }
 
-  if (theme?.type === 'kyc') {
+  if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYC) {
     return {
       kyc: [...businessInformationBlocks, ...createKycBlocks(workflow)],
-    };
+    } as const;
   }
 
   return defaultTabsMap;
