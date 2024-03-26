@@ -95,7 +95,7 @@ export const JSONForm: UIElementComponent<JSONFormElementBaseParams> = ({ defini
             layouts={jsonFormLayouts}
             formData={formData}
             ref={formRef}
-            testId={definition?.name ? `${definition.name}-form` : undefined}
+            testId={definition?.name ? `${definition.name}` : undefined}
             transformErrors={transformRJSFErrors}
             onSubmit={handleSubmit}
           />

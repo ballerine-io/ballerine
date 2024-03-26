@@ -465,7 +465,7 @@ export const CustomSubmitButtonsLayout = {
   ),
 };
 
-export const WithCustomFormPrefix = {
+export const WithTestId = {
   render: () => (
     <DynamicForm
       schema={customSubmitLayoutSchema}
