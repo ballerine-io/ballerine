@@ -172,7 +172,7 @@ export const MultiSelect = ({
                   className="h-6"
                   onFocus={() => setOpen(true)}
                   onBlur={onBlur}
-                  data-test-id={testId ? `${testId}-search-input` : undefined}
+                  data-testid={testId ? `${testId}-search-input` : undefined}
                 />
               </div>
             </div>
@@ -192,7 +192,7 @@ export const MultiSelect = ({
                         }}
                         onSelect={() => handleSelect(option)}
                         className={'cursor-pointer'}
-                        data-test-id={testId ? `${testId}-option` : undefined}
+                        data-testid={testId ? `${testId}-option` : undefined}
                       >
                         {option.title}
                       </CommandItem>

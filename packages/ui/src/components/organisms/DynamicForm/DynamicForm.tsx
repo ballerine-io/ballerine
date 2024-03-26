@@ -103,7 +103,7 @@ export const DynamicForm = forwardRef(
           //@ts-ignore
           ref={innerRef => {
             if (testId) {
-              innerRef?.formElement?.current?.setAttribute('data-test-id', testId);
+              innerRef?.formElement?.current?.setAttribute('data-testid', testId);
             }
 
             if (ref) {

@@ -24,13 +24,13 @@ export const RadioInputAdapter: RJSFInputAdapter<string> = ({
       onValueChange={onChange}
       onBlur={() => onBlur(id as string, formData)}
       disabled={disabled}
-      data-test-id={testId ? `${testId}-radio-group` : undefined}
+      data-testid={testId ? `${testId}-radio-group` : undefined}
     >
       {options.map(({ value, label }) => (
         <div
           className="flex items-center space-x-2"
           key={`radio-group-item-${value}`}
-          data-test-id={testId ? `${testId}-radio-group-item` : undefined}
+          data-testid={testId ? `${testId}-radio-group-item` : undefined}
         >
           <RadioGroupItem value={value} id={`radio-group-item-${value}`}></RadioGroupItem>
           <Label htmlFor={`radio-group-item-${value}`}>{label}</Label>

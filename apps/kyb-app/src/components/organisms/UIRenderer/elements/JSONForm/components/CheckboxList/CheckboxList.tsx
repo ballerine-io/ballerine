@@ -17,7 +17,7 @@ export const CheckboxList = (props: RJSFInputProps & { testId?: string }) => {
   return (
     <div
       className={ctw('flex flex-col gap-4', { 'pointer-events-none opacity-50': disabled })}
-      data-test-id={testId}
+      data-testid={testId}
     >
       {options.map(option => (
         <label className="flex items-center gap-2" key={option.value}>
@@ -26,7 +26,7 @@ export const CheckboxList = (props: RJSFInputProps & { testId?: string }) => {
             color="primary"
             value={option.value}
             checked={Array.isArray(formData) && formData.includes(option.value)}
-            data-test-id={testId ? `${testId}-checkbox` : undefined}
+            data-testid={testId ? `${testId}-checkbox` : undefined}
             onCheckedChange={checked => {
               let value = (formData as string[]) || [];
 

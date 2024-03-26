@@ -43,12 +43,12 @@ export const TextField = ({
   };
 
   return uiSchema?.['ui:widget'] === 'textarea' ? (
-    <TextArea {...inputProps} data-test-id={testId} />
+    <TextArea {...inputProps} data-testid={testId} />
   ) : (
     <Input
       {...inputProps}
       type={schema.type === 'number' ? 'number' : 'text'}
-      data-test-id={testId}
+      data-testid={testId}
     />
   );
 };

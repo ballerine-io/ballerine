@@ -29,7 +29,7 @@ export const PhoneNumberInput = (props: PhoneNumberInputProps) => {
       containerClass="flex items-center border border-input h-9 focus-within:ring-ring focus-within:ring-1 rounded-md font-inter disabled:cursor-not-allowed disabled:opacity-50"
       inputClass="w-full h-8 border-none outline-none disabled:cursor-not-allowed disabled:opacity-50"
       searchClass={styles.searchInput}
-      inputProps={{ ...restProps.inputProps, 'data-test-id': testId }}
+      inputProps={{ ...restProps.inputProps, 'data-testid': testId }}
       buttonClass={clsx(
         'border-none rounded-l-md',
         { 'cursor-not-allowed opacity-50': disabled },

@@ -12,12 +12,12 @@ export const ErrorsList = ({ errors, type = 'error', className, testId }: Props)
   return (
     <ul
       className={clsx('pl-1', className)}
-      data-test-id={testId ? `${testId}-errors-list` : undefined}
+      data-testid={testId ? `${testId}-errors-list` : undefined}
     >
       {errors.map((error, index) => (
         <li
           key={`error-list-item-${index}`}
-          data-test-id={testId ? `${testId}-error-list-item-${index}` : undefined}
+          data-testid={testId ? `${testId}-error-list-item-${index}` : undefined}
         >
           <ErrorMessage
             text={error}

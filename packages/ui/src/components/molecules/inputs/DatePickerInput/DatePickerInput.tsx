@@ -112,7 +112,7 @@ export const DatePickerInput = ({
           }}
           inputProps={{
             ...props.inputProps,
-            'data-test-id': testId,
+            'data-testid': testId,
             className: 'py-0 px-0 h-9',
           }}
         />

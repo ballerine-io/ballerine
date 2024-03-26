@@ -98,7 +98,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
             props?.trigger?.className,
           )}
           disabled={disabled}
-          data-test-id={testId ? `${testId}-trigger` : undefined}
+          data-testid={testId ? `${testId}-trigger` : undefined}
         >
           <span className="flex-1 text-left">
             {selectedOption ? selectedOption.label : placeholder}
@@ -124,7 +124,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
                 <CommandItem
                   value={option.label}
                   key={option.value}
-                  data-test-id={testId ? `${testId}-option` : undefined}
+                  data-testid={testId ? `${testId}-option` : undefined}
                   onSelect={(label: string) => {
                     const option = options.find(
                       option => option.label.toLocaleLowerCase() === label.toLocaleLowerCase(),

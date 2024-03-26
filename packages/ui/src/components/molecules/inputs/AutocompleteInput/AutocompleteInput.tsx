@@ -76,7 +76,7 @@ export const AutocompleteInput = ({
           },
         }}
         renderOption={(props, option) => (
-          <li {...props} key={option} data-test-id={testId ? `${testId}-option` : undefined}>
+          <li {...props} key={option} data-testid={testId ? `${testId}-option` : undefined}>
             {option}
           </li>
         )}
@@ -102,7 +102,7 @@ export const AutocompleteInput = ({
             //@ts-nocheck
             inputProps={{
               ...params.inputProps,
-              'data-test-id': testId,
+              'data-testid': testId,
               className: 'py-0 px-0 h-9',
             }}
             onChange={handleInputChange}

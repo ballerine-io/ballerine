@@ -56,7 +56,7 @@ export const FileInputAdapter: RJSFInputAdapter<File> = ({
         className="line-1 flex items-center"
         disabled={disabled}
         onBlur={handleBlur}
-        data-test-id={testId}
+        data-testid={testId}
       />
     </div>
   );

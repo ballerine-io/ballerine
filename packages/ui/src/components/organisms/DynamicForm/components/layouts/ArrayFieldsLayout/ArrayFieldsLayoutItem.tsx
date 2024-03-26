@@ -30,7 +30,7 @@ export const ArrayFieldsLayoutItem = ({
   }, [element, onDelete]);
 
   return (
-    <div key={element.index} className="relative flex flex-row flex-nowrap" data-test-id={testId}>
+    <div key={element.index} className="relative flex flex-row flex-nowrap" data-testid={testId}>
       <div className="flex w-full flex-col gap-4">
         <div className={ctw('flex flex-row items-center', { 'justify-between': Boolean(title) })}>
           {title ? title : null}
@@ -41,12 +41,12 @@ export const ArrayFieldsLayoutItem = ({
               { ['pointer-events-none opacity-50']: disableDeletion },
             )}
             onClick={createDeleteHandler()}
-            data-test-id={testId ? `${testId}-delete-button` : undefined}
+            data-testid={testId ? `${testId}-delete-button` : undefined}
           >
             {removeText}
           </span>
         </div>
-        <div data-test-id={testId ? `${testId}-element-container` : undefined}>
+        <div data-testid={testId ? `${testId}-element-container` : undefined}>
           {element.children}
         </div>
       </div>

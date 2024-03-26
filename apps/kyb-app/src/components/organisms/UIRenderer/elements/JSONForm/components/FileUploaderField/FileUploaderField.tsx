@@ -43,7 +43,7 @@ export const FileUploaderField = ({
 
   return (
     <Input
-      data-test-id={testId}
+      data-testid={testId}
       type="file"
       placeholder={placeholder}
       accept={acceptFileFormats}
