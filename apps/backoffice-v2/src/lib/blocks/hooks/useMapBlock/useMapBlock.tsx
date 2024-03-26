@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
-import { toTitleCase } from 'string-ts';
-import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { getAddressDeep } from '@/pages/Entity/hooks/useEntityLogic/utils/get-address-deep/get-address-deep';
 import { useNominatimQuery } from '@/lib/blocks/components/MapCell/hooks/useNominatimQuery/useNominatimQuery';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { getAddressDeep } from '@/pages/Entity/hooks/useCurrentCase/utils/get-address-deep/get-address-deep';
+import { useMemo } from 'react';
+import { toTitleCase } from 'string-ts';
 
 export const useMapBlock = ({ filteredPluginsOutput, entityType, workflow }) => {
   const address = getAddressDeep(filteredPluginsOutput, {

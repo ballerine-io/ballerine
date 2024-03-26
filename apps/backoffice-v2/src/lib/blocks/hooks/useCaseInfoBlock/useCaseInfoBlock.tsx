@@ -1,7 +1,7 @@
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { omitPropsFromObject } from '@/pages/Entity/hooks/useCurrentCase/utils';
 import { useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
 

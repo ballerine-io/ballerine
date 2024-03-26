@@ -1,27 +1,27 @@
-import React, { useCallback, useMemo } from 'react';
-import { getDocumentsByCountry, StateTag, TDocument } from '@ballerine/common';
-import { Button, ctw } from '@ballerine/ui';
-import { UseQueryResult } from '@tanstack/react-query';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
+import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { getRevisionReasonsForDocument } from '@/lib/blocks/components/DirectorsCallToAction/helpers';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { DecisionStatus, Director } from '@/lib/blocks/hooks/useDirectorsBlocks/types';
+import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
+import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import {
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
-} from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { motionBadgeProps } from '../../motion-badge-props';
-import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
-import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
-import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+} from '@/pages/Entity/hooks/useCurrentCase/utils';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
-import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
-import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { StateTag, TDocument, getDocumentsByCountry } from '@ballerine/common';
+import { Button, ctw } from '@ballerine/ui';
+import { UseQueryResult } from '@tanstack/react-query';
 import { X } from 'lucide-react';
-import { getRevisionReasonsForDocument } from '@/lib/blocks/components/DirectorsCallToAction/helpers';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import React, { useCallback, useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
-import { DecisionStatus, Director } from '@/lib/blocks/hooks/useDirectorsBlocks/types';
-import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { motionBadgeProps } from '../../motion-badge-props';
 
 export const useDirectorsBlocks = ({
   workflow,

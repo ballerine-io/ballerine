@@ -2,13 +2,13 @@ import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthe
 import { useApproveCaseMutation } from '@/domains/entities/hooks/mutations/useApproveCaseMutation/useApproveCaseMutation';
 import { useRejectCaseMutation } from '@/domains/entities/hooks/mutations/useRejectCaseMutation/useRejectCaseMutation';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
+import { useCurrentCase } from '@/pages/Entity/hooks/useCurrentCase/useCurrentCase';
 import { StateTag } from '@ballerine/common';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
 export const useWebsiteMonitoringCaseActionsLogic = () => {
-  const { workflow } = useEntityLogic();
+  const { workflow } = useCurrentCase();
   const { data: session } = useAuthenticatedUserQuery();
   const authenticatedUser = session?.user;
   const caseState = useCaseState(authenticatedUser, workflow);

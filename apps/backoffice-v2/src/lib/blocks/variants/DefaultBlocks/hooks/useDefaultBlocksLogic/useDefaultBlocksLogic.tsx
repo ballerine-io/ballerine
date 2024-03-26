@@ -39,7 +39,7 @@ import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCase
 import { useWebsiteMonitoringBlocks } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringBlocks/useWebsiteMonitoringBlocks';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { omitPropsFromObject } from '@/pages/Entity/hooks/useCurrentCase/utils';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { Send } from 'lucide-react';
 import { useCallback, useMemo } from 'react';

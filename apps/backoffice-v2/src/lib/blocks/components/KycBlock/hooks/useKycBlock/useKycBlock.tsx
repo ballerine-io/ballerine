@@ -1,27 +1,26 @@
-import * as React from 'react';
+import { StateTag, TStateTags, isObject } from '@ballerine/common';
 import { ComponentProps, useCallback, useMemo } from 'react';
-import { isObject, StateTag, TStateTags } from '@ballerine/common';
 
-import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
-import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
-import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
-import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
-import { toTitleCase } from 'string-ts';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
+import { ctw } from '@/common/utils/ctw/ctw';
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useApproveCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useApproveCaseAndDocumentsMutation/useApproveCaseAndDocumentsMutation';
 import { useRevisionCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useRevisionCaseAndDocumentsMutation/useRevisionCaseAndDocumentsMutation';
-import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { Button } from '@ballerine/ui';
-import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
+import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { omitPropsFromObject } from '@/pages/Entity/hooks/useCurrentCase/utils';
+import { Button } from '@ballerine/ui';
+import { toTitleCase } from 'string-ts';
+import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
+import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
+import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
+import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
+import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },

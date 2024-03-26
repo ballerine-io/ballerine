@@ -1,9 +1,9 @@
+import { workflow } from '@/pages/Entity/hooks/useCurrentCase/mock-workflow-with-children';
 import { Meta, StoryObj } from '@storybook/react';
-import { withRouter } from 'storybook-addon-react-router-v6';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { withRouter } from 'storybook-addon-react-router-v6';
 import { queryClient } from '../../../../../../lib/react-query/query-client';
 import { KycBlock } from '../../KycBlock';
-import { workflow } from '@/pages/Entity/hooks/useEntityLogic/mock-workflow-with-children';
 
 export const KycBlocks = () => {
   return (

@@ -1,8 +1,8 @@
 import { useCaseInfoBlock } from '@/lib/blocks/hooks/useCaseInfoBlock/useCaseInfoBlock';
-import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
+import { useCurrentCase } from '@/pages/Entity/hooks/useCurrentCase/useCurrentCase';
 
 export const useKYCBusinessInformationBlock = () => {
-  const { workflow } = useEntityLogic();
+  const { workflow } = useCurrentCase();
   const {
     store,
     bank,

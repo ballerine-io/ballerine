@@ -1,33 +1,33 @@
-import { toTitleCase } from 'string-ts';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { ctw } from '@/common/utils/ctw/ctw';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
+import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
+import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
+import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { checkCanApprove } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-approve/check-can-approve';
+import { checkCanReject } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-reject/check-can-reject';
+import { checkCanRevision } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-revision/check-can-revision';
+import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
+import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import {
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
   getIsEditable,
   isExistingSchemaForDocument,
-} from '@/pages/Entity/hooks/useEntityLogic/utils';
+} from '@/pages/Entity/hooks/useCurrentCase/utils';
+import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
+import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
+import { CommonWorkflowStates, StateTag } from '@ballerine/common';
+import { Button } from '@ballerine/ui';
+import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback, useMemo } from 'react';
-import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
-import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
-import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
-import { CommonWorkflowStates, StateTag } from '@ballerine/common';
-import { X } from 'lucide-react';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
-import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
-import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
-import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
-import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
-import { checkCanRevision } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-revision/check-can-revision';
-import { checkCanReject } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-reject/check-can-reject';
-import { checkCanApprove } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-approve/check-can-approve';
-import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
-import { Button } from '@ballerine/ui';
+import { toTitleCase } from 'string-ts';
 
 export const useDocumentBlocks = ({
   workflow,

@@ -1,11 +1,11 @@
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useWorkflowDefinitionByIdQuery } from '@/domains/workflow-definitions/hooks/queries/useWorkflowDefinitionByQuery/useWorkflowDefinitionByIdQuery';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
-import { getProcessTrackerProcesses } from '@/pages/Entity/hooks/useEntityLogic/utils/get-process-tracker-processes';
+import { getProcessTrackerProcesses } from '@/pages/Entity/hooks/useCurrentCase/utils/get-process-tracker-processes';
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
-export const useEntityLogic = () => {
+export const useCurrentCase = () => {
   const { entityId } = useParams();
   const filterId = useFilterId();
   const { data: workflow } = useWorkflowByIdQuery({
