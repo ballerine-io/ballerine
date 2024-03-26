@@ -1,3 +1,4 @@
+import { WithTestId } from '@/common';
 import { DropdownInput, DropdownOption } from '@/components/molecules';
 import { TOneOfItem } from '@/components/organisms/DynamicForm/types/one-of';
 import { FieldProps } from '@rjsf/utils';
@@ -12,7 +13,7 @@ export const SelectField = ({
   disabled,
   testId,
   onBlur,
-}: FieldProps<string> & { testId?: string }) => {
+}: WithTestId<FieldProps<string>>) => {
   const options = useMemo((): DropdownOption[] => {
     if (!Array.isArray(schema.oneOf)) return [];
 

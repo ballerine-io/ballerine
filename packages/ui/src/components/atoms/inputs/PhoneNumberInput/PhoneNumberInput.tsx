@@ -1,3 +1,4 @@
+import { WithTestId } from '@/common';
 import clsx from 'clsx';
 import PhoneInput, { PhoneInputProps } from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -16,7 +17,7 @@ export type PhoneInputStylesPropsNames =
 
 export type PhoneInputPropsWithoutStyleProps = Omit<PhoneInputProps, PhoneInputStylesPropsNames>;
 
-export type PhoneNumberInputProps = PhoneInputPropsWithoutStyleProps & { testId?: string };
+export type PhoneNumberInputProps = WithTestId<PhoneInputPropsWithoutStyleProps>;
 
 export const PhoneNumberInput = (props: PhoneNumberInputProps) => {
   const { disableSearchIcon = true, disabled, testId, ...restProps } = props;

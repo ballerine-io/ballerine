@@ -1,4 +1,4 @@
-import { Checkbox, RJSFInputProps, ctw } from '@ballerine/ui';
+import { Checkbox, RJSFInputProps, WithTestId, ctw } from '@ballerine/ui';
 import { useMemo } from 'react';
 
 interface CheckboxListOption {
@@ -6,7 +6,7 @@ interface CheckboxListOption {
   value: string;
 }
 
-export const CheckboxList = (props: RJSFInputProps & { testId?: string }) => {
+export const CheckboxList = (props: WithTestId<RJSFInputProps>) => {
   //@ts-nocheck
   const { uiSchema, formData = [], onChange, disabled, testId } = props;
 

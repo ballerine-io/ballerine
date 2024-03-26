@@ -1,3 +1,4 @@
+import { WithTestId } from '@/common';
 import { Input, TextArea } from '@/components/atoms';
 import { FieldProps } from '@rjsf/utils';
 import { useCallback } from 'react';
@@ -12,7 +13,7 @@ export const TextField = ({
   testId,
   onChange,
   onBlur,
-}: FieldProps<string | number> & { testId?: string }) => {
+}: WithTestId<FieldProps<string | number>>) => {
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const serializedValue =
