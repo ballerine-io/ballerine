@@ -3,25 +3,22 @@ import {Tabs, TabItem} from '@astrojs/starlight/components';
 import CodeBlock from "../CodeBlock/CodeBlock.astro";
 
 export interface Props {
-    code: string | {
-        pnpm: string;
-        npm: string;
-        yarn: string;
-    };
-    prefix?: string;
+  code: string | {
+    pnpm: string;
+    npm: string;
+    yarn: string;
+  };
+  prefix?: string;
 }
 
 const {code, prefix = ``} = Astro.props;
+const packageManagers = ['pnpm', 'npm', 'yarn'];
 ---
 
 <Tabs>
-    <TabItem label="pnpm">
-        <CodeBlock lang={`shell`} code={`${prefix}${prefix ? ` ` : ``}pnpm ${typeof code === 'string' ? code : code.pnpm}`}/>
+  {packageManagers.map(manager => (
+    <TabItem label={manager}>
+      <CodeBlock lang={`shell`} code={`${prefix}${prefix ? ` ` : ``}${manager} ${typeof code === 'string' ? code : code[manager]}`}/>
     </TabItem>
-    <TabItem label="npm">
-        <CodeBlock lang={`shell`} code={`${prefix}${prefix ? ` ` : ``}npm ${typeof code === 'string' ? code : code.npm}`}/>
-    </TabItem>
-    <TabItem label="yarn">
-        <CodeBlock lang={`shell`} code={`${prefix}${prefix ? ` ` : ``}yarn ${typeof code === 'string' ? code : code.yarn}`}/>
-    </TabItem>
+  ))}
 </Tabs>
