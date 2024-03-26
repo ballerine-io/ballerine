@@ -47,6 +47,10 @@ export default defineConfig({
               label: `Deployment`,
               link: `/en/getting_started/deployment`,
             },
+            {
+              label: `Ansible Deployment`,
+              link: `/en/getting_started/ansibledeployment`,
+            },
           ],
         },
         {

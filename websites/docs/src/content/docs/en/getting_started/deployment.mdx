@@ -15,7 +15,7 @@ import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
 <CodeBlock lang={`shell`} code={`git checkout dev`}/>
 
 3. **Run Docker Compose**: Now, you can start all services using Docker Compose:
-<CodeBlock lang={`shell`} code={`docker-compose up -d`}/>
+<CodeBlock lang={`shell`} code={`docker-compose -f docker-compose-build.yml up -d`}/>
 
 The application should now be running at the ports defined in your Docker Compose configuration.
 
