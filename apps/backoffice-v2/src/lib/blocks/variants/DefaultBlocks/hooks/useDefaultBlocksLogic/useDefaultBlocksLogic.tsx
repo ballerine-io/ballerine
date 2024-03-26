@@ -35,7 +35,7 @@ import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistry
 import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvidedBlock/useUbosUserProvidedBlock';
 import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
 import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
-import { useCaseBlocksLogic } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/useCaseBlocksLogic';
+import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/useCaseBlocks';
 import { useWebsiteMonitoringBlocks } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringBlocks/useWebsiteMonitoringBlocks';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
@@ -434,7 +434,13 @@ export const useDefaultBlocksLogic = () => {
     blocks = [],
     tabs,
     setActiveTab,
-  } = useCaseBlocksLogic(allBlocks, workflow!.workflowDefinition?.config, { workflow });
+  } = useCaseBlocks({
+    workflow,
+    config: workflow!.workflowDefinition?.config,
+    blocks: allBlocks,
+    onReuploadNeeded,
+    isLoadingReuploadNeeded,
+  });
 
   const availableTabs = useMemo(() => tabs.filter(tab => !tab.hidden), [tabs]);
 

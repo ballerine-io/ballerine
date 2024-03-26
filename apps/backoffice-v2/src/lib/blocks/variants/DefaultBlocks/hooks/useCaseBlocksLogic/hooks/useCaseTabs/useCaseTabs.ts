@@ -2,7 +2,7 @@ import { TCaseTabDefinition } from '@/lib/blocks/variants/DefaultBlocks/types/ca
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 
-export const useCaseTabsLogic = (tabs: TCaseTabDefinition[]) => {
+export const useCaseTabs = (tabs: TCaseTabDefinition[]) => {
   const [activeTabName, setActiveTabName] = useState(() => tabs?.at(0)?.name);
 
   const activeTab = useMemo(
