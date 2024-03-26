@@ -3,10 +3,10 @@ import { FunctionComponent } from 'react';
 
 import { Icon } from '@/common/components/molecules/ProcessTracker/constants';
 import { useProcessTrackerLogic } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/useProcessTrackerLogic';
-import { IProcessTrackerProps } from '@/common/components/molecules/ProcessTracker/interfaces';
+import { ExtractCellProps } from '@ballerine/blocks';
 import { HelpCircle } from 'lucide-react';
 
-export const ProcessTracker: FunctionComponent<IProcessTrackerProps> = ({
+export const ProcessTracker: FunctionComponent<ExtractCellProps<'processTracker'>> = ({
   plugins,
   workflow,
   processes,

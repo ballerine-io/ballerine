@@ -10,17 +10,16 @@ import {
 import { Dialog } from '@/common/components/molecules/Dialog/Dialog';
 import { MotionBadge } from '@/common/components/molecules/MotionBadge/MotionBadge';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { IProcessTrackerProps } from '@/common/components/molecules/ProcessTracker/interfaces';
 import { GenericAsyncFunction, GenericFunction } from '@/common/types';
+import { TWorkflowDefinitionById } from '@/domains/workflow-definitions/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ICallToActionLegacyProps } from '@/lib/blocks/components/CallToActionLegacy/interfaces';
 import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
 import { IEditableDetailsDocument } from '@/lib/blocks/components/EditableDetails/interfaces';
-import { INodeCellProps } from '@/lib/blocks/components/NodeCell/interfaces';
 import { TPDFViewerCell } from '@/lib/blocks/components/PDFViewerCell/interfaces';
 import { Block } from '@ballerine/blocks';
 import { CommonWorkflowStates } from '@ballerine/common';
-import { AnyObject } from '@ballerine/ui';
+import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { ColumnDef, TableOptions } from '@tanstack/react-table';
 import { ComponentProps, ReactNode } from 'react';
 
@@ -218,11 +217,21 @@ export type TDialogCell = {
 
 export type TProcessTrackerBlock = {
   type: 'processTracker';
-} & IProcessTrackerProps;
+  workflow: TWorkflowById;
+  plugins: Array<
+    | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['apiPlugins']>[number]
+    | NonNullable<
+        NonNullable<TWorkflowDefinitionById['extensions']>['childWorkflowPlugins']
+      >[number]
+    | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['commonPlugins']>[number]
+  >;
+  processes?: string[];
+};
 
 export type TNodeCell = {
   type: 'nodeCell';
-} & INodeCellProps;
+  value: AnyChildren;
+};
 
 export type TCell =
   | TBlockCell
