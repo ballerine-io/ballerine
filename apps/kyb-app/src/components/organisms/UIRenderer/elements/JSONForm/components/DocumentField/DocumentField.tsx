@@ -229,6 +229,7 @@ export const DocumentField = (
         fileId={fileId}
         fileRepository={collectionFlowFileStorage}
         onBlur={onBlur as () => void}
+        testId={definition.name}
         onChange={handleChange}
       />
       {!!warnings.length && <ErrorsList errors={warnings.map(err => err.message)} />}

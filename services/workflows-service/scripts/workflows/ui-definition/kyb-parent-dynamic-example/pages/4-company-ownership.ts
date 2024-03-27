@@ -221,6 +221,7 @@ export const CompanyOwnershipPage = {
         },
         {
           type: 'json-form',
+          name: 'im-shareholder-checkbox-form',
           options: {
             jsonFormDefinition: {
               required: ['im-shareholder-checkbox'],
@@ -399,6 +400,7 @@ export const CompanyOwnershipPage = {
         },
         {
           type: 'json-form',
+          name: 'im-director-checkbox-form',
           elements: [
             {
               type: 'checkbox',

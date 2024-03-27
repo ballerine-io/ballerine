@@ -41,3 +41,13 @@ export const Controlled = {
 export const Disabled = {
   render: () => <AutocompleteInput disabled options={[]} onChange={() => {}} />,
 };
+
+export const WithTestId = {
+  render: () => (
+    <AutocompleteInput
+      options={storyOptions}
+      onChange={() => {}}
+      testId="autocomplete-input-test-id"
+    />
+  ),
+};

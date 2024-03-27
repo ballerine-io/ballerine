@@ -40,3 +40,13 @@ export const DisabledFutureDate = {
 export const DisabledPastDate = {
   render: () => <DatePickerInput onChange={() => {}} params={{ disablePast: true }} />,
 };
+
+export const WithTestId = {
+  render: () => (
+    <DatePickerInput
+      onChange={() => {}}
+      params={{ disablePast: true }}
+      testId="date-picker-test-id"
+    />
+  ),
+};

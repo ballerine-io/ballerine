@@ -1,3 +1,4 @@
+import { WithTestId } from '@/common';
 import { Input, TextArea } from '@/components/atoms';
 import { FieldProps } from '@rjsf/utils';
 import { useCallback } from 'react';
@@ -9,9 +10,10 @@ export const TextField = ({
   formData,
   disabled,
   schema,
+  testId,
   onChange,
   onBlur,
-}: FieldProps<string | number>) => {
+}: WithTestId<FieldProps<string | number>>) => {
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const serializedValue =
@@ -42,8 +44,12 @@ export const TextField = ({
   };
 
   return uiSchema?.['ui:widget'] === 'textarea' ? (
-    <TextArea {...inputProps} />
+    <TextArea {...inputProps} data-testid={testId} />
   ) : (
-    <Input {...inputProps} type={schema.type === 'number' ? 'number' : 'text'} />
+    <Input
+      {...inputProps}
+      type={schema.type === 'number' ? 'number' : 'text'}
+      data-testid={testId}
+    />
   );
 };

@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import { DropdownInput } from './DropdownInput';
 import { DropdownOption } from './types';
-import { useState } from 'react';
 
 export default {
   component: DropdownInput,
@@ -74,4 +74,25 @@ export const AutoOpenOnFocus = {
       onChange={() => {}}
     />
   ),
+};
+
+const WithTestIdComponent = () => {
+  const [value, setValue] = useState('');
+
+  return (
+    <DropdownInput
+      name="select"
+      placeholdersParams={{
+        placeholder: 'Select item',
+      }}
+      options={storyOptions}
+      value={value}
+      testId={'dropdown-input'}
+      onChange={setValue}
+    />
+  );
+};
+
+export const WithTestId = {
+  render: WithTestIdComponent,
 };
