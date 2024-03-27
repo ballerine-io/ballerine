@@ -2,6 +2,15 @@ name: Publish workflows-service image
 
 on:
   workflow_dispatch:
+    inputs:
+      deploy_to_dev:
+        type: choice
+        description: 'Deploy to Development Environment'
+        required: true
+        default: 'false'
+        options: 
+          - 'false'
+          - 'true'
   push:
     paths:
       # Run this pipeline only if there are changes in specified path
