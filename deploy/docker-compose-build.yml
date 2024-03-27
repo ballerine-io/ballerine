@@ -76,7 +76,7 @@ services:
     restart: on-failure
   ballerine-postgres:
     container_name: postgres
-    image: sibedge/postgres-plv8:15.3-3.1.7
+    image: sibedge/postgres-plv8:15.6-3.2.2
     ports:
       - ${DB_PORT}:${DB_PORT}
     environment:
