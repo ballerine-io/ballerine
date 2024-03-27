@@ -9,6 +9,7 @@ import {
 import { AggregateType } from './consts';
 import { Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { isEmpty } from 'lodash';
 
 @Injectable()
 export class DataAnalyticsService {
@@ -79,10 +80,13 @@ export class DataAnalyticsService {
       Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
         `${timeAmount} ${timeUnit}`,
       )}'`,
-      transactionType
-        ? Prisma.sql`tr."transactionType"::text IN (${Prisma.join(transactionType, ',')})`
-        : Prisma.empty,
     ];
+
+    if (!isEmpty(transactionType)) {
+      conditions.push(
+        Prisma.sql`tr."transactionType"::text IN (${Prisma.join(transactionType, ',')})`,
+      );
+    }
 
     if (direction) {
       conditions.push(Prisma.sql`"transactionDirection"::text = ${direction}`);
