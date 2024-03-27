@@ -278,7 +278,10 @@ describe('AlertService', () => {
         // Assert
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
+        
         expect((alerts[0] as any).executionDetails.executionRow.transactionCount).toEqual('11');
+        expect((alerts[0] as any).executionDetails.executionRow.totalAmount).toEqual('1100');
+
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
         expect(alerts[0]?.counterpartyId).toEqual(
           business1Transactions[0]?.counterpartyOriginatorId,
