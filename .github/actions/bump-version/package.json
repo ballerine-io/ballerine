@@ -1,0 +1,14 @@
+{
+  "name": "bump-version",
+  "version": "1.0.0",
+  "description": "Bump tag version",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build index.js"
+  },
+  "author": "Lior Zamir",
+  "license": "ISC",
+  "dependencies": {
+    "@actions/core": "^1.10.0"
+  }
+}
