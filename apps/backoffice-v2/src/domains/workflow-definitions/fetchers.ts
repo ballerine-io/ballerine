@@ -17,10 +17,10 @@ export type TPlugin = z.infer<typeof PluginSchema>;
 
 export const WorkflowDefinitionConfigTheme = z.object({
   type: z
-    .union([
-      z.literal(WorkflowDefinitionConfigThemeEnum.KYB),
-      z.literal(WorkflowDefinitionConfigThemeEnum.KYC),
-      z.literal(WorkflowDefinitionConfigThemeEnum.DOCUMENTS_REVIEW),
+    .enum([
+      WorkflowDefinitionConfigThemeEnum.KYB,
+      WorkflowDefinitionConfigThemeEnum.KYC,
+      WorkflowDefinitionConfigThemeEnum.DOCUMENTS_REVIEW,
     ])
     .default(WorkflowDefinitionConfigThemeEnum.KYB),
   tabsOverride: z.array(z.string()).optional(),
@@ -34,7 +34,7 @@ export const WorkflowDefinitionConfigSchema = z
     isManualCreation: z.boolean().default(false),
     isAssociatedCompanyKybEnabled: z.boolean().default(false),
     theme: WorkflowDefinitionConfigTheme.default({
-      type: 'kyb',
+      type: WorkflowDefinitionConfigThemeEnum.KYB,
     }),
   })
   .passthrough()
