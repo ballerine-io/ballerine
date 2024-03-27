@@ -107,6 +107,11 @@ jobs:
       contents: read
     steps:
 
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: Set outputs
         id: get_version
         run: |
