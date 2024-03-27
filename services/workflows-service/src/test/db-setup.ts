@@ -4,13 +4,13 @@ import console from 'console';
 import { TestGlobal } from '@/test/test-global';
 import { execSync } from 'child_process';
 
-const DATANASE_NAME = 'test';
+const DATABASE_NAME = 'test';
 
 module.exports = async () => {
   if (process.env.SKIP_DB_SETUP_TEARDOWN) return;
 
   const container = await new PostgreSqlContainer('sibedge/postgres-plv8:15.3-3.1.7')
-    .withDatabase(DATANASE_NAME)
+    .withDatabase(DATABASE_NAME)
     .withExposedPorts({ host: 5444, container: 5432 })
     .withHealthCheck({
       test: ['CMD', 'pg_isready -d test_postgress -U test_user -p 5432'],
