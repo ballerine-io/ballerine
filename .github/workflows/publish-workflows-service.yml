@@ -50,6 +50,7 @@ jobs:
           platforms: 'arm64,arm'
 
       - name: Cache Docker layers
+        id: cache
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
@@ -95,7 +96,7 @@ jobs:
           context: services/workflows-service
           platforms: linux/amd64
           push: true
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          cache-to: ${{ steps.cache.outputs.cache-hit }}
           cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}'
           tags: ${{ steps.docker_meta.outputs.tags }}
 
@@ -228,6 +229,7 @@ jobs:
           platforms: 'arm64,arm'
 
       - name: Cache Docker layers
+        id: cache
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
