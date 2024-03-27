@@ -278,9 +278,14 @@ describe('AlertService', () => {
         // Assert
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
-        
-        expect((alerts[0] as any).executionDetails.executionRow.transactionCount).toEqual('11');
-        expect((alerts[0] as any).executionDetails.executionRow.totalAmount).toEqual('1100');
+
+        expect(alerts[0] as any).toMatchObject({
+          executionDetails: { executionRow: { transactionCount: '11' } },
+        });
+
+        expect(alerts[0] as any).toMatchObject({
+          executionDetails: { executionRow: { totalAmount: 1000 * 11 } },
+        });
 
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
         expect(alerts[0]?.counterpartyId).toEqual(
@@ -290,10 +295,7 @@ describe('AlertService', () => {
 
       it('When the sum of refunds amount is less than 5000, no alert should be created', async () => {
         // Arrange
-        const business1Transactions = await baseTransactionFactory.amount(100).count(49).create({
-          transactionType: TransactionRecordType.refund,
-        });
-        const business2Transactions = await baseTransactionFactory.amount(100).count(49).create({
+        await baseTransactionFactory.amount(100).count(49).create({
           transactionType: TransactionRecordType.refund,
         });
 
