@@ -38,7 +38,7 @@ services:
       db:
         condition: service_healthy
   db:
-    image: docker pull sibedge/postgres-plv8:15.3-3.1.7
+    image: docker pull sibedge/postgres-plv8:15.6-3.2.2
     ports:
       - ${DB_PORT}:5432
     environment:

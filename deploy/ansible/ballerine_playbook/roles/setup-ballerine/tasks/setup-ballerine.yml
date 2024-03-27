@@ -68,7 +68,7 @@
             VITE_KYB_DEFINITION_ID: 'kyb_parent_kyc_session_example'
         ballerine-postgres:
           container_name: postgres
-          image: sibedge/postgres-plv8:15.3-3.1.7
+          image: sibedge/postgres-plv8:15.6-3.2.2
           ports:
             - "{{ postgres_port }}:{{ postgres_port }}"
           environment:
@@ -171,7 +171,7 @@
             VITE_KYB_DEFINITION_ID: 'kyb_parent_kyc_session_example'
         ballerine-postgres:
           container_name: postgres
-          image: sibedge/postgres-plv8:15.3-3.1.7
+          image: sibedge/postgres-plv8:15.6-3.2.2
           ports:
             - "{{ postgres_port }}:{{ postgres_port }}"
           environment:
