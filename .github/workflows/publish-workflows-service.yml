@@ -107,6 +107,7 @@ jobs:
       - name: Scan Docker Image
         uses: aquasecurity/trivy-action@master
         with:
+          cache-dir: 
           image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}'
           format: 'table'
           ignore-unfixed: true
@@ -181,7 +182,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           fetch-tags: true
       - name: Get version
         id: version
