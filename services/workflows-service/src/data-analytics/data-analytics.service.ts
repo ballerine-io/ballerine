@@ -54,6 +54,7 @@ export class DataAnalyticsService {
     amountThreshold,
     amountBetween,
     direction,
+    transactionType = [],
     excludedCounterparty = {
       counterpartyBeneficiaryIds: [],
       counterpartyOriginatorIds: [],
@@ -78,6 +79,12 @@ export class DataAnalyticsService {
       Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
         `${timeAmount} ${timeUnit}`,
       )}'`,
+      transactionType
+        ? Prisma.sql`tr."transactionType" IN (${Prisma.join(
+            transactionType.map(type => `'${type}'::"TransactionRecordType"`),
+            ',',
+          )})`
+        : Prisma.empty,
     ];
 
     if (direction) {
