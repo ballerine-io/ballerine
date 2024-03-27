@@ -54,9 +54,10 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.ref_name }}
+          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
           restore-keys: |
-            ${{ runner.os }}-buildx-
+            ${{ runner.os }}-docker-
+  
 
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
@@ -96,8 +97,8 @@ jobs:
           context: services/workflows-service
           platforms: linux/amd64
           push: true
-          cache-to: ${{ steps.cache.outputs.cache-hit }}
-          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}'
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
           tags: ${{ steps.docker_meta.outputs.tags }}
 
       - name: Scan Docker Image
@@ -235,9 +236,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.ref_name }}
+          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
           restore-keys: |
-            ${{ runner.os }}-buildx-
+            ${{ runner.os }}-docker-
 
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
