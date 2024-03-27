@@ -27,7 +27,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
 
-jobs:
+jobs:      
   build-and-push-image:
     runs-on: ubuntu-latest
     permissions:
@@ -100,9 +100,19 @@ jobs:
           vuln-type: 'os,library'
           severity: 'CRITICAL'
 
+  update-helm-chart:
+    needs: build-and-push-image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+
       - name: Set outputs
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        id: get_version
+        run: |
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "SHA_SHORT=$SHORT_SHA" >> $GITHUB_ENV
+          echo "::set-output name=sha_short::$SHORT_SHA"
 
       - name: Checkout cloud-infra-config repository
         uses: actions/checkout@v4
@@ -147,10 +157,30 @@ jobs:
               }
             }
 
+  release:
+    runs-on: ubuntu-latest
+    needs: build-and-push-image
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Get version
+        id: version
+        run: echo ::set-output name=tag::$(git tag -l "$(echo workflow-service)*" | sort -V -r | head -n 1)
+      - name: Bump version
+        id: bump-version
+        uses: ./.github/actions/bump-version
+        with:
+          tag: ${{ steps.version.outputs.tag }}
+      - name: Release
+        run: gh release create ${{ steps.bump-version.outputs.version }} --notes-start-tag ${{ steps.version.outputs.tag }}
+
   build-and-push-ee-image:
     runs-on: ubuntu-latest
     needs: build-and-push-image
-    if: ${{ needs.build-and-push-image.result != 'failure' }}
     permissions:
       contents: read
       packages: write
