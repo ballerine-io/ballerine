@@ -147,7 +147,7 @@ jobs:
 
       - name: Deploy from branch - Update dev env in the HelmChart
         continue-on-error: true
-        if: ${{ failure() }}
+        if: ${{ failure() && inputs.deploy_to_dev == 'true'}}
         uses: fjogeleit/yaml-update-action@main
         with:
           repository: ballerine-io/cloud-infra-config
