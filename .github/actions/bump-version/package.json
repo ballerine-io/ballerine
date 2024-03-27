@@ -4,11 +4,14 @@
   "description": "Bump tag version",
   "main": "index.js",
   "scripts": {
-    "build": "ncc build index.js"
+    "build": "npx ncc build index.js"
   },
   "author": "Lior Zamir",
   "license": "ISC",
   "dependencies": {
     "@actions/core": "^1.10.0"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.38.1"
   }
 }
