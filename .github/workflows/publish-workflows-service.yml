@@ -63,8 +63,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ github.head_ref || github.ref_name }}
-            type=raw,value=${{  steps.get_version.outputs.sha_short }}-${{ github.head_ref || github.ref_name }}
+            type=raw,value=${{ github.ref_name }}
+            type=raw,value=${{ steps.get_version.outputs.sha_short }}-${{ github.ref_name }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
             type=sha,format=short
 
@@ -73,19 +73,18 @@ jobs:
           echo "Metadata: ${{ steps.docker_meta.outputs.tags }}"
 
       - name: Build and push Docker image 
-        if: github.ref == 'refs/heads/prod'
         uses: docker/build-push-action@v4
         with:
           context: services/workflows-service
           platforms: linux/amd64
           push: true
-          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
+          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}'
           tags: ${{ steps.docker_meta.outputs.tags }}
 
       - name: Scan Docker Image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
+          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}'
           format: 'table'
           ignore-unfixed: true
           exit-code: 1
@@ -107,8 +106,7 @@ jobs:
             kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml
           sparse-checkout-cone-mode: false
 
-      - name: Update workdlow-service image version for non Prod in the HelmChart
-        if: github.ref != 'refs/heads/prod'
+      - name: Update workdlow-service image version in the HelmChart
         uses: fjogeleit/yaml-update-action@main
         with:
           repository: ballerine-io/cloud-infra-config
@@ -119,23 +117,7 @@ jobs:
           changes: |
             {
               "kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml": {
-                "image.tag": "${{  steps.get_version.outputs.sha_short  }}-${{ github.head_ref || github.ref_name }}"
-              }
-            }
-
-      - name: Update workdlow-service image version for Prod in the HelmChart
-        if: github.ref == 'refs/heads/prod'
-        uses: fjogeleit/yaml-update-action@main
-        with:
-          repository: ballerine-io/cloud-infra-config
-          branch: iamops/blue-green
-          commitChange: true
-          message: 'Update wf-service image Version to sha-${{ steps.get_version.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
-          token: ${{ secrets.GIT_TOKEN }}
-          changes: |
-            {
-              "kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml": {
-                "image.tag": "${{ steps.get_version.outputs.sha_short }}-prod"
+                "image.tag": "${{ steps.get_version.outputs.sha_short }}-${{ github.ref_name }}"
               }
             }
 
@@ -154,11 +136,13 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.SUBMODULES_TOKEN }}
 
-      - name: Get package version from package.json
+      - name: Set outputs
         id: get_version
         run: |
-          PACKAGE_VERSION=$(jq -r '.version' services/workflows-service/package.json)
-          echo "::set-output name=version::$PACKAGE_VERSION"
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "SHA_SHORT=$SHORT_SHA" >> $GITHUB_ENV
+          echo "::set-output name=sha_short::$SHORT_SHA"
+
       - name: Print the version
         run: echo "The version was ${{ steps.get_version.outputs.sha_short }}"
 
@@ -190,8 +174,9 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-ee
           tags: |
-            type=raw,value=${{ github.head_ref || github.ref_name }}
-            type=raw,value=${{ steps.get_version.outputs.sha_short }}-${{ github.head_ref || github.ref_name }}
+            type=raw,value=${{ github.ref_name }}
+            type=raw,value=${{ steps.get_version.outputs.sha_short }}-${{ github.ref_name }}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
             type=sha,format=short
 
       - name: Build and push ee Docker image
@@ -201,7 +186,7 @@ jobs:
           file: services/workflows-service/Dockerfile.ee
           platforms: linux/amd64
           push: true
-          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-ee:${{ github.head_ref || github.ref_name }}'
+          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-ee:${{ github.ref_name }}'
           tags: ${{ steps.eemeta.outputs.tags }}
           build-args: |
-            BASE_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.sha_short }}-${{ github.head_ref || github.ref_name }}
+            BASE_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.sha_short }}-${{ github.ref_name }}
