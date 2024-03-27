@@ -131,13 +131,14 @@ jobs:
             }
 
       - name: Deploy from branch - Update dev env in the HelmChart
+        continue-on-error: true
         if: ${{ failure() }}
         uses: fjogeleit/yaml-update-action@main
         with:
           repository: ballerine-io/cloud-infra-config
           branch: iamops/blue-green
           commitChange: true
-          message: 'Update wf-service image Version for dev environment to sha-${{ steps.get_version.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
+          message: 'Update wf-service image Version to dev environment sha-${{ steps.get_version.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
