@@ -243,8 +243,6 @@ jobs:
           mkdir -p ./dist
           
           docker cp $id:/app/dist/ ./dist
-          
-          docker rm $id
       - name: Create Sentry release
         uses: getsentry/action-release@v1
         env:
