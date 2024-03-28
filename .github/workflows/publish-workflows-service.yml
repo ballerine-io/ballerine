@@ -145,7 +145,7 @@ jobs:
             kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml
           sparse-checkout-cone-mode: false
 
-      - name: Update workdlow-service image version in the HelmChart
+      - name: Update workdlow-service image version for non Prod in the HelmChart
         uses: fjogeleit/yaml-update-action@main
         with:
           repository: ballerine-io/cloud-infra-config
@@ -153,23 +153,28 @@ jobs:
           commitChange: true
           message: 'Update wf-service image Version to sha-${{ steps.get_version.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
-          valueFile: "kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml"
-          propertyPath: "image.tag"
-          value: "${{ steps.get_version.outputs.sha_short }}-${{ github.ref_name }}"
+          changes: |
+            {
+              "kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml": {
+                "image.tag": "${{ steps.get_version.outputs.sha_short }}-${{ github.head_ref || github.ref_name }}"
+              }
+            }
 
       - name: Deploy from branch - Update dev env in the HelmChart
-        continue-on-error: true
-        if: ${{ failure() && inputs.deploy_to_dev == 'true'}}
+        if: github.ref != 'refs/heads/prod'
         uses: fjogeleit/yaml-update-action@main
         with:
           repository: ballerine-io/cloud-infra-config
           branch: iamops/blue-green
           commitChange: true
-          message: 'Update wf-service image Version to dev environment sha-${{ steps.get_version.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
+          message: 'Update wf-service image Version to sha-${{ steps.get_version.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
-          valueFile: "kubernetes/helm/wf-service/dev-custom-values.yaml"
-          propertyPath: "image.tag"
-          value: "${{ steps.get_version.outputs.sha_short }}-${{ github.ref_name }}"
+          changes: |
+            {
+              "kubernetes/helm/wf-service/dev-custom-values.yaml": {
+                "image.tag": "${{ steps.get_version.outputs.sha_short }}-${{ github.head_ref || github.ref_name }}"
+              }
+            }
 
   release:
     runs-on: ubuntu-latest
