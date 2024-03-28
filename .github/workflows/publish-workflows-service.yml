@@ -184,16 +184,17 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
     outputs:
+      version: ${{ steps.version.outputs.version }}
       tag: ${{ steps.version.outputs.tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 1
           fetch-tags: true
       - name: Get version
         id: version
         run: |
+          TAG=$(git tag -l "$(echo workflow-service)*" | sort -V -r | head -n 1)
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo ::set-output name=tag::$TAG
       - name: Bump version
@@ -235,9 +236,6 @@ jobs:
           docker cp $id:/app/dist/src/**/*.map ./dist
           
           docker rm $id
-      - name: Get version
-        id: version
-        run: echo ::set-output name=tag::$(git tag -l "$(echo workflow-service)*" | sort -V -r | head -n 1)
       - name: Create Sentry release
         uses: getsentry/action-release@v1
         env:
