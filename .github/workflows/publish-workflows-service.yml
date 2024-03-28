@@ -161,7 +161,7 @@ jobs:
             }
 
       - name: Deploy from branch - Update dev env in the HelmChart
-        if: github.ref != 'refs/heads/prod'
+        if: ${{ failure() && github.event.inputs.deploy_to_dev == 'true' }}
         uses: fjogeleit/yaml-update-action@main
         with:
           repository: ballerine-io/cloud-infra-config
