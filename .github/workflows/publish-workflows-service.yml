@@ -143,6 +143,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: |
             kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml
+            kubernetes/helm/wf-service/dev-custom-values.yaml
           sparse-checkout-cone-mode: false
 
       - name: Update workdlow-service image version for non Prod in the HelmChart
