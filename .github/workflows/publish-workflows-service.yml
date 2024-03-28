@@ -243,6 +243,9 @@ jobs:
           mkdir -p ./dist
           
           docker cp $id:/app/dist/ ./dist
+
+          curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.31.0" sh
+
       - name: Create Sentry release
         uses: getsentry/action-release@v1
         env:
