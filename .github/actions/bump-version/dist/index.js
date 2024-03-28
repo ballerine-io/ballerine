@@ -2825,8 +2825,9 @@ async function main() {
   console.log("Last tag: ", lastTag);
   
   let [component, version] = lastTag.split("@v");
-  let minorVersion = version.split(".").map((i) => Number.parseInt(i));
-  minorVersion[2]++;
+  
+  version = version.split(".").map((i) => Number.parseInt(i));
+  version[2]++;
 
   core.setOutput("version", `${component}@v${version.join(".")}`);
   core.setOutput("tag", `${version.join(".")}`);
