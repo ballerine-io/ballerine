@@ -1,23 +1,11 @@
 ---
-title: Deployment Guide
-
+title: Deployment on kubernetes Cluster
+description: This guide provides a step-by-step process for setting up and running the Ballerine stack on Kubernetes cluster.
 ---
 
-
+import PackageManagersTabs
+  from '../../../../components/PackageManagersTabs/PackageManagersTabs.astro';
 import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
-
-### Docker Compose Deployment
-
-1. **Clone the project**: Use Git to clone the Ballerine repository to your local machine:
-<CodeBlock lang={`shell`} code={`git clone https://github.com/ballerine-io/ballerine.git && cd ballerine`}/>
-
-2. **Switch to the dev branch**: After cloning, switch to the dev branch (or the branch you wish to deploy):
-<CodeBlock lang={`shell`} code={`git checkout dev`}/>
-
-3. **Run Docker Compose**: Now, you can start all services using Docker Compose:
-<CodeBlock lang={`shell`} code={`docker-compose -f docker-compose-build.yml up -d`}/>
-
-The application should now be running at the ports defined in your Docker Compose configuration.
 
 ### Kubernetes Deployment (Helm)
 #### Install ballerine using helm chart
@@ -101,4 +89,3 @@ postgresql:
 
 
 Always refer to the official documentation of Ballerine for more specific configuration and deployment details.
-

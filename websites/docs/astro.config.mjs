@@ -38,20 +38,30 @@ export default defineConfig({
             {
               label: `Glossary`,
               link: `/en/getting_started/glossary`,
-            },
-            {
-              label: `Installation`,
-              link: `/en/getting_started/installation`,
-            },
-            {
-              label: `Deployment`,
-              link: `/en/getting_started/deployment`,
-            },
-            {
-              label: `Ansible Deployment`,
-              link: `/en/getting_started/ansibledeployment`,
-            },
+            }
           ],
+        },
+        {
+          label: `Deployment Guides`,
+          collapsed: true,
+          items: [
+            {
+              label: `Local`,
+              link: `/en/getting_started/local_development`,
+            },
+            {
+              label: `Docker`,
+              link: `/en/getting_started/local_deployment`,
+            },
+            {
+              label: `Ansible `,
+              link: `/en/getting_started/ansible_deployment`,
+            },
+            {
+              label: `Kubernetes Deployment`,
+              link: `/en/getting_started/kubernetes_deployment`,
+            }
+          ]
         },
         {
           label: 'Learn',

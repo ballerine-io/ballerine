@@ -1,6 +1,6 @@
 ---
-title: Deploy Ballerine on HTTPS using ansible
-description: This guide provides a step-by-step process for setting up and running the Ballerine stack with HTTPS on a remote instance.
+title: Deployment using Ansible
+description: This guide provides a step-by-step process for setting up and running the Ballerine stack using Ansible.
 ---
 
 import PackageManagersTabs
@@ -9,10 +9,10 @@ import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
 
 ### Installation steps on a remote virtual machine
 
-We recommend installation using ansible
+We recommend installation using Ansible
 
-1. **Install ansible**: We recommend installing ansible with apt:
-<CodeBlock lang={`shell`}  code={`apt install -y ansible`}/>
+1. **Install Ansible**: We recommend installing Ansible with apt:
+<CodeBlock lang={`shell`}  code={`sudo apt install -y ansible`}/>
 
 2. **Clone the project**: Use Git to clone the Ballerine repository to your local machine:
 <CodeBlock lang={`shell`}  code={`git clone https://github.com/ballerine-io/ballerine.git && cd ballerine`}/>
@@ -38,9 +38,24 @@ using `ansible_ssh_private_key_file`
 
 After you completed the above step then we're pretty much done with the inventory
 
-7. **Setup your configuration vars for Ballerine**:
 
-The next step is to setup necessary configuration for your app to run such as environment variable, domain name, etc.
+### Start Ballerine
+
+**Run the Ansible playbook**:
+
+After complete the above step. Now the only remain step we need to do is run the Ansible playbook.
+You can run the Ansible playbook with the following command
+
+<CodeBlock lang={`shell`}  code={`cd ballerine/deploy/ansible/ballerine_playbook; 
+ansible-playbook -i inventory.txt ballerine-playbook.yml`}/>
+
+### Start Ballerine on HTTPS
+
+**Setup your configuration vars for Ballerine**:
+
+Once the inventory is setup and want to deploy on HTTPS.
+
+The next step is to setup necessary configuration for your app to run.
 
 First you need to open `deploy/ansible/ballerine_playbook/roles/setup-ballerine/defaults/main.yml` file with your editor.
 There are some variables that will need input from you to get the application start correctly
@@ -54,10 +69,10 @@ There are some variables that will need input from you to get the application st
 
 Once you complete setup config vars for your app then we are ready to deploy our app on your server.
 
-8. **Run the Ansible playbook**:
+**Run the Ansible playbook**:
 
-After complete the above step. Now the only remain step we need to do is run the ansible playbook.
-You can run the ansible playbook with the following command
+After complete the above step. Now the only remain step we need to do is run the Ansible playbook.
+You can run the Ansible playbook with the following command
 
 <CodeBlock lang={`shell`}  code={`cd ballerine/deploy/ansible/ballerine_playbook; 
 ansible-playbook -i inventory.txt ballerine-playbook.yml`}/>
@@ -67,8 +82,6 @@ The command above will use the host information from the `inventory` file.
 After performing these steps,
 
 The backoffice should be running on <CodeBlock lang={`shell`} code={`https://<backoffice_url>`}/>
-The collection flow on <CodeBlock lang={`shell`} code={`https://<kyb_url>`}/> and
-The workflow service will be accepting calls at <CodeBlock lang={`shell`} code={`https://<workflow_svc_url>`}/>
 
 The default username and password for the backoffice are:
 
@@ -77,3 +90,7 @@ The default username and password for the backoffice are:
 
 **Password:**
 <CodeBlock lang={`shell`}  code={`admin`}/>
+
+The collection flow on <CodeBlock lang={`shell`} code={`https://<kyb_url>`}/> and
+
+The workflow service will be accepting calls at <CodeBlock lang={`shell`} code={`https://<workflow_svc_url>`}/>
