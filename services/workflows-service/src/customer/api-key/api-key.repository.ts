@@ -12,8 +12,7 @@ export class ApiKeyRepository {
     return await this.prisma.apiKey.create<T>(args);
   }
 
-  // eslint-disable-next-line ballerine/verify-repository-project-scoped
-  async find(hashedKey: string) {
+  async findUnscoped(hashedKey: string) {
     return await this.prisma.apiKey.findFirst({
       include: {
         customer: {
@@ -29,8 +28,7 @@ export class ApiKeyRepository {
     });
   }
 
-  // eslint-disable-next-line ballerine/verify-repository-project-scoped
-  async delete(hashedKey: string): Promise<void> {
+  async deleteUnscoped(hashedKey: string): Promise<void> {
     await this.prisma.apiKey.update({
       where: {
         hashedKey,

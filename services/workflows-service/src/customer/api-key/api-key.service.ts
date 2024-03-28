@@ -28,10 +28,10 @@ export class ApiKeyService {
   async find(apiKey: string) {
     const hashedKey = await hashKey(apiKey);
 
-    return await this.apiKeyRepository.find(hashedKey);
+    return await this.apiKeyRepository.findUnscoped(hashedKey);
   }
 
   async deleteApiKey(hashedKey: string) {
-    return await this.apiKeyRepository.delete(hashedKey);
+    return await this.apiKeyRepository.deleteUnscoped(hashedKey);
   }
 }
