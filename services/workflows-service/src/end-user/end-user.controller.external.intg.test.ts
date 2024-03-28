@@ -36,6 +36,8 @@ import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { BusinessService } from '@/business/business.service';
 
+const API_KEY = faker.datatype.uuid();
+
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
   let endUserService: EndUserService;
@@ -94,7 +96,7 @@ describe('#EndUserControllerExternal', () => {
     customer = await createCustomer(
       await app.get(PrismaService),
       faker.datatype.uuid(),
-      'secret3',
+      API_KEY,
       '',
       '',
       'webhook-shared-secret',
@@ -105,8 +107,6 @@ describe('#EndUserControllerExternal', () => {
   describe('POST /end-user', () => {
     it('creates an end-user', async () => {
       expect(await endUserService.list({}, [project.id])).toHaveLength(0);
-
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const response = await request(app.getHttpServer())
         .post('/external/end-users')
         .send({
@@ -116,7 +116,7 @@ describe('#EndUserControllerExternal', () => {
           firstName: 'test',
           lastName: 'lastName',
         })
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       if (response.status !== 201) {
         console.log(response.body);

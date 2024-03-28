@@ -38,6 +38,8 @@ import { CustomerRepository } from './customer.repository';
 import { EndUserService } from '@/end-user/end-user.service';
 import { AllExceptionsFilter } from '@/common/filters/AllExceptions.filter';
 
+const API_KEY = 'secret3';
+
 describe.skip('#CustomerControllerExternal', () => {
   let app: INestApplication;
   let customerService: CustomerService;
@@ -104,7 +106,7 @@ describe.skip('#CustomerControllerExternal', () => {
       customer = await createCustomer(
         prismaClient,
         faker.datatype.uuid(),
-        'secret3',
+        API_KEY,
         '',
         '',
         'webhook-shared-secret',
@@ -129,7 +131,6 @@ describe.skip('#CustomerControllerExternal', () => {
     });
 
     it('creates a subsriptions for customer', async () => {
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const payload = {
         subscriptions: [
           {
@@ -143,7 +144,7 @@ describe.skip('#CustomerControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/customers/subscriptions')
         .send(payload)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       expect(response.status).toBe(201);
 
@@ -152,7 +153,6 @@ describe.skip('#CustomerControllerExternal', () => {
     });
 
     it('subsriptions has to be valid url', async () => {
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const payload = {
         subscriptions: [
           {
@@ -166,7 +166,7 @@ describe.skip('#CustomerControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/customers/subscriptions')
         .send(payload)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       expect(response.status).toBe(400);
       expect(response.body).toMatchObject({

@@ -14,6 +14,7 @@ import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
 import { CustomerModule } from '@/customer/customer.module';
 import { CustomerService } from '@/customer/customer.service';
 import { HttpModule } from '@nestjs/axios';
+import { ApiKeyService } from '@/customer/api-key/api-key.service';
 
 export const commonTestingModules = [
   ClsModule.forRoot({
@@ -53,7 +54,7 @@ export const initiateNestApp = async (
   }).compile();
 
   app = moduleRef.createNestApplication();
-  const middlewareInstnace = new AuthKeyMiddleware(app.get(CustomerService), app.get(ClsService));
+  const middlewareInstnace = new AuthKeyMiddleware(app.get(ApiKeyService), app.get(ClsService));
   const clsMiddleware = new ClsMiddleware();
 
   middlewares.forEach(middleware => app.use(middleware));

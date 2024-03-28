@@ -13,6 +13,8 @@ import { CustomerRepository } from '@/customer/customer.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { WinstonLogger } from '@/common/utils/winston-logger/winston-logger';
 import { ClsService } from 'nestjs-cls';
+import { ApiKeyService } from '@/customer/api-key/api-key.service';
+import { ApiKeyRepository } from '@/customer/api-key/api-key.repository';
 
 const buildWorkflowDefinition = (sequenceNum: number, projectId?: string) => {
   return {
@@ -59,6 +61,8 @@ describe('WorkflowDefinitionService', () => {
         FilterRepository,
         WorkflowDefinitionRepository,
         CustomerRepository,
+        ApiKeyService,
+        ApiKeyRepository,
         { useClass: WinstonLogger, provide: 'LOGGER' },
         ClsService,
         AppLoggerService,
