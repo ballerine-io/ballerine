@@ -238,7 +238,7 @@ jobs:
 
       - name: Run Container and Copy File
         run: |
-          id=$(docker run --name --rm temp-container ${{ needs.build-and-push-image.outputs.docker_full_image }})
+          id=$(docker run --name temp-container ${{ needs.build-and-push-image.outputs.docker_full_image }})
           
           mkdir -p ./dist
           
@@ -298,7 +298,7 @@ jobs:
         with:
           platforms: 'arm64,arm'
 
-      - name: Log in to the Container registry
+      - name: Log in to the container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
           registry: ${{ env.REGISTRY }}
