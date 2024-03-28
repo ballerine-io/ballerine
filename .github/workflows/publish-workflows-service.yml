@@ -242,7 +242,7 @@ jobs:
           
           mkdir -p ./dist
           
-          docker cp $id:/app/dist/src/**/*.map ./dist
+          docker cp $id:/app/dist/ ./dist
           
           docker rm $id
       - name: Create Sentry release
