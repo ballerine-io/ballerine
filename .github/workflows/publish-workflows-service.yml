@@ -194,9 +194,9 @@ jobs:
       - name: Get version
         id: version
         run: |
-          TAG=$(git tag -l "$(echo workflow-service)*" | sort -V -r | head -n 1)
+          TAG=$(git tag -l "$(echo workflow-service@)*" | sort -V -r | head -n 1)
+          echo "tag=$TAG"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo ::set-output name=tag::$TAG
       - name: Bump version
         id: bump-version
         uses: ./.github/actions/bump-version
