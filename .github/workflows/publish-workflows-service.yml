@@ -83,6 +83,7 @@ jobs:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
           restore-keys: |
+            ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
             ${{ runner.os }}-docker-
   
       - name: Log in to the Container registry
@@ -128,7 +129,7 @@ jobs:
           echo "bump-version-tag: ${{ steps.bump-version.outputs.tag }}"
             
       - name: Build and push Docker image 
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: services/workflows-service
           platforms: linux/amd64
@@ -178,12 +179,12 @@ jobs:
           repository: ballerine-io/cloud-infra-config
           branch: iamops/blue-green
           commitChange: true
-          message: 'Update wf-service image Version to sha-${{ steps.version.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
+          message: 'Update wf-service image Version to sha-${{ needs.build-and-push-image.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
               "kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml": {
-                "image.tag": ${{ steps.docker-version.outputs.tag }}
+                "image.tag": ${{ needs.build-and-push-image.outputs.docker_tag }}
               }
             }
 
@@ -195,12 +196,12 @@ jobs:
           repository: ballerine-io/cloud-infra-config
           branch: iamops/blue-green
           commitChange: true
-          message: 'Update wf-service image Version to sha-${{ steps.version.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
+          message: 'Update wf-service image Version to sha-${{ needs.build-and-push-image.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
               "kubernetes/helm/wf-service/dev-custom-values.yaml": {
-                "image.tag": ${{ steps.docker-version.outputs.tag }}
+                "image.tag": ${{ needs.build-and-push-image.outputs.docker_tag }}
               }
             }
 
@@ -210,13 +211,8 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Bump version
-        id: bump-version
-        uses: ./.github/actions/bump-version
-        with:
-          tag: ${{ needs.build-and-push-image.outputs.bumped_tag }}
       - name: Release
-        run: gh release create ${{ steps.bump-version.outputs.version }} --notes-start-tag ${{ steps.bump-version.outputs.bumped_tag }}
+        run: gh release create ${{ needs.build-and-push-image.outputs.version }} --notes-start-tag ${{ needs.build-and-push-image.outputs.bumped_tag }}
 
   sentry:
     runs-on: ubuntu-latest
@@ -226,20 +222,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
-          fetch-tags: true
+
       - name: Cache Docker layers
         id: cache
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
+          key: ${{ runner.os }}-docker${{ hashFiles('**/Dockerfile') }}
           restore-keys: |
-            ${{ runner.os }}-docker-
+            ${{ runner.os }}-docker${{ hashFiles('**/Dockerfile') }}
+            ${{ runner.os }}-docker
+
       - name: Run Container and Copy File
         run: |
-          id=$(docker run --name temp-container ${{ needs.build-and-push-image.outputs.docker_full_image }})
+          id=$(docker run --name --rm temp-container ${{ needs.build-and-push-image.outputs.docker_full_image }})
           
           mkdir -p ./dist
           
@@ -254,7 +250,7 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.WF_SENTRY_PROJECT }}
         with:
           working_directory: services/workflows-service
-          version: ${{needs.release.outputs.bumped_tag}}
+          version: ${{needs.build-and-push-image.outputs.version}}
           environment: ${{ github.ref_name }}
           finalize: ${{ github.ref == format('refs/heads/{0}', 'prod') }}
           sourcemaps: './dist'
@@ -274,6 +270,16 @@ jobs:
           fetch-depth: 1
           token: ${{ secrets.SUBMODULES_TOKEN }}
 
+      - name: Cache Docker layers
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
+            ${{ runner.os }}-docker-
+
       - name: Checkout submodule branch
         run: |
           git submodule update --init --recursive
@@ -288,15 +294,6 @@ jobs:
         uses: docker/setup-qemu-action@v2
         with:
           platforms: 'arm64,arm'
-
-      - name: Cache Docker layers
-        id: cache
-        uses: actions/cache@v2
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
-          restore-keys: |
-            ${{ runner.os }}-docker-
 
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
@@ -317,14 +314,13 @@ jobs:
             type=sha,format=short
 
       - name: Build and push ee Docker image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: services/workflows-service
           file: services/workflows-service/Dockerfile.ee
           platforms: linux/amd64
           push: true
-          # cache-from: type=local,src=/tmp/.buildx-cache
-          # cache-to: type=local,dest=/tmp/.buildx-cache
+          cache-from: type=local,src=/tmp/.buildx-cache
           tags: ${{ steps.eemeta.outputs.tags }}
           build-args: |
             BASE_IMAGE=${{needs.build-and-push-image.outputs.docker_full_image}}
