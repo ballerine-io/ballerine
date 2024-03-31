@@ -19,7 +19,7 @@ import {
   extractCountryCodeFromWorkflow,
   getIsEditable,
   isExistingSchemaForDocument,
-} from '@/pages/Entity/hooks/useCurrentCase/utils';
+} from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
 import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
 import { CommonWorkflowStates, StateTag } from '@ballerine/common';

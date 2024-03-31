@@ -1,12 +1,12 @@
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { useWebsiteMonitoringBlocks } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringBlocks/useWebsiteMonitoringBlocks';
-import { useCurrentCase } from '@/pages/Entity/hooks/useCurrentCase/useCurrentCase';
+import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
 import { BlocksComponent } from '@ballerine/blocks';
 
 export const WebsiteMonitoringBlocks = () => {
   const blocks = useWebsiteMonitoringBlocks();
-  const { workflow, plugins } = useCurrentCase();
+  const { workflow, plugins } = useEntityLogic();
 
   return (
     <div className="flex h-full flex-col">

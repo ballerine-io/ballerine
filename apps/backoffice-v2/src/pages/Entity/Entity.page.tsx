@@ -1,10 +1,10 @@
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { BlocksVariant } from '@/lib/blocks/variants/BlocksVariant/BlocksVariant';
-import { useCurrentCase } from '@/pages/Entity/hooks/useCurrentCase/useCurrentCase';
+import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
 import { Case } from './components/Case/Case';
 
 export const Entity = () => {
-  const { workflow, selectedEntity } = useCurrentCase();
+  const { workflow, selectedEntity } = useEntityLogic();
 
   // Selected entity
   return (

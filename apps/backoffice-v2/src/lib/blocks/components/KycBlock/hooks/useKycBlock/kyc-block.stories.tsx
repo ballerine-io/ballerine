@@ -1,4 +1,4 @@
-import { workflow } from '@/pages/Entity/hooks/useCurrentCase/mock-workflow-with-children';
+import { workflow } from '@/pages/Entity/hooks/useEntityLogic/mock-workflow-with-children';
 import { Meta, StoryObj } from '@storybook/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { withRouter } from 'storybook-addon-react-router-v6';

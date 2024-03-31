@@ -13,7 +13,7 @@ import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/
 import {
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
-} from '@/pages/Entity/hooks/useCurrentCase/utils';
+} from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { StateTag, TDocument, getDocumentsByCountry } from '@ballerine/common';
 import { Button, ctw } from '@ballerine/ui';

@@ -1,10 +1,10 @@
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { useCurrentCase } from '@/pages/Entity/hooks/useCurrentCase/useCurrentCase';
+import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
 import { useMemo } from 'react';
 
 export const useProcessTrackerBlock = () => {
-  const { workflow, plugins } = useCurrentCase();
+  const { workflow, plugins } = useEntityLogic();
 
   const block = useMemo(
     () =>

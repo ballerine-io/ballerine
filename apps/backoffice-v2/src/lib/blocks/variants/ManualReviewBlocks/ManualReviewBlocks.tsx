@@ -2,12 +2,12 @@ import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/Pro
 import { NoBlocks } from '@/lib/blocks/components/NoBlocks/NoBlocks';
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { useManualReviewBlocksLogic } from '@/lib/blocks/variants/ManualReviewBlocks/hooks/useManualReviewBlocksLogic/useManualReviewBlocksLogic';
-import { useCurrentCase } from '@/pages/Entity/hooks/useCurrentCase/useCurrentCase';
+import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
 import { BlocksComponent } from '@ballerine/blocks';
 
 export const ManualReviewBlocks = () => {
   const { blocks, isLoading } = useManualReviewBlocksLogic();
-  const { workflow, plugins } = useCurrentCase();
+  const { workflow, plugins } = useEntityLogic();
 
   return (
     <>

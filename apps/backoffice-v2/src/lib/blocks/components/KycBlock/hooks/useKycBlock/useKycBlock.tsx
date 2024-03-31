@@ -13,7 +13,7 @@ import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-block
 import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { omitPropsFromObject } from '@/pages/Entity/hooks/useCurrentCase/utils';
+import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { Button } from '@ballerine/ui';
 import { toTitleCase } from 'string-ts';
 import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
