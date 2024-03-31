@@ -12,14 +12,6 @@ export type TDedupeStrategy = {
   cooldownTimeframeInMinutes: number;
 };
 
-export type TAuthenticationConfiguration = {
-  apiType: 'API_KEY' | 'OAUTH2' | 'BASIC_AUTH';
-  authValue: string;
-  validUntil?: string;
-  isValid: boolean;
-  webhookSharedSecret: string;
-};
-
 export const BulkStatus = {
   SUCCESS: 'success',
   FAILED: 'failed',

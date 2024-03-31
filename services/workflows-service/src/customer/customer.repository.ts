@@ -1,7 +1,6 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import { Customer, Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
-import { CustomerWithProjects } from '@/types';
 
 @Injectable()
 export class CustomerRepository {
@@ -10,20 +9,7 @@ export class CustomerRepository {
   async create<T extends Prisma.CustomerCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>,
   ): Promise<Customer> {
-    // @ts-expect-error - prisma json not updated
-    await this.validateApiKey(args.data?.authenticationConfiguration?.authValue);
-
     return this.prisma.customer.create<T>(args);
-  }
-
-  async validateApiKey(apiKey?: string) {
-    if (apiKey === undefined) return;
-
-    if (apiKey.length < 4) throw new Error('Invalid API key');
-
-    const customerApiAlreadyExists = await this.findByApiKey(apiKey);
-
-    if (customerApiAlreadyExists) throw new Error('API key already exists');
   }
 
   async findMany<T extends Prisma.CustomerFindManyArgs>(
@@ -72,31 +58,6 @@ export class CustomerRepository {
     return this.prisma.customer.findUnique({
       where: { name },
       ...args,
-    });
-  }
-
-  async findByApiKey<T extends Omit<Prisma.CustomerFindFirstArgs, 'where'>>(
-    apiKey: string,
-  ): Promise<CustomerWithProjects | null> {
-    return this.prisma.customer.findFirst({
-      where: {
-        authenticationConfiguration: {
-          path: ['authValue'],
-          equals: apiKey,
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        authenticationConfiguration: true,
-        displayName: true,
-        logoImageUri: true,
-        faviconImageUri: true,
-        customerStatus: true,
-        country: true,
-        language: true,
-        projects: true,
-      },
     });
   }
 
