@@ -1,13 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { CustomerRepository } from '@/customer/customer.repository';
 import { Prisma } from '@prisma/client';
+import { ApiKeyService } from '@/customer/api-key/api-key.service';
+import { generateHashedKey } from '@/customer/api-key/utils';
 
 @Injectable()
 export class CustomerService {
-  constructor(protected readonly repository: CustomerRepository) {}
+  constructor(
+    protected readonly repository: CustomerRepository,
+    protected readonly apiKeyService: ApiKeyService,
+  ) {}
 
   async create(args: Parameters<CustomerRepository['create']>[0]) {
-    return this.repository.create(args);
+    // @ts-expect-error - prisma json not updated
+    const authValue = args.data?.authenticationConfiguration?.authValue;
+    const { hashedKey, validUntil } = await generateHashedKey({ key: authValue });
+
+    const dbCustomer = await this.repository.create({
+      ...args,
+      data: {
+        ...args.data,
+        apiKeys: {
+          create: {
+            hashedKey,
+            validUntil,
+          },
+        },
+      },
+    });
+
+    return dbCustomer;
   }
 
   async list(args?: Parameters<CustomerRepository['findMany']>[0]) {
@@ -16,10 +38,6 @@ export class CustomerService {
 
   async getById(id: string, args?: Parameters<CustomerRepository['findById']>[1]) {
     return this.repository.findById(id, args);
-  }
-
-  async getByApiKey(apiKey: string) {
-    return this.repository.findByApiKey(apiKey);
   }
 
   async getByProjectId(projectId: string, args?: Omit<Prisma.CustomerFindFirstArgsBase, 'where'>) {
