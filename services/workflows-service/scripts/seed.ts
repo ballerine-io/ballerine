@@ -1,3 +1,4 @@
+import { hashKey } from './../src/customer/api-key/utils';
 import { faker } from '@faker-js/faker';
 import { Business, Customer, EndUser, Prisma, PrismaClient, Project } from '@prisma/client';
 import { hash } from 'bcrypt';
@@ -80,11 +81,12 @@ async function createCustomer(
       id: `customer-${id}`,
       name: `customer-${id}`,
       displayName: `Customer ${id}`,
+      apiKeys: {
+        create: {
+          hashedKey: await hashKey(apiKey),
+        },
+      },
       authenticationConfiguration: {
-        apiType: 'API_KEY',
-        authValue: apiKey,
-        validUntil: '',
-        isValid: '',
         webhookSharedSecret,
       },
       logoImageUri: logoImageUri,
