@@ -266,7 +266,7 @@ jobs:
           curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.31.0" bash
 
           sentry-cli releases new "${{needs.build-and-push-image.outputs.version}}"
-          sentry-cli releases set-commits "${{needs.build-and-push-image.outputs.version}} --auto"
+          sentry-cli releases set-commits "${{needs.build-and-push-image.outputs.version}} --auto --ignore-missing"
           sentry-cli sourcemaps upload --dist=${{needs.build-and-push-image.outputs.sha_short}} --release=${{needs.build-and-push-image.outputs.version}} ./dist
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
