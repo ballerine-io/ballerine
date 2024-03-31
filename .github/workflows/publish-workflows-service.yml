@@ -2,6 +2,15 @@ name: Publish workflows-service image
 
 on:
   workflow_dispatch:
+    inputs:
+      deploy_to_dev:
+        type: choice
+        description: 'Deploy to Development Environment'
+        required: true
+        default: 'false'
+        options: 
+          - 'false'
+          - 'true'
   push:
     paths:
       # Run this pipeline only if there are changes in specified path
@@ -18,19 +27,48 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
 
-jobs:
+jobs:      
   build-and-push-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    outputs:
+      sha_short: ${{ steps.version.outputs.sha_short }} # short sha of the commit
+      image_tags: ${{ steps.docker_meta.outputs.tags }} # <short_sha>-<branch_name>, <branch_name>, latest(for prod branch only)
 
+      version: ${{ steps.bump-version.outputs.version }} # workflow-service@vX.X.X
+      bumped_tag: ${{ steps.bump-version.outputs.tag }} # bumped patched version X.X.X+1
+
+      docker_image: ${{ steps.docker-version.outputs.image }} # ghcr.io/ballerine-io/workflows-service
+      docker_tag: ${{ steps.docker-version.outputs.tag }} # <short_sha>-<branch_name>
+      docker_full_image: ${{ steps.docker-version.outputs.full_image }} # ghcr.io/ballerine-io/workflows-service:<short_sha>-<branch_name>
+      
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        
+      - name: Get tags
+        run: git fetch --tags origin
 
-      - name: Install jq
-        run: sudo apt-get install jq
+      - name: Get version
+        id: version
+        run: |
+          TAG=$(git tag -l "$(echo workflow-service@)*" | sort -V -r | head -n 1)
+          echo "tag=$TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "sha_short=$SHORT_SHA"
+          echo "sha_short=$SHORT_SHA" >> $GITHUB_OUTPUT
+          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+          
+      - name: Bump version
+        id: bump-version
+        uses: ./.github/actions/bump-version
+        with:
+          tag: ${{ steps.version.outputs.tag }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -40,6 +78,16 @@ jobs:
         with:
           platforms: 'arm64,arm'
 
+      - name: Cache Docker layers
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
+            ${{ runner.os }}-docker-
+  
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
@@ -47,71 +95,75 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get package version from package.json
-        id: get_version
+      - name: Extract metadata for Docker images
+        id: docker_meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ github.ref_name }}
+            type=raw,value=${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
+            type=sha,format=short
+
+      - name: Docker metadata version
+        id: docker-version
         run: |
-          PACKAGE_VERSION=$(jq -r '.version' services/workflows-service/package.json)
-          echo "::set-output name=version::$PACKAGE_VERSION"
-      - name: Print the version
-        run: echo "The version was ${{ steps.get_version.outputs.version }}"
+          DOCKER_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          DOCKER_TAG=${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
+          DOCKER_FULL_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
 
-      - name: Extract metadata for non Prod Docker images
-        if: github.ref != 'refs/heads/prod'
-        id: branchmeta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=${{ github.head_ref || github.ref_name }}
-            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
-            type=raw,value=${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
-            type=sha
-      - name: Extract metadata (tags, labels) for prod Docker images
-        if: github.ref == 'refs/heads/prod'
-        # This branch will have the tag latest
-        id: prodmeta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=prod
-            type=raw,value=commit-${{ github.sha }}-prod
-            type=raw,value=${{ steps.get_version.outputs.version }}-prod
-            type=raw,value=latest
-            type=sha
-      - name: Build and push Docker image for Prod
-        if: github.ref == 'refs/heads/prod'
-        uses: docker/build-push-action@v4
+          echo "DOCKER_IMAGE=$DOCKER_IMAGE"
+          echo "DOCKER_TAG=$DOCKER_TAG"
+          echo "DOCKER_FULL_IMAGE=$DOCKER_FULL_IMAGE"
+
+          echo "image=$DOCKER_IMAGE" >> $GITHUB_OUTPUT
+          echo "tag=$DOCKER_TAG" >> $GITHUB_OUTPUT
+          echo "full_image=$DOCKER_FULL_IMAGE" >> $GITHUB_OUTPUT
+
+      - name: Print docker version outputs
+        run: |
+          echo "Metadata: ${{ steps.docker_meta.outputs.tags }}"
+
+          echo "sha_short: ${{ steps.version.outputs.sha_short }}"
+          echo "docker_meta-tags: ${{ steps.docker_meta.outputs.tags }}"
+          echo "bump-version-version: ${{ steps.bump-version.outputs.version }}"
+          echo "bump-version-tag: ${{ steps.bump-version.outputs.tag }}"
+            
+      - name: Build and push Docker image 
+        uses: docker/build-push-action@v5
         with:
           context: services/workflows-service
           platforms: linux/amd64
           push: true
-          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
-          tags: ${{ steps.prodmeta.outputs.tags }}
-
-      - name: Build and push Docker image for non Prod
-        if: github.ref != 'refs/heads/prod'
-        uses: docker/build-push-action@v4
-        with:
-          context: services/workflows-service
-          platforms: linux/amd64
-          push: true
-          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
-          tags: ${{ steps.branchmeta.outputs.tags }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          tags: ${{ steps.docker_meta.outputs.tags }}
+          build-args: |
+            "RELEASE=${{ steps.bump-version.outputs.tag }}"
 
       - name: Scan Docker Image
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.head_ref || github.ref_name }}'
+          cache-dir: 
+          image-ref: ${{ steps.docker-version.outputs.full_image }}
           format: 'table'
           ignore-unfixed: true
           exit-code: 1
           vuln-type: 'os,library'
           severity: 'CRITICAL'
 
-      - name: Set outputs
-        id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+  update-helm-chart:
+    needs: build-and-push-image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Checkout cloud-infra-config repository
         uses: actions/checkout@v4
@@ -119,42 +171,92 @@ jobs:
           repository: ballerine-io/cloud-infra-config
           token: ${{ secrets.GIT_TOKEN }}
           ref: iamops/blue-green
-          fetch-depth: 0
+          fetch-depth: 1
           sparse-checkout: |
             kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml
+            kubernetes/helm/wf-service/dev-custom-values.yaml
           sparse-checkout-cone-mode: false
 
-      - name: Update workdlow-service image version for non Prod in the HelmChart
-        if: github.ref != 'refs/heads/prod'
+      - name: Update workdlow-service image version in the HelmChart
         uses: fjogeleit/yaml-update-action@main
         with:
           repository: ballerine-io/cloud-infra-config
           branch: iamops/blue-green
           commitChange: true
-          message: 'Update wf-service image Version to sha-${{ steps.vars.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
+          message: 'Update wf-service image Version to sha-${{ needs.build-and-push-image.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
               "kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml": {
-                "image.tag": "${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}"
+                "image.tag": "${{ needs.build-and-push-image.outputs.docker_tag }}"
               }
             }
 
-      - name: Update workdlow-service image version for Prod in the HelmChart
-        if: github.ref == 'refs/heads/prod'
+      - name: Deploy from branch - Update dev env in the HelmChart
+        continue-on-error: true
+        if: ${{ failure() && github.event.inputs.deploy_to_dev == 'true' }}
         uses: fjogeleit/yaml-update-action@main
         with:
           repository: ballerine-io/cloud-infra-config
           branch: iamops/blue-green
           commitChange: true
-          message: 'Update wf-service image Version to sha-${{ steps.vars.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
+          message: 'Update wf-service image Version to sha-${{ needs.build-and-push-image.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
-              "kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml": {
-                "image.tag": "${{ steps.get_version.outputs.version }}-prod"
+              "kubernetes/helm/wf-service/dev-custom-values.yaml": {
+                "image.tag": "${{ needs.build-and-push-image.outputs.docker_tag }}"
               }
             }
+
+  release:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/heads/prod') || startsWith(github.ref, 'refs/heads/dev') || startsWith(github.ref, 'refs/heads/sb')
+    needs: build-and-push-image
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Release
+        run: gh release create ${{ needs.build-and-push-image.outputs.version }} --notes-start-tag ${{ needs.build-and-push-image.outputs.bumped_tag }}
+
+  sentry:
+    runs-on: ubuntu-latest
+    # needs: [build-and-push-image]  # Uncomment this line if you want to create a release in sentry 
+    needs: [build-and-push-image, release]
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # TODO: add caching for docker_full_image which build previously
+
+      - name: Run Container and Copy File
+        run: |
+          id=$(docker run --rm --name tmp -d ${{ needs.build-and-push-image.outputs.docker_tag }} tail -f /dev/null)
+          
+          mkdir -p ./dist
+          
+          docker cp $id:/app/dist/ ./dist
+
+          curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.31.0" bash
+
+          sentry-cli releases new "${{needs.build-and-push-image.outputs.version}}"
+          echo "sentry-cli releases new ${{needs.build-and-push-image.outputs.version}}"
+          
+          sentry-cli releases set-commits "${{needs.build-and-push-image.outputs.version}}" --auto --ignore-missing
+          echo "sentry-cli releases set-commits ${{needs.build-and-push-image.outputs.version}} --auto --ignore-missing"
+          
+          sentry-cli sourcemaps upload --dist="${{needs.build-and-push-image.outputs.sha_short}}" --release="${{needs.build-and-push-image.outputs.version}}" ./dist
+          echo "sentry-cli sourcemaps upload --dist=${{needs.build-and-push-image.outputs.sha_short}} --release=${{needs.build-and-push-image.outputs.version}} ./dist"
+
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.WF_SENTRY_PROJECT }}
 
   build-and-push-ee-image:
     runs-on: ubuntu-latest
@@ -165,19 +267,21 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
-          fetch-depth: 0
+          fetch-depth: 1
           token: ${{ secrets.SUBMODULES_TOKEN }}
 
-      - name: Get package version from package.json
-        id: get_version
-        run: |
-          PACKAGE_VERSION=$(jq -r '.version' services/workflows-service/package.json)
-          echo "::set-output name=version::$PACKAGE_VERSION"
-      - name: Print the version
-        run: echo "The version was ${{ steps.get_version.outputs.version }}"
+      - name: Cache Docker layers
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
+            ${{ runner.os }}-docker-
 
       - name: Checkout submodule branch
         run: |
@@ -194,7 +298,7 @@ jobs:
         with:
           platforms: 'arm64,arm'
 
-      - name: Log in to the Container registry
+      - name: Log in to the container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
           registry: ${{ env.REGISTRY }}
@@ -205,21 +309,21 @@ jobs:
         id: eemeta
         uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-ee
+          images: ${{needs.build-and-push-image.outputs.docker_image}}-ee
           tags: |
-            type=raw,value=${{ github.head_ref || github.ref_name }}
-            type=raw,value=commit-${{ github.sha }}-${{ github.head_ref || github.ref_name }}
-            type=raw,value=${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
-            type=sha
+            type=raw,value=${{ github.ref_name }}
+            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ github.ref_name }}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
+            type=sha,format=short
 
       - name: Build and push ee Docker image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: services/workflows-service
           file: services/workflows-service/Dockerfile.ee
           platforms: linux/amd64
           push: true
-          cache-from: '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-ee:${{ github.head_ref || github.ref_name }}'
+          cache-from: type=local,src=/tmp/.buildx-cache
           tags: ${{ steps.eemeta.outputs.tags }}
           build-args: |
-            BASE_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.get_version.outputs.version }}-${{ github.head_ref || github.ref_name }}
+            BASE_IMAGE=${{needs.build-and-push-image.outputs.docker_full_image}}
