@@ -1,13 +1,14 @@
-import React, { useCallback } from 'react';
 import { AnyObject } from '@/common/types';
 import { ArrayFieldLayoutItem } from '@/components/organisms/DynamicForm/components/layouts/ArrayFieldsLayout/ArrayFieldsLayout';
 import { ctw } from '@/utils/ctw';
+import React, { useCallback } from 'react';
 
 interface ArrayFieldsLayoutItemProps {
   element: ArrayFieldLayoutItem;
   uiSchema: AnyObject;
   disableDeletion?: boolean;
   title?: string | React.ReactNode;
+  testId?: string;
   onDelete?: (index: number) => void;
 }
 
@@ -16,6 +17,7 @@ export const ArrayFieldsLayoutItem = ({
   uiSchema,
   disableDeletion,
   title,
+  testId,
   onDelete,
 }: ArrayFieldsLayoutItemProps) => {
   const { removeText = 'Delete', deleteButtonClassname = '' } = uiSchema;
@@ -28,7 +30,7 @@ export const ArrayFieldsLayoutItem = ({
   }, [element, onDelete]);
 
   return (
-    <div key={element.index} className="relative flex flex-row flex-nowrap">
+    <div key={element.index} className="relative flex flex-row flex-nowrap" data-testid={testId}>
       <div className="flex w-full flex-col gap-4">
         <div className={ctw('flex flex-row items-center', { 'justify-between': Boolean(title) })}>
           {title ? title : null}
@@ -39,11 +41,14 @@ export const ArrayFieldsLayoutItem = ({
               { ['pointer-events-none opacity-50']: disableDeletion },
             )}
             onClick={createDeleteHandler()}
+            data-testid={testId ? `${testId}-delete-button` : undefined}
           >
             {removeText}
           </span>
         </div>
-        <div>{element.children}</div>
+        <div data-testid={testId ? `${testId}-element-container` : undefined}>
+          {element.children}
+        </div>
       </div>
     </div>
   );

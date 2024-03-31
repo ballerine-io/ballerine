@@ -9,6 +9,7 @@ export const AutocompleteTextInputAdapter: RJSFInputAdapter = ({
   formData,
   placeholder,
   uiSchema,
+  testId,
   onChange,
   onBlur,
 }) => {
@@ -31,6 +32,7 @@ export const AutocompleteTextInputAdapter: RJSFInputAdapter = ({
       disabled={disabled}
       value={formData}
       options={options}
+      testId={testId}
       placeholder={placeholder || uiSchema?.['ui:placeholder']}
       onChange={event => void onChange(event.target.value || '')}
       onBlur={handleBlur}

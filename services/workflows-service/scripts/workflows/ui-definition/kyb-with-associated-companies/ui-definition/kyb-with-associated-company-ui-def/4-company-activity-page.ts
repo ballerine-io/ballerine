@@ -109,6 +109,7 @@ export const CompanyActivityPage = {
         },
         {
           type: 'json-form',
+          name: 'story-industry-input-form',
           options: {
             jsonFormDefinition: {
               required: ['store-industry-input'],
@@ -140,6 +141,7 @@ export const CompanyActivityPage = {
         },
         {
           type: 'json-form',
+          name: 'business-model-input-form',
           options: {},
           elements: [
             {
@@ -173,6 +175,7 @@ export const CompanyActivityPage = {
         },
         {
           type: 'json-form',
+          name: 'other-business-model-input-form',
           options: {
             jsonFormDefinition: {
               required: ['other-business-model-input'],
@@ -201,6 +204,7 @@ export const CompanyActivityPage = {
         },
         {
           type: 'json-form',
+          name: 'sales-form',
           options: {
             jsonFormDefinition: {
               required: ['annual-sales-volume-input', 'store-website-urls-input'],

@@ -20,7 +20,7 @@ export const Task = ({ options = {}, childrens, ...rest }: TaskProps) => {
   const Component = variant === 'wrapper' ? Card : 'div';
 
   return (
-    <Component className={className} style={styles} data-test-id="task">
+    <Component className={className} style={styles} data-testid="task">
       <BlocksComponent
         Block={
           // @ts-ignore
