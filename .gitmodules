@@ -1,4 +1,4 @@
-[submodule "new-data-migrations"]
-	path = data-migrations
+[submodule "data-migrations"]
+	path = services/workflows-service/prisma/data-migrations
 	url = git@github.com:ballerine-io/wf-data-migration.git
 	branch = main
