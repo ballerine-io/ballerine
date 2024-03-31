@@ -209,7 +209,7 @@ jobs:
           changes: |
             {
               "kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml": {
-                "image.tag": ${{ needs.build-and-push-image.outputs.docker_tag }}
+                "image.tag": "${{ needs.build-and-push-image.outputs.docker_tag }}"
               }
             }
 
@@ -226,7 +226,7 @@ jobs:
           changes: |
             {
               "kubernetes/helm/wf-service/dev-custom-values.yaml": {
-                "image.tag": ${{ needs.build-and-push-image.outputs.docker_tag }}
+                "image.tag": "${{ needs.build-and-push-image.outputs.docker_tag }}"
               }
             }
 
