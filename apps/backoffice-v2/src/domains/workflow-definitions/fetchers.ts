@@ -3,7 +3,10 @@ import { Method } from '@/common/enums';
 import { env } from '@/common/env/env';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
-import { WorkflowDefinitionConfigThemeEnum } from '@/domains/workflow-definitions/enums/workflow-definition-config-theme';
+import {
+  WorkflowDefinitionConfigThemeEnum,
+  WorkflowDefinitionConfigThemes,
+} from '@/domains/workflow-definitions/enums/workflow-definition-config-theme';
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
 import { WorkflowDefinitionVariant } from '@ballerine/common';
 import { z } from 'zod';
@@ -16,13 +19,7 @@ export const PluginSchema = z.object({
 export type TPlugin = z.infer<typeof PluginSchema>;
 
 export const WorkflowDefinitionConfigTheme = z.object({
-  type: z
-    .enum([
-      WorkflowDefinitionConfigThemeEnum.KYB,
-      WorkflowDefinitionConfigThemeEnum.KYC,
-      WorkflowDefinitionConfigThemeEnum.DOCUMENTS_REVIEW,
-    ])
-    .default(WorkflowDefinitionConfigThemeEnum.KYB),
+  type: z.enum(WorkflowDefinitionConfigThemes).default(WorkflowDefinitionConfigThemeEnum.KYB),
   tabsOverride: z.array(z.string()).optional(),
 });
 

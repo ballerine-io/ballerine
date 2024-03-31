@@ -1,3 +1,4 @@
+import { WorkflowDefinitionConfigThemeEnum } from '@/domains/workflow-definitions/enums/workflow-definition-config-theme';
 import { WorkflowDefinitionConfigTheme } from '@/domains/workflow-definitions/fetchers';
 import { applyTabsOverride } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/apply-tabs-override';
 import { TCaseTabDefinition } from '@/lib/blocks/variants/DefaultBlocks/types/case-tab';
@@ -18,7 +19,7 @@ export const getVariantTabs = (
   theme: WorkflowDefinitionConfigTheme,
   tabBlocks: Record<string, any[] | undefined>,
 ): TCaseTabDefinition[] => {
-  if (theme?.type === 'kyb') {
+  if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYB) {
     const baseTabs = [
       {
         name: Tab.SUMMARY,
@@ -65,7 +66,7 @@ export const getVariantTabs = (
     return applyTabsOverride(baseTabs, theme.tabsOverride);
   }
 
-  if (theme?.type === 'documents-review') {
+  if (theme?.type === WorkflowDefinitionConfigThemeEnum.DOCUMENTS_REVIEW) {
     const baseTabs = [
       {
         name: Tab.DOCUMENTS,
@@ -77,7 +78,7 @@ export const getVariantTabs = (
     return applyTabsOverride(baseTabs, theme.tabsOverride);
   }
 
-  if (theme?.type === 'kyc') {
+  if (theme?.type === WorkflowDefinitionConfigThemeEnum.KYC) {
     const baseTabs = [
       {
         name: Tab.KYC,
