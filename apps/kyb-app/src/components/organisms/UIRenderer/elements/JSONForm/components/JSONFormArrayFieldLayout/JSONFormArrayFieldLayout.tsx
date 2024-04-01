@@ -2,6 +2,7 @@ import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateMa
 import { JsonLogicRuleEngine } from '@/components/organisms/DynamicUI/rule-engines';
 import { useJSONFormDefinition } from '@/components/organisms/UIRenderer/elements/JSONForm/providers/JSONFormDefinitionProvider/useJSONFormDefinition';
 import { ArrayInsertionStrategy } from '@/components/organisms/UIRenderer/hooks/useDataInsertionLogic/insert-strategies/array.insertion-strategy';
+import { useUIElementHandlers } from '@/components/organisms/UIRenderer/hooks/useUIElementHandlers';
 import {
   AnyObject,
   ArrayFieldsLayout,
@@ -9,12 +10,11 @@ import {
   ArrayFieldsLayoutItemTitle,
   ArrayFieldsLayoutProps,
 } from '@ballerine/ui';
-import React, { useCallback, useMemo } from 'react';
-import pullAt from 'lodash/pullAt';
 import get from 'lodash/get';
+import pullAt from 'lodash/pullAt';
 import set from 'lodash/set';
+import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useUIElementHandlers } from '@/components/organisms/UIRenderer/hooks/useUIElementHandlers';
 
 const jsonLogicRuleEngine = new JsonLogicRuleEngine();
 
@@ -90,6 +90,7 @@ export const JSONFormArrayFieldLayout = (props: ArrayFieldsLayoutProps) => {
               (item?.children?.props as AnyObject)?.formData || {},
               definition.options?.insertionParams?.bindingAnchorDestination,
             )}
+            testId={`${definition.name}-item[${index}]`}
           />
         ))
       }

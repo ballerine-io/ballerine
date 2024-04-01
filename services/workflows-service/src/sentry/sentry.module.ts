@@ -20,6 +20,7 @@ import { SentryService } from '@/sentry/sentry.service';
 export class SentryModule implements OnModuleInit, OnModuleDestroy {
   _envName: string;
   _sentryDsn: string | undefined;
+  _releaseName: string | undefined;
 
   constructor(
     protected readonly configService: ConfigService,
@@ -28,6 +29,7 @@ export class SentryModule implements OnModuleInit, OnModuleDestroy {
     this._sentryDsn = this.configService.get('SENTRY_DSN');
     this._envName =
       this.configService.get('ENVIRONMENT_NAME') || this.configService.get('NODE_ENV', 'local');
+    this._releaseName = this.configService.get('RELEASE');
   }
 
   onModuleInit() {
@@ -37,6 +39,7 @@ export class SentryModule implements OnModuleInit, OnModuleDestroy {
       enabled: isEnabled,
       dsn: this._sentryDsn,
       environment: this._envName,
+      release: this._releaseName,
       enableTracing: true,
       sampleRate: 1.0,
       normalizeDepth: 15,

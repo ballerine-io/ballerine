@@ -24,6 +24,7 @@ export type TransactionsAgainstDynamicRulesType = {
   havingAggregate?: TAggregations;
   amountBetween?: { min: number; max: number };
   timeAmount?: number;
+  transactionType?: TransactionRecordType[];
   timeUnit?: 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years';
   direction?: TransactionDirection;
   excludedCounterparty?: TExcludedCounterparty;

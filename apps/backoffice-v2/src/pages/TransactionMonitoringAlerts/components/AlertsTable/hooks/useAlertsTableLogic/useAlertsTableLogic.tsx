@@ -14,6 +14,7 @@ import { columns } from '../../columns';
 import { checkIsBooleanishRecord } from '@/lib/zod/utils/checkers';
 import { useSelect } from '@/common/hooks/useSelect/useSelect';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { useLocation } from 'react-router-dom';
 
 export const useAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
   const { onSort, sortBy, sortDir } = useSort();
@@ -87,6 +88,11 @@ export const useAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
     getRowId: row => row.id,
   });
   const locale = useLocale();
+  const { pathname, search } = useLocation();
+  const url = `${pathname}${search}`;
+  const onRowClick = useCallback(() => {
+    sessionStorage.setItem('transaction-monitoring:transactions-drawer:previous-path', url);
+  }, [url]);
 
   useEffect(() => {
     if (Object.keys(ids ?? {}).length > 0) return;
@@ -97,5 +103,7 @@ export const useAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
   return {
     table,
     locale,
+    onRowClick,
+    search,
   };
 };

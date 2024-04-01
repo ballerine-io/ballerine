@@ -1,5 +1,11 @@
 # @ballerine/ui
 
+## 0.5.2
+
+### Patch Changes
+
+- Added test ids to inputs
+
 ## 0.5.1
 
 ### Patch Changes

@@ -37,6 +37,7 @@ describe('FileUploaderField', () => {
         uploadFile={() => Promise.resolve({ fileId: '123' })}
         onChange={() => {}}
         fileRepository={new FileRepository()}
+        testId="file-uploader-field"
       />,
     );
     getByTestId('file-uploader-field');
@@ -52,6 +53,7 @@ describe('FileUploaderField', () => {
         placeholder={testPlaceholder}
         onChange={() => {}}
         fileRepository={new FileRepository()}
+        testId="file-uploader-field"
       />,
     );
 
@@ -67,6 +69,7 @@ describe('FileUploaderField', () => {
         acceptFileFormats={testFileFormats}
         onChange={() => {}}
         fileRepository={new FileRepository()}
+        testId="file-uploader-field"
       />,
     );
 
@@ -81,6 +84,7 @@ describe('FileUploaderField', () => {
           onChange={() => {}}
           fileRepository={new FileRepository()}
           isLoading={true}
+          testId="file-uploader-field"
         />,
       );
 
@@ -94,6 +98,7 @@ describe('FileUploaderField', () => {
           onChange={() => {}}
           fileRepository={new FileRepository()}
           disabled={true}
+          testId="file-uploader-field"
         />,
       );
 
@@ -106,6 +111,7 @@ describe('FileUploaderField', () => {
           uploadFile={() => Promise.resolve({ fileId: '123' })}
           onChange={() => {}}
           fileRepository={new FileRepository()}
+          testId="file-uploader-field"
         />,
       );
 
@@ -131,6 +137,7 @@ describe('FileUploaderField', () => {
         uploadFile={() => Promise.resolve({ fileId: '123' })}
         onChange={onChangeCallback}
         fileRepository={new FileRepository()}
+        testId="file-uploader-field"
       />,
     );
 
@@ -157,6 +164,7 @@ describe('FileUploaderField', () => {
         onBlur={onBlurCallaback}
         onChange={onChangeCallback}
         fileRepository={new FileRepository()}
+        testId="file-uploader-field"
       />,
     );
 

@@ -265,7 +265,6 @@ workflowService:
     NODE_ENV: "development"
     SENTRY_DSN: ""
     WEBHOOK_URL: ""
-    WEBHOOK_SECRET: "webhook_secret"
     WORKFLOW_DASHBOARD_CORS_ORIGIN: "http://localhost:5200"
     KYB_EXAMPLE_CORS_ORIGIN: "http://localhost:5201"
     APP_API_URL: https://alon.ballerine.dev

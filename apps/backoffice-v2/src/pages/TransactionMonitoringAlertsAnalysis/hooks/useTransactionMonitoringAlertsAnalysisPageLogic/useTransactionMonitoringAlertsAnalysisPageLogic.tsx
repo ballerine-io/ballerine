@@ -2,7 +2,6 @@ import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchPar
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAlertDefinitionByAlertIdQuery } from '@/domains/alerts/hooks/queries/useAlertDefinitionByAlertIdQuery/useAlertDefinitionByAlertIdQuery';
 import { useTransactionsQuery } from '@/domains/transactions/hooks/queries/useTransactionsQuery/useTransactionsQuery';
-import { useNavigateBack } from '@/common/hooks/useNavigateBack/useNavigateBack';
 import { useCallback } from 'react';
 
 export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
@@ -19,20 +18,21 @@ export const useTransactionMonitoringAlertsAnalysisPageLogic = () => {
     page: 1,
     pageSize: 50,
   });
-  const navigateBack = useNavigateBack();
   const navigate = useNavigate();
   const onNavigateBack = useCallback(() => {
-    const isFirstPageInHistory = window.history.state.idx <= 1;
+    const previousPath = sessionStorage.getItem(
+      'transaction-monitoring:transactions-drawer:previous-path',
+    );
 
-    if (isFirstPageInHistory) {
+    if (!previousPath) {
       navigate('../');
 
       return;
     }
 
-    navigateBack();
-    navigateBack();
-  }, [navigate, navigateBack]);
+    navigate(previousPath);
+    sessionStorage.removeItem('transaction-monitoring:transactions-drawer:previous-path');
+  }, [navigate]);
 
   return {
     transactions,

@@ -99,6 +99,7 @@ export const AlertsListSchema = z.array(
     // amountOfTxs: z.number(),
     assignee: ObjectWithIdSchema.extend({
       fullName: z.string(),
+      avatarUrl: z.string().nullable().optional(),
     })
       .nullable()
       .default(null),

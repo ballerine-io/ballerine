@@ -305,10 +305,31 @@ model Customer {
   updatedAt DateTime @updatedAt
 
   projects Project[]
+  apiKeys                  ApiKey[]
 
   @@index(name)
   @@index(customerStatus)
-  @@index([authenticationConfiguration(ops: JsonbPathOps)], type: Gin)
+}
+
+model ApiKey {
+  id           String @id @default(cuid())
+
+  customerId    String    
+
+  hashedKey    String
+  
+  validUntil   DateTime?
+
+  additionalInfo Json?
+  rotationInfo Json?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+  
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  @@unique([hashedKey])
 }
 
 model Project {

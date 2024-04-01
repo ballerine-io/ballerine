@@ -49,14 +49,18 @@ export class TransactionRepository {
       args.orderBy = toPrismaOrderByGeneric(getTransactionsParameters.orderBy);
     }
 
-    return this.prisma.transactionRecord.findMany({
-      ...options,
-      where: {
-        projectId, //  Always restrict to project
-        ...this.buildFilters(getTransactionsParameters),
-      },
-      ...args,
-    });
+    return this.prisma.transactionRecord.findMany(
+      this.scopeService.scopeFindMany(
+        {
+          ...options,
+          where: {
+            ...this.buildFilters(getTransactionsParameters),
+          },
+          ...args,
+        },
+        [projectId],
+      ),
+    );
   }
 
   // eslint-disable-next-line ballerine/verify-repository-project-scoped

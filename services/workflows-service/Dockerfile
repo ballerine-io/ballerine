@@ -5,6 +5,9 @@ RUN apt-get install dumb-init
 
 WORKDIR /app
 
+ARG RELEASE
+ENV RELEASE ${RELEASE:-unknown}
+
 COPY ./package.json .
 
 RUN npm install --legacy-peer-deps

@@ -335,7 +335,7 @@ export const getAlertDefinitionCreateData = (
 ) => ({
   label: label,
   type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
-  name: faker.lorem.words(3),
+  name: inlineRule.id,
   enabled: enabled ?? false,
   description: description || faker.lorem.sentence(),
   rulesetId: `set-${inlineRule.id}`,

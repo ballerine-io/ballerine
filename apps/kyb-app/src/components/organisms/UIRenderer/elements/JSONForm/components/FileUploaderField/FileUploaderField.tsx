@@ -15,6 +15,7 @@ export const FileUploaderField = ({
   disabled,
   acceptFileFormats,
   placeholder,
+  testId,
 }: DocumentUploadFieldProps) => {
   const { isUploading, uploadFile } = useFileUploading(_uploadFile);
   const { file: registeredFile, registerFile } = useFileRepository(
@@ -42,7 +43,7 @@ export const FileUploaderField = ({
 
   return (
     <Input
-      data-testid="file-uploader-field"
+      data-testid={testId}
       type="file"
       placeholder={placeholder}
       accept={acceptFileFormats}

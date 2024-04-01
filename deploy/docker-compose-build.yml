@@ -52,7 +52,6 @@ services:
       WORKFLOW_DASHBOARD_CORS_ORIGIN: http://${DOMAIN_NAME:-localhost}:${WORKFLOW_DASHBOARD_PORT}
       PORT: ${WORKFLOW_SVC_PORT}
       KYB_EXAMPLE_CORS_ORIGIN: http://${DOMAIN_NAME:-localhost}:${KYB_APP_PORT}
-      WEBHOOK_SECRET: webhook_secret
       APP_API_URL: https://alon.ballerine.dev
       EMAIL_API_TOKEN: ''
       EMAIL_API_URL: https://api.sendgrid.com/v3/mail/send
