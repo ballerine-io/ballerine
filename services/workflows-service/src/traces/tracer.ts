@@ -17,10 +17,7 @@ import { ExpressInstrumentation } from '@opentelemetry/instrumentation-express';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { PrismaInstrumentation } from '@prisma/instrumentation';
 
-const traceExporter = new OTLPTraceExporter({
-  // port configured in the Collector config, defaults to 4317
-  url: 'http://localhost:4318/v1/traces',
-});
+const traceExporter = new OTLPTraceExporter();
 
 export const getTracer = () => {
   return trace.getTracer('default');
