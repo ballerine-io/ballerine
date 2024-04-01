@@ -6,9 +6,9 @@ import * as fs from 'fs';
 import { INestApplicationContext } from '@nestjs/common';
 import { env } from '@/env';
 import { DataMigrationRepository } from '@/data-migration/data-migration.repository';
-import console from 'console';
 import { DATA_MIGRATION_FOLDER_RELATIVE_PATH } from './consts';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { SentryService } from '@/sentry/sentry.service';
 
 interface IMigrationProcess {
   version: string; // also the timestamp
@@ -63,15 +63,17 @@ const fetchEnvMigrationFiles = async () => {
   return migrationFiles;
 };
 
-export const migrate = async () => {
+export const migrate = async (appContext: INestApplicationContext) => {
   const client = new PrismaClient();
-  const appContext = await NestFactory.createApplicationContext(AppModule);
 
   const dataMigrationRepository = appContext.get(DataMigrationRepository);
 
   const logger = appContext.get(AppLoggerService);
 
+  const sentryService = appContext.get(SentryService);
+
   logger.log('Starting Data Migration');
+
   const migrationFilesPath = await fetchEnvMigrationFiles();
 
   const migrationProcessesToRun = await calculateMigrationProcessToRun(
@@ -105,6 +107,8 @@ export const migrate = async () => {
       });
     } catch (error) {
       if (error instanceof Error) {
+        sentryService.captureException(error);
+
         await dataMigrationRepository.updateById(runningMigration.id, {
           data: {
             version: migrationVersion,
@@ -169,12 +173,33 @@ const calculateMigrationProcessToRun = async (
   ).sort((a, b) => Number(a.version) - Number(b.version));
 };
 
-migrate()
-  .then(() => {
-    console.log('Migration finished');
-    process.exit(0);
-  })
-  .catch(err => {
-    console.error('Error during application context initialization:', err);
-    process.exit(1);
-  });
+const main = async () => {
+  const app = await NestFactory.createApplicationContext(AppModule);
+
+  app.enableShutdownHooks();
+
+  const logger = app.get(AppLoggerService);
+  const sentryService = app.get(SentryService);
+
+  try {
+    await migrate(app);
+
+    setTimeout(() => {
+      return process.exit(0);
+    }, 2000);
+  } catch (error: unknown) {
+    logger.error('Error during running migration', { error });
+
+    if (error instanceof Error || typeof error === 'string') {
+      sentryService.captureException(error);
+    }
+
+    setTimeout(() => {
+      return process.exit(1);
+    }, 2000);
+  } finally {
+    await app.close();
+  }
+};
+
+main();

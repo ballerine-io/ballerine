@@ -47,6 +47,7 @@ export const AssociatedCompanyDocumentsPage = {
         },
         {
           type: 'json-form',
+          name: 'associated-company-documents-form',
           options: {
             jsonFormDefinition: {
               required: ['document-certificate-of-incorporation', 'document-business-utility-bill'],

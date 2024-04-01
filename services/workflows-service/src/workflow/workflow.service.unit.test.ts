@@ -113,7 +113,6 @@ describe('WorkflowService', () => {
   let testingModule: TestingModule;
   const configService = {
     WEBHOOK_URL: 'https://example.com',
-    WEBHOOK_SECRET: 'webhook_secret',
     NODE_ENV: 'test',
     ENVIRONMENT_NAME: 'test',
 

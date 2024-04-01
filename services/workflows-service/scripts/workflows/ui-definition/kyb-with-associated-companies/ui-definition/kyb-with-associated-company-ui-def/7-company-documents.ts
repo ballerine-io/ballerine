@@ -53,6 +53,7 @@ export const CompanyDocumentsPage = {
         },
         {
           type: 'json-form',
+          name: 'company-documents-form',
           options: {
             jsonFormDefinition: {
               required: [
