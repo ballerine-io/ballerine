@@ -9,8 +9,8 @@ export type TAuthenticationConfiguration = {
 };
 
 export const FEATURE_LIST = {
-  ONGOING_AUDIT_REPORT_T1: 'ONGOING_AUDIT_REPORT_T1',
-  ONGOING_AUDIT_REPORT_T2: 'ONGOING_AUDIT_REPORT_T2',
+  ONGOING_MERCHANT_REPORT_T1: 'ONGOING_MERCHANT_REPORT_T1',
+  ONGOING_MERCHANT_REPORT_T2: 'ONGOING_MERCHANT_REPORT_T2',
 } as const;
 
 export type TCustomerFeatures = {
@@ -28,8 +28,8 @@ export type TOngoingAuditReportDefinitionConfig = {
 };
 
 export const CUSTOMER_FEATURES = {
-  [FEATURE_LIST.ONGOING_AUDIT_REPORT_T1]: {
-    name: 'ONGOING_AUDIT_REPORT_T1',
+  [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
+    name: 'ONGOING_MERCHANT_REPORT_T1',
     enabled: false, // show option in UI
     options: {
       definitionVariation: 'ongoing_merchant_audit_t1',
@@ -39,8 +39,8 @@ export const CUSTOMER_FEATURES = {
       proxyViaCountry: 'GB',
     },
   },
-  [FEATURE_LIST.ONGOING_AUDIT_REPORT_T2]: {
-    name: 'ONGOING_AUDIT_REPORT_T2',
+  [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
+    name: 'ONGOING_MERCHANT_REPORT_T2',
     enabled: false, // show option in UI
     options: {
       definitionVariation: 'ongoing_merchant_audit_t2',

@@ -132,8 +132,8 @@ describe('OngoingMonitoringCron', () => {
         displayName: 'Test Customer Display 1',
         logoImageUri: 'http://example.com/logo1.png',
         features: {
-          [FEATURE_LIST.ONGOING_AUDIT_REPORT_T1]: {
-            name: FEATURE_LIST.ONGOING_AUDIT_REPORT_T1,
+          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
+            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
             enabled: true,
             options: {
               definitionVariation: 'ongoing_merchant_audit_t1',
@@ -152,8 +152,8 @@ describe('OngoingMonitoringCron', () => {
         displayName: 'Test Customer Display 2',
         logoImageUri: 'http://example.com/logo2.png',
         features: {
-          [FEATURE_LIST.ONGOING_AUDIT_REPORT_T2]: {
-            name: FEATURE_LIST.ONGOING_AUDIT_REPORT_T2,
+          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
+            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2,
             enabled: true,
             options: {
               definitionVariation: 'ongoing_merchant_audit_t2',
@@ -172,8 +172,8 @@ describe('OngoingMonitoringCron', () => {
         displayName: 'Test Customer Display 3',
         logoImageUri: 'http://example.com/logo3.png',
         features: {
-          [FEATURE_LIST.ONGOING_AUDIT_REPORT_T2]: {
-            name: FEATURE_LIST.ONGOING_AUDIT_REPORT_T2,
+          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
+            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2,
             enabled: false,
             options: {
               definitionVariation: 'ongoing_merchant_audit_t2',
@@ -192,8 +192,8 @@ describe('OngoingMonitoringCron', () => {
         displayName: 'Test Customer Display 4',
         logoImageUri: 'http://example.com/logo4.png',
         features: {
-          [FEATURE_LIST.ONGOING_AUDIT_REPORT_T2]: {
-            name: FEATURE_LIST.ONGOING_AUDIT_REPORT_T2,
+          [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2]: {
+            name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T2,
             enabled: true,
             options: {
               definitionVariation: 'ongoing_merchant_audit_t2',
@@ -215,8 +215,8 @@ describe('OngoingMonitoringCron', () => {
         id: 'business1',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST.ONGOING_AUDIT_REPORT_T1]: {
-              name: FEATURE_LIST.ONGOING_AUDIT_REPORT_T1,
+            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
+              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
               enabled: false,
               options: {
                 definitionVariation: 'variation1',
@@ -236,8 +236,8 @@ describe('OngoingMonitoringCron', () => {
         id: 'business3',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST.ONGOING_AUDIT_REPORT_T1]: {
-              name: FEATURE_LIST.ONGOING_AUDIT_REPORT_T1,
+            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
+              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
               enabled: true,
               options: {
                 definitionVariation: 'variation2',
@@ -254,8 +254,8 @@ describe('OngoingMonitoringCron', () => {
         id: 'business4',
         metadata: {
           featureConfig: {
-            [FEATURE_LIST.ONGOING_AUDIT_REPORT_T1]: {
-              name: FEATURE_LIST.ONGOING_AUDIT_REPORT_T1,
+            [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
+              name: FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1,
               enabled: true,
               options: {
                 definitionVariation: 'variation3',

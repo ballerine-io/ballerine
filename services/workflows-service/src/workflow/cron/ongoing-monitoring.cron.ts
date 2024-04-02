@@ -23,7 +23,7 @@ import { ValidationError } from '@/errors';
 @Injectable()
 export class OngoingMonitoringCron {
   private readonly lockKey = ONGOING_MONITORING_LOCK_KEY;
-  private readonly processFeatureName = FEATURE_LIST.ONGOING_AUDIT_REPORT_T1;
+  private readonly processFeatureName = FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1;
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly logger: AppLoggerService,
@@ -114,7 +114,11 @@ export class OngoingMonitoringCron {
             businessId: business.id,
             projectId: business.projectId,
             type: {
-              in: ['ONGOING_AUDIT_REPORT_T1', 'ONGOING_AUDIT_REPORT_T2', 'AUDIT_REPORT_T1'],
+              in: [
+                'ONGOING_MERCHANT_REPORT_T1',
+                'ONGOING_MERCHANT_REPORT_T2',
+                'MERCHANT_REPORT_T1',
+              ],
             },
           },
           orderBy: {
