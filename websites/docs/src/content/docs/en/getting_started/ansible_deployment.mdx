@@ -46,42 +46,8 @@ After you completed the above step then we're pretty much done with the inventor
 After complete the above step. Now the only remain step we need to do is run the Ansible playbook.
 You can run the Ansible playbook with the following command
 
-<CodeBlock lang={`shell`}  code={`cd ballerine/deploy/ansible/ballerine_playbook; 
+<CodeBlock lang={`shell`}  code={`cd ballerine/deploy/ansible/ballerine_playbook;
 ansible-playbook -i inventory.txt ballerine-playbook.yml`}/>
-
-### Start Ballerine on HTTPS
-
-**Setup your configuration vars for Ballerine**:
-
-Once the inventory is setup and want to deploy on HTTPS.
-
-The next step is to setup necessary configuration for your app to run.
-
-First you need to open `deploy/ansible/ballerine_playbook/roles/setup-ballerine/defaults/main.yml` file with your editor.
-There are some variables that will need input from you to get the application start correctly
-
-- `install_dir`: The absolute path of your app's installation folder on the server (required). Default: `/home/ubuntu/ballerine`
-- `vite_api_url`: Incase you want to deploy ballerine on a remote server and run it on HTTPS
-- `backoffice_url`: URL you wish to deploy Case-Management on
-- `kyb_url`: URL you wish to deploy KYB on
-- `workflow_dashboard_url`: URL you wish to deploy Workflows-Dashboard on
-- `workflow_svc_url`: URL you wish to deploy Workflows-Service on
-
-Once you complete setup config vars for your app then we are ready to deploy our app on your server.
-
-**Run the Ansible playbook**:
-
-After complete the above step. Now the only remain step we need to do is run the Ansible playbook.
-You can run the Ansible playbook with the following command
-
-<CodeBlock lang={`shell`}  code={`cd ballerine/deploy/ansible/ballerine_playbook; 
-ansible-playbook -i inventory.txt ballerine-playbook.yml`}/>
-
-The command above will use the host information from the `inventory` file.
-
-After performing these steps,
-
-The backoffice should be running on <CodeBlock lang={`shell`} code={`https://<backoffice_url>`}/>
 
 The default username and password for the backoffice are:
 
@@ -94,3 +60,6 @@ The default username and password for the backoffice are:
 The collection flow on <CodeBlock lang={`shell`} code={`https://<kyb_url>`}/> and
 
 The workflow service will be accepting calls at <CodeBlock lang={`shell`} code={`https://<workflow_svc_url>`}/>
+
+### Further Reading
+* [Ballerine on HTTPS](/en/getting_started/ballerine_on_https)

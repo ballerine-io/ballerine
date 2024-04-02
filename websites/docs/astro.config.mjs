@@ -38,17 +38,17 @@ export default defineConfig({
             {
               label: `Glossary`,
               link: `/en/getting_started/glossary`,
+            },
+            {
+              label: `Installation`,
+              link: `/en/getting_started/installation`,
             }
           ],
         },
         {
-          label: `Deployment Guides`,
+          label: `Deployment`,
           collapsed: true,
           items: [
-            {
-              label: `Local`,
-              link: `/en/getting_started/local_development`,
-            },
             {
               label: `Docker`,
               link: `/en/getting_started/local_deployment`,
@@ -60,6 +60,15 @@ export default defineConfig({
             {
               label: `Kubernetes Deployment`,
               link: `/en/getting_started/kubernetes_deployment`,
+            },
+            {
+              label: `Configure Instance`,
+              items: [
+                {
+                  label: `Ballerine on HTTPS`,
+                  link: `/en/getting_started/ballerine_on_https`,
+                }
+              ]
             }
           ]
         },
