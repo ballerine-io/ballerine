@@ -1,17 +1,18 @@
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { BusinessService } from '@/business/business.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 import { TDocumentsWithoutPageType } from '@/common/types';
 import { CustomerService } from '@/customer/customer.service';
-import type { TProjectId, TProjectIds } from '@/types';
+import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord, ProcessStatus, TDocument } from '@ballerine/common';
-import { Injectable } from '@nestjs/common';
-import { BusinessReportType, WorkflowRuntimeData } from '@prisma/client';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { BusinessReportType, Customer, WorkflowRuntimeData } from '@prisma/client';
 import fs from 'fs';
 import { get, isObject, set } from 'lodash';
 import * as tmp from 'tmp';
-import { BusinessReportService } from '@/business-report/business-report.service';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -19,6 +20,7 @@ export class HookCallbackHandlerService {
     protected readonly workflowService: WorkflowService,
     protected readonly customerService: CustomerService,
     protected readonly businessReportService: BusinessReportService,
+    protected readonly businessService: BusinessService,
     private readonly logger: AppLoggerService,
   ) {}
 
@@ -93,35 +95,39 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
 
     const { context } = workflowRuntime;
-    const { reportData, base64Pdf } = data;
+    const { reportData, base64Pdf, reportId } = data;
 
-    const pdfDocument: TDocument = {
-      category: 'website-monitoring',
-      type: 'pdf-report',
-      pages: [
-        {
-          provider: 'base64',
-          uri: `data:application/pdf;base64,${base64Pdf}`,
-          fileName: 'report.pdf',
-        },
-      ],
-      issuer: {
-        // TODO: use real company country?
-        country: 'GB',
-      },
-      propertiesSchema: {},
-      properties: {},
-    };
+    const { documents, pdfReportBallerineFileId } =
+      await this.__peristPDFReportDocumentWithWorkflowDocuments({
+        context,
+        customer,
+        projectId: currentProjectId,
+        base64PDFString: base64Pdf as string,
+      });
 
-    const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
-      [pdfDocument] as unknown as TDocumentsWithoutPageType,
-      context.entity.id || context.entity.ballerineEntityId,
+    const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
-      customer.name,
-    );
+    ]);
 
-    set(workflowRuntime.context, resultDestinationPath, { reportData, base64Pdf });
-    workflowRuntime.context.documents = persistedDocuments;
+    if (!business) throw new BadRequestException('Business not found.');
+
+    await this.businessReportService.create({
+      data: {
+        type: BusinessReportType.MERCHANT_REPORT_T1,
+        report: {
+          reportFileId: pdfReportBallerineFileId,
+          data: reportData as InputJsonValue,
+          reportId: reportId as string,
+        },
+        businessId: business.id,
+        projectId: currentProjectId,
+      },
+    });
+
+    set(workflowRuntime.context, resultDestinationPath, { reportData });
+    workflowRuntime.context.documents = documents;
+
+    set(workflowRuntime.context, 'entity.data.additionalIfo.report.previousReportId', reportId);
 
     return context;
   }
@@ -132,6 +138,7 @@ export class HookCallbackHandlerService {
     resultDestinationPath: string,
     currentProjectId: TProjectId,
   ) {
+    const { reportData, base64Pdf, reportId } = data;
     const { context } = workflowRuntime;
     const report = data.report as { data: AnyRecord; summary: AnyRecord };
     const comparedToReportId = data.comparedToReportId;
@@ -139,11 +146,22 @@ export class HookCallbackHandlerService {
     const proxyViaCountry = data.proxyViaCountry;
     const reportType = data.reportType as BusinessReportType;
 
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+
+    const { pdfReportBallerineFileId } = await this.__peristPDFReportDocumentWithWorkflowDocuments({
+      context,
+      customer,
+      projectId: currentProjectId,
+      base64PDFString: base64Pdf as string,
+    });
+
     const reportContent = {
       comparedToReportId: comparedToReportId,
-      reportContent: report.data,
+      reportContent: reportData,
       proxyViaCountry: proxyViaCountry,
       summary: report.summary,
+      reportFileId: pdfReportBallerineFileId,
+      reportId,
     } as Record<string, object | string>;
 
     await this.businessReportService.create({
@@ -156,6 +174,82 @@ export class HookCallbackHandlerService {
     });
 
     return context;
+  }
+
+  private async __peristPDFReportDocumentWithWorkflowDocuments({
+    context,
+    base64PDFString,
+    projectId,
+    customer,
+  }: {
+    context: any;
+    base64PDFString: string;
+    projectId: TProjectId;
+    customer: Customer;
+  }) {
+    const contextClone = structuredClone(context);
+
+    const pdfDocument: TDocument = {
+      category: 'website-monitoring',
+      type: 'pdf-report',
+      pages: [
+        {
+          provider: 'base64',
+          uri: base64PDFString,
+          fileName: 'report.pdf',
+        },
+      ],
+      issuer: {
+        country: 'GB',
+      },
+      propertiesSchema: {},
+      properties: {},
+    };
+
+    contextClone.documents = [...contextClone.documents, pdfDocument];
+
+    let persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
+      [pdfDocument] as unknown as TDocumentsWithoutPageType,
+      contextClone.entity.id || context.entity.ballerineEntityId,
+      projectId,
+      customer.name,
+    );
+
+    let pdfReportBallerineFileId = '';
+
+    //@ts-ignore
+    persistedDocuments = persistedDocuments.map(document => {
+      const isPDFReportDocument = document.pages.find(
+        //@ts-ignore
+        documentPage => documentPage.uri === base64PDFString,
+      );
+
+      if (isPDFReportDocument) {
+        return {
+          ...document,
+          pages: document.pages.map(documentPage => {
+            pdfReportBallerineFileId = documentPage.ballerineFileId as string;
+
+            //@ts-ignore
+            if (documentPage.uri === base64PDFString) {
+              return {
+                //@ts-ignore
+                type: documentPage.type,
+                ballerineFileId: documentPage.ballerineFileId,
+                fileName: documentPage.fileName,
+              };
+            }
+          }),
+        };
+      }
+
+      return document;
+    });
+
+    return {
+      documents: persistedDocuments,
+      pdfReportBallerineFileId,
+    };
   }
 
   async mapCallbackDataToIndividual(

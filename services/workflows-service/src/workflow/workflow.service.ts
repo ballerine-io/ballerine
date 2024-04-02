@@ -2230,4 +2230,10 @@ export class WorkflowService {
       },
     );
   }
+
+  async updateById(workflowRuntimeDataId: string, args: Prisma.WorkflowRuntimeDataUpdateInput) {
+    return await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataId, {
+      data: args,
+    });
+  }
 }
