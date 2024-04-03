@@ -11,13 +11,13 @@ export const Providers: FunctionComponent<PropsWithChildren> = ({ children }) =>
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider
-        redirectAuthenticatedTo={'/en/case-management/entities'}
+        redirectAuthenticatedTo={'/en/statistics'}
         redirectUnauthenticatedTo={'/en/auth/sign-in'}
         signInOptions={{
           redirect: env.VITE_AUTH_ENABLED,
           callbackUrl: state?.from
             ? `${state?.from?.pathname}${state?.from?.search}`
-            : '/en/case-management/entities',
+            : '/en/statistics',
         }}
         signOutOptions={{
           redirect: env.VITE_AUTH_ENABLED,

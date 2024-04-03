@@ -1,7 +1,7 @@
 import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useCallback, useMemo } from 'react';
-import { Building, Goal, Users } from 'lucide-react';
+import { Home, Building, Goal, Users } from 'lucide-react';
 import { TRoutes, TRouteWithChildren } from '@/Router/types';
 import { useLocation } from 'react-router-dom';
 
@@ -17,6 +17,12 @@ export const useNavbarLogic = () => {
     [filters],
   );
   const navItems = [
+    {
+      text: 'Home',
+      icon: <Home size={20} />,
+      href: '/en/statistics',
+      key: 'nav-item-Home',
+    },
     {
       text: 'Businesses',
       icon: <Building size={20} />,
