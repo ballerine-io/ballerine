@@ -42,7 +42,7 @@ export default defineConfig({
             {
               label: `Installation`,
               link: `/en/getting_started/installation`,
-            }
+            }          
           ],
         },
         {
@@ -51,27 +51,27 @@ export default defineConfig({
           items: [
             {
               label: `Docker`,
-              link: `/en/getting_started/local_deployment`,
+              link: `/en/deployment/docker_compose.mdx`,
             },
             {
               label: `Ansible `,
-              link: `/en/getting_started/ansible_deployment`,
+              link: `/en/deployment/ansible_deployment`,
             },
             {
               label: `Kubernetes Deployment`,
-              link: `/en/getting_started/kubernetes_deployment`,
+              link: `/en/deployment/kubernetes_deployment`,
             },
             {
               label: `Configure Instance`,
               items: [
                 {
                   label: `Ballerine on HTTPS`,
-                  link: `/en/getting_started/ballerine_on_https`,
+                  link: `/en/deployment/ballerine_on_https`,
                 }
               ]
             }
           ]
-        },
+        },        
         {
           label: 'Learn',
           collapsed: true,
