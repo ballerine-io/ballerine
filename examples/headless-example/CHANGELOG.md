@@ -1,5 +1,11 @@
 # @ballerine/headless-example
 
+## 0.1.53-prod-hotfix-4-4.0
+
+### Patch Changes
+
+- @ballerine/workflow-browser-sdk@0.5.53-prod-hotfix-4-4.0
+
 ## 0.1.52
 
 ### Patch Changes

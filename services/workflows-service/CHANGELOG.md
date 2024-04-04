@@ -1,5 +1,13 @@
 # @ballerine/workflows-service
 
+## 0.5.53-prod-hotfix-4-4.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/workflow-core@0.5.53-prod-hotfix-4-4.0
+  - @ballerine/workflow-node-sdk@0.5.53-prod-hotfix-4-4.0
+
 ## 0.5.52
 
 ### Patch Changes

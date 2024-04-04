@@ -14,7 +14,13 @@ export class PluginRunnerHandler implements ActionHandler {
     action: Action<PluginRunnerParams>,
     api: StateMachineAPI,
   ): Promise<TContext> {
+    console.log(`Invoking plugin`, {
+      pluginName: action.params.pluginName,
+    });
     await api.invokePlugin(action.params.pluginName);
+    console.log(`Plugin invoked`, {
+      pluginName: action.params.pluginName,
+    });
     return api.getContext();
   }
 }

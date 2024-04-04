@@ -1,5 +1,12 @@
 # @ballerine/backoffice-v2
 
+## 0.5.59-prod-hotfix-4-4.0
+
+### Patch Changes
+
+- @ballerine/workflow-browser-sdk@0.5.53-prod-hotfix-4-4.0
+- @ballerine/workflow-node-sdk@0.5.53-prod-hotfix-4-4.0
+
 ## 0.5.58
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.5.53-prod-hotfix-4-4.0
+
+### Patch Changes
+
+- hit fix
+
 ## 0.5.52
 
 ### Patch Changes

@@ -1,0 +1,27 @@
+{
+  "mode": "pre",
+  "tag": "prod-hotfix-4-4",
+  "initialVersions": {
+    "@ballerine/backoffice-v2": "0.5.58",
+    "@ballerine/kyb-app": "0.1.53",
+    "@ballerine/workflows-dashboard": "0.1.15",
+    "@ballerine/headless-example": "0.1.52",
+    "@ballerine/report-generation-example": "0.0.5",
+    "@ballerine/blocks": "0.1.29",
+    "@ballerine/common": "0.7.49",
+    "@ballerine/config": "1.0.8",
+    "@ballerine/eslint-config": "1.0.8",
+    "@ballerine/eslint-config-react": "1.0.9",
+    "@ballerine/react-pdf-toolkit": "1.0.16",
+    "@ballerine/rules-engine-lib": "0.4.28",
+    "@ballerine/ui": "0.3.31",
+    "@ballerine/workflow-core": "0.5.52",
+    "@ballerine/web-ui-sdk": "1.4.47",
+    "@ballerine/workflow-browser-sdk": "0.5.52",
+    "@ballerine/workflow-node-sdk": "0.5.52",
+    "@ballerine/websocket-service": "0.0.20",
+    "@ballerine/workflows-service": "0.5.52",
+    "@ballerine/docs-site": "0.0.1"
+  },
+  "changesets": ["lazy-hounds-dream"]
+}
