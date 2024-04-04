@@ -1,6 +1,7 @@
 import { TContext, Transformer, Transformers } from '../../utils';
 import { ChildWorkflowPluginParams } from './types';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
+import { logger } from '@/lib';
 
 export class ChildWorkflowPlugin {
   public static pluginType = 'child';
@@ -39,16 +40,25 @@ export class ChildWorkflowPlugin {
           },
         },
       });
-    } finally {
-      return Promise.resolve();
+    } catch (error) {
+      logger.error(`Error occurred while invoking child workflow plugin`, {
+        error,
+        name: this.name,
+        definitionId: this.definitionId,
+        parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
+      });
+
+      return Promise.reject();
     }
   }
 
   async transformData(transformers: Transformers, record: AnyRecord) {
     let mutatedRecord = record;
+
     for (const transformer of transformers) {
       mutatedRecord = await this.transformByTransformer(transformer, mutatedRecord);
     }
+
     return mutatedRecord;
   }
 
