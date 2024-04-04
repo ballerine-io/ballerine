@@ -51,7 +51,7 @@ export default defineConfig({
           items: [
             {
               label: `Docker`,
-              link: `/en/deployment/docker_compose.mdx`,
+              link: `/en/deployment/docker_compose`,
             },
             {
               label: `Ansible `,
