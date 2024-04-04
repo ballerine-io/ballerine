@@ -326,6 +326,11 @@ export class WorkflowService {
     currentProjectId: TProjectId,
     transaction: PrismaTransaction,
   ) {
+    this.logger.log('Persisting child event', {
+      childPluginConfig,
+      projectIds,
+      currentProjectId,
+    });
     const childWorkflow = (
       await this.createOrUpdateWorkflowRuntime(
         {
@@ -366,6 +371,12 @@ export class WorkflowService {
         currentProjectId,
         transaction,
       );
+    } else {
+      this.logger.warn('Child workflow not created', {
+        childPluginConfig,
+        projectIds,
+        currentProjectId,
+      });
     }
 
     return childWorkflow;
@@ -1863,6 +1874,9 @@ export class WorkflowService {
           );
 
           if (!runnableChildWorkflow || !childPluginConfiguration.initOptions.event) {
+            this.logger.log('Child workflow not runnable', {
+              childWorkflowId: runnableChildWorkflow?.workflowRuntimeData.id,
+            });
             return;
           }
 
