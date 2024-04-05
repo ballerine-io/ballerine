@@ -140,13 +140,8 @@ export class HookCallbackHandlerService {
   ) {
     const { reportData, base64Pdf, reportId } = data;
     const { context } = workflowRuntime;
-    const business = await this.businessService.getByCorrelationId(context.entity.id as string, [
-      currentProjectId,
-    ]);
 
-    if (!business) throw new BadRequestException('Business not found');
-
-    const businessId = business.id as string;
+    const businessId = context.entity.id as string;
     const reportType = data.reportType as BusinessReportType;
 
     const customer = await this.customerService.getByProjectId(currentProjectId);

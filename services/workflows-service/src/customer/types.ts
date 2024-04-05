@@ -30,11 +30,11 @@ export type TOngoingAuditReportDefinitionConfig = {
 export const CUSTOMER_FEATURES = {
   [FEATURE_LIST.ONGOING_MERCHANT_REPORT_T1]: {
     name: 'ONGOING_MERCHANT_REPORT_T1',
-    enabled: false, // show option in UI
+    enabled: true, // show option in UI
     options: {
       definitionVariation: 'ongoing_merchant_audit_t1',
       intervalInDays: 7,
-      active: false,
+      active: true,
       checkTypes: ['lob', 'content', 'reputation'],
       proxyViaCountry: 'GB',
     },

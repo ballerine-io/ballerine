@@ -1,24 +1,24 @@
-import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { PrismaService } from '@/prisma/prisma.service';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { ONGOING_MONITORING_LOCK_KEY } from '@/workflow/cron/lock-keys';
-import { DefaultContextSchema, defaultContextSchema, isErrorWithMessage } from '@ballerine/common';
-import { WorkflowService } from '@/workflow/workflow.service';
-import { CustomerService } from '@/customer/customer.service';
+import { BusinessReportService } from '@/business-report/business-report.service';
 import { BusinessService } from '@/business/business.service';
-import { Business, Project } from '@prisma/client';
+import { ajv } from '@/common/ajv/ajv.validator';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { CustomerService } from '@/customer/customer.service';
 import {
   FEATURE_LIST,
   TCustomerFeatures,
   TCustomerWithDefinitionsFeatures,
   TOngoingAuditReportDefinitionConfig,
 } from '@/customer/types';
-import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
-import { BusinessReportService } from '@/business-report/business-report.service';
-import { TProjectIds } from '@/types';
-import { ajv } from '@/common/ajv/ajv.validator';
 import { ValidationError } from '@/errors';
+import { PrismaService } from '@/prisma/prisma.service';
+import { TProjectIds } from '@/types';
+import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { ONGOING_MONITORING_LOCK_KEY } from '@/workflow/cron/lock-keys';
+import { WorkflowService } from '@/workflow/workflow.service';
+import { DefaultContextSchema, defaultContextSchema, isErrorWithMessage } from '@ballerine/common';
+import { Injectable } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { Business, Project } from '@prisma/client';
 
 @Injectable()
 export class OngoingMonitoringCron {
@@ -146,19 +146,23 @@ export class OngoingMonitoringCron {
         );
       })
       .map(async customer => {
-        const processConfig = this.extractDefinitionConfig(customer.features);
-        const projectIds = customer.projects.map((project: Project) => project.id);
+        const run = async () => {
+          const processConfig = this.extractDefinitionConfig(customer.features);
+          const projectIds = customer.projects.map((project: Project) => project.id);
 
-        const workflowDefinition = await this.workflowDefinitionService.getLastVersionByVariant(
-          processConfig!.options!.definitionVariation,
-          projectIds,
-        );
+          const workflowDefinition = await this.workflowDefinitionService.getLastVersionByVariant(
+            processConfig!.options!.definitionVariation,
+            projectIds,
+          );
 
-        return {
-          workflowDefinition: workflowDefinition,
-          projectIds: projectIds,
-          definitionConfig: processConfig,
+          return {
+            workflowDefinition: workflowDefinition,
+            projectIds: projectIds,
+            definitionConfig: processConfig,
+          };
         };
+
+        return run();
       });
 
     return await Promise.all(customersWithDefinitionsPromise);
@@ -186,7 +190,6 @@ export class OngoingMonitoringCron {
     currentProjectId,
     lastReportId,
     checkTypes,
-    reportType,
   }: {
     business: Business & { metadata?: { featureConfig?: Record<string, TCustomerFeatures> } };
     workflowDefinitionConfig: TOngoingAuditReportDefinitionConfig;
