@@ -10,7 +10,6 @@ export type TRouteWithoutChildren = {
 
 export type TRouteWithChildren = {
   text: ReactNode | ReactNode[];
-  href?: string;
   children: Array<Omit<TRouteWithoutChildren, 'icon'>>;
   key: string;
 };
