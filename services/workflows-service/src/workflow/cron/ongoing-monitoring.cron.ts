@@ -19,6 +19,7 @@ import { DefaultContextSchema, defaultContextSchema, isErrorWithMessage } from '
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Business, Project } from '@prisma/client';
+import get from 'lodash/get';
 
 @Injectable()
 export class OngoingMonitoringCron {
@@ -205,9 +206,9 @@ export class OngoingMonitoringCron {
         id: business.id,
         type: 'business',
         data: {
-          website: business.website,
+          website: this.getWebsiteUrl(business),
           companyName: business.companyName,
-          additionalIfo: {
+          additionalInfo: {
             report: {
               proxyViaCountry: workflowDefinitionConfig.proxyViaCountry,
               previousReportId: lastReportId,
@@ -244,5 +245,9 @@ export class OngoingMonitoringCron {
         },
       },
     });
+  }
+
+  private getWebsiteUrl(business: Business) {
+    return business.website || get(business, 'additionalInfo.store.website.mainWebsite', '');
   }
 }

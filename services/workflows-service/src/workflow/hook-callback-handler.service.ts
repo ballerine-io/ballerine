@@ -127,8 +127,6 @@ export class HookCallbackHandlerService {
     set(workflowRuntime.context, resultDestinationPath, { reportData });
     workflowRuntime.context.documents = documents;
 
-    set(workflowRuntime.context, 'entity.data.additionalIfo.report.previousReportId', reportId);
-
     return context;
   }
 
