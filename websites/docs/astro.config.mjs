@@ -50,7 +50,7 @@ export default defineConfig({
           collapsed: true,
           items: [
             {
-              label: `Docker`,
+              label: `Docker Compose`,
               link: `/en/deployment/docker_compose`,
             },
             {
