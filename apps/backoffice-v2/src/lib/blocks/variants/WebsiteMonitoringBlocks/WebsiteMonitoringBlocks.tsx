@@ -1,12 +1,15 @@
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { useWebsiteMonitoringBlocks } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringBlocks/useWebsiteMonitoringBlocks';
-import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
+import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
+import { useCurrentCase } from '@/pages/Entity/hooks/useCurrentCase/useCurrentCase';
 import { BlocksComponent } from '@ballerine/blocks';
 
 export const WebsiteMonitoringBlocks = () => {
   const blocks = useWebsiteMonitoringBlocks();
-  const { workflow, plugins } = useEntityLogic();
+  const { data: workflow } = useCurrentCase();
+  const plugins = useCasePlugins({ workflow: workflow as TWorkflowById });
 
   return (
     <div className="flex h-full flex-col">

@@ -1,9 +1,11 @@
 import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ChildDocumentBlocks } from '@/lib/blocks/components/ChildDocumentBlocks/ChildDocumentBlocks';
 import { NoBlocks } from '@/lib/blocks/components/NoBlocks/NoBlocks';
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { useKybExampleBlocksLogic } from '@/lib/blocks/variants/KybExampleBlocks/hooks/useKybExampleBlocksLogic/useKybExampleBlocksLogic';
-import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
+import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
+import { useCurrentCase } from '@/pages/Entity/hooks/useCurrentCase/useCurrentCase';
 import { BlocksComponent } from '@ballerine/blocks';
 
 export const KybExampleBlocks = () => {
@@ -16,7 +18,8 @@ export const KybExampleBlocks = () => {
     isLoadingReuploadNeeded,
     isLoading,
   } = useKybExampleBlocksLogic();
-  const { workflow, plugins } = useEntityLogic();
+  const { data: workflow } = useCurrentCase();
+  const plugins = useCasePlugins({ workflow: workflow as TWorkflowById });
 
   return (
     <>
