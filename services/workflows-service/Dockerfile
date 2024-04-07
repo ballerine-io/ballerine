@@ -29,11 +29,13 @@ COPY --from=dev /app/package.json ./package.json
 COPY --from=dev /app/dist ./dist
 COPY --from=dev /app/prisma ./prisma
 COPY --from=dev /app/scripts ./scripts
+COPY --from=dev /app/entrypoint.sh ./entrypoint.sh
 COPY --from=dev /app/src ./src
 COPY --from=dev /app/tsconfig.build.json ./tsconfig.build.json
 COPY --from=dev /app/tsconfig.json ./tsconfig.json
 
 EXPOSE 3000
 
-CMD [ "dumb-init", "npm", "run", "prod" ]
+ENTRYPOINT [ "/app/entrypoint.sh" ]
 
+CMD [ "dumb-init", "npm", "run", "prod" ]
