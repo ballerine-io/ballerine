@@ -87,6 +87,7 @@ export const BankInformationPage = {
         },
         {
           type: 'json-form',
+          name: 'bank-information-form',
           options: {
             jsonFormDefinition: {
               required: [

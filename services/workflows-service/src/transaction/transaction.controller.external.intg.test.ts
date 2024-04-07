@@ -128,6 +128,8 @@ const getBaseTransactionData = () => {
   } as const satisfies TransactionCreateDto;
 };
 
+const API_KEY = faker.datatype.uuid();
+
 describe('#TransactionControllerExternal', () => {
   let app: INestApplication;
   let project: Project;
@@ -144,7 +146,7 @@ describe('#TransactionControllerExternal', () => {
     customer = await createCustomer(
       app.get(PrismaService),
       faker.datatype.uuid(),
-      faker.datatype.uuid(),
+      API_KEY,
       '',
       '',
       'webhook-shared-secret',
@@ -156,14 +158,14 @@ describe('#TransactionControllerExternal', () => {
   describe('POST /', () => {
     it('creates a transaction with business originator and end user beneficiary', async () => {
       // Assert
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
+
       const transaction = getBaseTransactionData();
 
       // Act
       const response = await request(app.getHttpServer())
         .post('/external/transactions/')
         .send(transaction)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       // Assert
       expect(response.status).toBe(201);
@@ -189,7 +191,6 @@ describe('#TransactionControllerExternal', () => {
 
     it('creates a transaction and reusing a business as originator and end user as beneficiary', async () => {
       // Arrange
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const business = await app.get(PrismaService).business.create({
         data: generateBusiness({ projectId: project.id }),
       });
@@ -206,7 +207,7 @@ describe('#TransactionControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/transactions/')
         .send(transaction)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       // Assert
       expect(response.status).toBe(201);
@@ -228,7 +229,6 @@ describe('#TransactionControllerExternal', () => {
 
     it('returns 400 when validation fails', async () => {
       // Arrange
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const transaction = {
         ...getBaseTransactionData(),
         amount: 'asdsad' as unknown as number, // string instead of number
@@ -238,14 +238,19 @@ describe('#TransactionControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/transactions/')
         .send(transaction)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       // Assert
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
+        errors: [
+          {
+            message: 'amount must be a number conforming to the specified constraints.',
+            path: 'amount',
+          },
+        ],
+        message: 'Validation error',
         statusCode: 400,
-        error: 'Bad Request',
-        message: [expect.any(String)],
       });
     });
   });
@@ -253,7 +258,7 @@ describe('#TransactionControllerExternal', () => {
   describe('POST /bulk', () => {
     it('creates a transaction with business originator and end user beneficiary', async () => {
       // Assert
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
+
       const transactions = [
         getBaseTransactionData(),
       ] as const satisfies readonly TransactionCreateDto[];
@@ -262,7 +267,7 @@ describe('#TransactionControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/transactions/bulk')
         .send(transactions)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       // Assert
       expect(response.status).toBe(201);
@@ -290,7 +295,6 @@ describe('#TransactionControllerExternal', () => {
 
     it('creates a transaction and counterparties but with existing business as originator and end user as beneficiary', async () => {
       // Arrange
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const business = await app.get(PrismaService).business.create({
         data: generateBusiness({ projectId: project.id }),
       });
@@ -309,7 +313,7 @@ describe('#TransactionControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/transactions/bulk')
         .send(transactions)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       // Assert
       expect(response.status).toBe(201);
@@ -333,7 +337,6 @@ describe('#TransactionControllerExternal', () => {
 
     it('creates a transaction with existing counterparties', async () => {
       // Arrange
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const business = await app.get(PrismaService).business.create({
         data: generateBusiness({ projectId: project.id }),
       });
@@ -366,7 +369,7 @@ describe('#TransactionControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/transactions/bulk')
         .send(transactions)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       // Assert
       expect(response.status).toBe(201);
@@ -390,14 +393,13 @@ describe('#TransactionControllerExternal', () => {
 
     it('creates multiple transactions', async () => {
       // Arrange
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const transactions = Array.from({ length: 5 }, () => getBaseTransactionData());
 
       // Act
       const response = await request(app.getHttpServer())
         .post('/external/transactions/bulk')
         .send(transactions)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       // Assert
       expect(response.status).toBe(201);
@@ -420,7 +422,6 @@ describe('#TransactionControllerExternal', () => {
 
     it('creates multiple transaction with some failing', async () => {
       // Arrange
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const transaction = getBaseTransactionData();
       const transactions = [transaction, transaction] satisfies readonly TransactionCreateDto[];
 
@@ -428,7 +429,7 @@ describe('#TransactionControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/transactions/bulk')
         .send(transactions)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       // Assert
       expect(response.status).toBe(207);
@@ -459,7 +460,6 @@ describe('#TransactionControllerExternal', () => {
 
     it('returns 400 when validation fails', async () => {
       // Arrange
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const validTransaction = getBaseTransactionData();
       const transactions = [
         ...Array.from({ length: 5 }, () => validTransaction),
@@ -473,20 +473,24 @@ describe('#TransactionControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/transactions/bulk')
         .send(transactions)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       // Assert
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
+        errors: [
+          {
+            message: 'amount must be a number conforming to the specified constraints.',
+            path: 'amount',
+          },
+        ],
+        message: 'Validation error',
         statusCode: 400,
-        error: 'Bad Request',
-        message: [expect.any(String)],
       });
     });
 
     it('returns 400 when counterparty is missing from the body', async () => {
       // Arrange
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const validTransaction = getBaseTransactionData();
       const transactions = [
         {
@@ -499,7 +503,7 @@ describe('#TransactionControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/transactions/bulk')
         .send(transactions)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       // Assert
       expect(response.status).toBe(400);
@@ -511,7 +515,6 @@ describe('#TransactionControllerExternal', () => {
 
     it('returns 400 when counterparty is missing an entity', async () => {
       // Arrange
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const validTransaction = getBaseTransactionData();
       const transactions = [
         {
@@ -527,7 +530,7 @@ describe('#TransactionControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/transactions/bulk')
         .send(transactions)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       // Assert
       expect(response.status).toBe(400);
@@ -539,7 +542,6 @@ describe('#TransactionControllerExternal', () => {
 
     it('returns 400 when counterparty has both business and end user', async () => {
       // Arrange
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const validTransaction = getBaseTransactionData();
       const transactions = [
         {
@@ -556,7 +558,7 @@ describe('#TransactionControllerExternal', () => {
       const response = await request(app.getHttpServer())
         .post('/external/transactions/bulk')
         .send(transactions)
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       // Assert
       expect(response.status).toBe(400);
