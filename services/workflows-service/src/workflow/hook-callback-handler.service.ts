@@ -95,7 +95,7 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
 
     const { context } = workflowRuntime;
-    const { reportData, base64Pdf, reportId } = data;
+    const { reportData, base64Pdf, reportId, reportType } = data;
 
     const { documents, pdfReportBallerineFileId } =
       await this.__peristPDFReportDocumentWithWorkflowDocuments({
@@ -113,7 +113,7 @@ export class HookCallbackHandlerService {
 
     await this.businessReportService.create({
       data: {
-        type: BusinessReportType.MERCHANT_REPORT_T1,
+        type: reportType as BusinessReportType,
         report: {
           reportFileId: pdfReportBallerineFileId,
           data: reportData as InputJsonValue,
@@ -136,11 +136,10 @@ export class HookCallbackHandlerService {
     resultDestinationPath: string,
     currentProjectId: TProjectId,
   ) {
-    const { reportData, base64Pdf, reportId } = data;
+    const { reportData, base64Pdf, reportId, reportType } = data;
     const { context } = workflowRuntime;
 
     const businessId = context.entity.id as string;
-    const reportType = data.reportType as BusinessReportType;
 
     const customer = await this.customerService.getByProjectId(currentProjectId);
 
@@ -159,7 +158,7 @@ export class HookCallbackHandlerService {
 
     await this.businessReportService.create({
       data: {
-        type: reportType,
+        type: reportType as BusinessReportType,
         report: reportContent,
         businessId: businessId,
         projectId: currentProjectId,
