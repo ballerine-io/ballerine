@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.6.4
+
+### Patch Changes
+
+- Fixed invokedAt to be UTC epoch
+
 ## 0.6.3
 
 ### Patch Changes
