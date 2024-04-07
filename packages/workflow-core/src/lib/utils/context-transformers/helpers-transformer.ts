@@ -1,9 +1,9 @@
 import { BaseContextTransformer, THelperFormatingLogic } from './types';
-import { TContext } from '../types';
+import { TContext } from '@/lib';
 import { search } from 'jmespath';
 import { AnyRecord } from '@ballerine/common';
 import merge from 'lodash.merge';
-import { logger } from '../../logger';
+import { logger } from '@/lib';
 
 export type THelperMethod =
   | 'regex'
@@ -78,7 +78,7 @@ export class HelpersTransformer extends BaseContextTransformer {
     value: string,
     _options: unknown,
   ) {
-    return new Date().getUTCDate();
+    return new Date().getTime();
   }
 
   regex(
