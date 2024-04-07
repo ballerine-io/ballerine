@@ -63,10 +63,6 @@ export const useNavbarLogic = () => {
   const { pathname } = useLocation();
   const checkIsActiveFilterGroup = useCallback(
     (navItem: TRouteWithChildren) => {
-      if (!navItem.children) {
-        return navItem.href === pathname;
-      } 
-
       return navItem.children?.some(
         childNavItem => childNavItem.filterId === filterId || childNavItem.href === pathname,
       );
