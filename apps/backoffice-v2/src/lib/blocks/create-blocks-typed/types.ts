@@ -18,7 +18,7 @@ import { IEditableDetailsDocument } from '@/lib/blocks/components/EditableDetail
 import { TPDFViewerCell } from '@/lib/blocks/components/PDFViewerCell/interfaces';
 import { Block } from '@ballerine/blocks';
 import { CommonWorkflowStates } from '@ballerine/common';
-import { AnyObject } from '@ballerine/ui';
+import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { ColumnDef, TableOptions } from '@tanstack/react-table';
 import { ComponentProps, ReactNode } from 'react';
 
@@ -214,6 +214,11 @@ export type TDialogCell = {
   value: ComponentProps<typeof Dialog>;
 };
 
+export type TNodeCell = {
+  type: 'nodeCell';
+  value: AnyChildren;
+};
+
 export type TCell =
   | TBlockCell
   | TContainerCell
@@ -233,4 +238,5 @@ export type TCell =
   | TTableCell
   | TParagraphCell
   | TDialogCell
+  | TNodeCell
   | TPDFViewerCell;
