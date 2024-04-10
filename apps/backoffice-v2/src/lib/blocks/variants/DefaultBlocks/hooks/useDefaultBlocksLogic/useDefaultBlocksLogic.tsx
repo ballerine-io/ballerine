@@ -44,6 +44,7 @@ import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
 import { useCurrentCase } from '@/pages/Entity/hooks/useCurrentCase/useCurrentCase';
 import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
+import { DEFAULT_PROCESS_TRACKER_PROCESSES } from '@/common/components/molecules/ProcessTracker/constants';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -314,7 +315,7 @@ export const useDefaultBlocksLogic = () => {
   const processTrackerBlock = useProcessTrackerBlock({
     workflow,
     plugins,
-    processes: [],
+    processes: DEFAULT_PROCESS_TRACKER_PROCESSES,
   });
 
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
