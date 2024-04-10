@@ -10,12 +10,12 @@ export const Home: FunctionComponent = () => {
   const { firstName, fullName, avatarUrl } = session?.user || {};
 
   return (
-    <div className={`flex flex-col p-4`}>
-      <div className={`mt-[27px] flex h-[36px] w-[441px] items-center`}>
+    <div className={`flex flex-col p-10`}>
+      <div className={`flex items-center`}>
         {session?.user && (
           <UserAvatar fullName={fullName} className={`mr-2 d-6`} avatarUrl={avatarUrl} />
         )}
-        <h3 className={`flex text-2xl font-semibold`}>
+        <h3 className={`flex text-2xl font-semibold max-w-[45ch]`}>
           {t(`home.greeting`)}
           {session?.user && ` ${firstName}`}
         </h3>
