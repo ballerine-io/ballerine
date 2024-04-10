@@ -1,0 +1,15 @@
+name: 'Bump version'
+description: 'Bumps tag version'
+author: 'Lior Zamir'
+inputs:
+  tag:
+    description: 'Last tag to be bumped'
+    required: true
+outputs:
+  version:
+    description: 'New version to publish'
+  tag:
+    description: 'New tag after bump'
+runs:
+  using: node16
+  main: 'dist/index.js'

@@ -81,14 +81,14 @@ describe('AlertService', () => {
         .transactionDate(faker.date.recent(6));
     });
 
-    describe('Rule: NUMCHRG', () => {
+    describe('Rule: CHVC_C', () => {
       let alertDefinition: AlertDefinition;
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              label: 'NUMCHRG',
+              label: 'CHVC_C',
               ...ALERT_DEFINITIONS.CHVC_C,
             },
             project,
@@ -135,14 +135,14 @@ describe('AlertService', () => {
       });
     });
 
-    describe('Rule: SUMCHRG', () => {
+    describe('Rule: SHCAC_C', () => {
       let alertDefinition: AlertDefinition;
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              label: 'SUMCHRG',
+              label: 'SHCAC_C',
               ...ALERT_DEFINITIONS.SHCAC_C,
             },
             project,
@@ -189,14 +189,14 @@ describe('AlertService', () => {
       });
     });
 
-    describe('Rule: NUMREFCC', () => {
+    describe('Rule: CHCR_C', () => {
       let alertDefinition: AlertDefinition;
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              label: 'NUMREFCC',
+              label: 'CHCR_C',
               ...ALERT_DEFINITIONS.CHCR_C,
             },
             project,
@@ -243,14 +243,14 @@ describe('AlertService', () => {
       });
     });
 
-    describe('Rule: SUMREFCC', () => {
+    describe('Rule: SHCAR_C', () => {
       let alertDefinition: AlertDefinition;
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              label: 'SUMREFCC',
+              label: 'SHCAR_C',
               ...ALERT_DEFINITIONS.SHCAR_C,
             },
             project,
@@ -260,11 +260,16 @@ describe('AlertService', () => {
 
       it('When the sum of refunds amount is greater than 5000, an alert should be created', async () => {
         // Arrange
-        const business1Transactions = await baseTransactionFactory.amount(100).count(51).create({
+        const business1Transactions = await baseTransactionFactory.amount(1000).count(11).create({
           transactionType: TransactionRecordType.refund,
         });
-        const business2Transactions = await baseTransactionFactory.amount(100).count(49).create({
+
+        await baseTransactionFactory.amount(10).count(12).create({
           transactionType: TransactionRecordType.refund,
+        });
+
+        await baseTransactionFactory.amount(5001).count(13).create({
+          transactionType: TransactionRecordType.chargeback,
         });
 
         // Act
@@ -273,6 +278,15 @@ describe('AlertService', () => {
         // Assert
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(1);
+
+        expect(alerts[0] as any).toMatchObject({
+          executionDetails: { executionRow: { transactionCount: '11' } },
+        });
+
+        expect(alerts[0] as any).toMatchObject({
+          executionDetails: { executionRow: { totalAmount: 1000 * 11 } },
+        });
+
         expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
         expect(alerts[0]?.counterpartyId).toEqual(
           business1Transactions[0]?.counterpartyOriginatorId,
@@ -281,10 +295,7 @@ describe('AlertService', () => {
 
       it('When the sum of refunds amount is less than 5000, no alert should be created', async () => {
         // Arrange
-        const business1Transactions = await baseTransactionFactory.amount(100).count(49).create({
-          transactionType: TransactionRecordType.refund,
-        });
-        const business2Transactions = await baseTransactionFactory.amount(100).count(49).create({
+        await baseTransactionFactory.amount(100).count(49).create({
           transactionType: TransactionRecordType.refund,
         });
 

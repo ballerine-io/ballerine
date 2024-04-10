@@ -1,12 +1,12 @@
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { muiTheme } from '@/common/mui-theme';
+import { Paper } from '@/components/atoms';
+import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { FocusEvent, FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import dayjs, { Dayjs } from 'dayjs';
-import { TextField, TextFieldProps, ThemeProvider } from '@mui/material';
-import { muiTheme } from '@/common/mui-theme';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Paper } from '@/components/atoms';
+import { FocusEvent, FunctionComponent, useCallback, useMemo, useState } from 'react';
 
 export interface DatePickerChangeEvent {
   target: {
@@ -27,6 +27,7 @@ export interface DatePickerProps {
   name?: string;
   disabled?: boolean;
   params?: DatePickerParams;
+  testId?: string;
   onChange: (event: DatePickerChangeEvent) => void;
   onBlur?: (event: FocusEvent<any>) => void;
 }
@@ -36,6 +37,7 @@ export const DatePickerInput = ({
   name,
   disabled = false,
   params,
+  testId,
   onChange,
   onBlur,
 }: DatePickerProps) => {
@@ -110,6 +112,7 @@ export const DatePickerInput = ({
           }}
           inputProps={{
             ...props.inputProps,
+            'data-testid': testId,
             className: 'py-0 px-0 h-9',
           }}
         />

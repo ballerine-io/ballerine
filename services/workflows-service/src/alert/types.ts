@@ -12,14 +12,6 @@ export type TDedupeStrategy = {
   cooldownTimeframeInMinutes: number;
 };
 
-export type TAuthenticationConfiguration = {
-  apiType: 'API_KEY' | 'OAUTH2' | 'BASIC_AUTH';
-  authValue: string;
-  validUntil?: string;
-  isValid: boolean;
-  webhookSharedSecret: string;
-};
-
 export const BulkStatus = {
   SUCCESS: 'success',
   FAILED: 'failed',
@@ -29,7 +21,7 @@ export type TBulkStatus = (typeof BulkStatus)[keyof typeof BulkStatus];
 
 export type TAlertResponse = Alert & {
   alertDefinition: Pick<AlertDefinition, 'description' | 'label'>;
-  assignee: Pick<User, 'id' | 'firstName' | 'lastName'>;
+  assignee: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>;
   counterparty: {
     business: Pick<Business, 'id' | 'companyName'>;
     endUser: Pick<User, 'id' | 'firstName' | 'lastName'>;

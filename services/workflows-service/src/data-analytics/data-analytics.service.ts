@@ -9,6 +9,7 @@ import {
 import { AggregateType } from './consts';
 import { Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { isEmpty } from 'lodash';
 
 @Injectable()
 export class DataAnalyticsService {
@@ -54,6 +55,7 @@ export class DataAnalyticsService {
     amountThreshold,
     amountBetween,
     direction,
+    transactionType = [],
     excludedCounterparty = {
       counterpartyBeneficiaryIds: [],
       counterpartyOriginatorIds: [],
@@ -79,6 +81,12 @@ export class DataAnalyticsService {
         `${timeAmount} ${timeUnit}`,
       )}'`,
     ];
+
+    if (!isEmpty(transactionType)) {
+      conditions.push(
+        Prisma.sql`tr."transactionType"::text IN (${Prisma.join(transactionType, ',')})`,
+      );
+    }
 
     if (direction) {
       conditions.push(Prisma.sql`"transactionDirection"::text = ${direction}`);
@@ -154,8 +162,7 @@ export class DataAnalyticsService {
         break;
       case AggregateType.SUM:
         havingClause = `${AggregateType.SUM}(tr."transactionBaseAmount")`;
-        query = Prisma.sql`SELECT ${selectClause}, SUM(tr."transactionBaseAmount") AS "totalAmount", COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr
-        WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
+        query = Prisma.sql`SELECT ${selectClause}, SUM(tr."transactionBaseAmount") AS "totalAmount", COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
           havingClause,
         )} > ${amountThreshold}`;
         break;
@@ -274,10 +281,7 @@ export class DataAnalyticsService {
       Prisma.sql`tr."projectId" = '${projectId}'`,
       Prisma.sql`tr."businessId" IS NOT NULL`,
       // TODO: should we use equation instead of IN clause?
-      Prisma.sql`tr."transactionType" IN (${Prisma.join(
-        transactionType.map(type => `'${type}'::"TransactionRecordType"`),
-        ',',
-      )})`,
+      Prisma.sql`tr."transactionType"::text IN (${Prisma.join(transactionType, ',')})`,
       Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
         `${timeAmount} ${timeUnit}`,
       )}'`,

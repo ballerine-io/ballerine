@@ -1,37 +1,38 @@
+import { isEmpty } from 'lodash';
 import { Injectable, NestMiddleware, Scope } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
-import { CustomerService } from '@/customer/customer.service';
 import { ClsService } from 'nestjs-cls';
+import { ApiKeyService } from '@/customer/api-key/api-key.service';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthKeyMiddleware implements NestMiddleware {
-  constructor(
-    private readonly customerService: CustomerService,
-    private readonly cls: ClsService,
-  ) {}
+  constructor(private readonly apiKeyService: ApiKeyService, private readonly cls: ClsService) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers.authorization;
     const apiKey = authHeader?.split?.(' ')?.[1];
 
     if (apiKey) {
-      const customer = await this.customerService.getByApiKey(apiKey);
+      const dbApiKey = await this.apiKeyService.find(apiKey);
 
-      if (!customer) return next();
+      if (!dbApiKey || isEmpty(dbApiKey)) {
+        return next();
+      }
 
-      const { projects, authenticationConfiguration, ...customerWithoutProjects } = customer;
+      const { id, name, projects, authenticationConfiguration, ...customerWithoutProjects } =
+        dbApiKey.customer;
 
       this.cls.set('entity', {
         customer: {
-          id: customer.id,
-          name: customer.name,
+          id,
+          name,
         },
         type: 'customer',
       });
 
       req.user = {
         customer: customerWithoutProjects,
-        projectIds: customer.projects?.map(project => project.id),
+        projectIds: projects?.map(project => project.id),
         type: 'customer',
       };
     }

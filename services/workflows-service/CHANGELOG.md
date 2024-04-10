@@ -1,5 +1,14 @@
 # @ballerine/workflows-service
 
+## 0.7.3
+
+### Patch Changes
+
+- Fixed invokedAt to be UTC epoch
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.4
+  - @ballerine/workflow-node-sdk@0.6.4
+
 ## 0.7.2
 
 ### Patch Changes
