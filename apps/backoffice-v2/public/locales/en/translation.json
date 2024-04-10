@@ -1,3 +1,5 @@
 {
-    "home.greeting": "Welcome"
+  "home": {
+    "greeting": "Welcome"
+  }
 }

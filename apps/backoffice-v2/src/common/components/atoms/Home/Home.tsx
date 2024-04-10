@@ -7,24 +7,17 @@ import { UserAvatar } from '../UserAvatar/UserAvatar';
 export const Home: FunctionComponent = () => {
   const { t } = useTranslation();
   const { data: session } = useAuthenticatedUserQuery();
-  const user = useMemo(
-    () => ({
-      firstName: session?.user?.firstName,
-      fullName: `${session?.user?.firstName} ${session?.user?.lastName}`,
-      avatarUrl: session?.user?.avatarUrl,
-    }),
-    [session?.user?.firstName, session?.user?.lastName, session?.user?.avatarUrl],
-  );
+  const { firstName, fullName, avatarUrl } = session?.user || {};
 
   return (
     <div className={`flex flex-col p-4`}>
       <div className={`mt-[27px] flex h-[36px] w-[441px] items-center`}>
-        {user.avatarUrl && (
-          <UserAvatar fullName={user.fullName} className={`mr-2 d-6`} avatarUrl={user.avatarUrl} />
+        {session?.user && (
+          <UserAvatar fullName={fullName} className={`mr-2 d-6`} avatarUrl={avatarUrl} />
         )}
         <h3 className={`flex text-2xl font-semibold`}>
           {t(`home.greeting`)}
-          {user?.firstName && ` ${user.firstName}`}
+          {session?.user && ` ${firstName}`}
         </h3>
       </div>
       <Outlet />
