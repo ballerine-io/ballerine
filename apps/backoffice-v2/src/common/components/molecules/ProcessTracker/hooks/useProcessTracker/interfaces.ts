@@ -10,5 +10,5 @@ export interface IUseProcessTrackerLogicParams {
     | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['commonPlugins']>[number]
   >;
   workflow: TWorkflowById;
-  processes?: string[];
+  processes: string[];
 }

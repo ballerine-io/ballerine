@@ -10,5 +10,5 @@ export interface IProcessTrackerProps {
       >[number]
     | NonNullable<NonNullable<TWorkflowDefinitionById['extensions']>['commonPlugins']>[number]
   >;
-  processes?: string[];
+  processes: string[];
 }

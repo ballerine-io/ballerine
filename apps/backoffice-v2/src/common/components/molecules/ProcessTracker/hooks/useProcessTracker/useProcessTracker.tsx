@@ -4,12 +4,10 @@ import { processTrackersMap } from '@/common/components/molecules/ProcessTracker
 import { IProcessTracker } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/process-tracker-adapters/process-tracker.abstract';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-const defaultProcesses = ['collection-flow', 'third-party', 'ubos'];
-
 export const useProcessTracker = ({
   plugins,
   workflow,
-  processes = defaultProcesses,
+  processes,
 }: IUseProcessTrackerLogicParams) => {
   const tags = useMemo(() => workflow?.tags || [], [workflow]);
   const tag = useMemo(
