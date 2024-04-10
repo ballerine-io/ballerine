@@ -40,6 +40,9 @@ import { TransactionModule } from '@/transaction/transaction.module';
 import { AlertModule } from '@/alert/alert.module';
 import { SwaggerController } from './swagger/swagger.controller';
 import { WebhooksModule } from '@/webhooks/webhooks.module';
+import { BusinessReportModule } from '@/business-report/business-report.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronModule } from '@/workflow/cron/cron.module';
 
 @Module({
   controllers: [SwaggerController],
@@ -85,6 +88,9 @@ import { WebhooksModule } from '@/webhooks/webhooks.module';
     MetricsModule,
     CollectionFlowModule,
     CaseManagementModule,
+    BusinessReportModule,
+    CronModule,
+    ScheduleModule.forRoot(),
     initHttpMoudle(),
   ],
   providers: [

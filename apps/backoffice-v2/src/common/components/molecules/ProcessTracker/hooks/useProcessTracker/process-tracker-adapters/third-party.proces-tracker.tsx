@@ -5,7 +5,7 @@ import {
 import {
   IProcessTracker,
   ProcessTrackerItem,
-} from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/process-tracker-adapters/process-tracker.abstract';
+} from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/process-tracker-adapters/process-tracker.abstract';
 import { TPlugin } from '@/domains/workflow-definitions/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ProcessStatus } from '@ballerine/common';

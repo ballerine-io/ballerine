@@ -13,6 +13,10 @@ export const useWebsiteMonitoringBlocks = () => {
   });
 
   const blocks = useMemo(() => {
+    if (!workflow?.context?.entity?.report?.base64Pdf) {
+      return [];
+    }
+
     return createBlocksTyped()
       .addBlock()
       .addCell({
@@ -36,7 +40,5 @@ export const useWebsiteMonitoringBlocks = () => {
       .build();
   }, [workflow?.context]);
 
-  return {
-    blocks,
-  };
+  return blocks;
 };
