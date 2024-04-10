@@ -46,7 +46,11 @@ export const getTabsToBlocksMap = (
   ] = blocks;
 
   const defaultTabsMap = {
-    summary: [...processTrackerBlock, ...websiteMonitoringBlock, ...entityInfoBlock],
+    summary: [
+      ...(workflow?.workflowDefinition?.config?.isCaseOverviewEnabled ? processTrackerBlock : []),
+      ...websiteMonitoringBlock,
+      ...entityInfoBlock,
+    ],
     company_information: [
       ...registryInfoBlock,
       ...kybRegistryInfoBlock,
