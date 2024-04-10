@@ -2,7 +2,7 @@ import { useWorkflowDefinitionByIdQuery } from '@/domains/workflow-definitions/h
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { useMemo } from 'react';
 
-export const useCasePlugins = ({ workflow }: { workflow?: TWorkflowById }) => {
+export const useCasePlugins = ({ workflow }: { workflow: TWorkflowById | undefined }) => {
   const { data: workflowDefinition } = useWorkflowDefinitionByIdQuery({
     workflowDefinitionId: workflow?.workflowDefinition?.id ?? '',
   });

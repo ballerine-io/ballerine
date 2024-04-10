@@ -13,7 +13,7 @@ import { ProcessStatus } from '@ballerine/common';
 export class ThirdPartyProcessTracker implements IProcessTracker {
   PROCESS_NAME = 'third-party';
 
-  constructor(readonly workflow: TWorkflowById, readonly plugins?: TPlugin[]) {}
+  constructor(public readonly workflow: TWorkflowById, public readonly plugins?: TPlugin[]) {}
 
   buildItems(): ProcessTrackerItem[] {
     return (

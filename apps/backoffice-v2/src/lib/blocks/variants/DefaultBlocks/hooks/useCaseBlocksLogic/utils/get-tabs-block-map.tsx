@@ -52,6 +52,7 @@ export const getTabsToBlocksMap = (
       ...entityInfoBlock,
     ],
     company_information: [
+      ...entityInfoBlock,
       ...registryInfoBlock,
       ...kybRegistryInfoBlock,
       ...companySanctionsBlock,
@@ -73,7 +74,7 @@ export const getTabsToBlocksMap = (
     directors: [
       ...directorsUserProvidedBlock,
       ...directorsRegistryProvidedBlock,
-      ...(createKycBlocks(workflow as TWorkflowById) || []),
+      ...directorsDocumentsBlocks,
     ],
     website_monitoring: [...websiteMonitoringBlocks],
   } as const;
