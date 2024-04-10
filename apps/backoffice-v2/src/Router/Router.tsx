@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { env } from '@/common/env/env';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import { RootError } from '@/pages/Root/Root.error';
 import { Root } from '@/pages/Root/Root.page';
 import { SignIn } from '@/pages/SignIn/SignIn.page';
@@ -21,8 +21,9 @@ import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
 import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
 import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
 import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
-import { Statistics } from '@/pages/Statistics/Statistics.page'
-import { Workflows } from '@/pages/Workflows/Workflows.page'
+import { Welcome } from '../common/components/atoms/Welcome/Welcome';
+import { Statistics } from '@/pages/Statistics/Statistics.page';
+import { Workflows } from '@/pages/Workflows/Workflows.page';
 
 const router = createBrowserRouter([
   {
@@ -48,12 +49,12 @@ const router = createBrowserRouter([
             children: [
               ...(env.VITE_AUTH_ENABLED
                 ? [
-                  {
-                    path: '/:locale/auth/sign-in',
-                    element: <SignIn />,
-                    errorElement: <RouteError />,
-                  },
-                ]
+                    {
+                      path: '/:locale/auth/sign-in',
+                      element: <SignIn />,
+                      errorElement: <RouteError />,
+                    },
+                  ]
                 : []),
             ],
           },
@@ -110,13 +111,25 @@ const router = createBrowserRouter([
                 ],
               },
               {
-                path: '/:locale/statistics',
-                element: <Statistics />,
-                errorElement: <RouteError />,
-              },
-              {
-                path: '/:locale/workflows',
-                element: <Workflows />,
+                path: '/:locale',
+                element: (
+                  <div className={`flex flex-col p-4`}>
+                    <Welcome />
+                    <Outlet />
+                  </div>
+                ),
+                children: [
+                  {
+                    path: '/:locale/statistics',
+                    element: <Statistics />,
+                    errorElement: <RouteError />,
+                  },
+                  {
+                    path: '/:locale/workflows',
+                    element: <Workflows />,
+                    errorElement: <RouteError />,
+                  },
+                ],
                 errorElement: <RouteError />,
               },
             ],
