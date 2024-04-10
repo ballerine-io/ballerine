@@ -17,10 +17,9 @@ export const useProcessTrackerBlock = () => {
           type: 'nodeCell',
           value: (
             <ProcessTracker
-              tags={workflow?.tags ?? []}
+              workflow={workflow}
               plugins={plugins}
-              context={workflow?.context}
-              childWorkflows={workflow?.childWorkflows ?? []}
+              processes={['collection-flow', 'third-party', 'ubos']}
             />
           ),
         })

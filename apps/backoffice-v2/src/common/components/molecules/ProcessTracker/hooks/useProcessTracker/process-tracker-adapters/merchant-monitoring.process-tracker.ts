@@ -9,7 +9,7 @@ import { StateTag } from '@ballerine/common';
 export class MerchantMonitoringProcessTracker implements IProcessTracker {
   PROCESS_NAME = 'merchant-monitoring';
 
-  constructor(readonly workflow: TWorkflowById) {}
+  constructor(public readonly workflow: TWorkflowById) {}
 
   buildItems(): ProcessTrackerItem[] {
     return [

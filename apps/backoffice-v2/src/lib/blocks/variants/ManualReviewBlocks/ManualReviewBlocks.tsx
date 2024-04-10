@@ -16,10 +16,9 @@ export const ManualReviewBlocks = () => {
     <>
       {workflow?.workflowDefinition?.config?.isCaseOverviewEnabled && (
         <ProcessTracker
-          tags={workflow?.tags ?? []}
+          workflow={workflow}
           plugins={plugins}
-          context={workflow?.context}
-          childWorkflows={workflow?.childWorkflows ?? []}
+          processes={['collection-flow', 'third-party', 'ubos']}
         />
       )}
       <BlocksComponent blocks={blocks} cells={cells}>

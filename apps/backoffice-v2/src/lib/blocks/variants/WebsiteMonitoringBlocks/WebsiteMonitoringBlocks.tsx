@@ -14,7 +14,11 @@ export const WebsiteMonitoringBlocks = () => {
   return (
     <div className="flex h-full flex-col">
       {workflow?.workflowDefinition?.config?.isCaseOverviewEnabled && (
-        <ProcessTracker workflow={workflow} plugins={plugins} />
+        <ProcessTracker
+          workflow={workflow}
+          plugins={plugins}
+          processes={['collection-flow', 'third-party', 'ubos']}
+        />
       )}
       <BlocksComponent blocks={blocks} cells={cells}>
         {(Cell, cell) => <Cell {...cell} />}
