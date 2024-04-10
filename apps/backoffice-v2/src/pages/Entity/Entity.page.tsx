@@ -1,12 +1,10 @@
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { BlocksVariant } from '@/lib/blocks/variants/BlocksVariant/BlocksVariant';
 import { useEntityLogic } from '@/pages/Entity/hooks/useEntityLogic/useEntityLogic';
 import { Case } from './components/Case/Case';
 
-import { ProcessTracker } from '@/common/components/molecules/ProcessTracker/ProcessTracker';
-import { TWorkflowById } from '@/domains/workflows/fetchers';
-
 export const Entity = () => {
-  const { workflow, selectedEntity, plugins, processTrackerProcesses } = useEntityLogic();
+  const { workflow, selectedEntity } = useEntityLogic();
 
   // Selected entity
   return (
@@ -23,13 +21,6 @@ export const Entity = () => {
         workflow={workflow as TWorkflowById}
       />
       <Case.Content key={selectedEntity?.id}>
-        {workflow?.workflowDefinition?.config?.isCaseOverviewEnabled && (
-          <ProcessTracker
-            plugins={plugins}
-            workflow={workflow}
-            processes={processTrackerProcesses}
-          />
-        )}
         {workflow?.workflowDefinition && (
           <BlocksVariant
             workflowDefinition={{

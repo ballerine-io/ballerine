@@ -1,11 +1,11 @@
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
-import { toTitleCase } from 'string-ts';
-import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { useMemo } from 'react';
-import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { useMemo } from 'react';
+import { toTitleCase } from 'string-ts';
 
-export const useEntityInfoBlock = ({
+export const useCaseInfoBlock = ({
   entity,
   workflow,
   entityDataAdditionalInfo,

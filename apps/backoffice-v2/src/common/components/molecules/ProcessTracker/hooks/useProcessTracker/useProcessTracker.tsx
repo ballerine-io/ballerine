@@ -1,12 +1,12 @@
 import { tagToAccordionCardItem } from '@/common/components/molecules/ProcessTracker/constants';
-import { IUseProcessTrackerLogicParams } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/interfaces';
-import { processTrackersMap } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/process-tracker-adapters';
-import { IProcessTracker } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/process-tracker-adapters/process-tracker.abstract';
+import { IUseProcessTrackerLogicParams } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/interfaces';
+import { processTrackersMap } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/process-tracker-adapters';
+import { IProcessTracker } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/process-tracker-adapters/process-tracker.abstract';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const defaultProcesses = ['collection-flow', 'third-party', 'ubos'];
 
-export const useProcessTrackerLogic = ({
+export const useProcessTracker = ({
   plugins,
   workflow,
   processes = defaultProcesses,
@@ -29,6 +29,7 @@ export const useProcessTrackerLogic = ({
 
         if (!ProcessTracker) {
           console.warn(`${processName} is unsupported.`);
+
           return list;
         }
 

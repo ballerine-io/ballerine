@@ -2,7 +2,7 @@ import { processStatusToIcon } from '@/common/components/molecules/ProcessTracke
 import {
   IProcessTracker,
   ProcessTrackerItem,
-} from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/process-tracker-adapters/process-tracker.abstract';
+} from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/process-tracker-adapters/process-tracker.abstract';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ProcessStatus } from '@ballerine/common';
 import { titleCase } from 'string-ts';
