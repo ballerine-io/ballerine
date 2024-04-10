@@ -85,6 +85,14 @@ export class WorkflowDefinitionService {
     return await this.repository.findByLatestVersion(workflowDefinition.name, projectIds);
   }
 
+  async getLastVersionByName(definitionName: string, projectIds: TProjectIds) {
+    return await this.repository.findByLatestVersion(definitionName, projectIds);
+  }
+
+  async getLastVersionByVariant(definitionVariant: string, projectIds: TProjectIds) {
+    return await this.repository.findLatestVersionByVariant(definitionVariant, projectIds);
+  }
+
   async getLatestDefinitionWithTransitionSchema(
     id: string,
     projectIds: TProjectIds,

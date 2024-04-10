@@ -133,6 +133,7 @@ model Business {
   bankInformation         Json?
   approvalState           ApprovalState @default(NEW) // Current status of the KYB process for the business entity
   mccCode                 Int?
+  metadata                Json? // Additional metadata for the business entity and processes
 
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
@@ -141,6 +142,7 @@ model Business {
   projectId    String
   project      Project        @relation(fields: [projectId], references: [id])
   Counterparty Counterparty[]
+  businessReports BusinessReport[]
 
   @@unique([projectId, correlationId])
   @@index([companyName])
@@ -184,6 +186,8 @@ model WorkflowDefinition {
 
   @@unique([name, version, projectId, definitionType])
   @@index([projectId, name, definitionType])
+  @@index([variant, projectId])
+  @@index(version)
 }
 
 enum WorkflowRuntimeDataStatus {
@@ -286,6 +290,13 @@ enum CustomerStatuses {
   terminated
 }
 
+enum BusinessReportType {
+  ONGOING_MERCHANT_REPORT_T1
+  ONGOING_MERCHANT_REPORT_T2
+  MERCHANT_REPORT_T1
+  MERCHANT_REPORT_T2
+}
+
 model Customer {
   id                          String           @id @default(cuid())
   name                        String           @unique
@@ -299,6 +310,7 @@ model Customer {
   language                    String?
   websiteUrl                  String?
   subscriptions               Json?
+  features                    Json?   // Features enabled for the customer
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -352,7 +364,7 @@ model Project {
   AlertDefinition          AlertDefinition[]
   Alert                    Alert[]
   Counterparty             Counterparty[]
-
+  BusinessReport           BusinessReport[]
   @@unique([name, customerId])
   @@index(name)
   @@index(customerId)
@@ -816,4 +828,24 @@ model Counterparty {
 
   @@unique([projectId, correlationId])
   @@index([correlationId])
+}
+
+model BusinessReport {
+  id         String   @id @default(cuid())
+  type       BusinessReportType
+  report     Json
+
+  businessId String
+  projectId  String
+
+  business   Business @relation(fields: [businessId], references: [id])
+  project    Project @relation(fields: [projectId], references: [id])
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([businessId])
+  @@index([projectId])
+  @@index([type])
 }

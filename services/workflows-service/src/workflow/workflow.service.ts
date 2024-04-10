@@ -391,6 +391,13 @@ export class WorkflowService {
     return await this.workflowDefinitionRepository.findById(id, args, projectIds, transaction);
   }
 
+  async getWorkflowsByState(state: string[], args: Prisma.WorkflowRuntimeDataFindManyArgs) {
+    return await this.workflowRuntimeDataRepository.findManyUnscoped({
+      where: { state: { in: state } },
+      ...args,
+    });
+  }
+
   async listActiveWorkflowsRuntimeStates(projectIds: TProjectIds) {
     return await this.workflowRuntimeDataRepository.findMany(
       {
@@ -2236,5 +2243,11 @@ export class WorkflowService {
         forceEmit: true,
       },
     );
+  }
+
+  async updateById(workflowRuntimeDataId: string, args: Prisma.WorkflowRuntimeDataUpdateInput) {
+    return await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataId, {
+      data: args,
+    });
   }
 }
