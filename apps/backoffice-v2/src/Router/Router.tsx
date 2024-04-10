@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { env } from '@/common/env/env';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { RootError } from '@/pages/Root/Root.error';
 import { Root } from '@/pages/Root/Root.page';
 import { SignIn } from '@/pages/SignIn/SignIn.page';
@@ -21,7 +21,7 @@ import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
 import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
 import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
 import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
-import { Welcome } from '../common/components/atoms/Welcome/Welcome';
+import { Home } from '../common/components/atoms/Home/Home';
 import { Statistics } from '@/pages/Statistics/Statistics.page';
 import { Workflows } from '@/pages/Workflows/Workflows.page';
 
@@ -112,12 +112,7 @@ const router = createBrowserRouter([
               },
               {
                 path: '/:locale',
-                element: (
-                  <div className={`flex flex-col p-4`}>
-                    <Welcome />
-                    <Outlet />
-                  </div>
-                ),
+                element: <Home />,
                 children: [
                   {
                     path: '/:locale/statistics',
