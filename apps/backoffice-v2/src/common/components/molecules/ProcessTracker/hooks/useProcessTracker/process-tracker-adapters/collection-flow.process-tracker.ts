@@ -10,7 +10,7 @@ import { titleCase } from 'string-ts';
 export class CollectionFlowProcessTracker implements IProcessTracker {
   PROCESS_NAME = 'collection-flow';
 
-  constructor(readonly workflow: TWorkflowById) {}
+  constructor(public readonly workflow: TWorkflowById) {}
 
   buildItems(): ProcessTrackerItem[] {
     return (
