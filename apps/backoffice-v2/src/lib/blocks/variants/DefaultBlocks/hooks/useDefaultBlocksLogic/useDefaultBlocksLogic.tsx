@@ -1,12 +1,10 @@
 import { Button } from '@/common/components/atoms/Button/Button';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
-import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
 import { useAssociatedCompaniesInformationBlock } from '@/lib/blocks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
 import { associatedCompanyAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-adapter';
 import {
@@ -43,8 +41,9 @@ import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { Send } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useCurrentCase } from '@/pages/Entity/hooks/useCurrentCase/useCurrentCase';
+import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -55,12 +54,7 @@ const pluginsOutputBlacklist = [
 ] as const;
 
 export const useDefaultBlocksLogic = () => {
-  const { entityId: workflowId } = useParams();
-  const filterId = useFilterId();
-  const { data: workflow, isLoading } = useWorkflowByIdQuery({
-    workflowId,
-    filterId,
-  });
+  const { data: workflow, isLoading } = useCurrentCase();
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
   const { noAction } = useCaseDecision();
@@ -316,7 +310,12 @@ export const useDefaultBlocksLogic = () => {
     [mutateEvent],
   );
 
-  const processTrackerBlock = useProcessTrackerBlock();
+  const plugins = useCasePlugins({ workflow });
+  const processTrackerBlock = useProcessTrackerBlock({
+    workflow,
+    plugins,
+    processes: [],
+  });
 
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
     workflows: kybChildWorkflows,

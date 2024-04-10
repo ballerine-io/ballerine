@@ -91,3 +91,4 @@ export const tagToIcon = {
 } as const;
 
 export const pluginsWhiteList = ['kyb', 'ubo', 'company_sanctions'] as const;
+export const DEFAULT_PROCESS_TRACKER_PROCESSES = ['collection-flow', 'third-party', 'ubos'];

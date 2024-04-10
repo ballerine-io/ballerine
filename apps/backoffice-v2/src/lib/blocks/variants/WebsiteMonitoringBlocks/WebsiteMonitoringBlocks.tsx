@@ -10,15 +10,12 @@ export const WebsiteMonitoringBlocks = () => {
   const blocks = useWebsiteMonitoringBlocks();
   const { data: workflow } = useCurrentCase();
   const plugins = useCasePlugins({ workflow: workflow as TWorkflowById });
+  const processes = ['merchant-monitoring'];
 
   return (
     <div className="flex h-full flex-col">
       {workflow?.workflowDefinition?.config?.isCaseOverviewEnabled && (
-        <ProcessTracker
-          workflow={workflow}
-          plugins={plugins}
-          processes={['collection-flow', 'third-party', 'ubos']}
-        />
+        <ProcessTracker workflow={workflow} plugins={plugins} processes={processes} />
       )}
       <BlocksComponent blocks={blocks} cells={cells}>
         {(Cell, cell) => <Cell {...cell} />}
