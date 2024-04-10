@@ -9,7 +9,7 @@ export interface ProcessTrackerItem {
 export abstract class IProcessTracker {
   abstract readonly PROCESS_NAME: string;
 
-  constructor(readonly workflow: TWorkflowById, readonly plugins?: TPlugin[]) {}
+  constructor(public readonly workflow: TWorkflowById, public readonly plugins?: TPlugin[]) {}
 
   abstract buildItems(): ProcessTrackerItem[];
 

@@ -6,6 +6,7 @@ import { useManualReviewBlocksLogic } from '@/lib/blocks/variants/ManualReviewBl
 import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
 import { useCurrentCase } from '@/pages/Entity/hooks/useCurrentCase/useCurrentCase';
 import { BlocksComponent } from '@ballerine/blocks';
+import { DEFAULT_PROCESS_TRACKER_PROCESSES } from '@/common/components/molecules/ProcessTracker/constants';
 
 export const ManualReviewBlocks = () => {
   const { blocks, isLoading } = useManualReviewBlocksLogic();
@@ -16,10 +17,9 @@ export const ManualReviewBlocks = () => {
     <>
       {workflow?.workflowDefinition?.config?.isCaseOverviewEnabled && (
         <ProcessTracker
-          tags={workflow?.tags ?? []}
+          workflow={workflow}
           plugins={plugins}
-          context={workflow?.context}
-          childWorkflows={workflow?.childWorkflows ?? []}
+          processes={DEFAULT_PROCESS_TRACKER_PROCESSES}
         />
       )}
       <BlocksComponent blocks={blocks} cells={cells}>
