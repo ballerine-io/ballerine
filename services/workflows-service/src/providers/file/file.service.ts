@@ -221,7 +221,7 @@ export class FileService {
       };
     }
 
-    if (provider == 'base64' && z.string().refine(Base64.isValid).parse(uri?.split(',')[1])) {
+    if (provider == 'base64' && z.string().refine(Base64.isValid).parse(uri)) {
       return {
         sourceServiceProvider: new Base64FileService(),
         sourceRemoteFileConfig: uri as TRemoteFileConfig,

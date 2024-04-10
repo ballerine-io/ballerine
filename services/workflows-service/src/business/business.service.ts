@@ -1,20 +1,20 @@
-import * as common from '@nestjs/common';
-import { Injectable } from '@nestjs/common';
-import { BusinessRepository } from './business.repository';
+import { CompanyInformationModel } from '@/business/models/company-information.module';
 import {
   FetchCompanyInformationParams,
   TCompanyInformation,
 } from '@/business/types/business-information';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { HttpService } from '@nestjs/axios';
-import { CompanyInformationModel } from '@/business/models/company-information.module';
-import { env } from '@/env';
-import { lastValueFrom } from 'rxjs';
-import { plainToClass } from 'class-transformer';
-import { AxiosError } from 'axios';
-import type { TProjectIds } from '@/types';
-import { Business } from '@prisma/client';
 import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
+import { env } from '@/env';
+import type { TProjectIds } from '@/types';
+import { HttpService } from '@nestjs/axios';
+import * as common from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { Business } from '@prisma/client';
+import { AxiosError } from 'axios';
+import { plainToClass } from 'class-transformer';
+import { lastValueFrom } from 'rxjs';
+import { BusinessRepository } from './business.repository';
 
 @Injectable()
 export class BusinessService {
@@ -28,12 +28,14 @@ export class BusinessService {
   }
 
   async list(args: Parameters<BusinessRepository['findMany']>[0], projectIds: TProjectIds) {
-    return (await this.repository.findMany(args, projectIds)) as (Business & {
-      metadata?: {
-        featureConfig?: TCustomerWithDefinitionsFeatures['features'];
-        lastOngoingAuditReportInvokedAt?: number;
-      };
-    })[];
+    return (await this.repository.findMany(args, projectIds)) as Array<
+      Business & {
+        metadata?: {
+          featureConfig?: TCustomerWithDefinitionsFeatures['features'];
+          lastOngoingAuditReportInvokedAt?: number;
+        };
+      }
+    >;
   }
 
   async getById(
@@ -42,6 +44,10 @@ export class BusinessService {
     projectIds: TProjectIds,
   ) {
     return await this.repository.findById(id, args, projectIds);
+  }
+
+  async getByCorrelationId(correlationId: string, projectids: TProjectIds) {
+    return await this.repository.findByCorrelationId(correlationId, {}, projectids);
   }
 
   async updateById(id: string, args: Parameters<BusinessRepository['updateById']>[1]) {
