@@ -56,19 +56,6 @@ export default defineConfig({
             {
               label: `Ansible `,
               link: `/en/deployment/ansible_deployment`,
-            },
-            {
-              label: `Kubernetes Deployment`,
-              link: `/en/deployment/kubernetes_deployment`,
-            },
-            {
-              label: `Configure Instance`,
-              items: [
-                {
-                  label: `Ballerine on HTTPS`,
-                  link: `/en/deployment/ballerine_on_https`,
-                }
-              ]
             }
           ]
         },        
