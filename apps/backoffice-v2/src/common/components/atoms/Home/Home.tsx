@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import { NavLink, Outlet, useParams } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useParams } from 'react-router-dom';
 import { t } from 'i18next';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { UserAvatar } from '../UserAvatar/UserAvatar';
@@ -7,11 +7,14 @@ import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
+import { Workflows } from '@/pages/Workflows/Workflows.page';
 
 export const Home: FunctionComponent = () => {
   const { data: session } = useAuthenticatedUserQuery();
   const { firstName, fullName, avatarUrl } = session?.user || {};
   const { locale } = useParams();
+  const { pathname } = useLocation();
+  const value = pathname.includes('workflows') ? 'workflows' : 'statistics';
 
   return (
     <div className={`flex flex-col gap-10 p-10`}>
@@ -27,7 +30,7 @@ export const Home: FunctionComponent = () => {
         </h3>
       </div>
       <div>
-        <Tabs defaultValue="statistics">
+        <Tabs defaultValue={value}>
           <TabsList>
             <TabsTrigger asChild={true} value="statistics">
               <NavLink to={`/${locale}/statistics`}>Statistics</NavLink>
@@ -36,10 +39,7 @@ export const Home: FunctionComponent = () => {
               <NavLink to={`/${locale}/workflows`}>Workflows</NavLink>
             </TabsTrigger>
           </TabsList>
-          <TabsContent value="statistics">
-            <Outlet />
-          </TabsContent>
-          <TabsContent value="workflows">
+          <TabsContent value={value}>
             <Outlet />
           </TabsContent>
         </Tabs>

@@ -20,7 +20,7 @@ export const useNavbarLogic = () => {
     {
       text: 'Home',
       icon: <Home size={20} />,
-      href: '/en/statistics',
+      href: '/en',
       key: 'nav-item-Home',
     },
     {
