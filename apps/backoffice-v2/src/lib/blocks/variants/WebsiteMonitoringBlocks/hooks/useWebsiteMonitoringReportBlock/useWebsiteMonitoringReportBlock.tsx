@@ -12,7 +12,7 @@ export const useWebsiteMonitoringReportBlock = () => {
   });
   const { data: reportFile } = useStorageFileByIdQuery(businessReport?.report?.reportFileId ?? '', {
     isEnabled: !!businessReport?.report?.reportFileId,
-    withSignedUrl: true,
+    withSignedUrl: false,
   });
   const blocks = useMemo(() => {
     if (!reportFile) {
