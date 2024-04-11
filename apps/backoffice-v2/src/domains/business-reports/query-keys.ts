@@ -1,10 +1,16 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
-import { fetchBusinessReports } from '@/domains/business-reports/queries';
+import { fetchBusinessReports } from '@/domains/business-reports/fetchers';
 
 export const businessReportsQueryKey = createQueryKeys('business-reports', {
-  list: ({ businessId }: { businessId: string }) => ({
-    queryKey: [{ businessId }],
-    queryFn: () => fetchBusinessReports({ businessId }),
+  latest: ({
+    businessId,
+    reportType,
+  }: {
+    businessId: string;
+    reportType: 'ONGOING_MERCHANT_REPORT_T1' & (string & {});
+  }) => ({
+    queryKey: [{ businessId, reportType }],
+    queryFn: () => fetchBusinessReports({ businessId, reportType }),
   }),
 });

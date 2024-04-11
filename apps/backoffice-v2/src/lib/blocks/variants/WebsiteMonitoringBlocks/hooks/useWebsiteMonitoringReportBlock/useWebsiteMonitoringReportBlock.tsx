@@ -2,16 +2,17 @@ import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-block
 import { useMemo } from 'react';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { useStorageFileByIdQuery } from '@/domains/storage/hooks/queries/useStorageFileByIdQuery/useStorageFileByIdQuery';
-import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
+import { useLatestBusinessReportQuery } from '@/domains/business-reports/hooks/queries/useLatestBusinessReportQuery/useLatestBusinessReportQuery';
 
 export const useWebsiteMonitoringReportBlock = () => {
   const { data: workflow } = useCurrentCaseQuery();
-  const { data: businessReports } = useBusinessReportsQuery({
+  const { data: businessReport } = useLatestBusinessReportQuery({
     businessId: workflow?.context?.entity?.id,
+    reportType: 'ONGOING_MERCHANT_REPORT_T1',
   });
-  const { data: reportUrl } = useStorageFileByIdQuery(businessReports?.[0]?.reportFileId ?? '', {
-    isEnabled: !!businessReports?.[0]?.reportFileId,
-    withSignedUrl: false,
+  const { data: reportUrl } = useStorageFileByIdQuery(businessReport?.reportFileId ?? '', {
+    isEnabled: !!businessReport?.reportFileId,
+    withSignedUrl: true,
   });
   const blocks = useMemo(() => {
     if (!reportUrl) {

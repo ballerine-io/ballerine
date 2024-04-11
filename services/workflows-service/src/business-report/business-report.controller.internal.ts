@@ -16,17 +16,18 @@ export class BusinessReportControllerInternal {
     protected readonly logger: AppLoggerService,
   ) {}
 
-  @common.Get('/')
+  @common.Get('/latest')
   @swagger.ApiOkResponse({ type: [String] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async getBusinessReports(
+  async getLatestBusinessReport(
     @CurrentProject() currentProjectId: TProjectId,
     @Query() searchQueryParams: GetBusinessReportsDto,
   ) {
-    return await this.businessReportService.findMany(
+    return await this.businessReportService.findFirst(
       {
         where: {
           businessId: searchQueryParams.businessId,
+          type: searchQueryParams.type,
         },
       },
       [currentProjectId],
