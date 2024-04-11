@@ -35,8 +35,6 @@ export class OngoingMonitoringCron {
     protected readonly businessReportService: BusinessReportService,
   ) {}
 
-  private readonly PENDING_ONGOING_MONITORING_STATE = ['pending-ongoing-monitoring'];
-
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleCron() {
     const lockAcquired = await this.prisma.acquireLock(this.lockKey);
@@ -93,7 +91,7 @@ export class OngoingMonitoringCron {
               workflowDefinitionId: workflowDefinition.id,
               currentProjectId: business.projectId,
               projectIds: projectIds,
-              lastReportId: lastReceivedReport.id,
+              lastReportId: (lastReceivedReport.report as { reportId: string }).reportId,
               checkTypes: processConfig?.checkTypes,
               reportType: this.processFeatureName,
             });
@@ -108,28 +106,24 @@ export class OngoingMonitoringCron {
   }
 
   private async findLastBusinessReport(business: Business, projectIds: TProjectIds) {
-    return (
-      await this.businessReportService.findMany(
-        {
-          where: {
-            businessId: business.id,
-            projectId: business.projectId,
-            type: {
-              in: [
-                'ONGOING_MERCHANT_REPORT_T1',
-                'ONGOING_MERCHANT_REPORT_T2',
-                'MERCHANT_REPORT_T1',
-              ],
-            },
+    const businessReports = await this.businessReportService.findMany(
+      {
+        where: {
+          businessId: business.id,
+          projectId: business.projectId,
+          type: {
+            in: ['ONGOING_MERCHANT_REPORT_T1', 'ONGOING_MERCHANT_REPORT_T2', 'MERCHANT_REPORT_T1'],
           },
-          orderBy: {
-            createdAt: 'desc',
-          },
-          take: 1,
         },
-        projectIds,
-      )
-    )[0];
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 1,
+      },
+      projectIds,
+    );
+
+    return businessReports[0];
   }
 
   private async fetchCustomerFeatureConfiguration(customers: TCustomerWithDefinitionsFeatures[]) {
@@ -233,7 +227,7 @@ export class OngoingMonitoringCron {
       workflowDefinitionId: workflowDefinitionId,
       projectIds: projectIds,
       currentProjectId: currentProjectId,
-      config: { reportConfig: workflowDefinitionConfig },
+      config: { reportConfig: workflowDefinitionConfig, allowMultipleActiveWorkflows: true },
       context: context as unknown as DefaultContextSchema,
     });
 
