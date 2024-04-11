@@ -10,12 +10,12 @@ export const useWebsiteMonitoringReportBlock = () => {
     businessId: workflow?.context?.entity?.ballerineEntityId,
     reportType: 'MERCHANT_REPORT_T1',
   });
-  const { data: reportUrl } = useStorageFileByIdQuery(businessReport?.reportFileId ?? '', {
+  const { data: reportFile } = useStorageFileByIdQuery(businessReport?.reportFileId ?? '', {
     isEnabled: !!businessReport?.reportFileId,
     withSignedUrl: true,
   });
   const blocks = useMemo(() => {
-    if (!reportUrl) {
+    if (!reportFile?.signedUrl) {
       return [];
     }
 
@@ -34,13 +34,13 @@ export const useWebsiteMonitoringReportBlock = () => {
               width: '100%',
               height: '100%',
             },
-            value: reportUrl || '',
+            value: reportFile?.signedUrl || '',
           })
           .build()
           .flat(1),
       })
       .build();
-  }, [reportUrl]);
+  }, [reportFile]);
 
   return blocks;
 };
