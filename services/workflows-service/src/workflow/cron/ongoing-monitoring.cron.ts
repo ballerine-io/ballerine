@@ -35,8 +35,6 @@ export class OngoingMonitoringCron {
     protected readonly businessReportService: BusinessReportService,
   ) {}
 
-  private readonly PENDING_ONGOING_MONITORING_STATE = ['pending-ongoing-monitoring'];
-
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleCron() {
     const lockAcquired = await this.prisma.acquireLock(this.lockKey);
@@ -62,41 +60,49 @@ export class OngoingMonitoringCron {
         const businesses = await this.businessService.list({}, projectIds);
 
         for (const business of businesses) {
-          const businessProcessConfig =
-            business.metadata &&
-            business.metadata.featureConfig &&
-            this.extractDefinitionConfig(business.metadata.featureConfig);
+          try {
+            const businessProcessConfig =
+              business.metadata &&
+              business.metadata.featureConfig &&
+              this.extractDefinitionConfig(business.metadata.featureConfig);
 
-          const { options: processConfig } = (businessProcessConfig || customerProcessConfig)!;
-          const intervalInDays = processConfig.intervalInDays;
-          const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
+            const { options: processConfig } = (businessProcessConfig || customerProcessConfig)!;
+            const intervalInDays = processConfig.intervalInDays;
+            const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
 
-          if (!lastReceivedReport) {
-            this.logger.error(`No initial report found for business: ${business.id}`);
+            if (!lastReceivedReport) {
+              this.logger.error(`No initial report found for business: ${business.id}`);
 
-            continue;
-          }
+              continue;
+            }
 
-          const lastReportFinishedDate = lastReceivedReport.createdAt;
-          const dateToRunReport = new Date(
-            new Date().setTime(
-              lastReportFinishedDate.getTime() + intervalInDays * 24 * 60 * 60 * 1000,
-            ),
-          );
+            const lastReportFinishedDate = lastReceivedReport.createdAt;
+            const dateToRunReport = new Date(
+              new Date().setTime(
+                lastReportFinishedDate.getTime() + intervalInDays * 24 * 60 * 60 * 1000,
+              ),
+            );
 
-          if (dateToRunReport <= new Date()) {
-            await this.invokeOngoingAuditReport({
-              business: business as Business & {
-                metadata?: { featureConfig?: Record<string, TCustomerFeatures> };
-              },
-              workflowDefinitionConfig: processConfig,
-              workflowDefinitionId: workflowDefinition.id,
-              currentProjectId: business.projectId,
-              projectIds: projectIds,
-              lastReportId: lastReceivedReport.id,
-              checkTypes: processConfig?.checkTypes,
-              reportType: this.processFeatureName,
-            });
+            if (dateToRunReport <= new Date()) {
+              await this.invokeOngoingAuditReport({
+                business: business as Business & {
+                  metadata?: { featureConfig?: Record<string, TCustomerFeatures> };
+                },
+                workflowDefinitionConfig: processConfig,
+                workflowDefinitionId: workflowDefinition.id,
+                currentProjectId: business.projectId,
+                projectIds: projectIds,
+                lastReportId: (lastReceivedReport.report as { reportId: string }).reportId,
+                checkTypes: processConfig?.checkTypes,
+                reportType: this.processFeatureName,
+              });
+            }
+          } catch (error) {
+            this.logger.error(
+              `Failed to Invoke Ongoing Report for businessId: ${
+                business.id
+              } - An error occurred: ${isErrorWithMessage(error) && error.message}`,
+            );
           }
         }
       }
@@ -108,28 +114,24 @@ export class OngoingMonitoringCron {
   }
 
   private async findLastBusinessReport(business: Business, projectIds: TProjectIds) {
-    return (
-      await this.businessReportService.findMany(
-        {
-          where: {
-            businessId: business.id,
-            projectId: business.projectId,
-            type: {
-              in: [
-                'ONGOING_MERCHANT_REPORT_T1',
-                'ONGOING_MERCHANT_REPORT_T2',
-                'MERCHANT_REPORT_T1',
-              ],
-            },
+    const businessReports = await this.businessReportService.findMany(
+      {
+        where: {
+          businessId: business.id,
+          projectId: business.projectId,
+          type: {
+            in: ['ONGOING_MERCHANT_REPORT_T1', 'ONGOING_MERCHANT_REPORT_T2', 'MERCHANT_REPORT_T1'],
           },
-          orderBy: {
-            createdAt: 'desc',
-          },
-          take: 1,
         },
-        projectIds,
-      )
-    )[0];
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 1,
+      },
+      projectIds,
+    );
+
+    return businessReports[0];
   }
 
   private async fetchCustomerFeatureConfiguration(customers: TCustomerWithDefinitionsFeatures[]) {
@@ -233,7 +235,7 @@ export class OngoingMonitoringCron {
       workflowDefinitionId: workflowDefinitionId,
       projectIds: projectIds,
       currentProjectId: currentProjectId,
-      config: { reportConfig: workflowDefinitionConfig },
+      config: { reportConfig: workflowDefinitionConfig, allowMultipleActiveWorkflows: true },
       context: context as unknown as DefaultContextSchema,
     });
 
