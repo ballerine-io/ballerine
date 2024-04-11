@@ -8,7 +8,7 @@ export const useLatestBusinessReportQuery = ({
   reportType,
 }: {
   businessId: string;
-  reportType: 'ONGOING_MERCHANT_REPORT_T1' & (string & {});
+  reportType: 'MERCHANT_REPORT_T1' & (string & {});
 }) => {
   const isAuthenticated = useIsAuthenticated();
 

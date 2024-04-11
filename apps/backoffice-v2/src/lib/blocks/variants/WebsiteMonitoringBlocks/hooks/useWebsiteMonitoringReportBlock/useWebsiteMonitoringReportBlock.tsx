@@ -8,7 +8,7 @@ export const useWebsiteMonitoringReportBlock = () => {
   const { data: workflow } = useCurrentCaseQuery();
   const { data: businessReport } = useLatestBusinessReportQuery({
     businessId: workflow?.context?.entity?.ballerineEntityId,
-    reportType: 'ONGOING_MERCHANT_REPORT_T1',
+    reportType: 'MERCHANT_REPORT_T1',
   });
   const { data: reportUrl } = useStorageFileByIdQuery(businessReport?.reportFileId ?? '', {
     isEnabled: !!businessReport?.reportFileId,

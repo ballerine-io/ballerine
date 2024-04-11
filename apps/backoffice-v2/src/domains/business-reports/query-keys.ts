@@ -8,7 +8,7 @@ export const businessReportsQueryKey = createQueryKeys('business-reports', {
     reportType,
   }: {
     businessId: string;
-    reportType: 'ONGOING_MERCHANT_REPORT_T1' & (string & {});
+    reportType: 'MERCHANT_REPORT_T1' & (string & {});
   }) => ({
     queryKey: [{ businessId, reportType }],
     queryFn: () => fetchBusinessReports({ businessId, reportType }),
