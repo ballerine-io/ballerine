@@ -15,7 +15,7 @@ export const useWebsiteMonitoringReportBlock = () => {
     withSignedUrl: true,
   });
   const blocks = useMemo(() => {
-    if (!reportFile?.signedUrl) {
+    if (!reportFile) {
       return [];
     }
 
@@ -34,13 +34,13 @@ export const useWebsiteMonitoringReportBlock = () => {
               width: '100%',
               height: '100%',
             },
-            value: reportFile?.signedUrl || '',
+            value: reportFile || '',
           })
           .build()
           .flat(1),
       })
       .build();
-  }, [reportFile?.signedUrl]);
+  }, [reportFile]);
 
   return blocks;
 };
