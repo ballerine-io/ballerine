@@ -10,8 +10,8 @@ export const useWebsiteMonitoringReportBlock = () => {
     businessId: workflow?.context?.entity?.ballerineEntityId,
     reportType: 'MERCHANT_REPORT_T1',
   });
-  const { data: reportFile } = useStorageFileByIdQuery(businessReport?.reportFileId ?? '', {
-    isEnabled: !!businessReport?.reportFileId,
+  const { data: reportFile } = useStorageFileByIdQuery(businessReport?.report?.reportFileId ?? '', {
+    isEnabled: !!businessReport?.report?.reportFileId,
     withSignedUrl: true,
   });
   const blocks = useMemo(() => {

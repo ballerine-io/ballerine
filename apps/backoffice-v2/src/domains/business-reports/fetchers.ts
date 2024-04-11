@@ -4,7 +4,9 @@ import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 
 export const BusinessReportSchema = z.object({
-  reportFileId: z.string(),
+  report: z.object({
+    reportFileId: z.string(),
+  }),
 });
 export const BusinessReportsSchema = z.array(BusinessReportSchema);
 
