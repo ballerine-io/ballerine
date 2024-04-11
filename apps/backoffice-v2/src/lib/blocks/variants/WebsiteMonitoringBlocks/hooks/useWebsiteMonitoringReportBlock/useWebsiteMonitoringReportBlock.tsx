@@ -7,7 +7,7 @@ import { useLatestBusinessReportQuery } from '@/domains/business-reports/hooks/q
 export const useWebsiteMonitoringReportBlock = () => {
   const { data: workflow } = useCurrentCaseQuery();
   const { data: businessReport } = useLatestBusinessReportQuery({
-    businessId: workflow?.context?.entity?.id,
+    businessId: workflow?.context?.entity?.ballerineEntityId,
     reportType: 'ONGOING_MERCHANT_REPORT_T1',
   });
   const { data: reportUrl } = useStorageFileByIdQuery(businessReport?.reportFileId ?? '', {
