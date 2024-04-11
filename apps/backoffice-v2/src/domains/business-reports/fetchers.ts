@@ -13,10 +13,10 @@ export const fetchBusinessReports = async ({
   reportType,
 }: {
   businessId: string;
-  reportType: 'ONGOING_MERCHANT_REPORT_T1';
+  reportType: 'ONGOING_MERCHANT_REPORT_T1' & (string & {});
 }) => {
   const [filter, error] = await apiClient({
-    endpoint: `business-reports?businessId=${businessId}&reportType=${reportType}`,
+    endpoint: `business-reports/latest?businessId=${businessId}&reportType=${reportType}`,
     method: Method.GET,
     schema: BusinessReportSchema,
   });
