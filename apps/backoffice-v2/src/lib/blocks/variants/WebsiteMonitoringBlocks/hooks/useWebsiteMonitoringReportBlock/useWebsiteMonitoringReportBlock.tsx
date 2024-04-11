@@ -40,7 +40,7 @@ export const useWebsiteMonitoringReportBlock = () => {
           .flat(1),
       })
       .build();
-  }, [reportFile]);
+  }, [reportFile?.signedUrl]);
 
   return blocks;
 };
