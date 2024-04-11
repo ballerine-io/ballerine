@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
-import { NavLink, Outlet, useLocation, useParams } from 'react-router-dom';
+import React, { FunctionComponent, useEffect } from 'react';
+import { NavLink, Outlet, useLocation, useParams, useNavigate } from 'react-router-dom';
 import { t } from 'i18next';
 import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { UserAvatar } from '../UserAvatar/UserAvatar';
@@ -7,14 +7,22 @@ import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
-import { Workflows } from '@/pages/Workflows/Workflows.page';
+import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 
 export const Home: FunctionComponent = () => {
   const { data: session } = useAuthenticatedUserQuery();
   const { firstName, fullName, avatarUrl } = session?.user || {};
+  const isAuthenticated = useIsAuthenticated();
   const { locale } = useParams();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const value = pathname.includes('workflows') ? 'workflows' : 'statistics';
+
+  useEffect(() => {
+    if (isAuthenticated && pathname === `/${locale}`) {
+      navigate('/en/statistics');
+    }
+  }, [isAuthenticated, pathname]);
 
   return (
     <div className={`flex flex-col gap-10 p-10`}>
