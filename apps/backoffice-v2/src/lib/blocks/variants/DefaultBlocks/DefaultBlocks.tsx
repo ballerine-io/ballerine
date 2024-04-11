@@ -25,7 +25,7 @@ export const DefaultBlocks = () => {
           </div>
         </div>
       )}
-      <div className="flex flex-col gap-4">
+      <div className="flex h-full flex-col gap-4">
         <BlocksComponent blocks={blocks} cells={cells}>
           {(Cell, cell) => <Cell {...cell} />}
         </BlocksComponent>
