@@ -16,7 +16,7 @@ export const fetchBusinessReports = async ({
   reportType: 'ONGOING_MERCHANT_REPORT_T1' & (string & {});
 }) => {
   const [filter, error] = await apiClient({
-    endpoint: `business-reports/latest?businessId=${businessId}&reportType=${reportType}`,
+    endpoint: `business-reports/latest?businessId=${businessId}&type=${reportType}`,
     method: Method.GET,
     schema: BusinessReportSchema,
   });
