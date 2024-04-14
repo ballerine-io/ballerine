@@ -28,7 +28,7 @@ export const getUgandaDocuments = (): TDocument[] => {
       }),
     },
     {
-      category: 'proof_of_registration',
+      category: 'business_document',
       type: 'trade_license',
       issuer: { country: 'UG' },
       issuingVersion: 1,
@@ -36,19 +36,6 @@ export const getUgandaDocuments = (): TDocument[] => {
       propertiesSchema: Type.Object({
         businessName: Type.String(),
         prnNumber: TypeAlphanumericString,
-        issuer: TypeStringEnum(['KCCA', 'Other']),
-        expirationDate: Type.String({ format: 'date' }),
-      }),
-    },
-    {
-      category: 'proof_of_ownership',
-      type: 'trade_license',
-      issuer: { country: 'UG' },
-      issuingVersion: 1,
-      version: 1,
-      propertiesSchema: Type.Object({
-        businessName: Type.String(),
-        registrationNumber: TypeAlphanumericString,
         issuer: TypeStringEnum(['KCCA', 'Other']),
         expirationDate: Type.String({ format: 'date' }),
         ownerName: Type.String(),
