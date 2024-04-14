@@ -11,7 +11,6 @@ import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
 export const Home: FunctionComponent = () => {
   const { data: session } = useAuthenticatedUserQuery();
   const { firstName, fullName, avatarUrl } = session?.user || {};
-  const isAuthenticated = useIsAuthenticated();
   const { locale } = useParams();
   const { pathname } = useLocation();
   const navigate = useNavigate();
