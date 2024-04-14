@@ -7,7 +7,6 @@ import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
-import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 
 export const Home: FunctionComponent = () => {
   const { data: session } = useAuthenticatedUserQuery();
@@ -19,10 +18,10 @@ export const Home: FunctionComponent = () => {
   const value = pathname.includes('workflows') ? 'workflows' : 'statistics';
 
   useEffect(() => {
-    if (isAuthenticated && pathname === `/${locale}`) {
+    if (pathname === `/${locale}`) {
       navigate('/en/statistics');
     }
-  }, [isAuthenticated, pathname]);
+  }, [pathname]);
 
   return (
     <div className={`flex flex-col gap-10 p-10`}>
