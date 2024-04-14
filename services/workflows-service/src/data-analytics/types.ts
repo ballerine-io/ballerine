@@ -1,5 +1,6 @@
 import { TransactionDirection, PaymentMethod, TransactionRecordType } from '@prisma/client';
 import { AggregateType } from './consts';
+import { AggregateType, TIME_UNITS } from './consts';
 
 export type InlineRule = {
   id: string;
@@ -19,13 +20,15 @@ export type TExcludedCounterparty = {
   counterpartyOriginatorIds: string[];
 };
 
+export type TimeUnit = (typeof TIME_UNITS)[keyof typeof TIME_UNITS];
+
 export type TransactionsAgainstDynamicRulesType = {
   projectId?: string;
   havingAggregate?: TAggregations;
   amountBetween?: { min: number; max: number };
   timeAmount?: number;
   transactionType?: TransactionRecordType[];
-  timeUnit?: 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years';
+  timeUnit?: TimeUnit;
   direction?: TransactionDirection;
   excludedCounterparty?: TExcludedCounterparty;
   paymentMethods?: PaymentMethod[];
@@ -45,7 +48,7 @@ export type TCustomersTransactionTypeOptions = {
   threshold?: number;
   paymentMethods?: PaymentMethod[];
   timeAmount?: number;
-  timeUnit?: 'minutes' | 'hours' | 'days' | 'weeks' | 'months' | 'years';
+  timeUnit?: TimeUnit;
   isPerBrand?: boolean;
   havingAggregate?: TAggregations;
 };
