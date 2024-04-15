@@ -34,7 +34,7 @@ import {
 import { generateTransactions } from './alerts/generate-transactions';
 import { generateKycManualReviewRuntimeAndToken } from './workflows/runtime/geneate-kyc-manual-review-runtime-and-token';
 import { Type } from '@sinclair/typebox';
-import { generateFakeAlertsAndDefinitions as generateFakeAlertDefinitions } from './alerts/generate-alerts';
+import { seedTransactionsAlerts } from './alerts/generate-alerts';
 
 const BCRYPT_SALT: string | number = 10;
 
@@ -147,14 +147,6 @@ async function seed() {
   const project2 = await createProject(client, customer2, '2');
 
   const [adminUser, ...agentUsers] = await createUsers({ project1, project2 }, client);
-
-  await generateFakeAlertDefinitions(client, {
-    project: project1,
-    counterparyIds: [...ids1, ...ids2]
-      .map(({ counterpartyOriginatorId }) => counterpartyOriginatorId)
-      .filter(Boolean) as string[],
-    agentUserIds: agentUsers.map(({ id }) => id),
-  });
 
   const kycManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
   const kybManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9bbb';
@@ -1004,6 +996,14 @@ async function seed() {
     });
   });
 
+  await seedTransactionsAlerts(client, {
+    project: project1,
+    businessIds: businessRiskIds,
+    counterpartyIds: [...ids1, ...ids2]
+      .map(({ counterpartyOriginatorId }) => counterpartyOriginatorId)
+      .filter(Boolean) as string[],
+    agentUserIds: agentUsers.map(({ id }) => id),
+  });
   // TODO: create business with enduser attched to them
   // await client.business.create({
   //   data: {
