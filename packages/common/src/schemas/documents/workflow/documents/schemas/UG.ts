@@ -16,7 +16,7 @@ export const getUgandaDocuments = (): TDocument[] => {
   return [
     // Proof of Registration
     {
-      category: 'proof_of_registration',
+      category: 'business_document',
       type: 'certificate_of_registration',
       issuer: { country: 'UG' },
       issuingVersion: 1,
@@ -28,7 +28,7 @@ export const getUgandaDocuments = (): TDocument[] => {
       }),
     },
     {
-      category: 'proof_of_registration',
+      category: 'business_document',
       type: 'trade_license',
       issuer: { country: 'UG' },
       issuingVersion: 1,
@@ -38,24 +38,11 @@ export const getUgandaDocuments = (): TDocument[] => {
         prnNumber: TypeAlphanumericString,
         issuer: TypeStringEnum(['KCCA', 'Other']),
         expirationDate: Type.String({ format: 'date' }),
-      }),
-    },
-    {
-      category: 'proof_of_ownership',
-      type: 'trade_license',
-      issuer: { country: 'UG' },
-      issuingVersion: 1,
-      version: 1,
-      propertiesSchema: Type.Object({
-        businessName: Type.String(),
-        registrationNumber: TypeAlphanumericString,
-        issuer: TypeStringEnum(['KCCA', 'Other']),
-        expirationDate: Type.String({ format: 'date' }),
         ownerName: Type.String(),
       }),
     },
     {
-      category: 'proof_of_registration',
+      category: 'business_document',
       type: 'association_letter',
       issuer: { country: 'UG' },
       issuingVersion: 1,
@@ -70,7 +57,7 @@ export const getUgandaDocuments = (): TDocument[] => {
 
     // Business Ownership
     {
-      category: 'proof_of_ownership',
+      category: 'business_ownership',
       type: 'business_registration_form',
       issuer: { country: 'UG' },
       issuingVersion: 1,
@@ -86,7 +73,7 @@ export const getUgandaDocuments = (): TDocument[] => {
 
     // Financial Statement
     {
-      category: 'financial_information',
+      category: 'business_document',
       type: 'mtn_statement',
       issuer: { country: 'UG' },
       issuingVersion: 1,
@@ -100,7 +87,7 @@ export const getUgandaDocuments = (): TDocument[] => {
       }),
     },
     {
-      category: 'financial_information',
+      category: 'business_document',
       type: 'airtel_statement',
       issuer: { country: 'UG' },
       issuingVersion: 1,
@@ -113,7 +100,7 @@ export const getUgandaDocuments = (): TDocument[] => {
       }),
     },
     {
-      category: 'financial_information',
+      category: 'business_document',
       type: 'bank_statement',
       issuer: { country: 'UG' },
       issuingVersion: 1,
@@ -219,7 +206,7 @@ export const getUgandaDocuments = (): TDocument[] => {
 
     // Proof of Ownership
     {
-      category: 'proof_of_ownership',
+      category: 'business_document',
       type: 'property_rate',
       issuer: { country: 'UG' },
       issuingVersion: 1,
