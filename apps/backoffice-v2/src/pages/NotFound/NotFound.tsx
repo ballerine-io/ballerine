@@ -1,8 +1,9 @@
 import React, { FunctionComponent } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
 
 export const NotFoundRedirect: FunctionComponent = () => {
   const { state } = useLocation();
+  const { locale } = useParams();
 
-  return <Navigate to={'/en'} replace state={state} />;
+  return <Navigate to={`/${locale}/statistics`} replace state={state} />;
 };

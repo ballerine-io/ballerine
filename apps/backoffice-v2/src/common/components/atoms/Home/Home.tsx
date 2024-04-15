@@ -14,13 +14,14 @@ export const Home: FunctionComponent = () => {
   const { locale } = useParams();
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const value = pathname.includes('workflows') ? 'workflows' : 'statistics';
 
   useEffect(() => {
-    if (pathname === `/${locale}`) {
-      navigate(`/${locale}/statistics`);
+    if (pathname !== `/${locale}`) {
+      return;
     }
-  }, [pathname]);
+
+    navigate(`/${locale}/statistics`);
+  }, [pathname, locale, navigate]);
 
   return (
     <div className={`flex flex-col gap-10 p-10`}>
@@ -36,16 +37,16 @@ export const Home: FunctionComponent = () => {
         </h3>
       </div>
       <div>
-        <Tabs defaultValue={value}>
+        <Tabs defaultValue={pathname}>
           <TabsList>
-            <TabsTrigger asChild={true} value="statistics">
+            <TabsTrigger asChild={true} value={`/${locale}/statistics`}>
               <NavLink to={`/${locale}/statistics`}>Statistics</NavLink>
             </TabsTrigger>
-            <TabsTrigger asChild={true} value="workflows">
+            <TabsTrigger asChild={true} value={`/${locale}/workflows`}>
               <NavLink to={`/${locale}/workflows`}>Workflows</NavLink>
             </TabsTrigger>
           </TabsList>
-          <TabsContent value={value}>
+          <TabsContent value={pathname}>
             <Outlet />
           </TabsContent>
         </Tabs>

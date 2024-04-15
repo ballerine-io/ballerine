@@ -3,10 +3,12 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useCallback, useMemo } from 'react';
 import { Home, Building, Goal, Users } from 'lucide-react';
 import { TRoutes, TRouteWithChildren } from '@/Router/types';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 export const useNavbarLogic = () => {
   const { data: filters } = useFiltersQuery();
+  const { pathname } = useLocation();
+  const { locale } = useParams();
   const filterId = useFilterId();
   const individualsFilters = useMemo(
     () => filters?.filter(({ entity }) => entity === 'individuals'),
@@ -20,7 +22,7 @@ export const useNavbarLogic = () => {
     {
       text: 'Home',
       icon: <Home size={20} />,
-      href: '/en',
+      href: `/${locale}/${pathname.includes('statistics') ? 'statistics' : 'workflows'}`,
       key: 'nav-item-Home',
     },
     {
@@ -60,7 +62,6 @@ export const useNavbarLogic = () => {
       key: 'nav-item-transaction-monitoring',
     },
   ] satisfies TRoutes;
-  const { pathname } = useLocation();
   const checkIsActiveFilterGroup = useCallback(
     (navItem: TRouteWithChildren) => {
       return navItem.children?.some(
