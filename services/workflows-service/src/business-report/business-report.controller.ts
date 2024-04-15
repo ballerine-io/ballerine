@@ -1,4 +1,3 @@
-import { fetchBusinessInformation } from './../../../../apps/kyb-app/src/domains/business/business.api';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import * as swagger from '@nestjs/swagger';
 

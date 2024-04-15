@@ -20,7 +20,7 @@ import { Test } from '@nestjs/testing';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import {
-  ALERT_DEFINITIONS,
+  TRANSACTIONS_ALERT_DEFINITIONS,
   getAlertDefinitionCreateData,
 } from '../../scripts/alerts/generate-alerts';
 
@@ -89,7 +89,7 @@ describe('AlertService', () => {
           data: getAlertDefinitionCreateData(
             {
               label: 'CHVC_C',
-              ...ALERT_DEFINITIONS.CHVC_C,
+              ...TRANSACTIONS_ALERT_DEFINITIONS.CHVC_C,
             },
             project,
           ),
@@ -155,7 +155,7 @@ describe('AlertService', () => {
           data: getAlertDefinitionCreateData(
             {
               label: 'SHCAC_C',
-              ...ALERT_DEFINITIONS.SHCAC_C,
+              ...TRANSACTIONS_ALERT_DEFINITIONS.SHCAC_C,
             },
             project,
           ),
@@ -225,7 +225,7 @@ describe('AlertService', () => {
           data: getAlertDefinitionCreateData(
             {
               label: 'CHCR_C',
-              ...ALERT_DEFINITIONS.CHCR_C,
+              ...TRANSACTIONS_ALERT_DEFINITIONS.CHCR_C,
             },
             project,
           ),
@@ -291,7 +291,7 @@ describe('AlertService', () => {
           data: getAlertDefinitionCreateData(
             {
               label: 'SHCAR_C',
-              ...ALERT_DEFINITIONS.SHCAR_C,
+              ...TRANSACTIONS_ALERT_DEFINITIONS.SHCAR_C,
             },
             project,
           ),
@@ -361,7 +361,7 @@ describe('AlertService', () => {
           data: getAlertDefinitionCreateData(
             {
               label: 'HPC',
-              ...ALERT_DEFINITIONS.HPC,
+              ...TRANSACTIONS_ALERT_DEFINITIONS.HPC,
             },
             project,
           ),

@@ -18,6 +18,10 @@ export type InlineRule = {
       options: Omit<TCustomersTransactionTypeOptions, 'projectId'>;
     }
   | {
+      fnName: 'evaluateRiskScore';
+      options?: undefined;
+    }
+  | {
       // since we don't know the other options, we can use never
       fnName: unknown;
       options: never;
