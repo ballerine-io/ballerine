@@ -6,7 +6,7 @@ import {
   TCustomersTransactionTypeOptions,
   HighTransactionTypePercentage,
 } from './types';
-import { AggregateType } from './consts';
+import { AggregateType, TIME_UNITS } from './consts';
 import { Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isEmpty } from 'lodash';
@@ -18,29 +18,35 @@ export class DataAnalyticsService {
     protected readonly logger: AppLoggerService,
   ) {}
 
-  async runInlineRule(projectId: string, { fnName, options }: InlineRule) {
-    switch (fnName) {
+  async runInlineRule(projectId: string, inlineRule: InlineRule) {
+    switch (inlineRule.fnName) {
       case 'evaluateHighTransactionTypePercentage':
-        return await this[fnName]({
-          ...options,
+        return await this[inlineRule.fnName]({
+          ...inlineRule.options,
           projectId,
         });
 
       case 'evaluateTransactionsAgainstDynamicRules':
-        return await this[fnName]({
-          ...options,
+        return await this[inlineRule.fnName]({
+          ...inlineRule.options,
           projectId,
         });
 
       case 'evaluateCustomersTransactionType':
-        return await this[fnName]({
-          ...options,
+        return await this[inlineRule.fnName]({
+          ...inlineRule.options,
           projectId,
         });
     }
 
     // Used for exhaustive check
-    fnName satisfies never;
+    inlineRule satisfies never;
+
+    this.logger.error(`No evaluation function found`, {
+      inlineRule,
+    });
+
+    throw new Error(`No evaluation function found for rule name: ${(inlineRule as InlineRule).id}`);
   }
 
   async evaluateTransactionsAgainstDynamicRules({
@@ -56,7 +62,7 @@ export class DataAnalyticsService {
     paymentMethods = [],
     excludePaymentMethods = false,
     timeAmount = 7,
-    timeUnit = 'days',
+    timeUnit = TIME_UNITS.days,
     groupBy = [],
     havingAggregate = AggregateType.SUM,
   }: TransactionsAgainstDynamicRulesType) {
@@ -295,7 +301,7 @@ export class DataAnalyticsService {
     threshold = 5_000,
     paymentMethods = [],
     timeAmount = 7,
-    timeUnit = 'days',
+    timeUnit = TIME_UNITS.days,
     isPerBrand = false,
     havingAggregate = AggregateType.SUM,
   }: TCustomersTransactionTypeOptions) {

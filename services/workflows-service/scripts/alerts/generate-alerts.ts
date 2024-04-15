@@ -54,7 +54,7 @@ export const ALERT_DEFINITIONS = {
         excludePaymentMethods: false,
 
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
 
         amountThreshold: 1000,
 
@@ -85,7 +85,7 @@ export const ALERT_DEFINITIONS = {
         excludePaymentMethods: true,
 
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
 
         amountThreshold: 1000,
 
@@ -113,7 +113,7 @@ export const ALERT_DEFINITIONS = {
         excludePaymentMethods: false,
 
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
 
         amountThreshold: 5,
         amountBetween: { min: 500, max: 1000 },
@@ -139,7 +139,7 @@ export const ALERT_DEFINITIONS = {
         excludePaymentMethods: false,
 
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
 
         amountBetween: { min: 500, max: 1000 },
 
@@ -166,7 +166,7 @@ export const ALERT_DEFINITIONS = {
         excludePaymentMethods: false,
 
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
 
         amountThreshold: 3000,
       },
@@ -191,7 +191,7 @@ export const ALERT_DEFINITIONS = {
         excludePaymentMethods: true,
 
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
 
         amountThreshold: 3000,
       },
@@ -216,7 +216,7 @@ export const ALERT_DEFINITIONS = {
         excludePaymentMethods: false,
 
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
 
         amountThreshold: 2,
       },
@@ -236,7 +236,7 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         amountThreshold: 14,
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.COUNT,
       },
@@ -256,7 +256,7 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         amountThreshold: 5_000,
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.SUM,
       },
@@ -275,7 +275,7 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         amountThreshold: 14,
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.COUNT,
       },
@@ -294,7 +294,7 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         amountThreshold: 5_000,
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.SUM,
       },
