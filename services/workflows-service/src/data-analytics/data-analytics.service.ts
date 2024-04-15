@@ -3,8 +3,8 @@ import { PrismaService } from '@/prisma/prisma.service';
 import {
   InlineRule,
   TransactionsAgainstDynamicRulesType,
-  EvaluateFunctions,
   TCustomersTransactionTypeOptions,
+  HighTransactionTypePercentage,
 } from './types';
 import { AggregateType } from './consts';
 import { Prisma } from '@prisma/client';
@@ -13,41 +13,34 @@ import { isEmpty } from 'lodash';
 
 @Injectable()
 export class DataAnalyticsService {
-  private _evaluateNameToFunction: Partial<{
-    [K in keyof EvaluateFunctions]: EvaluateFunctions[K];
-  }> = {};
-
   constructor(
     protected readonly prisma: PrismaService,
     protected readonly logger: AppLoggerService,
-  ) {
-    this._evaluateNameToFunction[
-      this.evaluateTransactionsAgainstDynamicRules.name as keyof EvaluateFunctions
-    ] = this.evaluateTransactionsAgainstDynamicRules.bind(this);
+  ) {}
 
-    this._evaluateNameToFunction[
-      this.evaluateCustomersTransactionType.name as keyof EvaluateFunctions
-    ] = this.evaluateCustomersTransactionType.bind(this);
+  async runInlineRule(projectId: string, { fnName, options }: InlineRule) {
+    switch (fnName) {
+      case 'evaluateHighTransactionTypePercentage':
+        return await this[fnName]({
+          ...options,
+          projectId,
+        });
 
-    // this._evaluateNameToFunction[this.evaluateDormantAccount.name] =
-    //   this.evaluateDormantAccount.bind(this);
-  }
+      case 'evaluateTransactionsAgainstDynamicRules':
+        return await this[fnName]({
+          ...options,
+          projectId,
+        });
 
-  async runInlineRule(projectId: string, inlineRule: InlineRule) {
-    const evaluateFn = this._evaluateNameToFunction[inlineRule.fnName as keyof EvaluateFunctions];
-
-    if (!evaluateFn) {
-      this.logger.error(`No evaluation function found for rule name: ${inlineRule.id}`, {
-        inlineRule,
-      });
-
-      throw new Error(`No evaluation function found for rule name: ${inlineRule.id}`);
+      case 'evaluateCustomersTransactionType':
+        return await this[fnName]({
+          ...options,
+          projectId,
+        });
     }
 
-    return await evaluateFn({
-      ...inlineRule.options,
-      projectId,
-    });
+    // Used for exhaustive check
+    fnName satisfies never;
   }
 
   async evaluateTransactionsAgainstDynamicRules({
@@ -84,7 +77,7 @@ export class DataAnalyticsService {
 
     if (!isEmpty(transactionType)) {
       conditions.push(
-        Prisma.sql`tr."transactionType"::text IN (${Prisma.join(transactionType, ',')})`,
+        Prisma.sql`tr."transactionType"::text IN (${Prisma.join([...transactionType], ',')})`,
       );
     }
 
@@ -106,9 +99,9 @@ export class DataAnalyticsService {
       const methodCondition = excludePaymentMethods ? `NOT IN` : `IN`;
 
       conditions.push(
-        Prisma.sql`"paymentMethod"::text ${Prisma.raw(methodCondition)} (${Prisma.join(
-          paymentMethods,
-        )})`,
+        Prisma.sql`"paymentMethod"::text ${Prisma.raw(methodCondition)} (${Prisma.join([
+          ...paymentMethods,
+        ])})`,
       );
     }
 
@@ -170,7 +163,44 @@ export class DataAnalyticsService {
         query = Prisma.sql`SELECT ${selectClause}, COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr WHERE ${whereClause} GROUP BY ${groupByClause}`;
     }
 
-    return await this._executeQuery(query);
+    return await this._executeQuery<Array<Record<string, unknown>>>(query);
+  }
+
+  async evaluateHighTransactionTypePercentage({
+    projectId,
+    transactionType,
+    subjectColumn,
+    minimumCount,
+    minimumPercentage,
+    timeAmount,
+    timeUnit,
+  }: HighTransactionTypePercentage) {
+    return await this._executeQuery<Array<{ counterpartyId: string }>>(Prisma.sql`
+      WITH "transactionsData" AS (
+        SELECT
+          "${Prisma.raw(subjectColumn)}",
+          COUNT(*) AS "transactionCount",
+          COUNT(*) FILTER (WHERE "transactionType" = '${Prisma.raw(
+            transactionType,
+          )}') AS "filteredTransactionCount"
+        FROM
+          "TransactionRecord"
+        WHERE
+          "projectId" = ${projectId}
+          AND "transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+            `${timeAmount} ${timeUnit}`,
+          )}'
+        GROUP BY
+          "${Prisma.raw(subjectColumn)}"
+      )
+      SELECT
+        "${Prisma.raw(subjectColumn)}" AS "counterpartyId"
+      FROM
+        "transactionsData"
+      WHERE
+        "filteredTransactionCount" >= ${minimumCount}
+        AND "filteredTransactionCount"::decimal / "transactionCount"::decimal * 100 >= ${minimumPercentage}
+    `);
   }
 
   async evaluatePaymentUnexpected({
@@ -256,7 +286,7 @@ export class DataAnalyticsService {
     AND COUNT(tr."id") > 1;
   `;
 
-    return await this._executeQuery(query);
+    return await this._executeQuery<Array<Record<string, unknown>>>(query);
   }
 
   async evaluateCustomersTransactionType({
@@ -288,7 +318,7 @@ export class DataAnalyticsService {
     ];
 
     if (Array.isArray(paymentMethods.length)) {
-      conditions.push(Prisma.sql`"paymentMethod" IN (${Prisma.join(paymentMethods)})`);
+      conditions.push(Prisma.sql`"paymentMethod" IN (${Prisma.join([...paymentMethods])})`);
     }
 
     // High Velocity - Refund
@@ -318,15 +348,15 @@ export class DataAnalyticsService {
       WHERE ${Prisma.join(conditions, ' AND ')}
       GROUP BY ${groupBy.clause}  HAVING ${Prisma.raw(havingClause)} > ${threshold}`;
 
-    return await this._executeQuery(query);
+    return await this._executeQuery<Array<Record<string, unknown>>>(query);
   }
 
-  private async _executeQuery(query: Prisma.Sql) {
+  private async _executeQuery<T = unknown>(query: Prisma.Sql) {
     this.logger.log('Executing query...\n', {
       query: query.sql,
       values: query.values,
     });
 
-    return await this.prisma.$queryRaw(query);
+    return await this.prisma.$queryRaw<T>(query);
   }
 }

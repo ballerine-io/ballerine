@@ -1,62 +1,66 @@
 import { TransactionDirection, PaymentMethod, TransactionRecordType } from '@prisma/client';
-import { AggregateType } from './consts';
 import { AggregateType, TIME_UNITS } from './consts';
 
 export type InlineRule = {
   id: string;
-  fnName: string;
-  options:
-    | TransactionsAgainstDynamicRulesType
-    | TDormantAccountOption
-    | TCustomersTransactionTypeOptions;
-  subjects: any;
-  // subjects: readonly string[];
-};
+  subjects: string[] | readonly string[];
+} & (
+  | {
+      fnName: 'evaluateHighTransactionTypePercentage';
+      options: Omit<HighTransactionTypePercentage, 'projectId'>;
+    }
+  | {
+      fnName: 'evaluateTransactionsAgainstDynamicRules';
+      options: Omit<TransactionsAgainstDynamicRulesType, 'projectId'>;
+    }
+  | {
+      fnName: 'evaluateCustomersTransactionType';
+      options: Omit<TCustomersTransactionTypeOptions, 'projectId'>;
+    }
+);
 
 export type TAggregations = keyof typeof AggregateType;
 
 export type TExcludedCounterparty = {
-  counterpartyBeneficiaryIds: string[];
-  counterpartyOriginatorIds: string[];
+  counterpartyBeneficiaryIds: string[] | readonly string[];
+  counterpartyOriginatorIds: string[] | readonly string[];
 };
 
 export type TimeUnit = (typeof TIME_UNITS)[keyof typeof TIME_UNITS];
 
 export type TransactionsAgainstDynamicRulesType = {
-  projectId?: string;
+  projectId: string;
   havingAggregate?: TAggregations;
   amountBetween?: { min: number; max: number };
   timeAmount?: number;
-  transactionType?: TransactionRecordType[];
+  transactionType?: TransactionRecordType[] | readonly TransactionRecordType[];
   timeUnit?: TimeUnit;
   direction?: TransactionDirection;
   excludedCounterparty?: TExcludedCounterparty;
-  paymentMethods?: PaymentMethod[];
+  paymentMethods?: PaymentMethod[] | readonly PaymentMethod[];
   excludePaymentMethods?: boolean;
   days?: number;
   amountThreshold?: number;
-  groupBy?: string[];
+  groupBy?: string[] | readonly string[];
 };
 
-export type TDormantAccountOption = {
+export type HighTransactionTypePercentage = {
   projectId: string;
+  transactionType: TransactionRecordType;
+  subjectColumn: 'counterpartyOriginatorId' | 'counterpartyBeneficiaryId';
+  minimumCount: number;
+  minimumPercentage: number;
+  timeAmount: number;
+  timeUnit: TimeUnit;
 };
 
 export type TCustomersTransactionTypeOptions = {
-  projectId?: string; // TODO: make it required
-  transactionType?: TransactionRecordType[];
+  projectId: string;
+  transactionType?: TransactionRecordType[] | readonly TransactionRecordType[];
   threshold?: number;
-  paymentMethods?: PaymentMethod[];
+  paymentMethods?: PaymentMethod[] | readonly PaymentMethod[];
   timeAmount?: number;
   timeUnit?: TimeUnit;
   isPerBrand?: boolean;
   havingAggregate?: TAggregations;
-};
-
-export type EvaluateFunctions = {
-  evaluateTransactionsAgainstDynamicRules: (
-    options: TransactionsAgainstDynamicRulesType,
-  ) => Promise<any>;
-  evaluateCustomersTransactionType: (options: TCustomersTransactionTypeOptions) => Promise<any>;
-  // evaluateDormantAccount: (options: TDormantAccountOption) => Promise<any>;
 };
