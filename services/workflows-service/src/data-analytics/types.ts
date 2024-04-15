@@ -17,6 +17,11 @@ export type InlineRule = {
       fnName: 'evaluateCustomersTransactionType';
       options: Omit<TCustomersTransactionTypeOptions, 'projectId'>;
     }
+  | {
+      // since we don't know the other options, we can use never
+      fnName: unknown;
+      options: never;
+    }
 );
 
 export type TAggregations = keyof typeof AggregateType;

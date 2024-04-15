@@ -39,9 +39,6 @@ export class DataAnalyticsService {
         });
     }
 
-    // Used for exhaustive check
-    inlineRule satisfies never;
-
     this.logger.error(`No evaluation function found`, {
       inlineRule,
     });
