@@ -54,7 +54,7 @@ describe('OngoingMonitoringCron', () => {
       await service.handleCron();
 
       expect(businessService.list).toHaveBeenCalledTimes(1);
-      expect(mockWorkflowService.createOrUpdateWorkflowRuntime).toHaveBeenCalledTimes(1);
+      expect(mockWorkflowService.createOrUpdateWorkflowRuntime).toHaveBeenCalledTimes(4);
     });
 
     it('should handle errors correctly', async () => {
@@ -113,8 +113,12 @@ describe('OngoingMonitoringCron', () => {
     findMany: jest.fn().mockImplementation(criteria => {
       // Return an array of mock reports or a Promise of such an array
       return Promise.resolve([
-        { id: 'mockReport1', createdAt: new Date(new Date().setDate(new Date().getDate() - 30)) },
-        { id: 'mockReport2', createdAt: new Date() },
+        {
+          id: 'mockReport1',
+          createdAt: new Date(new Date().setDate(new Date().getDate() - 30)),
+          report: { reportId: 'mockReport1' },
+        },
+        { id: 'mockReport2', createdAt: new Date(), report: { reportId: 'mockReport2' } },
       ]); // Example, adjust as needed
     }),
     // Simulate other needed service methods
