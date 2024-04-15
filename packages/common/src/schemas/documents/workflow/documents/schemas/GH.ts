@@ -27,7 +27,7 @@ export const getGhanaDocuments = (): TDocument[] => {
   return [
     // Financial Information
     {
-      category: 'financial_information',
+      category: 'business_document',
       type: 'mtn_statement',
       issuer: { country: 'GH' },
       issuingVersion: 1,
@@ -57,7 +57,7 @@ export const getGhanaDocuments = (): TDocument[] => {
     //     },
 
     {
-      category: 'financial_information',
+      category: 'business_document',
       type: 'bank_statement',
       issuer: { country: 'GH' },
       issuingVersion: 1,
@@ -657,7 +657,7 @@ export const getGhanaDocuments = (): TDocument[] => {
 
     // Proof of Registration
     {
-      category: 'proof_of_registration',
+      category: 'business_document',
       type: 'certificate_of_registration',
       issuer: { country: 'GH' },
       issuingVersion: 1,
@@ -670,7 +670,7 @@ export const getGhanaDocuments = (): TDocument[] => {
       }),
     },
     {
-      category: 'proof_of_registration',
+      category: 'business_document',
       type: 'operating_permit',
       issuer: { country: 'GH' },
       issuingVersion: 1,
@@ -683,7 +683,7 @@ export const getGhanaDocuments = (): TDocument[] => {
       }),
     },
     {
-      category: 'proof_of_registration',
+      category: 'business_document',
       type: 'district_assembly_certificate',
       issuer: { country: 'GH' },
       issuingVersion: 1,
@@ -697,7 +697,7 @@ export const getGhanaDocuments = (): TDocument[] => {
     },
     // Proof of Ownership
     {
-      category: 'proof_of_ownership',
+      category: 'business_document',
       type: 'form_a',
       issuer: { country: 'GH' },
       issuingVersion: 1,
@@ -714,7 +714,7 @@ export const getGhanaDocuments = (): TDocument[] => {
       }),
     },
     {
-      category: 'proof_of_ownership',
+      category: 'business_document',
       type: 'receipt_for_permit',
       issuer: { country: 'GH' },
       issuingVersion: 1,
@@ -725,7 +725,7 @@ export const getGhanaDocuments = (): TDocument[] => {
       }),
     },
     {
-      category: 'proof_of_ownership',
+      category: 'business_document',
       type: 'property_rate',
       issuer: { country: 'GH' },
       issuingVersion: 1,
