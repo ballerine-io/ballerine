@@ -16,7 +16,7 @@ import {
   TransactionRecordType,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
-import { AggregateType } from '../../src/data-analytics/consts';
+import { AggregateType, TIME_UNITS } from '../../src/data-analytics/consts';
 import { InputJsonValue, PrismaTransaction } from '@/types';
 
 const tags = [
@@ -47,18 +47,19 @@ export const ALERT_DEFINITIONS = {
 
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
         },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
 
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
 
         amountThreshold: 1000,
 
         groupBy: ['counterpartyBeneficiaryId'],
-      } as TransactionsAgainstDynamicRulesType,
+      },
     },
   },
   PAY_HCA_APM: {
@@ -77,18 +78,19 @@ export const ALERT_DEFINITIONS = {
 
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
         },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: true,
 
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
 
         amountThreshold: 1000,
 
         groupBy: ['counterpartyBeneficiaryId'],
-      } as TransactionsAgainstDynamicRulesType,
+      },
     },
   },
 
@@ -101,7 +103,6 @@ export const ALERT_DEFINITIONS = {
       fnName: 'evaluateTransactionsAgainstDynamicRules',
       subjects: ['businessId'],
       options: {
-        groupByBusiness: true,
         havingAggregate: AggregateType.COUNT,
 
         direction: 'inbound',
@@ -112,11 +113,11 @@ export const ALERT_DEFINITIONS = {
         excludePaymentMethods: false,
 
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
 
         amountThreshold: 5,
         amountBetween: { min: 500, max: 1000 },
-      } as TransactionsAgainstDynamicRulesType,
+      },
     },
   },
   STRUC_APM: {
@@ -128,7 +129,6 @@ export const ALERT_DEFINITIONS = {
       fnName: 'evaluateTransactionsAgainstDynamicRules',
       subjects: ['businessId'],
       options: {
-        groupByBusiness: true,
         havingAggregate: AggregateType.COUNT,
 
         direction: 'inbound',
@@ -139,12 +139,12 @@ export const ALERT_DEFINITIONS = {
         excludePaymentMethods: false,
 
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
 
         amountBetween: { min: 500, max: 1000 },
 
         amountThreshold: 5,
-      } as TransactionsAgainstDynamicRulesType,
+      },
     },
   },
   HCAI_CC: {
@@ -156,9 +156,6 @@ export const ALERT_DEFINITIONS = {
       fnName: 'evaluateTransactionsAgainstDynamicRules',
       subjects: ['businessId', 'counterpartyOriginatorId'],
       options: {
-        groupByBusiness: true,
-        groupByCounterparty: true,
-
         havingAggregate: AggregateType.SUM,
 
         direction: 'inbound',
@@ -169,10 +166,10 @@ export const ALERT_DEFINITIONS = {
         excludePaymentMethods: false,
 
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
 
         amountThreshold: 3000,
-      } as TransactionsAgainstDynamicRulesType,
+      },
     },
   },
   HACI_APM: {
@@ -184,8 +181,6 @@ export const ALERT_DEFINITIONS = {
       fnName: 'evaluateTransactionsAgainstDynamicRules',
       subjects: ['businessId', 'counterpartyOriginatorId'],
       options: {
-        groupByBusiness: true,
-        groupByCounterparty: true,
         havingAggregate: AggregateType.SUM,
 
         direction: 'inbound',
@@ -196,10 +191,10 @@ export const ALERT_DEFINITIONS = {
         excludePaymentMethods: true,
 
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
 
         amountThreshold: 3000,
-      } as TransactionsAgainstDynamicRulesType,
+      },
     },
   },
   HVIC_CC: {
@@ -211,7 +206,6 @@ export const ALERT_DEFINITIONS = {
       fnName: 'evaluateTransactionsAgainstDynamicRules',
       subjects: ['businessId', 'counterpartyOriginatorId'],
       options: {
-        groupByBusiness: true,
         havingAggregate: AggregateType.COUNT,
 
         direction: 'inbound',
@@ -222,10 +216,10 @@ export const ALERT_DEFINITIONS = {
         excludePaymentMethods: false,
 
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
 
         amountThreshold: 2,
-      } as TransactionsAgainstDynamicRulesType,
+      },
     },
   },
   CHVC_C: {
@@ -242,10 +236,10 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         amountThreshold: 14,
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.COUNT,
-      } as TransactionsAgainstDynamicRulesType,
+      },
     },
   },
   SHCAC_C: {
@@ -262,10 +256,10 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         amountThreshold: 5_000,
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.SUM,
-      } as TransactionsAgainstDynamicRulesType,
+      },
     },
   },
   CHCR_C: {
@@ -281,10 +275,10 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         amountThreshold: 14,
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.COUNT,
-      } as TransactionsAgainstDynamicRulesType,
+      },
     },
   },
   SHCAR_C: {
@@ -300,10 +294,29 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         amountThreshold: 5_000,
         timeAmount: 7,
-        timeUnit: 'days',
+        timeUnit: TIME_UNITS.days,
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.SUM,
-      } as TransactionsAgainstDynamicRulesType,
+      },
+    },
+  },
+  HPC: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
+    description:
+      'High Percentage of Chargebacks - High percentage of chargebacks over a set period of time',
+    inlineRule: {
+      id: 'HPC',
+      fnName: 'evaluateHighTransactionTypePercentage',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionType: TransactionRecordType.chargeback,
+        subjectColumn: 'counterpartyOriginatorId',
+        minimumCount: 3,
+        minimumPercentage: 50,
+        timeAmount: 21,
+        timeUnit: TIME_UNITS.days,
+      },
     },
   },
 } as const satisfies Record<

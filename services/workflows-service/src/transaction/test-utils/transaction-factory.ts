@@ -160,6 +160,12 @@ export class TransactionFactory {
     return this;
   }
 
+  public type(type: TransactionRecordType) {
+    this.data.transactionType = type;
+
+    return this;
+  }
+
   public withBusinessOriginator() {
     this.runBeforeCreate.push(async () => {
       const correlationId = faker.datatype.uuid();
@@ -181,10 +187,16 @@ export class TransactionFactory {
         },
       });
 
-      this.data.counterpartyOriginator = {
-        connect: { id: counteryparty.id },
-      };
+      this.withCounterpartyOriginator(counteryparty.id);
     });
+
+    return this;
+  }
+
+  public withCounterpartyOriginator(id: string) {
+    this.data.counterpartyOriginator = {
+      connect: { id },
+    };
 
     return this;
   }

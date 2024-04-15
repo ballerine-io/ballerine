@@ -2,6 +2,8 @@ import { PageDto } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { PaymentMethod } from '@prisma/client';
 import { IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { TIME_UNITS } from '@/data-analytics/consts';
+import type { TimeUnit } from '@/data-analytics/types';
 
 export class GetTransactionsDto {
   @IsOptional()
@@ -25,8 +27,8 @@ export class GetTransactionsDto {
   endDate?: Date;
 
   @IsOptional()
-  @IsEnum(['minutes', 'hours', 'days', 'months', 'years'])
-  timeUnit?: 'minutes' | 'hours' | 'days' | 'months' | 'years';
+  @IsEnum(Object.values(TIME_UNITS))
+  timeUnit?: TimeUnit;
 
   @IsOptional()
   @ApiProperty({

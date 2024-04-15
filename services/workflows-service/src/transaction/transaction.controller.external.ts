@@ -27,6 +27,7 @@ import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dt
 import { BulkStatus } from '@/alert/types';
 import * as errors from '@/errors';
 import { ValidationError, exceptionValidationFactory } from '@/errors';
+import { TIME_UNITS } from '@/data-analytics/consts';
 
 @swagger.ApiTags('Transactions')
 @Controller('external/transactions')
@@ -147,7 +148,7 @@ export class TransactionControllerExternal {
   @swagger.ApiQuery({
     name: 'timeUnit',
     type: 'enum',
-    enum: ['minutes', 'hours', 'days', 'months', 'years'],
+    enum: Object.values(TIME_UNITS),
     description: 'The time unit used in conjunction with timeValue',
     required: false,
   })
