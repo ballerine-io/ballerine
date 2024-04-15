@@ -9,6 +9,7 @@ import {
   AlertStatus,
   AlertType,
   Customer,
+  MonitoringType,
   PaymentMethod,
   Prisma,
   PrismaClient,
@@ -348,6 +349,7 @@ export const getAlertDefinitionCreateData = (
 ) => ({
   label: label,
   type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
+  monitoringType: MonitoringType.transaction_monitoring,
   name: inlineRule.id,
   enabled: enabled ?? false,
   description: description || faker.lorem.sentence(),

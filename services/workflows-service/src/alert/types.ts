@@ -4,6 +4,7 @@ export type TExecutionDetails = {
   checkpoint: {
     hash: string;
   };
+  subject: Array<Record<string, unknown>>;
   executionRow: unknown;
 };
 

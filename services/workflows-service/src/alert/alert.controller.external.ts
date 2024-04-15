@@ -10,7 +10,7 @@ import type { AuthenticatedEntity, TProjectId } from '@/types';
 import * as common from '@nestjs/common';
 import { Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { Alert, AlertDefinition } from '@prisma/client';
+import { Alert, AlertDefinition, MonitoringType } from '@prisma/client';
 import * as errors from '../errors';
 import { AlertAssigneeUniqueDto, AlertUpdateResponse } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
@@ -51,44 +51,49 @@ export class AlertControllerExternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.UsePipes(new ZodValidationPipe(FindAlertsSchema, 'query'))
   async list(@common.Query() findAlertsDto: FindAlertsDto, @ProjectIds() projectIds: TProjectId[]) {
-    const alerts = await this.alertService.getAlerts(findAlertsDto, projectIds, {
-      include: {
-        alertDefinition: {
-          select: {
-            label: true,
-            description: true,
-          },
-        },
-        assignee: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-          },
-        },
-        counterparty: {
-          select: {
-            id: true,
-            business: {
-              select: {
-                id: true,
-                correlationId: true,
-                companyName: true,
-              },
+    const alerts = await this.alertService.getAlerts(
+      findAlertsDto,
+      MonitoringType.transaction_monitoring,
+      projectIds,
+      {
+        include: {
+          alertDefinition: {
+            select: {
+              label: true,
+              description: true,
             },
-            endUser: {
-              select: {
-                id: true,
-                correlationId: true,
-                firstName: true,
-                lastName: true,
+          },
+          assignee: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+            },
+          },
+          counterparty: {
+            select: {
+              id: true,
+              business: {
+                select: {
+                  id: true,
+                  correlationId: true,
+                  companyName: true,
+                },
+              },
+              endUser: {
+                select: {
+                  id: true,
+                  correlationId: true,
+                  firstName: true,
+                  lastName: true,
+                },
               },
             },
           },
         },
       },
-    });
+    );
 
     return alerts.map(alert => {
       const { alertDefinition, assignee, counterparty, state, ...alertWithoutDefinition } =
