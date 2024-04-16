@@ -143,7 +143,7 @@ model Business {
   project      Project        @relation(fields: [projectId], references: [id])
   Counterparty Counterparty[]
   businessReports BusinessReport[]
-  alerts          OngoingMarchentAlert[]
+  alerts          OngoingMerchantAlert[]
 
   @@unique([projectId, correlationId])
   @@index([companyName])
@@ -752,7 +752,7 @@ model AlertDefinition {
   @@index([projectId])
 }
 
-model OngoingMarchentAlert {
+model OngoingMerchantAlert {
   id String @id @default(cuid())
 
   alert Alert?
@@ -806,8 +806,8 @@ model Alert {
   workflowRuntimeDataId String?
   workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  ongoingMarchentAlert   OngoingMarchentAlert? @relation(fields: [ongoingMarchentAlertId], references: [id])
-  ongoingMarchentAlertId String?  @unique
+  ongoingMerchantAlert   OngoingMerchantAlert? @relation(fields: [ongoingMerchantAlertId], references: [id])
+  ongoingMerchantAlertId String?  @unique
 
   transactionAlert   TransactionAlert? @relation(fields: [transactionAlertId], references: [id])
   transactionAlertId String?  @unique
@@ -880,7 +880,7 @@ model BusinessReport {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   
-  ongoingMarchentAlert OngoingMarchentAlert?
+  ongoingMerchantAlert OngoingMerchantAlert?
 
   @@index([createdAt])
   @@index([businessId])
