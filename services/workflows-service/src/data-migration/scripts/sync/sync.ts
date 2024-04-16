@@ -1,6 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '@/app.module';
-import { DataSyncTables, PrismaClient } from '@prisma/client';
+import {
+  AlertDefinitionPayload,
+  DataSyncTables,
+  PrismaClient,
+  UiDefinitionPayload,
+  WorkflowDefinitionPayload,
+} from '@prisma/client';
 import * as path from 'path';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { MD5 as objectMd5 } from 'object-hash';
@@ -11,23 +17,35 @@ import { InputJsonValue, NullableJsonNullValueInput } from '@/types';
 import { env } from '@/env';
 
 type Envionment = 'sandbox' | 'production' | 'development' | 'local';
+export type TableName = 'WorkflowDefinition' | 'UiDefinition' | 'AlertDefinition';
 
 export type SyncedObject = {
   crossEnvKey: string;
-  tableName: string;
-  columns: {
-    [key: string]: any;
-  };
+  tableName: TableName;
   syncConfig: {
-    strategy: 'replace' | 'partial-deep-merge' | 'upsert';
+    strategy: 'update' | 'partial-deep-merge' | 'upsert';
   };
   syncedEnvironments: Envionment[];
   dryRunEnvironments: Envionment[];
-};
+} & (
+  | {
+      tableName: 'WorkflowDefinition';
+      columns: Partial<WorkflowDefinitionPayload['scalars']>;
+    }
+  | {
+      tableName: 'UiDefinition';
+      columns: Partial<UiDefinitionPayload['scalars']>;
+    }
+  | {
+      tableName: 'AlertDefinition';
+      columns: Partial<AlertDefinitionPayload['scalars']>;
+    }
+);
 
-// @TODO: map to repositories after adding transaction support - its important since we have addtional validation there
-const tableNamesMap = {
+const tableNamesMap: Record<TableName, string> = {
   WorkflowDefinition: 'workflowDefinition',
+  AlertDefinition: 'alertDefinition',
+  UiDefinition: 'uiDefinition',
 } as const;
 
 export const sync = async (objectsToSync: SyncedObject[]) => {
@@ -93,7 +111,7 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
             },
           });
 
-          appLoggerService.log(`Created ${crossEnvKey} in ${tableName}`, {
+          appLoggerService.log(`Created ${tableName}-${crossEnvKey} in DataSync table`, {
             existingRecord: {
               ...existingRecord,
               columns: undefined,
@@ -102,14 +120,17 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
             },
           });
         } else {
-          appLoggerService.log(`Found existing record for ${crossEnvKey} in ${tableName}`, {
-            existingRecord: {
-              ...existingRecord,
-              columns: undefined,
-              diff: undefined,
-              auditLog: undefined,
+          appLoggerService.log(
+            `Found existing record for ${tableName}-${crossEnvKey} in DataSync table`,
+            {
+              existingRecord: {
+                ...existingRecord,
+                columns: undefined,
+                diff: undefined,
+                auditLog: undefined,
+              },
             },
-          });
+          );
         }
 
         if (existingRecord.fullDataHash === columnsHash) {
@@ -125,7 +146,7 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
         });
 
         let diff = {} as any;
-        if (Array.isArray(existingRecord.syncedColumns)) {
+        if (Array.isArray(existingRecord.syncedColumns) && dbRecord) {
           const dbSyncedColumnsData = existingRecord.syncedColumns.reduce(
             (acc: any, column: any) => {
               acc[column] = dbRecord[column];
@@ -150,11 +171,11 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
           }
         }
 
-        if (syncConfig.strategy === 'replace') {
+        if (syncConfig.strategy === 'update') {
           await (transaction as { [key: string]: any })[
             tableNamesMap[tableName as keyof typeof tableNamesMap]
           ].update({
-            where: { id: crossEnvKey },
+            where: { crossEnvKey },
             data: columns,
           });
           appLoggerService.log(`Replaced ${crossEnvKey} in ${tableName}`, {
@@ -164,10 +185,10 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
           await (transaction as { [key: string]: any })[
             tableNamesMap[tableName as keyof typeof tableNamesMap]
           ].upsert({
-            where: { id: crossEnvKey },
+            where: { crossEnvKey },
             update: columns,
             create: {
-              id: crossEnvKey,
+              crossEnvKey,
               ...columns,
             },
           });
@@ -198,7 +219,7 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
           },
         });
 
-        appLoggerService.log(`Updated ${crossEnvKey} in ${tableName}`, {
+        appLoggerService.log(`Sync Done on ${crossEnvKey} in ${tableName}`, {
           updatedRecord: {
             ...updatedRecord,
             columns: undefined,
@@ -207,7 +228,9 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
           },
         });
       } catch (error) {
-        appLoggerService.error(`Error syncing ${crossEnvKey} in ${tableName}:`, error as Error);
+        appLoggerService.error(`Error syncing ${crossEnvKey} in ${tableName}:`, {
+          error: error as Error,
+        });
 
         await transaction.dataSync.upsert({
           where: { table_crossEnvKey: { table: tableName as DataSyncTables, crossEnvKey } },

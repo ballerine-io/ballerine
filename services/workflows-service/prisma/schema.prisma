@@ -462,6 +462,7 @@ enum DataSyncStatus {
 enum DataSyncTables {
   WorkflowDefinition
   UiDefinition
+  AlertDefinition
 }
 
 model DataSync {
@@ -712,6 +713,7 @@ enum AlertType {
 
 model AlertDefinition {
   id          String     @id @default(cuid())
+  crossEnvKey String?     @unique
   label       String
   type        AlertType?
   name        String
