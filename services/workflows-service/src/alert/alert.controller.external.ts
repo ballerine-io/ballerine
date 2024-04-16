@@ -171,8 +171,14 @@ export class AlertControllerExternal {
     );
 
     return alerts.map(alert => {
-      const { alertDefinition, assignee, business, state, ...alertWithoutDefinition } =
-        alert as TAlertMerchantResponse;
+      const {
+        alertDefinition,
+        assignee,
+        business,
+        state,
+        executionDetails: _,
+        ...alertWithoutDefinition
+      } = alert as TAlertMerchantResponse;
 
       return {
         ...alertWithoutDefinition,
