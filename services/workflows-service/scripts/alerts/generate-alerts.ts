@@ -13,6 +13,7 @@ import {
   Prisma,
   PrismaClient,
   Project,
+  TransactionDirection,
   TransactionRecordType,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
@@ -43,7 +44,7 @@ export const ALERT_DEFINITIONS = {
       options: {
         havingAggregate: AggregateType.SUM,
 
-        direction: 'inbound',
+        direction: TransactionDirection.inbound,
 
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
@@ -74,7 +75,7 @@ export const ALERT_DEFINITIONS = {
       options: {
         havingAggregate: AggregateType.SUM,
 
-        direction: 'inbound',
+        direction: TransactionDirection.inbound,
 
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
@@ -95,19 +96,23 @@ export const ALERT_DEFINITIONS = {
   },
 
   STRUC_CC: {
+    enabled: true,
     defaultSeverity: AlertSeverity.medium,
     description:
       'Structuring - Significant number of low value incoming transactions just below a threshold of credit card',
     inlineRule: {
       id: 'STRUC_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId'],
+      subjects: ['counterpartyId'],
       options: {
         havingAggregate: AggregateType.COUNT,
+        groupBy: ['counterpartyBeneficiaryId'],
 
-        direction: 'inbound',
-        // TODO: add excludedCounterparty
-        // excludedCounterparty: ['9999999999999999', '999999******9999'],
+        direction: TransactionDirection.inbound,
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
@@ -116,32 +121,36 @@ export const ALERT_DEFINITIONS = {
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 5,
-        amountBetween: { min: 500, max: 1000 },
+        amountBetween: { min: 500, max: 999 },
       },
     },
   },
   STRUC_APM: {
+    enabled: true,
     defaultSeverity: AlertSeverity.medium,
     description:
       'Structuring - Significant number of low value incoming transactions just below a threshold of APM',
     inlineRule: {
       id: 'STRUC_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId'],
+      subjects: ['counterpartyId'],
       options: {
         havingAggregate: AggregateType.COUNT,
+        groupBy: ['counterpartyBeneficiaryId'],
 
-        direction: 'inbound',
-        // TODO: add excludedCounterparty
-        // excludedCounterparty: ['9999999999999999', '999999******9999'],
+        direction: TransactionDirection.inbound,
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
-        excludePaymentMethods: false,
+        excludePaymentMethods: true,
 
         timeAmount: 7,
         timeUnit: TIME_UNITS.days,
 
-        amountBetween: { min: 500, max: 1000 },
+        amountBetween: { min: 500, max: 999 },
 
         amountThreshold: 5,
       },
