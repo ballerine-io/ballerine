@@ -157,7 +157,6 @@ export const ALERT_DEFINITIONS = {
     },
   },
   HCAI_CC: {
-    enabled: true,
     defaultSeverity: AlertSeverity.medium,
     description:
       'High Cumulative Amount - Total sum of inbound credit card transactions received from counterparty is greater than a limit over a set period of time',
@@ -186,7 +185,6 @@ export const ALERT_DEFINITIONS = {
     },
   },
   HACI_APM: {
-    enabled: true,
     defaultSeverity: AlertSeverity.medium,
     description:
       'High Cumulative Amount - Total sum of inbound non-traditional payment transactions received from counterparty is greater than a limit over a set period of time',
@@ -215,7 +213,6 @@ export const ALERT_DEFINITIONS = {
     },
   },
   HVIC_CC: {
-    enabled: true,
     defaultSeverity: AlertSeverity.medium,
     description:
       'High Velocity - High number of inbound credit card transactions received from a Counterparty over a set period of time',
@@ -245,7 +242,6 @@ export const ALERT_DEFINITIONS = {
   },
   HVIC_APM: {
     defaultSeverity: AlertSeverity.medium,
-    enabled: true,
     description:
       'High Velocity - High number of inbound non-traditional payment transactions received from a Counterparty over a set period of time',
     inlineRule: {
