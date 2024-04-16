@@ -747,6 +747,7 @@ model AlertDefinition {
   updatedAt  DateTime @updatedAt
 
   alert Alert[]
+  
 
   @@unique([label, projectId])
   @@index([projectId])
