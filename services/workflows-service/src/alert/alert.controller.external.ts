@@ -77,22 +77,26 @@ export class AlertControllerExternal {
               avatarUrl: true,
             },
           },
-          counterparty: {
-            select: {
-              id: true,
-              business: {
+          transactionAlert: {
+            include: {
+              counterparty: {
                 select: {
                   id: true,
-                  correlationId: true,
-                  companyName: true,
-                },
-              },
-              endUser: {
-                select: {
-                  id: true,
-                  correlationId: true,
-                  firstName: true,
-                  lastName: true,
+                  business: {
+                    select: {
+                      id: true,
+                      correlationId: true,
+                      companyName: true,
+                    },
+                  },
+                  endUser: {
+                    select: {
+                      id: true,
+                      correlationId: true,
+                      firstName: true,
+                      lastName: true,
+                    },
+                  },
                 },
               },
             },
@@ -159,11 +163,15 @@ export class AlertControllerExternal {
               avatarUrl: true,
             },
           },
-          business: {
-            select: {
-              id: true,
-              companyName: true,
-              businessReports: true,
+          ongoingMerchantAlert: {
+            include: {
+              business: {
+                select: {
+                  id: true,
+                  companyName: true,
+                  businessReports: true,
+                },
+              },
             },
           },
         },
