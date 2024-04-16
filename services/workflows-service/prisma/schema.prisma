@@ -143,7 +143,7 @@ model Business {
   project      Project        @relation(fields: [projectId], references: [id])
   Counterparty Counterparty[]
   businessReports BusinessReport[]
-  alerts     Alert[]
+  alerts          OngoingMarchentAlert[]
 
   @@unique([projectId, correlationId])
   @@index([companyName])
@@ -752,6 +752,33 @@ model AlertDefinition {
   @@index([projectId])
 }
 
+model OngoingMarchentAlert {
+  id String @id @default(cuid())
+
+  alert Alert?
+
+  businessId String?
+  business   Business? @relation(fields: [businessId], references: [id])
+
+  businessReportId String @unique
+  businessReport   BusinessReport   @relation(fields: [businessReportId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TransactionAlert {
+  id String @id @default(cuid())
+
+  alert Alert?
+
+  counterpartyId String
+  counterparty   Counterparty @relation(fields: [counterpartyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Alert {
   id String @id @default(cuid())
 
@@ -779,16 +806,15 @@ model Alert {
   workflowRuntimeDataId String?
   workflowRuntimeData   WorkflowRuntimeData? @relation(fields: [workflowRuntimeDataId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
-  counterpartyId String?
-  counterparty   Counterparty? @relation(fields: [counterpartyId], references: [id])
+  ongoingMarchentAlert   OngoingMarchentAlert? @relation(fields: [ongoingMarchentAlertId], references: [id])
+  ongoingMarchentAlertId String?  @unique
 
-  businessId String?
-  business   Business? @relation(fields: [businessId], references: [id])
+  transactionAlert   TransactionAlert? @relation(fields: [transactionAlertId], references: [id])
+  transactionAlertId String?  @unique
 
   @@index([assigneeId])
   @@index([projectId])
   @@index([alertDefinitionId])
-  @@index([counterpartyId])
   @@index([createdAt(sort: Desc)])
 }
 
@@ -831,7 +857,7 @@ model Counterparty {
   // Relations
   originatingTransactions TransactionRecord[] @relation("OriginatingCounterparty")
   benefitingTransactions  TransactionRecord[] @relation("BenefitingCounterparty")
-  alerts                  Alert[]
+  alerts                  TransactionAlert[]
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
@@ -854,6 +880,7 @@ model BusinessReport {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   
+  ongoingMarchentAlert OngoingMarchentAlert?
 
   @@index([createdAt])
   @@index([businessId])
