@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useState } from 'react';
+import { Separator } from '@/common/components/atoms/Separator/Separator';
 import {
   Badge,
   Button,
@@ -9,13 +9,13 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-  ctw,
   Popover,
   PopoverContent,
   PopoverTrigger,
+  ctw,
 } from '@ballerine/ui';
 import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons';
-import { Separator } from '@/common/components/atoms/Separator/Separator';
+import { ReactNode, useCallback, useState } from 'react';
 
 interface IMultiSelectProps<
   TOption extends {
@@ -46,6 +46,7 @@ export const MultiSelect = <
 }: IMultiSelectProps<TOption>) => {
   const [selected, setSelected] = useState(selectedValues);
 
+  console.log('title', { title });
   const onSelectChange = useCallback(
     (value: TOption['value']) => {
       const isSelected = selected.some(selectedValue => selectedValue === value);

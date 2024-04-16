@@ -1,10 +1,14 @@
-import { FunctionComponent, useCallback, useMemo } from 'react';
-import { TUsers } from '@/domains/users/types';
-import { MultiSelect } from '@/common/components/atoms/MultiSelect/MultiSelect';
+import { Filters } from '@/common/components/organisms/Filters/Filters';
+import { FiltersHeader } from '@/common/components/organisms/Filters/Filters.Header';
+import { FiltersList } from '@/common/components/organisms/Filters/Filters.List';
+import { FiltersInput } from '@/common/components/organisms/Filters/Filters.input';
+import { IFilterDefinition, IFilterValue } from '@/common/components/organisms/Filters/interfaces';
+import { TFiltersInputID } from '@/common/components/organisms/Filters/types';
 import { useFilter } from '@/common/hooks/useFilter/useFilter';
 import { AlertStatuses, AlertTypes } from '@/domains/alerts/fetchers';
+import { TUsers } from '@/domains/users/types';
+import { FunctionComponent, useCallback, useMemo } from 'react';
 import { titleCase } from 'string-ts';
-import { keyFactory } from '@/common/utils/key-factory/key-factory';
 
 export const AlertsFilters: FunctionComponent<{
   assignees: TUsers;
@@ -35,67 +39,82 @@ export const AlertsFilters: FunctionComponent<{
       })) ?? [],
     [],
   );
-  const filters = [
-    {
-      title: 'Assignee',
-      accessor: 'assigneeId',
-      options: [
-        {
-          label: 'Unassigned',
-          value: null,
+  const filters: IFilterDefinition[] = useMemo(
+    () => [
+      {
+        id: 'assigneeId',
+        label: 'Assignee',
+        type: 'multi-select',
+        params: {
+          options: [
+            {
+              label: 'Unassigned',
+              value: null,
+            },
+            ...assigneeOptions,
+          ],
         },
-        ...assigneeOptions,
-      ],
-    },
-    {
-      title: 'Alert Type',
-      accessor: 'alertType',
-      options: alertTypeOptions,
-    },
-    {
-      title: 'Status',
-      accessor: 'status',
-      options: statusOptions,
-    },
-    {
-      title: 'Label',
-      accessor: 'label',
-      options: labels.map(label => ({
-        label,
-        value: label,
-      })),
-    },
-  ] satisfies Array<{
-    title: string;
-    accessor: string;
-    options: Array<{
-      label: string;
-      value: string | null;
-    }>;
-  }>;
+      },
+      {
+        id: 'alertType',
+        label: 'Alert Type',
+        type: 'multi-select',
+        params: {
+          options: alertTypeOptions,
+        },
+      },
+      {
+        id: 'status',
+        label: 'Status',
+        type: 'multi-select',
+        params: {
+          options: statusOptions,
+        },
+      },
+      {
+        label: 'Label',
+        id: 'label',
+        type: 'multi-select',
+        params: {
+          options: labels.map(label => ({
+            label,
+            value: label,
+          })),
+        },
+      },
+    ],
+    [assigneeOptions, alertTypeOptions, labels, statusOptions],
+  );
+  console.log('filters', filters);
   const { filter, onFilter } = useFilter();
+  const filterValues = useMemo(
+    () => Object.entries(filter || {}).map(([key, value]) => ({ id: key, value })),
+    [filter],
+  );
+
   const onClearSelect = useCallback(
-    (accessor: string) => () => {
-      onFilter(accessor)([]);
+    (filterId: TFiltersInputID) => () => {
+      onFilter(filterId)([]);
+    },
+    [onFilter],
+  );
+
+  const onFilterChange = useCallback(
+    (filterValue: IFilterValue) => {
+      onFilter(filterValue.id)(filterValue.value as Array<string | null>);
     },
     [onFilter],
   );
 
   return (
-    <div>
-      <h4 className={'leading-0 min-h-[16px] pb-7 text-xs font-bold'}>Filters</h4>
-      <div className={`flex gap-x-2`}>
-        {filters.map(({ title, accessor, options }) => (
-          <MultiSelect
-            key={keyFactory(title, filter?.[accessor])}
-            title={title}
-            selectedValues={filter?.[accessor] ?? []}
-            onSelect={onFilter(accessor)}
-            onClearSelect={onClearSelect(accessor)}
-            options={options}
-          />
-        ))}
-      </div>
-    </div>
+    <Filters
+      filters={filters}
+      values={filterValues}
+      onClear={onClearSelect}
+      onChange={onFilterChange}
+    >
+      <FiltersHeader title="Filters" />
+      <FiltersList>{params => <FiltersInput {...params} />}</FiltersList>
+    </Filters>
   );
 };
