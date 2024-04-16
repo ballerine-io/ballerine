@@ -1,26 +1,28 @@
-import React, { FunctionComponent } from 'react';
+import { RouteError } from '@/common/components/atoms/RouteError/RouteError';
 import { env } from '@/common/env/env';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { AuthenticatedLayout } from '@/domains/auth/components/AuthenticatedLayout';
+import { authenticatedLayoutLoader } from '@/domains/auth/components/AuthenticatedLayout/AuthenticatedLayout.loader';
+import { UnauthenticatedLayout } from '@/domains/auth/components/UnauthenticatedLayout';
+import { unauthenticatedLayoutLoader } from '@/domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
+import { CaseManagement } from '@/pages/CaseManagement/CaseManagement.page';
+import { Document } from '@/pages/Document/Document.page';
+import { entitiesLoader } from '@/pages/Entities/Entities.loader';
+import { Entities } from '@/pages/Entities/Entities.page';
+import { entityLoader } from '@/pages/Entity/Entity.loader';
+import { Entity } from '@/pages/Entity/Entity.page';
+import { Locale } from '@/pages/Locale/Locale.page';
+import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
+import { OngoingMonitoring } from '@/pages/OngoingMonitoring/OngoingMonitoring';
+import { OngoingMonitoringAlertsPage } from '@/pages/OngoingMonitoringAlerts/OngoingMonitoringAlerts.page';
 import { RootError } from '@/pages/Root/Root.error';
+import { rootLoader } from '@/pages/Root/Root.loader';
 import { Root } from '@/pages/Root/Root.page';
 import { SignIn } from '@/pages/SignIn/SignIn.page';
-import { Entity } from '@/pages/Entity/Entity.page';
-import { Entities } from '@/pages/Entities/Entities.page';
-import { RouteError } from '@/common/components/atoms/RouteError/RouteError';
-import { CaseManagement } from '@/pages/CaseManagement/CaseManagement.page';
-import { rootLoader } from '@/pages/Root/Root.loader';
-import { entitiesLoader } from '@/pages/Entities/Entities.loader';
-import { authenticatedLayoutLoader } from '@/domains/auth/components/AuthenticatedLayout/AuthenticatedLayout.loader';
-import { entityLoader } from '@/pages/Entity/Entity.loader';
-import { AuthenticatedLayout } from '@/domains/auth/components/AuthenticatedLayout';
-import { UnauthenticatedLayout } from '@/domains/auth/components/UnauthenticatedLayout';
-import { Locale } from '@/pages/Locale/Locale.page';
-import { unauthenticatedLayoutLoader } from '@/domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
-import { Document } from '@/pages/Document/Document.page';
-import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
-import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
 import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
+import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
 import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
+import { FunctionComponent } from 'react';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 const router = createBrowserRouter([
   {
@@ -104,6 +106,18 @@ const router = createBrowserRouter([
                         errorElement: <RouteError />,
                       },
                     ],
+                  },
+                ],
+              },
+              {
+                path: '/:locale/ongoing-monitoring',
+                element: <OngoingMonitoring />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/ongoing-monitoring/alerts',
+                    element: <OngoingMonitoringAlertsPage />,
+                    errorElement: <RouteError />,
                   },
                 ],
               },
