@@ -81,6 +81,7 @@
     "broadcast-channel": "^7.0.0",
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
+    "currency-symbol-map": "^5.1.0",
     "dayjs": "^1.11.6",
     "eslint-plugin-tailwindcss": "^3.8.0",
     "face-api.js": "^0.22.2",

@@ -153,6 +153,9 @@ importers:
       clsx:
         specifier: ^1.2.1
         version: 1.2.1
+      currency-symbol-map:
+        specifier: ^5.1.0
+        version: 5.1.0
       dayjs:
         specifier: ^1.11.6
         version: 1.11.10
@@ -19649,6 +19652,10 @@ packages:
     dependencies:
       first-match: 0.0.1
       nub: 0.0.0
+    dev: false
+
+  /currency-symbol-map@5.1.0:
+    resolution: {integrity: sha512-LO/lzYRw134LMDVnLyAf1dHE5tyO6axEFkR3TXjQIOmMkAM9YL6QsiUwuXzZAmFnuDJcs4hayOgyIYtViXFrLw==}
     dev: false
 
   /cz-conventional-changelog@3.3.0(@types/node@18.17.19)(typescript@4.9.5):
