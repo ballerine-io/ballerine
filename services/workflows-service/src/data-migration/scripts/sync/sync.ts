@@ -254,7 +254,7 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
             fullDataHash: '',
             status: 'failed',
             failureReason: (error as Error).message,
-            syncedColumns: columns,
+            syncedColumns: columns as InputJsonValue,
             auditLog: {
               [`${new Date().toISOString()}`]: {
                 action: 'syncFailed',
