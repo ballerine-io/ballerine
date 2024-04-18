@@ -1,6 +1,7 @@
 name: Publish workflows-service image
 
 on:
+  workflow_call:
   workflow_dispatch:
     inputs:
       deploy_to_dev:
