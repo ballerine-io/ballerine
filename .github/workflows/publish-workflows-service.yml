@@ -2,7 +2,7 @@ name: Publish workflows-service image
 
 on:
   repository_dispatch:
-    types: [trigger-cd-event] 
+    types: [trigger-cd-event]
   workflow_dispatch:
     inputs:
       deploy_to_dev:
@@ -10,7 +10,7 @@ on:
         description: 'Deploy to Development Environment'
         required: true
         default: 'false'
-        options: 
+        options:
           - 'false'
           - 'true'
   push:
@@ -29,7 +29,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
 
-jobs:      
+jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
     permissions:
@@ -45,11 +45,11 @@ jobs:
       docker_image: ${{ steps.docker-version.outputs.image }} # ghcr.io/ballerine-io/workflows-service
       docker_tag: ${{ steps.docker-version.outputs.tag }} # <short_sha>-<branch_name>
       docker_full_image: ${{ steps.docker-version.outputs.full_image }} # ghcr.io/ballerine-io/workflows-service:<short_sha>-<branch_name>
-      
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Get tags
         run: git fetch --tags origin
 
@@ -65,7 +65,7 @@ jobs:
           echo "sha_short=$SHORT_SHA"
           echo "sha_short=$SHORT_SHA" >> $GITHUB_OUTPUT
           echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
-          
+
       - name: Bump version
         id: bump-version
         uses: ./.github/actions/bump-version
@@ -89,7 +89,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
             ${{ runner.os }}-docker-
-  
+
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
@@ -131,8 +131,8 @@ jobs:
           echo "docker_meta-tags: ${{ steps.docker_meta.outputs.tags }}"
           echo "bump-version-version: ${{ steps.bump-version.outputs.version }}"
           echo "bump-version-tag: ${{ steps.bump-version.outputs.tag }}"
-            
-      - name: Build and push Docker image 
+
+      - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: services/workflows-service
@@ -147,7 +147,7 @@ jobs:
       - name: Scan Docker Image
         uses: aquasecurity/trivy-action@master
         with:
-          cache-dir: 
+          cache-dir:
           image-ref: ${{ steps.docker-version.outputs.full_image }}
           format: 'table'
           ignore-unfixed: true
@@ -161,7 +161,6 @@ jobs:
     permissions:
       contents: read
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -220,13 +219,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Release
         run: gh release create ${{ needs.build-and-push-image.outputs.version }} --notes-start-tag ${{ needs.build-and-push-image.outputs.bumped_tag }}
 
   sentry:
     runs-on: ubuntu-latest
-    # needs: [build-and-push-image]  # Uncomment this line if you want to create a release in sentry 
+    # needs: [build-and-push-image]  # Uncomment this line if you want to create a release in sentry
     needs: [build-and-push-image, release]
     env:
       GH_TOKEN: ${{ github.token }}
@@ -239,19 +238,19 @@ jobs:
       - name: Run Container and Copy File
         run: |
           id=$(docker run --rm --name tmp -d ${{ needs.build-and-push-image.outputs.docker_full_image }} tail -f /dev/null)
-          
+
           mkdir -p ./dist
-          
+
           docker cp $id:/app/dist/ ./dist
 
           curl -sL https://sentry.io/get-cli/ | SENTRY_CLI_VERSION="2.31.0" bash
 
           sentry-cli releases new "${{needs.build-and-push-image.outputs.version}}"
           echo "sentry-cli releases new ${{needs.build-and-push-image.outputs.version}}"
-          
+
           sentry-cli releases set-commits "${{needs.build-and-push-image.outputs.version}}" --auto --ignore-missing
           echo "sentry-cli releases set-commits ${{needs.build-and-push-image.outputs.version}} --auto --ignore-missing"
-          
+
           sentry-cli sourcemaps upload --dist="${{needs.build-and-push-image.outputs.sha_short}}" --release="${{needs.build-and-push-image.outputs.version}}" ./dist
           echo "sentry-cli sourcemaps upload --dist=${{needs.build-and-push-image.outputs.sha_short}} --release=${{needs.build-and-push-image.outputs.version}} ./dist"
 
@@ -271,8 +270,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: recursive
           fetch-depth: 1
+          submodules: 'recursive'
           token: ${{ secrets.SUBMODULES_TOKEN }}
 
       - name: Cache Docker layers
@@ -285,12 +284,12 @@ jobs:
             ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
             ${{ runner.os }}-docker-
 
-      - name: Checkout submodule branch
+      - name: Fetch submodule branch
         run: |
-          git submodule update --init --recursive
           cd services/workflows-service/prisma/data-migrations
+          git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ github.ref_name }}
           git checkout ${{ github.ref_name }}
-          cd ../../..
+          cd ../../../..
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
