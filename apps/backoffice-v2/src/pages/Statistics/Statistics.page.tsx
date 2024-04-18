@@ -1,7 +1,9 @@
-import React, { FunctionComponent } from 'react'
+import React, { FunctionComponent } from 'react';
 
 export const Statistics: FunctionComponent = () => {
   return (
-    <div>Statistics.page</div>
-  )
-}
+    <div>
+      statistics page
+    </div>
+  );
+};
