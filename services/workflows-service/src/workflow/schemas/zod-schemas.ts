@@ -1,4 +1,5 @@
 import { SubscriptionSchema } from '@/common/types';
+import { WorkflowDefinitionConfigThemeSchema } from '@ballerine/common';
 import { z } from 'zod';
 
 export const ConfigSchema = z
@@ -56,11 +57,7 @@ export const ConfigSchema = z
       .describe('Indicates if workflow could be created in backoffice'),
     kybOnExitAction: z.enum(['send-event', 'redirect-to-customer-portal']).optional(),
     reportConfig: z.record(z.string(), z.unknown()).optional(),
-    theme: z
-      .object({
-        type: z.enum(['documents-review']),
-      })
-      .optional(),
+    theme: WorkflowDefinitionConfigThemeSchema.optional(),
   })
   .strict()
   .optional();
