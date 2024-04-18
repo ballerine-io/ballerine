@@ -1,5 +1,15 @@
 # @ballerine/backoffice-v2
 
+## 0.7.5
+
+### Patch Changes
+
+- Added workflow definition theme schemas
+- Updated dependencies
+  - @ballerine/common@0.9.3
+  - @ballerine/workflow-browser-sdk@0.6.6
+  - @ballerine/workflow-node-sdk@0.6.6
+
 ## 0.7.4
 
 ### Patch Changes
