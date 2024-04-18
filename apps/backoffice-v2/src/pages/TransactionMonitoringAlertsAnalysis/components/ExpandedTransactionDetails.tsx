@@ -1,10 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import dayjs from 'dayjs';
 import { t } from 'i18next';
 import { toast } from 'sonner';
 import { titleCase } from 'string-ts';
 import { FileJson2 } from 'lucide-react';
-import getSymbolFromCurrency from 'currency-symbol-map';
 
 import { JsonDialog } from '@ballerine/ui';
 import { CopySvg } from '@/common/components/atoms/icons';
@@ -24,6 +23,28 @@ const copyToClipboard = async (text: string) => {
 
 export const ExpandedTransactionDetails = ({ transaction }: IExpandedTransactionDetailsProps) => {
   const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
+
+  const transactionAmountAndCurrency = useMemo(() => {
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: transaction.transactionCurrency,
+      }).format(transaction.transactionAmount);
+    } catch {
+      return `${transaction.transactionAmount} ${transaction.transactionCurrency}`;
+    }
+  }, [transaction.transactionAmount, transaction.transactionCurrency]);
+
+  const transactionBaseAmountAndCurrency = useMemo(() => {
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: transaction.transactionBaseCurrency,
+      }).format(transaction.transactionBaseAmount);
+    } catch {
+      return `${transaction.transactionBaseAmount} ${transaction.transactionBaseCurrency}`;
+    }
+  }, [transaction.transactionBaseAmount, transaction.transactionBaseCurrency]);
 
   return (
     <div className={`flex justify-between px-8`}>
@@ -55,16 +76,8 @@ export const ExpandedTransactionDetails = ({ transaction }: IExpandedTransaction
           <TextWithNAFallback>
             {titleCase(transaction.transactionCategory ?? '')}
           </TextWithNAFallback>
-          <TextWithNAFallback>
-            {`${getSymbolFromCurrency(transaction.transactionCurrency)} ${
-              transaction.transactionAmount
-            }`}
-          </TextWithNAFallback>
-          <TextWithNAFallback>
-            {`${getSymbolFromCurrency(transaction.transactionBaseCurrency)} ${
-              transaction.transactionBaseAmount
-            }`}
-          </TextWithNAFallback>
+          <TextWithNAFallback>{transactionAmountAndCurrency}</TextWithNAFallback>
+          <TextWithNAFallback>{transactionBaseAmountAndCurrency}</TextWithNAFallback>
         </div>
       </div>
       <div className={`flex space-x-6`}>
