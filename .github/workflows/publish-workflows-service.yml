@@ -289,7 +289,7 @@ jobs:
         run: |
           git submodule update --init --recursive
           cd services/workflows-service/prisma/data-migrations
-          git checkout ${{ github.ref_name }}
+          git checkout dev
           cd ../../..
 
       - name: Setup upterm session
