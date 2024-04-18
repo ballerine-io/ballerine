@@ -1,7 +1,8 @@
 name: Publish workflows-service image
 
 on:
-  workflow_call:
+  repository_dispatch:
+    types: [trigger-cd-event] 
   workflow_dispatch:
     inputs:
       deploy_to_dev:
