@@ -1,9 +1,10 @@
 import React, { FunctionComponent } from 'react';
-import { Navigate, useLocation, useParams } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 export const NotFoundRedirect: FunctionComponent = () => {
   const { state } = useLocation();
-  const { locale } = useParams();
+  const locale = useLocale();
 
-  return <Navigate to={`/${locale}/statistics`} replace state={state} />;
+  return <Navigate to={`/${locale}/home/statistics`} replace state={state} />;
 };
