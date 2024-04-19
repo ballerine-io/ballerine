@@ -8,7 +8,6 @@ import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 export const useNavbarLogic = () => {
   const { data: filters } = useFiltersQuery();
-  const { pathname } = useLocation();
   const locale = useLocale();
   const filterId = useFilterId();
   const individualsFilters = useMemo(
@@ -33,7 +32,7 @@ export const useNavbarLogic = () => {
         businessesFilters?.map(({ id, name }) => ({
           filterId: id,
           text: name,
-          href: `/en/case-management/entities?filterId=${id}`,
+          href: `/${locale}/case-management/entities?filterId=${id}`,
           key: `nav-item-${id}`,
         })) ?? [],
       key: 'nav-item-businesses',
@@ -45,7 +44,7 @@ export const useNavbarLogic = () => {
         individualsFilters?.map(({ id, name }) => ({
           filterId: id,
           text: name,
-          href: `/en/case-management/entities?filterId=${id}`,
+          href: `/${locale}/case-management/entities?filterId=${id}`,
           key: `nav-item-${id}`,
         })) ?? [],
       key: 'nav-item-individuals',
@@ -56,13 +55,14 @@ export const useNavbarLogic = () => {
       children: [
         {
           text: 'Alerts',
-          href: `/en/transaction-monitoring/alerts`,
+          href: `/${locale}/transaction-monitoring/alerts`,
           key: 'nav-item-alerts',
         },
       ],
       key: 'nav-item-transaction-monitoring',
     },
   ] satisfies TRoutes;
+  const { pathname } = useLocation();
   const checkIsActiveFilterGroup = useCallback(
     (navItem: TRouteWithChildren) => {
       return navItem.children?.some(

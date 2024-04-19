@@ -56,6 +56,11 @@ export const ConfigSchema = z
       .describe('Indicates if workflow could be created in backoffice'),
     kybOnExitAction: z.enum(['send-event', 'redirect-to-customer-portal']).optional(),
     reportConfig: z.record(z.string(), z.unknown()).optional(),
+    theme: z
+      .object({
+        type: z.enum(['documents-review']),
+      })
+      .optional(),
   })
   .strict()
   .optional();
