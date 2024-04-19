@@ -1,9 +1,9 @@
-import { WorkflowDefinitionConfigThemeEnum } from '@/domains/workflow-definitions/enums/workflow-definition-config-theme';
 import { WorkflowDefinitionConfigTheme } from '@/domains/workflow-definitions/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createAssociatedCompanyDocumentBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/create-assosiacted-company-document-blocks';
 import { createKycBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/create-kyc-blocks';
 import { Blocks } from '@ballerine/blocks';
+import { WorkflowDefinitionConfigThemeEnum } from '@ballerine/common';
 
 export type TCaseBlocksCreationProps = {
   workflow: TWorkflowById;
