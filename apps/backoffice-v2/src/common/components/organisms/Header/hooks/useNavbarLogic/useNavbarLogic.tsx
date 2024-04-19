@@ -1,14 +1,15 @@
 import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useCallback, useMemo } from 'react';
-import { Home, Building, Goal, Users } from 'lucide-react';
+import { Building, Goal, Home, Users } from 'lucide-react';
 import { TRoutes, TRouteWithChildren } from '@/Router/types';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 export const useNavbarLogic = () => {
   const { data: filters } = useFiltersQuery();
   const { pathname } = useLocation();
-  const { locale } = useParams();
+  const locale = useLocale();
   const filterId = useFilterId();
   const individualsFilters = useMemo(
     () => filters?.filter(({ entity }) => entity === 'individuals'),
@@ -22,7 +23,7 @@ export const useNavbarLogic = () => {
     {
       text: 'Home',
       icon: <Home size={20} />,
-      href: `/${locale}/${pathname.includes('statistics') ? 'statistics' : 'workflows'}`,
+      href: `/${locale}/home`,
       key: 'nav-item-Home',
     },
     {
