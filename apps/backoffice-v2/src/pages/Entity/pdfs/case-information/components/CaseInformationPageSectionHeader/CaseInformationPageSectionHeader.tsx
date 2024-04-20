@@ -4,7 +4,7 @@ import { FunctionComponent } from 'react';
 
 interface ICaseInformationPageSectionHeaderProps {
   title: string;
-  subtitle: string;
+  subtitle?: string;
 }
 
 export const CaseInformationPageSectionHeader: FunctionComponent<
