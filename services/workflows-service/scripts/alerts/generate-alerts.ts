@@ -13,6 +13,7 @@ import {
   Prisma,
   PrismaClient,
   Project,
+  TransactionDirection,
   TransactionRecordType,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
@@ -43,7 +44,7 @@ export const ALERT_DEFINITIONS = {
       options: {
         havingAggregate: AggregateType.SUM,
 
-        direction: 'inbound',
+        direction: TransactionDirection.inbound,
 
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
@@ -74,7 +75,7 @@ export const ALERT_DEFINITIONS = {
       options: {
         havingAggregate: AggregateType.SUM,
 
-        direction: 'inbound',
+        direction: TransactionDirection.inbound,
 
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
@@ -95,19 +96,23 @@ export const ALERT_DEFINITIONS = {
   },
 
   STRUC_CC: {
-    defaultSeverity: AlertSeverity.medium,
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
     description:
       'Structuring - Significant number of low value incoming transactions just below a threshold of credit card',
     inlineRule: {
       id: 'STRUC_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId'],
+      subjects: ['counterpartyId'],
       options: {
         havingAggregate: AggregateType.COUNT,
+        groupBy: ['counterpartyBeneficiaryId'],
 
-        direction: 'inbound',
-        // TODO: add excludedCounterparty
-        // excludedCounterparty: ['9999999999999999', '999999******9999'],
+        direction: TransactionDirection.inbound,
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
@@ -116,32 +121,36 @@ export const ALERT_DEFINITIONS = {
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 5,
-        amountBetween: { min: 500, max: 1000 },
+        amountBetween: { min: 500, max: 999 },
       },
     },
   },
   STRUC_APM: {
-    defaultSeverity: AlertSeverity.medium,
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
     description:
       'Structuring - Significant number of low value incoming transactions just below a threshold of APM',
     inlineRule: {
       id: 'STRUC_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId'],
+      subjects: ['counterpartyId'],
       options: {
         havingAggregate: AggregateType.COUNT,
+        groupBy: ['counterpartyBeneficiaryId'],
 
-        direction: 'inbound',
-        // TODO: add excludedCounterparty
-        // excludedCounterparty: ['9999999999999999', '999999******9999'],
+        direction: TransactionDirection.inbound,
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
-        excludePaymentMethods: false,
+        excludePaymentMethods: true,
 
         timeAmount: 7,
         timeUnit: TIME_UNITS.days,
 
-        amountBetween: { min: 500, max: 1000 },
+        amountBetween: { min: 500, max: 999 },
 
         amountThreshold: 5,
       },
@@ -154,13 +163,16 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'HCAI_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId', 'counterpartyOriginatorId'],
+      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
       options: {
         havingAggregate: AggregateType.SUM,
+        groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
 
-        direction: 'inbound',
-        // TODO: add excludedCounterparty
-        // excludedCounterparty: ['9999999999999999', '999999******9999'],
+        direction: TransactionDirection.inbound,
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
@@ -179,13 +191,16 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'HACI_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId', 'counterpartyOriginatorId'],
+      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
       options: {
         havingAggregate: AggregateType.SUM,
+        groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
 
-        direction: 'inbound',
-        // TODO: add excludedCounterparty
-        // excludedCounterparty: ['9999999999999999', '999999******9999'],
+        direction: TransactionDirection.inbound,
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: true,
@@ -204,16 +219,47 @@ export const ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'HVIC_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId', 'counterpartyOriginatorId'],
+      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
       options: {
         havingAggregate: AggregateType.COUNT,
+        groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
 
-        direction: 'inbound',
-        // TODO: add excludedCounterparty
-        // excludedCounterparty: ['9999999999999999', '999999******9999'],
+        direction: TransactionDirection.inbound,
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
+
+        timeAmount: 7,
+        timeUnit: TIME_UNITS.days,
+
+        amountThreshold: 2,
+      },
+    },
+  },
+  HVIC_APM: {
+    defaultSeverity: AlertSeverity.medium,
+    description:
+      'High Velocity - High number of inbound non-traditional payment transactions received from a Counterparty over a set period of time',
+    inlineRule: {
+      id: 'HVIC_CC',
+      fnName: 'evaluateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
+      options: {
+        havingAggregate: AggregateType.COUNT,
+        groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
+
+        direction: TransactionDirection.inbound,
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
+
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: true,
 
         timeAmount: 7,
         timeUnit: TIME_UNITS.days,
@@ -244,7 +290,7 @@ export const ALERT_DEFINITIONS = {
   },
   SHCAC_C: {
     enabled: true,
-    defaultSeverity: AlertSeverity.medium,
+    defaultSeverity: AlertSeverity.high,
     description:
       'High Cumulative Amount - Chargeback - High sum of chargebacks over a set period of time',
     inlineRule: {
@@ -283,7 +329,7 @@ export const ALERT_DEFINITIONS = {
   },
   SHCAR_C: {
     enabled: true,
-    defaultSeverity: AlertSeverity.medium,
+    defaultSeverity: AlertSeverity.high,
     description: 'High Cumulative Amount - Refund - High sum of refunds over a set period of time',
     inlineRule: {
       id: 'SHCAR_C',
