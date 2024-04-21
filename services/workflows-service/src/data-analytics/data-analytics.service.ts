@@ -93,10 +93,12 @@ export class DataAnalyticsService {
 
     if (excludedCounterparty) {
       (excludedCounterparty.counterpartyBeneficiaryIds || []).forEach(id =>
+        // @TODO: Check against correlationId
         conditions.push(Prisma.sql`"counterpartyBeneficiaryId" NOT LIKE ${id}`),
       );
 
       (excludedCounterparty.counterpartyOriginatorIds || []).forEach(id =>
+        // @TODO: Check against correlationId
         conditions.push(Prisma.sql`"counterpartyOriginatorId" NOT LIKE ${id}`),
       );
     }
@@ -186,9 +188,7 @@ export class DataAnalyticsService {
         SELECT
           "${Prisma.raw(subjectColumn)}",
           COUNT(*) AS "transactionCount",
-          COUNT(*) FILTER (WHERE "transactionType" = '${Prisma.raw(
-            transactionType,
-          )}') AS "filteredTransactionCount"
+          COUNT(*) FILTER (WHERE "transactionType"::text = ${Prisma.sql`${transactionType}`}) AS "filteredTransactionCount"
         FROM
           "TransactionRecord"
         WHERE
