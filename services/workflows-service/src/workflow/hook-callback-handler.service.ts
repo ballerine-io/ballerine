@@ -13,6 +13,7 @@ import { BusinessReportType, Customer, WorkflowRuntimeData } from '@prisma/clien
 import fs from 'fs';
 import { get, isObject, set } from 'lodash';
 import * as tmp from 'tmp';
+import { z } from 'zod';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -137,18 +138,21 @@ export class HookCallbackHandlerService {
   }
 
   async prepareMerchantAuditReportContext(
-    data: {
-      reportData: Record<string, unknown>;
-      base64Pdf: string;
-      reportId: string;
-      reportType: string;
-      comparedToReportId?: string;
-    },
+    data: Record<string, unknown>,
     workflowRuntime: WorkflowRuntimeData,
     resultDestinationPath: string,
     currentProjectId: TProjectId,
   ) {
-    const { reportData, base64Pdf, reportId, reportType, comparedToReportId } = data;
+    const { reportData, base64Pdf, reportId, reportType, comparedToReportId } = z
+      .object({
+        reportData: z.record(z.string(), z.unknown()),
+        base64Pdf: z.string(),
+        reportId: z.string(),
+        reportType: z.string(),
+        comparedToReportId: z.string().optional(),
+      })
+      .parse(data);
+
     const { context } = workflowRuntime;
 
     const businessId = context.entity.id as string;
