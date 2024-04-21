@@ -165,13 +165,14 @@ export class HookCallbackHandlerService {
         },
         [currentProjectId],
       );
-      reportData.previousReport = {
-        summary: (comparedToReport.report as { summary: unknown }).summary,
-      };
 
       if (!comparedToReport) {
         throw new BadRequestException('Compared to report not found.');
       }
+
+      reportData.previousReport = {
+        summary: (comparedToReport.report as { summary: unknown }).summary,
+      };
     }
 
     const { pdfReportBallerineFileId } = await this.__peristPDFReportDocumentWithWorkflowDocuments({
