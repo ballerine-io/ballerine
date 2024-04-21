@@ -58,7 +58,13 @@ export class HookCallbackHandlerService {
 
     if (processName === 'merchant-audit-report') {
       return await this.prepareMerchantAuditReportContext(
-        data,
+        data as {
+          reportData: Record<string, unknown>;
+          base64Pdf: string;
+          reportId: string;
+          reportType: string;
+          comparedToReportId?: string;
+        },
         workflowRuntime,
         resultDestinationPath,
         currentProjectId,
@@ -117,8 +123,8 @@ export class HookCallbackHandlerService {
         report: {
           reportFileId: pdfReportBallerineFileId,
           data: reportData as InputJsonValue,
-          reportId: reportId as string,
         },
+        reportId: reportId as string,
         businessId: business.id,
         projectId: currentProjectId,
       },
@@ -131,17 +137,42 @@ export class HookCallbackHandlerService {
   }
 
   async prepareMerchantAuditReportContext(
-    data: AnyRecord,
+    data: {
+      reportData: Record<string, unknown>;
+      base64Pdf: string;
+      reportId: string;
+      reportType: string;
+      comparedToReportId?: string;
+    },
     workflowRuntime: WorkflowRuntimeData,
     resultDestinationPath: string,
     currentProjectId: TProjectId,
   ) {
-    const { reportData, base64Pdf, reportId, reportType } = data;
+    const { reportData, base64Pdf, reportId, reportType, comparedToReportId } = data;
     const { context } = workflowRuntime;
 
     const businessId = context.entity.id as string;
 
     const customer = await this.customerService.getByProjectId(currentProjectId);
+
+    if (comparedToReportId) {
+      const comparedToReport = await this.businessReportService.findFirst(
+        {
+          where: {
+            businessId,
+            reportId: comparedToReportId,
+          },
+        },
+        [currentProjectId],
+      );
+      reportData.previousReport = {
+        summary: (comparedToReport.report as { summary: unknown }).summary,
+      };
+
+      if (!comparedToReport) {
+        throw new BadRequestException('Compared to report not found.');
+      }
+    }
 
     const { pdfReportBallerineFileId } = await this.__peristPDFReportDocumentWithWorkflowDocuments({
       context,
@@ -161,6 +192,7 @@ export class HookCallbackHandlerService {
         type: reportType as BusinessReportType,
         report: reportContent,
         businessId: businessId,
+        reportId: reportId as string,
         projectId: currentProjectId,
       },
     });

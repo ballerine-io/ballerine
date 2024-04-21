@@ -838,6 +838,7 @@ model Counterparty {
 model BusinessReport {
   id     String             @id @default(cuid())
   type   BusinessReportType
+  reportId String?
   report Json
 
   businessId String
@@ -849,6 +850,7 @@ model BusinessReport {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([reportId])
   @@index([createdAt])
   @@index([businessId])
   @@index([projectId])

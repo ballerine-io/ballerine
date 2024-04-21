@@ -25,4 +25,13 @@ export class BusinessReportRepository {
       this.scopeService.scopeFindMany(args, projectIds),
     );
   }
+
+  async findFirst<T extends Prisma.BusinessReportFindFirstArgs>(
+    args: Prisma.SelectSubset<T, Prisma.BusinessReportFindFirstArgs>,
+    projectIds: TProjectIds,
+  ) {
+    return await this.prisma.businessReport.findFirstOrThrow(
+      this.scopeService.scopeFindFirst(args, projectIds),
+    );
+  }
 }
