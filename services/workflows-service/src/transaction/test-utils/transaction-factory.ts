@@ -333,6 +333,16 @@ export class TransactionFactory {
     return factory;
   }
 
+  public withCounterpartyBeneficiary(id: string) {
+    const factory = this.clone();
+
+    factory.data.counterpartyBeneficiary = {
+      connect: { id },
+    };
+
+    return factory;
+  }
+
   public transactionDate(transactionDate: Date) {
     const factory = this.clone();
 
