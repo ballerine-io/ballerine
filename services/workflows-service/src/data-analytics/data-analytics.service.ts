@@ -224,6 +224,10 @@ export class DataAnalyticsService {
     minimumTransactionAmount,
     transactionFactor,
   }: TransactionLimitHistoricAverageOptions) {
+    if (!['=', '!='].includes(paymentMethod.operator)) {
+      throw new Error('Invalid operator');
+    }
+
     return await this._executeQuery<Array<{ counterpartyId: string }>>(Prisma.sql`
       WITH transactionsData AS (
         SELECT
