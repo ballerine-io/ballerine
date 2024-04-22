@@ -1,8 +1,6 @@
-import { DataSyncTables, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { SyncedObject, sync } from './sync';
-import { MD5 as objectMd5 } from 'object-hash';
+import { SyncedObject } from './sync';
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 import { fetchServiceFromModule } from '@/test/helpers/nest-app-helper';
 import { PrismaModule } from '@/prisma/prisma.module';
@@ -39,6 +37,7 @@ describe('Data Sync System:', () => {
     crossEnvKey: 'test-key',
     tableName: 'WorkflowDefinition',
     columns: { name: 'Test Workflow', version: 1 },
+    // @ts-expect-error -- there is no 'replace' strategy
     syncConfig: { strategy: 'replace' },
     syncedEnvironments: ['local'],
     dryRunEnvironments: [],

@@ -18,17 +18,14 @@ import {
   PaymentProcessor,
   PaymentType,
   Project,
-  ReviewStatus,
   TransactionDirection,
-  TransactionRecordStatus,
   TransactionRecordType,
 } from '@prisma/client';
 import { createProject } from '@/test/helpers/create-project';
-import { TransactionModule } from '@/transaction/transaction.module';
-import { TransactionControllerExternal } from '@/transaction/transaction.controller.external';
 import { TransactionCreateDto } from '@/transaction/dtos/transaction-create.dto';
 import { generateBusiness, generateEndUser } from '../../scripts/generate-end-user';
 import { BulkStatus } from '@/alert/types';
+import { TransactionModule } from '@/transaction/transaction.module';
 
 const getBusinessCounterpartyData = (business?: Business) => {
   if (business) {
@@ -140,7 +137,7 @@ describe('#TransactionControllerExternal', () => {
   beforeAll(async () => {
     await cleanupDatabase();
 
-    app = await initiateNestApp(app, [], [TransactionControllerExternal], [TransactionModule]);
+    app = await initiateNestApp(app, [], [], [TransactionModule]);
   });
   beforeEach(async () => {
     customer = await createCustomer(
