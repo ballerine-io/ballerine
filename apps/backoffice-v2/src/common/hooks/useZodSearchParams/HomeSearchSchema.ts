@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const dateRangeSchema = z.object({
+export const HomeSearchSchema = z.object({
   from: z
     .string()
     .optional()
@@ -11,4 +11,4 @@ export const dateRangeSchema = z.object({
     .transform(val => (val ? new Date(val) : undefined)),
 });
 
-export type DateRange = z.infer<typeof dateRangeSchema>;
+export type DateRange = z.infer<typeof HomeSearchSchema>;
