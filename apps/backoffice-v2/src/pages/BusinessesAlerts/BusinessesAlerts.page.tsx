@@ -1,10 +1,10 @@
 import { AlertsTable } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable';
-import { AlertsHeader } from 'src/pages/TransactionMonitoringAlerts/components/AlertsHeader';
-import { AlertsPagination } from '@/pages/TransactionMonitoringAlerts/components/AlertsPagination/AlertsPagination';
-import { useTransactionMonitoringAlertsLogic } from '@/pages/TransactionMonitoringAlerts/hooks/useTransactionMonitoringAlertsLogic/useTransactionMonitoringAlertsLogic';
+import { AlertsHeader } from 'src/pages/BusinessesAlerts/components/AlertsHeader';
+import { AlertsPagination } from '@/pages/BusinessesAlerts/components/AlertsPagination/AlertsPagination';
+import { useTransactionMonitoringAlertsLogic } from '@/pages/BusinessesAlerts/hooks/useTransactionMonitoringAlertsLogic/useTransactionMonitoringAlertsLogic';
 import { Outlet } from 'react-router-dom';
 import { isNonEmptyArray } from '@ballerine/common';
-import { NoAlerts } from '@/pages/TransactionMonitoringAlerts/components/NoAlerts/NoAlerts';
+import { NoAlerts } from '@/pages/BusinessesAlerts/components/NoAlerts/NoAlerts';
 
 export const BusinessesAlerts = () => {
   const {

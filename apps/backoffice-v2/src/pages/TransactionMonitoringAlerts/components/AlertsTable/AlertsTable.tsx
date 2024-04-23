@@ -74,7 +74,8 @@ export const AlertsTable: FunctionComponent<IAlertsTableProps> = ({ data }) => {
                           flexRender(cell.column.columnDef.cell, cell.getContext())}
                         {cell.column.id !== 'select' && (
                           <Link
-                            to={`/${locale}/transaction-monitoring/alerts/${itemId}${search}&businessId=${
+                            // NOT COMMON
+                            to={`/${locale}/businesses/alerts/${itemId}${search}&businessId=${
                               item?.merchant?.id ?? ''
                             }&counterpartyId=${item?.counterpartyId ?? ''}`}
                             onClick={onRowClick}
