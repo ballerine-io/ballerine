@@ -30,7 +30,7 @@ export const useNavbarLogic = () => {
         {
           text: 'Ongoing Moniotring',
           href: `/en/businesses/alerts`,
-          key: 'nav-item-alerts',
+          key: 'nav-item-business-alerts',
         },
       ],
       key: 'nav-item-businesses',

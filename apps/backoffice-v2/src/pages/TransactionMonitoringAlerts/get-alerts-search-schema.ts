@@ -28,4 +28,5 @@ export const getAlertsSearchSchema = (authenticatedUserId: string | null) =>
     selected: BooleanishSchema.optional(),
     businessId: z.string().optional(),
     counterpartyId: z.string().optional(),
+    type: z.string().optional(),
   });
