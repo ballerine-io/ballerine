@@ -20,7 +20,9 @@ import { Document } from '@/pages/Document/Document.page';
 import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
 import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
 import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
-import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
+import { Businesses } from '@/pages/Businesses/Businesses';
+import { BusinessesAlerts } from '@/pages/BusinessesAlerts/BusinessesAlerts.page';
+import { BusinessesAlertsAnalysisPage } from '@/pages/BusinessesAlertsAnalysis/BusinessesAlertsAnalysis.page';
 
 const router = createBrowserRouter([
   {
@@ -100,7 +102,26 @@ const router = createBrowserRouter([
                     children: [
                       {
                         path: '/:locale/transaction-monitoring/alerts/:alertId',
-                        element: <TransactionMonitoringAlertsAnalysisPage />,
+                        element: <TransactionMonitoringAlerts />,
+                        errorElement: <RouteError />,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                path: '/:locale/businesses',
+                element: <Businesses />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/businesses/alerts',
+                    element: <BusinessesAlerts />,
+                    errorElement: <RouteError />,
+                    children: [
+                      {
+                        path: '/:locale/businesses/alerts/:alertId',
+                        element: <BusinessesAlertsAnalysisPage />,
                         errorElement: <RouteError />,
                       },
                     ],
