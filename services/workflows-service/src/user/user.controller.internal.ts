@@ -9,6 +9,7 @@ import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { UserStatus } from '@prisma/client';
+import sgMail from '@sendgrid/mail';
 
 @swagger.ApiExcludeController()
 @common.Controller('internal/users')
@@ -50,9 +51,10 @@ export class UserControllerInternal {
     @common.Body() userCreatInfo: UserCreateDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    const { projectIds, ...userInfo } = userCreatInfo;
+    const { projectIds, options, ...userInfo } = userCreatInfo;
+    const shouldSendWelcomeEmail = options?.sendWelcomeEmail ?? false;
 
-    return this.service.create(
+    const createdUser = await this.service.create(
       {
         data: userInfo,
         select: {
@@ -67,5 +69,29 @@ export class UserControllerInternal {
       },
       projectIds?.[0] || currentProjectId,
     );
+    if (shouldSendWelcomeEmail && createdUser.email) {
+      const message: sgMail.MailDataRequired = {
+        to: createdUser.email,
+        from: 'oss@ballerine.com',
+        subject: 'Welcome Message!',
+        text: 'Welcome to our Ballerine!',
+        html: '<strong>Welcome to our Ballerine!</strong>',
+      };
+
+      if (process.env.SENDGRID_API_KEY) {
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        await sgMail.send(message).then(() => {}, error => {
+          console.error(error);
+          if (error.response) {
+            console.error(error.response.body)
+          }
+        });
+      } else {
+        console.warn('SendGrid API key not provided. Email will not be not send ');
+        console.log('Email:', message);
+      }
+    }
+
+    return createdUser;
   }
 }

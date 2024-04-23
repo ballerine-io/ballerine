@@ -1,6 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsString } from 'class-validator';
+import { IsArray, IsString , IsOptional , IsBoolean } from 'class-validator';
 import type { InputJsonValue } from '../../types';
+
+class CreateOptions {
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+    default: false,
+  })
+  @IsBoolean()
+  @IsOptional()
+  sendWelcomeEmail?: boolean;
+}
 
 export class UserCreateDto {
   @ApiProperty({
@@ -53,4 +64,8 @@ export class UserCreateDto {
   // @Type(() => WorkflowCreateNestedManyWithoutUsersInput)
   // @IsOptional()
   // workflows?: WorkflowCreateNestedManyWithoutUsersInput;
+
+  @ApiProperty({ required: false, type: CreateOptions })
+  @IsOptional()
+  options?: CreateOptions;
 }
