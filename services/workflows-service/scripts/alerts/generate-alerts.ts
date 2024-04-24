@@ -20,7 +20,6 @@ import {
   TWENTY_ONE_DAYS,
   daysToMinutesConverter,
 } from '@/alert/consts';
-import { inlineRef } from 'ajv/dist/compile/resolve';
 
 const tags = [
   ...new Set([
