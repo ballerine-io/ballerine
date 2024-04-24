@@ -5,6 +5,7 @@ import {
   TransactionsAgainstDynamicRulesType,
   TCustomersTransactionTypeOptions,
   HighTransactionTypePercentage,
+  TransactionLimitHistoricAverageOptions,
 } from './types';
 import { AggregateType, TIME_UNITS } from './consts';
 import { Prisma } from '@prisma/client';
@@ -33,6 +34,12 @@ export class DataAnalyticsService {
         });
 
       case 'evaluateCustomersTransactionType':
+        return await this[inlineRule.fnName]({
+          ...inlineRule.options,
+          projectId,
+        });
+
+      case 'evaluateTransactionLimitHistoricAverageInbound':
         return await this[inlineRule.fnName]({
           ...inlineRule.options,
           projectId,
@@ -206,6 +213,53 @@ export class DataAnalyticsService {
       WHERE
         "filteredTransactionCount" >= ${minimumCount}
         AND "filteredTransactionCount"::decimal / "transactionCount"::decimal * 100 >= ${minimumPercentage}
+    `);
+  }
+
+  async evaluateTransactionLimitHistoricAverageInbound({
+    projectId,
+    transactionDirection,
+    paymentMethod,
+    minimumCount,
+    minimumTransactionAmount,
+    transactionFactor,
+  }: TransactionLimitHistoricAverageOptions) {
+    if (!['=', '!='].includes(paymentMethod.operator)) {
+      throw new Error('Invalid operator');
+    }
+
+    return await this._executeQuery<Array<{ counterpartyId: string }>>(Prisma.sql`
+      WITH transactionsData AS (
+        SELECT
+          "counterpartyBeneficiaryId" ,
+          count(*) AS count,
+          avg("transactionBaseAmount") AS avg
+        FROM
+          "TransactionRecord" tr
+        WHERE
+          "transactionDirection"::text = ${transactionDirection}
+          AND "paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${paymentMethod.value}
+          AND "projectId" = ${projectId}
+        GROUP BY
+          "counterpartyBeneficiaryId"
+      )
+      SELECT
+        tr."counterpartyBeneficiaryId" as "counterpartyId"
+      FROM
+        "TransactionRecord" tr
+      JOIN transactionsData td ON
+        tr."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
+        AND td.count > ${minimumCount}
+      WHERE
+        tr."transactionDirection"::text = ${transactionDirection}
+        AND "projectId" = ${projectId}
+        AND "paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${paymentMethod.value}
+        AND "transactionBaseAmount" > ${minimumTransactionAmount}
+        AND "transactionBaseAmount" > (
+          ${transactionFactor} * avg
+        )
+      GROUP BY
+        tr."counterpartyBeneficiaryId"
     `);
   }
 
