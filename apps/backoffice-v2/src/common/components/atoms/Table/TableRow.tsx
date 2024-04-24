@@ -14,4 +14,5 @@ export const TableRow = React.forwardRef<
     {...props}
   />
 ));
+
 TableRow.displayName = 'TableRow';

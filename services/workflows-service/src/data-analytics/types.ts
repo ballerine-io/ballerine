@@ -16,6 +16,10 @@ export type InlineRule = {
       fnName: 'evaluateCustomersTransactionType';
       options: Omit<TCustomersTransactionTypeOptions, 'projectId'>;
     }
+  | {
+      fnName: 'evaluateTransactionLimitHistoricAverageInbound';
+      options: Omit<TransactionLimitHistoricAverageOptions, 'projectId'>;
+    }
 );
 
 export type TAggregations = keyof typeof AggregateType;
@@ -62,4 +66,16 @@ export type TCustomersTransactionTypeOptions = {
   timeUnit?: TimeUnit;
   isPerBrand?: boolean;
   havingAggregate?: TAggregations;
+};
+
+export type TransactionLimitHistoricAverageOptions = {
+  projectId: string;
+  transactionDirection: TransactionDirection;
+  paymentMethod: {
+    value: PaymentMethod;
+    operator: '=' | '!=';
+  };
+  minimumCount: number;
+  minimumTransactionAmount: number;
+  transactionFactor: number;
 };
