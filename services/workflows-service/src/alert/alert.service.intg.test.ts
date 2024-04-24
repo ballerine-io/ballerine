@@ -79,7 +79,6 @@ describe('AlertService', () => {
     beforeEach(() => {
       baseTransactionFactory = transactionFactory
         .paymentMethod(PaymentMethod.credit_card)
-        .withEndUserBeneficiary()
         .transactionDate(faker.date.recent(6));
     });
 
@@ -252,11 +251,13 @@ describe('AlertService', () => {
         // Arrange
         const business1Transactions = await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .count(15)
           .type(TransactionRecordType.chargeback)
           .create();
         const business2Transactions = await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .count(14)
           .type(TransactionRecordType.chargeback)
           .create();
@@ -277,11 +278,13 @@ describe('AlertService', () => {
         // Arrange
         const business1Transactions = await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .count(14)
           .type(TransactionRecordType.chargeback)
           .create();
         const business2Transactions = await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .count(14)
           .type(TransactionRecordType.chargeback)
           .create();
@@ -314,12 +317,14 @@ describe('AlertService', () => {
         // Arrange
         const business1Transactions = await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .amount(100)
           .count(51)
           .type(TransactionRecordType.chargeback)
           .create();
         const business2Transactions = await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .amount(100)
           .count(49)
           .type(TransactionRecordType.chargeback)
@@ -341,12 +346,14 @@ describe('AlertService', () => {
         // Arrange
         const business1Transactions = await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .amount(100)
           .count(49)
           .type(TransactionRecordType.chargeback)
           .create();
         const business2Transactions = await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .amount(100)
           .count(49)
           .type(TransactionRecordType.chargeback)
@@ -380,11 +387,13 @@ describe('AlertService', () => {
         // Arrange
         const business1Transactions = await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .count(15)
           .type(TransactionRecordType.refund)
           .create();
         const business2Transactions = await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .count(14)
           .type(TransactionRecordType.refund)
           .create();
@@ -405,11 +414,13 @@ describe('AlertService', () => {
         // Arrange
         const business1Transactions = await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .count(14)
           .type(TransactionRecordType.refund)
           .create();
         const business2Transactions = await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .count(14)
           .type(TransactionRecordType.refund)
           .create();
@@ -442,6 +453,7 @@ describe('AlertService', () => {
         // Arrange
         const business1Transactions = await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .amount(1000)
           .count(11)
           .type(TransactionRecordType.refund)
@@ -449,6 +461,7 @@ describe('AlertService', () => {
 
         await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .amount(10)
           .count(12)
           .type(TransactionRecordType.refund)
@@ -456,6 +469,7 @@ describe('AlertService', () => {
 
         await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .amount(5001)
           .count(13)
           .type(TransactionRecordType.chargeback)
@@ -486,6 +500,7 @@ describe('AlertService', () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessOriginator()
+          .withEndUserBeneficiary()
           .amount(100)
           .count(49)
           .type(TransactionRecordType.refund)
@@ -535,15 +550,17 @@ describe('AlertService', () => {
 
       it('When there are >=3 chargeback transactions and they are >=50% of the total transactions, an alert should be created', async () => {
         // Arrange
-
         const chargebackTransactions = await baseTransactionFactory
           .type(TransactionRecordType.chargeback)
           .withCounterpartyOriginator(counteryparty.id)
+          .withEndUserBeneficiary()
           .count(3)
           .create();
+
         await baseTransactionFactory
           .type(TransactionRecordType.payment)
           .withCounterpartyOriginator(counteryparty.id)
+          .withEndUserBeneficiary()
           .count(3)
           .create();
 
@@ -563,11 +580,14 @@ describe('AlertService', () => {
         // Arrange
         await baseTransactionFactory
           .type(TransactionRecordType.chargeback)
+          .withEndUserBeneficiary()
           .withCounterpartyOriginator(counteryparty.id)
           .count(3)
           .create();
+
         await baseTransactionFactory
           .type(TransactionRecordType.payment)
+          .withEndUserBeneficiary()
           .withCounterpartyOriginator(counteryparty.id)
           .count(4)
           .create();
@@ -584,13 +604,194 @@ describe('AlertService', () => {
         // Arrange
         await baseTransactionFactory
           .type(TransactionRecordType.chargeback)
+          .withEndUserBeneficiary()
           .withCounterpartyOriginator(counteryparty.id)
           .count(2)
           .create();
+
         await baseTransactionFactory
           .type(TransactionRecordType.payment)
+          .withEndUserBeneficiary()
           .withCounterpartyOriginator(counteryparty.id)
           .count(2)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('Rule: TLHAICC', () => {
+      let alertDefinition: AlertDefinition;
+      let counteryparty: Counterparty;
+
+      beforeEach(async () => {
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              label: 'TLHAICC',
+              ...ALERT_DEFINITIONS.TLHAICC,
+            },
+            project,
+          ),
+        });
+
+        const correlationId = faker.datatype.uuid();
+        counteryparty = await prismaService.counterparty.create({
+          data: {
+            project: { connect: { id: project.id } },
+            correlationId: correlationId,
+            business: {
+              create: {
+                correlationId: correlationId,
+                companyName: faker.company.name(),
+                registrationNumber: faker.datatype.uuid(),
+                mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+                businessType: faker.lorem.word(),
+                project: { connect: { id: project.id } },
+              },
+            },
+          },
+        });
+      });
+
+      it('When there are >2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, an alert should be created', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .direction('inbound')
+          .paymentMethod(PaymentMethod.credit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(150)
+          .count(2)
+          .create();
+
+        await baseTransactionFactory
+          .direction('inbound')
+          .paymentMethod(PaymentMethod.credit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(300)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(1);
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+      });
+
+      it('When there are 2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, no alert should be created', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .direction('inbound')
+          .paymentMethod(PaymentMethod.credit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(150)
+          .count(1)
+          .create();
+
+        await baseTransactionFactory
+          .direction('inbound')
+          .paymentMethod(PaymentMethod.credit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(300)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('Rule: TLHAIAPM', () => {
+      let alertDefinition: AlertDefinition;
+      let counteryparty: Counterparty;
+
+      beforeEach(async () => {
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              label: 'TLHAIAPM',
+              ...ALERT_DEFINITIONS.TLHAIAPM,
+            },
+            project,
+          ),
+        });
+
+        const correlationId = faker.datatype.uuid();
+        counteryparty = await prismaService.counterparty.create({
+          data: {
+            project: { connect: { id: project.id } },
+            correlationId: correlationId,
+            business: {
+              create: {
+                correlationId: correlationId,
+                companyName: faker.company.name(),
+                registrationNumber: faker.datatype.uuid(),
+                mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+                businessType: faker.lorem.word(),
+                project: { connect: { id: project.id } },
+              },
+            },
+          },
+        });
+      });
+
+      it('When there are >2 APM transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, an alert should be created', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .direction('inbound')
+          .paymentMethod(PaymentMethod.apple_pay)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(150)
+          .count(2)
+          .create();
+
+        await baseTransactionFactory
+          .direction('inbound')
+          .paymentMethod(PaymentMethod.pay_pal)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(300)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(1);
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+      });
+
+      it('When there are 2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, no alert should be created', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .direction('inbound')
+          .paymentMethod(PaymentMethod.google_pay)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(150)
+          .count(1)
+          .create();
+
+        await baseTransactionFactory
+          .direction('inbound')
+          .paymentMethod(PaymentMethod.bank_transfer)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(300)
+          .count(1)
           .create();
 
         // Act

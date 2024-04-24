@@ -25,7 +25,6 @@ export const PaymentMethod = {
   PAYPAL: 'pay_pal',
   APPLE_PAY: 'apple_pay',
   GOOGLE_PAY: 'google_pay',
-  APN: 'apn',
 } as const;
 
 export const PaymentMethods = [
@@ -35,7 +34,6 @@ export const PaymentMethods = [
   PaymentMethod.PAYPAL,
   PaymentMethod.APPLE_PAY,
   PaymentMethod.GOOGLE_PAY,
-  PaymentMethod.APN,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof PaymentMethod>>;
 
 const TransactionStatus = {
