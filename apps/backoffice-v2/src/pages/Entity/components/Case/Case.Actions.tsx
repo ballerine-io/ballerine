@@ -52,7 +52,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
       <div className={`flex h-20 justify-between`}>
         <div className={`flex flex-col space-y-3`}>
           <h2
-            className={ctw(`text-4xl font-semibold leading-9`, {
+            className={ctw(`w-[35ch] break-all text-4xl font-semibold leading-9`, {
               'h-8 w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
                 isLoadingCase,
             })}
