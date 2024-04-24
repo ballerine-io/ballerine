@@ -7,7 +7,6 @@ import {
   AlertSeverity,
   AlertState,
   AlertStatus,
-  AlertType,
   Customer,
   PaymentMethod,
   Prisma,
@@ -347,7 +346,6 @@ export const getAlertDefinitionCreateData = (
   createdBy: string = 'SYSTEM',
 ) => ({
   label: label,
-  type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
   name: inlineRule.id,
   enabled: enabled ?? false,
   description: description || faker.lorem.sentence(),
