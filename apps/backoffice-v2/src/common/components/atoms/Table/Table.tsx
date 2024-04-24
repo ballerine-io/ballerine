@@ -6,4 +6,5 @@ export const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTM
     <table ref={ref} className={ctw('w-full caption-bottom text-sm', className)} {...props} />
   ),
 );
+
 Table.displayName = 'Table';

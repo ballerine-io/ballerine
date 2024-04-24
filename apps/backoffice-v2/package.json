@@ -1,6 +1,6 @@
 {
   "name": "@ballerine/backoffice-v2",
-  "version": "0.7.3",
+  "version": "0.7.5",
   "description": "Ballerine - Backoffice",
   "homepage": "https://github.com/ballerine-io/ballerine",
   "repository": {
@@ -51,10 +51,10 @@
   },
   "dependencies": {
     "@ballerine/blocks": "0.2.2",
-    "@ballerine/common": "0.9.1",
+    "@ballerine/common": "0.9.3",
     "@ballerine/ui": "^0.5.1",
-    "@ballerine/workflow-browser-sdk": "0.6.4",
-    "@ballerine/workflow-node-sdk": "0.6.4",
+    "@ballerine/workflow-browser-sdk": "0.6.6",
+    "@ballerine/workflow-node-sdk": "0.6.6",
     "@fontsource/inter": "^4.5.15",
     "@formkit/auto-animate": "1.0.0-beta.5",
     "@hookform/resolvers": "^3.1.0",
