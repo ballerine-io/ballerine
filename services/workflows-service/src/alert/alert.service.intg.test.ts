@@ -86,13 +86,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(
-            {
-              label: 'CHVC_C',
-              ...ALERT_DEFINITIONS.CHVC_C,
-            },
-            project,
-          ),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.CHVC_C, project),
         });
       });
 
@@ -152,13 +146,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(
-            {
-              label: 'SHCAC_C',
-              ...ALERT_DEFINITIONS.SHCAC_C,
-            },
-            project,
-          ),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.SHCAC_C, project),
         });
       });
 
@@ -222,13 +210,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(
-            {
-              label: 'CHCR_C',
-              ...ALERT_DEFINITIONS.CHCR_C,
-            },
-            project,
-          ),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.CHCR_C, project),
         });
       });
 
@@ -288,13 +270,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(
-            {
-              label: 'SHCAR_C',
-              ...ALERT_DEFINITIONS.SHCAR_C,
-            },
-            project,
-          ),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.SHCAR_C, project),
         });
       });
 
@@ -358,13 +334,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(
-            {
-              label: 'HPC',
-              ...ALERT_DEFINITIONS.HPC,
-            },
-            project,
-          ),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.HPC, project),
         });
         const correlationId = faker.datatype.uuid();
         counteryparty = await prismaService.counterparty.create({
@@ -383,6 +353,10 @@ describe('AlertService', () => {
             },
           },
         });
+      });
+
+      afterAll(async () => {
+        return await prismaService.alertDefinition.delete({ where: { id: alertDefinition.id } });
       });
 
       it('When there are >=3 chargeback transactions and they are >=50% of the total transactions, an alert should be created', async () => {
