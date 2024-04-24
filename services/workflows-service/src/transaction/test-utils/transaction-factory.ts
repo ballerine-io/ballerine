@@ -10,11 +10,9 @@ import {
   TransactionDirection,
   TransactionRecordType,
   Prisma,
-  Project,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
 
 const getNestedCounterpartyBusinessData = ({
   projectId,
@@ -126,121 +124,240 @@ const getTransactionCreateData = ({ projectId }: { projectId: string }): Transac
   };
 };
 
+const createBusinessCounterparty = async ({
+  prismaService,
+  projectId,
+}: {
+  prismaService: PrismaService;
+  projectId: string;
+}) => {
+  const correlationId = faker.datatype.uuid();
+
+  return await prismaService.counterparty.create({
+    data: {
+      project: { connect: { id: projectId } },
+      correlationId: correlationId,
+      business: {
+        create: {
+          correlationId: correlationId,
+          companyName: faker.company.name(),
+          registrationNumber: faker.datatype.uuid(),
+          mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+          businessType: faker.lorem.word(),
+          project: { connect: { id: projectId } },
+        },
+      },
+    },
+  });
+};
+
+const createEndUserCounterparty = async ({
+  prismaService,
+  projectId,
+}: {
+  prismaService: PrismaService;
+  projectId: string;
+}) => {
+  const correlationId = faker.datatype.uuid();
+
+  return await prismaService.counterparty.create({
+    data: {
+      project: { connect: { id: projectId } },
+      correlationId: correlationId,
+      endUser: {
+        create: {
+          correlationId: correlationId,
+          firstName: faker.name.firstName(),
+          lastName: faker.name.lastName(),
+          email: faker.internet.email(),
+          phone: faker.phone.number(),
+          project: { connect: { id: projectId } },
+        },
+      },
+    },
+  });
+};
+
 type TransactionCreateData = Parameters<
   InstanceType<typeof PrismaService>['transactionRecord']['create']
 >[0]['data'];
 
-@Injectable()
 export class TransactionFactory {
-  private number = 1;
+  readonly prisma: PrismaService;
 
-  private data: Partial<TransactionCreateData> = {};
+  number;
 
-  private runBeforeCreate: Array<() => Promise<void>> = [];
+  data: Partial<TransactionCreateData>;
 
-  private projectId!: string;
+  runBeforeCreate: Array<() => Promise<void>>;
 
-  constructor(private readonly prisma: PrismaService) {}
+  projectId: string;
 
-  project(project: Project) {
-    this.projectId = project.id;
-
-    return this;
+  constructor({
+    prisma,
+    number = 1,
+    data = {},
+    runBeforeCreate = [],
+    projectId,
+  }: {
+    prisma: PrismaService;
+    projectId: string;
+    number?: number;
+    data?: Partial<TransactionCreateData>;
+    runBeforeCreate?: Array<() => Promise<void>>;
+  }) {
+    this.prisma = prisma;
+    this.number = number;
+    this.data = data;
+    this.runBeforeCreate = runBeforeCreate;
+    this.projectId = projectId;
   }
 
-  count(number: number) {
-    this.number = number;
+  public clone() {
+    return new TransactionFactory({
+      prisma: this.prisma,
+      number: this.number,
+      data: this.data,
+      runBeforeCreate: this.runBeforeCreate,
+      projectId: this.projectId,
+    });
+  }
 
-    return this;
+  public count(number: number) {
+    const factory = this.clone();
+
+    factory.number = number;
+
+    return factory;
   }
 
   public paymentMethod(paymentMethod: PaymentMethod) {
-    this.data.paymentMethod = paymentMethod;
+    const factory = this.clone();
 
-    return this;
+    factory.data.paymentMethod = paymentMethod;
+
+    return factory;
   }
 
   public type(type: TransactionRecordType) {
-    this.data.transactionType = type;
+    const factory = this.clone();
 
-    return this;
+    factory.data.transactionType = type;
+
+    return factory;
+  }
+
+  public direction(direction: TransactionDirection) {
+    const factory = this.clone();
+
+    factory.data.transactionDirection = direction;
+
+    return factory;
   }
 
   public withBusinessOriginator() {
-    this.runBeforeCreate.push(async () => {
-      const correlationId = faker.datatype.uuid();
+    const factory = this.clone();
 
-      const counteryparty = await this.prisma.counterparty.create({
-        data: {
-          project: { connect: { id: this.projectId } },
-          correlationId: correlationId,
-          business: {
-            create: {
-              correlationId: correlationId,
-              companyName: faker.company.name(),
-              registrationNumber: faker.datatype.uuid(),
-              mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
-              businessType: faker.lorem.word(),
-              project: { connect: { id: this.projectId } },
-            },
-          },
-        },
+    factory.runBeforeCreate.push(async () => {
+      const counterparty = await createBusinessCounterparty({
+        prismaService: this.prisma,
+        projectId: this.projectId,
       });
 
-      this.withCounterpartyOriginator(counteryparty.id);
-    });
-
-    return this;
-  }
-
-  public withCounterpartyOriginator(id: string) {
-    this.data.counterpartyOriginator = {
-      connect: { id },
-    };
-
-    return this;
-  }
-
-  public withEndUserBeneficiary() {
-    this.runBeforeCreate.push(async () => {
-      const correlationId = faker.datatype.uuid();
-
-      const counteryparty = await this.prisma.counterparty.create({
-        data: {
-          project: { connect: { id: this.projectId } },
-          correlationId: correlationId,
-          endUser: {
-            create: {
-              correlationId: correlationId,
-              firstName: faker.name.firstName(),
-              lastName: faker.name.lastName(),
-              email: faker.internet.email(),
-              phone: faker.phone.number(),
-              project: { connect: { id: this.projectId } },
-            },
-          },
-        },
-      });
-
-      this.data.counterpartyBeneficiary = {
-        connect: { id: counteryparty.id },
+      factory.data.counterpartyOriginator = {
+        connect: { id: counterparty.id },
       };
     });
 
-    return this;
+    return factory;
+  }
+
+  public withBusinessBeneficiary() {
+    const factory = this.clone();
+
+    factory.runBeforeCreate.push(async () => {
+      const counterparty = await createBusinessCounterparty({
+        prismaService: this.prisma,
+        projectId: this.projectId,
+      });
+
+      factory.data.counterpartyBeneficiary = {
+        connect: { id: counterparty.id },
+      };
+    });
+
+    return factory;
+  }
+
+  public withEndUserBeneficiary() {
+    const factory = this.clone();
+
+    factory.runBeforeCreate.push(async () => {
+      const counterparty = await createEndUserCounterparty({
+        prismaService: this.prisma,
+        projectId: this.projectId,
+      });
+
+      factory.data.counterpartyBeneficiary = {
+        connect: { id: counterparty.id },
+      };
+    });
+
+    return factory;
+  }
+
+  public withEndUserOriginator() {
+    const factory = this.clone();
+
+    factory.runBeforeCreate.push(async () => {
+      const counterparty = await createEndUserCounterparty({
+        prismaService: this.prisma,
+        projectId: this.projectId,
+      });
+
+      factory.data.counterpartyOriginator = {
+        connect: { id: counterparty.id },
+      };
+    });
+
+    return factory;
+  }
+
+  public withCounterpartyOriginator(id: string) {
+    const factory = this.clone();
+
+    factory.data.counterpartyOriginator = {
+      connect: { id },
+    };
+
+    return factory;
+  }
+
+  public withCounterpartyBeneficiary(id: string) {
+    const factory = this.clone();
+
+    factory.data.counterpartyBeneficiary = {
+      connect: { id },
+    };
+
+    return factory;
   }
 
   public transactionDate(transactionDate: Date) {
-    this.data.transactionDate = transactionDate;
+    const factory = this.clone();
 
-    return this;
+    factory.data.transactionDate = transactionDate;
+
+    return factory;
   }
 
   public amount(amount: number) {
-    this.data.transactionBaseAmount = amount;
-    this.data.transactionAmount = amount;
+    const factory = this.clone();
 
-    return this;
+    factory.data.transactionBaseAmount = amount;
+    factory.data.transactionAmount = amount;
+
+    return factory;
   }
 
   async create(overrideData: Partial<TransactionCreateData> = {}) {

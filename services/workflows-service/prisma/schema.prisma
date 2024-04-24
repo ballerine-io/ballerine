@@ -528,7 +528,6 @@ enum PaymentMethod {
   pay_pal
   apple_pay
   google_pay
-  apn
 }
 
 enum PaymentType {
