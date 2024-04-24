@@ -92,7 +92,7 @@ export const ALERT_DEFINITIONS = {
     },
   },
   STRUC_CC: {
-    enabled: false,
+    enabled: true,
     defaultSeverity: AlertSeverity.high,
     description:
       'Structuring - Significant number of low value incoming transactions just below a threshold of credit card',
@@ -122,7 +122,7 @@ export const ALERT_DEFINITIONS = {
     },
   },
   STRUC_APM: {
-    enabled: false,
+    enabled: true,
     defaultSeverity: AlertSeverity.high,
     description:
       'Structuring - Significant number of low value incoming transactions just below a threshold of APM',
