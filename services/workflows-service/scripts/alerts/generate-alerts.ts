@@ -1,14 +1,8 @@
-import {
-  InlineRule,
-  TCustomersTransactionTypeOptions,
-  TransactionsAgainstDynamicRulesType,
-} from '../../src/data-analytics/types';
+import { InlineRule } from '@/data-analytics/types';
 import {
   AlertSeverity,
   AlertState,
   AlertStatus,
-  AlertType,
-  Customer,
   PaymentMethod,
   Prisma,
   PrismaClient,
@@ -18,6 +12,14 @@ import {
 import { faker } from '@faker-js/faker';
 import { AggregateType, TIME_UNITS } from '../../src/data-analytics/consts';
 import { InputJsonValue, PrismaTransaction } from '@/types';
+import { TDedupeStrategy } from '@/alert/types';
+import {
+  ALERT_DEDUPE_STRATEGY_DEFAULT,
+  SEVEN_DAYS,
+  TWENTY_ONE_DAYS,
+  daysToMinutesConverter,
+} from '@/alert/consts';
+import { inlineRef } from 'ajv/dist/compile/resolve';
 
 const tags = [
   ...new Set([
@@ -53,7 +55,7 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
 
-        timeAmount: 7,
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 1000,
@@ -84,7 +86,7 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: true,
 
-        timeAmount: 7,
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 1000,
@@ -95,7 +97,8 @@ export const ALERT_DEFINITIONS = {
   },
 
   STRUC_CC: {
-    defaultSeverity: AlertSeverity.medium,
+    enabled: false,
+    defaultSeverity: AlertSeverity.high,
     description:
       'Structuring - Significant number of low value incoming transactions just below a threshold of credit card',
     inlineRule: {
@@ -112,7 +115,7 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
 
-        timeAmount: 7,
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 5,
@@ -121,7 +124,8 @@ export const ALERT_DEFINITIONS = {
     },
   },
   STRUC_APM: {
-    defaultSeverity: AlertSeverity.medium,
+    enabled: false,
+    defaultSeverity: AlertSeverity.high,
     description:
       'Structuring - Significant number of low value incoming transactions just below a threshold of APM',
     inlineRule: {
@@ -138,7 +142,7 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
 
-        timeAmount: 7,
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
 
         amountBetween: { min: 500, max: 1000 },
@@ -148,6 +152,7 @@ export const ALERT_DEFINITIONS = {
     },
   },
   HCAI_CC: {
+    enabled: false,
     defaultSeverity: AlertSeverity.medium,
     description:
       'High Cumulative Amount - Total sum of inbound credit card transactions received from counterparty is greater than a limit over a set period of time',
@@ -165,7 +170,7 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
 
-        timeAmount: 7,
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 3000,
@@ -173,6 +178,7 @@ export const ALERT_DEFINITIONS = {
     },
   },
   HACI_APM: {
+    enabled: false,
     defaultSeverity: AlertSeverity.medium,
     description:
       'High Cumulative Amount - Total sum of inbound non-traditional payment transactions received from counterparty is greater than a limit over a set period of time',
@@ -190,7 +196,7 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: true,
 
-        timeAmount: 7,
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 3000,
@@ -198,6 +204,7 @@ export const ALERT_DEFINITIONS = {
     },
   },
   HVIC_CC: {
+    enabled: false,
     defaultSeverity: AlertSeverity.medium,
     description:
       'High Velocity - High number of inbound credit card transactions received from a Counterparty over a set period of time',
@@ -215,7 +222,7 @@ export const ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
 
-        timeAmount: 7,
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 2,
@@ -235,8 +242,10 @@ export const ALERT_DEFINITIONS = {
         transactionType: [TransactionRecordType.chargeback],
         paymentMethods: [PaymentMethod.credit_card],
         amountThreshold: 14,
-        timeAmount: 7,
+
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
+
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.COUNT,
       },
@@ -244,7 +253,7 @@ export const ALERT_DEFINITIONS = {
   },
   SHCAC_C: {
     enabled: true,
-    defaultSeverity: AlertSeverity.medium,
+    defaultSeverity: AlertSeverity.high,
     description:
       'High Cumulative Amount - Chargeback - High sum of chargebacks over a set period of time',
     inlineRule: {
@@ -254,9 +263,12 @@ export const ALERT_DEFINITIONS = {
       options: {
         transactionType: [TransactionRecordType.chargeback],
         paymentMethods: [PaymentMethod.credit_card],
+
         amountThreshold: 5_000,
-        timeAmount: 7,
+
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
+
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.SUM,
       },
@@ -273,9 +285,12 @@ export const ALERT_DEFINITIONS = {
       options: {
         transactionType: [TransactionRecordType.refund],
         paymentMethods: [PaymentMethod.credit_card],
+
         amountThreshold: 14,
-        timeAmount: 7,
+
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
+
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.COUNT,
       },
@@ -283,7 +298,7 @@ export const ALERT_DEFINITIONS = {
   },
   SHCAR_C: {
     enabled: true,
-    defaultSeverity: AlertSeverity.medium,
+    defaultSeverity: AlertSeverity.high,
     description: 'High Cumulative Amount - Refund - High sum of refunds over a set period of time',
     inlineRule: {
       id: 'SHCAR_C',
@@ -293,7 +308,8 @@ export const ALERT_DEFINITIONS = {
         transactionType: [TransactionRecordType.refund],
         paymentMethods: [PaymentMethod.credit_card],
         amountThreshold: 5_000,
-        timeAmount: 7,
+
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.SUM,
@@ -305,6 +321,9 @@ export const ALERT_DEFINITIONS = {
     defaultSeverity: AlertSeverity.high,
     description:
       'High Percentage of Chargebacks - High percentage of chargebacks over a set period of time',
+    dedupeStrategy: {
+      cooldownTimeframeInMinutes: daysToMinutesConverter(TWENTY_ONE_DAYS),
+    },
     inlineRule: {
       id: 'HPC',
       fnName: 'evaluateHighTransactionTypePercentage',
@@ -319,53 +338,48 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
-} as const satisfies Record<
-  string,
-  {
-    inlineRule: InlineRule;
-    defaultSeverity: AlertSeverity;
-    enabled?: boolean;
-    description?: string;
-  }
->;
+} as const satisfies Record<string, Parameters<typeof getAlertDefinitionCreateData>[0]>;
 
 export const getAlertDefinitionCreateData = (
   {
     inlineRule,
     defaultSeverity,
-    label,
     description,
     enabled = false,
+    dedupeStrategy = ALERT_DEDUPE_STRATEGY_DEFAULT,
   }: {
-    label: string;
     inlineRule: InlineRule;
     defaultSeverity: AlertSeverity;
-    enabled?: boolean;
+    enabled: boolean;
+    dedupeStrategy?: Partial<TDedupeStrategy>;
     description?: string;
   },
   project: Project,
   createdBy: string = 'SYSTEM',
-) => ({
-  label: label,
-  type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
-  name: inlineRule.id,
-  enabled: enabled ?? false,
-  description: description || faker.lorem.sentence(),
-  rulesetId: `set-${inlineRule.id}`,
-  defaultSeverity,
-  ruleId: inlineRule.id,
-  createdBy: createdBy,
-  modifiedBy: createdBy,
-  dedupeStrategy: {
-    mute: false,
-    cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
-  },
-  config: { config: {} },
-  inlineRule,
-  tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
-  additionalInfo: {},
-  projectId: project.id,
-});
+) => {
+  const id = inlineRule.id;
+
+  return {
+    enabled,
+    defaultSeverity,
+    dedupeStrategy: {
+      ...ALERT_DEDUPE_STRATEGY_DEFAULT,
+      ...(dedupeStrategy ?? {}),
+    },
+    inlineRule,
+    label: id,
+    name: id,
+    rulesetId: `set-${id}`,
+    description: description,
+    ruleId: id,
+    createdBy: createdBy,
+    modifiedBy: createdBy,
+    config: { config: {} },
+    tags: [],
+    additionalInfo: {},
+    projectId: project.id,
+  };
+};
 
 export const generateAlertDefinitions = async (
   prisma: PrismaClient | PrismaTransaction,
@@ -378,13 +392,18 @@ export const generateAlertDefinitions = async (
   },
 ) =>
   Promise.all(
-    Object.entries(ALERT_DEFINITIONS)
-      .filter(([_, alert]) => 'enabled' in alert && alert.enabled)
-      .map(([label, data]) =>
+    Object.values(ALERT_DEFINITIONS)
+      .map(alert => ({
+        label: alert.inlineRule.id,
+        enable: false,
+        ...alert,
+      }))
+      .filter(alert => alert.enabled)
+      .map(alertDef =>
         prisma.alertDefinition.upsert({
-          where: { label_projectId: { label: label, projectId: project.id } },
-          create: getAlertDefinitionCreateData({ label, ...data }, project, createdBy),
-          update: getAlertDefinitionCreateData({ label, ...data }, project, createdBy),
+          where: { label_projectId: { label: alertDef.inlineRule.id, projectId: project.id } },
+          create: getAlertDefinitionCreateData(alertDef, project, createdBy),
+          update: getAlertDefinitionCreateData(alertDef, project, createdBy),
           include: {
             alert: true,
           },
