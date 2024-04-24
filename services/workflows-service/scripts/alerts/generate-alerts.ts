@@ -237,6 +237,7 @@ export const ALERT_DEFINITIONS = {
     },
   },
   HVIC_APM: {
+    enabled: false,
     defaultSeverity: AlertSeverity.medium,
     description:
       'High Velocity - High number of inbound non-traditional payment transactions received from a Counterparty over a set period of time',
@@ -258,34 +259,6 @@ export const ALERT_DEFINITIONS = {
         excludePaymentMethods: true,
 
         timeAmount: SEVEN_DAYS,
-        timeUnit: TIME_UNITS.days,
-
-        amountThreshold: 2,
-      },
-    },
-  },
-  HVIC_APM: {
-    defaultSeverity: AlertSeverity.medium,
-    description:
-      'High Velocity - High number of inbound non-traditional payment transactions received from a Counterparty over a set period of time',
-    inlineRule: {
-      id: 'HVIC_CC',
-      fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
-      options: {
-        havingAggregate: AggregateType.COUNT,
-        groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
-
-        direction: TransactionDirection.inbound,
-        excludedCounterparty: {
-          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
-          counterpartyOriginatorIds: [],
-        },
-
-        paymentMethods: [PaymentMethod.credit_card],
-        excludePaymentMethods: true,
-
-        timeAmount: 7,
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 2,
@@ -442,13 +415,7 @@ export const ALERT_DEFINITIONS = {
     },
   },
 } as const satisfies Record<
-  string,
-  {
-    inlineRule: InlineRule;
-    defaultSeverity: AlertSeverity;
-    enabled?: boolean;
-    description?: string;
-  }
+  string, Parameters<typeof getAlertDefinitionCreateData>[0]
 >;
 
 export const getAlertDefinitionCreateData = (
