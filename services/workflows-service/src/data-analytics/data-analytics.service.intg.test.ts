@@ -320,7 +320,7 @@ describe('TransactionRulesEvaluationService', () => {
       });
     });
 
-    describe.only('', () => {
+    describe('', () => {
       const transactionIdsForCleanup: string[] = [];
 
       // eslint-disable-next-line @typescript-eslint/no-empty-function
