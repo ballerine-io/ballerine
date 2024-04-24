@@ -30,8 +30,8 @@ export class BusinessReportRepository {
     args: Prisma.SelectSubset<T, Prisma.BusinessReportFindFirstArgs>,
     projectIds: TProjectIds,
   ) {
-    return await this.prisma.businessReport.findFirstOrThrow(
-      this.scopeService.scopeFindFirst(args, projectIds),
+    return await this.prisma.businessReport.findFirst(
+      this.scopeService.scopeFindMany(args, projectIds),
     );
   }
 }
