@@ -9,7 +9,7 @@ import {
 } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/components/IndividualSanctionsItem/IndividualSanctionsItem';
 import { tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
-import poweredByLogo from '../TitlePage/assets/title-page-ballerine-logo.png';
+import poweredByLogo from './assets/title-page-ballerine-logo.png';
 
 const individualSanctions: IIndividualSanctionsItem[] = [
   {

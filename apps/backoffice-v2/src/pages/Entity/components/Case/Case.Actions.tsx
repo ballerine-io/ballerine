@@ -3,6 +3,7 @@ import { Badge } from '@ballerine/ui';
 import { FunctionComponent } from 'react';
 
 import { ActionsVariant } from '@/pages/Entity/components/Case/actions-variants/ActionsVariant/ActionsVariant';
+import { CaseOptions } from '@/pages/Entity/components/Case/components/CaseOptions/CaseOptions';
 import { AssignDropdown } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
 import { ctw } from '../../../../common/utils/ctw/ctw';
 import { tagToBadgeData } from './consts';
@@ -39,7 +40,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
 
   return (
     <div className={`sticky top-0 z-50 col-span-2 space-y-2 bg-base-100 px-4 pt-4`}>
-      <div className={`mb-8 flex flex-row space-x-3.5`}>
+      <div className={`mb-8 flex flex-row justify-between space-x-3.5 pe-[3.35rem]`}>
         <AssignDropdown
           assignedUser={assignedUser}
           assignees={assignees}
@@ -48,6 +49,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
           }}
           authenticatedUserId={authenticatedUser?.id}
         />
+        <CaseOptions />
       </div>
       <div className={`flex h-20 justify-between`}>
         <div className={`flex flex-col space-y-3`}>
