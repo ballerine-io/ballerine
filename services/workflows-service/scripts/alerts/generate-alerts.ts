@@ -1,14 +1,9 @@
-import {
-  InlineRule,
-  TCustomersTransactionTypeOptions,
-  TransactionsAgainstDynamicRulesType,
-} from '../../src/data-analytics/types';
+import { InlineRule } from '@/data-analytics/types';
 import {
   AlertSeverity,
   AlertState,
   AlertStatus,
   AlertType,
-  Customer,
   PaymentMethod,
   Prisma,
   PrismaClient,
@@ -17,7 +12,7 @@ import {
   TransactionRecordType,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
-import { AggregateType, TIME_UNITS } from '../../src/data-analytics/consts';
+import { AggregateType, TIME_UNITS } from '@/data-analytics/consts';
 import { InputJsonValue, PrismaTransaction } from '@/types';
 
 const tags = [
@@ -43,22 +38,16 @@ export const ALERT_DEFINITIONS = {
       subjects: ['counterpartyId'],
       options: {
         havingAggregate: AggregateType.SUM,
-
         direction: TransactionDirection.inbound,
-
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
           counterpartyOriginatorIds: [],
         },
-
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
-
         timeAmount: 7,
         timeUnit: TIME_UNITS.days,
-
         amountThreshold: 1000,
-
         groupBy: ['counterpartyBeneficiaryId'],
       },
     },
@@ -94,7 +83,6 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
-
   STRUC_CC: {
     enabled: true,
     defaultSeverity: AlertSeverity.high,
@@ -143,15 +131,11 @@ export const ALERT_DEFINITIONS = {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
           counterpartyOriginatorIds: [],
         },
-
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: true,
-
         timeAmount: 7,
         timeUnit: TIME_UNITS.days,
-
         amountBetween: { min: 500, max: 999 },
-
         amountThreshold: 5,
       },
     },
@@ -362,6 +346,46 @@ export const ALERT_DEFINITIONS = {
         minimumPercentage: 50,
         timeAmount: 21,
         timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  TLHAICC: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
+    inlineRule: {
+      id: 'TLHAICC',
+      fnName: 'evaluateTransactionLimitHistoricAverageInbound',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '=',
+        },
+        minimumTransactionAmount: 100,
+        transactionFactor: 1,
+      },
+    },
+  },
+  TLHAIAPM: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
+    inlineRule: {
+      id: 'TLHAIAPM',
+      fnName: 'evaluateTransactionLimitHistoricAverageInbound',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '!=',
+        },
+        minimumTransactionAmount: 100,
+        transactionFactor: 1,
       },
     },
   },
