@@ -704,16 +704,9 @@ enum AlertStatus {
   completed @map("300")
 }
 
-enum AlertType {
-  high_risk_transaction
-  dormant_account_activity
-  unusual_pattern
-}
-
 model AlertDefinition {
   id          String     @id @default(cuid())
   label       String
-  type        AlertType?
   name        String
   enabled     Boolean    @default(true)
   description String?
