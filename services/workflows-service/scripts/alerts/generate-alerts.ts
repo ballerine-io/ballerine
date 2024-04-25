@@ -139,7 +139,7 @@ export const ALERT_DEFINITIONS = {
           counterpartyOriginatorIds: [],
         },
         paymentMethods: [PaymentMethod.credit_card],
-        excludePaymentMethods: false,
+        excludePaymentMethods: true,
 
         timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
@@ -413,9 +413,7 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
-} as const satisfies Record<
-  string, Parameters<typeof getAlertDefinitionCreateData>[0]
->;
+} as const satisfies Record<string, Parameters<typeof getAlertDefinitionCreateData>[0]>;
 
 export const getAlertDefinitionCreateData = (
   {
@@ -433,7 +431,7 @@ export const getAlertDefinitionCreateData = (
   },
   project: Project,
   createdBy: string = 'SYSTEM',
-  extraColumns: any,
+  extraColumns: any = {},
 ) => {
   const id = inlineRule.id;
 
@@ -465,12 +463,13 @@ export const generateAlertDefinitions = async (
   {
     createdBy = 'SYSTEM',
     project,
-    
   }: {
     createdBy?: string;
     project: Project;
   },
-  { crossEnvKeyPrefix = undefined }: {
+  {
+    crossEnvKeyPrefix = undefined,
+  }: {
     crossEnvKeyPrefix?: string;
   } = {},
 ) =>
@@ -483,7 +482,11 @@ export const generateAlertDefinitions = async (
       }))
       .filter(alert => alert.enabled)
       .map(alertDef => {
-        const extraColumns = { crossEnvKey: crossEnvKeyPrefix ? `${crossEnvKeyPrefix}_${alertDef.inlineRule.id}` : undefined };
+        const extraColumns = {
+          crossEnvKey: crossEnvKeyPrefix
+            ? `${crossEnvKeyPrefix}_${alertDef.inlineRule.id}`
+            : undefined,
+        };
 
         return prisma.alertDefinition.upsert({
           where: { label_projectId: { label: alertDef.inlineRule.id, projectId: project.id } },
@@ -492,8 +495,8 @@ export const generateAlertDefinitions = async (
           include: {
             alert: true,
           },
-        })},
-      ),
+        });
+      }),
   );
 
 const generateFakeAlert = ({
