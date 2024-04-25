@@ -10,6 +10,7 @@ import type { TProjectId, TProjectIds } from '@/types';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { UserStatus } from '@prisma/client';
 import sgMail from '@sendgrid/mail';
+import { env } from '@/env';
 
 @swagger.ApiExcludeController()
 @common.Controller('internal/users')
@@ -52,7 +53,6 @@ export class UserControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
   ) {
     const { projectIds, options, ...userInfo } = userCreatInfo;
-    const shouldSendWelcomeEmail = options?.sendWelcomeEmail ?? false;
 
     const createdUser = await this.service.create(
       {
@@ -69,27 +69,32 @@ export class UserControllerInternal {
       },
       projectIds?.[0] || currentProjectId,
     );
-    if (shouldSendWelcomeEmail && createdUser.email) {
-      const message: sgMail.MailDataRequired = {
-        to: createdUser.email,
-        from: 'oss@ballerine.com',
-        subject: 'Welcome Message!',
-        text: 'Welcome to our Ballerine!',
-        html: '<strong>Welcome to our Ballerine!</strong>',
+    if (!options?.sendWelcomeEmail) {
+        
+        return createdUser;
       };
 
-      if (process.env.SENDGRID_API_KEY) {
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        await sgMail.send(message).then(() => {}, error => {
-          console.error(error);
-          if (error.response) {
-            console.error(error.response.body)
-          }
-        });
-      } else {
-        console.warn('SendGrid API key not provided. Email will not be not send ');
-        console.log('Email:', message);
-      }
+    const message: sgMail.MailDataRequired = {
+      to: createdUser.email,
+      from: 'no-reply@ballerine.com',
+      subject: 'Welcome Message!',
+      text: 'Welcome to our Ballerine!',
+      html: '<strong>Welcome to our Ballerine!</strong>',
+    }
+      
+    if (!env.SENDGRID_API_KEY) {
+      console.warn('SendGrid API key not provided. Email will not be not send ');
+      console.log('Email:', message);
+
+      return createdUser;
+    } 
+
+    try {
+      sgMail.setApiKey(env.SENDGRID_API_KEY);
+      await sgMail.send(message);
+      
+    } catch (error) {
+      console.error(error);
     }
 
     return createdUser;
