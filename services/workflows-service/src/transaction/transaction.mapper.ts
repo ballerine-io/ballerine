@@ -1,5 +1,9 @@
-import { Prisma } from '@prisma/client';
-import { CounterpartyInfo, TransactionCreateDto } from './dtos/transaction-create.dto';
+import { PaymentBrandName, Prisma } from '@prisma/client';
+import {
+  CounterpartyInfo,
+  TransactionCreateAltDto,
+  TransactionCreateDto,
+} from './dtos/transaction-create.dto';
 import { InputJsonValue, TProjectId } from '@/types';
 import { HttpException } from '@nestjs/common';
 
@@ -30,6 +34,7 @@ export class TransactionEntityMapper {
       paymentAcquirer: dto.payment?.acquirer ?? null,
       paymentProcessor: dto.payment?.processor ?? null,
       paymentBrandName: dto.payment?.brandName ?? null,
+      paymentMccCode: dto.payment?.mccCode ?? null,
 
       // Assuming card details and tags are part of the DTO
       cardFingerprint: dto.cardDetails?.fingerprint ?? null,
@@ -163,4 +168,94 @@ export class TransactionEntityMapper {
         }
       : undefined;
   }
+
+  static altDtoToOriginalDto(aclDto: TransactionCreateAltDto): TransactionCreateDto {
+    let originator: CounterpartyInfo = {} as CounterpartyInfo;
+    let beneficiary: CounterpartyInfo = {} as CounterpartyInfo;
+
+    if (aclDto.tx_direction === 'outbound') {
+      originator = {
+        correlationId: aclDto.customer_id,
+        businessData: aclDtoToBusinessData(aclDto),
+      };
+      beneficiary = {
+        correlationId: aclDto.counterparty_id,
+        endUserData: aclDtoToEndUserData(aclDto),
+      };
+    } else {
+      originator = {
+        correlationId: aclDto.counterparty_id,
+        endUserData: aclDtoToEndUserData(aclDto),
+      };
+      beneficiary = {
+        correlationId: aclDto.customer_id,
+        businessData: aclDtoToBusinessData(aclDto),
+      };
+    }
+
+    const oldDto: TransactionCreateDto = {
+      date: new Date(aclDto.tx_date_time),
+      amount: aclDto.tx_amount,
+      currency: aclDto.tx_currency,
+      baseAmount: aclDto.tx_base_amount,
+      baseCurrency: aclDto.tx_base_currency,
+      correlationId: aclDto.tx_id,
+      description: aclDto.tx_reference_text,
+      direction: aclDto.tx_direction,
+      reference: aclDto.tx_reference_text,
+      // type: aclDto.tx_type,
+      originator,
+      beneficiary,
+      payment: {
+        channel: aclDto.tx_payment_channel,
+        mccCode: parseInt(aclDto.tx_mcc_code || '0'),
+        brandName: (
+          aclDto.counterparty_institution_name ||
+          aclDto.tx_product ||
+          aclDto.counterparty_type
+        ).toLowerCase() as PaymentBrandName,
+      },
+      cardDetails: {
+        cardBin: parseInt(aclDto.counterparty_institution_id) || undefined,
+      },
+      additionalInfo: {},
+    };
+
+    return oldDto;
+  }
 }
+
+const aclDtoToBusinessData: (aclDto: TransactionCreateAltDto) => {
+  address: {
+    street: string;
+    postcode: string;
+    state: string;
+    country: string;
+  };
+  companyName: string;
+  businessType: string;
+} = aclDto => {
+  return {
+    address: {
+      street: aclDto.customer_address,
+      postcode: aclDto.customer_postcode,
+      state: aclDto.customer_state,
+      country: aclDto.customer_country,
+    },
+    companyName: aclDto.customer_name,
+    businessType: aclDto.customer_type,
+  };
+};
+
+const aclDtoToEndUserData: (aclDto: TransactionCreateAltDto) => {
+  firstName: string;
+  lastName: string;
+} = aclDto => {
+  const firstName = aclDto.counterparty_name.split(' ').slice(0, -1).join(' ');
+  const lastName = aclDto.counterparty_name.split(' ').slice(-1).join(' ');
+
+  return {
+    firstName,
+    lastName,
+  };
+};

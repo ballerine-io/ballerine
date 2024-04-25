@@ -1,6 +1,9 @@
 import * as swagger from '@nestjs/swagger';
 import { TransactionService } from '@/transaction/transaction.service';
-import { TransactionCreateDto } from '@/transaction/dtos/transaction-create.dto';
+import {
+  TransactionCreateAltDto,
+  TransactionCreateDto,
+} from '@/transaction/dtos/transaction-create.dto';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
 
 import * as types from '@/types';
@@ -26,8 +29,9 @@ import { BulkTransactionsCreatedDto } from '@/transaction/dtos/bulk-transactions
 import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
 import { BulkStatus } from '@/alert/types';
 import * as errors from '@/errors';
-import { ValidationError, exceptionValidationFactory } from '@/errors';
+import { exceptionValidationFactory } from '@/errors';
 import { TIME_UNITS } from '@/data-analytics/consts';
+import { TransactionEntityMapper } from './transaction.mapper';
 
 @swagger.ApiTags('Transactions')
 @Controller('external/transactions')
@@ -63,6 +67,82 @@ export class TransactionControllerExternal {
     }
 
     res.status(201).json(creationResponse);
+  }
+
+  @Post('/alt')
+  @UseCustomerAuthGuard()
+  @swagger.ApiCreatedResponse({ type: TransactionCreateAltDto })
+  @swagger.ApiForbiddenResponse()
+  async createAlt(
+    @Body(
+      new ValidationPipe({
+        exceptionFactory: exceptionValidationFactory,
+      }),
+    )
+    body: TransactionCreateAltDto,
+    @Res() res: express.Response,
+    @CurrentProject() currentProjectId: types.TProjectId,
+  ) {
+    const tranformedPayload = TransactionEntityMapper.altDtoToOriginalDto(body);
+    const creationResponses = await this.service.createBulk({
+      transactionsPayload: [tranformedPayload],
+      projectId: currentProjectId,
+    });
+    const creationResponse = creationResponses[0]!;
+
+    if ('error' in creationResponse) {
+      throw creationResponse.error;
+    }
+
+    res.status(201).json(creationResponse);
+  }
+
+  @Post('/alt/bulk')
+  @UseCustomerAuthGuard()
+  @swagger.ApiCreatedResponse({ type: [BulkTransactionsCreatedDto] })
+  @swagger.ApiResponse({ type: [BulkTransactionsCreatedDto], status: 207 })
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiBody({ type: () => [TransactionCreateAltDto] })
+  async createAltBulk(
+    @Body(
+      new ParseArrayPipe({
+        items: TransactionCreateAltDto,
+        exceptionFactory: exceptionValidationFactory,
+      }),
+    )
+    body: TransactionCreateAltDto[],
+    @Res() res: express.Response,
+    @CurrentProject() currentProjectId: types.TProjectId,
+  ) {
+    const tranformedPayload = body.map(TransactionEntityMapper.altDtoToOriginalDto);
+    const creationResponses = await this.service.createBulk({
+      transactionsPayload: tranformedPayload,
+      projectId: currentProjectId,
+    });
+
+    let hasErrors = false;
+
+    const response = creationResponses.map(creationResponse => {
+      if ('error' in creationResponse) {
+        hasErrors = true;
+
+        return {
+          status: BulkStatus.FAILED,
+          error: creationResponse.error.message,
+          data: {
+            correlationId: creationResponse.correlationId,
+          },
+        };
+      }
+
+      return {
+        status: BulkStatus.SUCCESS,
+        data: creationResponse,
+      };
+    });
+
+    res.status(hasErrors ? 207 : 201).json(response);
   }
 
   @Post('/bulk')

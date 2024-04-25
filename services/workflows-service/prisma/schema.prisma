@@ -537,14 +537,6 @@ enum PaymentType {
   refund
 }
 
-enum PaymentChannel {
-  online
-  mobile_app
-  in_store
-  telephone
-  mail_order
-}
-
 enum PaymentIssuer {
   chase
   bank_of_america
@@ -616,11 +608,12 @@ model TransactionRecord {
   paymentBrandName PaymentBrandName?
   paymentMethod    PaymentMethod?
   paymentType      PaymentType?
-  paymentChannel   PaymentChannel?
+  paymentChannel   String?
   paymentIssuer    PaymentIssuer?
   paymentGateway   PaymentGateway?
   paymentAcquirer  PaymentAcquirer?
   paymentProcessor PaymentProcessor?
+  paymentMccCode   Int?
 
   cardFingerprint   String?
   cardIssuedCountry String?
