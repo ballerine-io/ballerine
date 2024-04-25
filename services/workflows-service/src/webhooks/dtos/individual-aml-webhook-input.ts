@@ -21,7 +21,7 @@ export class IndividualAmlWebhookInput {
     type: Number,
   })
   @IsNumber()
-  timestamp!: string;
+  timestamp!: number;
 
   @ApiProperty({
     required: true,
