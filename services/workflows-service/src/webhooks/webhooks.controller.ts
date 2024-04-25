@@ -6,6 +6,8 @@ import { AmlWebhookInput } from './dtos/aml-webhook-input';
 import { IndividualAmlWebhookInput } from '@/webhooks/dtos/individual-aml-webhook-input';
 import { WebhooksService } from '@/webhooks/webhooks.service';
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
+import { BadRequestException } from '@nestjs/common';
+import { isObject } from '@ballerine/common';
 
 const Webhook = {
   AML_INDIVIDUAL_MONITORING_UPDATE: 'aml.individuals.monitoring.update',
@@ -30,14 +32,16 @@ export class WebhooksController {
   @VerifyUnifiedApiSignatureDecorator()
   async amlHook(
     @common.Param() { entityType }: AmlWebhookInput,
-    @common.Body() data: IndividualAmlWebhookInput,
+    @common.Body() { eventName, data }: IndividualAmlWebhookInput,
   ) {
+    if (!(isObject(data) && 'endUserId' in data && data.endUserId)) {
+      throw new BadRequestException('Missing endUserId');
+    }
+
     try {
       if (entityType === EntityType.INDIVIDUAL) {
-        const { eventName } = data;
-
         if (eventName === Webhook.AML_INDIVIDUAL_MONITORING_UPDATE) {
-          await this.webhooksService.handleIndividualAmlHit(data as IndividualAmlWebhookInput);
+          await this.webhooksService.handleIndividualAmlHit({ endUserId: data.endUserId, data });
         }
       }
     } catch (error) {
