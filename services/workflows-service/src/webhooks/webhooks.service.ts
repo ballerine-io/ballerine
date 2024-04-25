@@ -74,7 +74,6 @@ export class WebhooksService {
             ...rest,
             additionalInfo: rest.additionalInfo ?? {},
           },
-          id: endUserId,
           ballerineEntityId: endUserId,
           type: 'individual',
         },
