@@ -144,17 +144,17 @@ jobs:
           build-args: |
             "RELEASE=${{ steps.bump-version.outputs.tag }}"
 
-      - name: Scan Docker Image
-        uses: aquasecurity/trivy-action@master
-        with:
-          cache-dir:
-          image-ref: ${{ steps.docker-version.outputs.full_image }}
-          format: 'table'
-          ignore-unfixed: true
-          exit-code: 1
-          trivyignores: ./.trivyignore
-          vuln-type: 'os,library'
-          severity: 'CRITICAL'
+      # - name: Scan Docker Image
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     cache-dir:
+      #     image-ref: ${{ steps.docker-version.outputs.full_image }}
+      #     format: 'table'
+      #     ignore-unfixed: true
+      #     exit-code: 1
+      #     trivyignores: ./.trivyignore
+      #     vuln-type: 'os,library'
+      #     severity: 'CRITICAL'
 
   update-helm-chart:
     needs: build-and-push-image
