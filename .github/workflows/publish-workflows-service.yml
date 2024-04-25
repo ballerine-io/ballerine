@@ -152,7 +152,8 @@ jobs:
           format: 'table'
           ignore-unfixed: true
           exit-code: 1
-          vuln-type: 'os'
+          trivyignores: ./.trivyignore
+          vuln-type: 'os,library'
           severity: 'CRITICAL'
 
   update-helm-chart:
