@@ -8,6 +8,8 @@ import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
+import { HomeSearchSchema } from './home-search-schema';
 
 export const Home: FunctionComponent = () => {
   const { data: session } = useAuthenticatedUserQuery();
@@ -15,6 +17,7 @@ export const Home: FunctionComponent = () => {
   const locale = useLocale();
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const [dateRange, setDateRange] = useZodSearchParams(HomeSearchSchema);
 
   useEffect(() => {
     if (pathname !== `/${locale}` && pathname !== `/${locale}/home`) {
