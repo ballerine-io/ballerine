@@ -34,4 +34,12 @@ export class BusinessReportRepository {
       this.scopeService.scopeFindMany(args, projectIds),
     );
   }
+  async upsert<T extends Prisma.BusinessReportUpsertArgs>(
+    args: Prisma.SelectSubset<T, Prisma.BusinessReportUpsertArgs>,
+    projectIds: TProjectIds,
+  ) {
+    args.where = { ...args.where, project: { id: { in: projectIds } } };
+
+    return await this.prisma.businessReport.upsert(args);
+  }
 }
