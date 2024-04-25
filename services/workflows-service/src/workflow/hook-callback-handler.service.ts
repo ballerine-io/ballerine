@@ -198,7 +198,7 @@ export class HookCallbackHandlerService {
       }
 
       reportData.previousReport = {
-        summary: (comparedToReport.report as { summary: unknown }).summary,
+        ...(comparedToReport.report as { data: { summary: { summary: unknown } } }).data.summary,
       };
     }
 
