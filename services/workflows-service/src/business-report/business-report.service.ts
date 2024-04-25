@@ -20,6 +20,13 @@ export class BusinessReportService {
     return await this.businessReportRepository.findMany(args, projectIds);
   }
 
+  async upsert<T extends Prisma.BusinessReportUpsertArgs>(
+    args: Prisma.SelectSubset<T, Prisma.BusinessReportUpsertArgs>,
+    projectIds: TProjectIds,
+  ) {
+    return await this.businessReportRepository.upsert(args, projectIds);
+  }
+
   async findFirst<T extends Prisma.BusinessReportFindFirstArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportFindFirstArgs>,
     projectIds: TProjectIds,

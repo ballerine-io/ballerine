@@ -118,18 +118,41 @@ export class HookCallbackHandlerService {
 
     if (!business) throw new BadRequestException('Business not found.');
 
-    await this.businessReportService.create({
-      data: {
-        type: reportType as BusinessReportType,
-        report: {
-          reportFileId: pdfReportBallerineFileId,
-          data: reportData as InputJsonValue,
+    const existantBusinessReport = await this.businessReportService.findFirst(
+      {
+        where: {
+          businessId: business.id,
+          reportId: reportId as string,
         },
-        reportId: reportId as string,
-        businessId: business.id,
-        projectId: currentProjectId,
       },
-    });
+      [currentProjectId],
+    );
+
+    await this.businessReportService.upsert(
+      {
+        create: {
+          type: reportType as BusinessReportType,
+          report: {
+            reportFileId: pdfReportBallerineFileId,
+            data: reportData as InputJsonValue,
+          },
+          reportId: reportId as string,
+          businessId: business.id,
+          projectId: currentProjectId,
+        },
+        update: {
+          type: reportType as BusinessReportType,
+          report: {
+            reportFileId: pdfReportBallerineFileId,
+            data: reportData as InputJsonValue,
+          },
+        },
+        where: {
+          id: existantBusinessReport?.id,
+        },
+      },
+      [currentProjectId],
+    );
 
     set(workflowRuntime.context, resultDestinationPath, { reportData });
     workflowRuntime.context.documents = documents;
