@@ -21,16 +21,15 @@ const HitSchema = z.object({
 export const AmlSchema = z.object({
   hits: z.array(HitSchema).optional().nullable(),
   createdAt: z.string().optional().nullable(),
-  totalHits: z.number().optional().nullable(),
 });
 
 export type TAml = z.output<typeof AmlSchema>;
 
 export const amlAdapter = (aml: TAml) => {
-  const { hits, totalHits, createdAt, ...rest } = aml;
+  const { hits, createdAt, ...rest } = aml;
 
   return {
-    totalMatches: totalHits ?? 0,
+    totalMatches: hits?.length ?? 0,
     fullReport: rest,
     dateOfCheck: createdAt,
     matches:

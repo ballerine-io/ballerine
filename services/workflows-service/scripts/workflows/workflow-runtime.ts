@@ -403,7 +403,6 @@ const createAmlData = ({ ubo }: { ubo: Workflow['ubos'][number] }) => {
       name: `${ubo.firstName} ${ubo.lastName}`,
       year: ubo.dateOfBirth.getFullYear(),
     },
-    totalHits: 1,
     createdAt: faker.date.recent().toISOString(),
     hits: [
       {

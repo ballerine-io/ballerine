@@ -650,7 +650,6 @@ export const workflow = {
               result: {
                 vendorResult: {
                   aml: {
-                    totalHits: 1,
                     createdAt: faker.date.recent().toISOString(),
                     hits: [
                       {
