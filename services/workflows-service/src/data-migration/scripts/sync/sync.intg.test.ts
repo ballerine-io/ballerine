@@ -35,15 +35,15 @@ describe('Data Sync System:', () => {
     await tearDownDatabase();
   });
 
-  const createSyncObject = (overrides: Partial<SyncedObject> = {}): SyncedObject => ({
-    crossEnvKey: 'test-key',
-    tableName: 'WorkflowDefinition',
-    columns: { name: 'Test Workflow', version: 1 },
-    syncConfig: { strategy: 'replace' },
-    syncedEnvironments: ['local'],
-    dryRunEnvironments: [],
-    ...overrides,
-  });
+  // const createSyncObject = (overrides: Partial<SyncedObject> = {}): SyncedObject => ({
+  //   crossEnvKey: 'test-key',
+  //   tableName: 'WorkflowDefinition',
+  //   columns: { name: 'Test Workflow', version: 1 },
+  //   syncConfig: { strategy: 'replace' },
+  //   syncedEnvironments: ['local'],
+  //   dryRunEnvironments: [],
+  //   ...overrides,
+  // });
 
   it('should create a new DataSync record when syncing a new object', async () => {
     // const syncObject = createSyncObject();
