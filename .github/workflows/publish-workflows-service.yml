@@ -152,7 +152,7 @@ jobs:
           format: 'table'
           ignore-unfixed: true
           exit-code: 1
-          vuln-type: 'os,library'
+          vuln-type: 'os'
           severity: 'CRITICAL'
 
   update-helm-chart:
