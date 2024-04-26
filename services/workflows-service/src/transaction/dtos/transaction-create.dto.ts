@@ -12,6 +12,7 @@ import {
 } from '@prisma/client';
 import {
   IsBoolean,
+  IsDate,
   IsDateString,
   IsEnum,
   IsNotEmpty,
@@ -21,7 +22,7 @@ import {
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { JsonValue } from 'type-fest';
 import { BusinessCreateDto } from '@/business/dtos/business-create';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
@@ -142,7 +143,7 @@ export class TransactionCreateDto {
 }
 
 export class TransactionCreateAltDto {
-  @ApiProperty({ required: true }) @IsDateString() @IsNotEmpty() tx_date_time!: Date;
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() tx_date_time!: Date;
   @ApiProperty({ required: true }) @IsNumber() @IsNotEmpty() tx_amount!: number;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() tx_currency!: string;
   @ApiProperty({ required: true }) @IsNumber() @IsNotEmpty() tx_base_amount!: number;
@@ -153,7 +154,11 @@ export class TransactionCreateAltDto {
   @ApiProperty({ required: false }) @IsString() @IsOptional() tx_direction?: TransactionDirection;
   @ApiProperty({ required: false }) @IsString() @IsOptional() tx_mcc_code?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() tx_payment_channel?: string;
-  @ApiProperty({ required: false }) @IsString() @IsOptional() tx_product?: string;
+  @ApiProperty({ required: false })
+  @Transform(({ value }) => value.toLowerCase())
+  @IsEnum(PaymentBrandName)
+  @IsOptional()
+  tx_product?: PaymentBrandName;
 
   // @ApiProperty({ required: false })
   // @IsEnum(TransactionRecordType)
@@ -162,9 +167,17 @@ export class TransactionCreateAltDto {
 
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() counterparty_id!: string;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() counterparty_institution_id!: string;
-  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() counterparty_institution_name!: string;
+  @ApiProperty({ required: true })
+  @Transform(({ value }) => value.toLowerCase())
+  @IsEnum(PaymentBrandName)
+  @IsNotEmpty()
+  counterparty_institution_name!: PaymentBrandName;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() counterparty_name!: string;
-  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() counterparty_type!: string;
+  @ApiProperty({ required: true })
+  @Transform(({ value }) => value.toLowerCase())
+  @IsEnum(PaymentBrandName)
+  @IsNotEmpty()
+  counterparty_type!: PaymentBrandName;
 
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_id!: string;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_name!: string;

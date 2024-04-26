@@ -6,6 +6,8 @@ import {
 } from './dtos/transaction-create.dto';
 import { InputJsonValue, TProjectId } from '@/types';
 import { HttpException } from '@nestjs/common';
+import { validateSync } from 'class-validator';
+import { ValidationError } from '@/errors';
 
 export class TransactionEntityMapper {
   static toCreateData({ dto, projectId }: { dto: TransactionCreateDto; projectId: TProjectId }) {
@@ -169,63 +171,84 @@ export class TransactionEntityMapper {
       : undefined;
   }
 
-  static altDtoToOriginalDto(aclDto: TransactionCreateAltDto): TransactionCreateDto {
+  static altDtoToOriginalDto(altDto: TransactionCreateAltDto): TransactionCreateDto {
     let originator: CounterpartyInfo = {} as CounterpartyInfo;
     let beneficiary: CounterpartyInfo = {} as CounterpartyInfo;
 
-    if (aclDto.tx_direction === 'outbound') {
+    if (altDto.tx_direction === 'outbound') {
       originator = {
-        correlationId: aclDto.customer_id,
-        businessData: aclDtoToBusinessData(aclDto),
+        correlationId: altDto.customer_id,
+        businessData: altDtoToBusinessData(altDto),
       };
       beneficiary = {
-        correlationId: aclDto.counterparty_id,
-        endUserData: aclDtoToEndUserData(aclDto),
+        correlationId: altDto.counterparty_id,
+        endUserData: altDtoToEndUserData(altDto),
       };
     } else {
       originator = {
-        correlationId: aclDto.counterparty_id,
-        endUserData: aclDtoToEndUserData(aclDto),
+        correlationId: altDto.counterparty_id,
+        endUserData: altDtoToEndUserData(altDto),
       };
       beneficiary = {
-        correlationId: aclDto.customer_id,
-        businessData: aclDtoToBusinessData(aclDto),
+        correlationId: altDto.customer_id,
+        businessData: altDtoToBusinessData(altDto),
       };
     }
 
-    const oldDto: TransactionCreateDto = {
-      date: new Date(aclDto.tx_date_time),
-      amount: aclDto.tx_amount,
-      currency: aclDto.tx_currency,
-      baseAmount: aclDto.tx_base_amount,
-      baseCurrency: aclDto.tx_base_currency,
-      correlationId: aclDto.tx_id,
-      description: aclDto.tx_reference_text,
-      direction: aclDto.tx_direction,
-      reference: aclDto.tx_reference_text,
-      // type: aclDto.tx_type,
+    const date = new Date(altDto.tx_date_time);
+    const originalDto: TransactionCreateDto = {
+      date: date.toISOString() as any,
+      amount: altDto.tx_amount,
+      currency: altDto.tx_currency,
+      baseAmount: altDto.tx_base_amount,
+      baseCurrency: altDto.tx_base_currency,
+      correlationId: altDto.tx_id,
+      description: altDto.tx_reference_text,
+      direction: altDto.tx_direction,
+      reference: altDto.tx_reference_text,
+      // type: altDto.tx_type,
       originator,
       beneficiary,
       payment: {
-        channel: aclDto.tx_payment_channel,
-        mccCode: parseInt(aclDto.tx_mcc_code || '0'),
+        channel: altDto.tx_payment_channel,
+        mccCode: parseInt(altDto.tx_mcc_code || '0'),
         brandName: (
-          aclDto.counterparty_institution_name ||
-          aclDto.tx_product ||
-          aclDto.counterparty_type
+          altDto.counterparty_institution_name ||
+          altDto.tx_product ||
+          altDto.counterparty_type
         ).toLowerCase() as PaymentBrandName,
       },
       cardDetails: {
-        cardBin: parseInt(aclDto.counterparty_institution_id) || undefined,
+        cardBin: parseInt(altDto.counterparty_institution_id) || undefined,
       },
       additionalInfo: {},
     };
 
-    return oldDto;
+    const brand = (
+      altDto.tx_product ||
+      altDto.counterparty_institution_name ||
+      altDto.counterparty_type
+    ).toLowerCase() as PaymentBrandName;
+
+    const isCreditCard = ['visa', 'mastercard', 'amex', 'discover', 'dci'].includes(brand);
+    if (isCreditCard) {
+      originalDto.payment!.method = 'credit_card';
+    } else {
+      originalDto.payment!.method = 'apm';
+    }
+
+    const errors = validateSync(Object.assign(new TransactionCreateDto(), originalDto));
+    if (errors.length > 0) {
+      throw new ValidationError(errors as any);
+    } else {
+      console.log('validation succeed');
+    }
+
+    return originalDto;
   }
 }
 
-const aclDtoToBusinessData: (aclDto: TransactionCreateAltDto) => {
+const altDtoToBusinessData: (altDto: TransactionCreateAltDto) => {
   address: {
     street: string;
     postcode: string;
@@ -234,25 +257,25 @@ const aclDtoToBusinessData: (aclDto: TransactionCreateAltDto) => {
   };
   companyName: string;
   businessType: string;
-} = aclDto => {
+} = altDto => {
   return {
     address: {
-      street: aclDto.customer_address,
-      postcode: aclDto.customer_postcode,
-      state: aclDto.customer_state,
-      country: aclDto.customer_country,
+      street: altDto.customer_address,
+      postcode: altDto.customer_postcode,
+      state: altDto.customer_state,
+      country: altDto.customer_country,
     },
-    companyName: aclDto.customer_name,
-    businessType: aclDto.customer_type,
+    companyName: altDto.customer_name,
+    businessType: altDto.customer_type,
   };
 };
 
-const aclDtoToEndUserData: (aclDto: TransactionCreateAltDto) => {
+const altDtoToEndUserData: (altDto: TransactionCreateAltDto) => {
   firstName: string;
   lastName: string;
-} = aclDto => {
-  const firstName = aclDto.counterparty_name.split(' ').slice(0, -1).join(' ');
-  const lastName = aclDto.counterparty_name.split(' ').slice(-1).join(' ');
+} = altDto => {
+  const firstName = altDto.counterparty_name.split(' ').slice(0, -1).join(' ');
+  const lastName = altDto.counterparty_name.split(' ').slice(-1).join(' ');
 
   return {
     firstName,
