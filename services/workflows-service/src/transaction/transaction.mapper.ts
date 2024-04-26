@@ -206,7 +206,6 @@ export class TransactionEntityMapper {
       description: altDto.tx_reference_text,
       direction: altDto.tx_direction,
       reference: altDto.tx_reference_text,
-      // type: altDto.tx_type,
       originator,
       beneficiary,
       payment: {
@@ -221,7 +220,9 @@ export class TransactionEntityMapper {
       cardDetails: {
         cardBin: parseInt(altDto.counterparty_institution_id) || undefined,
       },
-      additionalInfo: {},
+      additionalInfo: {
+        type: altDto.tx_type,
+      },
     };
 
     const brand = (

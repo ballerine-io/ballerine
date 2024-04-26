@@ -160,10 +160,10 @@ export class TransactionCreateAltDto {
   @IsOptional()
   tx_product?: PaymentBrandName;
 
-  // @ApiProperty({ required: false })
-  // @IsEnum(TransactionRecordType)
-  // @IsOptional()
-  // tx_type?: TransactionRecordType;
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  tx_type?: string;
 
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() counterparty_id!: string;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() counterparty_institution_id!: string;

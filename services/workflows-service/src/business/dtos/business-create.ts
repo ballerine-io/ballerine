@@ -65,6 +65,7 @@ export class BusinessCreateDto {
     type: String,
   })
   @IsString()
+  @Optional()
   registrationNumber?: string;
 
   @ApiProperty({
@@ -79,6 +80,7 @@ export class BusinessCreateDto {
     type: Number,
   })
   @IsString()
+  @Optional()
   mccCode?: number;
 
   @ApiProperty({
@@ -86,6 +88,7 @@ export class BusinessCreateDto {
     type: String,
   })
   @IsString()
+  @Optional()
   businessType?: string;
 
   @ApiProperty({ type: BusinessAddressDto })

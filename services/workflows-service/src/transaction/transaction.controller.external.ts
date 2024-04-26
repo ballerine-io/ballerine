@@ -275,6 +275,9 @@ export class TransactionControllerExternal {
           },
         },
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
 }
