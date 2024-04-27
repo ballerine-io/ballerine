@@ -70,9 +70,8 @@ export class UserControllerInternal {
       projectIds?.[0] || currentProjectId,
     );
     if (!options?.sendWelcomeEmail) {
-        
-        return createdUser;
-      };
+      return createdUser;
+    }
 
     const message: sgMail.MailDataRequired = {
       to: createdUser.email,
@@ -80,19 +79,18 @@ export class UserControllerInternal {
       subject: 'Welcome Message!',
       text: 'Welcome to our Ballerine!',
       html: '<strong>Welcome to our Ballerine!</strong>',
-    }
-      
+    };
+
     if (!env.SENDGRID_API_KEY) {
       console.warn('SendGrid API key not provided. Email will not be not send ');
       console.log('Email:', message);
 
       return createdUser;
-    } 
+    }
 
     try {
       sgMail.setApiKey(env.SENDGRID_API_KEY);
       await sgMail.send(message);
-      
     } catch (error) {
       console.error(error);
     }

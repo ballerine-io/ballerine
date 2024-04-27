@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsString , IsOptional , IsBoolean } from 'class-validator';
+import { IsArray, IsString, IsOptional, IsBoolean } from 'class-validator';
 import type { InputJsonValue } from '../../types';
 
 class CreateOptions {
