@@ -69,6 +69,7 @@ export class UserControllerInternal {
       },
       projectIds?.[0] || currentProjectId,
     );
+
     if (!options?.sendWelcomeEmail) {
       return createdUser;
     }
