@@ -4,13 +4,13 @@ import { NoBlocks } from '@/lib/blocks/components/NoBlocks/NoBlocks';
 import { cells } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { useManualReviewBlocksLogic } from '@/lib/blocks/variants/ManualReviewBlocks/hooks/useManualReviewBlocksLogic/useManualReviewBlocksLogic';
 import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
-import { useCurrentCase } from '@/pages/Entity/hooks/useCurrentCase/useCurrentCase';
+import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { BlocksComponent } from '@ballerine/blocks';
 import { DEFAULT_PROCESS_TRACKER_PROCESSES } from '@/common/components/molecules/ProcessTracker/constants';
 
 export const ManualReviewBlocks = () => {
   const { blocks, isLoading } = useManualReviewBlocksLogic();
-  const { data: workflow } = useCurrentCase();
+  const { data: workflow } = useCurrentCaseQuery();
   const plugins = useCasePlugins({ workflow: workflow as TWorkflowById });
 
   return (
