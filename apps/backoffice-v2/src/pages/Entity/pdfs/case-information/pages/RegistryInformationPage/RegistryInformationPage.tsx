@@ -3,71 +3,27 @@ import { CaseInformationPageContainer } from '@/pages/Entity/pdfs/case-informati
 import { CaseInformationPageHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageHeader/CaseInformationPageHeader';
 import { CaseInformationPageSection } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSection/CaseInformationPageSection';
 import { CaseInformationPageSectionHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSectionHeader/CaseInformationPageSectionHeader';
+import { TRegistryInformationData } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/registry-information.schema';
+import { createRegistryItems } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/utils/create-registry-items';
 import { Link, Typography, tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
-import poweredByLogo from './assets/title-page-ballerine-logo.png';
+import { FunctionComponent } from 'react';
 
-interface IRegistryItem {
-  key: string;
-  title: string;
-  value: string;
-  valueType?: 'text' | 'link';
+export interface IRegistryInformationPageProps {
+  data: TRegistryInformationData;
 }
 
-const registryItems: IRegistryItem[] = [
-  {
-    key: 'name',
-    title: 'Name',
-    value: 'Singapore Airlines Limited',
-  },
-  {
-    key: 'registrationNumber',
-    title: 'Registration number',
-    value: '128947342867',
-  },
-  {
-    key: 'incorporationDate',
-    title: 'Incorporation date',
-    value: '12/12/2012',
-  },
-  {
-    key: 'companyType',
-    title: 'Company type',
-    value: 'Public Company',
-  },
-  {
-    key: 'currentStatus',
-    title: 'Current status',
-    value: 'Active',
-  },
-  {
-    key: 'lastUpdate',
-    title: 'Last update',
-    value: '12/12/2021',
-  },
-  {
-    key: 'registeredAddress',
-    title: 'Registered Address',
-    value: 'Singapore',
-  },
-  {
-    key: 'createdAt',
-    title: 'Created at',
-    value: '12/12/2021',
-  },
-  {
-    key: 'registryPage',
-    title: 'Registry page',
-    value: 'https://www.example.com',
-    valueType: 'link',
-  },
-];
+export const RegistryInformationPage: FunctionComponent<IRegistryInformationPageProps> = ({
+  data,
+}) => {
+  const { companyName, logoUrl } = data;
 
-export const RegistryInformationPage = () => {
+  const registryItems = createRegistryItems(data);
+
   return (
     <CaseInformationPageContainer>
       <View style={tw('mb-3')}>
-        <CaseInformationPageHeader companyLogo={poweredByLogo} companyName="Ballerine" />
+        <CaseInformationPageHeader companyLogo={logoUrl} companyName={companyName} />
       </View>
       <View style={tw('flex flex-col gap-5')}>
         <CaseInformationPageSection>

@@ -1,8 +1,16 @@
+import { TTitlePageData } from '@/pages/Entity/pdfs/case-information/pages/TitlePage/title-page.schema';
 import { Image, List, ListItem, Typography, tw } from '@ballerine/react-pdf-toolkit';
 import { Page, View } from '@react-pdf/renderer';
+import { FunctionComponent } from 'react';
 import poweredByLogo from './assets/title-page-ballerine-logo.png';
 
-export const TitlePage = () => {
+export interface ITitlePageProps {
+  data: TTitlePageData;
+}
+
+export const TitlePage: FunctionComponent<ITitlePageProps> = ({ data }) => {
+  const { companyName, creationDate } = data;
+
   return (
     <Page wrap={false}>
       <View style={tw('flex flex-col p-5')}>
@@ -16,15 +24,14 @@ export const TitlePage = () => {
         <View style={tw('flex flex-col items-center justify-center gap-12 pb-12')}>
           <Image width={100} height={23} src={poweredByLogo} />
           <Typography styles={[tw('text-[18px] text-center leading-5')]} weight="bold">
-            Singapore Airlines Limited
-            {'\n'} Onboarding Data Report
+            {companyName}
           </Typography>
         </View>
         {/* Company Info section --- end */}
         {/* Document information section --- start*/}
         <View style={tw('flex flex-col gap-2 items-center pb-12')}>
           <Typography weight="bold" styles={[tw('text-[10px]')]}>
-            Created at
+            {new Date(creationDate).toISOString()}
           </Typography>
           <Typography styles={[tw('text-[10px]')]}>{new Date().toISOString()}</Typography>
         </View>

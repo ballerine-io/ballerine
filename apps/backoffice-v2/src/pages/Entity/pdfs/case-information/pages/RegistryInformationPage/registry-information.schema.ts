@@ -12,3 +12,5 @@ export const registryInformationSchema = BaseCaseInformationPdfSchema.extend({
   registrationAddress: z.string(),
   registryPage: z.string(),
 });
+
+export type TRegistryInformationData = z.infer<typeof registryInformationSchema>;

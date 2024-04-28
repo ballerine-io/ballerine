@@ -1,10 +1,10 @@
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
-import { TitlePage } from '@/pages/Entity/pdfs/case-information/TitlePage';
 import { CompanyOwnershipPage } from '@/pages/Entity/pdfs/case-information/pages/CompanyOwnershipPage';
 import { CompanySanctionsPage } from '@/pages/Entity/pdfs/case-information/pages/CompanySanctionsPage';
 import { IdentityVerificationsPage } from '@/pages/Entity/pdfs/case-information/pages/IdentityVerificationsPage';
 import { IndividualSanctionsPage } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage';
 import { RegistryInformationPage } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage';
+import { TitlePage } from '@/pages/Entity/pdfs/case-information/pages/TitlePage';
 import { registerFont } from '@ballerine/react-pdf-toolkit';
 import { Document, Font, pdf } from '@react-pdf/renderer';
 import { useCallback, useState } from 'react';
