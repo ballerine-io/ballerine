@@ -1,150 +1,26 @@
+import { isValidUrl } from '@/common/utils/is-valid-url';
 import { CaseInformationDisclaimer } from '@/pages/Entity/pdfs/case-information/components/CaseInformationDisclaimer/CaseInformationDisclaimer';
 import { CaseInformationPageContainer } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageContainer/CaseInformationPageContainer';
 import { CaseInformationPageHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageHeader/CaseInformationPageHeader';
 import { CaseInformationPageSection } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSection/CaseInformationPageSection';
 import { CaseInformationPageSectionHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSectionHeader/CaseInformationPageSectionHeader';
-import {
-  CompanySanctionsMatchSection,
-  ICompanySanctionsMatchSectionAddress,
-} from '@/pages/Entity/pdfs/case-information/pages/CompanySanctionsPage/components/CompanySanctionsMatchSection/CompanySanctionsMatchSection';
+import { TCompanySanctionsData } from '@/pages/Entity/pdfs/case-information/pages/CompanySanctionsPage/company-sanctions.schema';
+import { CompanySanctionsMatchSection } from '@/pages/Entity/pdfs/case-information/pages/CompanySanctionsPage/components/CompanySanctionsMatchSection/CompanySanctionsMatchSection';
 import { Typography, tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
-import poweredByLogo from './assets/title-page-ballerine-logo.png';
+import { FunctionComponent } from 'react';
 
-interface ICompanySanctionsItem {
-  primaryName: string;
-  lastReviewed: string;
-  labels: string[];
-  matchReasons: string[];
-  //urls
-  sources: string[];
-  //address line
-  addresses: ICompanySanctionsMatchSectionAddress[];
+interface ICompanySanctionsPageProps {
+  data: TCompanySanctionsData;
 }
 
-const matches: ICompanySanctionsItem[] = [
-  {
-    primaryName: 'Singapore Airlines Limited',
-    lastReviewed: '12/12/2021',
-    labels: [
-      'PEP',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'PEP',
-      'Sanction',
-      'PEP',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'PEP',
-      'Sanction',
-      'PEP',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'Sanction',
-      'PEP',
-      'Sanction',
-    ],
-    matchReasons: [
-      'Name',
-      'Address',
-      'Address',
-      'Address',
-      'Address',
-      'Address',
-      'Address',
-      'Address',
-      'Name',
-      'Address',
-      'Address',
-      'Address',
-      'Address',
-      'Address',
-      'Address',
-      'Address',
-      'Name',
-      'Address',
-      'Address',
-      'Address',
-      'Address',
-      'Address',
-      'Address',
-      'Address',
-    ],
-    sources: [
-      'https://www.singaporeairlines.com',
-      'https://www.example.com',
-      'https://www.example.com',
-      'https://www.example.com',
-      'https://www.example.com',
-      'https://www.example.com',
-      'https://www.example.com',
-      'https://www.example.com',
-    ],
-    addresses: [
-      {
-        addresses: [
-          'Sutton yard, 65 Goswell Road, London, United Kingdom',
-          'Sutton yard, 65 Goswell Road, London, United Kingdom',
-          'Sutton yard, 65 Goswell Road, London, United Kingdom',
-          'Sutton yard, 65 Goswell Road, London, United Kingdom',
-        ],
-        city: 'London',
-        country: 'United Kingdom',
-      },
-      {
-        addresses: ['Sutton yard, 65 Goswell Road, London, United Kingdom'],
-        city: 'London',
-        country: 'United Kingdom',
-      },
-    ],
-  },
-  {
-    primaryName: 'Singapore Airlines Limited',
-    lastReviewed: '12/12/2021',
-    labels: ['PEP', 'Sanction'],
-    matchReasons: ['Name', 'Address'],
-    sources: [
-      'https://www.singaporeairlines.com',
-      'https://www.example.com',
-      'https://www.example.com',
-    ],
-    addresses: [
-      {
-        addresses: ['Sutton yard, 65 Goswell Road, London, United Kingdom'],
-        city: 'London',
-        country: 'United Kingdom',
-      },
-      {
-        addresses: ['Sutton yard, 65 Goswell Road, London, United Kingdom'],
-        city: 'London',
-        country: 'United Kingdom',
-      },
-    ],
-  },
-];
+export const CompanySanctionsPage: FunctionComponent<ICompanySanctionsPageProps> = ({ data }) => {
+  const { sanctions, companyName, logoUrl } = data;
 
-export const CompanySanctionsPage = () => {
   return (
     <CaseInformationPageContainer>
       <View style={tw('mb-3')}>
-        <CaseInformationPageHeader
-          companyLogo={poweredByLogo}
-          companyName="Ballerine Onboarding Data Report"
-        />
+        <CaseInformationPageHeader companyLogo={logoUrl} companyName={companyName} />
       </View>
       <View style={tw('flex flex-col gap-5')}>
         <CaseInformationPageSection>
@@ -170,21 +46,21 @@ export const CompanySanctionsPage = () => {
                   </Typography>
                 </View>
                 <Typography styles={[tw('text-[#EA4335]')]} weight="bold">
-                  {matches.length}
+                  {sanctions.length}
                   {' matches'}
                 </Typography>
               </View>
             </View>
             <View style={tw('flex flex-col gap-4')}>
-              {matches.map((item, index) => (
+              {sanctions.map((item, index) => (
                 <CompanySanctionsMatchSection
-                  key={item.primaryName}
-                  primaryName={item.primaryName}
+                  key={item.name}
+                  primaryName={item.name}
                   labels={item.labels}
                   matchNumber={index + 1}
-                  lastReviewedDate={item.lastReviewed}
+                  lastReviewedDate={item.reviewDate ? new Date(item.reviewDate) : undefined}
                   matchReasons={item.matchReasons}
-                  sources={item.sources}
+                  sources={item.sources.filter(source => isValidUrl(source))}
                   addresses={item.addresses}
                 />
               ))}

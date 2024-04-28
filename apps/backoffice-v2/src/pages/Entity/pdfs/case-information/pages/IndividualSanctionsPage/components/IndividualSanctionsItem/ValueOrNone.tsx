@@ -12,15 +12,6 @@ const NONE_TEXT_HEX_COLOR = '#999999';
 const valueOrNoneTextColor = valueOrFallback(NONE_TEXT_HEX_COLOR, { checkFalsy: true });
 
 export const ValueOrNone: FunctionComponent<IValueOrNoneProps> = ({ value }) => {
-  console.log(
-    { value },
-    `text-[8px] leading-[1.45rem] ${
-      valueOrNoneTextColor(value) === NONE_TEXT_HEX_COLOR
-        ? `text-[${valueOrNoneTextColor(value)}]`
-        : ''
-    }}`,
-  );
-
   return (
     <Typography
       styles={[

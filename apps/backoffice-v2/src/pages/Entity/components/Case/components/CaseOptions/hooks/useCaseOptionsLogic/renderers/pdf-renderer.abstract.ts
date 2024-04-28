@@ -1,14 +1,19 @@
+import { svgToPng } from '@/common/utils/svg-to-png/svg-to-png';
+import { TCustomer } from '@/domains/customer/fetchers';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { z } from 'zod';
 
-export abstract class IPDFRenderer<TPDFData> {
+export abstract class IPDFRenderer<TPDFData = unknown> {
   static PDF_NAME: string;
 
-  constructor(readonly workflow: TWorkflowById, readonly validationSchema: z.ZodAny) {}
+  constructor(readonly workflow: TWorkflowById, readonly customer: TCustomer) {}
 
-  abstract render(): JSX.Element;
+  abstract render(): Promise<JSX.Element>;
 
-  abstract getData(): TPDFData;
+  abstract getData(): Promise<TPDFData>;
 
-  abstract isValid(): boolean;
+  abstract isValid(data: TPDFData): void;
+
+  getLogoUrl(): Promise<string> {
+    return svgToPng(this.customer?.logoImageUri || '');
+  }
 }

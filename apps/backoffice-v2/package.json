@@ -52,6 +52,7 @@
   "dependencies": {
     "@ballerine/blocks": "0.2.2",
     "@ballerine/common": "0.9.4",
+    "@ballerine/react-pdf-toolkit": "^1.2.1",
     "@ballerine/ui": "^0.5.1",
     "@ballerine/workflow-browser-sdk": "0.6.7",
     "@ballerine/workflow-node-sdk": "0.6.7",
@@ -74,6 +75,7 @@
     "@radix-ui/react-slot": "^1.0.1",
     "@radix-ui/react-switch": "^1.0.3",
     "@radix-ui/react-tabs": "^1.0.4",
+    "@react-pdf/renderer": "^3.1.14",
     "@rjsf/utils": "^5.9.0",
     "@tanstack/react-query": "^4.19.1",
     "@tanstack/react-table": "^8.9.2",

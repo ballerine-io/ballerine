@@ -1,9 +1,10 @@
+import { ValueOrNone } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/components/IndividualSanctionsItem/ValueOrNone';
 import { Link, Typography, tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
 
 export interface ICompanySanctionsMatchSectionAddress {
-  addresses: string[];
+  address: string;
   city: string;
   country: string;
 }
@@ -11,7 +12,7 @@ export interface ICompanySanctionsMatchSectionAddress {
 interface ICompanySanctionsMatchSectionProps {
   primaryName: string;
   matchNumber: number;
-  lastReviewedDate: string;
+  lastReviewedDate?: Date;
   labels: string[];
   matchReasons: string[];
   sources: string[];
@@ -45,9 +46,11 @@ export const CompanySanctionsMatchSection: FunctionComponent<
               </Typography>
             </View>
             <View style={tw('w-[400px]')}>
-              <Typography styles={[tw('text-[8px] leading-[1.45rem]')]}>
-                {lastReviewedDate}
-              </Typography>
+              <ValueOrNone
+                value={
+                  lastReviewedDate ? new Date(lastReviewedDate).toISOString() : lastReviewedDate
+                }
+              />
             </View>
           </View>
           <View style={tw('flex flex-row')}>
@@ -114,7 +117,7 @@ export const CompanySanctionsMatchSection: FunctionComponent<
             <View key={index} style={tw('flex flex-row')}>
               <View style={tw('flex w-[50%] text-ellipsis')}>
                 <View style={tw('mr-4 overflow-hidden')}>
-                  <Typography styles={[tw('text-[8px]')]}>{item.addresses.join(' , ')}</Typography>
+                  <Typography styles={[tw('text-[8px]')]}>{item.address}</Typography>
                 </View>
               </View>
               <View style={tw('flex w-[15%]')}>

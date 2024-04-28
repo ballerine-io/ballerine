@@ -1,6 +1,5 @@
 import { TRegistryInformationData } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/registry-information.schema';
 import { IRegistryInformationItem } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/types';
-import { valueOrNone } from '@/pages/Entity/pdfs/case-information/utils/value-or-none';
 
 export const createRegistryItems = (
   registryInformationData: TRegistryInformationData,
@@ -22,52 +21,52 @@ export const createRegistryItems = (
     {
       key: 'name',
       title: 'Name',
-      value: valueOrNone(companyName),
+      value: companyName || '',
     },
     {
       key: 'registrationNumber',
       title: 'Registration number',
-      value: valueOrNone(registrationNumber),
+      value: registrationNumber || '',
     },
     {
       key: 'incorporationDate',
       title: 'Incorporation date',
-      value: valueOrNone(incorporationDate),
+      value: incorporationDate || '',
     },
     {
       key: 'companyType',
       title: 'Company type',
-      value: valueOrNone(companyType),
+      value: companyType || '',
     },
     {
       key: 'currentStatus',
       title: 'Current status',
-      value: valueOrNone(companyStatus),
+      value: companyStatus || '',
     },
     {
       key: 'lastUpdate',
       title: 'Last update',
-      value: valueOrNone(lastUpdate?.toISOString()),
+      value: lastUpdate?.toISOString() || '',
     },
     {
       key: 'registeredAt',
       title: 'Registered At',
-      value: valueOrNone(registeredAt),
+      value: registeredAt || '',
     },
     {
       key: 'registeredAddress',
       title: 'Registered Address',
-      value: valueOrNone(registrationAddress),
+      value: registrationAddress || '',
     },
     {
       key: 'createdAt',
       title: 'Created at',
-      value: valueOrNone(creationDate?.toISOString()),
+      value: creationDate?.toISOString(),
     },
     {
       key: 'registryPage',
       title: 'Registry page',
-      value: valueOrNone(registryPage),
+      value: registryPage || '',
       valueType: 'link',
     },
   ];

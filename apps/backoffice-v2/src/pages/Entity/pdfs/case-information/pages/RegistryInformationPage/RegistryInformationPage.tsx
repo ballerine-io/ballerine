@@ -3,6 +3,7 @@ import { CaseInformationPageContainer } from '@/pages/Entity/pdfs/case-informati
 import { CaseInformationPageHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageHeader/CaseInformationPageHeader';
 import { CaseInformationPageSection } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSection/CaseInformationPageSection';
 import { CaseInformationPageSectionHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSectionHeader/CaseInformationPageSectionHeader';
+import { ValueOrNone } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/components/IndividualSanctionsItem/ValueOrNone';
 import { TRegistryInformationData } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/registry-information.schema';
 import { createRegistryItems } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/utils/create-registry-items';
 import { Link, Typography, tw } from '@ballerine/react-pdf-toolkit';
@@ -19,6 +20,8 @@ export const RegistryInformationPage: FunctionComponent<IRegistryInformationPage
   const { companyName, logoUrl } = data;
 
   const registryItems = createRegistryItems(data);
+
+  console.log('registryItems', registryItems);
 
   return (
     <CaseInformationPageContainer>
@@ -47,7 +50,7 @@ export const RegistryInformationPage: FunctionComponent<IRegistryInformationPage
               </View>
               <View style={tw('flex flex-1 flex-col gap-1')}>
                 {registryItems.map(item =>
-                  item.valueType === 'link' ? (
+                  item.valueType === 'link' && item.value ? (
                     <Link
                       key={item.key}
                       url="View"
@@ -55,9 +58,7 @@ export const RegistryInformationPage: FunctionComponent<IRegistryInformationPage
                       styles={[tw('text-[#007AFF] no-underline')]}
                     ></Link>
                   ) : (
-                    <Typography styles={[tw('text-[8px] leading-[1.45rem]')]} key={item.key}>
-                      {item.value}
-                    </Typography>
+                    <ValueOrNone value={item.value} key={item.key} />
                   ),
                 )}
               </View>

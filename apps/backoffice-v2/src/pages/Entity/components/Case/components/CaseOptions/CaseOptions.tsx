@@ -3,7 +3,7 @@ import { DropdownMenu } from '@/common/components/molecules/DropdownMenu/Dropdow
 import { DropdownMenuContent } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Content';
 import { DropdownMenuItem } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Item';
 import { DropdownMenuTrigger } from '@/common/components/molecules/DropdownMenu/DropdownMenu.Trigger';
-import { useCaseOptionsLogic } from '@/pages/Entity/components/Case/components/CaseOptions/useCaseOptionsLogic';
+import { useCaseOptionsLogic } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/useCaseOptionsLogic';
 
 export const CaseOptions = () => {
   const { isGeneratingPDF, genereateAndDownloadPDFCertificate } = useCaseOptionsLogic();

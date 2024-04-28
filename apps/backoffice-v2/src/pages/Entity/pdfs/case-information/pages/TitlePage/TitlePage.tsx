@@ -1,6 +1,6 @@
 import { TTitlePageData } from '@/pages/Entity/pdfs/case-information/pages/TitlePage/title-page.schema';
-import { Image, List, ListItem, Typography, tw } from '@ballerine/react-pdf-toolkit';
-import { Page, View } from '@react-pdf/renderer';
+import { List, ListItem, Typography, tw } from '@ballerine/react-pdf-toolkit';
+import { Image, Page, View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
 import poweredByLogo from './assets/title-page-ballerine-logo.png';
 
@@ -9,20 +9,20 @@ export interface ITitlePageProps {
 }
 
 export const TitlePage: FunctionComponent<ITitlePageProps> = ({ data }) => {
-  const { companyName, creationDate } = data;
+  const { companyName, creationDate, logoUrl } = data;
 
   return (
     <Page wrap={false}>
       <View style={tw('flex flex-col p-5')}>
         {/* Powered by section --- start */}
-        <View style={tw('flex flex-col gap-1 pb-12')}>
+        <View style={tw('flex flex-col gap-1 pb-12 px-4')}>
           <Typography styles={[tw('text-[12px]')]}>Powered by</Typography>
-          <Image width={100} height={23} src={poweredByLogo} />
+          <Image style={{ width: '100px' }} src={poweredByLogo} />
         </View>
         {/* Powered by section --- end */}
         {/* Company Info section --- start */}
-        <View style={tw('flex flex-col items-center justify-center gap-12 pb-12')}>
-          <Image width={100} height={23} src={poweredByLogo} />
+        <View style={tw('flex flex-col items-center justify-center gap-12 pb-12 px-10')}>
+          <Image style={{ width: '100px' }} src={logoUrl} />
           <Typography styles={[tw('text-[18px] text-center leading-5')]} weight="bold">
             {companyName}
           </Typography>

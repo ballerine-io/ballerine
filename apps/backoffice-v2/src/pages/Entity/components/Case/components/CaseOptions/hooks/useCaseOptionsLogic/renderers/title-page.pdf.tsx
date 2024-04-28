@@ -1,25 +1,32 @@
 import { IPDFRenderer } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/pdf-renderer.abstract';
-import { TTitlePageData, TitlePage } from '@/pages/Entity/pdfs/case-information/pages/TitlePage';
+import {
+  TTitlePageData,
+  TitlePage,
+  TitlePageSchema,
+} from '@/pages/Entity/pdfs/case-information/pages/TitlePage';
 import get from 'lodash/get';
 
 export class TitlePagePDF extends IPDFRenderer<TTitlePageData> {
   static PDF_NAME = 'titlePage';
 
-  render(): JSX.Element {
-    return <TitlePage data={this.getData()} />;
+  async render(): Promise<JSX.Element> {
+    const pdfData = await this.getData();
+    this.isValid(pdfData);
+
+    return <TitlePage data={pdfData} />;
   }
 
-  getData() {
+  async getData() {
     const pdfData: TTitlePageData = {
       companyName: get(this.workflow.context, 'entity.data.companyName', ''),
       creationDate: new Date(),
-      logoUrl: '',
+      logoUrl: await this.getLogoUrl(),
     };
 
     return pdfData;
   }
 
-  isValid(): boolean {
-    return true;
+  isValid(data: TTitlePageData) {
+    TitlePageSchema.parse(data);
   }
 }

@@ -1,10 +1,12 @@
+import { svgToPng } from '@/common/utils/svg-to-png/svg-to-png';
+import { TCustomer } from '@/domains/customer/fetchers';
+import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { CompanyOwnershipPagePDF } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/company-ownership-page.pdf';
+import { CompanySanctionsPagePDF } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/company-sanctions-page.pdf';
+import { RegistryPagePDF } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/registry-page.pdf';
+import { TitlePagePDF } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/title-page.pdf';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
-import { CompanyOwnershipPage } from '@/pages/Entity/pdfs/case-information/pages/CompanyOwnershipPage';
-import { CompanySanctionsPage } from '@/pages/Entity/pdfs/case-information/pages/CompanySanctionsPage';
-import { IdentityVerificationsPage } from '@/pages/Entity/pdfs/case-information/pages/IdentityVerificationsPage';
-import { IndividualSanctionsPage } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage';
-import { RegistryInformationPage } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage';
-import { TitlePage } from '@/pages/Entity/pdfs/case-information/pages/TitlePage';
 import { registerFont } from '@ballerine/react-pdf-toolkit';
 import { Document, Font, pdf } from '@react-pdf/renderer';
 import { useCallback, useState } from 'react';
@@ -28,21 +30,25 @@ const downloadFile = (file: File) => {
 export const useCaseOptionsLogic = () => {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { data: workflow } = useCurrentCaseQuery();
+  const { data: customer } = useCustomerQuery();
+
+  console.log('customer', customer);
 
   const genereateAndDownloadPDFCertificate = useCallback(async () => {
+    await svgToPng(customer?.logoImageUri || '').then(result => console.log(result));
     try {
       setIsGeneratingPDF(true);
 
-      const PDFBlob = await pdf(
-        <Document>
-          <TitlePage />
-          <RegistryInformationPage />
-          <CompanyOwnershipPage />
-          <CompanySanctionsPage />
-          <IdentityVerificationsPage />
-          <IndividualSanctionsPage />
-        </Document>,
-      ).toBlob();
+      const pdfs = [
+        TitlePagePDF,
+        RegistryPagePDF,
+        CompanyOwnershipPagePDF,
+        CompanySanctionsPagePDF,
+      ];
+      const renderers = pdfs.map(PDF => new PDF(workflow as TWorkflowById, customer as TCustomer));
+      const pages = await Promise.all(renderers.map(renderer => renderer.render()));
+
+      const PDFBlob = await pdf(<Document>{pages}</Document>).toBlob();
 
       const pdfFile = new File([PDFBlob], 'certificate.pdf');
 
@@ -53,7 +59,7 @@ export const useCaseOptionsLogic = () => {
     } finally {
       setIsGeneratingPDF(false);
     }
-  }, [workflow]);
+  }, [workflow, customer]);
 
   return {
     isGeneratingPDF,

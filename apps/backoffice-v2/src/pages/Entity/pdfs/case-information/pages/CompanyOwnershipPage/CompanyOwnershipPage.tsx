@@ -3,40 +3,23 @@ import { CaseInformationPageContainer } from '@/pages/Entity/pdfs/case-informati
 import { CaseInformationPageHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageHeader/CaseInformationPageHeader';
 import { CaseInformationPageSection } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSection/CaseInformationPageSection';
 import { CaseInformationPageSectionHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSectionHeader/CaseInformationPageSectionHeader';
+import { TCompanyOwnershipData } from '@/pages/Entity/pdfs/case-information/pages/CompanyOwnershipPage/company-ownership.schema';
+import { ValueOrNone } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/components/IndividualSanctionsItem/ValueOrNone';
 import { Typography, tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
-import poweredByLogo from './assets/title-page-ballerine-logo.png';
+import { FunctionComponent } from 'react';
 
-interface ICompanyOwnershipItem {
-  name: string;
-  type: string;
-  percentage: string;
-  level: number;
+export interface ICompanyOwnershipPageProps {
+  data: TCompanyOwnershipData;
 }
 
-const tableItems: ICompanyOwnershipItem[] = [
-  {
-    name: 'AIR STAR ALLIANCE GLOBAL SINGAPORE PTE. LTD.',
-    type: 'COMPANY',
-    percentage: '100%',
-    level: 1,
-  },
-  {
-    name: 'MENG, XIANGHONG',
-    type: 'PERSON',
-    percentage: '100%',
-    level: 3,
-  },
-];
+export const CompanyOwnershipPage: FunctionComponent<ICompanyOwnershipPageProps> = ({ data }) => {
+  const { items, companyName, logoUrl } = data;
 
-export const CompanyOwnershipPage = () => {
   return (
     <CaseInformationPageContainer>
       <View style={tw('mb-3')}>
-        <CaseInformationPageHeader
-          companyLogo={poweredByLogo}
-          companyName="Ballerine Onboarding Data Report"
-        />
+        <CaseInformationPageHeader companyLogo={logoUrl} companyName={companyName} />
       </View>
       <View style={tw('flex flex-col gap-5')}>
         <CaseInformationPageSection>
@@ -74,21 +57,23 @@ export const CompanyOwnershipPage = () => {
                 {/* Table Header --- end */}
               </View>
               {/* Table Body --- start */}
-              {tableItems.map(item => (
-                <View key={item.name} style={tw('flex flex-row')}>
+              {items.map(({ companyName, companyType, ownershipPercentage, level }) => (
+                <View key={companyName} style={tw('flex flex-row')}>
                   <View style={tw('flex w-[50%] text-ellipsis')}>
                     <View style={tw('mr-4 overflow-hidden')}>
-                      <Typography styles={[tw('text-[8px]')]}>{item.name}</Typography>
+                      <ValueOrNone value={companyName} />
                     </View>
                   </View>
                   <View style={tw('flex w-[20%]')}>
-                    <Typography styles={[tw('text-[8px]')]}>{item.type}</Typography>
+                    <ValueOrNone value={companyType} />
                   </View>
                   <View style={tw('flex w-[15%]')}>
-                    <Typography styles={[tw('text-[8px]')]}>{item.percentage}</Typography>
+                    <ValueOrNone
+                      value={ownershipPercentage ? `${ownershipPercentage}%` : undefined}
+                    />
                   </View>
                   <View style={tw('flex w-[15%]')}>
-                    <Typography styles={[tw('text-[8px]')]}>{item.level}</Typography>
+                    <ValueOrNone value={level} />
                   </View>
                 </View>
               ))}

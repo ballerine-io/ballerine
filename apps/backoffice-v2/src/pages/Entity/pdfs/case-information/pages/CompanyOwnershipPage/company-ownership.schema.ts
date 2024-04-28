@@ -4,10 +4,12 @@ import { z } from 'zod';
 export const CompanyOwnershipItem = z.object({
   companyName: z.string(),
   companyType: z.string(),
-  ownershipPercentage: z.number(),
-  level: z.number(),
+  ownershipPercentage: z.string().optional(),
+  level: z.string().optional(),
 });
 
 export const CompanyOwnershipSchema = BaseCaseInformationPdfSchema.extend({
-  companies: z.array(CompanyOwnershipItem),
+  items: z.array(CompanyOwnershipItem),
 });
+
+export type TCompanyOwnershipData = z.infer<typeof CompanyOwnershipSchema>;
