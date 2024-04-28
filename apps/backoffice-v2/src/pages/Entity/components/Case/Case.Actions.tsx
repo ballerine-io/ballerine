@@ -35,6 +35,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     assignees,
     onMutateAssignWorkflow,
     workflowDefinition,
+    isWorkflowCompleted,
   } = useCaseActionsLogic({ workflowId: id, fullName });
 
   return (
@@ -47,6 +48,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
             onMutateAssignWorkflow(id, id === authenticatedUser?.id);
           }}
           authenticatedUserId={authenticatedUser?.id}
+          isDisabled={isWorkflowCompleted}
         />
       </div>
       <div className={`flex h-20 justify-between`}>
