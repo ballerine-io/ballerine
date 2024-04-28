@@ -528,6 +528,7 @@ enum PaymentMethod {
   pay_pal
   apple_pay
   google_pay
+  apm
 }
 
 enum PaymentType {
@@ -535,14 +536,6 @@ enum PaymentType {
   scheduled
   recurring
   refund
-}
-
-enum PaymentChannel {
-  online
-  mobile_app
-  in_store
-  telephone
-  mail_order
 }
 
 enum PaymentIssuer {
@@ -616,11 +609,12 @@ model TransactionRecord {
   paymentBrandName PaymentBrandName?
   paymentMethod    PaymentMethod?
   paymentType      PaymentType?
-  paymentChannel   PaymentChannel?
+  paymentChannel   String?
   paymentIssuer    PaymentIssuer?
   paymentGateway   PaymentGateway?
   paymentAcquirer  PaymentAcquirer?
   paymentProcessor PaymentProcessor?
+  paymentMccCode   Int?
 
   cardFingerprint   String?
   cardIssuedCountry String?
@@ -707,17 +701,10 @@ enum AlertStatus {
   completed @map("300")
 }
 
-enum AlertType {
-  high_risk_transaction
-  dormant_account_activity
-  unusual_pattern
-}
-
 model AlertDefinition {
   id          String     @id @default(cuid())
   crossEnvKey String?    @unique
   label       String
-  type        AlertType?
   name        String
   enabled     Boolean    @default(true)
   description String?

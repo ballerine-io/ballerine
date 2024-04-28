@@ -1,6 +1,5 @@
 import { TransactionDirection, PaymentMethod, TransactionRecordType } from '@prisma/client';
 import { AggregateType, TIME_UNITS } from './consts';
-
 export type InlineRule = {
   id: string;
   subjects: string[] | readonly string[];
