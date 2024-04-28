@@ -7,13 +7,57 @@ import { includesValues } from '@/common/utils/includes-values/includes-values';
 import { isNullish } from '@ballerine/common';
 import { WarningFilledSvg } from '@/common/components/atoms/icons';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 
-export const useWebsiteMonitoringBlock = ({ pluginsOutput, workflow }) => {
+export const useWebsiteMonitoringBlock = ({
+  pluginsOutput,
+  workflow,
+}: {
+  pluginsOutput: TWorkflowById['context']['pluginsOutput'];
+  workflow: TWorkflowById;
+}) => {
   const websiteMonitoringAdapter = ({
     lsAction,
     merchantDetails,
     merchantDomains,
     createdAt: checkCreatedAt,
+  }: {
+    lsAction: {
+      reason: string;
+      contentLabels: Array<{
+        label: string;
+      }>;
+      actions: Array<{
+        warning: string;
+      }>;
+    };
+    merchantDetails: {
+      merchantCountry: string;
+      merchantRegion: string;
+      merchantCity: string;
+      merchantStreet: string;
+      merchantPostalCode: string;
+      businessOwnerCountry: string;
+      businessOwnerRegion: string;
+      businessOwnerCity: string;
+      businessOwnerStreet: string;
+      businessOwnerPostalCode: string;
+      dbaCountry: string;
+      dbaRegion: string;
+      dbaCity: string;
+      dbaStreet: string;
+      dbaPostalCode: string;
+      status: string;
+    };
+    merchantDomains: Array<{
+      merchantUrl: string;
+      websiteRegistrar: {
+        ianaNumber: string;
+        riskLevel: string;
+        name: string;
+      };
+    }>;
+    createdAt: string;
   }) => {
     const { reason, contentLabels, actions } = lsAction ?? {};
     const labels = contentLabels?.map(({ label: contentLabel }) => ({ contentLabel })) ?? [];
@@ -195,8 +239,11 @@ export const useWebsiteMonitoringBlock = ({ pluginsOutput, workflow }) => {
                       const isSuccess = ['cleared'].includes(value);
 
                       if (isDestructive) return 'destructive';
+
                       if (isWarning) return 'warning';
+
                       if (isSlate) return 'secondary';
+
                       if (isSuccess) return 'success';
 
                       return 'secondary';
