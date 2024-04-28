@@ -78,9 +78,40 @@ export class UserControllerInternal {
     const message: sgMail.MailDataRequired = {
       to: createdUser.email,
       from: 'no-reply@ballerine.com',
-      subject: 'Welcome Message!',
-      text: 'Welcome to our Ballerine!',
-      html: '<strong>Welcome to our Ballerine!</strong>',
+      subject: "Your Ballerine's Case Management System Credentials",
+      text: `
+      Dear ${userInfo.firstName} ${userInfo.lastName},
+
+        Welcome to the team! We are excited to have you on our system. To get you started, we have created your account for our Case Management System, which you will need to access to manage your tasks and collaborate with the team.
+      
+        To access your account:
+      
+        URL: ${env.BACKOFFICE_CORS_ORIGIN}
+        Email: ${userInfo.email}
+        Password: ${userInfo.password}
+      
+        If you encounter any issues accessing your account or have any questions, please do not hesitate to reach out to Ballerine's team.
+      
+        Best regards,
+        Ballerine's Team`,
+      html: `
+      <body>
+        <p>Dear ${userInfo.firstName} ${userInfo.lastName},</p>
+    
+        <p>Welcome to the team! We are excited to have you on our system. To get you started, we have created your account for our Case Management System, which you will need to access to manage your tasks and collaborate with the team.</p>
+    
+        <p><strong>To access your account:</strong></p>
+        <ul>
+          <li><strong>URL:</strong> ${env.BACKOFFICE_CORS_ORIGIN}</li>
+          <li><strong>Email:</strong> ${userInfo.email}</li>
+          <li><strong>Password:</strong> ${userInfo.password}</li>
+        </ul>
+    
+        <p>If you encounter any issues accessing your account or have any questions, please do not hesitate to reach out to Ballerine's team.</p>
+    
+        <p>Best regards,<br>
+        Ballerine's Team</p>
+      </body>`,
     };
 
     if (!env.SENDGRID_API_KEY) {
