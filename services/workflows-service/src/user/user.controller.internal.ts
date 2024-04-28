@@ -11,12 +11,13 @@ import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { UserStatus } from '@prisma/client';
 import sgMail from '@sendgrid/mail';
 import { env } from '@/env';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 @swagger.ApiExcludeController()
 @common.Controller('internal/users')
 @swagger.ApiExcludeController()
 export class UserControllerInternal {
-  constructor(protected readonly service: UserService) {}
+  constructor(protected readonly service: UserService, private logger: AppLoggerService) {}
 
   @common.Get()
   @swagger.ApiQuery({ name: 'projectId', type: String })
@@ -83,8 +84,8 @@ export class UserControllerInternal {
     };
 
     if (!env.SENDGRID_API_KEY) {
-      console.warn('SendGrid API key not provided. Email will not be not send ');
-      console.log('Email:', message);
+      this.logger.warn('SendGrid API key not provided. Email will not be not send ');
+      this.logger.log('Email:', message);
 
       return createdUser;
     }
