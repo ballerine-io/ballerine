@@ -1,15 +1,15 @@
 import React, { FunctionComponent, useEffect } from 'react';
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { t } from 'i18next';
-import { useAuthenticatedUserQuery } from '../../../../domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { UserAvatar } from '../UserAvatar/UserAvatar';
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { UserAvatar } from '@/common/components/atoms/UserAvatar/UserAvatar';
 import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
-import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
-import { HomeSearchSchema } from './home-search-schema';
+import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
+import { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
 
 export const Home: FunctionComponent = () => {
   const { data: session } = useAuthenticatedUserQuery();
@@ -17,7 +17,7 @@ export const Home: FunctionComponent = () => {
   const locale = useLocale();
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const [dateRange, setDateRange] = useZodSearchParams(HomeSearchSchema);
+  const { dateRange, handleDateRangeChange } = useHomeLogic();
 
   useEffect(() => {
     if (pathname !== `/${locale}` && pathname !== `/${locale}/home`) {
@@ -29,16 +29,25 @@ export const Home: FunctionComponent = () => {
 
   return (
     <div className={`flex flex-col gap-10 p-10`}>
-      <div className={`flex items-center`}>
-        <UserAvatar
-          fullName={fullName ?? ''}
-          className={`mr-2 d-6`}
-          avatarUrl={avatarUrl ?? undefined}
+      <div className={`flex items-center justify-between`}>
+        <div className={`flex items-center`}>
+          <UserAvatar
+            fullName={fullName ?? ''}
+            className={`mr-2 d-6`}
+            avatarUrl={avatarUrl ?? undefined}
+          />
+          <h3 className={`flex max-w-[45ch] break-all text-2xl font-semibold`}>
+            {t(`home.greeting`)}
+            {firstName && ` ${firstName}`}
+          </h3>
+        </div>
+        <DateRangePicker
+          onChange={range => handleDateRangeChange(range)}
+          value={{
+            start: dateRange.from ? new Date(dateRange.from) : null,
+            end: dateRange.to ? new Date(dateRange.to) : null,
+          }}
         />
-        <h3 className={`flex max-w-[45ch] break-all text-2xl font-semibold`}>
-          {t(`home.greeting`)}
-          {firstName && ` ${firstName}`}
-        </h3>
       </div>
       <div>
         <Tabs defaultValue={pathname} key={pathname}>

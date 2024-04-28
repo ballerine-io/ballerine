@@ -21,7 +21,7 @@ import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
 import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
 import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
 import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
-import { Home } from '../common/components/atoms/Home/Home';
+import { Home } from '@/pages/Home/Home.page';
 import { Statistics } from '@/pages/Statistics/Statistics.page';
 import { Workflows } from '@/pages/Workflows/Workflows.page';
 
