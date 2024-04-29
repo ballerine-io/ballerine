@@ -2,6 +2,7 @@ import * as swagger from '@nestjs/swagger';
 import { TransactionService } from '@/transaction/transaction.service';
 import {
   TransactionCreateAltDto,
+  TransactionCreateAltDtoWrapper,
   TransactionCreateDto,
 } from '@/transaction/dtos/transaction-create.dto';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
@@ -79,11 +80,11 @@ export class TransactionControllerExternal {
         exceptionFactory: exceptionValidationFactory,
       }),
     )
-    body: TransactionCreateAltDto,
+    body: TransactionCreateAltDtoWrapper,
     @Res() res: express.Response,
     @CurrentProject() currentProjectId: types.TProjectId,
   ) {
-    const tranformedPayload = TransactionEntityMapper.altDtoToOriginalDto(body);
+    const tranformedPayload = TransactionEntityMapper.altDtoToOriginalDto(body.data);
     const creationResponses = await this.service.createBulk({
       transactionsPayload: [tranformedPayload],
       projectId: currentProjectId,
@@ -107,7 +108,7 @@ export class TransactionControllerExternal {
   async createAltBulk(
     @Body(
       new ParseArrayPipe({
-        items: TransactionCreateAltDto,
+        items: TransactionCreateAltDtoWrapper,
         exceptionFactory: exceptionValidationFactory,
       }),
     )

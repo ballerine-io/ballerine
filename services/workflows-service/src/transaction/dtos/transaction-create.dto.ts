@@ -183,7 +183,14 @@ export class TransactionCreateAltDto {
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_name!: string;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_address!: string;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_country!: string;
-  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_postcode!: string;
-  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_state!: string;
+  @ApiProperty({ required: true }) @IsString() @IsOptional() customer_postcode?: string;
+  @ApiProperty({ required: true }) @IsString() @IsOptional() customer_state?: string;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_type!: string;
+}
+
+export class TransactionCreateAltDtoWrapper {
+  @ApiProperty({ type: TransactionCreateAltDto })
+  @ValidateNested()
+  @Type(() => TransactionCreateAltDto)
+  data!: TransactionCreateAltDto;
 }
