@@ -231,7 +231,18 @@ export class TransactionEntityMapper {
       altDto.counterparty_type
     ).toLowerCase() as PaymentBrandName;
 
-    const isCreditCard = ['visa', 'mastercard', 'amex', 'discover', 'dci'].includes(brand);
+    const isCreditCard = [
+      'visa',
+      'mastercard',
+      'amex',
+      'american express',
+      'discover',
+      'dci',
+      'jcb',
+      'diners',
+      'discover',
+      'china unionpay',
+    ].includes(brand);
     if (isCreditCard) {
       originalDto.payment!.method = 'credit_card';
     } else {
@@ -252,8 +263,8 @@ export class TransactionEntityMapper {
 const altDtoToBusinessData: (altDto: TransactionCreateAltDto) => {
   address: {
     street: string;
-    postcode: string;
-    state: string;
+    postcode?: string;
+    state?: string;
     country: string;
   };
   companyName: string;
