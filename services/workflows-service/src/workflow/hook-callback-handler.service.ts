@@ -440,7 +440,7 @@ export class HookCallbackHandlerService {
     const documentImages: AnyRecord[] = [];
 
     for (const image of data.images as Array<{ context?: string; content: string }>) {
-      const tmpFile = tmp.fileSync().name;
+      const tmpFile = tmp.fileSync({ keep: false }).name;
       const base64ImageContent = image.content.split(',')[1];
       const buffer = Buffer.from(base64ImageContent as string, 'base64');
       const fileType = await getFileMetadata({
