@@ -1,25 +1,15 @@
+import { TIdentityVerificationsItemData } from '@/pages/Entity/pdfs/case-information/pages/IdentityVerificationsPage/identity-verifications.schema';
+import { ValueOrNone } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/components/IndividualSanctionsItem/ValueOrNone';
 import { Typography, tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
 
-export interface IIdentityItem {
-  checkedAt: string;
-  result: 'approved' | 'rejected';
-  reason: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  id: string;
-  gender: string;
-  nationality: string;
-}
-
 interface IIdentityItemProps {
-  item: IIdentityItem;
+  item: TIdentityVerificationsItemData;
 }
 
 export const IdentityItem: FunctionComponent<IIdentityItemProps> = ({ item }) => {
-  const { checkedAt, reason, result, firstName, lastName, dateOfBirth, id, gender, nationality } =
+  const { checkDate, reason, status, firstName, lastName, dateOfBirth, id, gender, nationality } =
     item;
 
   return (
@@ -38,7 +28,7 @@ export const IdentityItem: FunctionComponent<IIdentityItemProps> = ({ item }) =>
             </Typography>
           </View>
           <View style={tw('w-[400px]')}>
-            <Typography styles={[tw('text-[8px] leading-[1.45rem]')]}>{checkedAt}</Typography>
+            <ValueOrNone value={checkDate ? new Date(checkDate).toISOString() : undefined} />
           </View>
         </View>
         <View style={tw('flex flex-row')}>
@@ -48,7 +38,7 @@ export const IdentityItem: FunctionComponent<IIdentityItemProps> = ({ item }) =>
             </Typography>
           </View>
           <View style={tw('w-[400px]')}>
-            {result === 'approved' && (
+            {status === 'approved' && (
               <Typography
                 styles={[tw('text-[8px] leading-[1.45rem] text-[#00BD59]')]}
                 weight="bold"
@@ -56,7 +46,7 @@ export const IdentityItem: FunctionComponent<IIdentityItemProps> = ({ item }) =>
                 Approved
               </Typography>
             )}
-            {result === 'rejected' && (
+            {status === 'rejected' && (
               <Typography
                 styles={[tw('text-[8px] leading-[1.45rem] text-[#DF2222]')]}
                 weight="bold"
@@ -64,6 +54,7 @@ export const IdentityItem: FunctionComponent<IIdentityItemProps> = ({ item }) =>
                 Rejected
               </Typography>
             )}
+            {!status && <ValueOrNone value={status} />}
           </View>
         </View>
         <View style={tw('flex flex-row')}>
@@ -73,7 +64,7 @@ export const IdentityItem: FunctionComponent<IIdentityItemProps> = ({ item }) =>
             </Typography>
           </View>
           <View style={tw('w-[400px]')}>
-            <Typography styles={[tw('text-[8px] leading-[1.45rem]')]}>{reason}</Typography>
+            <ValueOrNone value={reason} />
           </View>
         </View>
         <View style={tw('flex flex-row')}>
@@ -83,7 +74,7 @@ export const IdentityItem: FunctionComponent<IIdentityItemProps> = ({ item }) =>
             </Typography>
           </View>
           <View style={tw('w-[400px]')}>
-            <Typography styles={[tw('text-[8px] leading-[1.45rem]')]}>{firstName}</Typography>
+            <ValueOrNone value={firstName} />
           </View>
         </View>
         <View style={tw('flex flex-row')}>
@@ -93,7 +84,7 @@ export const IdentityItem: FunctionComponent<IIdentityItemProps> = ({ item }) =>
             </Typography>
           </View>
           <View style={tw('w-[400px] flex flex-row gap-2 flex-wrap')}>
-            <Typography styles={[tw('text-[8px] leading-[1.45rem]')]}>{lastName}</Typography>
+            <ValueOrNone value={lastName} />
           </View>
         </View>
         <View style={tw('flex flex-row')}>
@@ -103,7 +94,7 @@ export const IdentityItem: FunctionComponent<IIdentityItemProps> = ({ item }) =>
             </Typography>
           </View>
           <View style={tw('w-[400px] flex flex-row gap-2 flex-wrap')}>
-            <Typography styles={[tw('text-[8px] leading-[1.45rem]')]}>{dateOfBirth}</Typography>
+            <ValueOrNone value={dateOfBirth ? new Date(dateOfBirth).toISOString() : undefined} />
           </View>
         </View>
         <View style={tw('flex flex-row')}>
@@ -113,7 +104,7 @@ export const IdentityItem: FunctionComponent<IIdentityItemProps> = ({ item }) =>
             </Typography>
           </View>
           <View style={tw('w-[400px] flex flex-row gap-2 flex-wrap')}>
-            <Typography styles={[tw('text-[8px] leading-[1.45rem]')]}>{id}</Typography>
+            <ValueOrNone value={id} />
           </View>
         </View>
         <View style={tw('flex flex-row')}>
@@ -123,7 +114,7 @@ export const IdentityItem: FunctionComponent<IIdentityItemProps> = ({ item }) =>
             </Typography>
           </View>
           <View style={tw('w-[400px] flex flex-row gap-2 flex-wrap')}>
-            <Typography styles={[tw('text-[8px] leading-[1.45rem]')]}>{gender}</Typography>
+            <ValueOrNone value={gender} />
           </View>
         </View>
         <View style={tw('flex flex-row')}>
@@ -133,7 +124,7 @@ export const IdentityItem: FunctionComponent<IIdentityItemProps> = ({ item }) =>
             </Typography>
           </View>
           <View style={tw('w-[400px] flex flex-row gap-2 flex-wrap')}>
-            <Typography styles={[tw('text-[8px] leading-[1.45rem]')]}>{nationality}</Typography>
+            <ValueOrNone value={nationality} />
           </View>
         </View>
       </View>
