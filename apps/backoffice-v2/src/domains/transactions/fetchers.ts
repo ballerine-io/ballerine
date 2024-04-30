@@ -25,6 +25,7 @@ export const PaymentMethod = {
   PAYPAL: 'pay_pal',
   APPLE_PAY: 'apple_pay',
   GOOGLE_PAY: 'google_pay',
+  APM: 'apm',
 } as const;
 
 export const PaymentMethods = [
@@ -34,6 +35,7 @@ export const PaymentMethods = [
   PaymentMethod.PAYPAL,
   PaymentMethod.APPLE_PAY,
   PaymentMethod.GOOGLE_PAY,
+  PaymentMethod.APM,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof PaymentMethod>>;
 
 const TransactionStatus = {
@@ -136,7 +138,7 @@ export const TransactionsListSchema = z.array(
     counterpartyBeneficiaryId: z.string().nullable(),
     paymentMethod: z.enum(PaymentMethods).nullable(),
     paymentType: z.enum(PaymentTypes).nullable(),
-    paymentChannel: z.enum(PaymentChannels).nullable(),
+    paymentChannel: z.string().nullable(),
     transactionStatus: z.enum(TransactionStatuses).nullable(),
     transactionType: z.enum(TransactionTypes).nullable(),
     transactionCategory: z.string().nullable(),
