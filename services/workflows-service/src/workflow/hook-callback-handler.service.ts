@@ -197,7 +197,7 @@ export class HookCallbackHandlerService {
         throw new BadRequestException('Compared to report not found.');
       }
 
-      reportData.previousReport = {
+      reportData.previousReportSummary = {
         ...(comparedToReport.report as { data: { summary: { summary: unknown } } }).data.summary,
       };
     }
