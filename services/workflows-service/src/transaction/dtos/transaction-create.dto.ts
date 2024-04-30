@@ -30,6 +30,15 @@ import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
 class CounterpartyBusinessCreateDto extends OmitType(BusinessCreateDto, ['correlationId']) {}
 class CounterpartyEndUserCreateDto extends OmitType(EndUserCreateDto, ['correlationId']) {}
 
+export const AltPaymentBrandNames = {
+  SCB_PAYNOW: 'scb_paynow',
+  ['China UnionPay']: 'china unionpay',
+  ['American Express']: 'american express',
+
+  ...PaymentBrandName,
+} as const;
+
+export type AltPaymentBrandNames = (typeof AltPaymentBrandNames)[keyof typeof AltPaymentBrandNames];
 export class CounterpartyInfo {
   @ApiProperty({ required: true }) @IsString() correlationId!: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() sortCode?: string;
@@ -154,11 +163,12 @@ export class TransactionCreateAltDto {
   @ApiProperty({ required: false }) @IsString() @IsOptional() tx_direction?: TransactionDirection;
   @ApiProperty({ required: false }) @IsString() @IsOptional() tx_mcc_code?: string;
   @ApiProperty({ required: false }) @IsString() @IsOptional() tx_payment_channel?: string;
-  @ApiProperty({ required: false })
+
+  @ApiProperty({ required: true })
   @Transform(({ value }) => value.toLowerCase())
-  @IsEnum(PaymentBrandName)
-  @IsOptional()
-  tx_product?: PaymentBrandName;
+  @IsEnum(AltPaymentBrandNames)
+  @IsNotEmpty()
+  tx_product!: AltPaymentBrandNames;
 
   @ApiProperty({ required: false })
   @IsString()
@@ -167,17 +177,13 @@ export class TransactionCreateAltDto {
 
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() counterparty_id!: string;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() counterparty_institution_id!: string;
-  @ApiProperty({ required: true })
-  @Transform(({ value }) => value.toLowerCase())
-  @IsEnum(PaymentBrandName)
-  @IsNotEmpty()
-  counterparty_institution_name!: PaymentBrandName;
+  @ApiProperty({ required: false })
+  @IsString()
+  counterparty_institution_name?: string;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() counterparty_name!: string;
-  @ApiProperty({ required: true })
-  @Transform(({ value }) => value.toLowerCase())
-  @IsEnum(PaymentBrandName)
-  @IsNotEmpty()
-  counterparty_type!: PaymentBrandName;
+  @ApiProperty({ required: false })
+  @IsString()
+  counterparty_type?: string;
 
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_id!: string;
   @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_name!: string;
