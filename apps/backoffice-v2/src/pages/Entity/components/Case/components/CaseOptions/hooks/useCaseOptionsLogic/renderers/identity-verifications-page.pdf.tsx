@@ -19,30 +19,36 @@ export class IdentityVerificationsPagePDF extends IPDFRenderer<TIdentityVerifica
   }
 
   async getData() {
+    const childWorkflowSessions = values(get(this.workflow?.context, 'childWorkflows', {}));
+
     const pdfData: TIdentityVerificationsData = {
       companyName: get(this.workflow?.context, 'entity.data.companyName', ''),
       creationDate: new Date(),
       logoUrl: await this.getLogoUrl(),
-      items: map(
-        values(get(this.workflow?.context, 'childWorkflows.kyc_email_session_example', {})),
-        (session): TIdentityVerificationsData['items'][number] => ({
-          firstName: get(session, 'result.childEntity.firstName', ''),
-          lastName: get(session, 'result.childEntity.lastName', ''),
-          dateOfBirth: get(session, 'result.entity.data.dateOfBirth'),
-          status: get(session, 'result.vendorResult.decision.status', '') as
-            | 'approved'
-            | 'rejected',
-          checkDate: get(session, 'result.vendorResult.aml.createdAt'),
-          id: get(session, 'result.vendorResult.metadata.id', ''),
-          gender: get(session, 'result.vendorResult.entity.data.additionalInfo.gender', ''),
-          nationality: get(
-            session,
-            'result.vendorResult.entity.data.additionalInfo.nationality',
-            '',
-          ),
-          reason: get(session, 'result.vendorResult.decision.reason', ''),
-        }),
-      ),
+      items: childWorkflowSessions
+        .map(childWorkflowSession => {
+          return map(
+            values(childWorkflowSession),
+            (session): TIdentityVerificationsData['items'][number] => ({
+              firstName: get(session, 'result.childEntity.firstName', ''),
+              lastName: get(session, 'result.childEntity.lastName', ''),
+              dateOfBirth: get(session, 'result.entity.data.dateOfBirth'),
+              status: get(session, 'result.vendorResult.decision.status', '') as
+                | 'approved'
+                | 'rejected',
+              checkDate: get(session, 'result.vendorResult.aml.createdAt'),
+              id: get(session, 'result.vendorResult.metadata.id', ''),
+              gender: get(session, 'result.vendorResult.entity.data.additionalInfo.gender', ''),
+              nationality: get(
+                session,
+                'result.vendorResult.entity.data.additionalInfo.nationality',
+                '',
+              ),
+              reason: get(session, 'result.vendorResult.decision.reason', ''),
+            }),
+          );
+        })
+        .flat(),
     };
 
     return pdfData;

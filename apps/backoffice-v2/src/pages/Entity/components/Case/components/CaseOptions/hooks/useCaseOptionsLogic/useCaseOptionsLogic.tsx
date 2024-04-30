@@ -5,6 +5,7 @@ import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { CompanyOwnershipPagePDF } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/company-ownership-page.pdf';
 import { CompanySanctionsPagePDF } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/company-sanctions-page.pdf';
 import { IdentityVerificationsPagePDF } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/identity-verifications-page.pdf';
+import { IndividualSantcionsPagePDF } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/individual-sanctions-page.pdf';
 import { RegistryPagePDF } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/registry-page.pdf';
 import { TitlePagePDF } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/title-page.pdf';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
@@ -46,6 +47,7 @@ export const useCaseOptionsLogic = () => {
         CompanyOwnershipPagePDF,
         CompanySanctionsPagePDF,
         IdentityVerificationsPagePDF,
+        IndividualSantcionsPagePDF,
       ];
       const renderers = pdfs.map(PDF => new PDF(workflow as TWorkflowById, customer as TCustomer));
       const pages = await Promise.all(renderers.map(renderer => renderer.render()));

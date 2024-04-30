@@ -1,46 +1,24 @@
 import { ValueOrNone } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/components/IndividualSanctionsItem/ValueOrNone';
-import { Typography, tw } from '@ballerine/react-pdf-toolkit';
+import { TIndividualSanctionsItemData } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/individual-sanctions.schema';
+import { Link, Typography, tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
 
-export interface IIndividualSanctionsItem {
-  checkedAt: string;
-  matchesCount: number;
-  names: string[];
-  warnings: string[];
-  sanctions: string[];
-  PEP: string[];
-  adverseMedia: string[];
-  firstName: string;
-  lastName: string;
-}
-
 interface IIndividualSanctionsItemProps {
-  item: IIndividualSanctionsItem;
+  item: TIndividualSanctionsItemData;
 }
 
 export const IndividualSanctionsItem: FunctionComponent<IIndividualSanctionsItemProps> = ({
   item,
 }) => {
-  const {
-    checkedAt,
-    matchesCount,
-    names,
-    warnings,
-    sanctions,
-    PEP,
-    adverseMedia,
-    firstName,
-    lastName,
-  } = item;
+  const { checkDate, matchesCount, names, warnings, sanctions, PEP, adverseMedia, fullName } = item;
 
   return (
     <View style={tw('flex flex-col')}>
       <View>
-        <Typography
-          styles={[tw('text-[10px] leading-[2.5rem]')]}
-          weight="bold"
-        >{`${firstName} ${lastName}`}</Typography>
+        <Typography styles={[tw('text-[10px] leading-[2.5rem]')]} weight="bold">
+          {fullName}
+        </Typography>
       </View>
       <View style={tw('flex flex-col gap-1')}>
         <View style={tw('flex flex-row')}>
@@ -50,7 +28,7 @@ export const IndividualSanctionsItem: FunctionComponent<IIndividualSanctionsItem
             </Typography>
           </View>
           <View style={tw('w-[400px]')}>
-            <ValueOrNone value={checkedAt} />
+            <ValueOrNone value={checkDate ? new Date(checkDate).toISOString() : undefined} />
           </View>
         </View>
         <View style={tw('flex flex-row')}>
@@ -70,7 +48,7 @@ export const IndividualSanctionsItem: FunctionComponent<IIndividualSanctionsItem
               ]}
               weight="bold"
             >
-              {`${matchesCount} Matche${matchesCount === 1 ? '' : 's'}`}
+              {`${matchesCount} Match${matchesCount === 1 ? '' : 'es'}`}
             </Typography>
           </View>
         </View>
@@ -90,8 +68,19 @@ export const IndividualSanctionsItem: FunctionComponent<IIndividualSanctionsItem
               Warnings
             </Typography>
           </View>
-          <View style={tw('w-[400px]')}>
-            <ValueOrNone value={warnings?.join(' ')} />
+          <View style={tw('w-[400px] flex flex-row flex-wrap gap-2')}>
+            {warnings.length ? (
+              warnings.map((warning, index) => (
+                <Link
+                  key={index}
+                  href={warning.sourceUrl}
+                  url={warning.name}
+                  styles={[tw('text-[#007AFF] no-underline')]}
+                />
+              ))
+            ) : (
+              <ValueOrNone value={undefined} />
+            )}
           </View>
         </View>
         <View style={tw('flex flex-row')}>
@@ -101,7 +90,18 @@ export const IndividualSanctionsItem: FunctionComponent<IIndividualSanctionsItem
             </Typography>
           </View>
           <View style={tw('w-[400px] flex flex-row gap-2 flex-wrap')}>
-            <ValueOrNone value={sanctions.join(', ')} />
+            {sanctions.length ? (
+              sanctions.map((sanction, index) => (
+                <Link
+                  key={index}
+                  href={sanction.sourceUrl}
+                  url={sanction.name}
+                  styles={[tw('text-[#007AFF] no-underline')]}
+                />
+              ))
+            ) : (
+              <ValueOrNone value={undefined} />
+            )}
           </View>
         </View>
         <View style={tw('flex flex-row')}>
@@ -111,7 +111,18 @@ export const IndividualSanctionsItem: FunctionComponent<IIndividualSanctionsItem
             </Typography>
           </View>
           <View style={tw('w-[400px] flex flex-row gap-2 flex-wrap')}>
-            <ValueOrNone value={PEP?.join(', ')} />
+            {PEP.length ? (
+              PEP.map((PEP, index) => (
+                <Link
+                  key={index}
+                  href={PEP.sourceUrl}
+                  url={PEP.name}
+                  styles={[tw('text-[#007AFF] no-underline')]}
+                />
+              ))
+            ) : (
+              <ValueOrNone value={undefined} />
+            )}
           </View>
         </View>
         <View style={tw('flex flex-row')}>
@@ -121,7 +132,18 @@ export const IndividualSanctionsItem: FunctionComponent<IIndividualSanctionsItem
             </Typography>
           </View>
           <View style={tw('w-[400px] flex flex-row gap-2 flex-wrap')}>
-            <ValueOrNone value={adverseMedia?.join(', ')} />
+            {adverseMedia.length ? (
+              adverseMedia.map((adverseMedia, index) => (
+                <Link
+                  key={index}
+                  href={adverseMedia.sourceUrl}
+                  url={adverseMedia.name}
+                  styles={[tw('text-[#007AFF] no-underline')]}
+                />
+              ))
+            ) : (
+              <ValueOrNone value={undefined} />
+            )}
           </View>
         </View>
       </View>

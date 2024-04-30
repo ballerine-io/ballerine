@@ -3,40 +3,22 @@ import { CaseInformationPageContainer } from '@/pages/Entity/pdfs/case-informati
 import { CaseInformationPageHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageHeader/CaseInformationPageHeader';
 import { CaseInformationPageSection } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSection/CaseInformationPageSection';
 import { CaseInformationPageSectionHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSectionHeader/CaseInformationPageSectionHeader';
-import {
-  IIndividualSanctionsItem,
-  IndividualSanctionsItem,
-} from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/components/IndividualSanctionsItem/IndividualSanctionsItem';
+import { IndividualSanctionsItem } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/components/IndividualSanctionsItem/IndividualSanctionsItem';
+import { TIndividualSanctionsData } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/individual-sanctions.schema';
 import { tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
+import { FunctionComponent } from 'react';
 import poweredByLogo from './assets/title-page-ballerine-logo.png';
 
-const individualSanctions: IIndividualSanctionsItem[] = [
-  {
-    checkedAt: '12/12/2021',
-    matchesCount: 2,
-    names: ['John Doe', 'Jane Doe'],
-    warnings: [],
-    sanctions: [],
-    PEP: [],
-    adverseMedia: [],
-    firstName: 'John',
-    lastName: 'Doe',
-  },
-  {
-    checkedAt: '12/12/2021',
-    matchesCount: 0,
-    names: ['John Doe', 'Jane Doe'],
-    warnings: ['Matched with known PEP', 'Matched with known PEP'],
-    sanctions: ['PEP', 'PEP'],
-    PEP: ['PEP', 'PEP'],
-    adverseMedia: ['PEP', 'PEP'],
-    firstName: 'John',
-    lastName: 'Doe',
-  },
-];
+interface IIndividualSanctionsPageProps {
+  data: TIndividualSanctionsData;
+}
 
-export const IndividualSanctionsPage = () => {
+export const IndividualSanctionsPage: FunctionComponent<IIndividualSanctionsPageProps> = ({
+  data,
+}) => {
+  const { items } = data;
+
   return (
     <CaseInformationPageContainer>
       <View style={tw('mb-3')}>
@@ -51,7 +33,7 @@ export const IndividualSanctionsPage = () => {
             {/* Company Sanctions section --- start */}
             <CaseInformationPageSectionHeader title="Individual PEP/Sanctions" />
             <View style={tw('flex flex-col gap-6')}>
-              {individualSanctions.map((item, index) => (
+              {items.map((item, index) => (
                 <IndividualSanctionsItem key={index} item={item} />
               ))}
             </View>
