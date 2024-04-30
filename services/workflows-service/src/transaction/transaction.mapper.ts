@@ -279,6 +279,7 @@ const altDtoToBusinessData: (altDto: TransactionCreateAltDto) => {
     },
     companyName: altDto.customer_name,
     businessType: altDto.customer_type,
+    correlationId: altDto.customer_name.toLowerCase().replace(' ', '_'),
   };
 };
 
@@ -292,5 +293,6 @@ const altDtoToEndUserData: (altDto: TransactionCreateAltDto) => {
   return {
     firstName,
     lastName,
+    correlationId: altDto.counterparty_name.toLowerCase().replace(' ', '_'),
   };
 };
