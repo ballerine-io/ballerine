@@ -11,22 +11,9 @@ import { isInstanceOfFunction } from '@/common/utils/is-instance-of-function/is-
 import { columns } from '../../columns';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useLocation } from 'react-router-dom';
+import { TIndividualsProfiles } from '@/domains/profiles/fetchers';
 
-export const useProfilesTableLogic = ({
-  data,
-}: {
-  data: Array<{
-    id: string;
-    createdAt: string;
-    name: string;
-    business: string;
-    role: string;
-    kyc: string;
-    sanctions: string;
-    alerts: number;
-    updatedAt: string;
-  }>;
-}) => {
+export const useProfilesTableLogic = ({ data }: { data: TIndividualsProfiles }) => {
   const { onSort, sortBy, sortDir } = useSort();
   const [sorting, setSorting] = useState<SortingState>([
     {

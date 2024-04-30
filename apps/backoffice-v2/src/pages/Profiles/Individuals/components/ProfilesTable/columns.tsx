@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import React from 'react';
 import { titleCase } from 'string-ts';
 import { TObjectValues } from '@/common/types';
+import { TIndividualsProfiles } from '@/domains/profiles/fetchers';
 
 export const Role = {
   UBO: 'UBO',
@@ -22,6 +23,7 @@ export const KYC = {
   COMPLETED: 'COMPLETED',
   APPROVED: 'APPROVED',
   DECLINED: 'DECLINED',
+  REVISIONS: 'REVISIONS',
 } as const;
 
 export const KYCs = [
@@ -29,6 +31,7 @@ export const KYCs = [
   KYC.COMPLETED,
   KYC.APPROVED,
   KYC.DECLINED,
+  KYC.REVISIONS,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof KYC>>;
 
 export const Sanction = {
@@ -41,19 +44,7 @@ export const Sanctions = [
   Sanction.NOT_MONITORED,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof Sanction>>;
 
-const columnHelper = createColumnHelper<
-  Array<{
-    id: string;
-    createdAt: string;
-    name: string;
-    business: string;
-    role: string;
-    kyc: string;
-    sanctions: string;
-    alerts: number;
-    updatedAt: string;
-  }>
->();
+const columnHelper = createColumnHelper<TIndividualsProfiles>();
 
 export const columns = [
   columnHelper.accessor('id', {
@@ -104,7 +95,7 @@ export const columns = [
     cell: info => {
       const role = info.getValue();
 
-      return <TextWithNAFallback>{titleCase(role)}</TextWithNAFallback>;
+      return <TextWithNAFallback>{titleCase(role ?? '')}</TextWithNAFallback>;
     },
     header: 'Role',
   }),
@@ -112,7 +103,7 @@ export const columns = [
     cell: info => {
       const kyc = info.getValue();
 
-      return <TextWithNAFallback>{titleCase(kyc)}</TextWithNAFallback>;
+      return <TextWithNAFallback>{titleCase(kyc ?? '')}</TextWithNAFallback>;
     },
     header: 'KYC',
   }),
@@ -120,9 +111,7 @@ export const columns = [
     cell: info => {
       const sanctions = info.getValue();
 
-      return (
-        <TextWithNAFallback className={`font-semibold`}>{titleCase(sanctions)}</TextWithNAFallback>
-      );
+      return <TextWithNAFallback>{titleCase(sanctions ?? '')}</TextWithNAFallback>;
     },
     header: 'Sanctions',
   }),

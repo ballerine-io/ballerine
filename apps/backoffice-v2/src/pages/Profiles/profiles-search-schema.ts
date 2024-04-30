@@ -5,6 +5,7 @@ import {
   Roles,
   Sanctions,
 } from '@/pages/Profiles/Individuals/components/ProfilesTable/columns';
+import { TIndividualProfile } from '@/domains/profiles/fetchers';
 
 export const ProfilesSearchSchema = BaseSearchSchema.extend({
   sortBy: z
@@ -18,19 +19,7 @@ export const ProfilesSearchSchema = BaseSearchSchema.extend({
       'sanctions',
       'alerts',
       'updatedAt',
-    ] as const satisfies ReadonlyArray<
-      keyof Array<{
-        id: string;
-        createdAt: string;
-        name: string;
-        business: string;
-        role: string;
-        kyc: string;
-        sanctions: string;
-        alerts: number;
-        updatedAt: string;
-      }>[number]
-    >)
+    ] as const satisfies ReadonlyArray<keyof TIndividualProfile>)
     .catch('createdAt'),
   filter: z
     .object({

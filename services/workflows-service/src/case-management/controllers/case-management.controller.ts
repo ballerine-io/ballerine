@@ -53,4 +53,75 @@ export class CaseManagementController {
   async getTransactions(@CurrentProject() projectId: TProjectId) {
     return this.transactionService.getAll({}, projectId);
   }
+
+  @Get('profiles/individuals')
+  async listIndividualsProfiles(@CurrentProject() projectId: TProjectId) {
+    return [
+      {
+        id: '1',
+        createdAt: '2024-04-30T12:52:14.965Z',
+        name: 'John Doe',
+        business: 'ACME Inc.',
+        role: 'UBO',
+        kyc: 'COMPLETED',
+        sanctions: 'MONITORED',
+        alerts: 0,
+        updatedAt: '2024-04-30T12:52:14.965Z',
+      },
+      {
+        id: '2',
+        createdAt: '2024-04-30T12:52:14.965Z',
+        name: 'Jane Doe',
+        business: 'ACME Inc.',
+        role: 'DIRECTOR',
+        kyc: 'PENDING',
+        sanctions: 'NOT_MONITORED',
+        alerts: 0,
+        updatedAt: '2024-04-30T12:52:14.965Z',
+      },
+      {
+        id: '3',
+        createdAt: '2024-04-30T12:52:14.965Z',
+        name: 'John Smith',
+        business: 'ACME Inc.',
+        role: 'AUTHORIZED_SIGNATORY',
+        kyc: 'APPROVED',
+        sanctions: 'MONITORED',
+        alerts: 0,
+        updatedAt: '2024-04-30T12:52:14.965Z',
+      },
+      {
+        id: '4',
+        createdAt: '2024-04-30T12:52:14.965Z',
+        name: 'Bob Smith',
+        business: 'ACME Inc.',
+        role: 'AUTHORIZED_SIGNATORY',
+        kyc: 'DECLINED',
+        sanctions: 'NOT_MONITORED',
+        alerts: 0,
+        updatedAt: '2024-04-30T12:52:14.965Z',
+      },
+      {
+        id: '5',
+        createdAt: '2024-04-30T12:52:14.965Z',
+        name: 'Alice Smith',
+        business: 'ACME Inc.',
+        role: 'AUTHORIZED_SIGNATORY',
+        kyc: 'REVISIONS',
+        sanctions: 'MONITORED',
+        alerts: 0,
+        updatedAt: '2024-04-30T12:52:14.965Z',
+      },
+    ] satisfies Array<{
+      id: string;
+      createdAt: string;
+      name: string;
+      business: string;
+      role: string;
+      kyc: string;
+      sanctions: string;
+      alerts: number;
+      updatedAt: string;
+    }>;
+  }
 }
