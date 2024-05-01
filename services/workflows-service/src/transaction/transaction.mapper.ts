@@ -208,6 +208,8 @@ export class TransactionEntityMapper {
           return 'alipay_host';
         case 'wechathost':
           return 'wechat_host';
+        case 'grabpay':
+          return 'grab_pay';
         default:
           return undefined;
       }
