@@ -359,6 +359,7 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
     description:
       'High Percentage of Chargebacks - High percentage of chargebacks over a set period of time',
     dedupeStrategy: {
+      mute: false,
       cooldownTimeframeInMinutes: daysToMinutesConverter(TWENTY_ONE_DAYS),
     },
     inlineRule: {
@@ -370,7 +371,8 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
         subjectColumn: 'counterpartyOriginatorId',
         minimumCount: 3,
         minimumPercentage: 50,
-        timeAmount: 21,
+        timeAmount: TWENTY_ONE_DAYS,
+
         timeUnit: TIME_UNITS.days,
       },
     },
@@ -420,6 +422,7 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
   {
     inlineRule: InlineRule & InputJsonValue;
     defaultSeverity: AlertSeverity;
+    dedupeStrategy?: TDedupeStrategy;
     monitoringType?: MonitoringType;
     enabled?: boolean;
     description?: string;
