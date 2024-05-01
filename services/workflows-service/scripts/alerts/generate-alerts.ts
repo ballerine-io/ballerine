@@ -437,8 +437,9 @@ export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
     description: '',
     inlineRule: {
       id: 'MRCNT_RISK',
-      fnName: 'evaluateRiskScore',
-      subjects: ['businessId'],
+      fnName: 'checkRiskScore',
+      subjects: ['businessId', 'projectId'],
+      options: {},
     },
   },
 } as const satisfies Record<
