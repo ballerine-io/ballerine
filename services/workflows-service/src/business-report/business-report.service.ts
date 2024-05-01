@@ -51,7 +51,7 @@ export class BusinessReportService {
       args.orderBy = toPrismaOrderByGeneric(getTransactionsParameters.orderBy);
     }
 
-    return await this.repository.findMany(
+    return await this.businessReportRepository.findMany(
       {
         ...options,
         where: {
