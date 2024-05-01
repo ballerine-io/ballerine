@@ -1,9 +1,6 @@
 import {
-  Business,
-  EndUser,
   PaymentAcquirer,
   PaymentBrandName,
-  PaymentChannel,
   PaymentGateway,
   PaymentIssuer,
   PaymentMethod,
@@ -17,6 +14,14 @@ import {
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { generateBusiness, generateEndUser } from '../generate-end-user';
+
+const PaymentChannel = {
+  online: 'online',
+  mobile_app: 'mobile_app',
+  in_store: 'in_store',
+  telephone: 'telephone',
+  mail_order: 'mail_order',
+};
 
 export const generateTransactions = async (
   prismaClient: PrismaClient,

@@ -1,7 +1,7 @@
-import { WorkflowDefinitionConfigThemeEnum } from '@/domains/workflow-definitions/enums/workflow-definition-config-theme';
 import { WorkflowDefinitionConfigTheme } from '@/domains/workflow-definitions/fetchers';
 import { applyTabsOverride } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/utils/apply-tabs-override';
 import { TCaseTabDefinition } from '@/lib/blocks/variants/DefaultBlocks/types/case-tab';
+import { WorkflowDefinitionConfigThemeEnum } from '@ballerine/common';
 
 export const Tab = {
   SUMMARY: 'summary',
