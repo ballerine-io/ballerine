@@ -3,7 +3,6 @@ import { PrismaModule } from '@/prisma/prisma.module';
 import { ProjectModule } from '@/project/project.module';
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { BusinessReportRepository } from '@/business-report/business-report.repository';
-import { BusinessReportController } from '@/business-report/business-report.controller';
 import { BusinessReportControllerInternal } from '@/business-report/business-report.controller.internal';
 
 @Module({
