@@ -26,6 +26,8 @@ import { TransactionControllerExternal } from '@/transaction/transaction.control
 import { TransactionCreateDto } from '@/transaction/dtos/transaction-create.dto';
 import { generateBusiness, generateEndUser } from '../../scripts/generate-end-user';
 import { BulkStatus } from '@/alert/types';
+import { GenericContainer, PostgreSqlContainer } from 'testcontainers';
+import { Container } from 'winston';
 
 const getBusinessCounterpartyData = (business?: Business) => {
   if (business) {
@@ -131,13 +133,31 @@ describe('#TransactionControllerExternal', () => {
   let app: INestApplication;
   let project: Project;
   let customer: Customer;
+  let dbUrl: string;
+  let postgresContainer: PostgreSqlContainer;
 
-  beforeAll(cleanupDatabase);
-  afterEach(tearDownDatabase);
   beforeAll(async () => {
-    await cleanupDatabase();
+    const db = 'testdb';
 
-    app = await initiateNestApp(app, [], [TransactionControllerExternal], [TransactionModule]);
+    const postgresContainer = await new PostgreSqlContainer('sibedge/postgres-plv8:15.3-3.1.7')
+      .withDatabase(db)
+      .withExposedPorts(5432)
+      .start();
+
+    dbUrl = postgresContainer.getConnectionUri();
+
+    app = await initiateNestApp(
+      app,
+      [],
+      [TransactionControllerExternal],
+      [TransactionModule],
+      [],
+      dbUrl,
+    );
+  });
+  afterAll(async () => {
+    await app.close(); // Ensure your app is properly closed to release all resources
+    await postgresContainer.stop();
   });
   beforeEach(async () => {
     customer = await createCustomer(
