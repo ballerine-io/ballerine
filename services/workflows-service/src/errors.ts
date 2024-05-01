@@ -85,6 +85,7 @@ export class ValidationError extends common.BadRequestException {
 
   static fromClassValidator(error: ClassValidatorValidationError[]) {
     const childrens = error[0]?.children ? error[0].children : [];
+
     return new ValidationError(
       [...error, ...childrens].map(({ property, constraints = {} }) => ({
         message: `${Object.values(constraints).join(', ')}.`,

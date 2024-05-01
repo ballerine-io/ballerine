@@ -17,9 +17,7 @@ import {
   PaymentProcessor,
   PaymentType,
   Project,
-  ReviewStatus,
   TransactionDirection,
-  TransactionRecordStatus,
   TransactionRecordType,
 } from '@prisma/client';
 import { createProject } from '@/test/helpers/create-project';
