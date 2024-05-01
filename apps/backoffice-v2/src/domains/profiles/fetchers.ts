@@ -29,7 +29,7 @@ export const IndividualProfileSchema = z.object({
   name: z.string(),
   business: z.string().optional(),
   role: z.enum(Roles),
-  kyc: z.enum(KYCs),
+  kyc: z.enum(KYCs).or(z.undefined()),
   sanctions: z.enum(Sanctions),
   alerts: z.number(),
   updatedAt: z.string().datetime(),

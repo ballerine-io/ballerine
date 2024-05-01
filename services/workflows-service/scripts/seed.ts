@@ -958,6 +958,7 @@ async function seed() {
             state: DEFAULT_INITIAL_STATE,
           },
           projectId: project1.id,
+          connectBusinesses: true,
         }),
       }),
     ),

@@ -10,6 +10,8 @@ import { WorkflowRunDto } from '@/workflow/dtos/workflow-run';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { Body, Controller, ForbiddenException, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { ApiExcludeController, ApiForbiddenResponse, ApiOkResponse } from '@nestjs/swagger';
+import { EndUserService } from '@/end-user/end-user.service';
+import { StateTag, TStateTag } from '@ballerine/common';
 
 @Controller('case-management')
 @ApiExcludeController()
@@ -20,6 +22,7 @@ export class CaseManagementController {
     protected readonly caseManagementService: CaseManagementService,
     protected readonly logger: AppLoggerService,
     protected readonly transactionService: TransactionService,
+    protected readonly endUserService: EndUserService,
   ) {}
 
   @Get('workflow-definition/:workflowDefinitionId')
@@ -56,72 +59,63 @@ export class CaseManagementController {
 
   @Get('profiles/individuals')
   async listIndividualsProfiles(@CurrentProject() projectId: TProjectId) {
-    return [
+    const endUsers = await this.endUserService.list(
       {
-        id: '1',
-        createdAt: '2024-04-30T12:52:14.965Z',
-        name: 'John Doe',
-        business: 'ACME Inc.',
-        role: 'UBO',
-        kyc: 'COMPLETED',
-        sanctions: 'MONITORED',
-        alerts: 0,
-        updatedAt: '2024-04-30T12:52:14.965Z',
+        select: {
+          id: true,
+          createdAt: true,
+          firstName: true,
+          lastName: true,
+          businesses: {
+            select: {
+              companyName: true,
+            },
+          },
+          updatedAt: true,
+        },
       },
-      {
-        id: '2',
-        createdAt: '2024-04-30T12:52:14.965Z',
-        name: 'Jane Doe',
-        business: 'ACME Inc.',
-        role: 'DIRECTOR',
-        kyc: 'PENDING',
-        sanctions: 'NOT_MONITORED',
-        alerts: 0,
-        updatedAt: '2024-04-30T12:52:14.965Z',
-      },
-      {
-        id: '3',
-        createdAt: '2024-04-30T12:52:14.965Z',
-        name: 'John Smith',
-        business: 'ACME Inc.',
-        role: 'AUTHORIZED_SIGNATORY',
-        kyc: 'APPROVED',
-        sanctions: 'MONITORED',
-        alerts: 0,
-        updatedAt: '2024-04-30T12:52:14.965Z',
-      },
-      {
-        id: '4',
-        createdAt: '2024-04-30T12:52:14.965Z',
-        name: 'Bob Smith',
-        business: 'ACME Inc.',
-        role: 'AUTHORIZED_SIGNATORY',
-        kyc: 'DECLINED',
-        sanctions: 'NOT_MONITORED',
-        alerts: 0,
-        updatedAt: '2024-04-30T12:52:14.965Z',
-      },
-      {
-        id: '5',
-        createdAt: '2024-04-30T12:52:14.965Z',
-        name: 'Alice Smith',
-        business: 'ACME Inc.',
-        role: 'AUTHORIZED_SIGNATORY',
-        kyc: 'REVISIONS',
-        sanctions: 'MONITORED',
-        alerts: 0,
-        updatedAt: '2024-04-30T12:52:14.965Z',
-      },
-    ] satisfies Array<{
-      id: string;
-      createdAt: string;
-      name: string;
-      business: string;
-      role: string;
-      kyc: string;
-      sanctions: string;
-      alerts: number;
-      updatedAt: string;
-    }>;
+      [projectId],
+    );
+    const typedEndUsers = endUsers as Array<
+      (typeof endUsers)[number] & {
+        businesses: Array<{
+          companyName: string;
+        }>;
+      }
+    >;
+    const tagToKyc = {
+      [StateTag.COLLECTION_FLOW]: 'PENDING',
+      [StateTag.APPROVED]: 'APPROVED',
+      [StateTag.REJECTED]: 'REJECTED',
+      [StateTag.REVISION]: 'REVISIONS',
+      [StateTag.PENDING_PROCESS]: 'PROCESSED',
+      [StateTag.DATA_ENRICHMENT]: 'PROCESSED',
+      [StateTag.MANUAL_REVIEW]: 'PROCESSED',
+    } as const satisfies Record<
+      Exclude<TStateTag, 'failure' | 'flagged' | 'resolved' | 'dismissed'>,
+      'APPROVED' | 'REJECTED' | 'REVISIONS' | 'PROCESSED' | 'PENDING'
+    >;
+    const formattedEndUsers = await Promise.all(
+      typedEndUsers.map(async endUser => {
+        const workflowRuntimeData = await this.workflowService.getByEntityId(endUser.id, projectId);
+        const tag = (workflowRuntimeData?.tags as string[])?.find(
+          tag => !!tagToKyc[tag as keyof typeof tagToKyc],
+        );
+
+        return {
+          id: endUser.id,
+          createdAt: endUser.createdAt,
+          name: `${endUser.firstName} ${endUser.lastName}`,
+          business: endUser.businesses?.map(business => business.companyName).join(', '),
+          role: 'UBO',
+          kyc: tagToKyc[tag as keyof typeof tagToKyc],
+          sanctions: 'MONITORED',
+          alerts: 0,
+          updatedAt: endUser.updatedAt,
+        };
+      }),
+    );
+
+    return formattedEndUsers;
   }
 }

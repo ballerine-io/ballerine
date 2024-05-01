@@ -358,4 +358,23 @@ export class WorkflowRuntimeDataRepository {
 
     return (await this.prisma.$queryRaw(sql)) as WorkflowRuntimeData[];
   }
+
+  async findFirstByEntityId<T extends Prisma.WorkflowRuntimeDataFindFirstArgs>(
+    entityId: string,
+    projectIds: TProjectIds,
+    args?: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindFirstArgs>,
+  ) {
+    return await this.prisma.workflowRuntimeData.findFirst(
+      this.scopeService.scopeFindFirst(
+        {
+          ...args,
+          where: {
+            ...args?.where,
+            endUserId: entityId,
+          },
+        },
+        projectIds,
+      ),
+    );
+  }
 }

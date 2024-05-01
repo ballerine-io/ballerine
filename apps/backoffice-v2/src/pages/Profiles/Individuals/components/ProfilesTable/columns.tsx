@@ -20,7 +20,7 @@ export const Roles = [
 
 export const KYC = {
   PENDING: 'PENDING',
-  COMPLETED: 'COMPLETED',
+  PROCESSED: 'PROCESSED',
   APPROVED: 'APPROVED',
   DECLINED: 'DECLINED',
   REVISIONS: 'REVISIONS',
@@ -28,7 +28,7 @@ export const KYC = {
 
 export const KYCs = [
   KYC.PENDING,
-  KYC.COMPLETED,
+  KYC.PROCESSED,
   KYC.APPROVED,
   KYC.DECLINED,
   KYC.REVISIONS,
@@ -87,7 +87,7 @@ export const columns = [
     cell: info => {
       const business = info.getValue();
 
-      return <TextWithNAFallback>{business}</TextWithNAFallback>;
+      return <TextWithNAFallback className={`w-[40ch] break-words`}>{business}</TextWithNAFallback>;
     },
     header: 'Business',
   }),

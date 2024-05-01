@@ -163,6 +163,7 @@ export const generateEndUser = ({
   avatarUrl = faker.image.avatar(),
   workflow,
   projectId,
+  connectBusinesses,
 }: {
   id?: string;
   correlationId?: string;
@@ -180,6 +181,7 @@ export const generateEndUser = ({
     state: string;
   };
   projectId: string;
+  connectBusinesses?: boolean;
 }): Prisma.EndUserCreateInput => {
   let res: Prisma.EndUserCreateInput = {
     id,
@@ -192,6 +194,11 @@ export const generateEndUser = ({
     dateOfBirth,
     avatarUrl,
     project: { connect: { id: projectId } },
+    ...(connectBusinesses && {
+      businesses: {
+        connect: businessIds.map(id => ({ id })),
+      },
+    }),
   };
 
   res.project = { connect: { id: projectId } };
