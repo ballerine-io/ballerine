@@ -243,6 +243,7 @@ export class TransactionEntityMapper {
       'discover',
       'china unionpay',
     ].includes(brand);
+
     if (isCreditCard) {
       originalDto.payment!.method = 'credit_card';
     } else {
@@ -250,6 +251,7 @@ export class TransactionEntityMapper {
     }
 
     const errors = validateSync(Object.assign(new TransactionCreateDto(), originalDto));
+
     if (errors.length > 0) {
       throw new ValidationError(errors as any);
     } else {
