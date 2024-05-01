@@ -34,7 +34,8 @@ export const AltPaymentBrandNames = {
   SCB_PAYNOW: 'scb_paynow',
   ['China UnionPay']: 'china unionpay',
   ['American Express']: 'american express',
-
+  ['ALIPAYHOST']: 'alipayhost',
+  ['WECHAT']: 'wechathost',
   ...PaymentBrandName,
 } as const;
 
