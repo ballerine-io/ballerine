@@ -168,9 +168,9 @@ export class TransactionCreateAltDto {
 
   @ApiProperty({ required: true })
   @Transform(({ value }) => value.toLowerCase())
-  @IsEnum(AltPaymentBrandNames)
+  @IsString()
   @IsNotEmpty()
-  tx_product!: AltPaymentBrandNames;
+  tx_product!: string;
 
   @ApiProperty({ required: false })
   @IsString()
