@@ -33,7 +33,9 @@ export const AltPaymentBrandNames = {
   SCB_PAYNOW: 'scb_paynow',
   ['China UnionPay']: 'china unionpay',
   ['American Express']: 'american express',
-
+  ['ALIPAYHOST']: 'alipayhost',
+  ['WECHAT']: 'wechathost',
+  ['GRABPAY']: 'grabpay',
   ...PaymentBrandName,
 } as const;
 
@@ -165,9 +167,9 @@ export class TransactionCreateAltDto {
 
   @ApiProperty({ required: true })
   @Transform(({ value }) => value.toLowerCase())
-  @IsEnum(AltPaymentBrandNames)
+  @IsString()
   @IsNotEmpty()
-  tx_product!: AltPaymentBrandNames;
+  tx_product!: string;
 
   @ApiProperty({ required: false })
   @IsString()
