@@ -34,8 +34,6 @@ export const useCaseOptionsLogic = () => {
   const { data: workflow } = useCurrentCaseQuery();
   const { data: customer } = useCustomerQuery();
 
-  console.log({ workflow });
-
   const genereateAndDownloadPDFCertificate = useCallback(async () => {
     await svgToPng(customer?.logoImageUri || '').then(result => console.log(result));
     try {
