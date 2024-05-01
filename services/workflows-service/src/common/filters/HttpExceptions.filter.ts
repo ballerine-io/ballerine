@@ -56,10 +56,19 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
         return super.catch(exception, host);
       }
 
-      throw new HttpException(message, statusCode);
+      const ctx = host.switchToHttp();
+      const response = ctx.getResponse();
+      const request = ctx.getRequest();
+
+      return response.status(statusCode).json({
+        statusCode,
+        message,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+      });
     }
 
-    throw new HttpException(message, statusCode);
+    return super.catch(exception, host);
   }
 
   /**

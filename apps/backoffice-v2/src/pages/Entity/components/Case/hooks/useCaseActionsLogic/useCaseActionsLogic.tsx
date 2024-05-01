@@ -57,6 +57,8 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
       }
     : undefined;
 
+  const isWorkflowCompleted = workflow?.status === 'completed';
+
   return {
     isActionButtonDisabled,
     onMutateAssignWorkflow,
@@ -74,5 +76,6 @@ export const useCaseActionsLogic = ({ workflowId, fullName }: IUseActions) => {
     tag,
     workflow,
     workflowDefinition: workflow?.workflowDefinition,
+    isWorkflowCompleted,
   };
 };

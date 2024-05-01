@@ -6,6 +6,9 @@ import { AmlWebhookInput } from './dtos/aml-webhook-input';
 import { IndividualAmlWebhookInput } from '@/webhooks/dtos/individual-aml-webhook-input';
 import { WebhooksService } from '@/webhooks/webhooks.service';
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
+import { BadRequestException } from '@nestjs/common';
+import { isObject } from '@ballerine/common';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 const Webhook = {
   AML_INDIVIDUAL_MONITORING_UPDATE: 'aml.individuals.monitoring.update',
@@ -20,7 +23,10 @@ const EntityType = {
 @swagger.ApiTags('Webhooks')
 @common.Controller('webhooks')
 export class WebhooksController {
-  constructor(private readonly webhooksService: WebhooksService) {}
+  constructor(
+    private readonly webhooksService: WebhooksService,
+    private readonly logger: AppLoggerService,
+  ) {}
 
   @common.Post('/:entityType/aml')
   @swagger.ApiOkResponse()
@@ -30,18 +36,26 @@ export class WebhooksController {
   @VerifyUnifiedApiSignatureDecorator()
   async amlHook(
     @common.Param() { entityType }: AmlWebhookInput,
-    @common.Body() data: IndividualAmlWebhookInput,
+    @common.Body() { eventName, data }: IndividualAmlWebhookInput,
   ) {
+    if (!(isObject(data) && 'endUserId' in data && data.endUserId)) {
+      throw new BadRequestException('Missing endUserId');
+    }
+
     try {
       if (entityType === EntityType.INDIVIDUAL) {
-        const { eventName } = data;
-
         if (eventName === Webhook.AML_INDIVIDUAL_MONITORING_UPDATE) {
-          await this.webhooksService.handleIndividualAmlHit(data as IndividualAmlWebhookInput);
+          await this.webhooksService.handleIndividualAmlHit({ endUserId: data.endUserId, data });
+        } else {
+          this.logger.error(`Unknown webhook event: ${eventName}`);
+          throw new BadRequestException('Unknown webhook event');
         }
+      } else {
+        this.logger.error(`Unknown entity type: ${entityType}`);
+        throw new BadRequestException('Unknown entity type');
       }
     } catch (error) {
-      console.error(error);
+      this.logger.error('amlHook::', { entityType, eventName, data, error });
 
       throw error;
     }

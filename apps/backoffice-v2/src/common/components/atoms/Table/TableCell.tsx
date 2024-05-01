@@ -11,4 +11,5 @@ export const TableCell = React.forwardRef<
     {...props}
   />
 ));
+
 TableCell.displayName = 'TableCell';

@@ -1,6 +1,5 @@
 import { TransactionDirection, PaymentMethod, TransactionRecordType } from '@prisma/client';
 import { AggregateType, TIME_UNITS } from './consts';
-
 export type InlineRule = {
   id: string;
   subjects: string[] | readonly string[];
@@ -16,6 +15,10 @@ export type InlineRule = {
   | {
       fnName: 'evaluateCustomersTransactionType';
       options: Omit<TCustomersTransactionTypeOptions, 'projectId'>;
+    }
+  | {
+      fnName: 'evaluateTransactionLimitHistoricAverageInbound';
+      options: Omit<TransactionLimitHistoricAverageOptions, 'projectId'>;
     }
   | {
       fnName: 'evaluateRiskScore';
@@ -72,4 +75,16 @@ export type TCustomersTransactionTypeOptions = {
   timeUnit?: TimeUnit;
   isPerBrand?: boolean;
   havingAggregate?: TAggregations;
+};
+
+export type TransactionLimitHistoricAverageOptions = {
+  projectId: string;
+  transactionDirection: TransactionDirection;
+  paymentMethod: {
+    value: PaymentMethod;
+    operator: '=' | '!=';
+  };
+  minimumCount: number;
+  minimumTransactionAmount: number;
+  transactionFactor: number;
 };

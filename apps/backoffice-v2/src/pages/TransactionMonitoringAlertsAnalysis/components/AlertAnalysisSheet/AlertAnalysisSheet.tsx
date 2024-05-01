@@ -25,7 +25,7 @@ export const AlertAnalysisSheet: FunctionComponent<IAlertAnalysisProps> = ({
             <h2 className="text-2xl font-bold">{heading}</h2>
             <div className="mb-10 flex flex-col gap-1">
               <h3 className="text-sm font-bold">Summary</h3>
-              <p className="max-w-[88ch] text-sm text-[#64748B]">{summary}</p>
+              <div className="max-w-[88ch] text-sm text-[#64748B]">{summary}</div>
             </div>
           </div>
           <div>
