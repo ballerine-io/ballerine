@@ -1,14 +1,26 @@
 module.exports = {
-  preset: 'ts-jest',
   testEnvironment: 'node',
-  modulePathIgnorePatterns: ['<rootDir>/dist/'],
   testRegex: '(/__tests__/.*|(\\.|/)(unit|e2e|intg)\\.test)\\.ts$',
+
+  preset: 'ts-jest',
+  modulePathIgnorePatterns: ['<rootDir>/dist/'],
+  modulePaths: ['<rootDir>/src'],
+  moduleDirectories: ['node_modules'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+
+  transform: {
+    '^.+\\.{ts}?$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.test.json',
+      },
+    ],
+  },
   globals: {
     'ts-jest': {
-      tsconfig: './tsconfig.test.json',
+      tsconfig: 'tsconfig.test.json',
     },
   },
   globalSetup: '<rootDir>/src/test/db-setup.ts',

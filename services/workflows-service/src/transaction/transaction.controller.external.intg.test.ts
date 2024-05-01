@@ -434,9 +434,7 @@ describe('#TransactionControllerExternal', () => {
       const successfulTransaction = (response.body as any[]).find(
         ({ status }) => status === BulkStatus.SUCCESS,
       );
-      const failedTransaction = (response.body as any[]).find(
-        ({ status }) => status === BulkStatus.FAILED,
-      );
+
       expect(successfulTransaction).toEqual({
         status: BulkStatus.SUCCESS,
         data: { id: expect.any(String), correlationId: transaction.correlationId },
@@ -448,6 +446,11 @@ describe('#TransactionControllerExternal', () => {
         },
       });
       expect(transactionRecord?.id).toEqual(successfulTransaction.data.id);
+
+      const failedTransaction = (response.body as any[]).find(
+        ({ status }) => status === BulkStatus.FAILED,
+      );
+
       expect(failedTransaction).toEqual({
         status: BulkStatus.FAILED,
         error: 'Transaction already exists',
