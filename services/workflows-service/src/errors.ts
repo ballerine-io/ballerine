@@ -85,6 +85,7 @@ export class ValidationError extends common.BadRequestException {
 
   static fromClassValidator(error: ClassValidatorValidationError[]) {
     const flattenedErrors = flattenValidationErrors(error);
+
     return new ValidationError(
       flattenedErrors.map(({ property, constraints = {}, value }, index) => ({
         message: `${Object.values(constraints).join(', ')}.`,
@@ -95,9 +96,9 @@ export class ValidationError extends common.BadRequestException {
   }
 }
 
-function flattenValidationErrors(
+const flattenValidationErrors = (
   errors: ClassValidatorValidationError[],
-): ClassValidatorValidationError[] {
+): ClassValidatorValidationError[] => {
   const flattenedErrors: ClassValidatorValidationError[] = [];
 
   for (const error of errors) {
@@ -111,4 +112,4 @@ function flattenValidationErrors(
   }
 
   return flattenedErrors;
-}
+};

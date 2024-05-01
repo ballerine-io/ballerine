@@ -60,6 +60,7 @@ export class WebhooksService {
 
     if (!config?.ongoingWorkflowDefinitionId) {
       this.logger.error('No ongoing workflow definition found for project', { projectId });
+
       return;
     }
 
