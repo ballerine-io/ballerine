@@ -24,6 +24,7 @@ import {
   ALERT_DEFINITIONS,
   getAlertDefinitionCreateData,
 } from '../../scripts/alerts/generate-alerts';
+import { TExecutionDetails } from './types';
 
 describe('AlertService', () => {
   let prismaService: PrismaService;
@@ -87,25 +88,26 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(
-            {
-              label: 'STRUC_CC',
-              ...ALERT_DEFINITIONS.STRUC_CC,
-            },
-            project,
-          ),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.STRUC_CC, project),
         });
+
+        expect(
+          ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold,
+        ).toBeGreaterThanOrEqual(5);
+        expect(
+          ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min,
+        ).toBeGreaterThanOrEqual(500);
       });
 
-      test('When there are more than 5 inbound transactions with amount of 500, an alert should be created', async () => {
+      test('When there are more than 5 inbound transactions with amount of 501, an alert should be created', async () => {
         // Arrange
         const transactions = await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(500)
+          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .count(6)
+          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -118,15 +120,15 @@ describe('AlertService', () => {
         expect(alerts[0]?.counterpartyId).toEqual(transactions[0]?.counterpartyBeneficiaryId);
       });
 
-      test('When there are less than 5 inbound transactions with amount of 500, no alert should be created', async () => {
+      test('When there inbound transactions with amount less of Threshold, no alert should be created', async () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(500)
+          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .count(4)
+          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold - 1)
           .create();
 
         // Act
@@ -137,7 +139,26 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(0);
       });
 
-      test('When there are more than 5 inbound transactions with amount of 499, no alert should be created', async () => {
+      test('When there inbound transactions with amount less of 500, no alert should be created', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min - 1)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+
+      test('When there are more than 5 inbound transactions with amount less than 500, no alert should be created', async () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
@@ -162,25 +183,26 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(
-            {
-              label: 'STRUC_APM',
-              ...ALERT_DEFINITIONS.STRUC_APM,
-            },
-            project,
-          ),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.STRUC_APM, project),
         });
+
+        expect(
+          ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountThreshold,
+        ).toBeGreaterThanOrEqual(5);
+        expect(
+          ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountBetween.min,
+        ).toBeGreaterThanOrEqual(500);
       });
 
-      test('When there are more than 5 inbound transactions with amount of 500, an alert should be created', async () => {
+      test('When there are more than 5 inbound transactions with amount above between, an alert should be created', async () => {
         // Arrange
         const transactions = await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(500)
+          .amount(ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountBetween.max - 1)
           .direction(TransactionDirection.inbound)
-          .paymentMethod(PaymentMethod.pay_pal)
-          .count(6)
+          .paymentMethod(PaymentMethod.bank_transfer)
+          .count(ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -198,10 +220,10 @@ describe('AlertService', () => {
         await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(500)
+          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min - 1)
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.pay_pal)
-          .count(4)
+          .count(6)
           .create();
 
         // Act
@@ -223,6 +245,32 @@ describe('AlertService', () => {
           .count(6)
           .create();
 
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(501)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.pay_pal)
+          .count(3)
+          .create();
+
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(501)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .count(6)
+          .create();
+
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .withEndUserOriginator()
+          .amount(501)
+          .direction(TransactionDirection.outbound)
+          .paymentMethod(PaymentMethod.pay_pal)
+          .count(6)
+          .create();
         // Act
         await alertService.checkAllAlerts();
 
@@ -237,13 +285,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(
-            {
-              label: 'CHVC_C',
-              ...ALERT_DEFINITIONS.CHVC_C,
-            },
-            project,
-          ),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.CHVC_C, project),
         });
       });
 
@@ -303,13 +345,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(
-            {
-              label: 'SHCAC_C',
-              ...ALERT_DEFINITIONS.SHCAC_C,
-            },
-            project,
-          ),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.SHCAC_C, project),
         });
       });
 
@@ -373,13 +409,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(
-            {
-              label: 'CHCR_C',
-              ...ALERT_DEFINITIONS.CHCR_C,
-            },
-            project,
-          ),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.CHCR_C, project),
         });
       });
 
@@ -439,13 +469,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(
-            {
-              label: 'SHCAR_C',
-              ...ALERT_DEFINITIONS.SHCAR_C,
-            },
-            project,
-          ),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.SHCAR_C, project),
         });
       });
 
@@ -521,13 +545,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(
-            {
-              label: 'HPC',
-              ...ALERT_DEFINITIONS.HPC,
-            },
-            project,
-          ),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.HPC, project),
         });
         const correlationId = faker.datatype.uuid();
         counteryparty = await prismaService.counterparty.create({
@@ -546,6 +564,10 @@ describe('AlertService', () => {
             },
           },
         });
+      });
+
+      afterAll(async () => {
+        return await prismaService.alertDefinition.delete({ where: { id: alertDefinition.id } });
       });
 
       it('When there are >=3 chargeback transactions and they are >=50% of the total transactions, an alert should be created', async () => {
@@ -633,7 +655,6 @@ describe('AlertService', () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              label: 'TLHAICC',
               ...ALERT_DEFINITIONS.TLHAICC,
             },
             project,
@@ -722,7 +743,6 @@ describe('AlertService', () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              label: 'TLHAIAPM',
               ...ALERT_DEFINITIONS.TLHAIAPM,
             },
             project,
@@ -792,6 +812,140 @@ describe('AlertService', () => {
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(300)
           .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('Rule: PAY_HCA_CC', () => {
+      let alertDefinition: AlertDefinition;
+      let counteryparty: Counterparty;
+
+      beforeEach(async () => {
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.PAY_HCA_CC, project),
+        });
+
+        expect(
+          ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold,
+        ).toBeGreaterThanOrEqual(1000);
+        expect(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.direction).toBe(
+          TransactionDirection.inbound,
+        );
+      });
+
+      it('When there more than 1k credit card transactions, an alert should be created', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .direction('inbound')
+          .paymentMethod(PaymentMethod.credit_card)
+          .amount(2)
+          .count(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold + 1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(1);
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0] as any).toMatchObject({
+          executionDetails: { executionRow: { transactionCount: '1001', totalAmount: 2002 } },
+        });
+      });
+
+      it('When there are few transaction, no alert should be created', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .direction('inbound')
+          .paymentMethod(PaymentMethod.credit_card)
+          .amount(150)
+          .count(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold % 10)
+          .create();
+
+        await baseTransactionFactory
+          .direction('inbound')
+          .withBusinessBeneficiary()
+          .paymentMethod(PaymentMethod.apple_pay)
+          .amount(150)
+          .count(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold % 10)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('Rule: PAY_HCA_APM', () => {
+      let alertDefinition: AlertDefinition;
+      let counteryparty: Counterparty;
+
+      beforeEach(async () => {
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.PAY_HCA_APM, project),
+        });
+
+        expect(
+          ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold,
+        ).toBeGreaterThanOrEqual(1000);
+        expect(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.direction).toBe(
+          TransactionDirection.inbound,
+        );
+
+        expect(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.excludePaymentMethods).toBe(true);
+      });
+
+      it('When there more than 1k credit card transactions, an alert should be created', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .direction('inbound')
+          .paymentMethod(PaymentMethod.debit_card)
+          .amount(2)
+          .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold + 1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(1);
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0] as any).toMatchObject({
+          executionDetails: { executionRow: { transactionCount: '1001', totalAmount: 2002 } },
+        });
+      });
+
+      it('When there are few transaction, no alert should be created', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .withBusinessBeneficiary()
+          .direction('inbound')
+          .paymentMethod(PaymentMethod.credit_card)
+          .amount(150)
+          .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold % 10)
+          .create();
+
+        await baseTransactionFactory
+          .direction('inbound')
+          .withBusinessBeneficiary()
+          .paymentMethod(PaymentMethod.apple_pay)
+          .amount(150)
+          .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold % 10)
           .create();
 
         // Act

@@ -1399,7 +1399,10 @@ export class WorkflowService {
       }> = [];
 
       // Creating new workflow
-      if (!existingWorkflowRuntimeData || mergedConfig?.allowMultipleActiveWorkflows) {
+      if (
+        !existingWorkflowRuntimeData ||
+        (existingWorkflowRuntimeData && mergedConfig?.allowMultipleActiveWorkflows)
+      ) {
         const contextWithoutDocumentPageType = {
           ...contextToInsert,
           documents: this.omitTypeFromDocumentsPages(contextToInsert.documents),
@@ -1570,10 +1573,9 @@ export class WorkflowService {
         // Updating existing workflow
         this.logger.log('existing documents', existingWorkflowRuntimeData.context.documents);
         this.logger.log('documents', contextToInsert.documents);
-        // contextToInsert.documents = updateDocuments(
-        //   existingWorkflowRuntimeData.context.documents,
-        //   context.documents,
-        // );
+
+        contextToInsert.documents = assignIdToDocuments(contextToInsert.documents);
+
         const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
           contextToInsert?.documents,
           entityId,
@@ -1884,6 +1886,7 @@ export class WorkflowService {
             this.logger.log('Child workflow not runnable', {
               childWorkflowId: runnableChildWorkflow?.workflowRuntimeData.id,
             });
+
             return;
           }
 
