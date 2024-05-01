@@ -1,7 +1,6 @@
 import {
   PaymentAcquirer,
   PaymentBrandName,
-  PaymentChannel,
   PaymentGateway,
   PaymentIssuer,
   PaymentMethod,
@@ -93,7 +92,6 @@ const getTransactionCreateData = ({ projectId }: { projectId: string }): Transac
 
     paymentMethod: faker.helpers.arrayElement(Object.values(PaymentMethod)),
     paymentType: faker.helpers.arrayElement(Object.values(PaymentType)),
-    paymentChannel: faker.helpers.arrayElement(Object.values(PaymentChannel)),
     paymentIssuer: faker.helpers.arrayElement(Object.values(PaymentIssuer)),
     paymentGateway: faker.helpers.arrayElement(Object.values(PaymentGateway)),
     paymentAcquirer: faker.helpers.arrayElement(Object.values(PaymentAcquirer)),

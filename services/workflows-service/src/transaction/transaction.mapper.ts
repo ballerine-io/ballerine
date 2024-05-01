@@ -1,7 +1,14 @@
-import { Prisma } from '@prisma/client';
-import { CounterpartyInfo, TransactionCreateDto } from './dtos/transaction-create.dto';
+import { PaymentBrandName, Prisma } from '@prisma/client';
+import {
+  CounterpartyInfo,
+  TransactionCreateAltDto,
+  TransactionCreateDto,
+  AltPaymentBrandNames,
+} from './dtos/transaction-create.dto';
 import { InputJsonValue, TProjectId } from '@/types';
 import { HttpException } from '@nestjs/common';
+import { validateSync } from 'class-validator';
+import { ValidationError } from '@/errors';
 
 export class TransactionEntityMapper {
   static toCreateData({ dto, projectId }: { dto: TransactionCreateDto; projectId: TProjectId }) {
@@ -30,6 +37,7 @@ export class TransactionEntityMapper {
       paymentAcquirer: dto.payment?.acquirer ?? null,
       paymentProcessor: dto.payment?.processor ?? null,
       paymentBrandName: dto.payment?.brandName ?? null,
+      paymentMccCode: dto.payment?.mccCode ?? null,
 
       // Assuming card details and tags are part of the DTO
       cardFingerprint: dto.cardDetails?.fingerprint ?? null,
@@ -163,4 +171,137 @@ export class TransactionEntityMapper {
         }
       : undefined;
   }
+
+  static altDtoToOriginalDto(altDto: TransactionCreateAltDto): TransactionCreateDto {
+    let originator: CounterpartyInfo = {} as CounterpartyInfo;
+    let beneficiary: CounterpartyInfo = {} as CounterpartyInfo;
+
+    if (altDto.tx_direction === 'outbound') {
+      originator = {
+        correlationId: altDto.customer_id,
+        businessData: altDtoToBusinessData(altDto),
+      };
+      beneficiary = {
+        correlationId: altDto.counterparty_id,
+        endUserData: altDtoToEndUserData(altDto),
+      };
+    } else {
+      originator = {
+        correlationId: altDto.counterparty_id,
+        endUserData: altDtoToEndUserData(altDto),
+      };
+      beneficiary = {
+        correlationId: altDto.customer_id,
+        businessData: altDtoToBusinessData(altDto),
+      };
+    }
+
+    const tranformProductName = (brand: AltPaymentBrandNames): PaymentBrandName | undefined => {
+      switch (brand) {
+        case 'scb_paynow':
+          return 'scb_pay_now';
+        case 'china unionpay':
+          return 'china_union_pay';
+        case 'american express':
+          return 'american_express';
+        default:
+          return undefined;
+      }
+    };
+
+    let brandName;
+    if (altDto.tx_product.toLowerCase() in PaymentBrandName) {
+      brandName = altDto.tx_product.toLowerCase() as PaymentBrandName;
+    } else {
+      brandName = tranformProductName(altDto.tx_product.toLowerCase() as AltPaymentBrandNames);
+    }
+
+    const date = new Date(altDto.tx_date_time);
+    const originalDto: TransactionCreateDto = {
+      date: date.toISOString() as any,
+      amount: altDto.tx_amount,
+      currency: altDto.tx_currency,
+      baseAmount: altDto.tx_base_amount,
+      baseCurrency: altDto.tx_base_currency,
+      correlationId: altDto.tx_id,
+      description: altDto.tx_reference_text,
+      direction: altDto.tx_direction,
+      reference: altDto.tx_reference_text,
+      originator,
+      beneficiary,
+      payment: {
+        channel: altDto.tx_payment_channel,
+        mccCode: parseInt(altDto.tx_mcc_code || '0'),
+        brandName: brandName,
+      },
+      cardDetails: {
+        cardBin: parseInt(altDto.counterparty_institution_id) || undefined,
+      },
+      additionalInfo: {
+        type: altDto.tx_type,
+      },
+    };
+
+    const creditCardBrands: PaymentBrandName[] = [
+      'visa',
+      'mastercard',
+      'american_express',
+      'discover',
+      'jcb',
+      'diners',
+      'discover',
+      'china_union_pay',
+    ];
+    const isCreditCard = creditCardBrands.includes(brandName || '');
+
+    if (isCreditCard) {
+      originalDto.payment!.method = 'credit_card';
+    } else {
+      originalDto.payment!.method = 'apm';
+    }
+
+    const errors = validateSync(Object.assign(new TransactionCreateDto(), originalDto));
+    if (errors.length > 0) {
+      throw new ValidationError(errors as any);
+    } else {
+      console.log('validation succeed');
+    }
+
+    return originalDto;
+  }
 }
+
+const altDtoToBusinessData: (altDto: TransactionCreateAltDto) => {
+  address: {
+    street: string;
+    postcode?: string;
+    state?: string;
+    country: string;
+  };
+  companyName: string;
+  businessType: string;
+} = altDto => {
+  return {
+    address: {
+      street: altDto.customer_address,
+      postcode: altDto.customer_postcode,
+      state: altDto.customer_state,
+      country: altDto.customer_country,
+    },
+    companyName: altDto.customer_name,
+    businessType: altDto.customer_type,
+  };
+};
+
+const altDtoToEndUserData: (altDto: TransactionCreateAltDto) => {
+  firstName: string;
+  lastName: string;
+} = altDto => {
+  const firstName = altDto.counterparty_name.split(' ').slice(0, -1).join(' ');
+  const lastName = altDto.counterparty_name.split(' ').slice(-1).join(' ');
+
+  return {
+    firstName,
+    lastName,
+  };
+};

@@ -1,16 +1,16 @@
-import { createSearchParams } from 'react-router-dom';
 import { useCallback } from 'react';
 import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchParams/useSerializedSearchParams';
+import { defaultSerializer } from '@/common/hooks/useZodSearchParams/utils/default-serializer';
 
 export const usePagination = () => {
   const [searchParams] = useSerializedSearchParams();
 
   const onPaginate = useCallback(
     (page: number) => {
-      return createSearchParams({
+      return defaultSerializer({
         ...searchParams,
         page: page.toString(),
-      }).toString();
+      });
     },
     [searchParams],
   );
@@ -18,19 +18,19 @@ export const usePagination = () => {
     const pageNumber = Number(searchParams.page);
     const nextPage = pageNumber + 1;
 
-    return createSearchParams({
+    return defaultSerializer({
       ...searchParams,
       page: nextPage.toString(),
-    }).toString();
+    });
   }, [searchParams]);
   const onPrevPage = useCallback(() => {
     const pageNumber = Number(searchParams.page);
     const nextPage = pageNumber - 1;
 
-    return createSearchParams({
+    return defaultSerializer({
       ...searchParams,
       page: nextPage.toString(),
-    }).toString();
+    });
   }, [searchParams]);
 
   return {
