@@ -214,6 +214,7 @@ export class TransactionEntityMapper {
     };
 
     let brandName;
+
     if (altDto.tx_product.toLowerCase() in PaymentBrandName) {
       brandName = altDto.tx_product.toLowerCase() as PaymentBrandName;
     } else {
