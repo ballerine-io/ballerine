@@ -116,15 +116,17 @@ export class AlertService {
   }
 
   // Function to retrieve all alert definitions
-  async getAllAlertDefinitions(): Promise<AlertDefinition[]> {
+  async getAlertDefinitions(options: { type: MonitoringType }): Promise<AlertDefinition[]> {
     return await this.prisma.alertDefinition.findMany({
-      where: { enabled: true },
+      where: { enabled: true, monitoringType: options.type },
     });
   }
 
   // Function to perform alert checks for each alert definition
   async checkAllAlerts() {
-    const alertDefinitions = await this.getAllAlertDefinitions();
+    const alertDefinitions = await this.getAlertDefinitions({
+      type: MonitoringType.transaction_monitoring,
+    });
 
     for (const definition of alertDefinitions) {
       try {
@@ -143,7 +145,7 @@ export class AlertService {
   }
 
   // Specific alert check logic based on the definition
-  private async checkAlert(alertDefinition: AlertDefinition) {
+  private async checkAlert(alertDefinition: AlertDefinition, ...args: any[]) {
     const unknownData: unknown = alertDefinition.inlineRule;
 
     const inlineRule: InlineRule = unknownData as InlineRule;
@@ -151,6 +153,7 @@ export class AlertService {
     const ruleExecutionResults = await this.dataAnalyticsService.runInlineRule(
       alertDefinition.projectId,
       inlineRule,
+      args,
     );
 
     if (

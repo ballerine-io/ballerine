@@ -570,7 +570,11 @@ enum PaymentProcessor {
 enum PaymentBrandName {
   visa
   mastercard
-  dci // diners club international
+  diners
+  jcb
+  discover
+  china_union_pay // China UnionPay
+  american_express // American Express
   scb_pay_now
   ocbc_pay_now
   atome

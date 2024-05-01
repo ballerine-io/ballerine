@@ -1,3 +1,4 @@
+import { businessIds } from './../../scripts/generate-end-user';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
@@ -6,6 +7,8 @@ import {
   TCustomersTransactionTypeOptions,
   HighTransactionTypePercentage,
   TransactionLimitHistoricAverageOptions,
+  CheckRiskScoreOptions,
+  CheckRiskScorePayload,
 } from './types';
 import { AggregateType, TIME_UNITS } from './consts';
 import { Prisma } from '@prisma/client';
@@ -19,7 +22,7 @@ export class DataAnalyticsService {
     protected readonly logger: AppLoggerService,
   ) {}
 
-  async runInlineRule(projectId: string, inlineRule: InlineRule) {
+  async runInlineRule(projectId: string, inlineRule: InlineRule, args?: any) {
     switch (inlineRule.fnName) {
       case 'evaluateHighTransactionTypePercentage':
         return await this[inlineRule.fnName]({
@@ -44,6 +47,13 @@ export class DataAnalyticsService {
           ...inlineRule.options,
           projectId,
         });
+      case 'checkRiskScore':
+        return await this[inlineRule.fnName](
+          {
+            projectId,
+          },
+          args,
+        );
     }
 
     this.logger.error(`No evaluation function found`, {
@@ -51,6 +61,19 @@ export class DataAnalyticsService {
     });
 
     throw new Error(`No evaluation function found for rule name: ${(inlineRule as InlineRule).id}`);
+  }
+
+  async checkRiskScore({ projectId }: CheckRiskScoreOptions, payload: CheckRiskScorePayload) {
+    const { businessId, originalScore, currentScore } = payload;
+
+    return currentScore > originalScore
+      ? [
+          {
+            businessId,
+            projectId,
+          },
+        ]
+      : [];
   }
 
   async evaluateTransactionsAgainstDynamicRules({
