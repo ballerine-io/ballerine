@@ -12,7 +12,6 @@ import { AppLoggerModule } from '@/common/app-logger/app-logger.module';
 import { ClsMiddleware, ClsModule, ClsService } from 'nestjs-cls';
 import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
 import { CustomerModule } from '@/customer/customer.module';
-import { CustomerService } from '@/customer/customer.service';
 import { HttpModule } from '@nestjs/axios';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
 

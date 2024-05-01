@@ -107,11 +107,15 @@ export class AlertControllerExternal {
         alertDetails: alertDefinition.description,
         subject: counterparty.business
           ? {
+              type: 'business',
               id: counterparty.business.id,
               name: counterparty.business.companyName,
+              correlationId: counterparty.business.correlationId,
             }
           : {
+              type: 'counterparty',
               id: counterparty.endUser.id,
+              correlationId: counterparty.endUser.correlationId,
               name: `${counterparty.endUser.firstName} ${counterparty.endUser.lastName}`,
             },
         decision: state,

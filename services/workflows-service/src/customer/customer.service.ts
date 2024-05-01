@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CustomerRepository } from '@/customer/customer.repository';
-import { Prisma, Project } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
 import { generateHashedKey } from '@/customer/api-key/utils';
