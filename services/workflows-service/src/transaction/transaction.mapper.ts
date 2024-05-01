@@ -204,6 +204,12 @@ export class TransactionEntityMapper {
           return 'china_union_pay';
         case 'american express':
           return 'american_express';
+        case 'alipayhost':
+          return 'alipay_host';
+        case 'wechathost':
+          return 'wechat_host';
+        case 'grabpay':
+          return 'grab_pay';
         default:
           return undefined;
       }
