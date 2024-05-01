@@ -1,15 +1,12 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import {
   TransactionRecordType,
-  TransactionRecordStatus,
   PaymentType,
-  PaymentChannel,
   PaymentIssuer,
   PaymentGateway,
   PaymentAcquirer,
   PaymentProcessor,
   PaymentBrandName,
-  ReviewStatus,
   TransactionDirection,
   PaymentMethod,
 } from '@prisma/client';
@@ -24,7 +21,7 @@ import {
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { JsonValue } from 'type-fest';
 import { BusinessCreateDto } from '@/business/dtos/business-create';
 import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
@@ -54,7 +51,7 @@ class PaymentInfo {
   @IsOptional()
   method?: PaymentMethod;
   @ApiProperty({ required: false }) @IsEnum(PaymentType) @IsOptional() type?: PaymentType;
-  @ApiProperty({ required: false }) @IsEnum(PaymentChannel) @IsOptional() channel?: PaymentChannel;
+  @ApiProperty({ required: false }) @IsString() @IsOptional() channel?: string;
   @ApiProperty({ required: false }) @IsEnum(PaymentIssuer) @IsOptional() issuer?: PaymentIssuer;
   @ApiProperty({ required: false }) @IsEnum(PaymentGateway) @IsOptional() gateway?: PaymentGateway;
   @ApiProperty({ required: false })
@@ -69,6 +66,7 @@ class PaymentInfo {
   @IsEnum(PaymentBrandName)
   @IsOptional()
   brandName?: PaymentBrandName;
+  @ApiProperty({ required: false }) @IsNumber() @IsOptional() mccCode?: number;
 }
 class ProductInfo {
   @ApiProperty({ required: false }) @IsString() @IsOptional() name?: string;
@@ -141,4 +139,57 @@ export class TransactionCreateDto {
 
   @ApiProperty({ required: false }) @IsString() @IsOptional() regulatoryAuthority?: string;
   @ApiProperty({ required: false, type: 'object' }) @IsOptional() additionalInfo?: JsonValue | null;
+}
+
+export class TransactionCreateAltDto {
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() tx_date_time!: Date;
+  @ApiProperty({ required: true }) @IsNumber() @IsNotEmpty() tx_amount!: number;
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() tx_currency!: string;
+  @ApiProperty({ required: true }) @IsNumber() @IsNotEmpty() tx_base_amount!: number;
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() tx_base_currency!: string;
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() tx_id!: string;
+
+  @ApiProperty({ required: false }) @IsString() @IsOptional() tx_reference_text?: string;
+  @ApiProperty({ required: false }) @IsString() @IsOptional() tx_direction?: TransactionDirection;
+  @ApiProperty({ required: false }) @IsString() @IsOptional() tx_mcc_code?: string;
+  @ApiProperty({ required: false }) @IsString() @IsOptional() tx_payment_channel?: string;
+  @ApiProperty({ required: false })
+  @Transform(({ value }) => value.toLowerCase())
+  @IsEnum(PaymentBrandName)
+  @IsOptional()
+  tx_product?: PaymentBrandName;
+
+  @ApiProperty({ required: false })
+  @IsString()
+  @IsOptional()
+  tx_type?: string;
+
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() counterparty_id!: string;
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() counterparty_institution_id!: string;
+  @ApiProperty({ required: true })
+  @Transform(({ value }) => value.toLowerCase())
+  @IsEnum(PaymentBrandName)
+  @IsNotEmpty()
+  counterparty_institution_name!: PaymentBrandName;
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() counterparty_name!: string;
+  @ApiProperty({ required: true })
+  @Transform(({ value }) => value.toLowerCase())
+  @IsEnum(PaymentBrandName)
+  @IsNotEmpty()
+  counterparty_type!: PaymentBrandName;
+
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_id!: string;
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_name!: string;
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_address!: string;
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_country!: string;
+  @ApiProperty({ required: true }) @IsString() @IsOptional() customer_postcode?: string;
+  @ApiProperty({ required: true }) @IsString() @IsOptional() customer_state?: string;
+  @ApiProperty({ required: true }) @IsString() @IsNotEmpty() customer_type!: string;
+}
+
+export class TransactionCreateAltDtoWrapper {
+  @ApiProperty({ type: TransactionCreateAltDto })
+  @ValidateNested()
+  @Type(() => TransactionCreateAltDto)
+  data!: TransactionCreateAltDto;
 }

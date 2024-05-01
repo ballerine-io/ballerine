@@ -35,12 +35,13 @@ export class TransactionService {
     const response: Array<TransactionCreatedDto | { error: Error; correlationId: string }> = [];
 
     for (const transactionPayload of mappedTransactions) {
+      const correlationId = transactionPayload.transactionCorrelationId;
       try {
         const transaction = await this.repository.create({ data: transactionPayload });
 
         response.push({
           id: transaction.id,
-          correlationId: transaction.transactionCorrelationId,
+          correlationId,
         });
       } catch (error) {
         let errorToLog: Error = new Error('Unknown error', { cause: error });

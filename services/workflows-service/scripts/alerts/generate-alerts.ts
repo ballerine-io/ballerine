@@ -1,25 +1,27 @@
 import { businessIds } from './../generate-end-user';
-import {
-  InlineRule,
-  TCustomersTransactionTypeOptions,
-  TransactionsAgainstDynamicRulesType,
-} from '../../src/data-analytics/types';
+import { InlineRule } from '@/data-analytics/types';
 import {
   AlertSeverity,
   AlertState,
   AlertStatus,
-  AlertType,
-  Customer,
   MonitoringType,
   PaymentMethod,
   Prisma,
   PrismaClient,
   Project,
+  TransactionDirection,
   TransactionRecordType,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
-import { AggregateType, TIME_UNITS } from '../../src/data-analytics/consts';
+import { AggregateType, TIME_UNITS } from '@/data-analytics/consts';
 import { InputJsonValue, PrismaTransaction } from '@/types';
+import { TDedupeStrategy } from '@/alert/types';
+import {
+  ALERT_DEDUPE_STRATEGY_DEFAULT,
+  SEVEN_DAYS,
+  TWENTY_ONE_DAYS,
+  daysToMinutesConverter,
+} from '@/alert/consts';
 
 const tags = [
   ...new Set([
@@ -44,22 +46,17 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
       subjects: ['counterpartyId'],
       options: {
         havingAggregate: AggregateType.SUM,
-
-        direction: 'inbound',
-
+        direction: TransactionDirection.inbound,
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
           counterpartyOriginatorIds: [],
         },
-
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
 
-        timeAmount: 7,
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
-
         amountThreshold: 1000,
-
         groupBy: ['counterpartyBeneficiaryId'],
       },
     },
@@ -76,7 +73,7 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
       options: {
         havingAggregate: AggregateType.SUM,
 
-        direction: 'inbound',
+        direction: TransactionDirection.inbound,
 
         excludedCounterparty: {
           counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
@@ -86,7 +83,7 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: true,
 
-        timeAmount: 7,
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 1000,
@@ -95,79 +92,87 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
       },
     },
   },
-
   STRUC_CC: {
-    defaultSeverity: AlertSeverity.medium,
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
     description:
       'Structuring - Significant number of low value incoming transactions just below a threshold of credit card',
     inlineRule: {
       id: 'STRUC_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId'],
+      subjects: ['counterpartyId'],
       options: {
         havingAggregate: AggregateType.COUNT,
+        groupBy: ['counterpartyBeneficiaryId'],
 
-        direction: 'inbound',
-        // TODO: add excludedCounterparty
-        // excludedCounterparty: ['9999999999999999', '999999******9999'],
+        direction: TransactionDirection.inbound,
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
 
-        timeAmount: 7,
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 5,
-        amountBetween: { min: 500, max: 1000 },
+        amountBetween: { min: 500, max: 999 },
       },
     },
   },
   STRUC_APM: {
-    defaultSeverity: AlertSeverity.medium,
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
     description:
       'Structuring - Significant number of low value incoming transactions just below a threshold of APM',
     inlineRule: {
       id: 'STRUC_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId'],
+      subjects: ['counterpartyId'],
       options: {
         havingAggregate: AggregateType.COUNT,
+        groupBy: ['counterpartyBeneficiaryId'],
 
-        direction: 'inbound',
-        // TODO: add excludedCounterparty
-        // excludedCounterparty: ['9999999999999999', '999999******9999'],
-
+        direction: TransactionDirection.inbound,
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
         paymentMethods: [PaymentMethod.credit_card],
-        excludePaymentMethods: false,
+        excludePaymentMethods: true,
 
-        timeAmount: 7,
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
-
-        amountBetween: { min: 500, max: 1000 },
-
+        amountBetween: { min: 500, max: 999 },
         amountThreshold: 5,
       },
     },
   },
   HCAI_CC: {
+    enabled: false,
     defaultSeverity: AlertSeverity.medium,
     description:
       'High Cumulative Amount - Total sum of inbound credit card transactions received from counterparty is greater than a limit over a set period of time',
     inlineRule: {
       id: 'HCAI_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId', 'counterpartyOriginatorId'],
+      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
       options: {
         havingAggregate: AggregateType.SUM,
+        groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
 
-        direction: 'inbound',
-        // TODO: add excludedCounterparty
-        // excludedCounterparty: ['9999999999999999', '999999******9999'],
+        direction: TransactionDirection.inbound,
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
 
-        timeAmount: 7,
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 3000,
@@ -175,24 +180,28 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
     },
   },
   HACI_APM: {
+    enabled: false,
     defaultSeverity: AlertSeverity.medium,
     description:
       'High Cumulative Amount - Total sum of inbound non-traditional payment transactions received from counterparty is greater than a limit over a set period of time',
     inlineRule: {
       id: 'HACI_APM',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId', 'counterpartyOriginatorId'],
+      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
       options: {
         havingAggregate: AggregateType.SUM,
+        groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
 
-        direction: 'inbound',
-        // TODO: add excludedCounterparty
-        // excludedCounterparty: ['9999999999999999', '999999******9999'],
+        direction: TransactionDirection.inbound,
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: true,
 
-        timeAmount: 7,
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 3000,
@@ -200,24 +209,57 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
     },
   },
   HVIC_CC: {
+    enabled: false,
     defaultSeverity: AlertSeverity.medium,
     description:
       'High Velocity - High number of inbound credit card transactions received from a Counterparty over a set period of time',
     inlineRule: {
       id: 'HVIC_CC',
       fnName: 'evaluateTransactionsAgainstDynamicRules',
-      subjects: ['businessId', 'counterpartyOriginatorId'],
+      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
       options: {
         havingAggregate: AggregateType.COUNT,
+        groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
 
-        direction: 'inbound',
-        // TODO: add excludedCounterparty
-        // excludedCounterparty: ['9999999999999999', '999999******9999'],
+        direction: TransactionDirection.inbound,
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
 
         paymentMethods: [PaymentMethod.credit_card],
         excludePaymentMethods: false,
 
-        timeAmount: 7,
+        timeAmount: SEVEN_DAYS,
+        timeUnit: TIME_UNITS.days,
+
+        amountThreshold: 2,
+      },
+    },
+  },
+  HVIC_APM: {
+    enabled: false,
+    defaultSeverity: AlertSeverity.medium,
+    description:
+      'High Velocity - High number of inbound non-traditional payment transactions received from a Counterparty over a set period of time',
+    inlineRule: {
+      id: 'HVIC_CC',
+      fnName: 'evaluateTransactionsAgainstDynamicRules',
+      subjects: ['counterpartyId', 'counterpartyOriginatorId'],
+      options: {
+        havingAggregate: AggregateType.COUNT,
+        groupBy: ['counterpartyBeneficiaryId', 'counterpartyOriginatorId'],
+
+        direction: TransactionDirection.inbound,
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
+
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: true,
+
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
 
         amountThreshold: 2,
@@ -237,8 +279,10 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
         transactionType: [TransactionRecordType.chargeback],
         paymentMethods: [PaymentMethod.credit_card],
         amountThreshold: 14,
-        timeAmount: 7,
+
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
+
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.COUNT,
       },
@@ -246,7 +290,7 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
   },
   SHCAC_C: {
     enabled: true,
-    defaultSeverity: AlertSeverity.medium,
+    defaultSeverity: AlertSeverity.high,
     description:
       'High Cumulative Amount - Chargeback - High sum of chargebacks over a set period of time',
     inlineRule: {
@@ -256,9 +300,12 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
       options: {
         transactionType: [TransactionRecordType.chargeback],
         paymentMethods: [PaymentMethod.credit_card],
+
         amountThreshold: 5_000,
-        timeAmount: 7,
+
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
+
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.SUM,
       },
@@ -275,9 +322,12 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
       options: {
         transactionType: [TransactionRecordType.refund],
         paymentMethods: [PaymentMethod.credit_card],
+
         amountThreshold: 14,
-        timeAmount: 7,
+
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
+
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.COUNT,
       },
@@ -285,7 +335,7 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
   },
   SHCAR_C: {
     enabled: true,
-    defaultSeverity: AlertSeverity.medium,
+    defaultSeverity: AlertSeverity.high,
     description: 'High Cumulative Amount - Refund - High sum of refunds over a set period of time',
     inlineRule: {
       id: 'SHCAR_C',
@@ -295,7 +345,8 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
         transactionType: [TransactionRecordType.refund],
         paymentMethods: [PaymentMethod.credit_card],
         amountThreshold: 5_000,
-        timeAmount: 7,
+
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
         groupBy: ['counterpartyOriginatorId'],
         havingAggregate: AggregateType.SUM,
@@ -307,6 +358,10 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
     defaultSeverity: AlertSeverity.high,
     description:
       'High Percentage of Chargebacks - High percentage of chargebacks over a set period of time',
+    dedupeStrategy: {
+      mute: false,
+      cooldownTimeframeInMinutes: daysToMinutesConverter(TWENTY_ONE_DAYS),
+    },
     inlineRule: {
       id: 'HPC',
       fnName: 'evaluateHighTransactionTypePercentage',
@@ -316,8 +371,49 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
         subjectColumn: 'counterpartyOriginatorId',
         minimumCount: 3,
         minimumPercentage: 50,
-        timeAmount: 21,
+        timeAmount: TWENTY_ONE_DAYS,
+
         timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  TLHAICC: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
+    inlineRule: {
+      id: 'TLHAICC',
+      fnName: 'evaluateTransactionLimitHistoricAverageInbound',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '=',
+        },
+        minimumTransactionAmount: 100,
+        transactionFactor: 1,
+      },
+    },
+  },
+  TLHAIAPM: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
+    inlineRule: {
+      id: 'TLHAIAPM',
+      fnName: 'evaluateTransactionLimitHistoricAverageInbound',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '!=',
+        },
+        minimumTransactionAmount: 100,
+        transactionFactor: 1,
       },
     },
   },
@@ -326,6 +422,7 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
   {
     inlineRule: InlineRule & InputJsonValue;
     defaultSeverity: AlertSeverity;
+    dedupeStrategy?: TDedupeStrategy;
     monitoringType?: MonitoringType;
     enabled?: boolean;
     description?: string;
@@ -359,42 +456,47 @@ export const getAlertDefinitionCreateData = (
   {
     inlineRule,
     defaultSeverity,
-    label,
     description,
     monitoringType = MonitoringType.transaction_monitoring,
     enabled = false,
+    dedupeStrategy = ALERT_DEDUPE_STRATEGY_DEFAULT,
   }: {
-    label: string;
     inlineRule: InlineRule;
     defaultSeverity: AlertSeverity;
     monitoringType?: MonitoringType;
-    enabled?: boolean;
+    enabled: boolean;
+    dedupeStrategy?: Partial<TDedupeStrategy>;
     description?: string;
   },
   project: Project,
   createdBy: string = 'SYSTEM',
-) => ({
-  label: label,
-  type: faker.helpers.arrayElement(Object.values(AlertType)) as AlertType,
-  monitoringType: monitoringType ?? MonitoringType.transaction_monitoring,
-  name: inlineRule.id,
-  enabled: enabled ?? false,
-  description: description || faker.lorem.sentence(),
-  rulesetId: `set-${inlineRule.id}`,
-  defaultSeverity,
-  ruleId: inlineRule.id,
-  createdBy: createdBy,
-  modifiedBy: createdBy,
-  dedupeStrategy: {
-    mute: false,
-    cooldownTimeframeInMinutes: faker.datatype.number({ min: 60, max: 3600 }),
-  },
-  config: { config: {} },
-  inlineRule: inlineRule as InputJsonValue,
-  tags: [faker.helpers.arrayElement(tags), faker.helpers.arrayElement(tags)],
-  additionalInfo: {},
-  projectId: project.id,
-});
+  extraColumns: any = {},
+) => {
+  const id = inlineRule.id;
+
+  return {
+    inlineRule,
+    label: id,
+    name: id,
+    enabled,
+    defaultSeverity,
+    dedupeStrategy: {
+      ...ALERT_DEDUPE_STRATEGY_DEFAULT,
+      ...(dedupeStrategy ?? {}),
+    },
+    monitoringType: monitoringType ?? MonitoringType.transaction_monitoring,
+    rulesetId: `set-${id}`,
+    description: description,
+    ruleId: id,
+    createdBy: createdBy,
+    modifiedBy: createdBy,
+    config: { config: {} },
+    tags: [],
+    additionalInfo: {},
+    ...extraColumns,
+    projectId: project.id,
+  };
+};
 
 export const generateAlertDefinitions = async (
   prisma: PrismaClient | PrismaTransaction,
@@ -409,20 +511,36 @@ export const generateAlertDefinitions = async (
     createdBy?: string;
     project: Project;
   },
+  {
+    crossEnvKeyPrefix = undefined,
+  }: {
+    crossEnvKeyPrefix?: string;
+  } = {},
 ) =>
   Promise.all(
-    Object.entries(alertsDefConfiguration)
-      .filter(([_, alert]) => 'enabled' in alert && alert.enabled)
-      .map(([label, data]) =>
-        prisma.alertDefinition.upsert({
-          where: { label_projectId: { label: label, projectId: project.id } },
-          create: getAlertDefinitionCreateData({ label, ...data }, project, createdBy),
-          update: getAlertDefinitionCreateData({ label, ...data }, project, createdBy),
+    Object.values(alertsDefConfiguration)
+      .map(alert => ({
+        label: alert.inlineRule.id,
+        enable: false,
+        ...alert,
+      }))
+      .filter(alert => alert.enabled)
+      .map(alertDef => {
+        const extraColumns = {
+          crossEnvKey: crossEnvKeyPrefix
+            ? `${crossEnvKeyPrefix}_${alertDef.inlineRule.id}`
+            : undefined,
+        };
+
+        return prisma.alertDefinition.upsert({
+          where: { label_projectId: { label: alertDef.inlineRule.id, projectId: project.id } },
+          create: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
+          update: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
           include: {
             alert: true,
           },
-        }),
-      ),
+        });
+      }),
   );
 
 const generateFakeAlert = (
