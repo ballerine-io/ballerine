@@ -36,6 +36,7 @@ export const AltPaymentBrandNames = {
   ['American Express']: 'american express',
   ['ALIPAYHOST']: 'alipayhost',
   ['WECHAT']: 'wechathost',
+  ['GRABPAY']: 'grabpay',
   ...PaymentBrandName,
 } as const;
 
