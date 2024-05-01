@@ -5,6 +5,8 @@ import { CustomerService } from '@/customer/customer.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import type { InputJsonValue } from '@/types';
+import { EndUserService } from '@/end-user/end-user.service';
 
 @Injectable()
 export class WebhooksService {
@@ -14,6 +16,7 @@ export class WebhooksService {
     private readonly endUserRepository: EndUserRepository,
     private readonly workflowDefinitionService: WorkflowDefinitionService,
     private readonly logger: AppLoggerService,
+    private readonly endUserService: EndUserService,
   ) {}
 
   async handleIndividualAmlHit({
@@ -60,6 +63,7 @@ export class WebhooksService {
 
     if (!config?.ongoingWorkflowDefinitionId) {
       this.logger.error('No ongoing workflow definition found for project', { projectId });
+
       return;
     }
 
@@ -84,6 +88,12 @@ export class WebhooksService {
       },
       projectIds: [projectId],
       currentProjectId: projectId,
+    });
+
+    await this.endUserService.updateById(endUserId, {
+      data: {
+        amlHits: (data as { hits: unknown[] }).hits as InputJsonValue,
+      },
     });
   }
 }
