@@ -1,6 +1,9 @@
 import { amlAdapter } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
 import { IPDFRenderer } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/pdf-renderer.abstract';
-import { IndividualSanctionsPage } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage';
+import {
+  EmptyIndividualSanctionsPage,
+  IndividualSanctionsPage,
+} from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage';
 import {
   IndividualSanctionsSchema,
   TIndividualSanctionsData,
@@ -14,6 +17,8 @@ export class IndividualSantcionsPagePDF extends IPDFRenderer<TIndividualSanction
   async render(): Promise<JSX.Element> {
     const pdfData = await this.getData();
     this.isValid(pdfData);
+
+    if (this.isEmpty(pdfData)) return <EmptyIndividualSanctionsPage data={pdfData} />;
 
     return <IndividualSanctionsPage data={pdfData} />;
   }
@@ -104,5 +109,11 @@ export class IndividualSantcionsPagePDF extends IPDFRenderer<TIndividualSanction
 
   isValid(data: TIndividualSanctionsData) {
     IndividualSanctionsSchema.parse(data);
+  }
+
+  private isEmpty(data: TIndividualSanctionsData) {
+    if (!data.items?.length) return true;
+
+    return false;
   }
 }

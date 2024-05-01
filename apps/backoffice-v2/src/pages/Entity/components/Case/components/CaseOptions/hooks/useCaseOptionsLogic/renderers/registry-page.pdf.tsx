@@ -1,18 +1,20 @@
 import { IPDFRenderer } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/pdf-renderer.abstract';
-import { RegistryInformationPage } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage';
-import { TRegistryInformationData } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/registry-information.schema';
 import {
-  TTitlePageData,
-  TitlePageSchema,
-} from '@/pages/Entity/pdfs/case-information/pages/TitlePage';
+  EmptyRegistryInformationPage,
+  RegistryInformationPage,
+} from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage';
+import { TRegistryInformationData } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/registry-information.schema';
+import { TitlePageSchema } from '@/pages/Entity/pdfs/case-information/pages/TitlePage';
 import get from 'lodash/get';
 
-export class RegistryPagePDF extends IPDFRenderer<TTitlePageData> {
+export class RegistryPagePDF extends IPDFRenderer<TRegistryInformationData> {
   static PDF_NAME = 'titlePage';
 
   async render(): Promise<JSX.Element> {
     const pdfData = await this.getData();
     this.isValid(pdfData);
+
+    if (this.isEmpty(pdfData)) return <EmptyRegistryInformationPage data={pdfData} />;
 
     return <RegistryInformationPage data={pdfData} />;
   }
@@ -49,7 +51,32 @@ export class RegistryPagePDF extends IPDFRenderer<TTitlePageData> {
     return pdfData;
   }
 
-  isValid(data: TTitlePageData) {
+  isValid(data: TRegistryInformationData) {
     TitlePageSchema.parse(data);
+  }
+
+  private isEmpty(data: TRegistryInformationData) {
+    const values = [
+      data.registrationNumber,
+      data.incorporationDate,
+      data.companyType,
+      data.companyStatus,
+      data.registrationAddress,
+      data.registryPage,
+      data.lastUpdate,
+      data.registeredAt,
+    ];
+
+    if (
+      values.every(value => {
+        if (Array.isArray(value) && !value.length) return true;
+
+        return !value;
+      })
+    ) {
+      return true;
+    }
+
+    return false;
   }
 }

@@ -2,6 +2,7 @@ import { IPDFRenderer } from '@/pages/Entity/components/Case/components/CaseOpti
 import {
   CompanySanctionsPage,
   CompanySanctionsSchema,
+  EmptyCompanySanctionsPage,
   TCompanySanctionsData,
 } from '@/pages/Entity/pdfs/case-information/pages/CompanySanctionsPage';
 import get from 'lodash/get';
@@ -12,8 +13,9 @@ export class CompanySanctionsPagePDF extends IPDFRenderer<TCompanySanctionsData>
 
   async render(): Promise<JSX.Element> {
     const pdfData = await this.getData();
-    console.log({ pdfData });
     this.isValid(pdfData);
+
+    if (this.isEmpty(pdfData)) return <EmptyCompanySanctionsPage data={pdfData} />;
 
     return <CompanySanctionsPage data={pdfData} />;
   }
@@ -41,5 +43,13 @@ export class CompanySanctionsPagePDF extends IPDFRenderer<TCompanySanctionsData>
 
   isValid(data: TCompanySanctionsData) {
     CompanySanctionsSchema.parse(data);
+  }
+
+  private isEmpty(data: TCompanySanctionsData) {
+    if (!data.sanctions?.length) {
+      return true;
+    }
+
+    return false;
   }
 }

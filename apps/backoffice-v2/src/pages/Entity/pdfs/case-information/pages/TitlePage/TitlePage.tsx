@@ -30,10 +30,9 @@ export const TitlePage: FunctionComponent<ITitlePageProps> = ({ data }) => {
         {/* Company Info section --- end */}
         {/* Document information section --- start*/}
         <View style={tw('flex flex-col gap-2 items-center pb-12')}>
-          <Typography weight="bold" styles={[tw('text-[10px]')]}>
+          <Typography styles={[tw('text-[10px]')]}>
             {new Date(creationDate).toISOString()}
           </Typography>
-          <Typography styles={[tw('text-[10px]')]}>{new Date().toISOString()}</Typography>
         </View>
         {/* Document information section --- end*/}
         {/* Table of contents section --- start */}

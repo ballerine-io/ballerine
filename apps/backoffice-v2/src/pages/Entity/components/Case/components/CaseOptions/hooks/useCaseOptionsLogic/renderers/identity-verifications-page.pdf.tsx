@@ -1,5 +1,6 @@
 import { IPDFRenderer } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/pdf-renderer.abstract';
 import {
+  EmptyIdentityVerificationsPage,
   IdentityVerificationsPage,
   IdentityVerificationsSchema,
   TIdentityVerificationsData,
@@ -14,6 +15,8 @@ export class IdentityVerificationsPagePDF extends IPDFRenderer<TIdentityVerifica
   async render(): Promise<JSX.Element> {
     const pdfData = await this.getData();
     this.isValid(pdfData);
+
+    if (this.isEmpty(pdfData)) return <EmptyIdentityVerificationsPage data={pdfData} />;
 
     return <IdentityVerificationsPage data={pdfData} />;
   }
@@ -56,5 +59,11 @@ export class IdentityVerificationsPagePDF extends IPDFRenderer<TIdentityVerifica
 
   isValid(data: TIdentityVerificationsData) {
     IdentityVerificationsSchema.parse(data);
+  }
+
+  private isEmpty(data: TIdentityVerificationsData) {
+    if (!data.items?.length) return true;
+
+    return false;
   }
 }

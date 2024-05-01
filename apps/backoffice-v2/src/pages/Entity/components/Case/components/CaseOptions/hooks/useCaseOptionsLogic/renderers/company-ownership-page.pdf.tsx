@@ -2,6 +2,7 @@ import { IPDFRenderer } from '@/pages/Entity/components/Case/components/CaseOpti
 import {
   CompanyOwnershipPage,
   CompanyOwnershipSchema,
+  EmptyCompanyOwnershipPage,
   TCompanyOwnershipData,
 } from '@/pages/Entity/pdfs/case-information/pages/CompanyOwnershipPage';
 import get from 'lodash/get';
@@ -13,6 +14,8 @@ export class CompanyOwnershipPagePDF extends IPDFRenderer<TCompanyOwnershipData>
   async render(): Promise<JSX.Element> {
     const pdfData = await this.getData();
     this.isValid(pdfData);
+
+    if (this.isEmpty(pdfData)) return <EmptyCompanyOwnershipPage data={pdfData} />;
 
     return <CompanyOwnershipPage data={pdfData} />;
   }
@@ -35,5 +38,13 @@ export class CompanyOwnershipPagePDF extends IPDFRenderer<TCompanyOwnershipData>
 
   isValid(data: TCompanyOwnershipData) {
     CompanyOwnershipSchema.parse(data);
+  }
+
+  private isEmpty(data: TCompanyOwnershipData) {
+    if (!data.items?.length) {
+      return true;
+    }
+
+    return false;
   }
 }

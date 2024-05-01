@@ -21,8 +21,6 @@ export const RegistryInformationPage: FunctionComponent<IRegistryInformationPage
 
   const registryItems = createRegistryItems(data);
 
-  console.log('registryItems', registryItems);
-
   return (
     <CaseInformationPageContainer>
       <View style={tw('mb-3')}>
