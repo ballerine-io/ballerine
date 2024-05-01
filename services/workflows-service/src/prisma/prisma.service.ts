@@ -36,8 +36,11 @@ const prismaExtendedClient = (prismaClient: PrismaClient) =>
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   readonly extendedClient = prismaExtendedClient(this);
 
-  constructor(protected readonly logger: AppLoggerService) {
+  constructor(protected readonly logger: AppLoggerService, dbUrl?: string) {
+    const datasources = { db: { url: dbUrl || process.env.DB_URL } };
+
     super({
+      datasources,
       errorFormat: 'pretty',
       log: [
         {

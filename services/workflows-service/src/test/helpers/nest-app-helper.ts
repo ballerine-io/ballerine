@@ -14,6 +14,8 @@ import { AuthKeyMiddleware } from '@/common/middlewares/auth-key.middleware';
 import { CustomerModule } from '@/customer/customer.module';
 import { HttpModule } from '@nestjs/axios';
 import { ApiKeyService } from '@/customer/api-key/api-key.service';
+import { PrismaService } from '@/prisma/prisma.service';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
 export const commonTestingModules = [
   ClsModule.forRoot({
@@ -45,12 +47,19 @@ export const initiateNestApp = async (
   controllers: Type[],
   modules: Type[],
   middlewares: Array<NestMiddleware['use']> = [],
+  dbUrl?: string,
 ) => {
   const moduleRef = await Test.createTestingModule({
     providers: providers,
     controllers: controllers,
     imports: [ACLModule, ...modules, ...commonTestingModules],
-  }).compile();
+  })
+    .overrideProvider(PrismaService)
+    .useFactory({
+      factory: (logger: AppLoggerService) => new PrismaService(logger, dbUrl),
+      inject: [AppLoggerService],
+    })
+    .compile();
 
   app = moduleRef.createNestApplication();
   const middlewareInstnace = new AuthKeyMiddleware(app.get(ApiKeyService), app.get(ClsService));
