@@ -1,5 +1,6 @@
-module.exports = {
-  testEnvironment: 'node',
+import { Config } from 'jest';
+
+export default {
   testRegex: '(/__tests__/.*|(\\.|/)(unit|e2e|intg)\\.test)\\.ts$',
 
   preset: 'ts-jest',
@@ -25,4 +26,4 @@ module.exports = {
   },
   globalSetup: '<rootDir>/src/test/db-setup.ts',
   globalTeardown: '<rootDir>/src/test/db-teardown.ts',
-};
+} as Config;
