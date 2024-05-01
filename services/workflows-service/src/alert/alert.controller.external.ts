@@ -10,7 +10,7 @@ import type { AuthenticatedEntity, TProjectId } from '@/types';
 import * as common from '@nestjs/common';
 import { Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { Alert, AlertDefinition, MonitoringType, Business } from '@prisma/client';
+import { Alert, AlertDefinition, MonitoringType } from '@prisma/client';
 import * as errors from '../errors';
 import { AlertAssigneeUniqueDto, AlertUpdateResponse } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
@@ -18,7 +18,6 @@ import { FindAlertsDto, FindAlertsSchema } from './dtos/get-alerts.dto';
 import {
   BulkStatus,
   TAlertMerchantResponse,
-  TAlertResponse,
   TAlertTransactionResponse,
   TBulkAssignAlertsResponse,
 } from './types';

@@ -9,19 +9,26 @@ import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
 
 @Injectable()
 export class BusinessReportService {
-  constructor(protected readonly repository: BusinessReportRepository) {}
+  constructor(protected readonly businessReportRepository: BusinessReportRepository) {}
 
   async create<T extends Prisma.BusinessReportCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportCreateArgs>,
   ) {
-    return await this.repository.create(args);
+    return await this.businessReportRepository.create(args);
   }
 
   async findMany<T extends Prisma.BusinessReportFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportFindManyArgs>,
     projectIds: TProjectIds,
   ) {
-    return await this.repository.findMany(args, projectIds);
+    return await this.businessReportRepository.findMany(args, projectIds);
+  }
+
+  async findFirst<T extends Prisma.BusinessReportFindFirstArgs>(
+    args: Prisma.SelectSubset<T, Prisma.BusinessReportFindFirstArgs>,
+    projectIds: TProjectIds,
+  ) {
+    return await this.businessReportRepository.findFirst(args, projectIds);
   }
 
   async findManyWithFilters(
@@ -44,7 +51,7 @@ export class BusinessReportService {
       args.orderBy = toPrismaOrderByGeneric(getTransactionsParameters.orderBy);
     }
 
-    return await this.repository.findMany(
+    return await this.businessReportRepository.findMany(
       {
         ...options,
         where: {

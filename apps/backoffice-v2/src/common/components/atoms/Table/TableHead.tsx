@@ -16,4 +16,5 @@ export const TableHead = React.forwardRef<
     {children}
   </th>
 ));
+
 TableHead.displayName = 'TableHead';
