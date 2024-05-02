@@ -1,5 +1,11 @@
 # @ballerine/common
 
+## 0.9.5
+
+### Patch Changes
+
+- updated enums
+
 ## 0.9.4
 
 ### Patch Changes
