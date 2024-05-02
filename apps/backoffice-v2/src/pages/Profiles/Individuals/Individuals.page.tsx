@@ -1,5 +1,5 @@
 import { isNonEmptyArray } from '@ballerine/common';
-import { useIndividualsLogic } from '@/pages/Profiles/Individuals/hooks/useIndividualsLogic./useIndividualsLogic';
+import { useIndividualsLogic } from '@/pages/Profiles/Individuals/hooks/useIndividualsLogic/useIndividualsLogic';
 import { ProfilesTable } from '@/pages/Profiles/Individuals/components/ProfilesTable';
 import { NoProfiles } from '@/pages/Profiles/Individuals/components/NoProfiles/NoProfiles';
 import { ProfilesPagination } from '@/pages/Profiles/Individuals/components/ProfilesPagination/ProfilesPagination';

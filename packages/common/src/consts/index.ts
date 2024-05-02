@@ -20,7 +20,6 @@ export const StateTags = [
   StateTag.MANUAL_REVIEW,
   StateTag.PENDING_PROCESS,
   StateTag.COLLECTION_FLOW,
-  StateTag.RESOLVED,
   StateTag.FAILURE,
   StateTag.DATA_ENRICHMENT,
   StateTag.FLAGGED,
