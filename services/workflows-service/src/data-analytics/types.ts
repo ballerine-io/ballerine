@@ -1,4 +1,4 @@
-import { TransactionDirection, PaymentMethod, TransactionRecordType } from '@prisma/client';
+import { PaymentMethod, TransactionDirection, TransactionRecordType } from '@prisma/client';
 import { AggregateType, TIME_UNITS } from './consts';
 import { TProjectId } from '@/types';
 
@@ -91,12 +91,12 @@ export type TransactionLimitHistoricAverageOptions = {
   transactionFactor: number;
 };
 
-export type CheckRiskScoreOptions = {
+export type CheckRiskScoreContext = {
   projectId: TProjectId;
+  businessId: string;
 };
 
-export type CheckRiskScorePayload = {
-  businessId: TProjectId;
-  originalScore: number;
-  currentScore: number;
+export type CheckRiskScoreOptions = {
+  increaseRiskScorePercentage: number;
+  increaseRiskScore: number;
 };

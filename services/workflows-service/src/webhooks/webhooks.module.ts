@@ -31,6 +31,7 @@ import { WebhooksController } from '@/webhooks/webhooks.controller';
 import { WebhooksService } from '@/webhooks/webhooks.service';
 import { BusinessService } from '@/business/business.service';
 import { BusinessReportModule } from '@/business-report/business-report.module';
+import { AlertModule } from '@/alert/alert.module';
 
 @Module({
   controllers: [WebhooksController],
@@ -43,6 +44,7 @@ import { BusinessReportModule } from '@/business-report/business-report.module';
     CustomerModule,
     BusinessReportModule,
     WorkflowDefinitionModule,
+    AlertModule,
   ],
   providers: [
     WorkflowService,

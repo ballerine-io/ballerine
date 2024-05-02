@@ -1,23 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
-  InlineRule,
-  TransactionsAgainstDynamicRulesType,
-  TCustomersTransactionTypeOptions,
-  HighTransactionTypePercentage,
-  TransactionLimitHistoricAverageOptions,
+  CheckRiskScoreContext,
   CheckRiskScoreOptions,
-  CheckRiskScorePayload,
+  HighTransactionTypePercentage,
+  InlineRule,
+  TCustomersTransactionTypeOptions,
+  TransactionLimitHistoricAverageOptions,
+  TransactionsAgainstDynamicRulesType,
 } from './types';
 import { AggregateType, TIME_UNITS } from './consts';
-import { Prisma } from '@prisma/client';
+import { AlertSeverity, BusinessReportType, Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isEmpty } from 'lodash';
+import { BusinessReportService } from '@/business-report/business-report.service';
 
 @Injectable()
 export class DataAnalyticsService {
   constructor(
     protected readonly prisma: PrismaService,
+    protected readonly businessReportService: BusinessReportService,
     protected readonly logger: AppLoggerService,
   ) {}
 
@@ -46,13 +48,6 @@ export class DataAnalyticsService {
           ...inlineRule.options,
           projectId,
         });
-      case 'checkRiskScore':
-        return await this[inlineRule.fnName](
-          {
-            projectId,
-          },
-          args,
-        );
     }
 
     this.logger.error(`No evaluation function found`, {
@@ -62,17 +57,78 @@ export class DataAnalyticsService {
     throw new Error(`No evaluation function found for rule name: ${(inlineRule as InlineRule).id}`);
   }
 
-  async checkRiskScore({ projectId }: CheckRiskScoreOptions, payload: CheckRiskScorePayload) {
-    const { businessId, originalScore, currentScore } = payload;
+  async checkRiskScore(
+    { projectId, businessId }: CheckRiskScoreContext,
+    { increaseRiskScorePercentage, increaseRiskScore }: CheckRiskScoreOptions,
+  ) {
+    const { report } = await this.businessReportService.findFirst(
+      {
+        where: {
+          businessId,
+          type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
+      [projectId],
+    );
 
-    return currentScore > originalScore
-      ? [
-          {
-            businessId,
-            projectId,
-          },
-        ]
-      : [];
+    const {
+      data: {
+        summary: { riskScore: currentRiskScore },
+        previousReport: {
+          summary: { riskScore: previousRiskScore },
+        },
+      },
+    } = report as {
+      data: {
+        summary: { riskScore: number };
+        previousReport: { summary: { riskScore: number } };
+      };
+    };
+
+    if (currentRiskScore < previousRiskScore) {
+      return false;
+    }
+
+    if (increaseRiskScore > currentRiskScore - previousRiskScore) {
+      return false;
+    }
+
+    let severity: AlertSeverity = AlertSeverity.low;
+
+    const riskScorePercentage = (currentRiskScore - previousRiskScore) / previousRiskScore;
+
+    if (15 <= riskScorePercentage || currentRiskScore < 40) {
+      severity = AlertSeverity.low;
+    }
+
+    if (
+      (15 > riskScorePercentage && riskScorePercentage >= 30) ||
+      (currentRiskScore >= 40 && currentRiskScore < 55)
+    ) {
+      severity = AlertSeverity.medium;
+    }
+
+    if (
+      (30 > riskScorePercentage && riskScorePercentage >= 45) ||
+      (currentRiskScore >= 55 && currentRiskScore < 75)
+    ) {
+      severity = AlertSeverity.high;
+    }
+
+    if ((45 > riskScorePercentage && riskScorePercentage >= 60) || currentRiskScore > 75) {
+      severity = AlertSeverity.critical;
+    }
+    // only on jumping in risk type
+
+    const executionDetails = {
+      businessId: businessId,
+      severity,
+    };
+
+    this.alertService.createAlert({});
   }
 
   async evaluateTransactionsAgainstDynamicRules({

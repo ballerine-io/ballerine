@@ -144,7 +144,10 @@ export class AlertService {
     }
   }
 
-  // Specific alert check logic based on the definition
+  checkAlertForBusiness(businessId: string, alertDefinition: AlertDefinition) {
+    return this.checkAlert(alertDefinition, businessId);
+  }
+
   private async checkAlert(alertDefinition: AlertDefinition, ...args: any[]) {
     const unknownData: unknown = alertDefinition.inlineRule;
 

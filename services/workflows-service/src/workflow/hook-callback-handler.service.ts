@@ -13,6 +13,11 @@ import { BusinessReportType, Customer, WorkflowRuntimeData } from '@prisma/clien
 import fs from 'fs';
 import { get, isObject, set } from 'lodash';
 import * as tmp from 'tmp';
+import { AlertService } from '@/alert/alert.service';
+
+type TReportWithRiskScore = {
+  summary: { riskScore: number };
+};
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -21,6 +26,7 @@ export class HookCallbackHandlerService {
     protected readonly customerService: CustomerService,
     protected readonly businessReportService: BusinessReportService,
     protected readonly businessService: BusinessService,
+    protected readonly alertService: AlertService,
     private readonly logger: AppLoggerService,
   ) {}
 
@@ -104,6 +110,7 @@ export class HookCallbackHandlerService {
         projectId: currentProjectId,
         base64PDFString: base64Pdf as string,
       });
+    const reportRiskScore = (reportData as TReportWithRiskScore).summary.riskScore;
 
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
@@ -121,12 +128,14 @@ export class HookCallbackHandlerService {
         },
         businessId: business.id,
         projectId: currentProjectId,
+        riskScore: reportRiskScore,
       },
     });
 
     set(workflowRuntime.context, resultDestinationPath, { reportData });
     workflowRuntime.context.documents = documents;
 
+    this.alertService.checkAllAlerts();
     return context;
   }
 
@@ -156,12 +165,15 @@ export class HookCallbackHandlerService {
       reportId,
     } as Record<string, object | string>;
 
+    const reportRiskScore = (reportData as TReportWithRiskScore).summary.riskScore;
+
     await this.businessReportService.create({
       data: {
         type: reportType as BusinessReportType,
         report: reportContent,
         businessId: businessId,
         projectId: currentProjectId,
+        riskScore: reportRiskScore,
       },
     });
 
