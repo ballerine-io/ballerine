@@ -24,7 +24,6 @@ import {
   ALERT_DEFINITIONS,
   getAlertDefinitionCreateData,
 } from '../../scripts/alerts/generate-alerts';
-import { TExecutionDetails } from './types';
 
 describe('AlertService', () => {
   let prismaService: PrismaService;

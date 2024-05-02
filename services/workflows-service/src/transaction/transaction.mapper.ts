@@ -216,6 +216,7 @@ export class TransactionEntityMapper {
     };
 
     let brandName;
+
     if (altDto.tx_product.toLowerCase() in PaymentBrandName) {
       brandName = altDto.tx_product.toLowerCase() as PaymentBrandName;
     } else {
@@ -267,6 +268,7 @@ export class TransactionEntityMapper {
     }
 
     const errors = validateSync(Object.assign(new TransactionCreateDto(), originalDto));
+
     if (errors.length > 0) {
       throw new ValidationError(errors as any);
     } else {

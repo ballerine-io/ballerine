@@ -12,7 +12,6 @@ import {
 } from '@prisma/client';
 import {
   IsBoolean,
-  IsDate,
   IsDateString,
   IsEnum,
   IsNotEmpty,
