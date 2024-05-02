@@ -370,7 +370,14 @@ export class WorkflowRuntimeDataRepository {
           ...args,
           where: {
             ...args?.where,
-            endUserId: entityId,
+            OR: [
+              {
+                endUserId: entityId,
+              },
+              {
+                businessId: entityId,
+              },
+            ],
           },
         },
         projectIds,

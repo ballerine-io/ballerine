@@ -1,5 +1,5 @@
 import { apiClient } from '../../common/api-client/api-client';
-import { number, string, z } from 'zod';
+import { z } from 'zod';
 import { handleZodError } from '../../common/utils/handle-zod-error/handle-zod-error';
 import { Method } from '../../common/enums';
 import qs from 'qs';
@@ -10,18 +10,6 @@ import {
   Roles,
   Sanctions,
 } from '@/pages/Profiles/Individuals/components/ProfilesTable/columns';
-
-{
-  string;
-  string;
-  string;
-  string;
-  string;
-  string;
-  string;
-  number;
-  string;
-}
 
 export const IndividualProfileSchema = z.object({
   id: z.string(),
@@ -34,6 +22,7 @@ export const IndividualProfileSchema = z.object({
   alerts: z.number(),
   updatedAt: z.string().datetime(),
 });
+
 export const IndividualsProfilesSchema = z.array(IndividualProfileSchema);
 
 export type TIndividualProfile = z.infer<typeof IndividualProfileSchema>;

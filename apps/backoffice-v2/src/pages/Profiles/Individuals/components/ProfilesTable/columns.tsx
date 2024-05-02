@@ -143,6 +143,6 @@ export const columns = [
         </div>
       );
     },
-    header: 'Last Updated',
+    header: 'Last updated',
   }),
 ];
