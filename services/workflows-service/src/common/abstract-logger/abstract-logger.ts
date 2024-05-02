@@ -7,6 +7,6 @@ export abstract class IAppLogger {
   abstract info(message: string, payload: LogPayload): void;
   abstract warn(message: string, payload: LogPayload): void;
   abstract debug(message: string, payload: LogPayload): void;
-  abstract error(message: Error, payload: LogPayload): void;
+  abstract error(error: Error | string, payload: LogPayload): void;
   abstract close(): Promise<void>;
 }
