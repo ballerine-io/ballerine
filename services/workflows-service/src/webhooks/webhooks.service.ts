@@ -90,9 +90,14 @@ export class WebhooksService {
       currentProjectId: projectId,
     });
 
+    const amlHits = (data as { hits: Array<Record<PropertyKey, unknown>> }).hits.map(hit => ({
+      ...hit,
+      vendor: 'veriff',
+    }));
+
     await this.endUserService.updateById(endUserId, {
       data: {
-        amlHits: (data as { hits: unknown[] }).hits as InputJsonValue,
+        amlHits,
       },
     });
   }

@@ -20,13 +20,11 @@ const AmlHitSchema = z.object({
   matchedName: z.string(),
   countries: z.array(z.string()),
   matchTypes: z.array(z.string()),
-  listingsRelatedToMatch: z.object({
-    warnings: z.array(SourceSchema),
-    sanctions: z.array(SourceSchema),
-    fitnessProbity: z.array(SourceSchema),
-    pep: z.array(SourceSchema),
-    adverseMedia: z.array(SourceSchema),
-  }),
+  warnings: z.array(SourceSchema),
+  sanctions: z.array(SourceSchema),
+  fitnessProbity: z.array(SourceSchema),
+  pep: z.array(SourceSchema),
+  adverseMedia: z.array(SourceSchema),
 });
 
 export const EndUserAmlHitsSchema = z.array(AmlHitSchema);
