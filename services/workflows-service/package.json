@@ -16,7 +16,7 @@
     "start:watch": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "build": "nest build --path=tsconfig.build.json",
-    "test": "jest",
+    "test": "jest --runInBand",
     "test:unit": "cross-env SKIP_DB_SETUP_TEARDOWN=true jest --testRegex '.*\\.unit\\.test\\.ts$'",
     "test:integration": "jest --testRegex '.*\\.intg\\.test\\.ts$'",
     "test:e2e": "jest --testRegex '.*\\.e2e\\.test\\.ts$'",
