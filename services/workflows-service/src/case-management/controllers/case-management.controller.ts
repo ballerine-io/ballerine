@@ -19,7 +19,6 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import pluralize from 'pluralize';
 import { ApiExcludeController, ApiForbiddenResponse, ApiOkResponse } from '@nestjs/swagger';
 import { EndUserService } from '@/end-user/end-user.service';
 import { StateTag, TStateTag } from '@ballerine/common';
@@ -127,7 +126,9 @@ export class CaseManagementController {
         const alerts = await this.alertsService.getAlertsByEntityId(endUser.id, projectId);
         const getSanctions = () => {
           if (Array.isArray(endUser.amlHits) && endUser.amlHits?.length) {
-            return pluralize('match', endUser.amlHits?.length);
+            const isPlural = endUser.amlHits?.length > 1;
+
+            return `${endUser.amlHits?.length} ${isPlural ? 'matches' : 'match'}`;
           }
 
           if (Array.isArray(endUser.activeMonitorings) && endUser.activeMonitorings?.length) {
