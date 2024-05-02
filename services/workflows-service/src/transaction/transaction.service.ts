@@ -55,7 +55,7 @@ export class TransactionService {
         }
 
         response.push({
-          error: errorToLog,
+          error: error as Error,
           correlationId: transactionPayload.transactionCorrelationId,
         });
       }

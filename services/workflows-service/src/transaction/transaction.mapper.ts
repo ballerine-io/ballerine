@@ -3,6 +3,7 @@ import {
   CounterpartyInfo,
   TransactionCreateAltDto,
   TransactionCreateDto,
+  AltPaymentBrandNames,
 } from './dtos/transaction-create.dto';
 import { InputJsonValue, TProjectId } from '@/types';
 import { HttpException } from '@nestjs/common';
@@ -195,6 +196,33 @@ export class TransactionEntityMapper {
       };
     }
 
+    const tranformProductName = (brand: AltPaymentBrandNames): PaymentBrandName | undefined => {
+      switch (brand) {
+        case 'scb_paynow':
+          return 'scb_pay_now';
+        case 'china unionpay':
+          return 'china_union_pay';
+        case 'american express':
+          return 'american_express';
+        case 'alipayhost':
+          return 'alipay_host';
+        case 'wechathost':
+          return 'wechat_host';
+        case 'grabpay':
+          return 'grab_pay';
+        default:
+          return undefined;
+      }
+    };
+
+    let brandName;
+
+    if (altDto.tx_product.toLowerCase() in PaymentBrandName) {
+      brandName = altDto.tx_product.toLowerCase() as PaymentBrandName;
+    } else {
+      brandName = tranformProductName(altDto.tx_product.toLowerCase() as AltPaymentBrandNames);
+    }
+
     const date = new Date(altDto.tx_date_time);
     const originalDto: TransactionCreateDto = {
       date: date.toISOString() as any,
@@ -211,11 +239,7 @@ export class TransactionEntityMapper {
       payment: {
         channel: altDto.tx_payment_channel,
         mccCode: parseInt(altDto.tx_mcc_code || '0'),
-        brandName: (
-          altDto.counterparty_institution_name ||
-          altDto.tx_product ||
-          altDto.counterparty_type
-        ).toLowerCase() as PaymentBrandName,
+        brandName: brandName,
       },
       cardDetails: {
         cardBin: parseInt(altDto.counterparty_institution_id) || undefined,
@@ -225,13 +249,18 @@ export class TransactionEntityMapper {
       },
     };
 
-    const brand = (
-      altDto.tx_product ||
-      altDto.counterparty_institution_name ||
-      altDto.counterparty_type
-    ).toLowerCase() as PaymentBrandName;
+    const creditCardBrands: PaymentBrandName[] = [
+      'visa',
+      'mastercard',
+      'american_express',
+      'discover',
+      'jcb',
+      'diners',
+      'discover',
+      'china_union_pay',
+    ];
+    const isCreditCard = creditCardBrands.includes(brandName || '');
 
-    const isCreditCard = ['visa', 'mastercard', 'amex', 'discover', 'dci'].includes(brand);
     if (isCreditCard) {
       originalDto.payment!.method = 'credit_card';
     } else {
@@ -239,6 +268,7 @@ export class TransactionEntityMapper {
     }
 
     const errors = validateSync(Object.assign(new TransactionCreateDto(), originalDto));
+
     if (errors.length > 0) {
       throw new ValidationError(errors as any);
     } else {
@@ -252,8 +282,8 @@ export class TransactionEntityMapper {
 const altDtoToBusinessData: (altDto: TransactionCreateAltDto) => {
   address: {
     street: string;
-    postcode: string;
-    state: string;
+    postcode?: string;
+    state?: string;
     country: string;
   };
   companyName: string;

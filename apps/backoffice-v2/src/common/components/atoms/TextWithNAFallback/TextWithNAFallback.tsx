@@ -34,5 +34,6 @@ export const TextWithNAFallback: TTextWithNAFallback = forwardRef(
     );
   },
 );
+
 // @ts-ignore
 TextWithNAFallback.displayName = 'TextWithNAFallback';
