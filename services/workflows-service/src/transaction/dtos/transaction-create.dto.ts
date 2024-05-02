@@ -12,7 +12,6 @@ import {
 } from '@prisma/client';
 import {
   IsBoolean,
-  IsDate,
   IsDateString,
   IsEnum,
   IsNotEmpty,
@@ -36,6 +35,7 @@ export const AltPaymentBrandNames = {
   ['American Express']: 'american express',
   ['ALIPAYHOST']: 'alipayhost',
   ['WECHAT']: 'wechathost',
+  ['GRABPAY']: 'grabpay',
   ...PaymentBrandName,
 } as const;
 
@@ -167,9 +167,9 @@ export class TransactionCreateAltDto {
 
   @ApiProperty({ required: true })
   @Transform(({ value }) => value.toLowerCase())
-  @IsEnum(AltPaymentBrandNames)
+  @IsString()
   @IsNotEmpty()
-  tx_product!: AltPaymentBrandNames;
+  tx_product!: string;
 
   @ApiProperty({ required: false })
   @IsString()

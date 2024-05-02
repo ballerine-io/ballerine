@@ -1,4 +1,4 @@
-import { ArgumentsHost, Catch, HttpException, HttpStatus } from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import { Prisma } from '@prisma/client';
 import { PRISMA_UNIQUE_CONSTRAINT_ERROR } from '@/prisma/prisma.util';
