@@ -56,7 +56,7 @@ export class HookCallbackHandlerService {
         await this.updateEndUserWithAmlData({
           sessionId: data.id as string,
           amlHits: aml.hits,
-          withActiveMonitoring: workflowRuntime.config.ubosOngoingMonitoring ?? false,
+          withActiveMonitoring: workflowRuntime.config.hasUboOngoingMonitoring ?? false,
           endUserId: aml.endUserId,
           projectId: currentProjectId,
         });

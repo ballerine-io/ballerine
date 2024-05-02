@@ -58,7 +58,7 @@ export const ConfigSchema = z
     kybOnExitAction: z.enum(['send-event', 'redirect-to-customer-portal']).optional(),
     reportConfig: z.record(z.string(), z.unknown()).optional(),
     theme: WorkflowDefinitionConfigThemeSchema.optional(),
-    ubosOngoingMonitoring: z.boolean().optional(),
+    hasUboOngoingMonitoring: z.boolean().optional(),
   })
   .strict()
   .optional();
