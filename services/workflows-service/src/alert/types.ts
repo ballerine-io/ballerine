@@ -1,4 +1,4 @@
-import { Alert, AlertDefinition, Business, User } from '@prisma/client';
+import { Alert, AlertDefinition, Business, EndUser, User } from '@prisma/client';
 
 export type TExecutionDetails = {
   checkpoint: {
@@ -27,8 +27,8 @@ export type TAlertResponse = Alert & {
 
 export type TAlertTransactionResponse = TAlertResponse & {
   counterparty: {
-    business: Pick<Business, 'id' | 'companyName'>;
-    endUser: Pick<User, 'id' | 'firstName' | 'lastName'>;
+    business: Pick<Business, 'id' | 'companyName' | 'correlationId'>;
+    endUser: Pick<EndUser, 'id' | 'firstName' | 'lastName' | 'correlationId'>;
   };
 };
 
