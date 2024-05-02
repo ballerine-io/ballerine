@@ -13,6 +13,9 @@ import { BusinessReportType, Customer, WorkflowRuntimeData } from '@prisma/clien
 import fs from 'fs';
 import { get, isObject, set } from 'lodash';
 import * as tmp from 'tmp';
+import { EndUserService } from '@/end-user/end-user.service';
+import { z } from 'zod';
+import { EndUserActiveMonitoringsSchema } from '@/end-user/end-user.schema';
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -22,6 +25,7 @@ export class HookCallbackHandlerService {
     protected readonly businessReportService: BusinessReportService,
     protected readonly businessService: BusinessService,
     private readonly logger: AppLoggerService,
+    private readonly endUserService: EndUserService,
   ) {}
 
   async handleHookResponse({
@@ -39,12 +43,26 @@ export class HookCallbackHandlerService {
     currentProjectId: TProjectId;
   }) {
     if (processName === 'kyc-unified-api') {
-      return await this.mapCallbackDataToIndividual(
+      const context = await this.mapCallbackDataToIndividual(
         data,
         workflowRuntime,
         resultDestinationPath,
         currentProjectId,
       );
+
+      const aml = data.aml as { endUserId: string; hits: unknown[] } | undefined;
+
+      if (aml) {
+        await this.updateEndUserWithAmlData({
+          sessionId: data.id as string,
+          amlHits: aml.hits,
+          withActiveMonitoring: workflowRuntime.config.hasUboOngoingMonitoring ?? false,
+          endUserId: aml.endUserId,
+          projectId: currentProjectId,
+        });
+      }
+
+      return context;
     }
 
     if (processName === 'website-monitoring') {
@@ -430,5 +448,42 @@ export class HookCallbackHandlerService {
         current = current[path[i] as keyof typeof current];
       }
     }
+  }
+
+  private async updateEndUserWithAmlData({
+    sessionId,
+    endUserId,
+    amlHits,
+    withActiveMonitoring,
+    projectId,
+  }: {
+    sessionId: string;
+    endUserId: string;
+    amlHits: unknown[];
+    withActiveMonitoring: boolean;
+    projectId: TProjectId;
+  }) {
+    const endUser = await this.endUserService.getById(endUserId, {}, [projectId]);
+
+    return await this.endUserService.updateById(endUserId, {
+      data: {
+        amlHits: amlHits as InputJsonValue,
+        ...(withActiveMonitoring
+          ? {
+              activeMonitorings: [
+                ...(endUser.activeMonitorings as z.infer<typeof EndUserActiveMonitoringsSchema>),
+                {
+                  type: 'aml',
+                  vendor: 'veriff',
+                  monitoredUntil: new Date(
+                    new Date().setFullYear(new Date().getFullYear() + 3),
+                  ).toISOString(),
+                  sessionId,
+                },
+              ],
+            }
+          : {}),
+      },
+    });
   }
 }
