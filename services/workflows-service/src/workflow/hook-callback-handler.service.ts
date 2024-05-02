@@ -50,15 +50,17 @@ export class HookCallbackHandlerService {
         currentProjectId,
       );
 
-      const aml = data.aml as { endUserId: string; hits: unknown[] };
+      const aml = data.aml as { endUserId: string; hits: unknown[] } | undefined;
 
-      await this.updateEndUserWithAmlData({
-        sessionId: data.id as string,
-        amlHits: aml.hits,
-        withActiveMonitoring: workflowRuntime.config.ubosOngoingMonitoring ?? false,
-        endUserId: aml.endUserId,
-        projectId: currentProjectId,
-      });
+      if (aml) {
+        await this.updateEndUserWithAmlData({
+          sessionId: data.id as string,
+          amlHits: aml.hits,
+          withActiveMonitoring: workflowRuntime.config.ubosOngoingMonitoring ?? false,
+          endUserId: aml.endUserId,
+          projectId: currentProjectId,
+        });
+      }
 
       return context;
     }
