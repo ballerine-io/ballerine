@@ -83,22 +83,24 @@ export const columns = [
     },
     header: 'Name',
   }),
-  columnHelper.accessor('business', {
+  columnHelper.accessor('businesses', {
     cell: info => {
-      const business = info.getValue();
+      const businesses = info.getValue();
 
-      return <TextWithNAFallback className={`w-[40ch] break-words`}>{business}</TextWithNAFallback>;
+      return (
+        <TextWithNAFallback className={`w-[40ch] break-words`}>{businesses}</TextWithNAFallback>
+      );
     },
-    header: 'Business',
+    header: 'Businesses',
   }),
-  columnHelper.accessor('role', {
-    cell: info => {
-      const role = info.getValue();
-
-      return <TextWithNAFallback>{titleCase(role ?? '')}</TextWithNAFallback>;
-    },
-    header: 'Role',
-  }),
+  // columnHelper.accessor('role', {
+  //   cell: info => {
+  //     const role = info.getValue();
+  //
+  //     return <TextWithNAFallback>{titleCase(role ?? '')}</TextWithNAFallback>;
+  //   },
+  //   header: 'Role',
+  // }),
   columnHelper.accessor('kyc', {
     cell: info => {
       const kyc = info.getValue();

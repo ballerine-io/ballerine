@@ -51,6 +51,7 @@ export const useProfilesTableLogic = ({ data }: { data: TIndividualsProfiles }) 
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     enableSortingRemoval: false,
+    enableSorting: false,
     manualSorting: true,
     sortDescFirst: true,
     state: {

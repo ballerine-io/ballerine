@@ -1,6 +1,5 @@
 import { Search } from '@/pages/TransactionMonitoringAlerts/components/Search';
 import React, { ComponentProps, FunctionComponent } from 'react';
-import { ProfilesFilters } from '@/pages/Profiles/Individuals/components/ProfilesFilters';
 
 export const ProfilesHeader: FunctionComponent<{
   search: ComponentProps<typeof Search>['value'];
@@ -11,7 +10,7 @@ export const ProfilesHeader: FunctionComponent<{
       <div className="flex gap-6">
         {/*  Uncomment when search is implemented server-side */}
         {/*<Search value={search} onChange={onSearch} />*/}
-        <ProfilesFilters />
+        {/*<ProfilesFilters />*/}
       </div>
     </div>
   );

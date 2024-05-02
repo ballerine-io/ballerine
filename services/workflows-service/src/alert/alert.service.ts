@@ -329,4 +329,15 @@ export class AlertService {
 
     return alertDefinitions.map(({ label }) => label);
   }
+
+  async getAlertsByEntityId(entityId: string, projectId: string) {
+    return this.alertRepository.findMany(
+      {
+        where: {
+          counterpartyId: entityId,
+        },
+      },
+      [projectId],
+    );
+  }
 }

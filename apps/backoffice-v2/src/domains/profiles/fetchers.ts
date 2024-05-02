@@ -27,7 +27,7 @@ export const IndividualProfileSchema = z.object({
   id: z.string(),
   createdAt: z.string(),
   name: z.string(),
-  business: z.string().optional(),
+  businesses: z.string().optional(),
   role: z.enum(Roles),
   kyc: z.enum(KYCs).or(z.undefined()),
   sanctions: z.enum(Sanctions),

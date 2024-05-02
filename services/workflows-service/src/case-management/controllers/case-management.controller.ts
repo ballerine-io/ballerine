@@ -8,10 +8,24 @@ import { UserData } from '@/user/user-data.decorator';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowRunDto } from '@/workflow/dtos/workflow-run';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { Body, Controller, ForbiddenException, Get, HttpCode, Param, Post } from '@nestjs/common';
+import * as common from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  ForbiddenException,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiExcludeController, ApiForbiddenResponse, ApiOkResponse } from '@nestjs/swagger';
 import { EndUserService } from '@/end-user/end-user.service';
 import { StateTag, TStateTag } from '@ballerine/common';
+import { AlertService } from '@/alert/alert.service';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
+import { ListIndividualsProfilesSchema } from '@/case-management/dtos/list-individuals-profiles.dto';
+import { z } from 'zod';
 
 @Controller('case-management')
 @ApiExcludeController()
@@ -23,6 +37,7 @@ export class CaseManagementController {
     protected readonly logger: AppLoggerService,
     protected readonly transactionService: TransactionService,
     protected readonly endUserService: EndUserService,
+    protected readonly alertsService: AlertService,
   ) {}
 
   @Get('workflow-definition/:workflowDefinitionId')
@@ -58,7 +73,11 @@ export class CaseManagementController {
   }
 
   @Get('profiles/individuals')
-  async listIndividualsProfiles(@CurrentProject() projectId: TProjectId) {
+  @common.UsePipes(new ZodValidationPipe(ListIndividualsProfilesSchema, 'query'))
+  async listIndividualsProfiles(
+    @CurrentProject() projectId: TProjectId,
+    @Query() searchQueryParams: z.infer<typeof ListIndividualsProfilesSchema>,
+  ) {
     const endUsers = await this.endUserService.list(
       {
         select: {
@@ -73,6 +92,8 @@ export class CaseManagementController {
           },
           updatedAt: true,
         },
+        take: searchQueryParams.page.size,
+        skip: (searchQueryParams.page.number - 1) * searchQueryParams.page.size,
       },
       [projectId],
     );
@@ -101,16 +122,17 @@ export class CaseManagementController {
         const tag = (workflowRuntimeData?.tags as string[])?.find(
           tag => !!tagToKyc[tag as keyof typeof tagToKyc],
         );
+        const alerts = await this.alertsService.getAlertsByEntityId(endUser.id, projectId);
 
         return {
           id: endUser.id,
           createdAt: endUser.createdAt,
           name: `${endUser.firstName} ${endUser.lastName}`,
-          business: endUser.businesses?.map(business => business.companyName).join(', '),
+          businesses: endUser.businesses?.map(business => business.companyName).join(', '),
           role: 'UBO',
           kyc: tagToKyc[tag as keyof typeof tagToKyc],
-          sanctions: 'MONITORED',
-          alerts: 0,
+          sanctions: 'NOT_MONITORED',
+          alerts: alerts?.length ?? 0,
           updatedAt: endUser.updatedAt,
         };
       }),

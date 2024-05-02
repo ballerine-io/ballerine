@@ -11,7 +11,6 @@ import { flexRender } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
 import { ctw } from '@/common/utils/ctw/ctw';
 import React, { FunctionComponent } from 'react';
-import { Link } from 'react-router-dom';
 import { IProfilesTableProps } from '@/pages/Profiles/Individuals/components/ProfilesTable/interfaces';
 import { useProfilesTableLogic } from '@/pages/Profiles/Individuals/components/ProfilesTable/hooks/useProfiesTableLogic/useProfiesTableLogic';
 
@@ -29,16 +28,22 @@ export const ProfilesTable: FunctionComponent<IProfilesTableProps> = ({ data }) 
                   {headers.map(header => (
                     <TableHead
                       key={header.id}
-                      className={`sticky top-0 z-10 h-[34px] bg-white p-0 text-[14px] font-bold text-[#787981]`}
+                      className={`sticky top-0 z-10 h-[34px] bg-white p-1 text-[14px] font-bold text-[#787981]`}
                     >
-                      {header.column.id === 'select' && (
-                        <span className={'pe-4'}>
+                      {(header.column.id === 'select' || !header.column.getCanSort()) && (
+                        <span
+                          className={ctw({
+                            'pe-4': header.column.id === 'select',
+                            'flex h-9 flex-row items-center px-3 text-left text-[#A3A3A3]':
+                              header.column.id !== 'select',
+                          })}
+                        >
                           {flexRender(header.column.columnDef.header, header.getContext())}
                         </span>
                       )}
-                      {header.column.id !== 'select' && (
+                      {header.column.id !== 'select' && header.column.getCanSort() && (
                         <button
-                          className="flex h-9 flex-row items-center gap-x-2 px-3 text-[#A3A3A3]"
+                          className="flex h-9 flex-row items-center gap-x-2 px-3 text-left text-[#A3A3A3]"
                           onClick={() => header.column.toggleSorting()}
                         >
                           <span>
@@ -69,12 +74,12 @@ export const ProfilesTable: FunctionComponent<IProfilesTableProps> = ({ data }) 
 
                     return (
                       <TableCell key={cell.id} className={`p-0`}>
-                        <Link
-                          to={`/${locale}/profiles/individuals/${itemId}${search}`}
+                        <span
+                          // to={`/${locale}/profiles/individuals/${itemId}${search}`}
                           className={`d-full flex p-4`}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </Link>
+                        </span>
                       </TableCell>
                     );
                   })}
