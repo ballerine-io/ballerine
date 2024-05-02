@@ -19,6 +19,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import pluralize from 'pluralize';
 import { ApiExcludeController, ApiForbiddenResponse, ApiOkResponse } from '@nestjs/swagger';
 import { EndUserService } from '@/end-user/end-user.service';
 import { StateTag, TStateTag } from '@ballerine/common';
@@ -90,6 +91,7 @@ export class CaseManagementController {
               companyName: true,
             },
           },
+          amlHits: true,
           updatedAt: true,
         },
         take: searchQueryParams.page.size,
@@ -123,6 +125,18 @@ export class CaseManagementController {
           tag => !!tagToKyc[tag as keyof typeof tagToKyc],
         );
         const alerts = await this.alertsService.getAlertsByEntityId(endUser.id, projectId);
+        const getSanctions = () => {
+          if (Array.isArray(endUser.amlHits) && endUser.amlHits?.length) {
+            return pluralize('match', endUser.amlHits?.length);
+          }
+
+          if (Array.isArray(endUser.activeMonitorings) && endUser.activeMonitorings?.length) {
+            return 'MONITORED';
+          }
+
+          return 'NOT_MONITORED';
+        };
+        const sanctions = getSanctions();
 
         return {
           id: endUser.id,
@@ -131,7 +145,7 @@ export class CaseManagementController {
           businesses: endUser.businesses?.map(business => business.companyName).join(', '),
           role: 'UBO',
           kyc: tagToKyc[tag as keyof typeof tagToKyc],
-          sanctions: 'NOT_MONITORED',
+          sanctions,
           alerts: alerts?.length ?? 0,
           updatedAt: endUser.updatedAt,
         };

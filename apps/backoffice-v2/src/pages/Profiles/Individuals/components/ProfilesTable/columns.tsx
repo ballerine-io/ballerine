@@ -113,7 +113,11 @@ export const columns = [
     cell: info => {
       const sanctions = info.getValue();
 
-      return <TextWithNAFallback>{titleCase(sanctions ?? '')}</TextWithNAFallback>;
+      return (
+        <TextWithNAFallback className={`font-semibold`}>
+          {titleCase(sanctions ?? '')}
+        </TextWithNAFallback>
+      );
     },
     header: 'Sanctions',
   }),

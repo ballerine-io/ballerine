@@ -1,10 +1,6 @@
 import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
 import { z } from 'zod';
-import {
-  KYCs,
-  Roles,
-  Sanctions,
-} from '@/pages/Profiles/Individuals/components/ProfilesTable/columns';
+import { KYCs, Roles } from '@/pages/Profiles/Individuals/components/ProfilesTable/columns';
 import { TIndividualProfile } from '@/domains/profiles/fetchers';
 
 export const ProfilesSearchSchema = BaseSearchSchema.extend({
@@ -13,7 +9,7 @@ export const ProfilesSearchSchema = BaseSearchSchema.extend({
       'id',
       'createdAt',
       'name',
-      'business',
+      'businesses',
       'role',
       'kyc',
       'sanctions',
@@ -25,7 +21,7 @@ export const ProfilesSearchSchema = BaseSearchSchema.extend({
     .object({
       role: z.array(z.enum(Roles)).optional(),
       kyc: z.array(z.enum(KYCs)).optional(),
-      sanctions: z.array(z.enum(Sanctions)).optional(),
+      sanctions: z.array(z.string()).optional(),
     })
     .catch({
       role: [],

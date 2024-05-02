@@ -5,11 +5,7 @@ import { Method } from '../../common/enums';
 import qs from 'qs';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { env } from '@/common/env/env';
-import {
-  KYCs,
-  Roles,
-  Sanctions,
-} from '@/pages/Profiles/Individuals/components/ProfilesTable/columns';
+import { KYCs, Roles } from '@/pages/Profiles/Individuals/components/ProfilesTable/columns';
 
 export const IndividualProfileSchema = z.object({
   id: z.string(),
@@ -18,7 +14,7 @@ export const IndividualProfileSchema = z.object({
   businesses: z.string().optional(),
   role: z.enum(Roles),
   kyc: z.enum(KYCs).or(z.undefined()),
-  sanctions: z.enum(Sanctions),
+  sanctions: z.string(),
   alerts: z.number(),
   updatedAt: z.string().datetime(),
 });

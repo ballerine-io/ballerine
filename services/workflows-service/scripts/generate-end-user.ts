@@ -1,6 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { Prisma } from '@prisma/client';
 import { StateTag } from '@ballerine/common';
+import { z } from 'zod';
+import { EndUserAmlHitsSchema } from '@/end-user/end-user.schema';
 
 export const endUserIds = [
   'ckkt3qnv40001qxtt7nmj9r2r',
@@ -193,6 +195,63 @@ export const generateEndUser = ({
     phone,
     dateOfBirth,
     avatarUrl,
+    ...(Math.random() > 0.5 && {
+      activeMonitorings: [
+        {
+          type: 'aml',
+          vendor: 'veriff',
+          monitoredUntil: new Date(
+            new Date().setFullYear(new Date().getFullYear() + 3),
+          ).toISOString(),
+          sessionId: faker.datatype.uuid(),
+        },
+      ],
+      amlHits: Array.from(
+        { length: faker.datatype.number({ min: 0, max: 3 }) },
+        () =>
+          ({
+            vendor: 'veriff',
+            matchedName: faker.name.fullName(),
+            countries: [faker.address.country()],
+            warnings: [
+              {
+                date: faker.date.recent(2).toISOString(),
+                sourceName: faker.company.name(),
+                sourceUrl: faker.internet.url(),
+              },
+            ],
+            sanctions: [
+              {
+                date: faker.date.recent(2).toISOString(),
+                sourceUrl: faker.internet.url(),
+                sourceName: faker.company.name(),
+              },
+            ],
+            fitnessProbity: [
+              {
+                date: faker.date.recent(2).toISOString(),
+                sourceName: faker.company.name(),
+                sourceUrl: faker.internet.url(),
+              },
+            ],
+            pep: [
+              {
+                date: faker.date.recent(2).toISOString(),
+                sourceUrl: faker.internet.url(),
+                sourceName: faker.company.name(),
+              },
+            ],
+            adverseMedia: [
+              {
+                date: faker.date.recent(2).toISOString(),
+                sourceName: faker.company.name(),
+                sourceUrl: faker.internet.url(),
+              },
+            ],
+            matchTypes: ['PEP'],
+          } satisfies z.infer<typeof EndUserAmlHitsSchema>[number]),
+      ),
+    }),
     project: { connect: { id: projectId } },
     ...(connectBusinesses && {
       businesses: {
