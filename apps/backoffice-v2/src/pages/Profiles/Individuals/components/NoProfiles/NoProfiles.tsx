@@ -14,7 +14,7 @@ export const NoProfiles: FunctionComponent = () => {
 
           <div className="text-sm leading-[20px]">
             <p className="font-[400]">
-              It looks like there aren&apos;t any profiles in your queue right now.
+              It looks like there aren&apos;t any profiles in your system right now.
             </p>
 
             <div className="mt-[20px] flex flex-col">
