@@ -124,7 +124,7 @@ export class UserControllerInternal {
     try {
       sgMail.setApiKey(env.SENDGRID_API_KEY);
       await sgMail.send(message);
-    } catch (error: Error | any) {
+    } catch (error: unknown) {
       this.logger.error(`Error Sending mail with Sendgrid: ${error}`);
     }
 
