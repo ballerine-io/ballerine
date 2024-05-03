@@ -1,5 +1,5 @@
 import React, { FunctionComponent, useEffect } from 'react';
-import { NavLink, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { t } from 'i18next';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { UserAvatar } from '@/common/components/atoms/UserAvatar/UserAvatar';
@@ -17,7 +17,7 @@ export const Home: FunctionComponent = () => {
   const locale = useLocale();
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { dateRange, handleDateRangeChange } = useHomeLogic();
+  const { handleDateRangeChange, from, to } = useHomeLogic();
 
   useEffect(() => {
     if (pathname !== `/${locale}` && pathname !== `/${locale}/home`) {
@@ -42,11 +42,12 @@ export const Home: FunctionComponent = () => {
           </h3>
         </div>
         <DateRangePicker
-          onChange={range => handleDateRangeChange(range)}
+          onChange={handleDateRangeChange}
           value={{
-            start: dateRange.from ? new Date(dateRange.from) : null,
-            end: dateRange.to ? new Date(dateRange.to) : null,
+            start: from ? new Date(from) : null,
+            end: to ? new Date(to) : null,
           }}
+          className={'<div>'}
         />
       </div>
       <div>
