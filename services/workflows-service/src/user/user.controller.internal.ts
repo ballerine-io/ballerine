@@ -114,7 +114,7 @@ export class UserControllerInternal {
       </body>`,
     };
 
-    if (!env.SENDGRID_API_KEY) {
+    if (!process.env.EMAIL_API_TOKEN) {
       this.logger.warn('SendGrid API key not provided. Email will not be not send ');
       this.logger.log('Email:', message);
 
@@ -122,7 +122,7 @@ export class UserControllerInternal {
     }
 
     try {
-      sgMail.setApiKey(env.SENDGRID_API_KEY);
+      sgMail.setApiKey(process.env.EMAIL_API_TOKEN);
       await sgMail.send(message);
     } catch (error: unknown) {
       this.logger.error(`Error Sending mail with Sendgrid: ${error}`);

@@ -47,10 +47,6 @@ export const env = createEnv({
     SENTRY_DSN: z.string().nullable().optional(),
     RELEASE: z.string().nullable().optional(),
     ADMIN_API_KEY: z.string().optional(),
-    SENDGRID_API_KEY: z
-      .string()
-      .optional()
-      .describe('API Key for Sendgrid , without api key email will be logged on console'),
     MAIL_ADAPTER: z
       .enum(['sendgrid', 'log'])
       .default('sendgrid')
