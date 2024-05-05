@@ -61,6 +61,7 @@
     "@nestjs/serve-static": "3.0.1",
     "@nestjs/testing": "^9.3.12",
     "@prisma/client": "4.16.2",
+    "@sendgrid/mail": "^8.1.3",
     "@sentry/cli": "^2.17.5",
     "@sentry/integrations": "^7.52.1",
     "@sentry/node": "^7.52.1",
