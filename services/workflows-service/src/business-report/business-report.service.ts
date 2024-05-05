@@ -22,9 +22,19 @@ export class BusinessReportService {
 
   async upsert<T extends Prisma.BusinessReportUpsertArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportUpsertArgs>,
-    projectIds: TProjectIds,
+    projectIds: NonNullable<TProjectIds>,
   ) {
-    return await this.businessReportRepository.upsert(args, projectIds);
+    if (!args.where.id) {
+      return await this.businessReportRepository.create({ data: args.create });
+    }
+
+    return await this.businessReportRepository.updateMany({
+      where: {
+        id: args.where.id,
+        project: { id: { in: projectIds } },
+      },
+      data: args.update,
+    });
   }
 
   async findFirst<T extends Prisma.BusinessReportFindFirstArgs>(
