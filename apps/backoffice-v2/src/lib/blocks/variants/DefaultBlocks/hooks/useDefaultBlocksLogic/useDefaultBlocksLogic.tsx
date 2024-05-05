@@ -34,7 +34,7 @@ import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvided
 import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
 import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
 import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/useCaseBlocks';
-import { useWebsiteMonitoringBlocks } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringBlocks/useWebsiteMonitoringBlocks';
+import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/useWebsiteMonitoringReportBlock';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
@@ -42,7 +42,7 @@ import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirecto
 import { Send } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
-import { useCurrentCase } from '@/pages/Entity/hooks/useCurrentCase/useCurrentCase';
+import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
 import { DEFAULT_PROCESS_TRACKER_PROCESSES } from '@/common/components/molecules/ProcessTracker/constants';
 
@@ -55,7 +55,7 @@ const pluginsOutputBlacklist = [
 ] as const;
 
 export const useDefaultBlocksLogic = () => {
-  const { data: workflow, isLoading } = useCurrentCase();
+  const { data: workflow, isLoading } = useCurrentCaseQuery();
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
   const { noAction } = useCaseDecision();
@@ -368,7 +368,7 @@ export const useDefaultBlocksLogic = () => {
     kybChildWorkflows ?? [],
   );
 
-  const websiteMonitoringBlocks = useWebsiteMonitoringBlocks();
+  const websiteMonitoringBlocks = useWebsiteMonitoringReportBlock();
   const documentReviewBlocks = useDocumentReviewBlocks();
   const businessInformationBlocks = useKYCBusinessInformationBlock();
 
@@ -436,7 +436,7 @@ export const useDefaultBlocksLogic = () => {
     setActiveTab,
   } = useCaseBlocks({
     workflow,
-    config: workflow!.workflowDefinition?.config,
+    config: workflow?.workflowDefinition?.config,
     blocks: allBlocks,
     onReuploadNeeded,
     isLoadingReuploadNeeded,

@@ -103,7 +103,9 @@ export const useKycBlock = ({
     }
 
     return kycSessionKeys.map(
-      key => kycSessionKeys[key]?.result?.vendorResult?.aml ?? kycSessionKeys[key]?.result?.aml,
+      key =>
+        childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ??
+        childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml,
     );
   }, [kycSessionKeys]);
 

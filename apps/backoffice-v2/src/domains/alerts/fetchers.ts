@@ -34,18 +34,6 @@ export const AlertStatuses = [
   AlertStatus.COMPLETED,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof AlertStatus>>;
 
-export const AlertType = {
-  HIGH_RISK_TRANSACTION: 'high_risk_transaction',
-  DORMANT_ACCOUNT_ACTIVITY: 'dormant_account_activity',
-  UNUSUAL_PATTERN: 'unusual_pattern',
-} as const;
-
-export const AlertTypes = [
-  AlertType.HIGH_RISK_TRANSACTION,
-  AlertType.DORMANT_ACCOUNT_ACTIVITY,
-  AlertType.UNUSUAL_PATTERN,
-] as const satisfies ReadonlyArray<TObjectValues<typeof AlertType>>;
-
 export const AlertState = {
   TRIGGERED: 'triggered',
   UNDER_REVIEW: 'under_review',
@@ -80,10 +68,6 @@ export type TAlertSeverity = (typeof AlertSeverities)[number];
 
 export type TAlertSeverities = typeof AlertSeverities;
 
-export type TAlertType = (typeof AlertTypes)[number];
-
-export type TAlertTypes = typeof AlertTypes;
-
 export type TAlertState = (typeof AlertStates)[number];
 
 export type TAlertStates = typeof AlertStates;
@@ -92,7 +76,11 @@ export const AlertsListSchema = z.array(
   ObjectWithIdSchema.extend({
     dataTimestamp: z.string().datetime(),
     updatedAt: z.string().datetime(),
-    subject: ObjectWithIdSchema.extend({ name: z.string() }),
+    subject: ObjectWithIdSchema.extend({
+      name: z.string(),
+      correlationId: z.string(),
+      type: z.enum(['business', 'counterparty']),
+    }),
     severity: z.enum(AlertSeverities),
     label: z.string(),
     alertDetails: z.string(),
