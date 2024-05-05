@@ -134,6 +134,7 @@ export class HookCallbackHandlerService {
         projectId: currentProjectId,
         base64PDFString: base64Pdf as string,
       });
+
     const reportRiskScore = (reportData as TReportWithRiskScore).summary.riskScore;
 
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
@@ -142,11 +143,12 @@ export class HookCallbackHandlerService {
 
     if (!business) throw new BadRequestException('Business not found.');
 
+    const currentReportId = reportId as string;
     const existantBusinessReport = await this.businessReportService.findFirst(
       {
         where: {
           businessId: business.id,
-          reportId: reportId as string,
+          reportId: currentReportId,
         },
       },
       [currentProjectId],
@@ -161,7 +163,7 @@ export class HookCallbackHandlerService {
             reportFileId: pdfReportBallerineFileId,
             data: reportData as InputJsonValue,
           },
-          reportId: reportId as string,
+          reportId: currentReportId,
           businessId: business.id,
           projectId: currentProjectId,
         },
@@ -183,7 +185,14 @@ export class HookCallbackHandlerService {
     set(workflowRuntime.context, resultDestinationPath, { reportData });
     workflowRuntime.context.documents = documents;
 
-    this.alertService.checkAllAlerts();
+    this.alertService.checkOngoingMonitoringAlert(
+      {
+        businessId: business.id,
+        projectId: currentProjectId,
+        reportId: currentReportId,
+      },
+      {},
+    );
     return context;
   }
 
