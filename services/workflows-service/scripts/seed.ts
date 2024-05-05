@@ -1,4 +1,4 @@
-import { hashKey } from './../src/customer/api-key/utils';
+import { hashKey } from '../src/customer/api-key/utils';
 import { faker } from '@faker-js/faker';
 import { Business, Customer, EndUser, Prisma, PrismaClient, Project } from '@prisma/client';
 import { hash } from 'bcrypt';

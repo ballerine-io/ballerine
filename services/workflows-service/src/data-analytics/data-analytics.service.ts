@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
-  CheckRiskScoreContext,
   CheckRiskScoreOptions,
+  CheckRiskScoreSubject,
   HighTransactionTypePercentage,
   InlineRule,
   TCustomersTransactionTypeOptions,
@@ -57,8 +57,8 @@ export class DataAnalyticsService {
     throw new Error(`No evaluation function found for rule name: ${(inlineRule as InlineRule).id}`);
   }
 
-  async checkRiskScore(
-    { projectId, businessId }: CheckRiskScoreContext,
+  async checkMerchantOngoingAlert(
+    { projectId, businessId }: CheckRiskScoreSubject,
     { increaseRiskScorePercentage, increaseRiskScore }: CheckRiskScoreOptions,
   ) {
     const { report } = await this.businessReportService.findFirst(
@@ -89,11 +89,11 @@ export class DataAnalyticsService {
     };
 
     if (currentRiskScore < previousRiskScore) {
-      return false;
+      return;
     }
 
     if (increaseRiskScore > currentRiskScore - previousRiskScore) {
-      return false;
+      return;
     }
 
     let severity: AlertSeverity = AlertSeverity.low;
@@ -118,17 +118,24 @@ export class DataAnalyticsService {
       severity = AlertSeverity.high;
     }
 
-    if ((45 > riskScorePercentage && riskScorePercentage >= 60) || currentRiskScore > 75) {
+    if ((30 > riskScorePercentage && riskScorePercentage >= 60) || currentRiskScore > 75) {
       severity = AlertSeverity.critical;
     }
-    // only on jumping in risk type
+
+    if ((previousRiskScore < 90 && previousRiskScore > 60) || currentRiskScore > 90) {
+      severity = AlertSeverity.critical;
+    }
 
     const executionDetails = {
       businessId: businessId,
+      projectId: projectId,
       severity,
+      riskScore: currentRiskScore,
+      previousRiskScore,
+      alertReason: 'The risk score has been significantly increased from previous monitoring',
     };
 
-    this.alertService.createAlert({});
+    return executionDetails;
   }
 
   async evaluateTransactionsAgainstDynamicRules({

@@ -10,9 +10,9 @@ import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
-import { InlineRule } from '@/data-analytics/types';
+import { CheckRiskScoreOptions, CheckRiskScoreSubject, InlineRule } from '@/data-analytics/types';
 import _ from 'lodash';
-import { AlertExecutionStatus } from './consts';
+import { AlertExecutionStatus, MerchantAlertLabel } from './consts';
 import { computeHash } from '@/common/utils/sign/sign';
 import { TDedupeStrategy, TExecutionDetails } from './types';
 
@@ -144,8 +144,42 @@ export class AlertService {
     }
   }
 
-  checkAlertForBusiness(businessId: string, alertDefinition: AlertDefinition) {
-    return this.checkAlert(alertDefinition, businessId);
+  async checkOngoingMonitoringAlert(
+    checkRiskScoreSubject: CheckRiskScoreSubject,
+    businessCompanyName: string,
+  ) {
+    const alertDefinition = await this.alertDefinitionRepository.findFirst(
+      {
+        where: {
+          enabled: true,
+          monitoringType: MonitoringType.ongoing_merchant_monitoring,
+          projectId: checkRiskScoreSubject.projectId,
+          label: MerchantAlertLabel.MERCHANT_ONGOING_RISK_ALERT,
+        },
+      },
+      [checkRiskScoreSubject.projectId],
+    );
+
+    const alertResultData = await this.dataAnalyticsService.checkMerchantOngoingAlert(
+      checkRiskScoreSubject,
+      (alertDefinition.inlineRule as InlineRule).options as CheckRiskScoreOptions,
+    );
+
+    if (alertResultData) {
+      const subjectArray = Object.entries(checkRiskScoreSubject).map(([key, value]) => ({
+        [key]: value,
+      }));
+
+      await this.createAlert(
+        alertDefinition,
+        subjectArray,
+        { subjectArray },
+        {
+          ...alertResultData,
+          businessCompanyName,
+        },
+      );
+    }
   }
 
   private async checkAlert(alertDefinition: AlertDefinition, ...args: any[]) {
@@ -237,6 +271,7 @@ export class AlertService {
     alertDef: AlertDefinition,
     subject: Array<{ [key: string]: unknown }>,
     executionRow: Record<string, unknown>,
+    additionalInfo?: Record<string, unknown>,
   ): Promise<Alert> {
     return this.alertRepository.create({
       data: {
@@ -246,6 +281,7 @@ export class AlertService {
         dataTimestamp: new Date(),
         state: AlertState.triggered,
         status: AlertStatus.new,
+        ...(additionalInfo ? { additionalInfo } : {}),
         executionDetails: {
           checkpoint: {
             hash: computeHash(executionRow),

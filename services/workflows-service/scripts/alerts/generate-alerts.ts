@@ -1,4 +1,3 @@
-import { businessIds } from './../generate-end-user';
 import { InlineRule } from '@/data-analytics/types';
 import {
   AlertSeverity,
@@ -18,9 +17,11 @@ import { InputJsonValue, PrismaTransaction } from '@/types';
 import { TDedupeStrategy } from '@/alert/types';
 import {
   ALERT_DEDUPE_STRATEGY_DEFAULT,
-  SEVEN_DAYS,
-  TWENTY_ONE_DAYS,
   daysToMinutesConverter,
+  MerchantAlertLabel,
+  SEVEN_DAYS,
+  TransactionAlertLabel,
+  TWENTY_ONE_DAYS,
 } from '@/alert/consts';
 
 const tags = [
@@ -418,7 +419,7 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
     },
   },
 } as const satisfies Record<
-  string,
+  Partial<keyof typeof TransactionAlertLabel>,
   {
     inlineRule: InlineRule & InputJsonValue;
     defaultSeverity: AlertSeverity;
@@ -430,20 +431,23 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
 >;
 
 export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
-  MRCNT_RISK: {
+  MERCHANT_ONGOING_RISK: {
     enabled: true,
     defaultSeverity: AlertSeverity.high,
     monitoringType: MonitoringType.ongoing_merchant_monitoring,
     description: '',
     inlineRule: {
-      id: 'MRCNT_RISK',
-      fnName: 'checkRiskScore',
+      id: 'MERCHANT_ONGOING_RISK',
+      fnName: 'checkMerchantOngoingAlert',
       subjects: ['businessId', 'projectId'],
-      options: {},
+      options: {
+        increaseRiskScorePercentage: 50,
+        increaseRiskScore: 60,
+      },
     },
   },
 } as const satisfies Record<
-  string,
+  keyof typeof MerchantAlertLabel,
   {
     inlineRule: InlineRule & InputJsonValue;
     monitoringType: MonitoringType;
