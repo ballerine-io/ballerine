@@ -17,6 +17,17 @@ export class BusinessReportRepository {
     return await this.prisma.businessReport.create(args);
   }
 
+  async update<T extends Prisma.BusinessReportUpdateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.BusinessReportUpdateArgs>,
+  ) {
+    return await this.prisma.businessReport.update(args);
+  }
+  async updateMany<T extends Prisma.BusinessReportUpdateManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.BusinessReportUpdateManyArgs>,
+  ) {
+    return await this.prisma.businessReport.updateMany(args);
+  }
+
   async findMany<T extends Prisma.BusinessReportFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportFindManyArgs>,
     projectIds: TProjectIds,
@@ -33,5 +44,13 @@ export class BusinessReportRepository {
     return await this.prisma.businessReport.findFirstOrThrow(
       this.scopeService.scopeFindFirst(args, projectIds),
     );
+  }
+  async upsert<T extends Prisma.BusinessReportUpsertArgs>(
+    args: Prisma.SelectSubset<T, Prisma.BusinessReportUpsertArgs>,
+    projectIds: TProjectIds,
+  ) {
+    args.where = { ...args.where, project: { id: { in: projectIds } } };
+
+    return await this.prisma.businessReport.upsert(args);
   }
 }

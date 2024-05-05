@@ -14,6 +14,9 @@ import fs from 'fs';
 import { get, isObject, set } from 'lodash';
 import * as tmp from 'tmp';
 import { AlertService } from '@/alert/alert.service';
+import { EndUserService } from '@/end-user/end-user.service';
+import { z } from 'zod';
+import { EndUserActiveMonitoringsSchema } from '@/end-user/end-user.schema';
 
 type TReportWithRiskScore = {
   summary: { riskScore: number };
@@ -28,6 +31,7 @@ export class HookCallbackHandlerService {
     protected readonly businessService: BusinessService,
     protected readonly alertService: AlertService,
     private readonly logger: AppLoggerService,
+    private readonly endUserService: EndUserService,
   ) {}
 
   async handleHookResponse({
@@ -45,12 +49,26 @@ export class HookCallbackHandlerService {
     currentProjectId: TProjectId;
   }) {
     if (processName === 'kyc-unified-api') {
-      return await this.mapCallbackDataToIndividual(
+      const context = await this.mapCallbackDataToIndividual(
         data,
         workflowRuntime,
         resultDestinationPath,
         currentProjectId,
       );
+
+      const aml = data.aml as { endUserId: string; hits: unknown[] } | undefined;
+
+      if (aml) {
+        await this.updateEndUserWithAmlData({
+          sessionId: data.id as string,
+          amlHits: aml.hits,
+          withActiveMonitoring: workflowRuntime.config.hasUboOngoingMonitoring ?? false,
+          endUserId: aml.endUserId,
+          projectId: currentProjectId,
+        });
+      }
+
+      return context;
     }
 
     if (processName === 'website-monitoring') {
@@ -64,7 +82,13 @@ export class HookCallbackHandlerService {
 
     if (processName === 'merchant-audit-report') {
       return await this.prepareMerchantAuditReportContext(
-        data,
+        data as {
+          reportData: Record<string, unknown>;
+          base64Pdf: string;
+          reportId: string;
+          reportType: string;
+          comparedToReportId?: string;
+        },
         workflowRuntime,
         resultDestinationPath,
         currentProjectId,
@@ -118,19 +142,43 @@ export class HookCallbackHandlerService {
 
     if (!business) throw new BadRequestException('Business not found.');
 
-    await this.businessReportService.create({
-      data: {
-        type: reportType as BusinessReportType,
-        report: {
-          reportFileId: pdfReportBallerineFileId,
-          data: reportData as InputJsonValue,
+    const existantBusinessReport = await this.businessReportService.findFirst(
+      {
+        where: {
+          businessId: business.id,
           reportId: reportId as string,
         },
-        businessId: business.id,
-        projectId: currentProjectId,
-        riskScore: reportRiskScore,
       },
-    });
+      [currentProjectId],
+    );
+
+    await this.businessReportService.upsert(
+      {
+        create: {
+          type: reportType as BusinessReportType,
+          reportRiskScore: reportRiskScore,
+          report: {
+            reportFileId: pdfReportBallerineFileId,
+            data: reportData as InputJsonValue,
+          },
+          reportId: reportId as string,
+          businessId: business.id,
+          projectId: currentProjectId,
+        },
+        update: {
+          type: reportType as BusinessReportType,
+          report: {
+            reportRiskScore: reportRiskScore,
+            reportFileId: pdfReportBallerineFileId,
+            data: reportData as InputJsonValue,
+          },
+        },
+        where: {
+          id: existantBusinessReport?.id,
+        },
+      },
+      [currentProjectId],
+    );
 
     set(workflowRuntime.context, resultDestinationPath, { reportData });
     workflowRuntime.context.documents = documents;
@@ -140,17 +188,48 @@ export class HookCallbackHandlerService {
   }
 
   async prepareMerchantAuditReportContext(
-    data: AnyRecord,
+    data: Record<string, unknown>,
     workflowRuntime: WorkflowRuntimeData,
     resultDestinationPath: string,
     currentProjectId: TProjectId,
   ) {
-    const { reportData, base64Pdf, reportId, reportType } = data;
+    const { reportData, base64Pdf, reportId, reportType, comparedToReportId } = z
+      .object({
+        reportData: z.record(z.string(), z.unknown()),
+        base64Pdf: z.string(),
+        reportId: z.string(),
+        reportType: z.string(),
+        comparedToReportId: z.string().optional(),
+      })
+      .parse(data);
+
     const { context } = workflowRuntime;
 
     const businessId = context.entity.id as string;
 
     const customer = await this.customerService.getByProjectId(currentProjectId);
+
+    if (comparedToReportId) {
+      const comparedToReport = await this.businessReportService.findFirst(
+        {
+          where: {
+            businessId,
+            reportId: comparedToReportId,
+          },
+        },
+        [currentProjectId],
+      );
+
+      if (!comparedToReport) {
+        throw new BadRequestException('Compared to report not found.');
+      }
+
+      reportData.previousReport = {
+        summary: (comparedToReport.report as { data: { summary: { summary: unknown } } }).data
+          .summary,
+        reportType: comparedToReport.type,
+      };
+    }
 
     const { pdfReportBallerineFileId } = await this.__peristPDFReportDocumentWithWorkflowDocuments({
       context,
@@ -172,6 +251,7 @@ export class HookCallbackHandlerService {
         type: reportType as BusinessReportType,
         report: reportContent,
         businessId: businessId,
+        reportId: reportId as string,
         projectId: currentProjectId,
         riskScore: reportRiskScore,
       },
@@ -390,7 +470,7 @@ export class HookCallbackHandlerService {
     const documentImages: AnyRecord[] = [];
 
     for (const image of data.images as Array<{ context?: string; content: string }>) {
-      const tmpFile = tmp.fileSync().name;
+      const tmpFile = tmp.fileSync({ keep: false }).name;
       const base64ImageContent = image.content.split(',')[1];
       const buffer = Buffer.from(base64ImageContent as string, 'base64');
       const fileType = await getFileMetadata({
@@ -442,5 +522,42 @@ export class HookCallbackHandlerService {
         current = current[path[i] as keyof typeof current];
       }
     }
+  }
+
+  private async updateEndUserWithAmlData({
+    sessionId,
+    endUserId,
+    amlHits,
+    withActiveMonitoring,
+    projectId,
+  }: {
+    sessionId: string;
+    endUserId: string;
+    amlHits: unknown[];
+    withActiveMonitoring: boolean;
+    projectId: TProjectId;
+  }) {
+    const endUser = await this.endUserService.getById(endUserId, {}, [projectId]);
+
+    return await this.endUserService.updateById(endUserId, {
+      data: {
+        amlHits: amlHits as InputJsonValue,
+        ...(withActiveMonitoring
+          ? {
+              activeMonitorings: [
+                ...(endUser.activeMonitorings as z.infer<typeof EndUserActiveMonitoringsSchema>),
+                {
+                  type: 'aml',
+                  vendor: 'veriff',
+                  monitoredUntil: new Date(
+                    new Date().setFullYear(new Date().getFullYear() + 3),
+                  ).toISOString(),
+                  sessionId,
+                },
+              ],
+            }
+          : {}),
+      },
+    });
   }
 }
