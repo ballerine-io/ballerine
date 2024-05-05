@@ -4,6 +4,9 @@ import { AuthenticatedLayout } from '@/domains/auth/components/AuthenticatedLayo
 import { authenticatedLayoutLoader } from '@/domains/auth/components/AuthenticatedLayout/AuthenticatedLayout.loader';
 import { UnauthenticatedLayout } from '@/domains/auth/components/UnauthenticatedLayout';
 import { unauthenticatedLayoutLoader } from '@/domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
+import { Businesses } from '@/pages/Businesses/Businesses';
+import { BusinessesAlerts } from '@/pages/BusinessesAlerts/BusinessesAlerts.page';
+import { BusinessesAlertsAnalysisPage } from '@/pages/BusinessesAlertsAnalysis/BusinessesAlertsAnalysis.page';
 import { CaseManagement } from '@/pages/CaseManagement/CaseManagement.page';
 import { Document } from '@/pages/Document/Document.page';
 import { entitiesLoader } from '@/pages/Entities/Entities.loader';
@@ -20,9 +23,8 @@ import { Root } from '@/pages/Root/Root.page';
 import { SignIn } from '@/pages/SignIn/SignIn.page';
 import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
 import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
-import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
 import { FunctionComponent } from 'react';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 const router = createBrowserRouter([
   {
@@ -102,7 +104,26 @@ const router = createBrowserRouter([
                     children: [
                       {
                         path: '/:locale/transaction-monitoring/alerts/:alertId',
-                        element: <TransactionMonitoringAlertsAnalysisPage />,
+                        element: <TransactionMonitoringAlerts />,
+                        errorElement: <RouteError />,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                path: '/:locale/businesses',
+                element: <Businesses />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/businesses/alerts',
+                    element: <BusinessesAlerts />,
+                    errorElement: <RouteError />,
+                    children: [
+                      {
+                        path: '/:locale/businesses/alerts/:alertId',
+                        element: <BusinessesAlertsAnalysisPage />,
                         errorElement: <RouteError />,
                       },
                     ],

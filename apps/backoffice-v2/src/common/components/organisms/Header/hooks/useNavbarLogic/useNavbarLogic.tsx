@@ -28,12 +28,11 @@ export const useNavbarLogic = () => {
           key: `nav-item-${id}`,
         })) ?? []),
         {
-          text: 'Ongoing Monitoring',
-          href: `/en/ongoing-monitoring/alerts`,
-          key: 'nav-item-alerts',
+          text: 'Ongoing Moniotring',
+          href: `/en/businesses/alerts`,
+          key: 'nav-item-business-alerts',
         },
       ],
-
       key: 'nav-item-businesses',
     },
     {
