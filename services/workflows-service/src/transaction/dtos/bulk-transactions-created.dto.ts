@@ -15,3 +15,14 @@ export class BulkTransactionsCreatedDto {
   @Type(() => TransactionCreatedDto)
   data!: TransactionCreatedDto;
 }
+
+export class BulkTransactionsCreatedAltDto {
+  @ApiProperty({ required: true, enum: BulkStatus }) @IsEnum(BulkStatus) status!: typeof BulkStatus;
+
+  @ApiProperty({ required: false }) @Optional() @IsString() @IsNotEmpty() error?: string;
+
+  @ApiProperty({ type: TransactionCreatedDto })
+  @ValidateNested()
+  @Type(() => TransactionCreatedDto)
+  data!: TransactionCreatedDto;
+}

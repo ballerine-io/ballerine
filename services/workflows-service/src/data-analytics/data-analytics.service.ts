@@ -5,6 +5,7 @@ import {
   TransactionsAgainstDynamicRulesType,
   TCustomersTransactionTypeOptions,
   HighTransactionTypePercentage,
+  TransactionLimitHistoricAverageOptions,
 } from './types';
 import { AggregateType, TIME_UNITS } from './consts';
 import { Prisma } from '@prisma/client';
@@ -33,6 +34,12 @@ export class DataAnalyticsService {
         });
 
       case 'evaluateCustomersTransactionType':
+        return await this[inlineRule.fnName]({
+          ...inlineRule.options,
+          projectId,
+        });
+
+      case 'evaluateTransactionLimitHistoricAverageInbound':
         return await this[inlineRule.fnName]({
           ...inlineRule.options,
           projectId,
@@ -93,10 +100,12 @@ export class DataAnalyticsService {
 
     if (excludedCounterparty) {
       (excludedCounterparty.counterpartyBeneficiaryIds || []).forEach(id =>
+        // @TODO: Check against correlationId
         conditions.push(Prisma.sql`"counterpartyBeneficiaryId" NOT LIKE ${id}`),
       );
 
       (excludedCounterparty.counterpartyOriginatorIds || []).forEach(id =>
+        // @TODO: Check against correlationId
         conditions.push(Prisma.sql`"counterpartyOriginatorId" NOT LIKE ${id}`),
       );
     }
@@ -186,9 +195,7 @@ export class DataAnalyticsService {
         SELECT
           "${Prisma.raw(subjectColumn)}",
           COUNT(*) AS "transactionCount",
-          COUNT(*) FILTER (WHERE "transactionType" = '${Prisma.raw(
-            transactionType,
-          )}') AS "filteredTransactionCount"
+          COUNT(*) FILTER (WHERE "transactionType"::text = ${Prisma.sql`${transactionType}`}) AS "filteredTransactionCount"
         FROM
           "TransactionRecord"
         WHERE
@@ -206,6 +213,53 @@ export class DataAnalyticsService {
       WHERE
         "filteredTransactionCount" >= ${minimumCount}
         AND "filteredTransactionCount"::decimal / "transactionCount"::decimal * 100 >= ${minimumPercentage}
+    `);
+  }
+
+  async evaluateTransactionLimitHistoricAverageInbound({
+    projectId,
+    transactionDirection,
+    paymentMethod,
+    minimumCount,
+    minimumTransactionAmount,
+    transactionFactor,
+  }: TransactionLimitHistoricAverageOptions) {
+    if (!['=', '!='].includes(paymentMethod.operator)) {
+      throw new Error('Invalid operator');
+    }
+
+    return await this._executeQuery<Array<{ counterpartyId: string }>>(Prisma.sql`
+      WITH transactionsData AS (
+        SELECT
+          "counterpartyBeneficiaryId" ,
+          count(*) AS count,
+          avg("transactionBaseAmount") AS avg
+        FROM
+          "TransactionRecord" tr
+        WHERE
+          "transactionDirection"::text = ${transactionDirection}
+          AND "paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${paymentMethod.value}
+          AND "projectId" = ${projectId}
+        GROUP BY
+          "counterpartyBeneficiaryId"
+      )
+      SELECT
+        tr."counterpartyBeneficiaryId" as "counterpartyId"
+      FROM
+        "TransactionRecord" tr
+      JOIN transactionsData td ON
+        tr."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
+        AND td.count > ${minimumCount}
+      WHERE
+        tr."transactionDirection"::text = ${transactionDirection}
+        AND "projectId" = ${projectId}
+        AND "paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${paymentMethod.value}
+        AND "transactionBaseAmount" > ${minimumTransactionAmount}
+        AND "transactionBaseAmount" > (
+          ${transactionFactor} * avg
+        )
+      GROUP BY
+        tr."counterpartyBeneficiaryId"
     `);
   }
 

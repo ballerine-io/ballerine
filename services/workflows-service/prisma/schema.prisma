@@ -63,15 +63,17 @@ model EndUser {
   approvalState ApprovalState @default(NEW)
   stateReason   String?       @db.VarChar
 
-  firstName      String    @db.VarChar
-  lastName       String    @db.VarChar
-  email          String?   @db.Text
-  phone          String?   @db.VarChar
-  country        String?   @db.VarChar
-  dateOfBirth    DateTime?
-  avatarUrl      String?
-  nationalId     String?   @db.VarChar
-  additionalInfo Json?
+  firstName         String    @db.VarChar
+  lastName          String    @db.VarChar
+  email             String?   @db.Text
+  phone             String?   @db.VarChar
+  country           String?   @db.VarChar
+  dateOfBirth       DateTime?
+  avatarUrl         String?
+  nationalId        String?   @db.VarChar
+  additionalInfo    Json?
+  activeMonitorings Json      @default("[]")
+  amlHits           Json      @default("[]")
 
   workflowRuntimeData WorkflowRuntimeData[]
 
@@ -139,9 +141,9 @@ model Business {
   endUsers             EndUser[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
-  projectId    String
-  project      Project        @relation(fields: [projectId], references: [id])
-  Counterparty Counterparty[]
+  projectId       String
+  project         Project          @relation(fields: [projectId], references: [id])
+  Counterparty    Counterparty[]
   businessReports BusinessReport[]
 
   @@unique([projectId, correlationId])
@@ -310,35 +312,35 @@ model Customer {
   language                    String?
   websiteUrl                  String?
   subscriptions               Json?
-  features                    Json?   // Features enabled for the customer
+  features                    Json? // Features enabled for the customer
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   projects Project[]
-  apiKeys                  ApiKey[]
+  apiKeys  ApiKey[]
 
   @@index(name)
   @@index(customerStatus)
 }
 
 model ApiKey {
-  id           String @id @default(cuid())
+  id String @id @default(cuid())
 
-  customerId    String    
+  customerId String
 
-  hashedKey    String
-  
-  validUntil   DateTime?
+  hashedKey String
+
+  validUntil DateTime?
 
   additionalInfo Json?
-  rotationInfo Json?
+  rotationInfo   Json?
 
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  deletedAt    DateTime?
-  
-  customer   Customer @relation(fields: [customerId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  customer Customer @relation(fields: [customerId], references: [id])
 
   @@unique([hashedKey])
 }
@@ -365,6 +367,7 @@ model Project {
   Alert                    Alert[]
   Counterparty             Counterparty[]
   BusinessReport           BusinessReport[]
+
   @@unique([name, customerId])
   @@index(name)
   @@index(customerId)
@@ -413,6 +416,8 @@ model UiDefinition {
   uiSchema      Json // JSON schmea of how to render UI
   schemaOptions Json? // Document Schemas, rejectionReasons: {}, documenTypes: {}, documenCateogries: {}
   uiOptions     Json? // how the view will look, overall
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
 
   projectId          String
   project            Project            @relation(fields: [projectId], references: [id])
@@ -462,6 +467,7 @@ enum DataSyncStatus {
 enum DataSyncTables {
   WorkflowDefinition
   UiDefinition
+  AlertDefinition
 }
 
 model DataSync {
@@ -524,7 +530,7 @@ enum PaymentMethod {
   pay_pal
   apple_pay
   google_pay
-  apn
+  apm
 }
 
 enum PaymentType {
@@ -532,14 +538,6 @@ enum PaymentType {
   scheduled
   recurring
   refund
-}
-
-enum PaymentChannel {
-  online
-  mobile_app
-  in_store
-  telephone
-  mail_order
 }
 
 enum PaymentIssuer {
@@ -573,7 +571,11 @@ enum PaymentProcessor {
 enum PaymentBrandName {
   visa
   mastercard
-  dci // diners club international
+  diners
+  jcb
+  discover
+  china_union_pay // China UnionPay
+  american_express // American Express
   scb_pay_now
   ocbc_pay_now
   atome
@@ -613,11 +615,12 @@ model TransactionRecord {
   paymentBrandName PaymentBrandName?
   paymentMethod    PaymentMethod?
   paymentType      PaymentType?
-  paymentChannel   PaymentChannel?
+  paymentChannel   String?
   paymentIssuer    PaymentIssuer?
   paymentGateway   PaymentGateway?
   paymentAcquirer  PaymentAcquirer?
   paymentProcessor PaymentProcessor?
+  paymentMccCode   Int?
 
   cardFingerprint   String?
   cardIssuedCountry String?
@@ -704,18 +707,12 @@ enum AlertStatus {
   completed @map("300")
 }
 
-enum AlertType {
-  high_risk_transaction
-  dormant_account_activity
-  unusual_pattern
-}
-
 model AlertDefinition {
-  id          String     @id @default(cuid())
+  id          String  @id @default(cuid())
+  crossEnvKey String? @unique
   label       String
-  type        AlertType?
   name        String
-  enabled     Boolean    @default(true)
+  enabled     Boolean @default(true)
   description String?
 
   projectId String
@@ -831,18 +828,18 @@ model Counterparty {
 }
 
 model BusinessReport {
-  id         String   @id @default(cuid())
-  type       BusinessReportType
-  report     Json
+  id     String             @id @default(cuid())
+  type   BusinessReportType
+  report Json
 
   businessId String
   projectId  String
 
-  business   Business @relation(fields: [businessId], references: [id])
-  project    Project @relation(fields: [projectId], references: [id])
+  business Business @relation(fields: [businessId], references: [id])
+  project  Project  @relation(fields: [projectId], references: [id])
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([createdAt])
   @@index([businessId])

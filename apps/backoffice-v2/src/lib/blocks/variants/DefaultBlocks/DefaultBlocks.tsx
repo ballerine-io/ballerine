@@ -9,7 +9,7 @@ export const DefaultBlocks = () => {
   const { blocks, tabs, activeTab, setActiveTab } = useDefaultBlocksLogic();
 
   return (
-    <div className="relative flex flex-col">
+    <div className="relative flex h-full flex-col">
       {!!tabs.length && (
         <div className="mb-12">
           <div className="fixed z-[50] mt-[-8px] h-12 w-full bg-white pb-10 pt-2">
@@ -25,7 +25,7 @@ export const DefaultBlocks = () => {
           </div>
         </div>
       )}
-      <div className="flex flex-col gap-4">
+      <div className="flex h-full flex-col gap-4">
         <BlocksComponent blocks={blocks} cells={cells}>
           {(Cell, cell) => <Cell {...cell} />}
         </BlocksComponent>

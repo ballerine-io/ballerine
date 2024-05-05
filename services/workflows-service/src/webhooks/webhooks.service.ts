@@ -4,6 +4,9 @@ import { EndUserRepository } from '@/end-user/end-user.repository';
 import { CustomerService } from '@/customer/customer.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowService } from '@/workflow/workflow.service';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import type { InputJsonValue } from '@/types';
+import { EndUserService } from '@/end-user/end-user.service';
 
 @Injectable()
 export class WebhooksService {
@@ -12,10 +15,18 @@ export class WebhooksService {
     private readonly workflowService: WorkflowService,
     private readonly endUserRepository: EndUserRepository,
     private readonly workflowDefinitionService: WorkflowDefinitionService,
+    private readonly logger: AppLoggerService,
+    private readonly endUserService: EndUserService,
   ) {}
 
-  async handleIndividualAmlHit({ entityId, data }: IndividualAmlWebhookInput) {
-    const { projectId, ...rest } = await this.endUserRepository.findByIdUnscoped(entityId, {
+  async handleIndividualAmlHit({
+    endUserId,
+    data,
+  }: {
+    endUserId: string;
+    data: IndividualAmlWebhookInput['data'];
+  }) {
+    const { projectId, ...rest } = await this.endUserRepository.findByIdUnscoped(endUserId, {
       select: {
         approvalState: true,
         stateReason: true,
@@ -51,6 +62,8 @@ export class WebhooksService {
     });
 
     if (!config?.ongoingWorkflowDefinitionId) {
+      this.logger.error('No ongoing workflow definition found for project', { projectId });
+
       return;
     }
 
@@ -68,14 +81,24 @@ export class WebhooksService {
             ...rest,
             additionalInfo: rest.additionalInfo ?? {},
           },
-          id: entityId,
-          ballerineEntityId: entityId,
+          ballerineEntityId: endUserId,
           type: 'individual',
         },
         documents: [],
       },
       projectIds: [projectId],
       currentProjectId: projectId,
+    });
+
+    const amlHits = (data as { hits: Array<Record<PropertyKey, unknown>> }).hits.map(hit => ({
+      ...hit,
+      vendor: 'veriff',
+    }));
+
+    await this.endUserService.updateById(endUserId, {
+      data: {
+        amlHits,
+      },
     });
   }
 }

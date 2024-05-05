@@ -5,7 +5,7 @@ import { FiltersInput } from '@/common/components/organisms/Filters/Filters.inpu
 import { IFilterDefinition, IFilterValue } from '@/common/components/organisms/Filters/interfaces';
 import { TFiltersInputID } from '@/common/components/organisms/Filters/types';
 import { useFilter } from '@/common/hooks/useFilter/useFilter';
-import { AlertStatuses, AlertTypes } from '@/domains/alerts/fetchers';
+import { AlertStatuses } from '@/domains/alerts/fetchers';
 import { TUsers } from '@/domains/users/types';
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import { titleCase } from 'string-ts';
@@ -23,14 +23,7 @@ export const AlertsFilters: FunctionComponent<{
       })) ?? [],
     [authenticatedUserId, assignees],
   );
-  const alertTypeOptions = useMemo(
-    () =>
-      AlertTypes?.map(alertType => ({
-        label: titleCase(alertType),
-        value: alertType,
-      })) ?? [],
-    [],
-  );
+
   const statusOptions = useMemo(
     () =>
       AlertStatuses?.map(status => ({
@@ -56,14 +49,6 @@ export const AlertsFilters: FunctionComponent<{
         },
       },
       {
-        id: 'alertType',
-        label: 'Alert Type',
-        type: 'multi-select',
-        params: {
-          options: alertTypeOptions,
-        },
-      },
-      {
         id: 'status',
         label: 'Status',
         type: 'multi-select',
@@ -83,7 +68,7 @@ export const AlertsFilters: FunctionComponent<{
         },
       },
     ],
-    [assigneeOptions, alertTypeOptions, labels, statusOptions],
+    [assigneeOptions, labels, statusOptions],
   );
   console.log('filters', filters);
   const { filter, onFilter } = useFilter();

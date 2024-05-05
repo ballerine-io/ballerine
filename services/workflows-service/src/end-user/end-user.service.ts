@@ -4,6 +4,7 @@ import { EndUserCreateDto } from '@/end-user/dtos/end-user-create';
 import type { TProjectId, TProjectIds } from '@/types';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { Business, EndUser, Prisma } from '@prisma/client';
+import { EndUserActiveMonitoringsSchema, EndUserAmlHitsSchema } from '@/end-user/end-user.schema';
 
 @Injectable()
 export class EndUserService {
@@ -78,6 +79,25 @@ export class EndUserService {
   }
 
   async updateById(id: string, endUser: Omit<Prisma.EndUserUpdateArgs, 'where'>) {
-    return await this.repository.updateById(id, endUser);
+    let activeMonitorings;
+
+    if (endUser.data.activeMonitorings !== undefined) {
+      activeMonitorings = EndUserActiveMonitoringsSchema.parse(endUser.data.activeMonitorings);
+    }
+
+    let amlHits;
+
+    if (endUser.data.amlHits !== undefined) {
+      amlHits = EndUserAmlHitsSchema.parse(endUser.data.amlHits);
+    }
+
+    return await this.repository.updateById(id, {
+      ...endUser,
+      data: {
+        ...endUser.data,
+        activeMonitorings,
+        amlHits,
+      },
+    });
   }
 }

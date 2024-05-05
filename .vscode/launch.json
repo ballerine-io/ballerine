@@ -29,6 +29,16 @@
       "args": ["run", "${relativeFile}"],
       "smartStep": true,
       "console": "integratedTerminal"
+    },
+    {
+      "name": "Attach Remote WF-Service",
+      "port": 9229,
+      "request": "attach",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "localRoot": "${workspaceFolder}/services/workflows-service",
+      "remoteRoot": "/app",
+      "sourceMaps": true
     }
   ]
 }
