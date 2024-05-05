@@ -6,12 +6,9 @@ import { HomeSearchSchema } from '@/pages/Home/home-search-schema';
 export const useHomeLogic = () => {
   const [searchParams, setSearchParams] = useZodSearchParams(HomeSearchSchema);
 
-  const handleDateRangeChange: ComponentProps<typeof DateRangePicker>['onChange'] = (range: {
-    start: { toISOString: () => string };
-    end: { toISOString: () => string };
-  }) => {
-    const from = range?.start?.toISOString() || '';
-    const to = range?.end?.toISOString() || '';
+  const handleDateRangeChange: ComponentProps<typeof DateRangePicker>['onChange'] = range => {
+    const from = range?.from?.toISOString() || '';
+    const to = range?.to?.toISOString() || '';
 
     setSearchParams({ from, to });
   };
