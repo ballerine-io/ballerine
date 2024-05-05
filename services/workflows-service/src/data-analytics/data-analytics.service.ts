@@ -288,44 +288,45 @@ export class DataAnalyticsService {
   }
 
   async evaluateDormantAccount({ projectId }: { projectId: string }) {
-    const _V1: Prisma.Sql = Prisma.sql`SELECT
-    "totalTrunsactionAllTime"."businessId",
-    "totalTrunsactionAllTime"."totalTrunsactionAllTime",
-    "totalTransactionWithinSixMonths"."totalTransactionWithinSixMonths"
-  FROM
-    (
-        SELECT
-            "tr"."businessId",
-            COUNT(tr."id") AS "totalTrunsactionAllTime"
-        FROM
-            "TransactionRecord" AS "tr"
-        WHERE
-          tr."projectId" = '${projectId}'
-          AND tr."businessId" IS NOT NULL
-        GROUP BY
-            tr."businessId"
-        HAVING COUNT(tr."id") > 1
-    ) AS "totalTrunsactionAllTime"
-  JOIN
-    (
-        SELECT
-            "tr"."businessId",
-            COUNT("tr"."id") AS "totalTransactionWithinSixMonths"
-        FROM
-            "TransactionRecord" AS "tr"
-        WHERE
-            tr."projectId" = '${projectId}'
-            AND tr."businessId" IS NOT NULL
-            AND "transactionDate" >= CURRENT_DATE - INTERVAL '180 days'
-        GROUP BY
-            tr."businessId"
-        HAVING COUNT(tr."id") = 1
-    ) AS "totalTransactionWithinSixMonths"
-  ON "totalTrunsactionAllTime"."businessId" = "totalTransactionWithinSixMonths"."businessId";`;
+    //   const _V1: Prisma.Sql = Prisma.sql`SELECT
+    //   "totalTrunsactionAllTime"."businessId",
+    //   "totalTrunsactionAllTime"."totalTrunsactionAllTime",
+    //   "totalTransactionWithinSixMonths"."totalTransactionWithinSixMonths"
+    // FROM
+    //   (
+    //       SELECT
+    //           "tr"."businessId",
+    //           COUNT(tr."id") AS "totalTrunsactionAllTime"
+    //       FROM
+    //           "TransactionRecord" AS "tr"
+    //       WHERE
+    //         tr."projectId" = '${projectId}'
+    //         AND tr."businessId" IS NOT NULL
+    //       GROUP BY
+    //           tr."businessId"
+    //       HAVING COUNT(tr."id") > 1
+    //   ) AS "totalTrunsactionAllTime"
+    // JOIN
+    //   (
+    //       SELECT
+    //           "tr"."businessId",
+    //           COUNT("tr"."id") AS "totalTransactionWithinSixMonths"
+    //       FROM
+    //           "TransactionRecord" AS "tr"
+    //       WHERE
+    //           tr."projectId" = '${projectId}'
+    //           AND tr."businessId" IS NOT NULL
+    //           AND "transactionDate" >= CURRENT_DATE - INTERVAL '180 days'
+    //       GROUP BY
+    //           tr."businessId"
+    //       HAVING COUNT(tr."id") = 1
+    //   ) AS "totalTransactionWithinSixMonths"
+    // ON "totalTrunsactionAllTime"."businessId" = "totalTransactionWithinSixMonths"."businessId";`;
 
     const query: Prisma.Sql = Prisma.sql`
-    SELECT
-    tr."businessId",
+
+  SELECT
+    tr."counterpartyBeneficiaryId" as "counterpartyId"
     COUNT(
       CASE WHEN tr."transactionDate" >= CURRENT_DATE - INTERVAL '1 days' THEN
         tr."id"
@@ -335,9 +336,11 @@ export class DataAnalyticsService {
     "TransactionRecord" AS "tr"
   WHERE
     tr."projectId" = '${projectId}'
-    AND tr."businessId" IS NOT NULL
+    JOIN "transactionsData" "td" ON
+      tr."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
+    AND tr."counterpartyBeneficiaryId" IS NOT NULL
   GROUP BY
-    tr."businessId"
+    tr."counterpartyBeneficiaryId" as counterpartyId
   HAVING
     COUNT(
       CASE WHEN tr."transactionDate" >= CURRENT_DATE - INTERVAL '1 days' THEN
