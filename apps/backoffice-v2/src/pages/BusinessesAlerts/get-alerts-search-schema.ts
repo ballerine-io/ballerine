@@ -1,7 +1,7 @@
 import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
-import { z } from 'zod';
-import { AlertStatus, AlertStatuses, AlertTypes, TAlertsList } from '@/domains/alerts/fetchers';
+import { AlertStatus, AlertStatuses, TAlertsList } from '@/domains/alerts/fetchers';
 import { BooleanishSchema } from '@/lib/zod/utils/checkers';
+import { z } from 'zod';
 
 export const getAlertsSearchSchema = (authenticatedUserId: string | null) =>
   BaseSearchSchema.extend({
@@ -15,7 +15,6 @@ export const getAlertsSearchSchema = (authenticatedUserId: string | null) =>
         assigneeId: z.array(z.string().nullable()).catch([]),
         status: z.array(z.enum(AlertStatuses)).catch([AlertStatus.NEW]),
         state: z.array(z.string().nullable()).catch([]),
-        alertType: z.array(z.enum(AlertTypes)).catch([]),
         label: z.array(z.string()).catch([]),
       })
       .catch({

@@ -15,8 +15,6 @@ import { entityLoader } from '@/pages/Entity/Entity.loader';
 import { Entity } from '@/pages/Entity/Entity.page';
 import { Locale } from '@/pages/Locale/Locale.page';
 import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
-import { OngoingMonitoring } from '@/pages/OngoingMonitoring/OngoingMonitoring';
-import { OngoingMonitoringAlertsPage } from '@/pages/OngoingMonitoringAlerts/OngoingMonitoringAlerts.page';
 import { RootError } from '@/pages/Root/Root.error';
 import { rootLoader } from '@/pages/Root/Root.loader';
 import { Root } from '@/pages/Root/Root.page';
@@ -127,18 +125,6 @@ const router = createBrowserRouter([
                         errorElement: <RouteError />,
                       },
                     ],
-                  },
-                ],
-              },
-              {
-                path: '/:locale/ongoing-monitoring',
-                element: <OngoingMonitoring />,
-                errorElement: <RouteError />,
-                children: [
-                  {
-                    path: '/:locale/ongoing-monitoring/alerts',
-                    element: <OngoingMonitoringAlertsPage />,
-                    errorElement: <RouteError />,
                   },
                 ],
               },
