@@ -29,7 +29,7 @@ export const AlertsTable: FunctionComponent<IAlertsTableProps> = ({ data }) => {
                   {headers.map(header => (
                     <TableHead
                       key={header.id}
-                      className={`sticky top-0 z-10 h-[34px] bg-white p-1 text-[14px] font-bold text-[#787981]`}
+                      className={`sticky top-0 z-10 h-[34px] bg-white p-0 text-[14px] font-bold text-[#787981]`}
                     >
                       {header.column.id === 'select' && (
                         <span className={'pe-4'}>
@@ -38,7 +38,7 @@ export const AlertsTable: FunctionComponent<IAlertsTableProps> = ({ data }) => {
                       )}
                       {header.column.id !== 'select' && (
                         <button
-                          className="flex h-9 flex-row items-center gap-x-2 px-3 text-left text-[#A3A3A3]"
+                          className="flex h-9 flex-row items-center gap-x-2 px-3 text-[#A3A3A3]"
                           onClick={() => header.column.toggleSorting()}
                         >
                           <span>
@@ -74,8 +74,7 @@ export const AlertsTable: FunctionComponent<IAlertsTableProps> = ({ data }) => {
                           flexRender(cell.column.columnDef.cell, cell.getContext())}
                         {cell.column.id !== 'select' && (
                           <Link
-                            // NOT COMMON
-                            to={`/${locale}/businesses/alerts/${itemId}${search}&businessId=${
+                            to={`/${locale}/transaction-monitoring/alerts/${itemId}${search}&businessId=${
                               item?.merchant?.id ?? ''
                             }&counterpartyId=${item?.counterpartyId ?? ''}`}
                             onClick={onRowClick}

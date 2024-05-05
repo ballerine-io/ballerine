@@ -91,7 +91,7 @@ export const useAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
   const { pathname, search } = useLocation();
   const url = `${pathname}${search}`;
   const onRowClick = useCallback(() => {
-    // sessionStorage.setItem('transaction-monitoring:transactions-drawer:previous-path', url);
+    sessionStorage.setItem('transaction-monitoring:transactions-drawer:previous-path', url);
   }, [url]);
 
   useEffect(() => {

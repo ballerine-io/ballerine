@@ -98,6 +98,7 @@ export const AlertsListSchema = z.array(
 );
 
 export type TAlertsList = z.output<typeof AlertsListSchema>;
+export type AlertEntityType = 'transaction' | 'business';
 
 export const fetchAlerts = async (params: {
   orderBy: string;
@@ -106,11 +107,15 @@ export const fetchAlerts = async (params: {
     size: number;
   };
   filter: Record<string, unknown>;
+  entityType: AlertEntityType;
 }) => {
   const queryParams = qs.stringify(params, { encode: false });
-
+  let url = `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts?${queryParams}`;
+  if (params.entityType === 'business') {
+    url = `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts/business-report?${queryParams}`;
+  }
   const [alerts, error] = await apiClient({
-    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts?${queryParams}`,
+    url,
     method: Method.GET,
     schema: AlertsListSchema,
   });
