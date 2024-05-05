@@ -412,6 +412,25 @@ export const ALERT_DEFINITIONS = {
         transactionFactor: 1,
       },
     },
+  DORMANT: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
+    description: `First activity of client after a long period of dormancy`,
+    inlineRule: {
+      id: 'DORMANT',
+      fnName: 'evaluateDormantAccount',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '!=',
+        },
+        minimumTransactionAmount: 100,
+        transactionFactor: 1,
+      },
+    },
   },
 } as const satisfies Record<string, Parameters<typeof getAlertDefinitionCreateData>[0]>;
 
