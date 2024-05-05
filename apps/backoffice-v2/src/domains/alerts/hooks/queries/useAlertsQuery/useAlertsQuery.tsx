@@ -1,7 +1,7 @@
+import { AlertEntityType } from '@/domains/alerts/fetchers';
+import { alertsQueryKeys } from '@/domains/alerts/query-keys';
 import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
 import { useQuery } from '@tanstack/react-query';
-import { alertsQueryKeys } from '@/domains/alerts/query-keys';
-import { AlertEntityType } from '@/domains/alerts/fetchers';
 
 export const useAlertsQuery = ({
   sortBy,
@@ -21,7 +21,7 @@ export const useAlertsQuery = ({
   entityType: AlertEntityType;
 }) => {
   const isAuthenticated = useIsAuthenticated();
-  debugger;
+
   return useQuery({
     ...alertsQueryKeys.list({ filter, sortBy, sortDir, page, pageSize, search, entityType }),
     enabled: isAuthenticated && !!sortBy && !!sortDir && !!page && !!pageSize,

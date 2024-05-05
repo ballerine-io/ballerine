@@ -1,10 +1,10 @@
-import { FunctionComponent, useCallback, useMemo } from 'react';
-import { TUsers } from '@/domains/users/types';
 import { MultiSelect } from '@/common/components/atoms/MultiSelect/MultiSelect';
 import { useFilter } from '@/common/hooks/useFilter/useFilter';
-import { AlertStatuses, AlertTypes } from '@/domains/alerts/fetchers';
-import { titleCase } from 'string-ts';
 import { keyFactory } from '@/common/utils/key-factory/key-factory';
+import { AlertStatuses } from '@/domains/alerts/fetchers';
+import { TUsers } from '@/domains/users/types';
+import { FunctionComponent, useCallback, useMemo } from 'react';
+import { titleCase } from 'string-ts';
 
 export const AlertsFilters: FunctionComponent<{
   assignees: TUsers;
@@ -18,14 +18,6 @@ export const AlertsFilters: FunctionComponent<{
         value: assignee?.id,
       })) ?? [],
     [authenticatedUserId, assignees],
-  );
-  const alertTypeOptions = useMemo(
-    () =>
-      AlertTypes?.map(alertType => ({
-        label: titleCase(alertType),
-        value: alertType,
-      })) ?? [],
-    [],
   );
   const statusOptions = useMemo(
     () =>
@@ -46,11 +38,6 @@ export const AlertsFilters: FunctionComponent<{
         },
         ...assigneeOptions,
       ],
-    },
-    {
-      title: 'Alert Type',
-      accessor: 'alertType',
-      options: alertTypeOptions,
     },
     {
       title: 'Status',
