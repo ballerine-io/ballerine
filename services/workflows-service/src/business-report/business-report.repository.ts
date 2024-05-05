@@ -17,6 +17,17 @@ export class BusinessReportRepository {
     return await this.prisma.businessReport.create(args);
   }
 
+  async update<T extends Prisma.BusinessReportUpdateArgs>(
+    args: Prisma.SelectSubset<T, Prisma.BusinessReportUpdateArgs>,
+  ) {
+    return await this.prisma.businessReport.update(args);
+  }
+  async updateMany<T extends Prisma.BusinessReportUpdateManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.BusinessReportUpdateManyArgs>,
+  ) {
+    return await this.prisma.businessReport.updateMany(args);
+  }
+
   async findMany<T extends Prisma.BusinessReportFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportFindManyArgs>,
     projectIds: TProjectIds,
