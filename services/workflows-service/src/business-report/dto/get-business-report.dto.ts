@@ -1,6 +1,7 @@
 import { PageDto } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { BusinessReportType } from '@prisma/client';
+import { IsDateString, IsEnum, IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TIME_UNITS } from '@/data-analytics/consts';
 import type { TimeUnit } from '@/data-analytics/types';
 
@@ -8,6 +9,12 @@ export class GetBusinessReportDto {
   @IsOptional()
   @IsString()
   businessId?: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsIn(Object.values(BusinessReportType))
+  type!: BusinessReportType;
 
   @IsOptional()
   @IsNumber()
