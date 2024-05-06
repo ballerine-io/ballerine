@@ -1,5 +1,6 @@
 import { TransactionDirection, PaymentMethod, TransactionRecordType } from '@prisma/client';
 import { AggregateType, TIME_UNITS } from './consts';
+import { TProjectId } from '@/types';
 
 export type InlineRule = {
   id: string;
@@ -20,6 +21,15 @@ export type InlineRule = {
   | {
       fnName: 'evaluateTransactionLimitHistoricAverageInbound';
       options: Omit<TransactionLimitHistoricAverageOptions, 'projectId'>;
+    }
+  | {
+      fnName: 'checkRiskScore';
+      options: Omit<CheckRiskScoreOptions, 'projectId'>;
+    }
+  | {
+      // since we don't know the other options, we can use never
+      fnName: unknown;
+      options: never;
     }
 );
 
@@ -79,4 +89,14 @@ export type TransactionLimitHistoricAverageOptions = {
   minimumCount: number;
   minimumTransactionAmount: number;
   transactionFactor: number;
+};
+
+export type CheckRiskScoreOptions = {
+  projectId: TProjectId;
+};
+
+export type CheckRiskScorePayload = {
+  businessId: TProjectId;
+  originalScore: number;
+  currentScore: number;
 };

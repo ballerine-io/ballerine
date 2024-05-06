@@ -145,6 +145,7 @@ model Business {
   project         Project          @relation(fields: [projectId], references: [id])
   Counterparty    Counterparty[]
   businessReports BusinessReport[]
+  alerts     Alert[]
 
   @@unique([projectId, correlationId])
   @@index([companyName])
@@ -707,10 +708,16 @@ enum AlertStatus {
   completed @map("300")
 }
 
+enum MonitoringType {
+  transaction_monitoring
+  ongoing_merchant_monitoring
+}
+
 model AlertDefinition {
   id          String  @id @default(cuid())
   crossEnvKey String? @unique
   label       String
+  monitoringType    MonitoringType
   name        String
   enabled     Boolean @default(true)
   description String?
@@ -747,7 +754,7 @@ model Alert {
 
   alertDefinitionId String
   alertDefinition   AlertDefinition @relation(fields: [alertDefinitionId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-
+  
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
@@ -771,6 +778,9 @@ model Alert {
 
   counterpartyId String?
   counterparty   Counterparty? @relation(fields: [counterpartyId], references: [id])
+
+  businessId String?
+  business   Business? @relation(fields: [businessId], references: [id])
 
   @@index([assigneeId])
   @@index([projectId])
@@ -833,13 +843,14 @@ model BusinessReport {
   report Json
 
   businessId String
+  business   Business @relation(fields: [businessId], references: [id])
+
   projectId  String
-
-  business Business @relation(fields: [businessId], references: [id])
-  project  Project  @relation(fields: [projectId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  project    Project @relation(fields: [projectId], references: [id])
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
 
   @@index([createdAt])
   @@index([businessId])

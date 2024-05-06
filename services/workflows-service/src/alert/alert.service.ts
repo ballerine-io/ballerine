@@ -3,9 +3,9 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import * as errors from '@/errors';
 import { PrismaService } from '@/prisma/prisma.service';
 import { isFkConstraintError } from '@/prisma/prisma.util';
-import { ObjectValues, TProjectId } from '@/types';
+import { InputJsonValue, ObjectValues, TProjectId } from '@/types';
 import { Injectable } from '@nestjs/common';
-import { Alert, AlertDefinition, AlertState, AlertStatus } from '@prisma/client';
+import { Alert, AlertDefinition, AlertState, AlertStatus, MonitoringType } from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
@@ -71,6 +71,7 @@ export class AlertService {
 
   async getAlerts(
     findAlertsDto: FindAlertsDto,
+    monitoringType: MonitoringType,
     projectIds: TProjectId[],
     args?: Omit<
       Parameters<typeof this.alertRepository.findMany>[0],
@@ -88,6 +89,7 @@ export class AlertService {
             in: findAlertsDto.filter?.status,
           },
           alertDefinition: {
+            monitoringType,
             label: {
               in: findAlertsDto.filter?.label,
             },
@@ -114,15 +116,17 @@ export class AlertService {
   }
 
   // Function to retrieve all alert definitions
-  async getAllAlertDefinitions(): Promise<AlertDefinition[]> {
+  async getAlertDefinitions(options: { type: MonitoringType }): Promise<AlertDefinition[]> {
     return await this.prisma.alertDefinition.findMany({
-      where: { enabled: true },
+      where: { enabled: true, monitoringType: options.type },
     });
   }
 
   // Function to perform alert checks for each alert definition
   async checkAllAlerts() {
-    const alertDefinitions = await this.getAllAlertDefinitions();
+    const alertDefinitions = await this.getAlertDefinitions({
+      type: MonitoringType.transaction_monitoring,
+    });
 
     for (const definition of alertDefinitions) {
       try {
@@ -141,7 +145,7 @@ export class AlertService {
   }
 
   // Specific alert check logic based on the definition
-  private async checkAlert(alertDefinition: AlertDefinition) {
+  private async checkAlert(alertDefinition: AlertDefinition, ...args: any[]) {
     const unknownData: unknown = alertDefinition.inlineRule;
 
     const inlineRule: InlineRule = unknownData as InlineRule;
@@ -149,6 +153,7 @@ export class AlertService {
     const ruleExecutionResults = await this.dataAnalyticsService.runInlineRule(
       alertDefinition.projectId,
       inlineRule,
+      args,
     );
 
     if (
@@ -242,8 +247,9 @@ export class AlertService {
           checkpoint: {
             hash: computeHash(executionRow),
           },
+          subject: Object.assign({}, ...(subject || [])),
           executionRow,
-        } satisfies TExecutionDetails,
+        } satisfies TExecutionDetails as InputJsonValue,
         ...Object.assign({}, ...(subject || [])),
       },
     });
