@@ -7,22 +7,22 @@ import {
   TableRow,
 } from '@/common/components/atoms/Table';
 import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
+import { TTransactionsList } from '@/domains/transactions/fetchers';
 import {
+  ExpandedState,
   flexRender,
   getCoreRowModel,
-  useReactTable,
-  ExpandedState,
   getExpandedRowModel,
+  useReactTable,
 } from '@tanstack/react-table';
-import { columns } from './columns';
 import React, { FunctionComponent, useState } from 'react';
-import { TTransactionsList } from '@/domains/transactions/fetchers';
+import { columns } from './columns';
 
 import { Collapsible } from '@/common/components/molecules/Collapsible/Collapsible';
 import { CollapsibleContent } from '@/common/components/molecules/Collapsible/Collapsible.Content';
 import { ExpandedTransactionDetails } from '@/pages/TransactionMonitoringAlertsAnalysis/components/ExpandedTransactionDetails';
 
-export const AlertAnalysisTable: FunctionComponent<{
+export const OngoingMonitoringTable: FunctionComponent<{
   transactions: TTransactionsList;
 }> = ({ transactions }) => {
   const [expanded, setExpanded] = useState<ExpandedState>({});
@@ -41,7 +41,7 @@ export const AlertAnalysisTable: FunctionComponent<{
   });
 
   return (
-    <div className="d-full relative overflow-auto rounded-md border bg-white shadow">
+    <div className="d-full relative max-w-[411px] overflow-auto rounded-md border bg-white shadow">
       <ScrollArea orientation="both" className="h-[47vh]">
         <Table>
           <TableHeader className="border-0">
