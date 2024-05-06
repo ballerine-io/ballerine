@@ -106,8 +106,8 @@ export const columns = [
         <div className={`w-[11.8ch]`}>
           <TextWithNAFallback
             className={buttonVariants({
-              variant: 'link',
-              className: '!block cursor-pointer !p-0 text-sm !text-blue-500',
+              variant: 'ghost',
+              className: '!block !p-0 text-sm',
             })}
             style={styles}
             ref={ref}

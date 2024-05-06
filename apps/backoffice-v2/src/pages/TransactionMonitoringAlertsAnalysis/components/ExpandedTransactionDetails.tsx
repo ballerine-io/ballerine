@@ -1,25 +1,17 @@
 import React, { useMemo } from 'react';
 import dayjs from 'dayjs';
-import { t } from 'i18next';
-import { toast } from 'sonner';
 import { titleCase } from 'string-ts';
 import { FileJson2 } from 'lucide-react';
 
 import { JsonDialog } from '@ballerine/ui';
-import { CopySvg } from '@/common/components/atoms/icons';
 import { TTransactionsList } from '@/domains/transactions/fetchers';
 import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
+import { CopyToClipboard } from '@/common/components/atoms/CopyToClipboard/CopyToClipboard';
 
 interface IExpandedTransactionDetailsProps {
   transaction: TTransactionsList[number];
 }
-
-const copyToClipboard = async (text: string) => {
-  await navigator.clipboard.writeText(text);
-
-  toast.success(t(`toast:copy_to_clipboard`, { text }));
-};
 
 export const ExpandedTransactionDetails = ({ transaction }: IExpandedTransactionDetailsProps) => {
   const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
@@ -63,10 +55,7 @@ export const ExpandedTransactionDetails = ({ transaction }: IExpandedTransaction
             <TextWithNAFallback style={styles} ref={ref}>
               {transaction.transactionCorrelationId}
             </TextWithNAFallback>
-            <CopySvg
-              className={`h-5 w-5 cursor-pointer opacity-80 hover:opacity-100`}
-              onClick={() => copyToClipboard(transaction.transactionCorrelationId)}
-            />
+            <CopyToClipboard textToCopy={transaction.transactionCorrelationId} />
           </div>
           <TextWithNAFallback>{`${dayjs(transaction.transactionDate).format(
             'MMM DD, YYYY',

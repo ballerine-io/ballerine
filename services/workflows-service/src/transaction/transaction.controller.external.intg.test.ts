@@ -453,7 +453,8 @@ describe('#TransactionControllerExternal', () => {
 
       expect(failedTransaction).toEqual({
         status: BulkStatus.FAILED,
-        error: 'Transaction already exists',
+        error:
+          'Another record with the requested (projectId, transactionCorrelationId) already exists',
         data: { correlationId: transaction.correlationId },
       });
     });
