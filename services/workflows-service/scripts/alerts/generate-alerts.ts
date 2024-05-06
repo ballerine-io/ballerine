@@ -431,13 +431,13 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
 >;
 
 export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
-  MERCHANT_ONGOING_RISK: {
+  MERCHANT_ONGOING_RISK_ALERT: {
     enabled: true,
     defaultSeverity: AlertSeverity.high,
     monitoringType: MonitoringType.ongoing_merchant_monitoring,
     description: '',
     inlineRule: {
-      id: 'MERCHANT_ONGOING_RISK',
+      id: 'MERCHANT_ONGOING_RISK_ALERT',
       fnName: 'checkMerchantOngoingAlert',
       subjects: ['businessId', 'projectId'],
       options: {

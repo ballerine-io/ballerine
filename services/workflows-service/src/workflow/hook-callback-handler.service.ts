@@ -158,7 +158,7 @@ export class HookCallbackHandlerService {
       {
         create: {
           type: reportType as BusinessReportType,
-          reportRiskScore: reportRiskScore,
+          riskScore: reportRiskScore as number,
           report: {
             reportFileId: pdfReportBallerineFileId,
             data: reportData as InputJsonValue,
@@ -169,8 +169,8 @@ export class HookCallbackHandlerService {
         },
         update: {
           type: reportType as BusinessReportType,
+          riskScore: reportRiskScore,
           report: {
-            reportRiskScore: reportRiskScore,
             reportFileId: pdfReportBallerineFileId,
             data: reportData as InputJsonValue,
           },
