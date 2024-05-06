@@ -443,7 +443,7 @@ export const getAlertDefinitionCreateData = (
       ...(dedupeStrategy ?? {}),
     },
     inlineRule,
-    label: id,
+    correlationId: id,
     name: id,
     rulesetId: `set-${id}`,
     description: description,
@@ -478,7 +478,7 @@ export const generateAlertDefinitions = async (
   Promise.all(
     Object.values(alertsDef)
       .map(alert => ({
-        label: alert.inlineRule.id,
+        correlationId: alert.inlineRule.id,
         enable: false,
         ...alert,
       }))
@@ -491,7 +491,12 @@ export const generateAlertDefinitions = async (
         };
 
         return prisma.alertDefinition.upsert({
-          where: { label_projectId: { label: alertDef.inlineRule.id, projectId: project.id } },
+          where: {
+            correlationId_projectId: {
+              correlationId: alertDef.correlationId,
+              projectId: project.id,
+            },
+          },
           create: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
           update: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
           include: {
