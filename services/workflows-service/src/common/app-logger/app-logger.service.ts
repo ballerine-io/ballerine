@@ -29,6 +29,7 @@ export class AppLoggerService implements LoggerService, OnModuleDestroy {
     if (typeof error === 'string') {
       error = new Error(error);
     }
+
     this.logger.error(error, { ...this.getLogMetadata(), logData });
   }
 
