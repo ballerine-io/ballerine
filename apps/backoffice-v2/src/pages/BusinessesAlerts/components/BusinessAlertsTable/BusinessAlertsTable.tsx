@@ -6,17 +6,17 @@ import {
   TableRow,
 } from '@/common/components/atoms/Table';
 import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
+import { ctw } from '@/common/utils/ctw/ctw';
+import { useBusinessAlertsTableLogic } from '@/pages/BusinessesAlerts/components/BusinessAlertsTable/hooks/useBusinessAlertsTableLogic/useBusinessAlertsTableLogic';
+import { IAlertsTableProps } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/interfaces';
 import { TableBody } from '@ballerine/ui';
 import { flexRender } from '@tanstack/react-table';
 import { ChevronDown } from 'lucide-react';
-import { ctw } from '@/common/utils/ctw/ctw';
-import React, { FunctionComponent } from 'react';
-import { IAlertsTableProps } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/interfaces';
-import { useAlertsTableLogic } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/hooks/useAlertsTableLogic/useAlertsTableLogic';
+import { FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 
-export const AlertsTable: FunctionComponent<IAlertsTableProps> = ({ data }) => {
-  const { table, locale, onRowClick, search } = useAlertsTableLogic({ data });
+export const BusinessAlertsTable: FunctionComponent<IAlertsTableProps> = ({ data }) => {
+  const { table, locale, onRowClick, search } = useBusinessAlertsTableLogic({ data });
 
   return (
     <div className="d-full relative overflow-auto rounded-md border bg-white shadow">

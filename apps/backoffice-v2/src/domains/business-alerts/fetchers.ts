@@ -8,33 +8,33 @@ import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-i
 import qs from 'qs';
 import { z } from 'zod';
 
-export const AlertSeverity = {
+export const BusinessAlertSeverity = {
   CRITICAL: 'critical',
   HIGH: 'high',
   MEDIUM: 'medium',
   LOW: 'low',
 } as const;
 
-export const AlertSeverities = [
-  AlertSeverity.CRITICAL,
-  AlertSeverity.HIGH,
-  AlertSeverity.MEDIUM,
-  AlertSeverity.LOW,
-] as const satisfies ReadonlyArray<TObjectValues<typeof AlertSeverity>>;
+export const BusinessAlertSeverities = [
+  BusinessAlertSeverity.CRITICAL,
+  BusinessAlertSeverity.HIGH,
+  BusinessAlertSeverity.MEDIUM,
+  BusinessAlertSeverity.LOW,
+] as const satisfies ReadonlyArray<TObjectValues<typeof BusinessAlertSeverity>>;
 
-export const AlertStatus = {
+export const BusinessAlertStatus = {
   NEW: 'new',
   PENDING: 'pending',
   COMPLETED: 'completed',
 } as const;
 
-export const AlertStatuses = [
-  AlertStatus.NEW,
-  AlertStatus.PENDING,
-  AlertStatus.COMPLETED,
-] as const satisfies ReadonlyArray<TObjectValues<typeof AlertStatus>>;
+export const BusinessAlertStatuses = [
+  BusinessAlertStatus.NEW,
+  BusinessAlertStatus.PENDING,
+  BusinessAlertStatus.COMPLETED,
+] as const satisfies ReadonlyArray<TObjectValues<typeof BusinessAlertStatus>>;
 
-export const AlertState = {
+export const BusinessAlertState = {
   TRIGGERED: 'triggered',
   UNDER_REVIEW: 'under_review',
   ESCALATED: 'escalated',
@@ -43,45 +43,44 @@ export const AlertState = {
   CLEARED: 'cleared',
 } as const;
 
-export const AlertStates = [
-  AlertState.TRIGGERED,
-  AlertState.UNDER_REVIEW,
-  AlertState.ESCALATED,
-  AlertState.REJECTED,
-  AlertState.DISMISSED,
-  AlertState.CLEARED,
-] as const satisfies ReadonlyArray<TObjectValues<typeof AlertState>>;
+export const BusinessAlertStates = [
+  BusinessAlertState.TRIGGERED,
+  BusinessAlertState.UNDER_REVIEW,
+  BusinessAlertState.ESCALATED,
+  BusinessAlertState.REJECTED,
+  BusinessAlertState.DISMISSED,
+  BusinessAlertState.CLEARED,
+] as const satisfies ReadonlyArray<TObjectValues<typeof BusinessAlertState>>;
 
-export const alertStateToDecision = {
+export const businessAlertStateToDecision = {
   REJECTED: 'reject',
   CLEARED: 'clear',
   REVERT_DECISION: 'revert decision',
-} as const satisfies Partial<Record<keyof typeof AlertState | (string & {}), string>>;
+} as const satisfies Partial<Record<keyof typeof BusinessAlertState | (string & {}), string>>;
 
-export const alertDecisionToState = {
+export const businessAlertDecisionToState = {
   REJECT: 'rejected',
   CLEAR: 'cleared',
   REVERT_DECISION: 'triggered',
-} as const satisfies Partial<Record<keyof typeof AlertState | (string & {}), string>>;
+} as const satisfies Partial<Record<keyof typeof BusinessAlertState | (string & {}), string>>;
 
-export type TAlertSeverity = (typeof AlertSeverities)[number];
+export type TBusinessAlertSeverity = (typeof BusinessAlertSeverities)[number];
 
-export type TAlertSeverities = typeof AlertSeverities;
+export type TBusinessAlertSeverities = typeof BusinessAlertSeverities;
 
-export type TAlertState = (typeof AlertStates)[number];
+export type TBusinessAlertState = (typeof BusinessAlertStates)[number];
 
-export type TAlertStates = typeof AlertStates;
+export type TBusinessAlertStates = typeof BusinessAlertStates;
 
-export const AlertsListSchema = z.array(
+export const BusinessAlertsListSchema = z.array(
   ObjectWithIdSchema.extend({
     dataTimestamp: z.string().datetime(),
     updatedAt: z.string().datetime(),
     subject: ObjectWithIdSchema.extend({
-      name: z.string(),
-      correlationId: z.string(),
-      type: z.enum(['business', 'counterparty']),
+      companyName: z.string(),
+      businessReports: z.any(),
     }),
-    severity: z.enum(AlertSeverities),
+    severity: z.enum(BusinessAlertSeverities),
     label: z.string(),
     alertDetails: z.string(),
     // amountOfTxs: z.number(),
@@ -91,16 +90,16 @@ export const AlertsListSchema = z.array(
     })
       .nullable()
       .default(null),
-    status: z.enum(AlertStatuses),
-    decision: z.enum(AlertStates).nullable().default(null),
+    status: z.enum(BusinessAlertStatuses),
+    decision: z.enum(BusinessAlertStates).nullable().default(null),
     counterpartyId: z.string().nullable().default(null),
   }),
 );
 
-export type TAlertsList = z.output<typeof AlertsListSchema>;
+export type TBusinessAlertsList = z.output<typeof BusinessAlertsListSchema>;
 export type AlertEntityType = 'transaction' | 'business';
 
-export const fetchAlerts = async (params: {
+export const fetchBusinessAlerts = async (params: {
   orderBy: string;
   page: {
     number: number;
@@ -113,7 +112,7 @@ export const fetchAlerts = async (params: {
   const [alerts, error] = await apiClient({
     url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts/business-report?${queryParams}`,
     method: Method.GET,
-    schema: AlertsListSchema,
+    schema: BusinessAlertsListSchema,
   });
 
   return handleZodError(error, alerts);
@@ -143,7 +142,7 @@ export const updateAlertsDecisionByIds = async ({
   decision,
   alertIds,
 }: {
-  decision: TAlertState;
+  decision: TBusinessAlertState;
   alertIds: string[];
 }) => {
   const [alerts, error] = await apiClient({

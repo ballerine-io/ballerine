@@ -1,11 +1,8 @@
+import { fetchAlertDefinitionByAlertId, fetchAlertLabels } from '@/domains/alerts/fetchers';
+import { fetchBusinessAlerts } from '@/domains/business-alerts/fetchers';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
-import {
-  fetchAlertDefinitionByAlertId,
-  fetchAlertLabels,
-  fetchAlerts,
-} from '@/domains/alerts/fetchers';
 
-export const alertsQueryKeys = createQueryKeys('alerts', {
+export const businessAlertsQueryKeys = createQueryKeys('alerts', {
   list: ({ sortBy, sortDir, page, pageSize, ...params }) => {
     const data = {
       ...params,
@@ -26,7 +23,7 @@ export const alertsQueryKeys = createQueryKeys('alerts', {
           pageSize,
         },
       ],
-      queryFn: () => fetchAlerts(data),
+      queryFn: () => fetchBusinessAlerts(data),
     };
   },
   alertDefinitionByAlertId: ({ alertId }: { alertId: string }) => {
