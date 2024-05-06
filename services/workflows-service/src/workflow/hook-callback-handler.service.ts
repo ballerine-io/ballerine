@@ -185,14 +185,22 @@ export class HookCallbackHandlerService {
     set(workflowRuntime.context, resultDestinationPath, { reportData });
     workflowRuntime.context.documents = documents;
 
-    this.alertService.checkOngoingMonitoringAlert(
-      {
-        businessId: business.id,
-        projectId: currentProjectId,
-        reportId: currentReportId,
-      },
-      {},
-    );
+    this.alertService
+      .checkOngoingMonitoringAlert(
+        {
+          businessId: business.id,
+          projectId: currentProjectId,
+          reportId: currentReportId,
+        },
+        business.companyName,
+      )
+      .then(() => {
+        this.logger.debug(`Alert Tested for ${currentReportId}}`);
+      })
+      .catch(error => {
+        this.logger.error(error);
+      });
+
     return context;
   }
 
