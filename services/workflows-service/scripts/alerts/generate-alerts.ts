@@ -374,7 +374,7 @@ export const ALERT_DEFINITIONS = {
     },
   },
   TLHAICC: {
-    enabled: true,
+    enabled: false,
     defaultSeverity: AlertSeverity.medium,
     description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
     inlineRule: {
@@ -394,7 +394,7 @@ export const ALERT_DEFINITIONS = {
     },
   },
   TLHAIAPM: {
-    enabled: true,
+    enabled: false,
     defaultSeverity: AlertSeverity.medium,
     description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
     inlineRule: {
