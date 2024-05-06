@@ -329,11 +329,6 @@ export const useKycBlock = ({
             childWorkflow?.context?.entity?.data?.lastName,
           )}`,
         })
-        .addCell({
-          id: 'actions',
-          type: 'container',
-          value: getDecisionStatusOrAction(childWorkflow?.tags),
-        })
         .build()
         .flat(1),
     })
@@ -353,6 +348,27 @@ export const useKycBlock = ({
         .addCell({
           type: 'nodeCell',
           value: <Separator className={`my-2`} />,
+        })
+        .addCell({
+          id: 'title-with-actions',
+          type: 'container',
+          props: { className: 'mt-2' },
+          value: createBlocksTyped()
+            .addBlock()
+            .addCell({
+              type: 'heading',
+              value: 'Identity Verification Results',
+              props: {
+                className: 'mt-0',
+              },
+            })
+            .addCell({
+              type: 'container',
+              props: { className: 'space-x-4' },
+              value: getDecisionStatusOrAction(childWorkflow?.tags),
+            })
+            .build()
+            .flat(1),
         })
         .addCell({
           id: 'kyc-block',
