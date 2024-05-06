@@ -130,9 +130,8 @@ export class CaseManagementController {
         const checkIsMonitored = () =>
           Array.isArray(endUser.activeMonitorings) && !!endUser.activeMonitorings?.length;
         const getMatches = () => {
-          const isPlural =
-            (endUser.amlHits as z.infer<typeof EndUserAmlHitsSchema>)?.length ?? 0 > 1;
           const amlHits = (endUser.amlHits as z.infer<typeof EndUserAmlHitsSchema>)?.length ?? 0;
+          const isPlural = amlHits > 1 || amlHits === 0;
 
           return `${amlHits} ${isPlural ? 'matches' : 'match'}`;
         };
