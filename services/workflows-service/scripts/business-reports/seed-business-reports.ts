@@ -1,6 +1,10 @@
 import { faker } from '@faker-js/faker';
 import { PrismaClient, Project } from '@prisma/client';
 
+const generateFakeRiskScore = () => {
+  return Math.floor(Math.random() * 100) + 1;
+};
+
 const seedFiles = async (prisma: PrismaClient, project: Project) => {
   const files = await Promise.all(
     new Array(3).fill(null).map((_, index) => {
@@ -23,24 +27,6 @@ export const seedBusinessReports = async (
   { businessRiskIds, project }: { businessRiskIds: string[]; project: Project },
 ) => {
   const fileIds = await seedFiles(prisma, project);
-  const arr = businessRiskIds
-    .map(businessRiskId =>
-      fileIds.map(fileId =>
-        prisma.businessReport.create({
-          data: {
-            businessId: businessRiskId,
-            report: {
-              data: {},
-              reportFileId: fileId,
-              reportId: faker.datatype.uuid(),
-            },
-            projectId: project.id,
-            type: 'ONGOING_MERCHANT_REPORT_T1',
-          },
-        }),
-      ),
-    )
-    .flat(0);
 
   await Promise.all(
     businessRiskIds
@@ -50,7 +36,11 @@ export const seedBusinessReports = async (
             data: {
               businessId: businessRiskId,
               report: {
-                data: {},
+                data: {
+                  summary: {
+                    riskScore: generateFakeRiskScore(),
+                  },
+                },
                 reportFileId: fileId,
                 reportId: faker.datatype.uuid(),
               },
