@@ -5,6 +5,13 @@ import React from 'react';
 import { titleCase } from 'string-ts';
 import { TObjectValues } from '@/common/types';
 import { TIndividualsProfiles } from '@/domains/profiles/fetchers';
+import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
+import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
+import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
+import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Content';
+import { CopyToClipboard } from '@/common/components/atoms/CopyToClipboard/CopyToClipboard';
+import { CheckCircle } from '@/common/components/atoms/CheckCircle/CheckCircle';
+import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
 
 export const Role = {
   UBO: 'UBO',
@@ -47,13 +54,13 @@ export const Sanctions = [
 const columnHelper = createColumnHelper<TIndividualsProfiles>();
 
 export const columns = [
-  columnHelper.accessor('id', {
+  columnHelper.accessor('name', {
     cell: info => {
-      const id = info.getValue();
+      const name = info.getValue();
 
-      return <TextWithNAFallback>{id}</TextWithNAFallback>;
+      return <TextWithNAFallback>{name}</TextWithNAFallback>;
     },
-    header: 'ID',
+    header: 'Name',
   }),
   columnHelper.accessor('createdAt', {
     cell: info => {
@@ -75,13 +82,26 @@ export const columns = [
     },
     header: 'Date added',
   }),
-  columnHelper.accessor('name', {
+  columnHelper.accessor('correlationId', {
     cell: info => {
-      const name = info.getValue();
+      // const correlationId = info.getValue();
+      const correlationId = 'd290f1ee-6c54-4b01-90e6-d701748f0851';
 
-      return <TextWithNAFallback>{name}</TextWithNAFallback>;
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger className={`flex items-center`}>
+              <TextWithNAFallback className={`w-[11.8ch] truncate`}>
+                {correlationId}
+              </TextWithNAFallback>
+              <CopyToClipboard textToCopy={correlationId} />
+            </TooltipTrigger>
+            <TooltipContent>{correlationId}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
     },
-    header: 'Name',
+    header: 'ID',
   }),
   columnHelper.accessor('businesses', {
     cell: info => {
@@ -109,17 +129,46 @@ export const columns = [
     },
     header: 'KYC',
   }),
-  columnHelper.accessor('sanctions', {
+  columnHelper.accessor('isMonitored', {
     cell: info => {
-      const sanctions = info.getValue();
+      const isMonitored = info.getValue();
+
+      return (
+        <div className={`mx-auto pe-5`}>
+          {isMonitored && (
+            <CheckCircle
+              size={24}
+              className={`stroke-success`}
+              containerProps={{
+                className: 'bg-success/20',
+              }}
+            />
+          )}
+          {!isMonitored && (
+            <XCircle
+              size={24}
+              className={`stroke-destructive`}
+              containerProps={{
+                className: 'bg-destructive/20',
+              }}
+            />
+          )}
+        </div>
+      );
+    },
+    header: 'Monitored',
+  }),
+  columnHelper.accessor('matches', {
+    cell: info => {
+      const matches = info.getValue();
 
       return (
         <TextWithNAFallback className={`font-semibold`}>
-          {titleCase(sanctions ?? '')}
+          {titleCase(matches ?? '')}
         </TextWithNAFallback>
       );
     },
-    header: 'Sanctions',
+    header: 'Matches',
   }),
   columnHelper.accessor('alerts', {
     cell: info => {

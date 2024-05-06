@@ -6,13 +6,14 @@ import { TIndividualProfile } from '@/domains/profiles/fetchers';
 export const ProfilesSearchSchema = BaseSearchSchema.extend({
   sortBy: z
     .enum([
-      'id',
+      'correlationId',
       'createdAt',
       'name',
       'businesses',
       'role',
       'kyc',
-      'sanctions',
+      'isMonitored',
+      'matches',
       'alerts',
       'updatedAt',
     ] as const satisfies ReadonlyArray<keyof TIndividualProfile>)
@@ -21,11 +22,10 @@ export const ProfilesSearchSchema = BaseSearchSchema.extend({
     .object({
       role: z.array(z.enum(Roles)).optional(),
       kyc: z.array(z.enum(KYCs)).optional(),
-      sanctions: z.array(z.string()).optional(),
+      isMonitored: z.boolean().optional(),
     })
     .catch({
       role: [],
       kyc: [],
-      sanctions: [],
     }),
 });

@@ -8,13 +8,14 @@ import { env } from '@/common/env/env';
 import { KYCs, Roles } from '@/pages/Profiles/Individuals/components/ProfilesTable/columns';
 
 export const IndividualProfileSchema = z.object({
-  id: z.string(),
+  correlationId: z.string().nullable().optional(),
   createdAt: z.string(),
   name: z.string(),
   businesses: z.string().optional(),
   role: z.enum(Roles),
   kyc: z.enum(KYCs).or(z.undefined()),
-  sanctions: z.string(),
+  isMonitored: z.boolean(),
+  matches: z.string(),
   alerts: z.number(),
   updatedAt: z.string().datetime(),
 });

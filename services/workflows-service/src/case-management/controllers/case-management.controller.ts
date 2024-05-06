@@ -26,6 +26,7 @@ import { AlertService } from '@/alert/alert.service';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { ListIndividualsProfilesSchema } from '@/case-management/dtos/list-individuals-profiles.dto';
 import { z } from 'zod';
+import { EndUserAmlHitsSchema } from '@/end-user/end-user.schema';
 
 @Controller('case-management')
 @ApiExcludeController()
@@ -91,6 +92,7 @@ export class CaseManagementController {
             },
           },
           amlHits: true,
+          activeMonitorings: true,
           updatedAt: true,
         },
         take: searchQueryParams.page.size,
@@ -124,29 +126,27 @@ export class CaseManagementController {
           tag => !!tagToKyc[tag as keyof typeof tagToKyc],
         );
         const alerts = await this.alertsService.getAlertsByEntityId(endUser.id, projectId);
-        const getSanctions = () => {
-          if (Array.isArray(endUser.amlHits) && endUser.amlHits?.length) {
-            const isPlural = endUser.amlHits?.length > 1;
+        const checkIsMonitored = () =>
+          Array.isArray(endUser.activeMonitorings) && !!endUser.activeMonitorings?.length;
+        const getMatches = () => {
+          const isPlural =
+            (endUser.amlHits as z.infer<typeof EndUserAmlHitsSchema>)?.length ?? 0 > 1;
+          const amlHits = (endUser.amlHits as z.infer<typeof EndUserAmlHitsSchema>)?.length ?? 0;
 
-            return `${endUser.amlHits?.length} ${isPlural ? 'matches' : 'match'}`;
-          }
-
-          if (Array.isArray(endUser.activeMonitorings) && endUser.activeMonitorings?.length) {
-            return 'MONITORED';
-          }
-
-          return 'NOT_MONITORED';
+          return `${amlHits} ${isPlural ? 'matches' : 'match'}`;
         };
-        const sanctions = getSanctions();
+        const isMonitored = checkIsMonitored();
+        const matches = getMatches();
 
         return {
-          id: endUser.id,
+          correlationId: endUser.correlationId,
           createdAt: endUser.createdAt,
           name: `${endUser.firstName} ${endUser.lastName}`,
           businesses: endUser.businesses?.map(business => business.companyName).join(', '),
           role: 'UBO',
           kyc: tagToKyc[tag as keyof typeof tagToKyc],
-          sanctions,
+          isMonitored,
+          matches,
           alerts: alerts?.length ?? 0,
           updatedAt: endUser.updatedAt,
         };
