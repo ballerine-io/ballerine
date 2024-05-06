@@ -1,5 +1,6 @@
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { getErrorMessageFromPrismaError } from '@/common/filters/HttpExceptions.filter';
+import { isPrismaClientKnownRequestError } from '@/prisma/prisma.util';
 import { SentryService } from '@/sentry/sentry.service';
 import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
 import { TransactionRepository } from '@/transaction/transaction.repository';
