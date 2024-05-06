@@ -87,9 +87,8 @@ export class ValidationError extends common.BadRequestException {
     const flattenedErrors = flattenValidationErrors(error);
 
     return new ValidationError(
-      flattenedErrors.map(({ property, constraints = {}, value }, index) => ({
+      flattenedErrors.map(({ property, constraints = {} }) => ({
         message: `${Object.values(constraints).join(', ')}.`,
-        value: index !== 0 ? value : {},
         path: property,
       })),
     );
