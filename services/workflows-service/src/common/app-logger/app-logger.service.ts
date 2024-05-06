@@ -1,7 +1,7 @@
 import { IAppLogger, LogPayload } from '@/common/abstract-logger/abstract-logger';
+import { setLogger } from '@ballerine/workflow-core';
 import { Inject, Injectable, LoggerService, OnModuleDestroy } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
-import { setLogger } from '@ballerine/workflow-core';
 
 @Injectable()
 export class AppLoggerService implements LoggerService, OnModuleDestroy {
@@ -29,6 +29,7 @@ export class AppLoggerService implements LoggerService, OnModuleDestroy {
     if (typeof error === 'string') {
       error = new Error(error);
     }
+
     this.logger.error(error, { ...this.getLogMetadata(), logData });
   }
 

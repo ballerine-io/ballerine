@@ -1,15 +1,13 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { getErrorMessageFromPrismaError } from '@/common/filters/HttpExceptions.filter';
+import { SentryService } from '@/sentry/sentry.service';
+import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
 import { TransactionRepository } from '@/transaction/transaction.repository';
+import { TProjectId } from '@/types';
+import { Injectable } from '@nestjs/common';
+import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { TransactionCreateDto } from './dtos/transaction-create.dto';
 import { TransactionEntityMapper } from './transaction.mapper';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { GetTransactionsDto } from './dtos/get-transactions.dto';
-import { TProjectId } from '@/types';
-import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
-import { Prisma } from '@prisma/client';
-import { SentryService } from '@/sentry/sentry.service';
-import { PRISMA_UNIQUE_CONSTRAINT_ERROR } from '@/prisma/prisma.util';
-import { getErrorMessageFromPrismaError } from '@/common/filters/HttpExceptions.filter';
 
 @Injectable()
 export class TransactionService {
@@ -37,13 +35,12 @@ export class TransactionService {
       [];
 
     for (const transactionPayload of mappedTransactions) {
-      const correlationId = transactionPayload.transactionCorrelationId;
       try {
         const transaction = await this.repository.create({ data: transactionPayload });
 
         response.push({
           id: transaction.id,
-          correlationId,
+          correlationId: transaction.transactionCorrelationId,
         });
       } catch (error) {
         if (mappedTransactions.length === 1) {
@@ -51,19 +48,16 @@ export class TransactionService {
         }
 
         let errorMessage = 'Unknown error';
-        if (
-          (error as Prisma.PrismaClientKnownRequestError).name === 'PrismaClientKnownRequestError'
-        ) {
-          errorMessage = getErrorMessageFromPrismaError(
-            error as Prisma.PrismaClientKnownRequestError,
-          );
+
+        if (isPrismaClientKnownRequestError(error)) {
+          errorMessage = getErrorMessageFromPrismaError(error);
         } else {
           this.sentry.captureException(error as Error);
           this.logger.error(error as Error);
         }
 
         response.push({
-          error: errorToLog,
+          errorMessage,
           correlationId: transactionPayload.transactionCorrelationId,
         });
       }
