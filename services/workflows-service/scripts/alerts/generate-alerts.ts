@@ -1,8 +1,10 @@
+import { businessIds } from './../generate-end-user';
 import { InlineRule } from '@/data-analytics/types';
 import {
   AlertSeverity,
   AlertState,
   AlertStatus,
+  MonitoringType,
   PaymentMethod,
   Prisma,
   PrismaClient,
@@ -32,7 +34,7 @@ const tags = [
   ]),
 ];
 
-export const ALERT_DEFINITIONS = {
+export const TRANSACTIONS_ALERT_DEFINITIONS = {
   PAY_HCA_CC: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
@@ -357,6 +359,7 @@ export const ALERT_DEFINITIONS = {
     description:
       'High Percentage of Chargebacks - High percentage of chargebacks over a set period of time',
     dedupeStrategy: {
+      mute: false,
       cooldownTimeframeInMinutes: daysToMinutesConverter(TWENTY_ONE_DAYS),
     },
     inlineRule: {
@@ -368,7 +371,8 @@ export const ALERT_DEFINITIONS = {
         subjectColumn: 'counterpartyOriginatorId',
         minimumCount: 3,
         minimumPercentage: 50,
-        timeAmount: 21,
+        timeAmount: TWENTY_ONE_DAYS,
+
         timeUnit: TIME_UNITS.days,
       },
     },
@@ -413,18 +417,54 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
-} as const satisfies Record<string, Parameters<typeof getAlertDefinitionCreateData>[0]>;
+} as const satisfies Record<
+  string,
+  {
+    inlineRule: InlineRule & InputJsonValue;
+    defaultSeverity: AlertSeverity;
+    dedupeStrategy?: TDedupeStrategy;
+    monitoringType?: MonitoringType;
+    enabled?: boolean;
+    description?: string;
+  }
+>;
+
+export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
+  MRCNT_RISK: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
+    monitoringType: MonitoringType.ongoing_merchant_monitoring,
+    description: '',
+    inlineRule: {
+      id: 'MRCNT_RISK',
+      fnName: 'checkRiskScore',
+      subjects: ['businessId', 'projectId'],
+      options: {},
+    },
+  },
+} as const satisfies Record<
+  string,
+  {
+    inlineRule: InlineRule & InputJsonValue;
+    monitoringType: MonitoringType;
+    defaultSeverity: AlertSeverity;
+    enabled?: boolean;
+    description?: string;
+  }
+>;
 
 export const getAlertDefinitionCreateData = (
   {
     inlineRule,
     defaultSeverity,
     description,
+    monitoringType = MonitoringType.transaction_monitoring,
     enabled = false,
     dedupeStrategy = ALERT_DEDUPE_STRATEGY_DEFAULT,
   }: {
     inlineRule: InlineRule;
     defaultSeverity: AlertSeverity;
+    monitoringType?: MonitoringType;
     enabled: boolean;
     dedupeStrategy?: Partial<TDedupeStrategy>;
     description?: string;
@@ -436,15 +476,16 @@ export const getAlertDefinitionCreateData = (
   const id = inlineRule.id;
 
   return {
+    inlineRule,
+    label: id,
+    name: id,
     enabled,
     defaultSeverity,
     dedupeStrategy: {
       ...ALERT_DEDUPE_STRATEGY_DEFAULT,
       ...(dedupeStrategy ?? {}),
     },
-    inlineRule,
-    label: id,
-    name: id,
+    monitoringType: monitoringType ?? MonitoringType.transaction_monitoring,
     rulesetId: `set-${id}`,
     description: description,
     ruleId: id,
@@ -463,7 +504,11 @@ export const generateAlertDefinitions = async (
   {
     createdBy = 'SYSTEM',
     project,
+    alertsDefConfiguration = TRANSACTIONS_ALERT_DEFINITIONS,
   }: {
+    alertsDefConfiguration?:
+      | typeof TRANSACTIONS_ALERT_DEFINITIONS
+      | typeof MERCHANT_MONITORING_ALERT_DEFINITIONS;
     createdBy?: string;
     project: Project;
   },
@@ -474,7 +519,7 @@ export const generateAlertDefinitions = async (
   } = {},
 ) =>
   Promise.all(
-    Object.values(ALERT_DEFINITIONS)
+    Object.values(alertsDefConfiguration)
       .map(alert => ({
         label: alert.inlineRule.id,
         enable: false,
@@ -499,18 +544,34 @@ export const generateAlertDefinitions = async (
       }),
   );
 
-const generateFakeAlert = ({
-  severity,
-  counterparyIds,
-  agentUserIds,
-}: {
-  severity: AlertSeverity;
-  counterparyIds: string[];
-  agentUserIds: string[];
-}): Omit<Prisma.AlertCreateManyAlertDefinitionInput, 'projectId'> => {
-  const counterypartyId = faker.helpers.arrayElement(
-    counterparyIds.map(id => ({ counterpartyId: id })),
-  );
+const generateFakeAlert = (
+  options: {
+    severity: AlertSeverity;
+    agentUserIds: string[];
+  } & (
+    | {
+        counterpartyIds: string[];
+      }
+    | {
+        businessIds: string[];
+      }
+  ),
+): Omit<Prisma.AlertCreateManyAlertDefinitionInput, 'projectId'> => {
+  const { severity, agentUserIds } = options;
+
+  let businessId: { businessId: string } | {} = {};
+  let counterpartyId: { counterpartyId: string } | {} = {};
+
+  if ('businessIds' in options) {
+    // For merchant monitoring alerts
+    businessId = faker.helpers.arrayElement(options.businessIds.map(id => ({ businessId: id })));
+  } else if ('counterpartyIds' in options) {
+    // For transaction alerts
+    counterpartyId = faker.helpers.arrayElement(
+      options.counterpartyIds.map(id => ({ counterpartyId: id })),
+    );
+  }
+
   // In chance of 1 to 5, assign an agent to the alert
   const assigneeId =
     faker.datatype.number({ min: 1, max: 5 }) === 1
@@ -530,29 +591,39 @@ const generateFakeAlert = ({
     } as InputJsonValue,
     severity,
     assigneeId,
-    ...counterypartyId,
+    ...counterpartyId,
+    ...businessId,
   };
 };
 
-export const generateFakeAlertsAndDefinitions = async (
+export const seedTransactionsAlerts = async (
   prisma: PrismaClient,
   {
     project,
-    counterparyIds,
+    businessIds,
+    counterpartyIds,
     agentUserIds,
   }: {
     project: Project;
-    counterparyIds: string[];
+    businessIds: string[];
+    counterpartyIds: string[];
     agentUserIds: string[];
   },
 ) => {
-  const alertDefinitions = await generateAlertDefinitions(prisma, {
+  const transactionsAlertDef = await generateAlertDefinitions(prisma, {
+    alertsDefConfiguration: TRANSACTIONS_ALERT_DEFINITIONS,
     project,
     createdBy: faker.internet.userName(),
   });
 
-  await Promise.all(
-    alertDefinitions.map(alertDefinition =>
+  const merchantMonitoringAlertDef = await generateAlertDefinitions(prisma, {
+    alertsDefConfiguration: MERCHANT_MONITORING_ALERT_DEFINITIONS,
+    project,
+    createdBy: faker.internet.userName(),
+  });
+
+  await Promise.all([
+    ...transactionsAlertDef.map(alertDefinition =>
       prisma.alert.createMany({
         data: Array.from(
           {
@@ -562,7 +633,7 @@ export const generateFakeAlertsAndDefinitions = async (
             alertDefinitionId: alertDefinition.id,
             projectId: project.id,
             ...generateFakeAlert({
-              counterparyIds,
+              counterpartyIds,
               agentUserIds,
               severity: faker.helpers.arrayElement(Object.values(AlertSeverity)),
             }),
@@ -571,5 +642,25 @@ export const generateFakeAlertsAndDefinitions = async (
         skipDuplicates: true,
       }),
     ),
-  );
+
+    ...merchantMonitoringAlertDef.map(alertDefinition =>
+      prisma.alert.createMany({
+        data: Array.from(
+          {
+            length: faker.datatype.number({ min: 3, max: 5 }),
+          },
+          () => ({
+            alertDefinitionId: alertDefinition.id,
+            projectId: project.id,
+            ...generateFakeAlert({
+              businessIds,
+              agentUserIds,
+              severity: faker.helpers.arrayElement(Object.values(AlertSeverity)),
+            }),
+          }),
+        ),
+        skipDuplicates: true,
+      }),
+    ),
+  ]);
 };

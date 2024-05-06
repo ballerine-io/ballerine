@@ -21,7 +21,7 @@ import { Test } from '@nestjs/testing';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import {
-  ALERT_DEFINITIONS,
+  TRANSACTIONS_ALERT_DEFINITIONS,
   getAlertDefinitionCreateData,
 } from '../../scripts/alerts/generate-alerts';
 
@@ -87,14 +87,14 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.STRUC_CC, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC, project),
         });
 
         expect(
-          ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold,
+          TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold,
         ).toBeGreaterThanOrEqual(5);
         expect(
-          ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min,
+          TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min,
         ).toBeGreaterThanOrEqual(500);
       });
 
@@ -103,10 +103,10 @@ describe('AlertService', () => {
         const transactions = await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
+          .amount(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -124,10 +124,10 @@ describe('AlertService', () => {
         await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
+          .amount(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold - 1)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold - 1)
           .create();
 
         // Act
@@ -143,10 +143,10 @@ describe('AlertService', () => {
         await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min - 1)
+          .amount(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min - 1)
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -182,14 +182,14 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.STRUC_APM, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_APM, project),
         });
 
         expect(
-          ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountThreshold,
+          TRANSACTIONS_ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountThreshold,
         ).toBeGreaterThanOrEqual(5);
         expect(
-          ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountBetween.min,
+          TRANSACTIONS_ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountBetween.min,
         ).toBeGreaterThanOrEqual(500);
       });
 
@@ -198,10 +198,10 @@ describe('AlertService', () => {
         const transactions = await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountBetween.max - 1)
+          .amount(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountBetween.max - 1)
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.bank_transfer)
-          .count(ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountThreshold + 1)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -219,7 +219,7 @@ describe('AlertService', () => {
         await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min - 1)
+          .amount(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min - 1)
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.pay_pal)
           .count(6)
@@ -284,7 +284,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.CHVC_C, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.CHVC_C, project),
         });
       });
 
@@ -344,7 +344,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.SHCAC_C, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.SHCAC_C, project),
         });
       });
 
@@ -408,7 +408,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.CHCR_C, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.CHCR_C, project),
         });
       });
 
@@ -468,7 +468,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.SHCAR_C, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.SHCAR_C, project),
         });
       });
 
@@ -544,7 +544,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.HPC, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.HPC, project),
         });
         const correlationId = faker.datatype.uuid();
         counteryparty = await prismaService.counterparty.create({
@@ -654,7 +654,7 @@ describe('AlertService', () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              ...ALERT_DEFINITIONS.TLHAICC,
+              ...TRANSACTIONS_ALERT_DEFINITIONS.TLHAICC,
             },
             project,
           ),
@@ -742,7 +742,7 @@ describe('AlertService', () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              ...ALERT_DEFINITIONS.TLHAIAPM,
+              ...TRANSACTIONS_ALERT_DEFINITIONS.TLHAIAPM,
             },
             project,
           ),
@@ -828,13 +828,13 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.PAY_HCA_CC, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_CC, project),
         });
 
         expect(
-          ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold,
+          TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold,
         ).toBeGreaterThanOrEqual(1000);
-        expect(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.direction).toBe(
+        expect(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.direction).toBe(
           TransactionDirection.inbound,
         );
       });
@@ -846,7 +846,7 @@ describe('AlertService', () => {
           .direction('inbound')
           .paymentMethod(PaymentMethod.credit_card)
           .amount(2)
-          .count(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold + 1)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -868,7 +868,7 @@ describe('AlertService', () => {
           .direction('inbound')
           .paymentMethod(PaymentMethod.credit_card)
           .amount(150)
-          .count(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold % 10)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold % 10)
           .create();
 
         await baseTransactionFactory
@@ -876,7 +876,7 @@ describe('AlertService', () => {
           .withBusinessBeneficiary()
           .paymentMethod(PaymentMethod.apple_pay)
           .amount(150)
-          .count(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold % 10)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold % 10)
           .create();
 
         // Act
@@ -894,17 +894,19 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.PAY_HCA_APM, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_APM, project),
         });
 
         expect(
-          ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold,
+          TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold,
         ).toBeGreaterThanOrEqual(1000);
-        expect(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.direction).toBe(
+        expect(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.direction).toBe(
           TransactionDirection.inbound,
         );
 
-        expect(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.excludePaymentMethods).toBe(true);
+        expect(
+          TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.excludePaymentMethods,
+        ).toBe(true);
       });
 
       it('When there more than 1k credit card transactions, an alert should be created', async () => {
@@ -914,7 +916,7 @@ describe('AlertService', () => {
           .direction('inbound')
           .paymentMethod(PaymentMethod.debit_card)
           .amount(2)
-          .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold + 1)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -936,7 +938,7 @@ describe('AlertService', () => {
           .direction('inbound')
           .paymentMethod(PaymentMethod.credit_card)
           .amount(150)
-          .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold % 10)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold % 10)
           .create();
 
         await baseTransactionFactory
@@ -944,7 +946,7 @@ describe('AlertService', () => {
           .withBusinessBeneficiary()
           .paymentMethod(PaymentMethod.apple_pay)
           .amount(150)
-          .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold % 10)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold % 10)
           .create();
 
         // Act
