@@ -72,7 +72,7 @@ export class BusinessReportService {
       {
         ...options,
         where: {
-          ...this.buildFilters(getTransactionsParameters),
+          businessId: getTransactionsParameters.businessId,
         },
         ...args,
       },
@@ -80,54 +80,54 @@ export class BusinessReportService {
     );
   }
 
-  private buildFilters(filterParams: GetBusinessReportDto): Prisma.TransactionRecordWhereInput {
-    const whereClause: Prisma.BusinessReportWhereInput = {};
-
-    if (filterParams.businessId) {
-      whereClause.businessId = filterParams.businessId;
-    }
-
-    if (filterParams.startDate) {
-      whereClause.createdAt = {
-        ...(whereClause.createdAt as DateTimeFilter),
-        gte: filterParams.startDate,
-      };
-    }
-
-    if (filterParams.endDate) {
-      whereClause.createdAt = {
-        ...(whereClause.createdAt as DateTimeFilter),
-        lte: filterParams.endDate,
-      };
-    }
-
-    if (filterParams.timeValue && filterParams.timeUnit) {
-      const now = new Date(); // UTC time by default
-      let subtractValue = 0;
-
-      switch (filterParams.timeUnit) {
-        case TIME_UNITS.minutes:
-          subtractValue = filterParams.timeValue * 60 * 1000;
-          break;
-        case TIME_UNITS.hours:
-          subtractValue = filterParams.timeValue * 60 * 60 * 1000;
-          break;
-        case TIME_UNITS.days:
-          subtractValue = filterParams.timeValue * 24 * 60 * 60 * 1000;
-          break;
-        case TIME_UNITS.months:
-          now.setMonth(now.getMonth() - filterParams.timeValue);
-          break;
-        case TIME_UNITS.years:
-          now.setFullYear(now.getFullYear() - filterParams.timeValue);
-          break;
-      }
-
-      const pastDate = new Date(now.getTime() - subtractValue);
-
-      whereClause.createdAt = { gte: pastDate };
-    }
-
-    return whereClause;
-  }
+  // private buildFilters(filterParams: GetBusinessReportDto): Prisma.TransactionRecordWhereInput {
+  //   const whereClause: Prisma.BusinessReportWhereInput = {};
+  //
+  //   if (filterParams.businessId) {
+  //     whereClause.businessId = filterParams.businessId;
+  //   }
+  //
+  //   if (filterParams.startDate) {
+  //     whereClause.createdAt = {
+  //       ...(whereClause.createdAt as DateTimeFilter),
+  //       gte: filterParams.startDate,
+  //     };
+  //   }
+  //
+  //   if (filterParams.endDate) {
+  //     whereClause.createdAt = {
+  //       ...(whereClause.createdAt as DateTimeFilter),
+  //       lte: filterParams.endDate,
+  //     };
+  //   }
+  //
+  //   if (filterParams.timeValue && filterParams.timeUnit) {
+  //     const now = new Date(); // UTC time by default
+  //     let subtractValue = 0;
+  //
+  //     switch (filterParams.timeUnit) {
+  //       case TIME_UNITS.minutes:
+  //         subtractValue = filterParams.timeValue * 60 * 1000;
+  //         break;
+  //       case TIME_UNITS.hours:
+  //         subtractValue = filterParams.timeValue * 60 * 60 * 1000;
+  //         break;
+  //       case TIME_UNITS.days:
+  //         subtractValue = filterParams.timeValue * 24 * 60 * 60 * 1000;
+  //         break;
+  //       case TIME_UNITS.months:
+  //         now.setMonth(now.getMonth() - filterParams.timeValue);
+  //         break;
+  //       case TIME_UNITS.years:
+  //         now.setFullYear(now.getFullYear() - filterParams.timeValue);
+  //         break;
+  //     }
+  //
+  //     const pastDate = new Date(now.getTime() - subtractValue);
+  //
+  //     whereClause.createdAt = { gte: pastDate };
+  //   }
+  //
+  //   return whereClause;
+  // }
 }
