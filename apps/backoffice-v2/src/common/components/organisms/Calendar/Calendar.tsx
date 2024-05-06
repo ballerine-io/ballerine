@@ -1,16 +1,16 @@
-import * as React from 'react';
+import React from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@radix-ui/react-icons';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { DayPicker } from 'react-day-picker';
+import { DayPicker, DayPickerRangeProps } from 'react-day-picker';
 import { buttonVariants } from '../../atoms/Button/Button';
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
-export function Calendar({
+export type CalendarProps = DayPickerRangeProps;
+export const Calendar = ({
   className,
   classNames,
   showOutsideDays = true,
   ...props
-}: CalendarProps) {
+}: CalendarProps) => {
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -60,5 +60,5 @@ export function Calendar({
       {...props}
     />
   );
-}
+};
 Calendar.displayName = 'Calendar';

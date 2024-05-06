@@ -17,7 +17,7 @@ export const Home: FunctionComponent = () => {
   const locale = useLocale();
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { handleDateRangeChange } = useHomeLogic();
+  const { handleDateRangeChange, from, to } = useHomeLogic();
 
   useEffect(() => {
     if (pathname !== `/${locale}` && pathname !== `/${locale}/home`) {
@@ -41,7 +41,11 @@ export const Home: FunctionComponent = () => {
             {firstName && ` ${firstName}`}
           </h3>
         </div>
-        <DateRangePicker onChange={handleDateRangeChange} />
+        <DateRangePicker
+          onChange={handleDateRangeChange}
+          value={{ from: from ? new Date(from) : undefined, to: to ? new Date(to) : undefined }}
+          className={undefined}
+        />
       </div>
       <div>
         <Tabs defaultValue={pathname} key={pathname}>

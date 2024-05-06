@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, ComponentProps, useEffect } from 'react';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { formatDate } from '@/common/utils/format-date';
 import { ctw } from '@/common/utils/ctw/ctw';
@@ -8,14 +8,17 @@ import { Popover, PopoverContent, PopoverTrigger } from '@ballerine/ui';
 import { DateRange } from 'react-day-picker';
 
 type TDateRangePickerProps = {
-  onChange: (range: DateRange | undefined) => void;
+  onChange: ComponentProps<typeof Calendar>['onSelect'];
+  value: ComponentProps<typeof Calendar>['value'];
+  className: ComponentProps<'div'>['className'];
 };
 
-export function DateRangePicker({ onChange }: TDateRangePickerProps) {
+export const DateRangePicker = ({ onChange, value, className }: TDateRangePickerProps) => {
   const [date, setDate] = useState<DateRange | undefined>();
+  console.log(value);
 
   return (
-    <div className={ctw('grid gap-2')}>
+    <div className={ctw('grid gap-2', className)}>
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -40,9 +43,9 @@ export function DateRangePicker({ onChange }: TDateRangePickerProps) {
             initialFocus
             mode="range"
             selected={date}
-            onSelect={selection => {
+            onSelect={(selection: DateRange | undefined) => {
               setDate(selection);
-              onChange(selection);
+              onChange ?? onChange(selection);
             }}
             numberOfMonths={2}
           />
@@ -50,4 +53,4 @@ export function DateRangePicker({ onChange }: TDateRangePickerProps) {
       </Popover>
     </div>
   );
-}
+};
