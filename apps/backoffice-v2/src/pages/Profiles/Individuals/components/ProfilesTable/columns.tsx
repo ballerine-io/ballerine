@@ -84,19 +84,20 @@ export const columns = [
   }),
   columnHelper.accessor('correlationId', {
     cell: info => {
-      // const correlationId = info.getValue();
-      const correlationId = 'd290f1ee-6c54-4b01-90e6-d701748f0851';
+      const correlationId = info.getValue();
 
       return (
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger className={`flex items-center`}>
-              <TextWithNAFallback className={`w-[11.8ch] truncate`}>
-                {correlationId}
-              </TextWithNAFallback>
-              <CopyToClipboard textToCopy={correlationId} />
+            <TooltipTrigger className={`flex items-center`} asChild>
+              <div>
+                <TextWithNAFallback className={`w-[11.8ch] truncate`}>
+                  {correlationId}
+                </TextWithNAFallback>
+                <CopyToClipboard textToCopy={correlationId} disabled={!correlationId} />
+              </div>
             </TooltipTrigger>
-            <TooltipContent>{correlationId}</TooltipContent>
+            {correlationId && <TooltipContent>{correlationId}</TooltipContent>}
           </Tooltip>
         </TooltipProvider>
       );

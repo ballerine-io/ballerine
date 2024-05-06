@@ -11,6 +11,7 @@ interface ICopyToClipboardProps extends ComponentProps<typeof Button> {
 export const CopyToClipboard: FunctionComponent<ICopyToClipboardProps> = ({
   textToCopy,
   className,
+  disabled,
   ...props
 }) => {
   return (
@@ -18,7 +19,14 @@ export const CopyToClipboard: FunctionComponent<ICopyToClipboardProps> = ({
       variant={'ghost'}
       size={'icon'}
       onClick={copyToClipboard(textToCopy)}
-      className={ctw(`h-[unset] opacity-80 hover:bg-transparent hover:opacity-100`, className)}
+      className={ctw(
+        `h-[unset] w-[unset] p-1 opacity-80 hover:bg-transparent hover:opacity-100`,
+        {
+          '!bg-transparent opacity-50': disabled,
+        },
+        className,
+      )}
+      disabled={disabled}
       {...props}
     >
       <CopySvg className={`d-4`} />

@@ -82,7 +82,7 @@ export class CaseManagementController {
     const endUsers = await this.endUserService.list(
       {
         select: {
-          id: true,
+          correlationId: true,
           createdAt: true,
           firstName: true,
           lastName: true,
