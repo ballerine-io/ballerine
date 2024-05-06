@@ -1,22 +1,22 @@
-import { TAlertsList } from '@/domains/alerts/fetchers';
+import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { useSelect } from '@/common/hooks/useSelect/useSelect';
 import { useSort } from '@/common/hooks/useSort/useSort';
-import { useCallback, useEffect, useState } from 'react';
+import { isInstanceOfFunction } from '@/common/utils/is-instance-of-function/is-instance-of-function';
+import { TAlertsList } from '@/domains/alerts/fetchers';
+import { checkIsBooleanishRecord } from '@/lib/zod/utils/checkers';
 import {
-  getCoreRowModel,
-  getSortedRowModel,
   OnChangeFn,
   RowSelectionState,
   SortingState,
+  getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { isInstanceOfFunction } from '@/common/utils/is-instance-of-function/is-instance-of-function';
-import { columns } from '../../columns';
-import { checkIsBooleanishRecord } from '@/lib/zod/utils/checkers';
-import { useSelect } from '@/common/hooks/useSelect/useSelect';
-import { useLocale } from '@/common/hooks/useLocale/useLocale';
+import { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { columns } from '../../columns';
 
-export const useAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
+export const useBusinessAlertsTableLogic = ({ data }: { data: TAlertsList }) => {
   const { onSort, sortBy, sortDir } = useSort();
   const { selected: ids, onSelect } = useSelect();
   const [sorting, setSorting] = useState<SortingState>([

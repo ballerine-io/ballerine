@@ -1,22 +1,24 @@
-import { createColumnHelper } from '@tanstack/react-table';
-import { TAlertsList, TAlertState } from '@/domains/alerts/fetchers';
-import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
-import dayjs from 'dayjs';
-import { Badge } from '@ballerine/ui';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { UserCircle2 } from 'lucide-react';
-import { Avatar } from '@/common/components/atoms/Avatar_/Avatar_';
-import { AvatarImage } from '@/common/components/atoms/Avatar_/Avatar.Image';
 import { AvatarFallback } from '@/common/components/atoms/Avatar_/Avatar.Fallback';
-import { createInitials } from '@/common/utils/create-initials/create-initials';
-import React, { ComponentProps } from 'react';
-import { severityToClassName } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/severity-to-class-name';
+import { AvatarImage } from '@/common/components/atoms/Avatar_/Avatar.Image';
+import { Avatar } from '@/common/components/atoms/Avatar_/Avatar_';
 import { IndeterminateCheckbox } from '@/common/components/atoms/IndeterminateCheckbox/IndeterminateCheckbox';
-import { SnakeCase, titleCase } from 'string-ts';
+import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
+import { createInitials } from '@/common/utils/create-initials/create-initials';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { TAlertState } from '@/domains/alerts/fetchers';
+import { TBusinessAlertsList } from '@/domains/business-alerts/fetchers';
+import { severityToClassName } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/severity-to-class-name';
+import { Badge } from '@ballerine/ui';
+import { createColumnHelper } from '@tanstack/react-table';
+import dayjs from 'dayjs';
+import { UserCircle2 } from 'lucide-react';
+import { ComponentProps } from 'react';
+import { SnakeCase, titleCase } from 'string-ts';
 
 const columnHelper = createColumnHelper<
-  TAlertsList[number] & {
+  TBusinessAlertsList[number] & {
     // TODO: Change type once decisions PR is merged
     // Computed from `alert.state`
     decision: string;
@@ -44,25 +46,13 @@ export const columns = [
     },
     header: 'Created At',
   }),
-  columnHelper.accessor('updatedAt', {
+  columnHelper.accessor('subject', {
     cell: info => {
-      const updatedAt = info.getValue();
+      const subject = info.getValue();
 
-      if (!updatedAt) {
-        return <TextWithNAFallback>{updatedAt}</TextWithNAFallback>;
-      }
-
-      const date = dayjs(updatedAt).format('MMM DD, YYYY');
-      const time = dayjs(updatedAt).format('hh:mm');
-
-      return (
-        <div className={`flex flex-col space-y-0.5`}>
-          <span className={`font-semibold`}>{date}</span>
-          <span className={`text-xs text-[#999999]`}>{time}</span>
-        </div>
-      );
+      return <span className={`font-semibold`}>{valueOrNA(subject?.companyName)}</span>;
     },
-    header: 'Updated At',
+    header: 'Business',
   }),
   columnHelper.accessor('label', {
     cell: info => {
