@@ -24,13 +24,6 @@ export class IndividualAmlWebhookInput {
   timestamp!: number;
 
   @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  eventName!: string;
-
-  @ApiProperty({
     required: false,
     type: String,
   })
