@@ -479,7 +479,6 @@ export const generateAlertDefinitions = async (
     Object.values(alertsDef)
       .map(alert => ({
         correlationId: alert.inlineRule.id,
-        enable: false,
         ...alert,
       }))
       .filter(alert => alert.enabled)
