@@ -1,9 +1,13 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import {
   AlertDefinition,
+  AlertSeverity,
+  Business,
+  BusinessReportType,
   Counterparty,
   Customer,
   PaymentMethod,
+  Prisma,
   Project,
   TransactionDirection,
   TransactionRecordType,
@@ -21,9 +25,14 @@ import { Test } from '@nestjs/testing';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import {
-  TRANSACTIONS_ALERT_DEFINITIONS,
   getAlertDefinitionCreateData,
+  MERCHANT_MONITORING_ALERT_DEFINITIONS,
+  TRANSACTIONS_ALERT_DEFINITIONS,
 } from '../../scripts/alerts/generate-alerts';
+import { generateBusiness } from '../../scripts/generate-end-user';
+import console from 'console';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { BusinessReportRepository } from '@/business-report/business-report.repository';
 
 describe('AlertService', () => {
   let prismaService: PrismaService;
@@ -40,6 +49,8 @@ describe('AlertService', () => {
         ProjectScopeService,
         AlertRepository,
         AlertDefinitionRepository,
+        BusinessReportService,
+        BusinessReportRepository,
         AlertService,
       ],
     }).compile();
@@ -955,6 +966,331 @@ describe('AlertService', () => {
         // Assert
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(0);
+      });
+    });
+  });
+
+  describe('#checkOngoingMonitoringAlert', () => {
+    let business: Business | null = null;
+    let fileId: string | null;
+
+    beforeEach(async () => {
+      console.log(project);
+
+      await prismaService.alertDefinition.create({
+        data: getAlertDefinitionCreateData(
+          MERCHANT_MONITORING_ALERT_DEFINITIONS.MERCHANT_ONGOING_RISK_ALERT_RISK_INCREASE,
+          project,
+        ),
+      });
+
+      business = await prismaService.business.create({
+        data: generateBusiness({ projectId: project.id }),
+      });
+
+      fileId = (
+        await prismaService.file.create({
+          data: {
+            fileName: 'ballerine.pdf',
+            projectId: project.id,
+            fileNameOnDisk: 'ballerine.pdf',
+            userId: '',
+            mimeType: 'dwa',
+            uri: 'dwa.',
+          },
+        })
+      ).id;
+    });
+
+    describe('When no previousReport ', () => {
+      it("doesn't create alert", async () => {
+        //Arrange
+        const currentReport = await prismaService.businessReport.create({
+          data: {
+            businessId: business!.id,
+            reportId: faker.datatype.uuid(),
+            riskScore: 15,
+            projectId: project.id,
+            type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+            report: {
+              reportFileId: fileId,
+              data: {
+                summary: {
+                  riskScore: 15,
+                },
+              },
+            },
+          } satisfies Prisma.BusinessReportUncheckedCreateInput,
+        });
+
+        // Act
+        const response = await alertService.checkOngoingMonitoringAlert(
+          {
+            projectId: project.id,
+            businessId: business!.id,
+            reportId: currentReport.id,
+          },
+          'cool company name',
+        );
+
+        //Assert
+        expect(response).toBeUndefined();
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('When previous report not ongoing report ', () => {
+      it("doesn't create alert", async () => {
+        //Arrange
+        const currentReport = await prismaService.businessReport.create({
+          data: {
+            businessId: business!.id,
+            reportId: faker.datatype.uuid(),
+            riskScore: 15,
+            projectId: project.id,
+            type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+            report: {
+              reportFileId: fileId,
+              data: {
+                summary: {
+                  riskScore: 15,
+                },
+                previousReport: {
+                  summary: {
+                    riskScore: 50,
+                  },
+                  reportType: BusinessReportType.MERCHANT_REPORT_T1,
+                },
+              },
+            },
+          } satisfies Prisma.BusinessReportUncheckedCreateInput,
+        });
+
+        // Act
+        const response = await alertService.checkOngoingMonitoringAlert(
+          {
+            projectId: project.id,
+            businessId: business!.id,
+            reportId: currentReport.id,
+          },
+          'cool company name',
+        );
+
+        //Assert
+        expect(response).toBeUndefined();
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('When previous report is ongoing report ', () => {
+      describe('When previous report has higher risk score ', () => {
+        it("doesn't create alert", async () => {
+          //Arrange
+          const currentReport = await prismaService.businessReport.create({
+            data: {
+              businessId: business!.id,
+              reportId: faker.datatype.uuid(),
+              riskScore: 15,
+              projectId: project.id,
+              type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+              report: {
+                reportFileId: fileId,
+                data: {
+                  summary: {
+                    riskScore: 10,
+                  },
+                  previousReport: {
+                    summary: {
+                      riskScore: 55,
+                    },
+                    reportType: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+                  },
+                },
+              },
+            } satisfies Prisma.BusinessReportUncheckedCreateInput,
+          });
+
+          // Act
+          const response = await alertService.checkOngoingMonitoringAlert(
+            {
+              projectId: project.id,
+              businessId: business!.id,
+              reportId: currentReport.id,
+            },
+            'cool company name',
+          );
+
+          //Assert
+          expect(response).toBeUndefined();
+          const alerts = await prismaService.alert.findMany();
+          expect(alerts).toHaveLength(0);
+        });
+      });
+
+      describe('When previous report does not hit required changes ', () => {
+        it("doesn't create alert", async () => {
+          //Arrange
+          const currentReport = await prismaService.businessReport.create({
+            data: {
+              businessId: business!.id,
+              reportId: faker.datatype.uuid(),
+              riskScore: 15,
+              projectId: project.id,
+              type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+              report: {
+                reportFileId: fileId,
+                data: {
+                  summary: {
+                    riskScore: 25,
+                  },
+                  previousReport: {
+                    summary: {
+                      riskScore: 15,
+                    },
+                    reportType: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+                  },
+                },
+              },
+            } satisfies Prisma.BusinessReportUncheckedCreateInput,
+          });
+
+          // Act
+          const response = await alertService.checkOngoingMonitoringAlert(
+            {
+              projectId: project.id,
+              businessId: business!.id,
+              reportId: currentReport.id,
+            },
+            'cool company name',
+          );
+
+          //Assert
+          expect(response).toBeUndefined();
+          const alerts = await prismaService.alert.findMany();
+          expect(alerts).toHaveLength(0);
+        });
+      });
+
+      describe('When previous report hits necessary changes to invoke alert', () => {
+        it('creates alert for specific', async () => {
+          //Arrange
+          const currentReport = await prismaService.businessReport.create({
+            data: {
+              businessId: business!.id,
+              reportId: faker.datatype.uuid(),
+              riskScore: 15,
+              projectId: project.id,
+              type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+              report: {
+                reportFileId: fileId,
+                data: {
+                  summary: {
+                    riskScore: 35,
+                  },
+                  previousReport: {
+                    summary: {
+                      riskScore: 15,
+                    },
+                    reportType: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+                  },
+                },
+              },
+            } satisfies Prisma.BusinessReportUncheckedCreateInput,
+          });
+
+          // Act
+          const response = await alertService.checkOngoingMonitoringAlert(
+            {
+              projectId: project.id,
+              businessId: business!.id,
+              reportId: currentReport.id,
+            },
+            'cool company name',
+          );
+
+          //Assert
+          expect(response!.severity).toEqual(AlertSeverity.low);
+          const alerts = await prismaService.alert.findMany();
+          expect(alerts).toHaveLength(1);
+        });
+
+        describe('When previous report hits multiple alerts', () => {
+          it('dispatches the highest severity alert', async () => {
+            //Arrange
+            const currentReport = await prismaService.businessReport.create({
+              data: {
+                businessId: business!.id,
+                reportId: faker.datatype.uuid(),
+                riskScore: 15,
+                projectId: project.id,
+                type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+                report: {
+                  reportFileId: fileId,
+                  data: {
+                    summary: {
+                      riskScore: 40,
+                    },
+                    previousReport: {
+                      summary: {
+                        riskScore: 15,
+                      },
+                      reportType: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+                    },
+                  },
+                },
+              } satisfies Prisma.BusinessReportUncheckedCreateInput,
+            });
+
+            await prismaService.alertDefinition.create({
+              data: getAlertDefinitionCreateData(
+                {
+                  ...MERCHANT_MONITORING_ALERT_DEFINITIONS.MERCHANT_ONGOING_RISK_ALERT_THRESHOLD,
+                  defaultSeverity: AlertSeverity.high,
+                  inlineRule: {
+                    id: 'MERCHANT_ONGOING_RISK_ALERT_THRESHOLD',
+                    fnName: 'checkMerchantOngoingAlert',
+                    subjects: ['businessId', 'projectId'],
+                    options: {
+                      maxRiskScoreThreshold: 40,
+                    },
+                  },
+                },
+                project,
+              ),
+            });
+            await prismaService.alertDefinition.create({
+              data: getAlertDefinitionCreateData(
+                {
+                  ...MERCHANT_MONITORING_ALERT_DEFINITIONS.MERCHANT_ONGOING_RISK_ALERT_THRESHOLD,
+                  defaultSeverity: AlertSeverity.medium,
+                  inlineRule: {
+                    ...MERCHANT_MONITORING_ALERT_DEFINITIONS.MERCHANT_ONGOING_RISK_ALERT_THRESHOLD
+                      .inlineRule,
+                    id: 'MERCHANT_ONGOING_RISK_ALERT_THRESHOLD_MEDIUM',
+                  },
+                },
+                project,
+              ),
+            });
+
+            // Act
+            const response = await alertService.checkOngoingMonitoringAlert(
+              {
+                projectId: project.id,
+                businessId: business!.id,
+                reportId: currentReport.id,
+              },
+              'cool company name',
+            );
+
+            //Assert
+            expect(response!.severity).toEqual(AlertSeverity.high);
+            const alerts = await prismaService.alert.findMany();
+            expect(alerts).toHaveLength(1);
+          });
+        });
       });
     });
   });

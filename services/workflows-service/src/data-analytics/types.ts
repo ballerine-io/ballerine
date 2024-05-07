@@ -4,7 +4,7 @@ import { TProjectId } from '@/types';
 import type { MerchantAlertLabel, TransactionAlertLabel } from '@/alert/consts';
 
 export type InlineRule = {
-  id: keyof typeof MerchantAlertLabel | keyof typeof TransactionAlertLabel;
+  id: keyof typeof MerchantAlertLabel | keyof typeof TransactionAlertLabel | string;
   subjects: string[] | readonly string[];
 } & (
   | {
@@ -102,6 +102,7 @@ export type CheckRiskScoreSubject = {
 };
 
 export type CheckRiskScoreOptions = {
-  increaseRiskScorePercentage: number;
-  increaseRiskScore: number;
+  increaseRiskScorePercentage?: number;
+  increaseRiskScore?: number;
+  maxRiskScoreThreshold?: number;
 };

@@ -14,6 +14,7 @@ import { AlertSeverity, BusinessReportType, Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isEmpty } from 'lodash';
 import { BusinessReportService } from '@/business-report/business-report.service';
+import console from 'console';
 
 @Injectable()
 export class DataAnalyticsService {
@@ -59,7 +60,12 @@ export class DataAnalyticsService {
 
   async checkMerchantOngoingAlert(
     { projectId, businessId }: CheckRiskScoreSubject,
-    { increaseRiskScorePercentage, increaseRiskScore }: CheckRiskScoreOptions,
+    {
+      increaseRiskScorePercentage,
+      increaseRiskScore,
+      maxRiskScoreThreshold,
+    }: CheckRiskScoreOptions,
+    alertSeverity: AlertSeverity,
   ) {
     const { report } = await this.businessReportService.findFirst(
       {
@@ -74,65 +80,95 @@ export class DataAnalyticsService {
       [projectId],
     );
 
+    if (
+      !(
+        report as {
+          data: {
+            previousReport?: unknown;
+          };
+        }
+      ).data.previousReport
+    ) {
+      return;
+    }
+
     const {
       data: {
         summary: { riskScore: currentRiskScore },
         previousReport: {
           summary: { riskScore: previousRiskScore },
+          reportType: previousReportType,
         },
       },
     } = report as {
       data: {
-        summary: { riskScore: number };
-        previousReport: { summary: { riskScore: number } };
+        summary: {
+          riskScore: number;
+        };
+        previousReport: {
+          summary: {
+            riskScore: number;
+          };
+          reportType: BusinessReportType;
+        };
       };
     };
+
+    if (previousReportType !== BusinessReportType.ONGOING_MERCHANT_REPORT_T1) {
+      return;
+    }
 
     if (currentRiskScore < previousRiskScore) {
       return;
     }
 
-    if (increaseRiskScore > currentRiskScore - previousRiskScore) {
+    if (!(maxRiskScoreThreshold || increaseRiskScore || increaseRiskScorePercentage)) {
+      this.logger.warn(`Rule for ${businessId} ${projectId} missing required options`, {
+        maxRiskScoreThreshold,
+        increaseRiskScore,
+        increaseRiskScorePercentage,
+      });
+
       return;
     }
 
-    let severity: AlertSeverity = AlertSeverity.low;
+    let ruleResult;
 
-    const riskScorePercentage = (currentRiskScore - previousRiskScore) / previousRiskScore;
+    if (maxRiskScoreThreshold && currentRiskScore >= maxRiskScoreThreshold) {
+      ruleResult = {
+        severity: alertSeverity,
+        alertReason: `The risk score has exceeded the threshold of ${maxRiskScoreThreshold}`,
+      };
+    }
 
-    if (15 <= riskScorePercentage || currentRiskScore < 40) {
-      severity = AlertSeverity.low;
+    if (increaseRiskScore && currentRiskScore - previousRiskScore >= increaseRiskScore) {
+      ruleResult = {
+        severity: alertSeverity,
+        alertReason: `The risk score has been increased by more than ${increaseRiskScore} from previous monitoring`,
+      };
     }
 
     if (
-      (15 > riskScorePercentage && riskScorePercentage >= 30) ||
-      (currentRiskScore >= 40 && currentRiskScore < 55)
+      increaseRiskScorePercentage &&
+      ((currentRiskScore - previousRiskScore) / previousRiskScore) * 100 >=
+        increaseRiskScorePercentage
     ) {
-      severity = AlertSeverity.medium;
+      ruleResult = {
+        severity: alertSeverity,
+        alertReason: `The risk score has been significantly increased from previous monitoring`,
+      };
     }
 
-    if (
-      (30 > riskScorePercentage && riskScorePercentage >= 45) ||
-      (currentRiskScore >= 55 && currentRiskScore < 75)
-    ) {
-      severity = AlertSeverity.high;
-    }
-
-    if ((30 > riskScorePercentage && riskScorePercentage >= 60) || currentRiskScore > 75) {
-      severity = AlertSeverity.critical;
-    }
-
-    if ((previousRiskScore < 90 && previousRiskScore > 60) || currentRiskScore > 90) {
-      severity = AlertSeverity.critical;
+    if (!ruleResult) {
+      return;
     }
 
     const executionDetails = {
       businessId: businessId,
       projectId: projectId,
-      severity,
       riskScore: currentRiskScore,
       previousRiskScore,
-      alertReason: 'The risk score has been significantly increased from previous monitoring',
+      ...ruleResult,
     };
 
     return executionDetails;
