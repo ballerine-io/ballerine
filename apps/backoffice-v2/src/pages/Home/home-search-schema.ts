@@ -1,14 +1,8 @@
 import { z } from 'zod';
 
 export const HomeSearchSchema = z.object({
-  from: z
-    .string()
-    .optional()
-    .transform(val => (val ? new Date(val) : undefined)),
-  to: z
-    .string()
-    .optional()
-    .transform(val => (val ? new Date(val) : undefined)),
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
 });
 
 export type DateRange = z.infer<typeof HomeSearchSchema>;

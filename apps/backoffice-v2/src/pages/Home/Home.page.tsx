@@ -43,8 +43,7 @@ export const Home: FunctionComponent = () => {
         </div>
         <DateRangePicker
           onChange={handleDateRangeChange}
-          value={{ from, to }}
-          className={undefined}
+          value={{ from: from ? new Date(from) : undefined, to: to ? new Date(to) : undefined }}
         />
       </div>
       <div>

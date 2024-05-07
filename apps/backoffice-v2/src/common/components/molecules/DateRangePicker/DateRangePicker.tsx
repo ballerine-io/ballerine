@@ -1,21 +1,18 @@
-import React, { useState, ComponentProps } from 'react';
+import React, { ComponentProps } from 'react';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { formatDate } from '@/common/utils/format-date';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { Button } from '../../atoms/Button/Button';
 import { Calendar } from '../../organisms/Calendar/Calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@ballerine/ui';
-import { DateRange } from 'react-day-picker';
 
 type TDateRangePickerProps = {
-  onChange: ComponentProps<typeof Calendar>['onSelect'];
-  value: ComponentProps<typeof Calendar>['selected'];
-  className: ComponentProps<'div'>['className'];
+  onChange: NonNullable<ComponentProps<typeof Calendar>['onSelect']>;
+  value: NonNullable<ComponentProps<typeof Calendar>['selected']>;
+  className?: ComponentProps<'div'>['className'];
 };
 
 export const DateRangePicker = ({ onChange, value, className }: TDateRangePickerProps) => {
-  const [date, setDate] = useState<DateRange | undefined>();
-
   return (
     <div className={ctw('grid gap-2', className)}>
       <Popover>
@@ -24,28 +21,25 @@ export const DateRangePicker = ({ onChange, value, className }: TDateRangePicker
             id="date"
             variant={'outline'}
             className={ctw('w-[300px] justify-start text-left font-normal', {
-              'text-muted-foreground': !value && !date,
+              'text-muted-foreground': !value,
             })}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date?.from && date?.to && (
+            <CalendarIcon className="size-4 mr-2" />
+            {value?.from && value?.to && (
               <>
-                {formatDate(date.from, 'LLL dd, y')} - {formatDate(date.to, 'LLL dd, y')}
+                {formatDate(value.from, 'LLL dd, y')} - {formatDate(value.to, 'LLL dd, y')}
               </>
             )}
-            {date?.from && !date?.to && formatDate(date.from, 'LLL dd, y')}
-            {!date?.from && !date?.to && <span>Pick a date</span>}
+            {value?.from && !value?.to && formatDate(value.from, 'LLL dd, y')}
+            {!value?.from && !value?.to && <span>Pick a date</span>}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             initialFocus
             mode="range"
-            selected={date}
-            onSelect={selection => {
-              setDate(selection);
-              onChange?.(selection);
-            }}
+            selected={value}
+            onSelect={onChange}
             numberOfMonths={2}
           />
         </PopoverContent>
