@@ -937,25 +937,6 @@ async function seed() {
     project1.id,
   );
 
-  await client.$transaction(async () =>
-    endUserIds.map(async (id, index) =>
-      client.endUser.create({
-        /// I tried to fix that so I can run through ajv, currently it doesn't like something in the schema (anyOf  )
-        data: generateEndUser({
-          id,
-          workflow: {
-            workflowDefinitionId: kycManualMachineId,
-            workflowDefinitionVersion: manualMachineVersion,
-            context: await createMockEndUserContextData(id, index + 1),
-            state: DEFAULT_INITIAL_STATE,
-          },
-          projectId: project1.id,
-          connectBusinesses: Math.random() > 0.5,
-        }),
-      }),
-    ),
-  );
-
   await client.$transaction(async tx => {
     businessRiskIds.map(async (id, index) => {
       const riskWf = async () => ({
@@ -1024,6 +1005,26 @@ async function seed() {
   //     },
   //   },
   // });
+
+  await client.$transaction(async () =>
+    endUserIds.map(async (id, index) =>
+      client.endUser.create({
+        /// I tried to fix that so I can run through ajv, currently it doesn't like something in the schema (anyOf  )
+        data: generateEndUser({
+          id,
+          workflow: {
+            workflowDefinitionId: kycManualMachineId,
+            workflowDefinitionVersion: manualMachineVersion,
+            context: await createMockEndUserContextData(id, index + 1),
+            state: DEFAULT_INITIAL_STATE,
+          },
+          projectId: project1.id,
+          connectBusinesses: Math.random() > 0.5,
+        }),
+      }),
+    ),
+  );
+
   void client.$disconnect();
 
   console.info('Seeding database with custom seed...');
