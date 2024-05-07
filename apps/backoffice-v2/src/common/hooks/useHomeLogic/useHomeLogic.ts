@@ -7,15 +7,15 @@ export const useHomeLogic = () => {
   const [searchParams, setSearchParams] = useZodSearchParams(HomeSearchSchema);
 
   const handleDateRangeChange: ComponentProps<typeof DateRangePicker>['onChange'] = range => {
-    const from = range?.from?.toISOString() || '';
-    const to = range?.to?.toISOString() || '';
+    const from = range?.from?.toISOString() || undefined;
+    const to = range?.to?.toISOString() || undefined;
 
     setSearchParams({ from, to });
   };
 
   return {
-    from: searchParams.from || '',
-    to: searchParams.to || '',
+    from: searchParams.from || undefined,
+    to: searchParams.to || undefined,
     handleDateRangeChange,
   };
 };

@@ -1,4 +1,4 @@
-import React, { useState, ComponentProps, useEffect } from 'react';
+import React, { useState, ComponentProps } from 'react';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { formatDate } from '@/common/utils/format-date';
 import { ctw } from '@/common/utils/ctw/ctw';
@@ -9,13 +9,12 @@ import { DateRange } from 'react-day-picker';
 
 type TDateRangePickerProps = {
   onChange: ComponentProps<typeof Calendar>['onSelect'];
-  value: ComponentProps<typeof Calendar>['value'];
+  value: ComponentProps<typeof Calendar>['selected'];
   className: ComponentProps<'div'>['className'];
 };
 
 export const DateRangePicker = ({ onChange, value, className }: TDateRangePickerProps) => {
   const [date, setDate] = useState<DateRange | undefined>();
-  console.log(value);
 
   return (
     <div className={ctw('grid gap-2', className)}>
@@ -25,7 +24,7 @@ export const DateRangePicker = ({ onChange, value, className }: TDateRangePicker
             id="date"
             variant={'outline'}
             className={ctw('w-[300px] justify-start text-left font-normal', {
-              'text-muted-foreground': !date,
+              'text-muted-foreground': !value && !date,
             })}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -43,9 +42,9 @@ export const DateRangePicker = ({ onChange, value, className }: TDateRangePicker
             initialFocus
             mode="range"
             selected={date}
-            onSelect={(selection: DateRange | undefined) => {
+            onSelect={selection => {
               setDate(selection);
-              onChange ?? onChange(selection);
+              onChange?.(selection);
             }}
             numberOfMonths={2}
           />
