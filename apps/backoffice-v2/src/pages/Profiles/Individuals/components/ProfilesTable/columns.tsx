@@ -29,7 +29,7 @@ export const KYC = {
   PENDING: 'PENDING',
   PROCESSED: 'PROCESSED',
   APPROVED: 'APPROVED',
-  DECLINED: 'DECLINED',
+  REJECTED: 'REJECTED',
   REVISIONS: 'REVISIONS',
 } as const;
 
@@ -37,7 +37,7 @@ export const KYCs = [
   KYC.PENDING,
   KYC.PROCESSED,
   KYC.APPROVED,
-  KYC.DECLINED,
+  KYC.REJECTED,
   KYC.REVISIONS,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof KYC>>;
 
