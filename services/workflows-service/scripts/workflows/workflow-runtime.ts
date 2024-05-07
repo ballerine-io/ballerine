@@ -403,7 +403,6 @@ const createAmlData = ({ ubo }: { ubo: Workflow['ubos'][number] }) => {
       name: `${ubo.firstName} ${ubo.lastName}`,
       year: ubo.dateOfBirth.getFullYear(),
     },
-    totalHits: 1,
     createdAt: faker.date.recent().toISOString(),
     hits: [
       {
@@ -413,19 +412,17 @@ const createAmlData = ({ ubo }: { ubo: Workflow['ubos'][number] }) => {
         dateOfBirth: ubo.dateOfBirth.toISOString().split('T')[0],
         dateOfDeath: null,
         matchedName: `${ubo.firstName} ${ubo.lastName}`,
-        listingsRelatedToMatch: {
-          pep: [],
-          warnings: [],
-          sanctions: [
-            {
-              sourceUrl:
-                'http://www.treasury.gov/resource-center/sanctions/SDN-List/Pages/default.aspx',
-              sourceName: 'OFAC SDN List',
-            },
-          ],
-          fitnessProbity: [],
-          adverseMedia: [],
-        },
+        pep: [],
+        warnings: [],
+        sanctions: [
+          {
+            sourceUrl:
+              'http://www.treasury.gov/resource-center/sanctions/SDN-List/Pages/default.aspx',
+            sourceName: 'OFAC SDN List',
+          },
+        ],
+        fitnessProbity: [],
+        adverseMedia: [],
       },
     ],
   };

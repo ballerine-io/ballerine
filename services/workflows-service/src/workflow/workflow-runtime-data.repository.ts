@@ -53,6 +53,12 @@ export class WorkflowRuntimeDataRepository {
     );
   }
 
+  async findManyUnscoped<T extends Prisma.WorkflowRuntimeDataFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindManyArgs>,
+  ) {
+    return await this.prisma.workflowRuntimeData.findMany(args);
+  }
+
   async findOne<T extends Prisma.WorkflowRuntimeDataFindFirstArgs>(
     args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindFirstArgs>,
     projectIds: TProjectIds,
@@ -351,5 +357,31 @@ export class WorkflowRuntimeDataRepository {
     `;
 
     return (await this.prisma.$queryRaw(sql)) as WorkflowRuntimeData[];
+  }
+
+  async findFirstByEntityId<T extends Prisma.WorkflowRuntimeDataFindFirstArgs>(
+    entityId: string,
+    projectIds: TProjectIds,
+    args?: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindFirstArgs>,
+  ) {
+    return await this.prisma.workflowRuntimeData.findFirst(
+      this.scopeService.scopeFindFirst(
+        {
+          ...args,
+          where: {
+            ...args?.where,
+            OR: [
+              {
+                endUserId: entityId,
+              },
+              {
+                businessId: entityId,
+              },
+            ],
+          },
+        },
+        projectIds,
+      ),
+    );
   }
 }

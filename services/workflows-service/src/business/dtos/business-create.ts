@@ -1,3 +1,4 @@
+import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
@@ -5,6 +6,50 @@ export enum ApprovalState {
   PROCESSING = 'PROCESSING',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
+}
+
+export class BusinessAddressDto {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  country?: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  countryCode?: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  city?: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  street?: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  postcode?: string;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  state?: string;
 }
 
 export class BusinessCreateDto {
@@ -20,7 +65,8 @@ export class BusinessCreateDto {
     type: String,
   })
   @IsString()
-  registrationNumber!: string;
+  @Optional()
+  registrationNumber?: string;
 
   @ApiProperty({
     required: true,
@@ -34,12 +80,18 @@ export class BusinessCreateDto {
     type: Number,
   })
   @IsString()
-  mccCode!: number;
+  @Optional()
+  mccCode?: number;
 
   @ApiProperty({
     required: false,
     type: String,
   })
   @IsString()
-  businessType!: string;
+  @Optional()
+  businessType?: string;
+
+  @ApiProperty({ type: BusinessAddressDto })
+  @Optional()
+  address?: BusinessAddressDto;
 }

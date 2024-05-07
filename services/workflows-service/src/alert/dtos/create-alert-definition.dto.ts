@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsOptional, IsBoolean, IsEnum } from 'class-validator';
-import { AlertType } from '@prisma/client';
+import { IsNotEmpty, IsString, IsOptional, IsBoolean } from 'class-validator';
 
 export class CreateAlertDefinitionDto {
   @ApiProperty({ example: '[Payments] - High Cumulative Amount - Inbound' })
@@ -34,11 +33,6 @@ export class CreateAlertDefinitionDto {
   @ApiProperty({ example: true })
   @IsBoolean()
   enabled!: boolean;
-
-  @ApiProperty({ example: 'HighRiskTransaction', enum: AlertType, required: false })
-  @IsEnum(AlertType)
-  @IsOptional()
-  type?: AlertType;
 
   @ApiProperty({
     example: '{"invokeOnce": true, "invokeThrottleInSeconds": 60}',

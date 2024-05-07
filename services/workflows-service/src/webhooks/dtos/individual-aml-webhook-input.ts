@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class IndividualAmlWebhookInput {
   @ApiProperty({
@@ -13,30 +13,15 @@ export class IndividualAmlWebhookInput {
     required: true,
     type: Number,
   })
-  @IsString()
+  @IsNumber()
   apiVersion!: number;
 
   @ApiProperty({
     required: true,
-    type: String,
+    type: Number,
   })
-  @IsString()
-  timestamp!: string;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  eventName!: string;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  entityId!: string;
+  @IsNumber()
+  timestamp!: number;
 
   @ApiProperty({
     required: false,

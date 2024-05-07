@@ -1,5 +1,39 @@
 # @ballerine/workflow-core
 
+## 0.6.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.5
+
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.4
+
+## 0.6.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.3
+
+## 0.6.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.2
+
+## 0.6.4
+
+### Patch Changes
+
+- Fixed invokedAt to be UTC epoch
+
 ## 0.6.3
 
 ### Patch Changes
