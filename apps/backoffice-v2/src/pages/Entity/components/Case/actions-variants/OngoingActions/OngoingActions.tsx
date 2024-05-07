@@ -24,7 +24,7 @@ export const OngoingActions = () => {
   } = useOngoingActionsLogic();
 
   return (
-    <div className={`flex items-center space-x-4 self-start pe-[3.35rem]`}>
+    <div className={`mt-6 flex items-center space-x-4 self-start pe-[3.35rem]`}>
       <Dialog>
         <DialogTrigger asChild>
           <Button

@@ -16,11 +16,11 @@ import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { Button } from '@ballerine/ui';
 import { toTitleCase } from 'string-ts';
-import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
-import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
-import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
-import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
+import { MotionBadge } from '@/common/components/molecules/MotionBadge/MotionBadge';
+import { capitalize } from '@/common/utils/capitalize/capitalize';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { Separator } from '@/common/components/atoms/Separator/Separator';
 
 const motionBadgeProps = {
@@ -454,7 +454,7 @@ export const useKycBlock = ({
         })
         .addCell({
           type: 'nodeCell',
-          value: <Separator className={`my-2`} />,
+          value: amlBlock?.length ? <Separator className={`my-2`} /> : null,
         })
         .addCell({
           type: 'container',
