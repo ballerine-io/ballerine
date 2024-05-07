@@ -710,7 +710,7 @@ enum AlertStatus {
 model AlertDefinition {
   id          String  @id @default(cuid())
   crossEnvKey String? @unique
-  label       String
+  correlationId       String
   name        String
   enabled     Boolean @default(true)
   description String?
@@ -738,7 +738,7 @@ model AlertDefinition {
 
   alert Alert[]
 
-  @@unique([label, projectId])
+  @@unique([correlationId, projectId])
   @@index([projectId])
 }
 
