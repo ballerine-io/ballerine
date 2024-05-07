@@ -10,10 +10,6 @@ import { BadRequestException } from '@nestjs/common';
 import { isObject } from '@ballerine/common';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 
-const Webhook = {
-  AML_INDIVIDUAL_MONITORING_UPDATE: 'aml.individuals.monitoring.update',
-} as const;
-
 const EntityType = {
   BUSINESS: 'business',
   INDIVIDUAL: 'individual',
@@ -36,7 +32,7 @@ export class WebhooksController {
   @VerifyUnifiedApiSignatureDecorator()
   async amlHook(
     @common.Param() { entityType }: AmlWebhookInput,
-    @common.Body() { eventName, data }: IndividualAmlWebhookInput,
+    @common.Body() { data }: IndividualAmlWebhookInput,
   ) {
     if (!(isObject(data) && 'endUserId' in data && data.endUserId)) {
       throw new BadRequestException('Missing endUserId');
@@ -44,18 +40,14 @@ export class WebhooksController {
 
     try {
       if (entityType === EntityType.INDIVIDUAL) {
-        if (eventName === Webhook.AML_INDIVIDUAL_MONITORING_UPDATE) {
-          await this.webhooksService.handleIndividualAmlHit({ endUserId: data.endUserId, data });
-        } else {
-          this.logger.error(`Unknown webhook event: ${eventName}`);
-          throw new BadRequestException('Unknown webhook event');
-        }
+        await this.webhooksService.handleIndividualAmlHit({ endUserId: data.endUserId, data });
       } else {
         this.logger.error(`Unknown entity type: ${entityType}`);
+
         throw new BadRequestException('Unknown entity type');
       }
     } catch (error) {
-      this.logger.error('amlHook::', { entityType, eventName, data, error });
+      this.logger.error('amlHook::', { entityType, data, error });
 
       throw error;
     }
