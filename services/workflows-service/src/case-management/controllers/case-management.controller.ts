@@ -92,6 +92,11 @@ export class CaseManagementController {
               companyName: true,
             },
           },
+          workflowRuntimeData: {
+            select: {
+              tags: true,
+            },
+          },
           amlHits: true,
           activeMonitorings: true,
           updatedAt: true,
@@ -106,6 +111,9 @@ export class CaseManagementController {
         businesses: Array<{
           companyName: string;
         }>;
+        workflowRuntimeData: {
+          tags: string[];
+        };
       }
     >;
     const tagToKyc = {
@@ -122,8 +130,7 @@ export class CaseManagementController {
     >;
     const formattedEndUsers = await Promise.all(
       typedEndUsers.map(async endUser => {
-        const workflowRuntimeData = await this.workflowService.getByEntityId(endUser.id, projectId);
-        const tag = (workflowRuntimeData?.tags as string[])?.find(
+        const tag = endUser.workflowRuntimeData?.tags?.find(
           tag => !!tagToKyc[tag as keyof typeof tagToKyc],
         );
         const alerts = await this.alertsService.getAlertsByEntityId(endUser.id, projectId);
