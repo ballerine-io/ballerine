@@ -85,7 +85,7 @@ export const fetcher: IFetcher = async ({
       ? validationError.errors.map(({ path, message }) => `${path.join('.')} (${message}),\n`)
       : [validationError];
 
-    terminal.error('❌ Validation error:\n', ...messages);
+    terminal.error('❌ Validation error:\n', { messages, url });
 
     throw validationError;
   }

@@ -374,7 +374,7 @@ export const ALERT_DEFINITIONS = {
     },
   },
   TLHAICC: {
-    enabled: true,
+    enabled: false,
     defaultSeverity: AlertSeverity.medium,
     description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
     inlineRule: {
@@ -394,7 +394,7 @@ export const ALERT_DEFINITIONS = {
     },
   },
   TLHAIAPM: {
-    enabled: true,
+    enabled: false,
     defaultSeverity: AlertSeverity.medium,
     description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
     inlineRule: {
@@ -462,7 +462,7 @@ export const getAlertDefinitionCreateData = (
       ...(dedupeStrategy ?? {}),
     },
     inlineRule,
-    label: id,
+    correlationId: id,
     name: id,
     rulesetId: `set-${id}`,
     description: description,
@@ -480,11 +480,13 @@ export const getAlertDefinitionCreateData = (
 export const generateAlertDefinitions = async (
   prisma: PrismaClient | PrismaTransaction,
   {
-    createdBy = 'SYSTEM',
     project,
+    createdBy = 'SYSTEM',
+    alertsDef = ALERT_DEFINITIONS,
   }: {
     createdBy?: string;
     project: Project;
+    alertsDef?: Partial<typeof ALERT_DEFINITIONS>;
   },
   {
     crossEnvKeyPrefix = undefined,
@@ -493,10 +495,9 @@ export const generateAlertDefinitions = async (
   } = {},
 ) =>
   Promise.all(
-    Object.values(ALERT_DEFINITIONS)
+    Object.values(alertsDef)
       .map(alert => ({
-        label: alert.inlineRule.id,
-        enable: false,
+        correlationId: alert.inlineRule.id,
         ...alert,
       }))
       .filter(alert => alert.enabled)
@@ -508,7 +509,12 @@ export const generateAlertDefinitions = async (
         };
 
         return prisma.alertDefinition.upsert({
-          where: { label_projectId: { label: alertDef.inlineRule.id, projectId: project.id } },
+          where: {
+            correlationId_projectId: {
+              correlationId: alertDef.correlationId,
+              projectId: project.id,
+            },
+          },
           create: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
           update: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
           include: {

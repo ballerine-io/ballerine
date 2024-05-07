@@ -655,6 +655,7 @@ describe('AlertService', () => {
           data: getAlertDefinitionCreateData(
             {
               ...ALERT_DEFINITIONS.TLHAICC,
+              enabled: true,
             },
             project,
           ),
@@ -743,6 +744,7 @@ describe('AlertService', () => {
           data: getAlertDefinitionCreateData(
             {
               ...ALERT_DEFINITIONS.TLHAIAPM,
+              enabled: true,
             },
             project,
           ),

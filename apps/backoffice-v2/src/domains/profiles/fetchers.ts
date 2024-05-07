@@ -13,7 +13,7 @@ export const IndividualProfileSchema = z.object({
   name: z.string(),
   businesses: z.string().optional(),
   role: z.enum(Roles),
-  kyc: z.enum(KYCs).or(z.undefined()),
+  kyc: z.enum(KYCs).optional(),
   isMonitored: z.boolean(),
   matches: z.string(),
   alerts: z.number(),
