@@ -66,17 +66,17 @@ export const columns = [
     },
     header: 'Updated At',
   }),
-  columnHelper.accessor('label', {
+  columnHelper.accessor('correlationId', {
     cell: info => {
-      const label = info.getValue();
+      const correlationId = info.getValue();
 
       return (
-        <Badge variant="secondary" className="max-w-[8rem]" title={label}>
-          <div className="truncate">{label}</div>
+        <Badge variant="secondary" className="max-w-[8rem]" title={correlationId}>
+          <div className="truncate">{correlationId}</div>
         </Badge>
       );
     },
-    header: 'Label',
+    header: 'Correlation Id',
   }),
   columnHelper.accessor('subject', {
     cell: info => {
