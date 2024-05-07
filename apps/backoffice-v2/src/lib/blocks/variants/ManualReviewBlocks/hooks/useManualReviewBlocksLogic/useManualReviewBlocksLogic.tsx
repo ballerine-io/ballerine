@@ -2,8 +2,8 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
+import { useCaseInfoBlock } from '@/lib/blocks/hooks/useCaseInfoBlock/useCaseInfoBlock';
 import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
-import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import { useCallback, useMemo } from 'react';
@@ -57,7 +57,7 @@ export const useManualReviewBlocksLogic = () => {
     [mutateRevisionTaskById],
   );
 
-  const businessInformation = useEntityInfoBlock({
+  const businessInformation = useCaseInfoBlock({
     entity: workflow?.context?.entity ?? {},
     workflow,
     entityDataAdditionalInfo,
@@ -107,6 +107,8 @@ export const useManualReviewBlocksLogic = () => {
 
   return {
     blocks,
+    businessInformationBlock: businessInformation,
+    documentsBlocks,
     isLoading,
   };
 };

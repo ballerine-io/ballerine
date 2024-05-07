@@ -349,7 +349,7 @@ export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
     .addCell({
       id: 'header',
       type: 'heading',
-      value: 'Compliance Check Results',
+      value: 'Sanctions Screening Results',
     })
     .build()
     .concat(amlBlock)

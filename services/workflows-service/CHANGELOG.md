@@ -1,5 +1,51 @@
 # @ballerine/workflows-service
 
+## 0.7.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.5
+  - @ballerine/workflow-core@0.6.8
+  - @ballerine/workflow-node-sdk@0.6.8
+
+## 0.7.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.4
+  - @ballerine/workflow-core@0.6.7
+  - @ballerine/workflow-node-sdk@0.6.7
+
+## 0.7.5
+
+### Patch Changes
+
+- Added workflow definition theme schemas
+- Updated dependencies
+  - @ballerine/common@0.9.3
+  - @ballerine/workflow-core@0.6.6
+  - @ballerine/workflow-node-sdk@0.6.6
+
+## 0.7.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.2
+  - @ballerine/workflow-core@0.6.5
+  - @ballerine/workflow-node-sdk@0.6.5
+
+## 0.7.3
+
+### Patch Changes
+
+- Fixed invokedAt to be UTC epoch
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.4
+  - @ballerine/workflow-node-sdk@0.6.4
+
 ## 0.7.2
 
 ### Patch Changes

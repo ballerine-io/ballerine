@@ -174,7 +174,9 @@ export class WorkflowRunner {
     parentWorkflowRuntimeConfig: unknown,
     callbackAction?: ChildWorkflowPluginParams['action'],
   ) {
+    console.log('Initiating child plugins', childPluginSchemas);
     return childPluginSchemas?.map(childPluginSchema => {
+      console.log('Initiating child plugin', childPluginSchema);
       const transformers = this.fetchTransformers(childPluginSchema.transformers) || [];
 
       return new ChildWorkflowPlugin({

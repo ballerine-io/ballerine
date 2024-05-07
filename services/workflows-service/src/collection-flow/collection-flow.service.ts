@@ -17,12 +17,13 @@ import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
-import { Customer, EndUser, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
+import { EndUser, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { randomUUID } from 'crypto';
 import keyBy from 'lodash/keyBy';
 import get from 'lodash/get';
 import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
+import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
 
 @Injectable()
 export class CollectionFlowService {
@@ -39,7 +40,7 @@ export class CollectionFlowService {
     protected readonly fileService: FileService,
   ) {}
 
-  async getCustomerDetails(projectId: TProjectId): Promise<Customer> {
+  async getCustomerDetails(projectId: TProjectId): Promise<TCustomerWithDefinitionsFeatures> {
     return this.customerService.getByProjectId(projectId);
   }
 

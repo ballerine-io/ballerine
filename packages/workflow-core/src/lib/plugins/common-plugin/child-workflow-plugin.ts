@@ -25,6 +25,11 @@ export class ChildWorkflowPlugin {
   }
 
   async invoke(context: TContext) {
+    console.log(`Invoking child workflow plugin`, {
+      name: this.name,
+      definitionId: this.definitionId,
+      parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
+    });
     const childWorkflowContext = await this.transformData(this.transformers || [], context);
 
     try {
@@ -39,7 +44,24 @@ export class ChildWorkflowPlugin {
           },
         },
       });
+      console.log(`Child workflow plugin invoked`, {
+        name: this.name,
+        definitionId: this.definitionId,
+        parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
+      });
+    } catch (error) {
+      console.error(`Error occurred while invoking child workflow plugin`, {
+        error,
+        name: this.name,
+        definitionId: this.definitionId,
+        parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
+      });
     } finally {
+      console.log(`Child workflow plugin completed`, {
+        name: this.name,
+        definitionId: this.definitionId,
+        parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
+      });
       return Promise.resolve();
     }
   }

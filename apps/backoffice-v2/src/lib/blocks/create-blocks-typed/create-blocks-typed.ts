@@ -12,6 +12,7 @@ import { Heading } from '@/lib/blocks/components/Heading/Heading';
 import { MapCell } from '@/lib/blocks/components/MapCell/MapCell';
 import { MultiDocuments } from '@/lib/blocks/components/MultiDocuments/MultiDocuments';
 import { NestedDetails } from '@/lib/blocks/components/NestedDetails/NestedDetails';
+import { NodeCell } from '@/lib/blocks/components/NodeCell/NodeCell';
 import { PDFViewerCell } from '@/lib/blocks/components/PDFViewerCell/PDFViewer';
 import { Paragraph } from '@/lib/blocks/components/Paragraph/Paragraph';
 import { Subheading } from '@/lib/blocks/components/Subheading/Subheading';
@@ -47,5 +48,6 @@ export const cells: CellsMap = {
   paragraph: Paragraph,
   dialog: DialogCell,
   block: BlockCell,
+  nodeCell: NodeCell,
   pdfViewer: PDFViewerCell,
 };

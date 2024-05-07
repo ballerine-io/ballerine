@@ -326,6 +326,11 @@ export class WorkflowService {
     currentProjectId: TProjectId,
     transaction: PrismaTransaction,
   ) {
+    this.logger.log('Persisting child event', {
+      childPluginConfig,
+      projectIds,
+      currentProjectId,
+    });
     const childWorkflow = (
       await this.createOrUpdateWorkflowRuntime(
         {
@@ -366,6 +371,12 @@ export class WorkflowService {
         currentProjectId,
         transaction,
       );
+    } else {
+      this.logger.warn('Child workflow not created', {
+        childPluginConfig,
+        projectIds,
+        currentProjectId,
+      });
     }
 
     return childWorkflow;
@@ -378,6 +389,13 @@ export class WorkflowService {
     transaction?: PrismaTransaction,
   ) {
     return await this.workflowDefinitionRepository.findById(id, args, projectIds, transaction);
+  }
+
+  async getWorkflowsByState(state: string[], args: Prisma.WorkflowRuntimeDataFindManyArgs) {
+    return await this.workflowRuntimeDataRepository.findManyUnscoped({
+      where: { state: { in: state } },
+      ...args,
+    });
   }
 
   async listActiveWorkflowsRuntimeStates(projectIds: TProjectIds) {
@@ -1381,7 +1399,10 @@ export class WorkflowService {
       }> = [];
 
       // Creating new workflow
-      if (!existingWorkflowRuntimeData || mergedConfig?.allowMultipleActiveWorkflows) {
+      if (
+        !existingWorkflowRuntimeData ||
+        (existingWorkflowRuntimeData && mergedConfig?.allowMultipleActiveWorkflows)
+      ) {
         const contextWithoutDocumentPageType = {
           ...contextToInsert,
           documents: this.omitTypeFromDocumentsPages(contextToInsert.documents),
@@ -1552,10 +1573,9 @@ export class WorkflowService {
         // Updating existing workflow
         this.logger.log('existing documents', existingWorkflowRuntimeData.context.documents);
         this.logger.log('documents', contextToInsert.documents);
-        // contextToInsert.documents = updateDocuments(
-        //   existingWorkflowRuntimeData.context.documents,
-        //   context.documents,
-        // );
+
+        contextToInsert.documents = assignIdToDocuments(contextToInsert.documents);
+
         const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
           contextToInsert?.documents,
           entityId,
@@ -1863,6 +1883,10 @@ export class WorkflowService {
           );
 
           if (!runnableChildWorkflow || !childPluginConfiguration.initOptions.event) {
+            this.logger.log('Child workflow not runnable', {
+              childWorkflowId: runnableChildWorkflow?.workflowRuntimeData.id,
+            });
+
             return;
           }
 
@@ -2221,6 +2245,24 @@ export class WorkflowService {
       {
         forceEmit: true,
       },
+    );
+  }
+
+  async updateById(workflowRuntimeDataId: string, args: Prisma.WorkflowRuntimeDataUpdateInput) {
+    return await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataId, {
+      data: args,
+    });
+  }
+
+  async getByEntityId(
+    entityId: string,
+    projectId: TProjectId,
+    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+  ) {
+    return await this.workflowRuntimeDataRepository.findFirstByEntityId(
+      entityId,
+      [projectId],
+      args,
     );
   }
 }

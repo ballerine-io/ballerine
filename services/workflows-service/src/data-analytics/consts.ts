@@ -5,3 +5,12 @@ export const AggregateType = {
   MAX: 'MAX',
   MIN: 'MIN',
 } as const;
+
+export const TIME_UNITS = {
+  minutes: 'minutes',
+  hours: 'hours',
+  days: 'days',
+  weeks: 'weeks',
+  months: 'months',
+  years: 'years',
+} as const;

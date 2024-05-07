@@ -11,6 +11,7 @@ export class WinstonLogger implements IAppLogger {
     const jsonFormat = format.combine(format.timestamp(), format.json(), format.uncolorize());
 
     const prettyFormat = format.combine(
+      format.errors({ stack: true }),
       format.colorize({ all: true }),
       format.timestamp(),
       format.splat(),
@@ -59,8 +60,8 @@ export class WinstonLogger implements IAppLogger {
     this.logger.info(message, payload);
   }
 
-  error(message: string, payload: LogPayload = {}) {
-    this.logger.error(message, payload);
+  error(error: Error | string) {
+    this.logger.error(error);
   }
 
   warn(message: string, payload: LogPayload = {}) {

@@ -78,7 +78,7 @@ export class HelpersTransformer extends BaseContextTransformer {
     value: string,
     _options: unknown,
   ) {
-    return new Date().getUTCDate();
+    return new Date().getTime();
   }
 
   regex(

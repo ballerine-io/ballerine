@@ -1,32 +1,32 @@
-import { useParams } from 'react-router-dom';
+import { Button } from '@/common/components/atoms/Button/Button';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
-import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { useCallback, useMemo } from 'react';
-import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
+import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
-import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
-import { toast } from 'sonner';
-import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { Button } from '@/common/components/atoms/Button/Button';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { ExternalLink, Send } from 'lucide-react';
-import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
+import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
+import { useAssociatedCompaniesInformationBlock } from '@/lib/blocks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
 import { associatedCompanyAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-adapter';
-import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
-import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
-import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
-import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
-import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
-import { useDirectorsBlocks } from '@/lib/blocks/hooks/useDirectorsBlocks';
 import {
   motionButtonProps,
   useAssociatedCompaniesBlock,
 } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
-import { useAssociatedCompaniesInformationBlock } from '@/lib/blocks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
+import { useCaseInfoBlock } from '@/lib/blocks/hooks/useCaseInfoBlock/useCaseInfoBlock';
+import { useDirectorsBlocks } from '@/lib/blocks/hooks/useDirectorsBlocks';
+import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
+import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
+import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
+import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
+import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
+import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
+import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
+import { ExternalLink, Send } from 'lucide-react';
+import { useCallback, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export const useKybExampleBlocksLogic = () => {
   const { entityId: workflowId } = useParams();
@@ -140,7 +140,7 @@ export const useKybExampleBlocksLogic = () => {
   );
 
   // Blocks
-  const businessInformation = useEntityInfoBlock({
+  const businessInformation = useCaseInfoBlock({
     entity: workflow?.context?.entity ?? {},
     workflow,
     entityDataAdditionalInfo,

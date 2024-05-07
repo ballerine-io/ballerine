@@ -29,7 +29,7 @@ export const BaseBusinessCreateInputSchema = zodBuilder<
     legalForm: z.string().optional(),
     country: z.string().optional(),
     countryOfIncorporation: z.string().optional(),
-    dateOfIncorporation: z.date().optional(),
+    dateOfIncorporation: z.string().datetime().optional(),
     address: InputJsonValueSchema.optional(),
     phoneNumber: z.string().optional(),
     email: z.string().optional(),
