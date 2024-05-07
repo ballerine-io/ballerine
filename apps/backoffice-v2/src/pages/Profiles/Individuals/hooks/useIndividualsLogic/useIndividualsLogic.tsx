@@ -17,6 +17,7 @@ export const useIndividualsLogic = () => {
       sortBy,
       sortDir,
     });
+  console.log(individualsProfiles);
   const isLastPage =
     (individualsProfiles?.length ?? 0) < pageSize || individualsProfiles?.length === 0;
   const { search, onSearch } = useSearch({
