@@ -1,3 +1,4 @@
+import { TProjectId } from '@/types';
 import { TransactionDirection, PaymentMethod, TransactionRecordType } from '@prisma/client';
 import { AggregateType, TIME_UNITS } from './consts';
 
@@ -21,6 +22,9 @@ export type InlineRule = {
       fnName: 'evaluateTransactionLimitHistoricAverageInbound';
       options: Omit<TransactionLimitHistoricAverageOptions, 'projectId'>;
     }
+  | {
+      fnName: 'evaluateDormantAccount';
+    }  
 );
 
 export type TAggregations = keyof typeof AggregateType;
@@ -33,7 +37,6 @@ export type TExcludedCounterparty = {
 export type TimeUnit = (typeof TIME_UNITS)[keyof typeof TIME_UNITS];
 
 export type TransactionsAgainstDynamicRulesType = {
-  projectId: string;
   havingAggregate?: TAggregations;
   amountBetween?: { min: number; max: number };
   timeAmount?: number;
@@ -49,7 +52,7 @@ export type TransactionsAgainstDynamicRulesType = {
 };
 
 export type HighTransactionTypePercentage = {
-  projectId: string;
+  projectId: TProjectId;
   transactionType: TransactionRecordType;
   subjectColumn: 'counterpartyOriginatorId' | 'counterpartyBeneficiaryId';
   minimumCount: number;
@@ -59,7 +62,7 @@ export type HighTransactionTypePercentage = {
 };
 
 export type TCustomersTransactionTypeOptions = {
-  projectId: string;
+  projectId: TProjectId;
   transactionType?: TransactionRecordType[] | readonly TransactionRecordType[];
   threshold?: number;
   paymentMethods?: PaymentMethod[] | readonly PaymentMethod[];
@@ -70,7 +73,7 @@ export type TCustomersTransactionTypeOptions = {
 };
 
 export type TransactionLimitHistoricAverageOptions = {
-  projectId: string;
+  projectId: TProjectId;
   transactionDirection: TransactionDirection;
   paymentMethod: {
     value: PaymentMethod;
@@ -80,3 +83,4 @@ export type TransactionLimitHistoricAverageOptions = {
   minimumTransactionAmount: number;
   transactionFactor: number;
 };
+

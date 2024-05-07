@@ -44,6 +44,11 @@ export class DataAnalyticsService {
           ...inlineRule.options,
           projectId,
         });
+
+      case 'evaluateDormantAccount':
+        return await this[inlineRule.fnName]({
+          projectId,
+        });
     }
 
     // Used for exhaustive check
@@ -324,29 +329,20 @@ export class DataAnalyticsService {
     // ON "totalTrunsactionAllTime"."businessId" = "totalTransactionWithinSixMonths"."businessId";`;
 
     const query: Prisma.Sql = Prisma.sql`
-
-  SELECT
-    tr."counterpartyBeneficiaryId" as "counterpartyId"
+    SELECT
+    tr."counterpartyBeneficiaryId" as "counterpartyId",
     COUNT(
-      CASE WHEN tr."transactionDate" >= CURRENT_DATE - INTERVAL '1 days' THEN
+      CASE WHEN tr."transactionDate" >= CURRENT_DATE - INTERVAL '180 days' THEN
         tr."id"
       END) AS "totalTransactionWithinSixMonths",
     COUNT(tr."id") AS "totalTrunsactionAllTime"
   FROM
-    "TransactionRecord" AS "tr"
+    "TransactionRecord" AS "tr" 
   WHERE
     tr."projectId" = '${projectId}'
-    JOIN "transactionsData" "td" ON
-      tr."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
     AND tr."counterpartyBeneficiaryId" IS NOT NULL
-  GROUP BY
-    tr."counterpartyBeneficiaryId" as counterpartyId
-  HAVING
-    COUNT(
-      CASE WHEN tr."transactionDate" >= CURRENT_DATE - INTERVAL '1 days' THEN
-        tr."id"
-      END) = 1
-    AND COUNT(tr."id") > 1;
+      GROUP BY
+    tr."counterpartyBeneficiaryId";
   `;
 
     return await this._executeQuery<Array<Record<string, unknown>>>(query);
