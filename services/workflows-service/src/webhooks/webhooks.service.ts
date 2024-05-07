@@ -71,7 +71,7 @@ export class WebhooksService {
       [projectId],
     );
 
-    const { hits } = data as { hits: Array<Record<PropertyKey, unknown>> };
+    const hits = (data as { hits: Array<Record<PropertyKey, unknown>> })?.hits ?? [];
 
     const amlHits = hits.map(hit => ({
       ...hit,
