@@ -47,6 +47,25 @@ jobs:
       - name: Build
         uses: ./.github/actions/build-action
 
+      - name: Seed
+        env:
+          DB_URL: postgres://admin:admin@postgres:5432/postgres
+        run: |
+          pnpm run seed
+          
+    services:
+      postgres:
+        image: sibedge/postgres-plv8:15.3-3.1.7
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin
+        options: >-
+          --health-cmd pg_isready -U admin
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
   spell_check:
     runs-on: ubuntu-latest
 
