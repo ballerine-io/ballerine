@@ -102,7 +102,7 @@ export const columns = [
         </TooltipProvider>
       );
     },
-    header: 'ID',
+    header: 'Correlation ID',
   }),
   columnHelper.accessor('businesses', {
     cell: info => {
