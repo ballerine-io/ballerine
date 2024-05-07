@@ -1,10 +1,13 @@
 import { z } from 'zod';
 
-const SourceInfoSchema = z.object({
-  sourceName: z.string().optional().nullable(),
-  sourceUrl: z.string().optional().nullable(),
-  date: z.string().optional().nullable(),
-});
+const SourceInfoSchema = z
+  .object({
+    sourceName: z.string().optional().nullable(),
+    sourceUrl: z.string().optional().nullable(),
+    date: z.string().optional().nullable(),
+  })
+  .optional()
+  .nullable();
 
 const HitSchema = z.object({
   matchedName: z.string().optional().nullable(),
@@ -26,11 +29,11 @@ export const AmlSchema = z.object({
 export type TAml = z.output<typeof AmlSchema>;
 
 export const amlAdapter = (aml: TAml) => {
-  const { hits, createdAt, ...rest } = aml;
+  const { hits, createdAt } = aml;
 
   return {
     totalMatches: hits?.length ?? 0,
-    fullReport: rest,
+    fullReport: aml,
     dateOfCheck: createdAt,
     matches:
       hits?.map(
