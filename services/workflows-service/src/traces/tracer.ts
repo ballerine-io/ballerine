@@ -59,5 +59,5 @@ process.on('SIGTERM', () => {
   tracingSdk
     .shutdown()
     .then(() => console.log('Tracing terminated'))
-    .catch((error: unknown) => console.error('Error terminating tracing', error));
+    .catch((error: unknown) => logger.error('Error terminating tracing', error));
 });
