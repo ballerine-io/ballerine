@@ -23,9 +23,11 @@ import { ProjectModule } from '@/project/project.module';
 import { UserRepository } from '@/user/user.repository';
 import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
 import { SentryModule } from '@/sentry/sentry.module';
+import { BusinessReportModule } from '@/business-report/business-report.module';
 
 @Module({
   imports: [
+    BusinessReportModule,
     DataAnalyticsModule,
     ACLModule,
     PrismaModule,

@@ -5,14 +5,21 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { isFkConstraintError } from '@/prisma/prisma.util';
 import { InputJsonValue, ObjectValues, TProjectId } from '@/types';
 import { Injectable } from '@nestjs/common';
-import { Alert, AlertDefinition, AlertState, AlertStatus, MonitoringType } from '@prisma/client';
+import {
+  Alert,
+  AlertDefinition,
+  AlertSeverity,
+  AlertState,
+  AlertStatus,
+  MonitoringType,
+} from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { CheckRiskScoreOptions, CheckRiskScoreSubject, InlineRule } from '@/data-analytics/types';
 import _ from 'lodash';
-import { AlertExecutionStatus, MerchantAlertLabel } from './consts';
+import { AlertExecutionStatus } from './consts';
 import { computeHash } from '@/common/utils/sign/sign';
 import { TDedupeStrategy, TExecutionDetails } from './types';
 
@@ -148,38 +155,49 @@ export class AlertService {
     checkRiskScoreSubject: CheckRiskScoreSubject,
     businessCompanyName: string,
   ) {
-    const alertDefinition = await this.alertDefinitionRepository.findFirst(
+    const alertDefinitions = await this.alertDefinitionRepository.findMany(
       {
         where: {
           enabled: true,
           monitoringType: MonitoringType.ongoing_merchant_monitoring,
           projectId: checkRiskScoreSubject.projectId,
-          label: MerchantAlertLabel.MERCHANT_ONGOING_RISK_ALERT,
         },
       },
       [checkRiskScoreSubject.projectId],
     );
 
-    const alertResultData = await this.dataAnalyticsService.checkMerchantOngoingAlert(
-      checkRiskScoreSubject,
-      (alertDefinition.inlineRule as InlineRule).options as CheckRiskScoreOptions,
-    );
-
-    if (alertResultData) {
-      const subjectArray = Object.entries(checkRiskScoreSubject).map(([key, value]) => ({
-        [key]: value,
-      }));
-
-      await this.createAlert(
-        alertDefinition,
-        subjectArray,
-        { subjectArray },
-        {
-          ...alertResultData,
-          businessCompanyName,
-        },
+    const alertDefinitionsCheck = alertDefinitions.map(async alertDefinition => {
+      const alertResultData = await this.dataAnalyticsService.checkMerchantOngoingAlert(
+        checkRiskScoreSubject,
+        (alertDefinition.inlineRule as InlineRule).options as CheckRiskScoreOptions,
+        alertDefinition.defaultSeverity,
       );
-    }
+
+      if (alertResultData) {
+        const { reportId, ...subjects } = checkRiskScoreSubject;
+        const subjectArray = Object.entries(subjects).map(([key, value]) => ({
+          [key]: value,
+        }));
+
+        const createAlertReference = this.createAlert;
+
+        return [
+          alertDefinition,
+          subjectArray,
+          { subjectArray },
+          {
+            ...alertResultData,
+            businessCompanyName,
+          },
+        ] satisfies Parameters<typeof createAlertReference>;
+      }
+    });
+
+    const alertCreateArgs = (await Promise.all(alertDefinitionsCheck))
+      .filter(Boolean)
+      .sort((a, b) => this.sortBySeverity(a[0].defaultSeverity, b[0].defaultSeverity))[0];
+
+    return alertCreateArgs && (await this.createAlert(...alertCreateArgs));
   }
 
   private async checkAlert(alertDefinition: AlertDefinition, ...args: any[]) {
@@ -272,7 +290,7 @@ export class AlertService {
     subject: Array<{ [key: string]: unknown }>,
     executionRow: Record<string, unknown>,
     additionalInfo?: Record<string, unknown>,
-  ): Promise<Alert> {
+  ) {
     return this.alertRepository.create({
       data: {
         alertDefinitionId: alertDef.id,
@@ -281,7 +299,7 @@ export class AlertService {
         dataTimestamp: new Date(),
         state: AlertState.triggered,
         status: AlertStatus.new,
-        ...(additionalInfo ? { additionalInfo } : {}),
+        additionalInfo: additionalInfo,
         executionDetails: {
           checkpoint: {
             hash: computeHash(executionRow),
@@ -384,5 +402,26 @@ export class AlertService {
       },
       [projectId],
     );
+  }
+
+  sortBySeverity(a: AlertSeverity, b: AlertSeverity) {
+    const alertSeverityToNumber = (severity: AlertSeverity) => {
+      switch (severity) {
+        case AlertSeverity.high:
+          return 3;
+        case AlertSeverity.medium:
+          return 2;
+        case AlertSeverity.low:
+          return 1;
+        default:
+          return 0;
+      }
+    };
+
+    if (a === b) {
+      return 0;
+    }
+
+    return alertSeverityToNumber(a) < alertSeverityToNumber(b) ? 1 : -1;
   }
 }

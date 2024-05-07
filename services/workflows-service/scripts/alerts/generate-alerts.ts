@@ -431,30 +431,59 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
 >;
 
 export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
-  MERCHANT_ONGOING_RISK_ALERT: {
+  MERCHANT_ONGOING_RISK_ALERT_RISK_INCREASE: {
     enabled: true,
-    defaultSeverity: AlertSeverity.high,
+    defaultSeverity: AlertSeverity.low,
     monitoringType: MonitoringType.ongoing_merchant_monitoring,
-    description: '',
+    description: 'Monitor ongoing risk changes',
     inlineRule: {
-      id: 'MERCHANT_ONGOING_RISK_ALERT',
+      id: 'MERCHANT_ONGOING_RISK_ALERT_RISK_INCREASE',
       fnName: 'checkMerchantOngoingAlert',
       subjects: ['businessId', 'projectId'],
       options: {
-        increaseRiskScorePercentage: 50,
-        increaseRiskScore: 60,
+        increaseRiskScore: 20,
       },
     },
   },
-} as const satisfies Record<
-  keyof typeof MerchantAlertLabel,
-  {
-    inlineRule: InlineRule & InputJsonValue;
-    monitoringType: MonitoringType;
-    defaultSeverity: AlertSeverity;
-    enabled?: boolean;
-    description?: string;
-  }
+  MERCHANT_ONGOING_RISK_ALERT_THRESHOLD: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
+    monitoringType: MonitoringType.ongoing_merchant_monitoring,
+    description: 'Monitor ongoing risk changes',
+    inlineRule: {
+      id: 'MERCHANT_ONGOING_RISK_ALERT_THRESHOLD',
+      fnName: 'checkMerchantOngoingAlert',
+      subjects: ['businessId', 'projectId'],
+      options: {
+        maxRiskScoreThreshold: 60,
+      },
+    },
+  },
+  MERCHANT_ONGOING_RISK_ALERT_PERCENTAGE: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    monitoringType: MonitoringType.ongoing_merchant_monitoring,
+    description: 'Monitor ongoing risk changes',
+    inlineRule: {
+      id: 'MERCHANT_ONGOING_RISK_ALERT_PERCENTAGE',
+      fnName: 'checkMerchantOngoingAlert',
+      subjects: ['businessId', 'projectId'],
+      options: {
+        increaseRiskScorePercentage: 30,
+      },
+    },
+  },
+} as const satisfies Partial<
+  Record<
+    keyof typeof MerchantAlertLabel | string,
+    {
+      inlineRule: InlineRule & InputJsonValue;
+      monitoringType: MonitoringType;
+      defaultSeverity: AlertSeverity;
+      enabled?: boolean;
+      description?: string;
+    }
+  >
 >;
 
 export const getAlertDefinitionCreateData = (
