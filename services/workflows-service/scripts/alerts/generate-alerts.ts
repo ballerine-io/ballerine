@@ -461,13 +461,11 @@ export const getAlertDefinitionCreateData = (
 export const generateAlertDefinitions = async (
   prisma: PrismaClient | PrismaTransaction,
   {
-    project,
     createdBy = 'SYSTEM',
-    alertsDef = ALERT_DEFINITIONS,
+    project,
   }: {
     createdBy?: string;
     project: Project;
-    alertsDef?: Partial<typeof ALERT_DEFINITIONS>;
   },
   {
     crossEnvKeyPrefix = undefined,
@@ -476,7 +474,7 @@ export const generateAlertDefinitions = async (
   } = {},
 ) =>
   Promise.all(
-    Object.values(alertsDef)
+    Object.values(ALERT_DEFINITIONS)
       .map(alert => ({
         correlationId: alert.inlineRule.id,
         ...alert,
