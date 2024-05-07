@@ -1,12 +1,15 @@
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { ComponentProps, useMemo } from 'react';
+import { ComponentProps, useEffect, useMemo, useState } from 'react';
 import { Badge } from '@ballerine/ui';
 import { WarningFilledSvg } from '@/common/components/atoms/icons';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
 import { amlAdapter } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { OngoingActions } from '@/pages/Entity/components/Case/actions-variants/OngoingActions/OngoingActions';
 
 export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
+  const [foundMatches, setFoundMatches] = useState(false);
+
   const amlBlock = useMemo(() => {
     if (!data?.length) {
       return [];
@@ -340,6 +343,10 @@ export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
     });
   }, [data]);
 
+  useEffect(() => {
+    setFoundMatches(amlBlock.length > 2);
+  }, [amlBlock]);
+
   if (!amlBlock.length) {
     return [];
   }
@@ -347,9 +354,23 @@ export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
   return createBlocksTyped()
     .addBlock()
     .addCell({
-      id: 'header',
-      type: 'heading',
-      value: 'Sanctions Screening Results',
+      type: 'container',
+      props: {
+        className: 'flex flex-row items-center justify-between',
+      },
+      value: createBlocksTyped()
+        .addBlock()
+        .addCell({
+          id: 'header',
+          type: 'heading',
+          value: 'Sanctions Screening Results',
+        })
+        .addCell({
+          type: 'nodeCell',
+          value: foundMatches ? <OngoingActions /> : null,
+        })
+        .build()
+        .flat(1),
     })
     .build()
     .concat(amlBlock)
