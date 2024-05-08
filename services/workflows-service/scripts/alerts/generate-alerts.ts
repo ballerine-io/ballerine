@@ -675,25 +675,5 @@ export const seedTransactionsAlerts = async (
         skipDuplicates: true,
       }),
     ),
-
-    ...merchantMonitoringAlertDef.map(alertDefinition =>
-      prisma.alert.createMany({
-        data: Array.from(
-          {
-            length: faker.datatype.number({ min: 3, max: 5 }),
-          },
-          () => ({
-            alertDefinitionId: alertDefinition.id,
-            projectId: project.id,
-            ...generateFakeAlert({
-              businessIds,
-              agentUserIds,
-              severity: faker.helpers.arrayElement(Object.values(AlertSeverity)),
-            }),
-          }),
-        ),
-        skipDuplicates: true,
-      }),
-    ),
   ]);
 };
