@@ -8,7 +8,7 @@ import {
   TransactionDirection,
   TransactionRecordType,
 } from '@prisma/client';
-import { tearDownDatabase } from '@/test/helpers/database-helper';
+import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 import { createCustomer } from '@/test/helpers/create-customer';
 import { faker } from '@faker-js/faker';
 import { createProject } from '@/test/helpers/create-project';
@@ -24,6 +24,7 @@ import {
   ALERT_DEFINITIONS,
   getAlertDefinitionCreateData,
 } from '../../scripts/alerts/generate-alerts';
+import { AsyncFunction } from 'type-fest/source/async-return-type';
 
 describe('AlertService', () => {
   let prismaService: PrismaService;
@@ -50,6 +51,7 @@ describe('AlertService', () => {
   });
 
   beforeEach(async () => {
+    await cleanupDatabase();
     await prismaService.$executeRaw`TRUNCATE TABLE "public"."Alert" CASCADE;`;
     await prismaService.$executeRaw`TRUNCATE TABLE "public"."AlertDefinition" CASCADE;`;
     await prismaService.$executeRaw`TRUNCATE TABLE "public"."TransactionRecord" CASCADE;`;
@@ -80,6 +82,90 @@ describe('AlertService', () => {
       baseTransactionFactory = transactionFactory
         .paymentMethod(PaymentMethod.credit_card)
         .transactionDate(faker.date.recent(6));
+    });
+
+    describe('Rule: DORMANT', () => {
+      let alertDefinition: AlertDefinition;
+
+      const execWithTransactionFactory = async (
+        project: Project | undefined,
+        fnTransaction: AsyncFunction,
+      ) => {
+        const counteryparty = await createCounterparty(prismaService, project);
+
+        console.log('New Project', counteryparty.projectId);
+
+        let baseTransactionFactory = new TransactionFactory({
+          prisma: prismaService,
+          projectId: counteryparty.projectId,
+        })
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card);
+
+        (await fnTransaction(baseTransactionFactory)) as TransactionFactory;
+
+        return baseTransactionFactory;
+      };
+
+      beforeEach(async () => {
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.DORMANT,
+              enabled: true,
+            },
+            project,
+          ),
+        });
+
+        expect(ALERT_DEFINITIONS.DORMANT).not.toHaveProperty('options');
+      });
+
+      test('When there are activity in the last 180 days', async () => {
+        // Arrange
+        const baseTransactionFactory = await execWithTransactionFactory(
+          project,
+          async (transactionFactory: unknown) => {
+            const castedTransactionFactory = transactionFactory as TransactionFactory;
+
+            await castedTransactionFactory.transactionDate(faker.date.past(10)).count(9).create();
+
+            await castedTransactionFactory.transactionDate(faker.date.recent(30)).count(1).create();
+          },
+        );
+
+        const counterpartyBeneficiary =
+          baseTransactionFactory.data.counterpartyBeneficiary?.connect?.id;
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(1);
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(counterpartyBeneficiary);
+      });
+
+      test('When there no activity in the project', async () => {
+        // Arrange
+        const newProject = undefined;
+        await execWithTransactionFactory(newProject, async (transactionFactory: unknown) => {
+          const castedTransactionFactory = transactionFactory as TransactionFactory;
+
+          await castedTransactionFactory.transactionDate(faker.date.past(10)).count(9).create();
+
+          await castedTransactionFactory.transactionDate(faker.date.recent(30)).count(1).create();
+        });
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
     });
 
     describe('Rule: STRUC_CC', () => {
@@ -661,23 +747,7 @@ describe('AlertService', () => {
           ),
         });
 
-        const correlationId = faker.datatype.uuid();
-        counteryparty = await prismaService.counterparty.create({
-          data: {
-            project: { connect: { id: project.id } },
-            correlationId: correlationId,
-            business: {
-              create: {
-                correlationId: correlationId,
-                companyName: faker.company.name(),
-                registrationNumber: faker.datatype.uuid(),
-                mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
-                businessType: faker.lorem.word(),
-                project: { connect: { id: project.id } },
-              },
-            },
-          },
-        });
+        counteryparty = await createCounterparty(prismaService, project);
       });
 
       it('When there are >2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, an alert should be created', async () => {
@@ -959,3 +1029,35 @@ describe('AlertService', () => {
     });
   });
 });
+async function createCounterparty(prismaService: PrismaService, proj?: Pick<Project, 'id'>) {
+  const correlationId = faker.datatype.uuid();
+  if (!proj) {
+    const customer = await createCustomer(
+      prismaService,
+      faker.datatype.uuid(),
+      faker.datatype.uuid(),
+      '',
+      '',
+      'webhook-shared-secret',
+    );
+
+    proj = await createProject(prismaService, customer, faker.datatype.uuid());
+  }
+
+  return await prismaService.counterparty.create({
+    data: {
+      project: { connect: { id: proj.id } },
+      correlationId: correlationId,
+      business: {
+        create: {
+          correlationId: correlationId,
+          companyName: faker.company.name(),
+          registrationNumber: faker.datatype.uuid(),
+          mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+          businessType: faker.lorem.word(),
+          project: { connect: { id: proj.id } },
+        },
+      },
+    },
+  });
+}
