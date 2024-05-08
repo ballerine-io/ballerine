@@ -99,6 +99,7 @@ export type CheckRiskScoreSubject = {
   projectId: TProjectId;
   businessId: string;
   reportId: string;
+  businessReportId: string;
 };
 
 export type CheckRiskScoreOptions = {

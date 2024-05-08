@@ -1029,6 +1029,7 @@ describe('AlertService', () => {
             projectId: project.id,
             businessId: business!.id,
             reportId: currentReport.id,
+            businessReportId: currentReport.id,
           },
           'cool company name',
         );
@@ -1073,6 +1074,7 @@ describe('AlertService', () => {
             projectId: project.id,
             businessId: business!.id,
             reportId: currentReport.id,
+            businessReportId: currentReport.id,
           },
           'cool company name',
         );
@@ -1118,6 +1120,7 @@ describe('AlertService', () => {
               projectId: project.id,
               businessId: business!.id,
               reportId: currentReport.id,
+              businessReportId: currentReport.id,
             },
             'cool company name',
           );
@@ -1162,6 +1165,7 @@ describe('AlertService', () => {
               projectId: project.id,
               businessId: business!.id,
               reportId: currentReport.id,
+              businessReportId: currentReport.id,
             },
             'cool company name',
           );
@@ -1206,6 +1210,7 @@ describe('AlertService', () => {
               projectId: project.id,
               businessId: business!.id,
               reportId: currentReport.id,
+              businessReportId: currentReport.id,
             },
             'cool company name',
           );
@@ -1219,7 +1224,7 @@ describe('AlertService', () => {
         describe('When previous report hits multiple alerts', () => {
           it('dispatches the highest severity alert', async () => {
             //Arrange
-            const currentReport = await prismaService.businessReport.create({
+            const currentBusinessReport = await prismaService.businessReport.create({
               data: {
                 businessId: business!.id,
                 reportId: faker.datatype.uuid(),
@@ -1280,13 +1285,25 @@ describe('AlertService', () => {
               {
                 projectId: project.id,
                 businessId: business!.id,
-                reportId: currentReport.id,
+                reportId: fileId!,
+                businessReportId: currentBusinessReport.id,
               },
               'cool company name',
             );
 
             //Assert
             expect(response!.severity).toEqual(AlertSeverity.high);
+            expect(response!.additionalInfo).toEqual({
+              alertReason: 'The risk score has exceeded the threshold of 40',
+              businessCompanyName: 'cool company name',
+              businessId: business!.id,
+              businessReportId: currentBusinessReport.id,
+              previousRiskScore: 15,
+              projectId: project.id,
+              reportId: fileId,
+              riskScore: 40,
+              severity: 'high',
+            });
             const alerts = await prismaService.alert.findMany();
             expect(alerts).toHaveLength(1);
           });

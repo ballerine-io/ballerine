@@ -174,7 +174,7 @@ export class AlertService {
       );
 
       if (alertResultData) {
-        const { reportId, ...subjects } = checkRiskScoreSubject;
+        const { reportId, businessReportId, ...subjects } = checkRiskScoreSubject;
         const subjectArray = Object.entries(subjects).map(([key, value]) => ({
           [key]: value,
         }));
@@ -187,6 +187,8 @@ export class AlertService {
           { subjectArray },
           {
             ...alertResultData,
+            reportId,
+            businessReportId,
             businessCompanyName,
           },
         ] satisfies Parameters<typeof createAlertReference>;

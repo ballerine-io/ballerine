@@ -30,13 +30,22 @@ export class BusinessReportService {
       return await this.businessReportRepository.create({ data: args.create });
     }
 
-    return await this.businessReportRepository.updateMany({
+    await this.businessReportRepository.updateMany({
       where: {
         id: args.where.id,
         project: { id: { in: projectIds } },
       },
       data: args.update,
     });
+
+    return await this.businessReportRepository.findFirst(
+      {
+        where: {
+          id: args.where.id,
+        },
+      },
+      projectIds,
+    );
   }
 
   async findFirst<T extends Prisma.BusinessReportFindFirstArgs>(

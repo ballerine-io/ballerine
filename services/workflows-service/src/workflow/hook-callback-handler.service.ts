@@ -154,7 +154,7 @@ export class HookCallbackHandlerService {
       [currentProjectId],
     );
 
-    await this.businessReportService.upsert(
+    const businessReport = await this.businessReportService.upsert(
       {
         create: {
           type: reportType as BusinessReportType,
@@ -191,6 +191,7 @@ export class HookCallbackHandlerService {
           businessId: business.id,
           projectId: currentProjectId,
           reportId: currentReportId,
+          businessReportId: businessReport.id,
         },
         business.companyName,
       )
