@@ -63,7 +63,7 @@ import { BusinessReportModule } from '@/business-report/business-report.module';
     UserRepository,
     PasswordService,
   ],
-  exports: [ACLModule, AlertService, WebhookEventEmitterService],
+  exports: [ACLModule, AlertRepository, AlertService, WebhookEventEmitterService],
 })
 export class AlertModule {
   constructor(
