@@ -138,7 +138,7 @@ export class AlertControllerExternal {
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.UsePipes(new ZodValidationPipe(FindAlertsSchema, 'query'))
-  async listBusniessReportAlerts(
+  async listBusinessReportAlerts(
     @common.Query() findAlertsDto: FindAlertsDto,
     @ProjectIds() projectIds: TProjectId[],
   ) {
