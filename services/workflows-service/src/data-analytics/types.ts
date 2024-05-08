@@ -24,7 +24,7 @@ export type InlineRule = {
     }
   | {
       fnName: 'evaluateDormantAccount';
-    }  
+    }
 );
 
 export type TAggregations = keyof typeof AggregateType;
@@ -37,6 +37,7 @@ export type TExcludedCounterparty = {
 export type TimeUnit = (typeof TIME_UNITS)[keyof typeof TIME_UNITS];
 
 export type TransactionsAgainstDynamicRulesType = {
+  projectId: TProjectId;
   havingAggregate?: TAggregations;
   amountBetween?: { min: number; max: number };
   timeAmount?: number;
@@ -83,4 +84,3 @@ export type TransactionLimitHistoricAverageOptions = {
   minimumTransactionAmount: number;
   transactionFactor: number;
 };
-
