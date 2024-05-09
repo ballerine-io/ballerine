@@ -1,6 +1,6 @@
 import { SubscriptionSchema } from '@/common/types';
-import { WorkflowDefinitionConfigThemeSchema } from '@ballerine/common';
 import { z } from 'zod';
+import { WorkflowDefinitionConfigThemeSchema } from '@ballerine/common';
 
 export const ConfigSchema = z
   .object({

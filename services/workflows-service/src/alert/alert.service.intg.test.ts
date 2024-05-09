@@ -1,9 +1,13 @@
 import { PrismaService } from '@/prisma/prisma.service';
 import {
   AlertDefinition,
+  AlertSeverity,
+  Business,
+  BusinessReportType,
   Counterparty,
   Customer,
   PaymentMethod,
+  Prisma,
   Project,
   TransactionDirection,
   TransactionRecordType,
@@ -21,9 +25,14 @@ import { Test } from '@nestjs/testing';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import {
-  ALERT_DEFINITIONS,
   getAlertDefinitionCreateData,
+  MERCHANT_MONITORING_ALERT_DEFINITIONS,
+  TRANSACTIONS_ALERT_DEFINITIONS,
 } from '../../scripts/alerts/generate-alerts';
+import { generateBusiness } from '../../scripts/generate-end-user';
+import console from 'console';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { BusinessReportRepository } from '@/business-report/business-report.repository';
 
 describe('AlertService', () => {
   let prismaService: PrismaService;
@@ -40,6 +49,8 @@ describe('AlertService', () => {
         ProjectScopeService,
         AlertRepository,
         AlertDefinitionRepository,
+        BusinessReportService,
+        BusinessReportRepository,
         AlertService,
       ],
     }).compile();
@@ -87,14 +98,14 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.STRUC_CC, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC, project),
         });
 
         expect(
-          ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold,
+          TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold,
         ).toBeGreaterThanOrEqual(5);
         expect(
-          ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min,
+          TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min,
         ).toBeGreaterThanOrEqual(500);
       });
 
@@ -103,10 +114,10 @@ describe('AlertService', () => {
         const transactions = await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
+          .amount(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -124,10 +135,10 @@ describe('AlertService', () => {
         await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
+          .amount(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min + 1)
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold - 1)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold - 1)
           .create();
 
         // Act
@@ -143,10 +154,10 @@ describe('AlertService', () => {
         await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min - 1)
+          .amount(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min - 1)
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
-          .count(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -182,14 +193,14 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.STRUC_APM, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_APM, project),
         });
 
         expect(
-          ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountThreshold,
+          TRANSACTIONS_ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountThreshold,
         ).toBeGreaterThanOrEqual(5);
         expect(
-          ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountBetween.min,
+          TRANSACTIONS_ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountBetween.min,
         ).toBeGreaterThanOrEqual(500);
       });
 
@@ -198,10 +209,10 @@ describe('AlertService', () => {
         const transactions = await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountBetween.max - 1)
+          .amount(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountBetween.max - 1)
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.bank_transfer)
-          .count(ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountThreshold + 1)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_APM.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -219,7 +230,7 @@ describe('AlertService', () => {
         await baseTransactionFactory
           .withBusinessBeneficiary()
           .withEndUserOriginator()
-          .amount(ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min - 1)
+          .amount(TRANSACTIONS_ALERT_DEFINITIONS.STRUC_CC.inlineRule.options.amountBetween.min - 1)
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.pay_pal)
           .count(6)
@@ -284,7 +295,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.CHVC_C, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.CHVC_C, project),
         });
       });
 
@@ -344,7 +355,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.SHCAC_C, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.SHCAC_C, project),
         });
       });
 
@@ -408,7 +419,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.CHCR_C, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.CHCR_C, project),
         });
       });
 
@@ -468,7 +479,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.SHCAR_C, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.SHCAR_C, project),
         });
       });
 
@@ -544,7 +555,7 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.HPC, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.HPC, project),
         });
         const correlationId = faker.datatype.uuid();
         counteryparty = await prismaService.counterparty.create({
@@ -654,7 +665,7 @@ describe('AlertService', () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              ...ALERT_DEFINITIONS.TLHAICC,
+              ...TRANSACTIONS_ALERT_DEFINITIONS.TLHAICC,
             },
             project,
           ),
@@ -742,7 +753,7 @@ describe('AlertService', () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              ...ALERT_DEFINITIONS.TLHAIAPM,
+              ...TRANSACTIONS_ALERT_DEFINITIONS.TLHAIAPM,
             },
             project,
           ),
@@ -828,13 +839,13 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.PAY_HCA_CC, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_CC, project),
         });
 
         expect(
-          ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold,
+          TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold,
         ).toBeGreaterThanOrEqual(1000);
-        expect(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.direction).toBe(
+        expect(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.direction).toBe(
           TransactionDirection.inbound,
         );
       });
@@ -846,7 +857,7 @@ describe('AlertService', () => {
           .direction('inbound')
           .paymentMethod(PaymentMethod.credit_card)
           .amount(2)
-          .count(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold + 1)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -868,7 +879,7 @@ describe('AlertService', () => {
           .direction('inbound')
           .paymentMethod(PaymentMethod.credit_card)
           .amount(150)
-          .count(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold % 10)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold % 10)
           .create();
 
         await baseTransactionFactory
@@ -876,7 +887,7 @@ describe('AlertService', () => {
           .withBusinessBeneficiary()
           .paymentMethod(PaymentMethod.apple_pay)
           .amount(150)
-          .count(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold % 10)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold % 10)
           .create();
 
         // Act
@@ -894,17 +905,19 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.PAY_HCA_APM, project),
+          data: getAlertDefinitionCreateData(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_APM, project),
         });
 
         expect(
-          ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold,
+          TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold,
         ).toBeGreaterThanOrEqual(1000);
-        expect(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.direction).toBe(
+        expect(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.direction).toBe(
           TransactionDirection.inbound,
         );
 
-        expect(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.excludePaymentMethods).toBe(true);
+        expect(
+          TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.excludePaymentMethods,
+        ).toBe(true);
       });
 
       it('When there more than 1k credit card transactions, an alert should be created', async () => {
@@ -914,7 +927,7 @@ describe('AlertService', () => {
           .direction('inbound')
           .paymentMethod(PaymentMethod.debit_card)
           .amount(2)
-          .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold + 1)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold + 1)
           .create();
 
         // Act
@@ -936,7 +949,7 @@ describe('AlertService', () => {
           .direction('inbound')
           .paymentMethod(PaymentMethod.credit_card)
           .amount(150)
-          .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold % 10)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold % 10)
           .create();
 
         await baseTransactionFactory
@@ -944,7 +957,7 @@ describe('AlertService', () => {
           .withBusinessBeneficiary()
           .paymentMethod(PaymentMethod.apple_pay)
           .amount(150)
-          .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold % 10)
+          .count(TRANSACTIONS_ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold % 10)
           .create();
 
         // Act
@@ -953,6 +966,319 @@ describe('AlertService', () => {
         // Assert
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(0);
+      });
+    });
+  });
+
+  describe('#checkOngoingMonitoringAlert', () => {
+    let business: Business | null = null;
+    let fileId: string | null;
+
+    beforeEach(async () => {
+      console.log(project);
+
+      await prismaService.alertDefinition.create({
+        data: getAlertDefinitionCreateData(
+          MERCHANT_MONITORING_ALERT_DEFINITIONS.MERCHANT_ONGOING_RISK_ALERT_RISK_INCREASE,
+          project,
+        ),
+      });
+
+      business = await prismaService.business.create({
+        data: generateBusiness({ projectId: project.id }),
+      });
+
+      fileId = (
+        await prismaService.file.create({
+          data: {
+            fileName: 'ballerine.pdf',
+            projectId: project.id,
+            fileNameOnDisk: 'ballerine.pdf',
+            userId: '',
+            mimeType: 'dwa',
+            uri: 'dwa.',
+          },
+        })
+      ).id;
+    });
+
+    describe('When no previousReport ', () => {
+      it("doesn't create alert", async () => {
+        //Arrange
+        const currentReport = await prismaService.businessReport.create({
+          data: {
+            businessId: business!.id,
+            reportId: faker.datatype.uuid(),
+            riskScore: 15,
+            projectId: project.id,
+            type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+            report: {
+              reportFileId: fileId,
+              data: {
+                summary: {
+                  riskScore: 15,
+                },
+              },
+            },
+          } satisfies Prisma.BusinessReportUncheckedCreateInput,
+        });
+
+        // Act
+        const response = await alertService.checkOngoingMonitoringAlert(
+          currentReport,
+          'cool company name',
+        );
+
+        //Assert
+        expect(response).toBeUndefined();
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('When previous report not ongoing report ', () => {
+      it("doesn't create alert", async () => {
+        //Arrange
+        const currentReport = await prismaService.businessReport.create({
+          data: {
+            businessId: business!.id,
+            reportId: faker.datatype.uuid(),
+            riskScore: 15,
+            projectId: project.id,
+            type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+            report: {
+              reportFileId: fileId,
+              data: {
+                summary: {
+                  riskScore: 15,
+                },
+                previousReport: {
+                  summary: {
+                    riskScore: 50,
+                  },
+                  reportType: BusinessReportType.MERCHANT_REPORT_T1,
+                },
+              },
+            },
+          } satisfies Prisma.BusinessReportUncheckedCreateInput,
+        });
+
+        // Act
+        const response = await alertService.checkOngoingMonitoringAlert(
+          currentReport,
+          'cool company name',
+        );
+
+        //Assert
+        expect(response).toBeUndefined();
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('When previous report is ongoing report ', () => {
+      describe('When previous report has higher risk score ', () => {
+        it("doesn't create alert", async () => {
+          //Arrange
+          const currentReport = await prismaService.businessReport.create({
+            data: {
+              businessId: business!.id,
+              reportId: faker.datatype.uuid(),
+              riskScore: 15,
+              projectId: project.id,
+              type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+              report: {
+                reportFileId: fileId,
+                data: {
+                  summary: {
+                    riskScore: 10,
+                  },
+                  previousReport: {
+                    summary: {
+                      riskScore: 55,
+                    },
+                    reportType: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+                  },
+                },
+              },
+            } satisfies Prisma.BusinessReportUncheckedCreateInput,
+          });
+
+          // Act
+          const response = await alertService.checkOngoingMonitoringAlert(
+            currentReport,
+            'cool company name',
+          );
+
+          //Assert
+          expect(response).toBeUndefined();
+          const alerts = await prismaService.alert.findMany();
+          expect(alerts).toHaveLength(0);
+        });
+      });
+
+      describe('When previous report does not hit required changes ', () => {
+        it("doesn't create alert", async () => {
+          //Arrange
+          const currentReport = await prismaService.businessReport.create({
+            data: {
+              businessId: business!.id,
+              reportId: faker.datatype.uuid(),
+              riskScore: 15,
+              projectId: project.id,
+              type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+              report: {
+                reportFileId: fileId,
+                data: {
+                  summary: {
+                    riskScore: 25,
+                  },
+                  previousReport: {
+                    summary: {
+                      riskScore: 15,
+                    },
+                    reportType: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+                  },
+                },
+              },
+            } satisfies Prisma.BusinessReportUncheckedCreateInput,
+          });
+
+          // Act
+          const response = await alertService.checkOngoingMonitoringAlert(
+            currentReport,
+            'cool company name',
+          );
+
+          //Assert
+          expect(response).toBeUndefined();
+          const alerts = await prismaService.alert.findMany();
+          expect(alerts).toHaveLength(0);
+        });
+      });
+
+      describe('When previous report hits necessary changes to invoke alert', () => {
+        it('creates alert for specific', async () => {
+          //Arrange
+          const currentReport = await prismaService.businessReport.create({
+            data: {
+              businessId: business!.id,
+              reportId: faker.datatype.uuid(),
+              riskScore: 15,
+              projectId: project.id,
+              type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+              report: {
+                reportFileId: fileId,
+                data: {
+                  summary: {
+                    riskScore: 35,
+                  },
+                  previousReport: {
+                    summary: {
+                      riskScore: 15,
+                    },
+                    reportType: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+                  },
+                },
+              },
+            } satisfies Prisma.BusinessReportUncheckedCreateInput,
+          });
+
+          // Act
+          const response = await alertService.checkOngoingMonitoringAlert(
+            currentReport,
+            'cool company name',
+          );
+
+          //Assert
+          expect(response!.severity).toEqual(AlertSeverity.low);
+          const alerts = await prismaService.alert.findMany();
+          expect(alerts).toHaveLength(1);
+        });
+
+        describe('When previous report hits multiple alerts', () => {
+          it('dispatches the highest severity alert', async () => {
+            //Arrange
+            const reportId = faker.datatype.uuid();
+            const currentBusinessReport = await prismaService.businessReport.create({
+              data: {
+                businessId: business!.id,
+                reportId: reportId,
+                riskScore: 15,
+                projectId: project.id,
+                type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+                report: {
+                  reportFileId: fileId,
+                  data: {
+                    summary: {
+                      riskScore: 40,
+                    },
+                    previousReport: {
+                      summary: {
+                        riskScore: 15,
+                      },
+                      reportType: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
+                    },
+                  },
+                },
+              } satisfies Prisma.BusinessReportUncheckedCreateInput,
+            });
+
+            await prismaService.alertDefinition.create({
+              data: getAlertDefinitionCreateData(
+                {
+                  ...MERCHANT_MONITORING_ALERT_DEFINITIONS.MERCHANT_ONGOING_RISK_ALERT_THRESHOLD,
+                  defaultSeverity: AlertSeverity.high,
+                  inlineRule: {
+                    id: 'MERCHANT_ONGOING_RISK_ALERT_THRESHOLD',
+                    fnName: 'checkMerchantOngoingAlert',
+                    subjects: ['businessId', 'projectId'],
+                    options: {
+                      maxRiskScoreThreshold: 40,
+                    },
+                  },
+                },
+                project,
+              ),
+            });
+            await prismaService.alertDefinition.create({
+              data: getAlertDefinitionCreateData(
+                {
+                  ...MERCHANT_MONITORING_ALERT_DEFINITIONS.MERCHANT_ONGOING_RISK_ALERT_THRESHOLD,
+                  defaultSeverity: AlertSeverity.medium,
+                  inlineRule: {
+                    ...MERCHANT_MONITORING_ALERT_DEFINITIONS.MERCHANT_ONGOING_RISK_ALERT_THRESHOLD
+                      .inlineRule,
+                    id: 'MERCHANT_ONGOING_RISK_ALERT_THRESHOLD_MEDIUM',
+                  },
+                },
+                project,
+              ),
+            });
+
+            // Act
+            const response = await alertService.checkOngoingMonitoringAlert(
+              currentBusinessReport,
+              'cool company name',
+            );
+
+            //Assert
+            expect(response!.severity).toEqual(AlertSeverity.high);
+            expect(response!.additionalInfo).toEqual({
+              alertReason: 'The risk score has exceeded the threshold of 40',
+              businessCompanyName: 'cool company name',
+              businessId: business!.id,
+              businessReportId: currentBusinessReport.id,
+              previousRiskScore: 15,
+              projectId: project.id,
+              reportId: reportId,
+              riskScore: 40,
+              severity: 'high',
+            });
+            const alerts = await prismaService.alert.findMany();
+            expect(alerts).toHaveLength(1);
+          });
+        });
       });
     });
   });

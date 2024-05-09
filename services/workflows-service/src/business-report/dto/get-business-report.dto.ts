@@ -1,18 +1,28 @@
+import { PageDto } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { BusinessReportType } from '@prisma/client';
-import { IsIn, IsNotEmpty, IsString } from 'class-validator';
+import { IsIn, IsOptional, IsString } from 'class-validator';
 
 export class GetBusinessReportDto {
-  @ApiProperty({
-    required: true,
-  })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  businessId!: string;
+  businessId?: string;
 
   @ApiProperty({
     required: true,
   })
   @IsIn(Object.values(BusinessReportType))
   type!: BusinessReportType;
+
+  @IsOptional()
+  @ApiProperty({
+    type: String,
+    required: false,
+    description: 'Column to sort by and direction separated by a colon',
+    examples: [{ value: 'createdAt:asc' }, { value: 'status:asc' }],
+  })
+  orderBy?: `${string}:asc` | `${string}:desc`;
+
+  @ApiProperty({ type: PageDto })
+  page!: PageDto;
 }

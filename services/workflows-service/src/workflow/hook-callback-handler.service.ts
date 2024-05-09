@@ -13,9 +13,18 @@ import { BusinessReportType, Customer, WorkflowRuntimeData } from '@prisma/clien
 import fs from 'fs';
 import { get, isObject, set } from 'lodash';
 import * as tmp from 'tmp';
+import { AlertService } from '@/alert/alert.service';
 import { EndUserService } from '@/end-user/end-user.service';
 import { z } from 'zod';
 import { EndUserActiveMonitoringsSchema } from '@/end-user/end-user.schema';
+
+const ReportWithRiskScoreSchema = z
+  .object({
+    summary: z.object({
+      riskScore: z.number(),
+    }),
+  })
+  .passthrough();
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -24,6 +33,7 @@ export class HookCallbackHandlerService {
     protected readonly customerService: CustomerService,
     protected readonly businessReportService: BusinessReportService,
     protected readonly businessService: BusinessService,
+    protected readonly alertService: AlertService,
     private readonly logger: AppLoggerService,
     private readonly endUserService: EndUserService,
   ) {}
@@ -119,7 +129,8 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
 
     const { context } = workflowRuntime;
-    const { reportData, base64Pdf, reportId, reportType } = data;
+    const { reportData: unvalidatedReportData, base64Pdf, reportId, reportType } = data;
+    const reportData = ReportWithRiskScoreSchema;
 
     const { documents, pdfReportBallerineFileId } =
       await this.__peristPDFReportDocumentWithWorkflowDocuments({
@@ -129,36 +140,42 @@ export class HookCallbackHandlerService {
         base64PDFString: base64Pdf as string,
       });
 
+    const reportRiskScore =
+      ReportWithRiskScoreSchema.parse(unvalidatedReportData).summary.riskScore;
+
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
     ]);
 
     if (!business) throw new BadRequestException('Business not found.');
 
-    const existantBusinessReport = await this.businessReportService.findFirst(
+    const currentReportId = reportId as string;
+    const existantBusinessReport = await this.businessReportService.findFirstOrThrow(
       {
         where: {
           businessId: business.id,
-          reportId: reportId as string,
+          reportId: currentReportId,
         },
       },
       [currentProjectId],
     );
 
-    await this.businessReportService.upsert(
+    const businessReport = await this.businessReportService.upsert(
       {
         create: {
           type: reportType as BusinessReportType,
+          riskScore: reportRiskScore as number,
           report: {
             reportFileId: pdfReportBallerineFileId,
             data: reportData as InputJsonValue,
           },
-          reportId: reportId as string,
+          reportId: currentReportId,
           businessId: business.id,
           projectId: currentProjectId,
         },
         update: {
           type: reportType as BusinessReportType,
+          riskScore: reportRiskScore,
           report: {
             reportFileId: pdfReportBallerineFileId,
             data: reportData as InputJsonValue,
@@ -174,6 +191,15 @@ export class HookCallbackHandlerService {
     set(workflowRuntime.context, resultDestinationPath, { reportData });
     workflowRuntime.context.documents = documents;
 
+    this.alertService
+      .checkOngoingMonitoringAlert(businessReport, business.companyName)
+      .then(() => {
+        this.logger.debug(`Alert Tested for ${currentReportId}}`);
+      })
+      .catch(error => {
+        this.logger.error(error);
+      });
+
     return context;
   }
 
@@ -185,7 +211,7 @@ export class HookCallbackHandlerService {
   ) {
     const { reportData, base64Pdf, reportId, reportType, comparedToReportId } = z
       .object({
-        reportData: z.record(z.string(), z.unknown()),
+        reportData: ReportWithRiskScoreSchema,
         base64Pdf: z.string(),
         reportId: z.string(),
         reportType: z.string(),
@@ -200,7 +226,7 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
 
     if (comparedToReportId) {
-      const comparedToReport = await this.businessReportService.findFirst(
+      const comparedToReport = await this.businessReportService.findFirstOrThrow(
         {
           where: {
             businessId,
@@ -234,6 +260,8 @@ export class HookCallbackHandlerService {
       reportId,
     } as Record<string, object | string>;
 
+    const reportRiskScore = reportData.summary.riskScore;
+
     await this.businessReportService.create({
       data: {
         type: reportType as BusinessReportType,
@@ -241,6 +269,7 @@ export class HookCallbackHandlerService {
         businessId: businessId,
         reportId: reportId as string,
         projectId: currentProjectId,
+        riskScore: reportRiskScore,
       },
     });
 

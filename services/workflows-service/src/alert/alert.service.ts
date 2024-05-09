@@ -3,14 +3,22 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import * as errors from '@/errors';
 import { PrismaService } from '@/prisma/prisma.service';
 import { isFkConstraintError } from '@/prisma/prisma.util';
-import { ObjectValues, TProjectId } from '@/types';
+import { InputJsonValue, ObjectValues, TProjectId } from '@/types';
 import { Injectable } from '@nestjs/common';
-import { Alert, AlertDefinition, AlertState, AlertStatus } from '@prisma/client';
+import {
+  Alert,
+  AlertDefinition,
+  AlertSeverity,
+  AlertState,
+  AlertStatus,
+  BusinessReport,
+  MonitoringType,
+} from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
-import { InlineRule } from '@/data-analytics/types';
+import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
 import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
 import { computeHash } from '@/common/utils/sign/sign';
@@ -71,6 +79,7 @@ export class AlertService {
 
   async getAlerts(
     findAlertsDto: FindAlertsDto,
+    monitoringType: MonitoringType,
     projectIds: TProjectId[],
     args?: Omit<
       Parameters<typeof this.alertRepository.findMany>[0],
@@ -88,6 +97,7 @@ export class AlertService {
             in: findAlertsDto.filter?.status,
           },
           alertDefinition: {
+            monitoringType,
             label: {
               in: findAlertsDto.filter?.label,
             },
@@ -114,15 +124,17 @@ export class AlertService {
   }
 
   // Function to retrieve all alert definitions
-  async getAllAlertDefinitions(): Promise<AlertDefinition[]> {
+  async getAlertDefinitions(options: { type: MonitoringType }): Promise<AlertDefinition[]> {
     return await this.prisma.alertDefinition.findMany({
-      where: { enabled: true },
+      where: { enabled: true, monitoringType: options.type },
     });
   }
 
   // Function to perform alert checks for each alert definition
   async checkAllAlerts() {
-    const alertDefinitions = await this.getAllAlertDefinitions();
+    const alertDefinitions = await this.getAlertDefinitions({
+      type: MonitoringType.transaction_monitoring,
+    });
 
     for (const definition of alertDefinitions) {
       try {
@@ -140,8 +152,56 @@ export class AlertService {
     }
   }
 
-  // Specific alert check logic based on the definition
-  private async checkAlert(alertDefinition: AlertDefinition) {
+  async checkOngoingMonitoringAlert(businessReport: BusinessReport, businessCompanyName: string) {
+    const alertDefinitions = await this.alertDefinitionRepository.findMany(
+      {
+        where: {
+          enabled: true,
+          monitoringType: MonitoringType.ongoing_merchant_monitoring,
+        },
+      },
+      [businessReport.projectId],
+    );
+
+    const alertDefinitionsCheck = alertDefinitions.map(async alertDefinition => {
+      const alertResultData = await this.dataAnalyticsService.checkMerchantOngoingAlert(
+        businessReport,
+        (alertDefinition.inlineRule as InlineRule).options as CheckRiskScoreOptions,
+        alertDefinition.defaultSeverity,
+      );
+
+      if (alertResultData) {
+        const { reportId, id: businessReportId, businessId, projectId } = businessReport;
+        const subjects = { businessId, projectId };
+
+        const subjectArray = Object.entries(subjects).map(([key, value]) => ({
+          [key]: value,
+        }));
+
+        const createAlertReference = this.createAlert;
+
+        return [
+          alertDefinition,
+          subjectArray,
+          { subjectArray },
+          {
+            ...alertResultData,
+            reportId,
+            businessReportId,
+            businessCompanyName,
+          },
+        ] satisfies Parameters<typeof createAlertReference>;
+      }
+    });
+
+    const alertCreateArgs = (await Promise.all(alertDefinitionsCheck))
+      .filter(Boolean)
+      .sort((a, b) => this.sortBySeverity(a[0].defaultSeverity, b[0].defaultSeverity))[0];
+
+    return alertCreateArgs && (await this.createAlert(...alertCreateArgs));
+  }
+
+  private async checkAlert(alertDefinition: AlertDefinition, ...args: any[]) {
     const unknownData: unknown = alertDefinition.inlineRule;
 
     const inlineRule: InlineRule = unknownData as InlineRule;
@@ -149,6 +209,7 @@ export class AlertService {
     const ruleExecutionResults = await this.dataAnalyticsService.runInlineRule(
       alertDefinition.projectId,
       inlineRule,
+      args,
     );
 
     if (
@@ -229,7 +290,8 @@ export class AlertService {
     alertDef: AlertDefinition,
     subject: Array<{ [key: string]: unknown }>,
     executionRow: Record<string, unknown>,
-  ): Promise<Alert> {
+    additionalInfo?: Record<string, unknown>,
+  ) {
     return this.alertRepository.create({
       data: {
         alertDefinitionId: alertDef.id,
@@ -238,12 +300,14 @@ export class AlertService {
         dataTimestamp: new Date(),
         state: AlertState.triggered,
         status: AlertStatus.new,
+        additionalInfo: additionalInfo,
         executionDetails: {
           checkpoint: {
             hash: computeHash(executionRow),
           },
+          subject: Object.assign({}, ...(subject || [])),
           executionRow,
-        } satisfies TExecutionDetails,
+        } satisfies TExecutionDetails as InputJsonValue,
         ...Object.assign({}, ...(subject || [])),
       },
     });
@@ -339,5 +403,26 @@ export class AlertService {
       },
       [projectId],
     );
+  }
+
+  sortBySeverity(a: AlertSeverity, b: AlertSeverity) {
+    const alertSeverityToNumber = (severity: AlertSeverity) => {
+      switch (severity) {
+        case AlertSeverity.high:
+          return 3;
+        case AlertSeverity.medium:
+          return 2;
+        case AlertSeverity.low:
+          return 1;
+        default:
+          return 0;
+      }
+    };
+
+    if (a === b) {
+      return 0;
+    }
+
+    return alertSeverityToNumber(a) < alertSeverityToNumber(b) ? 1 : -1;
   }
 }

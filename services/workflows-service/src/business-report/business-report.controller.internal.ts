@@ -24,7 +24,7 @@ export class BusinessReportControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
     @Query() searchQueryParams: GetBusinessReportDto,
   ) {
-    return await this.businessReportService.findFirst(
+    return await this.businessReportService.findFirstOrThrow(
       {
         where: {
           businessId: searchQueryParams.businessId,

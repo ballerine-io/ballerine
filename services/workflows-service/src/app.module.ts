@@ -63,6 +63,7 @@ import { CronModule } from '@/workflow/cron/cron.module';
     EndUserModule,
     CustomerModule,
     TransactionModule,
+    BusinessReportModule,
     AlertModule,
     BusinessModule,
     ProjectModule,

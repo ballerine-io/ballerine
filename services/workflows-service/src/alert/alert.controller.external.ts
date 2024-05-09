@@ -10,12 +10,17 @@ import type { AuthenticatedEntity, TProjectId } from '@/types';
 import * as common from '@nestjs/common';
 import { Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { Alert, AlertDefinition } from '@prisma/client';
+import { Alert, AlertDefinition, MonitoringType } from '@prisma/client';
 import * as errors from '../errors';
 import { AlertAssigneeUniqueDto, AlertUpdateResponse } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto, FindAlertsSchema } from './dtos/get-alerts.dto';
-import { BulkStatus, TAlertResponse, TBulkAssignAlertsResponse } from './types';
+import {
+  BulkStatus,
+  TAlertMerchantResponse,
+  TAlertTransactionResponse,
+  TBulkAssignAlertsResponse,
+} from './types';
 import { AlertDecisionDto } from './dtos/decision-alert.dto';
 import { UserData } from '@/user/user-data.decorator';
 import { AlertDefinitionService } from '@/alert-definition/alert-definition.service';
@@ -46,53 +51,58 @@ export class AlertControllerExternal {
   }
 
   @common.Get('/')
-  @swagger.ApiOkResponse({ type: Array<TAlertResponse> }) // TODO: Set type
+  @swagger.ApiOkResponse({ type: Array<TAlertTransactionResponse> }) // TODO: Set type
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.UsePipes(new ZodValidationPipe(FindAlertsSchema, 'query'))
   async list(@common.Query() findAlertsDto: FindAlertsDto, @ProjectIds() projectIds: TProjectId[]) {
-    const alerts = await this.alertService.getAlerts(findAlertsDto, projectIds, {
-      include: {
-        alertDefinition: {
-          select: {
-            label: true,
-            description: true,
-          },
-        },
-        assignee: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatarUrl: true,
-          },
-        },
-        counterparty: {
-          select: {
-            id: true,
-            business: {
-              select: {
-                id: true,
-                correlationId: true,
-                companyName: true,
-              },
+    const alerts = await this.alertService.getAlerts(
+      findAlertsDto,
+      MonitoringType.transaction_monitoring,
+      projectIds,
+      {
+        include: {
+          alertDefinition: {
+            select: {
+              label: true,
+              description: true,
             },
-            endUser: {
-              select: {
-                id: true,
-                correlationId: true,
-                firstName: true,
-                lastName: true,
+          },
+          assignee: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+            },
+          },
+          counterparty: {
+            select: {
+              id: true,
+              business: {
+                select: {
+                  id: true,
+                  correlationId: true,
+                  companyName: true,
+                },
+              },
+              endUser: {
+                select: {
+                  id: true,
+                  correlationId: true,
+                  firstName: true,
+                  lastName: true,
+                },
               },
             },
           },
         },
       },
-    });
+    );
 
     return alerts.map(alert => {
       const { alertDefinition, assignee, counterparty, state, ...alertWithoutDefinition } =
-        alert as TAlertResponse;
+        alert as TAlertTransactionResponse;
 
       return {
         ...alertWithoutDefinition,
@@ -118,6 +128,75 @@ export class AlertControllerExternal {
               correlationId: counterparty.endUser.correlationId,
               name: `${counterparty.endUser.firstName} ${counterparty.endUser.lastName}`,
             },
+        decision: state,
+      };
+    });
+  }
+
+  @common.Get('/business-report')
+  @swagger.ApiOkResponse({ type: Array<TAlertMerchantResponse> }) // TODO: Set type
+  @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @common.UsePipes(new ZodValidationPipe(FindAlertsSchema, 'query'))
+  async listBusinessReportAlerts(
+    @common.Query() findAlertsDto: FindAlertsDto,
+    @ProjectIds() projectIds: TProjectId[],
+  ) {
+    const alerts = await this.alertService.getAlerts(
+      findAlertsDto,
+      MonitoringType.ongoing_merchant_monitoring,
+      projectIds,
+      {
+        include: {
+          alertDefinition: {
+            select: {
+              label: true,
+              description: true,
+            },
+          },
+          assignee: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              avatarUrl: true,
+            },
+          },
+          business: {
+            select: {
+              id: true,
+              companyName: true,
+              businessReports: true,
+            },
+          },
+        },
+      },
+    );
+
+    return alerts.map(alert => {
+      const {
+        alertDefinition,
+        assignee,
+        business,
+        state,
+        executionDetails: _,
+        ...alertWithoutDefinition
+      } = alert as TAlertMerchantResponse;
+
+      return {
+        ...alertWithoutDefinition,
+        label: alertDefinition.label,
+        assignee: assignee
+          ? {
+              id: assignee?.id,
+              fullName: `${assignee?.firstName} ${assignee?.lastName}`,
+              avatarUrl: assignee?.avatarUrl,
+            }
+          : null,
+        alertDetails: alertDefinition.description,
+        subject: {
+          ...business,
+        },
         decision: state,
       };
     });
