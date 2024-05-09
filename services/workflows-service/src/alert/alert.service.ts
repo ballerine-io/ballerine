@@ -11,13 +11,14 @@ import {
   AlertSeverity,
   AlertState,
   AlertStatus,
+  BusinessReport,
   MonitoringType,
 } from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
-import { CheckRiskScoreOptions, CheckRiskScoreSubject, InlineRule } from '@/data-analytics/types';
+import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
 import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
 import { computeHash } from '@/common/utils/sign/sign';
@@ -151,30 +152,28 @@ export class AlertService {
     }
   }
 
-  async checkOngoingMonitoringAlert(
-    checkRiskScoreSubject: CheckRiskScoreSubject,
-    businessCompanyName: string,
-  ) {
+  async checkOngoingMonitoringAlert(businessReport: BusinessReport, businessCompanyName: string) {
     const alertDefinitions = await this.alertDefinitionRepository.findMany(
       {
         where: {
           enabled: true,
           monitoringType: MonitoringType.ongoing_merchant_monitoring,
-          projectId: checkRiskScoreSubject.projectId,
         },
       },
-      [checkRiskScoreSubject.projectId],
+      [businessReport.projectId],
     );
 
     const alertDefinitionsCheck = alertDefinitions.map(async alertDefinition => {
       const alertResultData = await this.dataAnalyticsService.checkMerchantOngoingAlert(
-        checkRiskScoreSubject,
+        businessReport,
         (alertDefinition.inlineRule as InlineRule).options as CheckRiskScoreOptions,
         alertDefinition.defaultSeverity,
       );
 
       if (alertResultData) {
-        const { reportId, businessReportId, ...subjects } = checkRiskScoreSubject;
+        const { reportId, id: businessReportId, businessId, projectId } = businessReport;
+        const subjects = { businessId, projectId };
+
         const subjectArray = Object.entries(subjects).map(([key, value]) => ({
           [key]: value,
         }));

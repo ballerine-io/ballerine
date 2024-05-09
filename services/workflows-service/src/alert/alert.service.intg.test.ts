@@ -1025,12 +1025,7 @@ describe('AlertService', () => {
 
         // Act
         const response = await alertService.checkOngoingMonitoringAlert(
-          {
-            projectId: project.id,
-            businessId: business!.id,
-            reportId: currentReport.id,
-            businessReportId: currentReport.id,
-          },
+          currentReport,
           'cool company name',
         );
 
@@ -1070,12 +1065,7 @@ describe('AlertService', () => {
 
         // Act
         const response = await alertService.checkOngoingMonitoringAlert(
-          {
-            projectId: project.id,
-            businessId: business!.id,
-            reportId: currentReport.id,
-            businessReportId: currentReport.id,
-          },
+          currentReport,
           'cool company name',
         );
 
@@ -1116,12 +1106,7 @@ describe('AlertService', () => {
 
           // Act
           const response = await alertService.checkOngoingMonitoringAlert(
-            {
-              projectId: project.id,
-              businessId: business!.id,
-              reportId: currentReport.id,
-              businessReportId: currentReport.id,
-            },
+            currentReport,
             'cool company name',
           );
 
@@ -1161,12 +1146,7 @@ describe('AlertService', () => {
 
           // Act
           const response = await alertService.checkOngoingMonitoringAlert(
-            {
-              projectId: project.id,
-              businessId: business!.id,
-              reportId: currentReport.id,
-              businessReportId: currentReport.id,
-            },
+            currentReport,
             'cool company name',
           );
 
@@ -1206,12 +1186,7 @@ describe('AlertService', () => {
 
           // Act
           const response = await alertService.checkOngoingMonitoringAlert(
-            {
-              projectId: project.id,
-              businessId: business!.id,
-              reportId: currentReport.id,
-              businessReportId: currentReport.id,
-            },
+            currentReport,
             'cool company name',
           );
 
@@ -1224,10 +1199,11 @@ describe('AlertService', () => {
         describe('When previous report hits multiple alerts', () => {
           it('dispatches the highest severity alert', async () => {
             //Arrange
+            const reportId = faker.datatype.uuid();
             const currentBusinessReport = await prismaService.businessReport.create({
               data: {
                 businessId: business!.id,
-                reportId: faker.datatype.uuid(),
+                reportId: reportId,
                 riskScore: 15,
                 projectId: project.id,
                 type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
@@ -1282,12 +1258,7 @@ describe('AlertService', () => {
 
             // Act
             const response = await alertService.checkOngoingMonitoringAlert(
-              {
-                projectId: project.id,
-                businessId: business!.id,
-                reportId: fileId!,
-                businessReportId: currentBusinessReport.id,
-              },
+              currentBusinessReport,
               'cool company name',
             );
 
@@ -1300,7 +1271,7 @@ describe('AlertService', () => {
               businessReportId: currentBusinessReport.id,
               previousRiskScore: 15,
               projectId: project.id,
-              reportId: fileId,
+              reportId: reportId,
               riskScore: 40,
               severity: 'high',
             });

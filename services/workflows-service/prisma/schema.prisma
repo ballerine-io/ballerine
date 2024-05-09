@@ -841,7 +841,7 @@ model Counterparty {
 model BusinessReport {
   id     String             @id @default(cuid())
   type   BusinessReportType
-  reportId String
+  reportId String           @unique
   report Json
 
   riskScore  Int
@@ -855,7 +855,6 @@ model BusinessReport {
   updatedAt  DateTime @updatedAt
 
 
-  @@index([reportId])
   @@index([createdAt])
   @@index([businessId])
   @@index([projectId])

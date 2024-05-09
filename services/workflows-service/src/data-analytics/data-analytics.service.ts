@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
   CheckRiskScoreOptions,
-  CheckRiskScoreSubject,
   HighTransactionTypePercentage,
   InlineRule,
   TCustomersTransactionTypeOptions,
@@ -10,7 +9,7 @@ import {
   TransactionsAgainstDynamicRulesType,
 } from './types';
 import { AggregateType, TIME_UNITS } from './consts';
-import { AlertSeverity, BusinessReportType, Prisma } from '@prisma/client';
+import { AlertSeverity, BusinessReport, BusinessReportType, Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isEmpty } from 'lodash';
 import { BusinessReportService } from '@/business-report/business-report.service';
@@ -59,7 +58,7 @@ export class DataAnalyticsService {
   }
 
   async checkMerchantOngoingAlert(
-    { projectId, businessId }: CheckRiskScoreSubject,
+    businessReport: BusinessReport,
     {
       increaseRiskScorePercentage,
       increaseRiskScore,
@@ -67,18 +66,7 @@ export class DataAnalyticsService {
     }: CheckRiskScoreOptions,
     alertSeverity: AlertSeverity,
   ) {
-    const { report } = await this.businessReportService.findFirst(
-      {
-        where: {
-          businessId,
-          type: BusinessReportType.ONGOING_MERCHANT_REPORT_T1,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      },
-      [projectId],
-    );
+    const { report, businessId, projectId } = businessReport;
 
     if (
       !(
@@ -115,6 +103,8 @@ export class DataAnalyticsService {
     };
 
     if (previousReportType !== BusinessReportType.ONGOING_MERCHANT_REPORT_T1) {
+      this.logger.warn(`Previous report type is not ONGOING_MERCHANT_REPORT_T1`);
+
       return;
     }
 

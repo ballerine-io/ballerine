@@ -18,9 +18,13 @@ import { EndUserService } from '@/end-user/end-user.service';
 import { z } from 'zod';
 import { EndUserActiveMonitoringsSchema } from '@/end-user/end-user.schema';
 
-type TReportWithRiskScore = {
-  summary: { riskScore: number };
-};
+const ReportWithRiskScoreSchema = z
+  .object({
+    summary: z.object({
+      riskScore: z.number(),
+    }),
+  })
+  .passthrough();
 
 @Injectable()
 export class HookCallbackHandlerService {
@@ -125,7 +129,8 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
 
     const { context } = workflowRuntime;
-    const { reportData, base64Pdf, reportId, reportType } = data;
+    const { reportData: unvalidatedReportData, base64Pdf, reportId, reportType } = data;
+    const reportData = ReportWithRiskScoreSchema;
 
     const { documents, pdfReportBallerineFileId } =
       await this.__peristPDFReportDocumentWithWorkflowDocuments({
@@ -135,7 +140,8 @@ export class HookCallbackHandlerService {
         base64PDFString: base64Pdf as string,
       });
 
-    const reportRiskScore = (reportData as TReportWithRiskScore).summary.riskScore;
+    const reportRiskScore =
+      ReportWithRiskScoreSchema.parse(unvalidatedReportData).summary.riskScore;
 
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
@@ -144,7 +150,7 @@ export class HookCallbackHandlerService {
     if (!business) throw new BadRequestException('Business not found.');
 
     const currentReportId = reportId as string;
-    const existantBusinessReport = await this.businessReportService.findFirst(
+    const existantBusinessReport = await this.businessReportService.findFirstOrThrow(
       {
         where: {
           businessId: business.id,
@@ -186,15 +192,7 @@ export class HookCallbackHandlerService {
     workflowRuntime.context.documents = documents;
 
     this.alertService
-      .checkOngoingMonitoringAlert(
-        {
-          businessId: business.id,
-          projectId: currentProjectId,
-          reportId: currentReportId,
-          businessReportId: businessReport.id,
-        },
-        business.companyName,
-      )
+      .checkOngoingMonitoringAlert(businessReport, business.companyName)
       .then(() => {
         this.logger.debug(`Alert Tested for ${currentReportId}}`);
       })
@@ -213,7 +211,7 @@ export class HookCallbackHandlerService {
   ) {
     const { reportData, base64Pdf, reportId, reportType, comparedToReportId } = z
       .object({
-        reportData: z.record(z.string(), z.unknown()),
+        reportData: ReportWithRiskScoreSchema,
         base64Pdf: z.string(),
         reportId: z.string(),
         reportType: z.string(),
@@ -228,7 +226,7 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
 
     if (comparedToReportId) {
-      const comparedToReport = await this.businessReportService.findFirst(
+      const comparedToReport = await this.businessReportService.findFirstOrThrow(
         {
           where: {
             businessId,
@@ -262,7 +260,7 @@ export class HookCallbackHandlerService {
       reportId,
     } as Record<string, object | string>;
 
-    const reportRiskScore = (reportData as TReportWithRiskScore).summary.riskScore;
+    const reportRiskScore = reportData.summary.riskScore;
 
     await this.businessReportService.create({
       data: {
