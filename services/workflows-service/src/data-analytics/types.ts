@@ -1,6 +1,5 @@
 import { PaymentMethod, TransactionDirection, TransactionRecordType } from '@prisma/client';
 import { AggregateType, TIME_UNITS } from './consts';
-import { TProjectId } from '@/types';
 import type { MerchantAlertLabel, TransactionAlertLabel } from '@/alert/consts';
 
 export type InlineRule = {
@@ -93,13 +92,6 @@ export type TransactionLimitHistoricAverageOptions = {
   minimumCount: number;
   minimumTransactionAmount: number;
   transactionFactor: number;
-};
-
-export type CheckRiskScoreSubject = {
-  projectId: TProjectId;
-  businessId: string;
-  reportId: string;
-  businessReportId: string;
 };
 
 export type CheckRiskScoreOptions = {
