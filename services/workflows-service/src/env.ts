@@ -78,6 +78,13 @@ export const env = createEnv({
       .string()
       .optional()
       .describe('Bucket name of Data migration folders'),
+    TELEMETRY_ENABLED: z
+      .enum(['true', 'false'])
+      .default('true')
+      .transform(value => value === 'true')
+      .describe('Enable or disable telemetry'),
+    TELEMETRY_SUPABASE_URL: z.string().url().optional().describe('Supabase URL for telemetry'),
+    TELEMETRY_SUPABASE_API_KEY: z.string().optional().describe('Supabase API key for telemetry'),
   },
   client: {},
   /**
