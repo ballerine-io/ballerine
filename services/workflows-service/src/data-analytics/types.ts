@@ -1,8 +1,9 @@
-import { TransactionDirection, PaymentMethod, TransactionRecordType } from '@prisma/client';
+import { PaymentMethod, TransactionDirection, TransactionRecordType } from '@prisma/client';
 import { AggregateType, TIME_UNITS } from './consts';
+import type { MerchantAlertLabel, TransactionAlertLabel } from '@/alert/consts';
 
 export type InlineRule = {
-  id: string;
+  id: keyof typeof MerchantAlertLabel | keyof typeof TransactionAlertLabel | string;
   subjects: string[] | readonly string[];
 } & (
   | {
@@ -21,6 +22,15 @@ export type InlineRule = {
       fnName: 'evaluateTransactionLimitHistoricAverageInbound';
       options: Omit<TransactionLimitHistoricAverageOptions, 'projectId'>;
     }
+  | {
+      fnName: 'checkMerchantOngoingAlert';
+      options: CheckRiskScoreOptions;
+    }
+  | {
+      // since we don't know the other options, we can use never
+      fnName: unknown;
+      options: never;
+    }
 );
 
 export type TAggregations = keyof typeof AggregateType;
@@ -35,7 +45,10 @@ export type TimeUnit = (typeof TIME_UNITS)[keyof typeof TIME_UNITS];
 export type TransactionsAgainstDynamicRulesType = {
   projectId: string;
   havingAggregate?: TAggregations;
-  amountBetween?: { min: number; max: number };
+  amountBetween?: {
+    min: number;
+    max: number;
+  };
   timeAmount?: number;
   transactionType?: TransactionRecordType[] | readonly TransactionRecordType[];
   timeUnit?: TimeUnit;
@@ -79,4 +92,10 @@ export type TransactionLimitHistoricAverageOptions = {
   minimumCount: number;
   minimumTransactionAmount: number;
   transactionFactor: number;
+};
+
+export type CheckRiskScoreOptions = {
+  increaseRiskScorePercentage?: number;
+  increaseRiskScore?: number;
+  maxRiskScoreThreshold?: number;
 };

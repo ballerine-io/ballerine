@@ -37,20 +37,12 @@ export class BusinessReportRepository {
     );
   }
 
-  async findFirst<T extends Prisma.BusinessReportFindFirstArgs>(
+  async findFirstOrThrow<T extends Prisma.BusinessReportFindFirstArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportFindFirstArgs>,
     projectIds: TProjectIds,
   ) {
-    return await this.prisma.businessReport.findFirst(
-      this.scopeService.scopeFindMany(args, projectIds),
+    return await this.prisma.businessReport.findFirstOrThrow(
+      this.scopeService.scopeFindFirst(args, projectIds),
     );
-  }
-  async upsert<T extends Prisma.BusinessReportUpsertArgs>(
-    args: Prisma.SelectSubset<T, Prisma.BusinessReportUpsertArgs>,
-    projectIds: TProjectIds,
-  ) {
-    args.where = { ...args.where, project: { id: { in: projectIds } } };
-
-    return await this.prisma.businessReport.upsert(args);
   }
 }
