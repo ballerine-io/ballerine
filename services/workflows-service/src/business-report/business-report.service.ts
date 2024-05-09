@@ -4,8 +4,6 @@ import { TProjectIds } from '@/types';
 import { BusinessReportRepository } from '@/business-report/business-report.repository';
 import { GetBusinessReportDto } from './dto/get-business-report.dto';
 import { toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
-import { TIME_UNITS } from '@/data-analytics/consts';
-import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
 
 @Injectable()
 export class BusinessReportService {
@@ -24,11 +22,37 @@ export class BusinessReportService {
     return await this.businessReportRepository.findMany(args, projectIds);
   }
 
-  async findFirst<T extends Prisma.BusinessReportFindFirstArgs>(
+  async upsert<T extends Prisma.BusinessReportUpsertArgs>(
+    args: Prisma.SelectSubset<T, Prisma.BusinessReportUpsertArgs>,
+    projectIds: NonNullable<TProjectIds>,
+  ) {
+    if (!args.where.id) {
+      return await this.businessReportRepository.create({ data: args.create });
+    }
+
+    await this.businessReportRepository.updateMany({
+      where: {
+        id: args.where.id,
+        project: { id: { in: projectIds } },
+      },
+      data: args.update,
+    });
+
+    return await this.businessReportRepository.findFirstOrThrow(
+      {
+        where: {
+          id: args.where.id,
+        },
+      },
+      projectIds,
+    );
+  }
+
+  async findFirstOrThrow<T extends Prisma.BusinessReportFindFirstArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportFindFirstArgs>,
     projectIds: TProjectIds,
   ) {
-    return await this.businessReportRepository.findFirst(args, projectIds);
+    return await this.businessReportRepository.findFirstOrThrow(args, projectIds);
   }
 
   async findManyWithFilters(
@@ -55,62 +79,11 @@ export class BusinessReportService {
       {
         ...options,
         where: {
-          ...this.buildFilters(getTransactionsParameters),
+          businessId: getTransactionsParameters.businessId,
         },
         ...args,
       },
       [projectId],
     );
-  }
-
-  private buildFilters(filterParams: GetBusinessReportDto): Prisma.TransactionRecordWhereInput {
-    const whereClause: Prisma.BusinessReportWhereInput = {};
-
-    if (filterParams.businessId) {
-      whereClause.businessId = filterParams.businessId;
-    }
-
-    if (filterParams.startDate) {
-      whereClause.createdAt = {
-        ...(whereClause.createdAt as DateTimeFilter),
-        gte: filterParams.startDate,
-      };
-    }
-
-    if (filterParams.endDate) {
-      whereClause.createdAt = {
-        ...(whereClause.createdAt as DateTimeFilter),
-        lte: filterParams.endDate,
-      };
-    }
-
-    if (filterParams.timeValue && filterParams.timeUnit) {
-      const now = new Date(); // UTC time by default
-      let subtractValue = 0;
-
-      switch (filterParams.timeUnit) {
-        case TIME_UNITS.minutes:
-          subtractValue = filterParams.timeValue * 60 * 1000;
-          break;
-        case TIME_UNITS.hours:
-          subtractValue = filterParams.timeValue * 60 * 60 * 1000;
-          break;
-        case TIME_UNITS.days:
-          subtractValue = filterParams.timeValue * 24 * 60 * 60 * 1000;
-          break;
-        case TIME_UNITS.months:
-          now.setMonth(now.getMonth() - filterParams.timeValue);
-          break;
-        case TIME_UNITS.years:
-          now.setFullYear(now.getFullYear() - filterParams.timeValue);
-          break;
-      }
-
-      const pastDate = new Date(now.getTime() - subtractValue);
-
-      whereClause.createdAt = { gte: pastDate };
-    }
-
-    return whereClause;
   }
 }

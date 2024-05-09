@@ -754,7 +754,7 @@ model Alert {
 
   alertDefinitionId String
   alertDefinition   AlertDefinition @relation(fields: [alertDefinitionId], references: [id], onUpdate: Cascade, onDelete: NoAction)
-  
+
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
@@ -765,6 +765,7 @@ model Alert {
   severity      AlertSeverity?
 
   executionDetails Json
+  additionalInfo   Json?
 
   assignee   User?     @relation(fields: [assigneeId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   assigneeId String?
@@ -840,20 +841,23 @@ model Counterparty {
 model BusinessReport {
   id     String             @id @default(cuid())
   type   BusinessReportType
+  reportId String           @unique
   report Json
 
+  riskScore  Int
   businessId String
   business   Business @relation(fields: [businessId], references: [id])
 
   projectId  String
   project    Project @relation(fields: [projectId], references: [id])
-  
+
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-  
+
 
   @@index([createdAt])
   @@index([businessId])
   @@index([projectId])
+  @@index([riskScore])
   @@index([type])
 }

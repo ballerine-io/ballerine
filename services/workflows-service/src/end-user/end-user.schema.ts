@@ -10,8 +10,8 @@ const ActiveMonitoringSchema = z.object({
 export const EndUserActiveMonitoringsSchema = z.array(ActiveMonitoringSchema);
 
 const SourceSchema = z.object({
-  sourceName: z.string().optional(),
-  sourceUrl: z.string().url().optional(),
+  sourceName: z.string().nullable().optional(),
+  sourceUrl: z.string().url().nullable().optional(),
   date: z.string().nullable().optional(),
 });
 

@@ -5,7 +5,6 @@ import { CustomerService } from '@/customer/customer.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import type { InputJsonValue } from '@/types';
 import { EndUserService } from '@/end-user/end-user.service';
 
 @Injectable()
@@ -72,6 +71,23 @@ export class WebhooksService {
       [projectId],
     );
 
+    const hits = (data as { hits: Array<Record<PropertyKey, unknown>> })?.hits ?? [];
+
+    const amlHits = hits.map(hit => ({
+      ...hit,
+      vendor: 'veriff',
+    }));
+
+    await this.endUserService.updateById(endUserId, {
+      data: {
+        amlHits,
+      },
+    });
+
+    if (hits.length === 0) {
+      return;
+    }
+
     await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId,
       context: {
@@ -88,17 +104,6 @@ export class WebhooksService {
       },
       projectIds: [projectId],
       currentProjectId: projectId,
-    });
-
-    const amlHits = (data as { hits: Array<Record<PropertyKey, unknown>> }).hits.map(hit => ({
-      ...hit,
-      vendor: 'veriff',
-    }));
-
-    await this.endUserService.updateById(endUserId, {
-      data: {
-        amlHits,
-      },
     });
   }
 }
