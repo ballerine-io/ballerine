@@ -57,12 +57,10 @@ export class ValidationError extends common.BadRequestException {
       },
       'Validation error',
     );
-
-    this.errors = errors;
   }
 
   getErrors() {
-    return this.errors;
+    return (this.getResponse() as any).errors;
   }
 
   static fromAjvError(error: Array<ErrorObject<string, Record<string, any>, unknown>>) {
