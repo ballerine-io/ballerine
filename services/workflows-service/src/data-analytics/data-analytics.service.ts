@@ -1,23 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
-  InlineRule,
-  TransactionsAgainstDynamicRulesType,
-  TCustomersTransactionTypeOptions,
-  HighTransactionTypePercentage,
-  TransactionLimitHistoricAverageOptions,
   CheckRiskScoreOptions,
-  CheckRiskScorePayload,
+  HighTransactionTypePercentage,
+  InlineRule,
+  TCustomersTransactionTypeOptions,
+  TransactionLimitHistoricAverageOptions,
+  TransactionsAgainstDynamicRulesType,
 } from './types';
 import { AggregateType, TIME_UNITS } from './consts';
-import { Prisma } from '@prisma/client';
+import { AlertSeverity, BusinessReport, BusinessReportType, Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isEmpty } from 'lodash';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import console from 'console';
 
 @Injectable()
 export class DataAnalyticsService {
   constructor(
     protected readonly prisma: PrismaService,
+    protected readonly businessReportService: BusinessReportService,
     protected readonly logger: AppLoggerService,
   ) {}
 
@@ -46,13 +48,6 @@ export class DataAnalyticsService {
           ...inlineRule.options,
           projectId,
         });
-      case 'checkRiskScore':
-        return await this[inlineRule.fnName](
-          {
-            projectId,
-          },
-          args,
-        );
     }
 
     this.logger.error(`No evaluation function found`, {
@@ -62,17 +57,111 @@ export class DataAnalyticsService {
     throw new Error(`No evaluation function found for rule name: ${(inlineRule as InlineRule).id}`);
   }
 
-  async checkRiskScore({ projectId }: CheckRiskScoreOptions, payload: CheckRiskScorePayload) {
-    const { businessId, originalScore, currentScore } = payload;
+  async checkMerchantOngoingAlert(
+    businessReport: BusinessReport,
+    {
+      increaseRiskScorePercentage,
+      increaseRiskScore,
+      maxRiskScoreThreshold,
+    }: CheckRiskScoreOptions,
+    alertSeverity: AlertSeverity,
+  ) {
+    const { report, businessId, projectId } = businessReport;
 
-    return currentScore > originalScore
-      ? [
-          {
-            businessId,
-            projectId,
-          },
-        ]
-      : [];
+    if (
+      !(
+        report as {
+          data: {
+            previousReport?: unknown;
+          };
+        }
+      ).data.previousReport
+    ) {
+      return;
+    }
+
+    const {
+      data: {
+        summary: { riskScore: currentRiskScore },
+        previousReport: {
+          summary: { riskScore: previousRiskScore },
+          reportType: previousReportType,
+        },
+      },
+    } = report as {
+      data: {
+        summary: {
+          riskScore: number;
+        };
+        previousReport: {
+          summary: {
+            riskScore: number;
+          };
+          reportType: BusinessReportType;
+        };
+      };
+    };
+
+    if (previousReportType !== BusinessReportType.ONGOING_MERCHANT_REPORT_T1) {
+      this.logger.warn(`Previous report type is not ONGOING_MERCHANT_REPORT_T1`);
+
+      return;
+    }
+
+    if (currentRiskScore < previousRiskScore) {
+      return;
+    }
+
+    if (!(maxRiskScoreThreshold || increaseRiskScore || increaseRiskScorePercentage)) {
+      this.logger.warn(`Rule for ${businessId} ${projectId} missing required options`, {
+        maxRiskScoreThreshold,
+        increaseRiskScore,
+        increaseRiskScorePercentage,
+      });
+
+      return;
+    }
+
+    let ruleResult;
+
+    if (maxRiskScoreThreshold && currentRiskScore >= maxRiskScoreThreshold) {
+      ruleResult = {
+        severity: alertSeverity,
+        alertReason: `The risk score has exceeded the threshold of ${maxRiskScoreThreshold}`,
+      };
+    }
+
+    if (increaseRiskScore && currentRiskScore - previousRiskScore >= increaseRiskScore) {
+      ruleResult = {
+        severity: alertSeverity,
+        alertReason: `The risk score has been increased by more than ${increaseRiskScore} from previous monitoring`,
+      };
+    }
+
+    if (
+      increaseRiskScorePercentage &&
+      ((currentRiskScore - previousRiskScore) / previousRiskScore) * 100 >=
+        increaseRiskScorePercentage
+    ) {
+      ruleResult = {
+        severity: alertSeverity,
+        alertReason: `The risk score has been significantly increased from previous monitoring`,
+      };
+    }
+
+    if (!ruleResult) {
+      return;
+    }
+
+    const executionDetails = {
+      businessId: businessId,
+      projectId: projectId,
+      riskScore: currentRiskScore,
+      previousRiskScore,
+      ...ruleResult,
+    };
+
+    return executionDetails;
   }
 
   async evaluateTransactionsAgainstDynamicRules({

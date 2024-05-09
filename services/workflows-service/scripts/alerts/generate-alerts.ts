@@ -1,4 +1,3 @@
-import { businessIds } from './../generate-end-user';
 import { InlineRule } from '@/data-analytics/types';
 import {
   AlertSeverity,
@@ -18,9 +17,11 @@ import { InputJsonValue, PrismaTransaction } from '@/types';
 import { TDedupeStrategy } from '@/alert/types';
 import {
   ALERT_DEDUPE_STRATEGY_DEFAULT,
-  SEVEN_DAYS,
-  TWENTY_ONE_DAYS,
   daysToMinutesConverter,
+  MerchantAlertLabel,
+  SEVEN_DAYS,
+  TransactionAlertLabel,
+  TWENTY_ONE_DAYS,
 } from '@/alert/consts';
 
 const tags = [
@@ -418,7 +419,7 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
     },
   },
 } as const satisfies Record<
-  string,
+  Partial<keyof typeof TransactionAlertLabel>,
   {
     inlineRule: InlineRule & InputJsonValue;
     defaultSeverity: AlertSeverity;
@@ -430,27 +431,59 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
 >;
 
 export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
-  MRCNT_RISK: {
+  MERCHANT_ONGOING_RISK_ALERT_RISK_INCREASE: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.low,
+    monitoringType: MonitoringType.ongoing_merchant_monitoring,
+    description: 'Monitor ongoing risk changes',
+    inlineRule: {
+      id: 'MERCHANT_ONGOING_RISK_ALERT_RISK_INCREASE',
+      fnName: 'checkMerchantOngoingAlert',
+      subjects: ['businessId', 'projectId'],
+      options: {
+        increaseRiskScore: 20,
+      },
+    },
+  },
+  MERCHANT_ONGOING_RISK_ALERT_THRESHOLD: {
     enabled: true,
     defaultSeverity: AlertSeverity.high,
     monitoringType: MonitoringType.ongoing_merchant_monitoring,
-    description: '',
+    description: 'Monitor ongoing risk changes',
     inlineRule: {
-      id: 'MRCNT_RISK',
-      fnName: 'checkRiskScore',
+      id: 'MERCHANT_ONGOING_RISK_ALERT_THRESHOLD',
+      fnName: 'checkMerchantOngoingAlert',
       subjects: ['businessId', 'projectId'],
-      options: {},
+      options: {
+        maxRiskScoreThreshold: 60,
+      },
     },
   },
-} as const satisfies Record<
-  string,
-  {
-    inlineRule: InlineRule & InputJsonValue;
-    monitoringType: MonitoringType;
-    defaultSeverity: AlertSeverity;
-    enabled?: boolean;
-    description?: string;
-  }
+  MERCHANT_ONGOING_RISK_ALERT_PERCENTAGE: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    monitoringType: MonitoringType.ongoing_merchant_monitoring,
+    description: 'Monitor ongoing risk changes',
+    inlineRule: {
+      id: 'MERCHANT_ONGOING_RISK_ALERT_PERCENTAGE',
+      fnName: 'checkMerchantOngoingAlert',
+      subjects: ['businessId', 'projectId'],
+      options: {
+        increaseRiskScorePercentage: 30,
+      },
+    },
+  },
+} as const satisfies Partial<
+  Record<
+    keyof typeof MerchantAlertLabel | string,
+    {
+      inlineRule: InlineRule & InputJsonValue;
+      monitoringType: MonitoringType;
+      defaultSeverity: AlertSeverity;
+      enabled?: boolean;
+      description?: string;
+    }
+  >
 >;
 
 export const getAlertDefinitionCreateData = (
@@ -634,26 +667,6 @@ export const seedTransactionsAlerts = async (
             projectId: project.id,
             ...generateFakeAlert({
               counterpartyIds,
-              agentUserIds,
-              severity: faker.helpers.arrayElement(Object.values(AlertSeverity)),
-            }),
-          }),
-        ),
-        skipDuplicates: true,
-      }),
-    ),
-
-    ...merchantMonitoringAlertDef.map(alertDefinition =>
-      prisma.alert.createMany({
-        data: Array.from(
-          {
-            length: faker.datatype.number({ min: 3, max: 5 }),
-          },
-          () => ({
-            alertDefinitionId: alertDefinition.id,
-            projectId: project.id,
-            ...generateFakeAlert({
-              businessIds,
               agentUserIds,
               severity: faker.helpers.arrayElement(Object.values(AlertSeverity)),
             }),

@@ -7,6 +7,6 @@ import { AlertDefinitionService } from '@/alert-definition/alert-definition.serv
 @Module({
   imports: [PrismaModule, ProjectModule],
   providers: [AlertDefinitionService, AlertDefinitionRepository],
-  exports: [AlertDefinitionService],
+  exports: [AlertDefinitionService, AlertDefinitionRepository],
 })
 export class AlertDefinitionModule {}

@@ -21,6 +21,7 @@ import { capitalize } from '../../../../../../common/utils/capitalize/capitalize
 import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
 import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
+import { Separator } from '@/common/components/atoms/Separator/Separator';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -51,6 +52,7 @@ export const useKycBlock = ({
       if (!results[docIndex]) {
         results[docIndex] = [];
       }
+
       results[docIndex][pageIndex] = docsData?.shift()?.data;
     });
   });
@@ -327,11 +329,6 @@ export const useKycBlock = ({
             childWorkflow?.context?.entity?.data?.lastName,
           )}`,
         })
-        .addCell({
-          id: 'actions',
-          type: 'container',
-          value: getDecisionStatusOrAction(childWorkflow?.tags),
-        })
         .build()
         .flat(1),
     })
@@ -348,6 +345,31 @@ export const useKycBlock = ({
       value: createBlocksTyped()
         .addBlock()
         .addCell(headerCell)
+        .addCell({
+          type: 'nodeCell',
+          value: <Separator className={`my-2`} />,
+        })
+        .addCell({
+          id: 'title-with-actions',
+          type: 'container',
+          props: { className: 'mt-2' },
+          value: createBlocksTyped()
+            .addBlock()
+            .addCell({
+              type: 'heading',
+              value: 'Identity Verification Results',
+              props: {
+                className: 'mt-0',
+              },
+            })
+            .addCell({
+              type: 'container',
+              props: { className: 'space-x-4' },
+              value: getDecisionStatusOrAction(childWorkflow?.tags),
+            })
+            .build()
+            .flat(1),
+        })
         .addCell({
           id: 'kyc-block',
           type: 'container',
@@ -417,10 +439,6 @@ export const useKycBlock = ({
                     .build()
                     .flat(1),
                 })
-                .addCell({
-                  type: 'container',
-                  value: amlBlock,
-                })
                 .build()
                 .flat(1),
             })
@@ -433,6 +451,14 @@ export const useKycBlock = ({
             })
             .build()
             .flat(1),
+        })
+        .addCell({
+          type: 'nodeCell',
+          value: <Separator className={`my-2`} />,
+        })
+        .addCell({
+          type: 'container',
+          value: amlBlock,
         })
         .build()
         .flat(1),

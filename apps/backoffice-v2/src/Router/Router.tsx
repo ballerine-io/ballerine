@@ -15,6 +15,8 @@ import { entityLoader } from '@/pages/Entity/Entity.loader';
 import { Entity } from '@/pages/Entity/Entity.page';
 import { Locale } from '@/pages/Locale/Locale.page';
 import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
+import { Individuals } from '@/pages/Profiles/Individuals/Individuals.page';
+import { Profiles } from '@/pages/Profiles/Profiles.page';
 import { RootError } from '@/pages/Root/Root.error';
 import { rootLoader } from '@/pages/Root/Root.loader';
 import { Root } from '@/pages/Root/Root.page';
@@ -87,6 +89,18 @@ const router = createBrowserRouter([
                         errorElement: <RouteError />,
                       },
                     ],
+                  },
+                ],
+              },
+              {
+                path: '/:locale/profiles',
+                element: <Profiles />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/profiles/individuals',
+                    element: <Individuals />,
+                    errorElement: <RouteError />,
                   },
                 ],
               },
