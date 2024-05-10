@@ -60,7 +60,7 @@ export class ValidationError extends common.BadRequestException {
   }
 
   getErrors() {
-    return (this.getResponse() as any).errors;
+    return (this.getResponse() as ValidationError).errors;
   }
 
   static fromAjvError(error: Array<ErrorObject<string, Record<string, any>, unknown>>) {
