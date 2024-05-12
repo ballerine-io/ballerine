@@ -271,6 +271,13 @@ jobs:
     outputs:
       skipnext: ${{ steps.fetch-submodule.outputs.skipnext }} # short sha of the commit
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+          token: ${{ secrets.SUBMODULES_TOKEN }}
+          
       - name: Check if branch exists
         id: fetch-submodule
         run: |
