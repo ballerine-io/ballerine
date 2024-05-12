@@ -1,6 +1,6 @@
 import React, { FunctionComponent } from 'react';
 import { IProfilesTableProps } from '@/pages/Profiles/Individuals/components/ProfilesTable/interfaces';
-import { DataTable, IDataTableProps } from '@/common/components/molecules/DataTable/DataTable';
+import { DataTable, IDataTableProps } from '@/common/components/organisms/DataTable/DataTable';
 import { columns } from './columns';
 
 export const ProfilesTable: FunctionComponent<IProfilesTableProps> = ({ data }) => {

@@ -4,7 +4,7 @@ import React, { FunctionComponent, ReactNode } from 'react';
 import { TTransactionsList } from '@/domains/transactions/fetchers';
 import { ExpandedTransactionDetails } from '@/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisSheet/ExpandedTransactionDetails';
 import { columns } from '@/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisSheet/columns';
-import { DataTable } from '@/common/components/molecules/DataTable/DataTable';
+import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
 
 export interface IAlertAnalysisProps {
   onOpenStateChange: () => void;

@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useCallback } from 'react';
 import { IAlertsTableProps } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/interfaces';
-import { DataTable, IDataTableProps } from '@/common/components/molecules/DataTable/DataTable';
+import { DataTable, IDataTableProps } from '@/common/components/organisms/DataTable/DataTable';
 import { columns } from './columns';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { Link, useLocation } from 'react-router-dom';

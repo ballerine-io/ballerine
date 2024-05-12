@@ -21,7 +21,7 @@ import { CommonWorkflowStates } from '@ballerine/common';
 import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { ColumnDef, TableOptions } from '@tanstack/react-table';
 import { ComponentProps, ReactNode } from 'react';
-import { DataTable } from '@/common/components/molecules/DataTable/DataTable';
+import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
 
 export type TBlockCell = {
   type: 'block';
