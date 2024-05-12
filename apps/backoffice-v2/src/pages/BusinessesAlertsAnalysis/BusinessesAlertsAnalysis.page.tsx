@@ -1,14 +1,14 @@
-import { useTransactionMonitoringAlertsAnalysisPageLogic } from '@/pages/TransactionMonitoringAlertsAnalysis/hooks/useTransactionMonitoringAlertsAnalysisPageLogic/useTransactionMonitoringAlertsAnalysisPageLogic';
 import { OngoingMonitoringRiskSheet } from '@/pages/BusinessesAlertsAnalysis/components/OngoingMonitoringRiskSheet';
+import { useBusinessAlertsAnalysisLogic } from '@/pages/BusinessesAlertsAnalysis/hooks/useBusinessAlertsAnalysisLogic/useBusinessAlertsAnalysisLogic';
 
 export const BusinessesAlertsAnalysisPage = () => {
-  const { transactions, onNavigateBack, alertDefinition, isLoadingAlertDefinition, alertId } =
-    useTransactionMonitoringAlertsAnalysisPageLogic();
+  const { businessReports, onNavigateBack } = useBusinessAlertsAnalysisLogic();
+
+  console.log({ businessReports });
 
   return (
     <OngoingMonitoringRiskSheet
-      key={alertId}
-      transactions={transactions ?? []}
+      businessReports={businessReports ?? []}
       onOpenStateChange={onNavigateBack}
     />
   );

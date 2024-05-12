@@ -1,17 +1,17 @@
 import { SheetContent } from '@/common/components/atoms/Sheet';
 import { Sheet } from '@/common/components/atoms/Sheet/Sheet';
-import { TTransactionsList } from '@/domains/transactions/fetchers';
+import { TBusinessReport } from '@/domains/business-reports/fetchers';
 import { OngoingMonitoringTable } from '@/pages/BusinessesAlertsAnalysis/components/OngoingMonitoringTable';
 import { FunctionComponent } from 'react';
 
-export interface IAlertAnalysisProps {
+export interface IOngoingMonitoringRiskSheet {
   onOpenStateChange: () => void;
-  transactions: TTransactionsList;
+  businessReports: TBusinessReport[];
 }
 
-export const OngoingMonitoringRiskSheet: FunctionComponent<IAlertAnalysisProps> = ({
+export const OngoingMonitoringRiskSheet: FunctionComponent<IOngoingMonitoringRiskSheet> = ({
   onOpenStateChange,
-  transactions,
+  businessReports,
 }) => {
   return (
     <Sheet defaultOpen onOpenChange={onOpenStateChange}>
@@ -29,7 +29,7 @@ export const OngoingMonitoringRiskSheet: FunctionComponent<IAlertAnalysisProps> 
             </div>
           </div>
           <div>
-            <OngoingMonitoringTable transactions={transactions ?? []} />
+            <OngoingMonitoringTable businessReports={businessReports ?? []} />
           </div>
         </div>
       </SheetContent>

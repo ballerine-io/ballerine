@@ -5,17 +5,19 @@ import { IndeterminateCheckbox } from '@/common/components/atoms/IndeterminateCh
 import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { createInitials } from '@/common/utils/create-initials/create-initials';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
-import { TAlertState } from '@/domains/alerts/fetchers';
 import { TBusinessAlertsList } from '@/domains/business-alerts/fetchers';
-import { severityToClassName } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/severity-to-class-name';
+import { getSeverityFromRiskScore } from '@/pages/BusinessesAlerts/components/BusinessAlertsTable/utils/get-severity-from-risk-score';
+import {
+  severityToClassName,
+  severityToTextClassName,
+} from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/severity-to-class-name';
 import { Badge } from '@ballerine/ui';
 import { createColumnHelper } from '@tanstack/react-table';
 import dayjs from 'dayjs';
 import { UserCircle2 } from 'lucide-react';
 import { ComponentProps } from 'react';
-import { SnakeCase, titleCase } from 'string-ts';
+import { titleCase } from 'string-ts';
 
 const columnHelper = createColumnHelper<
   TBusinessAlertsList[number] & {
@@ -46,37 +48,27 @@ export const columns = [
     },
     header: 'Created At',
   }),
-  columnHelper.accessor('subject', {
+  columnHelper.accessor('additionalInfo', {
     cell: info => {
-      const subject = info.getValue();
+      const { businessCompanyName } = info.getValue();
 
-      return <span className={`font-semibold`}>{valueOrNA(subject?.companyName)}</span>;
+      return (
+        <span className={`whitespace-nowrap font-semibold`}>{valueOrNA(businessCompanyName)}</span>
+      );
     },
     header: 'Business',
   }),
-  columnHelper.accessor('label', {
+  columnHelper.accessor('additionalInfo', {
     cell: info => {
-      const label = info.getValue();
+      const { alertReason } = info.getValue();
 
-      return (
-        <Badge variant="secondary" className="max-w-[8rem]" title={label}>
-          <div className="truncate">{label}</div>
-        </Badge>
-      );
+      return <div className="min-w-[250px] font-semibold">{alertReason}</div>;
     },
-    header: 'Label',
+    header: 'Reason',
   }),
-  columnHelper.accessor('subject', {
+  columnHelper.accessor('additionalInfo', {
     cell: info => {
-      const subject = info.getValue();
-
-      return <TextWithNAFallback>{subject.name}</TextWithNAFallback>;
-    },
-    header: 'Subject',
-  }),
-  columnHelper.accessor('severity', {
-    cell: info => {
-      const severity = info.getValue();
+      const { severity } = info.getValue();
 
       return (
         <TextWithNAFallback
@@ -94,13 +86,38 @@ export const columns = [
     },
     header: 'Severity',
   }),
-  columnHelper.accessor('alertDetails', {
+  columnHelper.accessor('additionalInfo', {
     cell: info => {
-      const alertDetails = info.getValue();
+      const { riskScore } = info.getValue();
+      const severity = getSeverityFromRiskScore(riskScore);
 
-      return <TextWithNAFallback>{alertDetails}</TextWithNAFallback>;
+      return (
+        <div className="flex items-center gap-2">
+          <TextWithNAFallback
+            className={ctw(
+              severityToTextClassName[
+                (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
+              ],
+              'py-0.5 font-bold',
+            )}
+          >
+            {riskScore}
+          </TextWithNAFallback>
+          <TextWithNAFallback
+            as={Badge}
+            className={ctw(
+              severityToClassName[
+                (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
+              ],
+              'w-20 py-0.5 font-bold',
+            )}
+          >
+            {titleCase(severity ?? '')}
+          </TextWithNAFallback>
+        </div>
+      );
     },
-    header: 'Alert Details',
+    header: 'Report Risk Score',
   }),
   // columnHelper.accessor('amountOfTxs', {
   //   cell: info => {
@@ -140,32 +157,6 @@ export const columns = [
       );
     },
     header: 'Status',
-  }),
-  columnHelper.accessor('decision', {
-    cell: info => {
-      const decision = info.getValue();
-      const screamingSnakeDecision = toScreamingSnakeCase(decision ?? '');
-      const decisionToTextColor = {
-        CLEARED: 'text-success',
-        REJECTED: 'text-destructive',
-      } as const satisfies Record<
-        Extract<Uppercase<SnakeCase<TAlertState>>, 'CLEARED' | 'REJECTED'>,
-        ComponentProps<typeof TextWithNAFallback>['className']
-      >;
-
-      return (
-        <TextWithNAFallback
-          className={ctw({
-            'font-bold': !!screamingSnakeDecision,
-            [decisionToTextColor[screamingSnakeDecision as keyof typeof decisionToTextColor]]:
-              !!screamingSnakeDecision,
-          })}
-        >
-          {titleCase(decision ?? '')}
-        </TextWithNAFallback>
-      );
-    },
-    header: 'Decision',
   }),
   columnHelper.display({
     id: 'select',

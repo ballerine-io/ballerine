@@ -46,6 +46,8 @@ export const seedBusinessReports = async (
               },
               projectId: project.id,
               type: 'ONGOING_MERCHANT_REPORT_T1',
+              riskScore: generateFakeRiskScore(),
+              reportId: faker.datatype.uuid(),
             },
           }),
         ),
