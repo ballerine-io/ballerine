@@ -423,6 +423,15 @@ export const ALERT_DEFINITIONS = {
       subjects: ['counterpartyId'],
       options: {
         amountThreshold: 100,
+
+        paymentMethods: [PaymentMethod.credit_card],
+        excludePaymentMethods: false,
+
+        customerType: '',
+        timeAmount = SEVEN_DAYS,
+        timeUnit = TIME_UNITS.days,
+
+        factor: 2,
       },
     },
   },
