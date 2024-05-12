@@ -59,11 +59,6 @@ export type TBadgeCell = {
   props?: ComponentProps<typeof MotionBadge>;
 };
 
-export type TDataTableCell = {
-  type: 'dataTable';
-  value: ComponentProps<typeof DataTable>;
-};
-
 export type TCallToActionLegacyCell = {
   type: 'callToActionLegacy';
   value: {

@@ -7,7 +7,7 @@ export const ProfilesTable: FunctionComponent<IProfilesTableProps> = ({ data }) 
   // const locale = useLocale();
   // const { search } = useLocation();
 
-  const Cell: IDataTableProps<typeof data>['CellWrapper'] = ({ cell, children }) => {
+  const Cell: IDataTableProps<typeof data>['CellContentWrapper'] = ({ cell, children }) => {
     // const itemId = cell.id.replace(`_${cell.column.id}`, '');
 
     return (
@@ -24,7 +24,7 @@ export const ProfilesTable: FunctionComponent<IProfilesTableProps> = ({ data }) 
     <DataTable
       data={data}
       columns={columns}
-      CellWrapper={Cell}
+      CellContentWrapper={Cell}
       sortByField={`createdAt`}
       props={{ scroll: { className: 'h-full' }, cell: { className: '!p-0' } }}
     />

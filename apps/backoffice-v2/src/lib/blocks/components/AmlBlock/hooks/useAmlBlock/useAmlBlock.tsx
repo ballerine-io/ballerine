@@ -90,7 +90,7 @@ export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
             value: {
               data: matches,
               props: { scroll: { className: 'h-[50vh]' }, cell: { className: '!p-0' } },
-              CollapsibleComponent: ({ row: match }) => <AmlMatch match={match} />,
+              CollapsibleContent: ({ row: match }) => <AmlMatch match={match} />,
               columns: [
                 columnHelper.display({
                   id: 'collapsible',

@@ -33,7 +33,7 @@ import {
   TableRow,
 } from '@/common/components/atoms/Table';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { CollapsibleContent } from '@/common/components/molecules/Collapsible/Collapsible.Content';
+import { CollapsibleContent as ShadCNCollapsibleContent } from '@/common/components/molecules/Collapsible/Collapsible.Content';
 import { Collapsible } from '@/common/components/molecules/Collapsible/Collapsible';
 import { useSort } from '@/common/hooks/useSort/useSort';
 import { isInstanceOfFunction } from '@/common/utils/is-instance-of-function/is-instance-of-function';
@@ -45,12 +45,11 @@ import { FunctionComponentWithChildren } from '@/common/types';
 export interface IDataTableProps<TData, TValue = any> {
   data: TData[];
   sortByField?: string;
-  enableSorting?: boolean;
   columns: Array<ColumnDef<TData, TValue>>;
   caption?: ComponentProps<typeof TableCaption>['children'];
 
-  CellWrapper?: FunctionComponentWithChildren<{ cell: Cell<TData, TValue> }>;
-  CollapsibleComponent?: FunctionComponent<{ row: TData }>;
+  CellContentWrapper?: FunctionComponentWithChildren<{ cell: Cell<TData, TValue> }>;
+  CollapsibleContent?: FunctionComponent<{ row: TData }>;
 
   // Component props
   props?: {
@@ -68,24 +67,24 @@ export interface IDataTableProps<TData, TValue = any> {
   options?: Omit<TableOptions<TData>, 'getCoreRowModel' | 'data' | 'columns'>;
 }
 
-export const DataTable = <TData extends RowData, TValue = unknown>({
+export const DataTable = <TData extends RowData, TValue = any>({
   data,
   props,
   caption,
   columns,
-  options,
-  CellWrapper,
-  sortByField,
-  enableSorting,
-  CollapsibleComponent,
+  CellContentWrapper,
+  options = {},
+  CollapsibleContent,
 }: IDataTableProps<TData, TValue>) => {
   const [expanded, setExpanded] = useState<ExpandedState>({});
+
+  const { enableSorting = false } = options;
 
   const { onSort, sortBy, sortDir } = useSort();
   const [sorting, setSorting] = useState<SortingState>([
     {
-      id: sortBy || sortByField || 'dataTimestamp',
-      desc: sortDir === 'desc',
+      id: sortBy || options?.initialState?.sorting?.[0]?.id || 'id',
+      desc: sortDir === 'desc' || options?.initialState?.sorting?.[0]?.desc || false,
     },
   ]);
 
@@ -94,7 +93,7 @@ export const DataTable = <TData extends RowData, TValue = unknown>({
       setSorting(prevSortingState => {
         if (!isInstanceOfFunction(sortingUpdaterOrValue)) {
           onSort({
-            sortBy: sortingUpdaterOrValue[0]?.id || sortByField || 'dataTimestamp',
+            sortBy: sortingUpdaterOrValue[0]?.id || sortBy,
             sortDir: sortingUpdaterOrValue[0]?.desc ? 'desc' : 'asc',
           });
 
@@ -104,14 +103,14 @@ export const DataTable = <TData extends RowData, TValue = unknown>({
         const newSortingState = sortingUpdaterOrValue(prevSortingState);
 
         onSort({
-          sortBy: newSortingState[0]?.id || sortByField || 'dataTimestamp',
+          sortBy: newSortingState[0]?.id || sortBy,
           sortDir: newSortingState[0]?.desc ? 'desc' : 'asc',
         });
 
         return newSortingState;
       });
     },
-    [onSort, sortByField],
+    [onSort, sortBy],
   );
 
   const { selected: ids, onSelect } = useSelect();
@@ -150,11 +149,11 @@ export const DataTable = <TData extends RowData, TValue = unknown>({
       ...(enableSorting && {
         sorting,
       }),
-      ...(CollapsibleComponent && {
+      ...(CollapsibleContent && {
         expanded,
       }),
     }),
-    [CollapsibleComponent, enableSorting, expanded, rowSelection, sorting],
+    [CollapsibleContent, enableSorting, expanded, rowSelection, sorting],
   );
 
   const table = useReactTable<TData>({
@@ -177,7 +176,7 @@ export const DataTable = <TData extends RowData, TValue = unknown>({
       enableSortingRemoval: false,
       getSortedRowModel: getSortedRowModel(),
     }),
-    ...(CollapsibleComponent
+    ...(CollapsibleContent
       ? {
           onExpandedChange: setExpanded,
           getExpandedRowModel: getExpandedRowModel(),
@@ -222,7 +221,7 @@ export const DataTable = <TData extends RowData, TValue = unknown>({
                           {flexRender(header.column.columnDef.header, header.getContext())}
                         </span>
                       )}
-                      {enableSorting && header.column.id !== 'select' && (
+                      {header.column.getCanSort() && header.column.id !== 'select' && (
                         <button
                           className="flex h-9 flex-row items-center gap-x-2 px-3 text-left text-[#A3A3A3]"
                           onClick={() => header.column.toggleSorting()}
@@ -237,7 +236,7 @@ export const DataTable = <TData extends RowData, TValue = unknown>({
                           />
                         </button>
                       )}
-                      {!enableSorting &&
+                      {!header.column.getCanSort() &&
                         !header.isPlaceholder &&
                         flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
@@ -264,25 +263,25 @@ export const DataTable = <TData extends RowData, TValue = unknown>({
                         {...props?.cell}
                         className={ctw('!py-px !pl-3.5', props?.cell?.className)}
                       >
-                        {CellWrapper ? (
-                          <CellWrapper cell={cell}>
+                        {CellContentWrapper ? (
+                          <CellContentWrapper cell={cell}>
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </CellWrapper>
+                          </CellContentWrapper>
                         ) : (
                           flexRender(cell.column.columnDef.cell, cell.getContext())
                         )}
                       </TableCell>
                     ))}
                   </TableRow>
-                  {CollapsibleComponent && (
+                  {CollapsibleContent && (
                     <Collapsible open={row.getIsExpanded()} asChild>
-                      <CollapsibleContent asChild>
+                      <ShadCNCollapsibleContent asChild>
                         <TableRow className={`max-h-[228px] border-y-[1px]`}>
                           <TableCell colSpan={10} className={`p-8`}>
-                            <CollapsibleComponent row={row.original} />
+                            <CollapsibleContent row={row.original} />
                           </TableCell>
                         </TableRow>
-                      </CollapsibleContent>
+                      </ShadCNCollapsibleContent>
                     </Collapsible>
                   )}
                 </React.Fragment>

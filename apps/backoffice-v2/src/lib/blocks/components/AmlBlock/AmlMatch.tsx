@@ -2,7 +2,6 @@ import { THit } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
 import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import React, { useMemo } from 'react';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
-import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
 import dayjs from 'dayjs';
 
 interface IAmlMatchProps {
@@ -16,8 +15,6 @@ interface IAmlMatchProps {
 }
 
 export const AmlMatch = ({ match }: IAmlMatchProps) => {
-  const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
-
   const orderedTypes = useMemo(
     () => [
       { key: 'pep', accessor: 'person', header: 'PEP' },
@@ -38,13 +35,13 @@ export const AmlMatch = ({ match }: IAmlMatchProps) => {
         <span className={`w-[150px] text-left`}>Date</span>
       </div>
       {orderedTypes.map(type =>
-        match[type.key].map((item, index) => (
-          <div key={`${type}-${index}`} className={`flex gap-x-6 px-4`}>
+        match[type.key].map(item => (
+          <div key={type.key} className={`flex gap-x-6 px-4`}>
             <span className={`w-[100px] text-left`}>{type.header}</span>
             <TextWithNAFallback className={`w-full text-left`}>
               {item[type.accessor]}
             </TextWithNAFallback>
-            <TextWithNAFallback className={`w-[120px] text-left`} ref={ref} style={styles}>
+            <TextWithNAFallback className={`w-[120px] text-left`}>
               {item.source && (
                 <a
                   className={buttonVariants({

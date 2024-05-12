@@ -35,7 +35,7 @@ export const AlertAnalysisSheet: FunctionComponent<IAlertAnalysisProps> = ({
               columns={columns}
               data={transactions}
               props={{ scroll: { className: 'h-[47vh]' } }}
-              CollapsibleComponent={({ row: transaction }) => (
+              CollapsibleContent={({ row: transaction }) => (
                 <ExpandedTransactionDetails transaction={transaction} />
               )}
             />

@@ -13,7 +13,7 @@ import { ITableCellProps } from './interfaces';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { DefaultCell } from './DefaultCell';
 
-export const TableCell = <TData extends RowData, TValue = unknown>({
+export const TableCell = <TData extends RowData, TValue = any>({
   value,
 }: ITableCellProps<TData, TValue>) => {
   const table = useReactTable<TData>({

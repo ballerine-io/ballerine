@@ -50,6 +50,6 @@ export const cells: CellsMap = {
   paragraph: Paragraph,
   dialog: DialogCell,
   block: BlockCell,
-  nodeCell: NodeCell,
+  node: NodeCell,
   pdfViewer: PDFViewerCell,
 };
