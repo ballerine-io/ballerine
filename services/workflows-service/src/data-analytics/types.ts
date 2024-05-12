@@ -19,12 +19,19 @@ export type InlineRule = {
       options: Omit<TCustomersTransactionTypeOptions, 'projectId'>;
     }
   | {
-      fnName: 'evaluateTransactionLimitHistoricAverageInbound';
+      fnName: 'evaluateTransactionAvg';
       options: Omit<TransactionLimitHistoricAverageOptions, 'projectId'>;
     }
   | {
-      fnName: 'evaluatePeerGroupTransactionAvg';
+      fnName: 'evaluateTransactionAvg';
       options: Omit<TPeerGroupTransactionAverageOptions, 'projectId'>;
+    }
+  | {
+      fnName: 'evaluateTransactionAvg';
+      options: Omit<
+        TPeerGroupTransactionAverageOptions,
+        'projectId' | 'customerType' | 'timeAmount' | 'timeUnit'
+      >;
     }
   | {
       fnName: 'evaluateDormantAccount';
@@ -89,17 +96,8 @@ export type TransactionLimitHistoricAverageOptions = {
   transactionFactor: number;
 };
 
-export type TPeerGroupTransactionAverageOptions = {
-  projectId: TProjectId;
-  paymentMethods: PaymentMethod[];
-  excludePaymentMethods?: boolean;
-
-  customerType: string;
-  amountThreshold: number;
-
-  timeAmount: number;
-  timeUnit: TimeUnit;
-
-  factor?: number;
-  excludedCounterparty?: TExcludedCounterparty;
+export type TPeerGroupTransactionAverageOptions = TransactionLimitHistoricAverageOptions & {
+  customerType?: string;
+  timeUnit?: TimeUnit;
+  timeAmount?: number;
 };

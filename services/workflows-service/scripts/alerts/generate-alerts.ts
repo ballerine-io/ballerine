@@ -379,7 +379,7 @@ export const ALERT_DEFINITIONS = {
     description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
     inlineRule: {
       id: 'TLHAICC',
-      fnName: 'evaluateTransactionLimitHistoricAverageInbound',
+      fnName: 'evaluateTransactionAvg',
       subjects: ['counterpartyId'],
       options: {
         transactionDirection: TransactionDirection.inbound,
@@ -390,6 +390,9 @@ export const ALERT_DEFINITIONS = {
         },
         minimumTransactionAmount: 100,
         transactionFactor: 1,
+        customerType: undefined,
+        timeUnit: undefined,
+        timeAmount: undefined,
       },
     },
   },
@@ -399,7 +402,7 @@ export const ALERT_DEFINITIONS = {
     description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
     inlineRule: {
       id: 'TLHAIAPM',
-      fnName: 'evaluateTransactionLimitHistoricAverageInbound',
+      fnName: 'evaluateTransactionAvg',
       subjects: ['counterpartyId'],
       options: {
         transactionDirection: TransactionDirection.inbound,
@@ -410,28 +413,58 @@ export const ALERT_DEFINITIONS = {
         },
         minimumTransactionAmount: 100,
         transactionFactor: 1,
+        customerType: undefined,
+        timeUnit: undefined,
+        timeAmount: undefined,
       },
     },
   },
   PGAICT: {
     enabled: true,
-    defaultSeverity: AlertSeverity.high,
-    description: `An Inbound credit card transaction value was over the peer group average within a set period of time`,
+    defaultSeverity: AlertSeverity.medium,
+    description: `An Credit card inbound transaction value was over the peer group average within a set period of time`,
     inlineRule: {
       id: 'PGAICT',
-      fnName: 'evaluatePeerGroupTransactionAvg',
+      fnName: 'evaluateTransactionAvg',
       subjects: ['counterpartyId'],
       options: {
-        amountThreshold: 100,
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '=',
+        },
+        minimumTransactionAmount: 100,
+        transactionFactor: 2,
 
-        paymentMethods: [PaymentMethod.credit_card],
-        excludePaymentMethods: false,
+        customerType: 'test',
+        timeAmount: SEVEN_DAYS,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
 
-        customerType: '',
-        timeAmount = SEVEN_DAYS,
-        timeUnit = TIME_UNITS.days,
+  PGAIAPM: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `An non credit card inbound transaction value was over the peer group average within a set period of time`,
+    inlineRule: {
+      id: 'PGAIAPM',
+      fnName: 'evaluateTransactionAvg',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '!=',
+        },
+        customerType: 'test',
+        minimumTransactionAmount: 100,
+        transactionFactor: 2,
 
-        factor: 2,
+        timeAmount: SEVEN_DAYS,
+        timeUnit: TIME_UNITS.days,
       },
     },
   },
