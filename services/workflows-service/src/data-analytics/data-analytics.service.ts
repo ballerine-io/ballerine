@@ -6,11 +6,13 @@ import {
   TCustomersTransactionTypeOptions,
   HighTransactionTypePercentage,
   TransactionLimitHistoricAverageOptions,
+  TPeerGroupTransactionAverageOptions,
 } from './types';
 import { AggregateType, TIME_UNITS } from './consts';
-import { Prisma } from '@prisma/client';
+import { Prisma, TransactionDirection } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isEmpty } from 'lodash';
+import { SEVEN_DAYS } from '@/alert/consts';
 
 @Injectable()
 export class DataAnalyticsService {
@@ -247,9 +249,9 @@ export class DataAnalyticsService {
         tr."counterpartyBeneficiaryId" as "counterpartyId"
       FROM
         "TransactionRecord" tr
-      JOIN transactionsData td ON
-        tr."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
-        AND td.count > ${minimumCount}
+        JOIN transactionsData td ON
+          tr."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
+          AND td.count > ${minimumCount}
       WHERE
         tr."transactionDirection"::text = ${transactionDirection}
         AND "projectId" = ${projectId}
@@ -407,6 +409,45 @@ export class DataAnalyticsService {
       FROM "TransactionRecord" as "tr"
       WHERE ${Prisma.join(conditions, ' AND ')}
       GROUP BY ${groupBy.clause}  HAVING ${Prisma.raw(havingClause)} > ${threshold}`;
+
+    return await this._executeQuery<Array<Record<string, unknown>>>(query);
+  }
+
+  async evaluatePeerGroupTransactionAvg({
+    projectId,
+    factor = 2,
+    amountThreshold = 100,
+    paymentMethods = [],
+    excludePaymentMethods = false,
+    customerType,
+    timeAmount = SEVEN_DAYS,
+    timeUnit = TIME_UNITS.days,
+  }: TPeerGroupTransactionAverageOptions) {
+    if (!projectId) {
+      throw new Error('projectId is required');
+    }
+    const conditions: Prisma.Sql[] = [
+      Prisma.sql`tr."projectId" = '${projectId}'`,
+      Prisma.sql`tr."counterpartyBeneficiaryId" IS NOT NULL`,
+      Prisma.sql`"transactionDirection"::text = ${TransactionDirection.inbound}`,
+      Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+        `${timeAmount} ${timeUnit}`,
+      )}'`,
+    ];
+
+    if (Array.isArray(paymentMethods.length)) {
+      conditions.push(Prisma.sql`"paymentMethod" IN (${Prisma.join([...paymentMethods])})`);
+    }
+
+    // High Velocity - Refund
+    const groupBy = Prisma.raw(`paymentBrandName`);
+
+    const query = Prisma.sql`
+      SELECT "counterpartyBeneficiaryId" as "counterpartyId",
+      FROM "TransactionRecord" as "tr"
+      WHERE ${Prisma.join(conditions, ' AND ')}
+      GROUP BY "counterpartyBeneficiaryId"
+      `;
 
     return await this._executeQuery<Array<Record<string, unknown>>>(query);
   }
