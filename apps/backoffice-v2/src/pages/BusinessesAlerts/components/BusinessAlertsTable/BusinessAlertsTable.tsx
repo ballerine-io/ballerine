@@ -19,7 +19,7 @@ export const BusinessAlertsTable: FunctionComponent<IAlertsTableProps> = ({ data
   const { table, locale, onRowClick, search } = useBusinessAlertsTableLogic({ data });
 
   return (
-    <div className="d-full relative overflow-auto rounded-md border bg-white shadow">
+    <div className="d-full relative h-full overflow-auto rounded-md border bg-white shadow">
       <ScrollArea orientation="both" className="h-full">
         <Table>
           <TableHeader className="border-0">
@@ -29,7 +29,7 @@ export const BusinessAlertsTable: FunctionComponent<IAlertsTableProps> = ({ data
                   {headers.map(header => (
                     <TableHead
                       key={header.id}
-                      className={`sticky top-0 z-10 h-[34px] bg-white p-0 text-[14px] font-bold text-[#787981]`}
+                      className={`sticky top-0 z-10 h-[34px] whitespace-nowrap bg-white p-0 text-[14px] font-bold text-[#787981]`}
                     >
                       {header.column.id === 'select' && (
                         <span className={'pe-4'}>
@@ -68,15 +68,21 @@ export const BusinessAlertsTable: FunctionComponent<IAlertsTableProps> = ({ data
                     const itemId = cell.id.replace(`_${cell.column.id}`, '');
                     const item = data.find(item => item.id === itemId);
 
+                    console.log(
+                      `/${locale}/businesses/alerts/${itemId}${search}&businessId=${
+                        item?.additionalInfo?.businessId ?? ''
+                      }`,
+                    );
+
                     return (
                       <TableCell key={cell.id} className={`p-0`}>
                         {cell.column.id === 'select' &&
                           flexRender(cell.column.columnDef.cell, cell.getContext())}
                         {cell.column.id !== 'select' && (
                           <Link
-                            to={`/${locale}/transaction-monitoring/alerts/${itemId}${search}&businessId=${
-                              item?.merchant?.id ?? ''
-                            }&counterpartyId=${item?.counterpartyId ?? ''}`}
+                            to={`/${locale}/businesses/alerts/${itemId}${search}&businessId=${
+                              item?.additionalInfo?.businessId ?? ''
+                            }`}
                             onClick={onRowClick}
                             className={`d-full flex p-4`}
                           >

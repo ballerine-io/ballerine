@@ -3,7 +3,7 @@ import { AlertStatus, AlertStatuses, TAlertsList } from '@/domains/alerts/fetche
 import { BooleanishSchema } from '@/lib/zod/utils/checkers';
 import { z } from 'zod';
 
-export const getAlertsSearchSchema = (authenticatedUserId: string | null) =>
+export const getBusinessAlertsSearchSchema = () =>
   BaseSearchSchema.extend({
     sortBy: z
       .enum(['dataTimestamp', 'status'] as const satisfies ReadonlyArray<

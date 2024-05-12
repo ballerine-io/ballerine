@@ -5,12 +5,12 @@ import { useAlertLabelsQuery } from '@/domains/alerts/hooks/queries/useAlertLabe
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useBusinessAlertsQuery } from '@/domains/business-alerts/hooks/queries/useBusinessAlertsQuery/useBusinessAlertsQuery';
 import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
-import { getAlertsSearchSchema } from '@/pages/TransactionMonitoringAlerts/get-alerts-search-schema';
+import { getBusinessAlertsSearchSchema } from '@/pages/BusinessesAlerts/get-alerts-search-schema';
 import { useMemo } from 'react';
 
-export const useTransactionMonitoringAlertsLogic = () => {
+export const useBusinessAlertsLogic = () => {
   const { data: session } = useAuthenticatedUserQuery();
-  const AlertsSearchSchema = getAlertsSearchSchema(session?.user?.id);
+  const AlertsSearchSchema = getBusinessAlertsSearchSchema(session?.user?.id);
   const [{ filter, sortBy, sortDir, page, pageSize, search: searchValue }] =
     useZodSearchParams(AlertsSearchSchema);
   const { data: alerts = [], isLoading: isLoadingAlerts } = useBusinessAlertsQuery({
@@ -31,6 +31,8 @@ export const useTransactionMonitoringAlertsLogic = () => {
         ?.sort((a, b) => (a?.id === session?.user?.id ? -1 : b?.id === session?.user?.id ? 1 : 0)),
     [assignees, session?.user?.id],
   );
+
+  console.log({ alerts, pageSize });
   const { data: labels } = useAlertLabelsQuery();
   const sortedLabels = useMemo(() => labels?.slice()?.sort(), [labels]);
   const { onPaginate, onPrevPage, onNextPage } = usePagination();

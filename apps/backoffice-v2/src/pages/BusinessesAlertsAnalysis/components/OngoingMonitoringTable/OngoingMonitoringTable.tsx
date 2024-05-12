@@ -7,7 +7,6 @@ import {
   TableRow,
 } from '@/common/components/atoms/Table';
 import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
-import { TTransactionsList } from '@/domains/transactions/fetchers';
 import {
   ExpandedState,
   flexRender,
@@ -18,18 +17,16 @@ import {
 import React, { FunctionComponent, useState } from 'react';
 import { columns } from './columns';
 
-import { Collapsible } from '@/common/components/molecules/Collapsible/Collapsible';
-import { CollapsibleContent } from '@/common/components/molecules/Collapsible/Collapsible.Content';
-import { ExpandedTransactionDetails } from '@/pages/TransactionMonitoringAlertsAnalysis/components/ExpandedTransactionDetails';
+import { TBusinessReport } from '@/domains/business-reports/fetchers';
 
 export const OngoingMonitoringTable: FunctionComponent<{
-  transactions: TTransactionsList;
-}> = ({ transactions }) => {
+  businessReports: TBusinessReport[];
+}> = ({ businessReports }) => {
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const table = useReactTable({
     columns,
-    data: transactions,
+    data: businessReports,
     state: {
       expanded,
     },
@@ -85,16 +82,6 @@ export const OngoingMonitoringTable: FunctionComponent<{
                       </TableCell>
                     ))}
                   </TableRow>
-
-                  <Collapsible open={row.getIsExpanded()} asChild>
-                    <CollapsibleContent asChild>
-                      <TableRow className={`max-h-[228px] border-y-[1px]`}>
-                        <TableCell colSpan={10} className={`p-8`}>
-                          <ExpandedTransactionDetails transaction={row.original} />
-                        </TableCell>
-                      </TableRow>
-                    </CollapsibleContent>
-                  </Collapsible>
                 </React.Fragment>
               );
             })}
