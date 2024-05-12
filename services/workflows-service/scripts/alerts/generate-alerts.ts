@@ -413,6 +413,19 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
+  PGAICT: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
+    description: `An Inbound credit card transaction value was over the peer group average within a set period of time`,
+    inlineRule: {
+      id: 'PGAICT',
+      fnName: 'evaluatePeerGroupTransactionAvg',
+      subjects: ['counterpartyId'],
+      options: {
+        amountThreshold: 100,
+      },
+    },
+  },
 } as const satisfies Record<string, Parameters<typeof getAlertDefinitionCreateData>[0]>;
 
 export const getAlertDefinitionCreateData = (
