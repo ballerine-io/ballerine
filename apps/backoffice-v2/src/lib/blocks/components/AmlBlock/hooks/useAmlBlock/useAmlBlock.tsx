@@ -1,10 +1,16 @@
-import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { ComponentProps, useMemo } from 'react';
+import { toTitleCase } from 'string-ts';
+import { ChevronDown } from 'lucide-react';
+import React, { ComponentProps, useMemo } from 'react';
+import { createColumnHelper } from '@tanstack/react-table';
+
 import { Badge } from '@ballerine/ui';
-import { WarningFilledSvg } from '@/common/components/atoms/icons';
-import { buttonVariants } from '@/common/components/atoms/Button/Button';
-import { amlAdapter } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { AmlMatch } from '@/lib/blocks/components/AmlBlock/AmlMatch';
+import { amlAdapter } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
+import { Button } from '@/common/components/atoms/Button/Button';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 
 export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
   const amlBlock = useMemo(() => {
@@ -16,6 +22,8 @@ export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
       if (!aml || !Object.keys(aml ?? {}).length) return [];
 
       const { totalMatches, fullReport, dateOfCheck, matches } = amlAdapter(aml);
+
+      const columnHelper = createColumnHelper<ReturnType<typeof amlAdapter>['matches'][number]>();
 
       return [
         ...createBlocksTyped()
@@ -78,264 +86,104 @@ export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
             },
           })
           .addCell({
-            type: 'table',
+            type: 'dataTable',
             value: {
-              props: {
-                table: {
-                  className: 'my-8',
-                },
-              },
+              data: matches,
+              props: { scroll: { className: 'h-[50vh]' }, cell: { className: '!p-0' } },
+              CollapsibleComponent: ({ row: match }) => <AmlMatch match={match} />,
               columns: [
+                columnHelper.display({
+                  id: 'collapsible',
+                  cell: ({ row }) => (
+                    <Button
+                      onClick={() => row.toggleExpanded()}
+                      disabled={row.getCanExpand()}
+                      variant="ghost"
+                      size="icon"
+                      className={`p-[7px]`}
+                    >
+                      <ChevronDown
+                        className={ctw('d-4', {
+                          'rotate-180': row.getIsExpanded(),
+                        })}
+                      />
+                    </Button>
+                  ),
+                }),
+                columnHelper.display({
+                  id: 'index',
+                  cell: info => {
+                    const index = info.cell.row.index + 1;
+
+                    return (
+                      <TextWithNAFallback className={`p-1 font-semibold`}>
+                        {index}
+                      </TextWithNAFallback>
+                    );
+                  },
+                  header: '#',
+                }),
                 {
                   accessorKey: 'matchedName',
                   header: 'Matched Name',
                 },
                 {
-                  accessorKey: 'dateOfBirth',
-                  header: 'Date Of Birth',
-                },
-                {
                   accessorKey: 'countries',
                   header: 'Countries',
                 },
-                {
-                  accessorKey: 'aka',
-                  header: 'AKA',
-                },
+                columnHelper.accessor('matchTypes', {
+                  header: 'Match Type',
+                  cell: info => {
+                    const matchTypes = info.getValue();
+
+                    return <TextWithNAFallback>{toTitleCase(matchTypes)}</TextWithNAFallback>;
+                  },
+                }),
+                columnHelper.accessor('pep', {
+                  cell: info => {
+                    const pepLength = info.getValue().length;
+
+                    return <TextWithNAFallback>{pepLength}</TextWithNAFallback>;
+                  },
+                  header: 'PEP',
+                }),
+                columnHelper.accessor('warnings', {
+                  cell: info => {
+                    const warningsLength = info.getValue().length;
+
+                    return <TextWithNAFallback>{warningsLength}</TextWithNAFallback>;
+                  },
+                  header: 'Warnings',
+                }),
+                columnHelper.accessor('sanctions', {
+                  cell: info => {
+                    const sanctionsLength = info.getValue().length;
+
+                    return <TextWithNAFallback>{sanctionsLength}</TextWithNAFallback>;
+                  },
+                  header: 'Sanctions',
+                }),
+                columnHelper.accessor('adverseMedia', {
+                  cell: info => {
+                    const adverseMediaLength = info.getValue().length;
+
+                    return <TextWithNAFallback>{adverseMediaLength}</TextWithNAFallback>;
+                  },
+                  header: 'Adverse Media',
+                }),
+                columnHelper.accessor('fitnessProbity', {
+                  cell: info => {
+                    const fitnessProbityLength = info.getValue().length;
+
+                    return <TextWithNAFallback>{fitnessProbityLength}</TextWithNAFallback>;
+                  },
+                  header: 'Fitness Probity',
+                }),
               ],
-              data: matches,
             },
           })
           .build()
           .flat(1),
-        ...(matches?.flatMap(({ warnings, sanctions, pep, adverseMedia }, index) =>
-          createBlocksTyped()
-            .addBlock()
-            .addCell({
-              type: 'container',
-              value: createBlocksTyped()
-                .addBlock()
-                .addCell({
-                  type: 'subheading',
-                  value: `Match ${index + 1}`,
-                  props: {
-                    className: 'text-lg block my-6',
-                  },
-                })
-                .addCell({
-                  type: 'table',
-                  value: {
-                    props: {
-                      table: {
-                        className: 'my-8 w-full',
-                      },
-                    },
-                    columns: [
-                      {
-                        accessorKey: 'warning',
-                        header: 'Warning',
-                        cell: props => {
-                          const value = props.getValue();
-
-                          return (
-                            <div className={'flex space-x-2'}>
-                              <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
-                              <span>{value}</span>
-                            </div>
-                          );
-                        },
-                      },
-                      {
-                        accessorKey: 'date',
-                        header: 'Date',
-                      },
-                      {
-                        accessorKey: 'source',
-                        header: 'Source URL',
-                        cell: props => {
-                          const value = props.getValue();
-
-                          return (
-                            <a
-                              className={buttonVariants({
-                                variant: 'link',
-                                className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
-                              })}
-                              target={'_blank'}
-                              rel={'noopener noreferrer'}
-                              href={value}
-                            >
-                              Link
-                            </a>
-                          );
-                        },
-                      },
-                    ],
-                    data: warnings,
-                  },
-                })
-                .addCell({
-                  type: 'table',
-                  props: {
-                    table: {
-                      className: 'my-8 w-full',
-                    },
-                  },
-                  value: {
-                    columns: [
-                      {
-                        accessorKey: 'sanction',
-                        header: 'Sanction',
-                        cell: props => {
-                          const value = props.getValue();
-
-                          return (
-                            <div className={'flex space-x-2'}>
-                              <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
-                              <span>{value}</span>
-                            </div>
-                          );
-                        },
-                      },
-                      {
-                        accessorKey: 'date',
-                        header: 'Date',
-                      },
-                      {
-                        accessorKey: 'source',
-                        header: 'Source URL',
-                        cell: props => {
-                          const value = props.getValue();
-
-                          return (
-                            <a
-                              className={buttonVariants({
-                                variant: 'link',
-                                className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
-                              })}
-                              target={'_blank'}
-                              rel={'noopener noreferrer'}
-                              href={value}
-                            >
-                              Link
-                            </a>
-                          );
-                        },
-                      },
-                    ],
-                    data: sanctions,
-                  },
-                })
-                .addCell({
-                  type: 'table',
-                  value: {
-                    props: {
-                      table: {
-                        className: 'my-8 w-full',
-                      },
-                    },
-                    columns: [
-                      {
-                        accessorKey: 'person',
-                        header: 'PEP (Politically Exposed Person)',
-                        cell: props => {
-                          const value = props.getValue();
-
-                          return (
-                            <div className={'flex space-x-2'}>
-                              <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
-                              <span>{value}</span>
-                            </div>
-                          );
-                        },
-                      },
-                      {
-                        accessorKey: 'date',
-                        header: 'Date',
-                      },
-                      {
-                        accessorKey: 'source',
-                        header: 'Source URL',
-                        cell: props => {
-                          const value = props.getValue();
-
-                          return (
-                            <a
-                              className={buttonVariants({
-                                variant: 'link',
-                                className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
-                              })}
-                              target={'_blank'}
-                              rel={'noopener noreferrer'}
-                              href={value}
-                            >
-                              Link
-                            </a>
-                          );
-                        },
-                      },
-                    ],
-                    data: pep,
-                  },
-                })
-                .addCell({
-                  type: 'table',
-                  value: {
-                    props: {
-                      table: {
-                        className: 'my-8',
-                      },
-                    },
-                    columns: [
-                      {
-                        accessorKey: 'entry',
-                        header: 'Adverse Media',
-                        cell: props => {
-                          const value = props.getValue();
-
-                          return (
-                            <div className={'flex space-x-2'}>
-                              <WarningFilledSvg className={'mt-px'} width={'20'} height={'20'} />
-                              <span>{value}</span>
-                            </div>
-                          );
-                        },
-                      },
-                      {
-                        accessorKey: 'date',
-                        header: 'Date',
-                      },
-                      {
-                        accessorKey: 'source',
-                        header: 'Source URL',
-                        cell: props => {
-                          const value = props.getValue();
-
-                          return (
-                            <a
-                              className={buttonVariants({
-                                variant: 'link',
-                                className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
-                              })}
-                              target={'_blank'}
-                              rel={'noopener noreferrer'}
-                              href={value}
-                            >
-                              Link
-                            </a>
-                          );
-                        },
-                      },
-                    ],
-                    data: adverseMedia,
-                  },
-                })
-                .build()
-                .flat(1),
-            })
-            .build()
-            .flat(1),
-        ) ?? []),
       ];
     });
   }, [data]);

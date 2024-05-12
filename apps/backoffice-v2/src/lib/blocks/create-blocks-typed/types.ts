@@ -21,6 +21,7 @@ import { CommonWorkflowStates } from '@ballerine/common';
 import { AnyChildren, AnyObject } from '@ballerine/ui';
 import { ColumnDef, TableOptions } from '@tanstack/react-table';
 import { ComponentProps, ReactNode } from 'react';
+import { DataTable } from '@/common/components/molecules/DataTable/DataTable';
 
 export type TBlockCell = {
   type: 'block';
@@ -56,6 +57,11 @@ export type TBadgeCell = {
   type: 'badge';
   value: ComponentProps<typeof MotionBadge>['children'];
   props?: ComponentProps<typeof MotionBadge>;
+};
+
+export type TDataTableCell = {
+  type: 'dataTable';
+  value: ComponentProps<typeof DataTable>;
 };
 
 export type TCallToActionLegacyCell = {
@@ -203,6 +209,11 @@ export type TTableCell = {
   };
 };
 
+export type TDataTableCell = {
+  type: 'dataTable';
+  value: ComponentProps<typeof DataTable>;
+};
+
 export type TParagraphCell = {
   type: 'paragraph';
   value: ReactNode | ReactNode[];
@@ -215,7 +226,7 @@ export type TDialogCell = {
 };
 
 export type TNodeCell = {
-  type: 'nodeCell';
+  type: 'node';
   value: AnyChildren;
 };
 
@@ -236,6 +247,7 @@ export type TCell =
   | TMapCell
   | TCaseCallToActionLegacyCell
   | TTableCell
+  | TDataTableCell
   | TParagraphCell
   | TDialogCell
   | TNodeCell
