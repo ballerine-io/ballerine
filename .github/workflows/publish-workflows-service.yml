@@ -274,6 +274,8 @@ jobs:
       - name: Check if branch exists
         id: fetch-submodule
         run: |
+          cd services/workflows-service/prisma/data-migrations
+
           is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ github.ref_name }}" | wc -l)
 
           # Check if the branch exists by counting the number of results
@@ -315,18 +317,6 @@ jobs:
       - name: Fetch submodule branch
         id: fetch-submodule
         run: |
-          is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ github.ref_name }}" | wc -l)
-
-          # Check if the branch exists by counting the number of results
-          if [ $is_exists -eq 0  ]; then
-            echo "Branch '${{ github.ref_name }}' does not exist."
-            echo "skipnext=true" >> $GITHUB_OUTPUT
-          else
-            echo "skipnext=true" >> $GITHUB_OUTPUT
-          fi
-          exit 0
-
-          
           cd services/workflows-service/prisma/data-migrations
           git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ github.ref_name }}
           git checkout ${{ github.ref_name }}
