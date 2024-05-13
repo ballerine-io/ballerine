@@ -346,7 +346,7 @@ export const useKycBlock = ({
         .addBlock()
         .addCell(headerCell)
         .addCell({
-          type: 'nodeCell',
+          type: 'node',
           value: <Separator className={`my-2`} />,
         })
         .addCell({
@@ -453,7 +453,7 @@ export const useKycBlock = ({
             .flat(1),
         })
         .addCell({
-          type: 'nodeCell',
+          type: 'node',
           value: <Separator className={`my-2`} />,
         })
         .addCell({
