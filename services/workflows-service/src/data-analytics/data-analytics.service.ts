@@ -415,13 +415,14 @@ export class DataAnalyticsService {
 
   async evaluatePeerGroupTransactionAvg({
     projectId,
-    factor = 2,
-    amountThreshold = 100,
     paymentMethods = [],
     excludePaymentMethods = false,
+    amountThreshold = 100,
     customerType,
     timeAmount = SEVEN_DAYS,
     timeUnit = TIME_UNITS.days,
+
+    factor = 2,
   }: TPeerGroupTransactionAverageOptions) {
     if (!projectId) {
       throw new Error('projectId is required');
