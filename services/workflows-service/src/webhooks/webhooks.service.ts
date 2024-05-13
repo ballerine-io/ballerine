@@ -25,6 +25,8 @@ export class WebhooksService {
     endUserId: string;
     data: IndividualAmlWebhookInput['data'];
   }) {
+    this.logger.log('Started handling individual AML hit', { endUserId });
+
     const { projectId, ...rest } = await this.endUserRepository.findByIdUnscoped(endUserId, {
       select: {
         approvalState: true,
