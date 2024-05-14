@@ -1,7 +1,6 @@
 import { TProjectId } from '@/types';
 import { TransactionDirection, PaymentMethod, TransactionRecordType } from '@prisma/client';
 import { AggregateType, TIME_UNITS } from './consts';
-import { TProjectId } from '@/types';
 
 export type InlineRule = {
   id: string;
