@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
+import { inspect } from 'node:util';
 import {
   InlineRule,
   TransactionsAgainstDynamicRulesType,
@@ -11,6 +12,8 @@ import { AggregateType, TIME_UNITS } from './consts';
 import { Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isEmpty } from 'lodash';
+import { ReadPrismaService } from '@/prisma/prisma.read-replica.service';
+import { NotFoundEvaluationError } from './errors';
 
 @Injectable()
 export class DataAnalyticsService {
@@ -46,14 +49,14 @@ export class DataAnalyticsService {
         });
     }
 
-    // Used for exhaustive check
-    inlineRule satisfies never;
-
-    this.logger.error(`No evaluation function found`, {
+    const error = new NotFoundEvaluationError(
+      `No evaluation function found for rule name: ${(inlineRule as InlineRule).id}`,
       inlineRule,
-    });
+    );
 
-    throw new Error(`No evaluation function found for rule name: ${(inlineRule as InlineRule).id}`);
+    this.logger.error(error);
+
+    throw error;
   }
 
   async evaluateTransactionsAgainstDynamicRules({
