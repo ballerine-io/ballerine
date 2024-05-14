@@ -26,6 +26,9 @@ import {
   getAlertDefinitionCreateData,
 } from '../../scripts/alerts/generate-alerts';
 import { AsyncFunction } from 'type-fest/source/async-return-type';
+type AsyncTransactionFactoryCallback = (
+  transactionFactory: TransactionFactory,
+) => Promise<TransactionFactory | void>;
 
 describe('AlertService', () => {
   let prismaService: PrismaService;
@@ -88,13 +91,11 @@ describe('AlertService', () => {
     describe('Rule: DORMANT', () => {
       let alertDefinition: AlertDefinition;
 
-      const execWithTransactionFactory = async (
+      const createTransactionsWithCounterpartyAsync = async (
         project: Project | undefined,
-        fnTransaction: AsyncFunction,
+        callback: AsyncTransactionFactoryCallback,
       ) => {
         const counteryparty = await createCounterparty(prismaService, project);
-
-        console.log('New Project', counteryparty.projectId);
 
         let baseTransactionFactory = new TransactionFactory({
           prisma: prismaService,
@@ -104,7 +105,7 @@ describe('AlertService', () => {
           .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card);
 
-        (await fnTransaction(baseTransactionFactory)) as TransactionFactory;
+        (await callback(baseTransactionFactory)) as TransactionFactory;
 
         return baseTransactionFactory;
       };
@@ -125,9 +126,9 @@ describe('AlertService', () => {
 
       test('When there are activity in the last 180 days', async () => {
         // Arrange
-        const baseTransactionFactory = await execWithTransactionFactory(
+        const baseTransactionFactory = await createTransactionsWithCounterpartyAsync(
           project,
-          async (transactionFactory: unknown) => {
+          async (transactionFactory: TransactionFactory) => {
             const castedTransactionFactory = transactionFactory as TransactionFactory;
 
             await castedTransactionFactory.transactionDate(faker.date.past(10)).count(9).create();
@@ -152,12 +153,9 @@ describe('AlertService', () => {
       test('When there no activity in the project', async () => {
         // Arrange
         const newProject = undefined;
-        await execWithTransactionFactory(newProject, async (transactionFactory: unknown) => {
-          const castedTransactionFactory = transactionFactory as TransactionFactory;
-
-          await castedTransactionFactory.transactionDate(faker.date.past(10)).count(9).create();
-
-          await castedTransactionFactory.transactionDate(faker.date.recent(30)).count(1).create();
+        await createTransactionsWithCounterpartyAsync(newProject, async transactionFactory => {
+          await transactionFactory.transactionDate(faker.date.past(10)).count(9).create();
+          await transactionFactory.transactionDate(faker.date.recent(30)).count(1).create();
         });
 
         // Act
