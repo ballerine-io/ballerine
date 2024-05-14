@@ -1,8 +1,9 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { Prisma, PrismaClient } from '@prisma/client';
+import { readReplicas } from '@prisma/extension-read-replicas';
 
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isErrorWithMessage } from '@ballerine/common';
-import { Prisma, PrismaClient } from '@prisma/client';
 
 const prismaExtendedClient = (prismaClient: PrismaClient) =>
   prismaClient.$extends({
@@ -52,6 +53,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     BigInt.prototype.toJSON = function () {
       return this.toString();
     };
+
+    Object.assign(this, this.extendedClient);
   }
 
   async onModuleInit() {

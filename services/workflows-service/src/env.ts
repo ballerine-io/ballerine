@@ -78,6 +78,7 @@ export const env = createEnv({
       .string()
       .optional()
       .describe('Bucket name of Data migration folders'),
+    READ_REPLICA_DATABASE_URL: z.string().optional().describe('Database replica URL'),
   },
   client: {},
   /**
