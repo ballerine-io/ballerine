@@ -316,7 +316,7 @@ describe('blocks #types', () => {
   });
 
   describe('when calling `buildFlat`', () => {
-    it('should infer an array of cells with a depth of `1`', () => {
+    it('should infer an array of blocks with a depth of `1`', () => {
       // Arrange
       const blockOneCellOne = generateCellValue({
         block: 1,

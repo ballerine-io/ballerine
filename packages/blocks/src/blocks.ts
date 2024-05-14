@@ -12,6 +12,9 @@ export type Block = Cell[];
 
 export type Blocks = Block[];
 
+/**
+ * Takes an array of arrays and flattens it once. [[1,2], [3,4]] => [1,2,3,4]
+ */
 export type FlattenOnce<T extends any[]> = T extends [infer U, ...infer V]
   ? U extends any[]
     ? [...U, ...FlattenOnce<V extends any[] ? V : []>]
