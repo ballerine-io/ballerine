@@ -23,11 +23,13 @@ import {
 import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
 import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
 import { CommonWorkflowStates, StateTag } from '@ballerine/common';
+import { TextArea } from '@ballerine/ui';
 import { Button } from '@ballerine/ui';
 import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
+import { useState } from 'react';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -79,16 +81,22 @@ export const useDocumentBlocks = ({
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
   const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(workflow?.id);
+
+  const [commentValue, setCommentValue] = useState('');
   const onMutateApproveTaskById = useCallback(
     ({
         taskId,
         contextUpdateMethod,
+        comment,
       }: {
         taskId: string;
         contextUpdateMethod: 'base' | 'director';
+        comment?: string;
       }) =>
-      () =>
-        mutateApproveTaskById({ documentId: taskId, contextUpdateMethod }),
+      () => {
+        mutateApproveTaskById({ documentId: taskId, contextUpdateMethod, comment });
+        setCommentValue('');
+      },
     [mutateApproveTaskById],
   );
   const { mutate: onMutateRemoveDecisionById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
@@ -263,9 +271,20 @@ export const useDocumentBlocks = ({
                 ),
                 title: `Approval confirmation`,
                 description: <p className={`text-sm`}>Are you sure you want to approve?</p>,
+                content: (
+                  <TextArea
+                    placeholder={'Add a comment'}
+                    value={commentValue}
+                    onChange={event => setCommentValue(event.target.value)}
+                  />
+                ),
                 close: (
                   <div className={`space-x-2`}>
-                    <Button type={'button'} variant={`secondary`}>
+                    <Button
+                      type={'button'}
+                      variant={`secondary`}
+                      onClick={() => setCommentValue('')}
+                    >
                       Cancel
                     </Button>
                     <Button
@@ -273,6 +292,7 @@ export const useDocumentBlocks = ({
                       onClick={onMutateApproveTaskById({
                         taskId: id,
                         contextUpdateMethod: 'base',
+                        comment: commentValue,
                       })}
                     >
                       Approve
