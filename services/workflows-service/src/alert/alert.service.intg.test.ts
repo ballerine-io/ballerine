@@ -1252,7 +1252,8 @@ describe('AlertService', () => {
     });
   });
 });
-async function createCounterparty(prismaService: PrismaService, proj?: Pick<Project, 'id'>) {
+
+const createCounterparty = async (prismaService: PrismaService, proj?: Pick<Project, 'id'>) => {
   const correlationId = faker.datatype.uuid();
   if (!proj) {
     const customer = await createCustomer(
@@ -1283,4 +1284,4 @@ async function createCounterparty(prismaService: PrismaService, proj?: Pick<Proj
       },
     },
   });
-}
+};
