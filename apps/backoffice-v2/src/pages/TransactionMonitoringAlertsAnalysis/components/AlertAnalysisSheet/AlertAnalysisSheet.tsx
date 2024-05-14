@@ -1,8 +1,10 @@
 import { SheetContent } from '@/common/components/atoms/Sheet';
 import { Sheet } from '@/common/components/atoms/Sheet/Sheet';
-import { AlertAnalysisTable } from 'src/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisTable';
-import { FunctionComponent, ReactNode } from 'react';
+import React, { FunctionComponent, ReactNode } from 'react';
 import { TTransactionsList } from '@/domains/transactions/fetchers';
+import { ExpandedTransactionDetails } from '@/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisSheet/ExpandedTransactionDetails';
+import { columns } from '@/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisSheet/columns';
+import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
 
 export interface IAlertAnalysisProps {
   onOpenStateChange: () => void;
@@ -29,7 +31,14 @@ export const AlertAnalysisSheet: FunctionComponent<IAlertAnalysisProps> = ({
             </div>
           </div>
           <div>
-            <AlertAnalysisTable transactions={transactions ?? []} />
+            <DataTable
+              columns={columns}
+              data={transactions}
+              props={{ scroll: { className: 'h-[47vh]' } }}
+              CollapsibleContent={({ row: transaction }) => (
+                <ExpandedTransactionDetails transaction={transaction} />
+              )}
+            />
           </div>
         </div>
       </SheetContent>
