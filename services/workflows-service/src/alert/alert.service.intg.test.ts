@@ -1,3 +1,4 @@
+import { businessIds } from './../../scripts/generate-end-user';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
   AlertDefinition,
@@ -751,21 +752,32 @@ describe('AlertService', () => {
       });
 
       it('When there are >2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, an alert should be created', async () => {
-        // Arrange
-        await baseTransactionFactory
-          .direction('inbound')
+        const { minimumTransactionAmount } = ALERT_DEFINITIONS.TLHAICC.inlineRule.options;
+
+        const txFactory = transactionFactory
           .paymentMethod(PaymentMethod.credit_card)
-          .withCounterpartyBeneficiary(counteryparty.id)
-          .amount(150)
-          .count(2)
+          .direction(TransactionDirection.inbound)
+          .withCounterpartyBeneficiary(counteryparty.id);
+
+        // Noise
+        await txFactory
+          .paymentMethod(PaymentMethod.apm)
+          .amount(1500)
+          .transactionDate(faker.date.recent(3))
+          .count(1)
           .create();
 
+        // Arrange
+        await txFactory.amount(400).transactionDate(faker.date.past(3)).count(1).create();
+
+        await txFactory.amount(300).transactionDate(faker.date.recent(30)).count(1).create();
+
         await baseTransactionFactory
-          .direction('inbound')
           .paymentMethod(PaymentMethod.credit_card)
-          .withCounterpartyBeneficiary(counteryparty.id)
-          .amount(300)
-          .count(1)
+          .direction(TransactionDirection.inbound)
+          .amount(minimumTransactionAmount + 1)
+          .transactionDate(faker.date.past(2))
+          .count(3)
           .create();
 
         // Act
@@ -781,7 +793,7 @@ describe('AlertService', () => {
       it('When there are 2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, no alert should be created', async () => {
         // Arrange
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(150)
@@ -789,7 +801,7 @@ describe('AlertService', () => {
           .create();
 
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(300)
@@ -842,7 +854,7 @@ describe('AlertService', () => {
       it('When there are >2 APM transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, an alert should be created', async () => {
         // Arrange
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.apple_pay)
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(150)
@@ -850,7 +862,7 @@ describe('AlertService', () => {
           .create();
 
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.pay_pal)
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(300)
@@ -870,7 +882,7 @@ describe('AlertService', () => {
       it('When there are 2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, no alert should be created', async () => {
         // Arrange
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.google_pay)
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(150)
@@ -878,7 +890,7 @@ describe('AlertService', () => {
           .create();
 
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.bank_transfer)
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(300)
@@ -915,7 +927,7 @@ describe('AlertService', () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
           .amount(2)
           .count(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold + 1)
@@ -937,14 +949,14 @@ describe('AlertService', () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
           .amount(150)
           .count(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold % 10)
           .create();
 
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .withBusinessBeneficiary()
           .paymentMethod(PaymentMethod.apple_pay)
           .amount(150)
@@ -983,7 +995,7 @@ describe('AlertService', () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.debit_card)
           .amount(2)
           .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold + 1)
@@ -1005,18 +1017,231 @@ describe('AlertService', () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
           .amount(150)
           .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold % 10)
           .create();
 
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .withBusinessBeneficiary()
           .paymentMethod(PaymentMethod.apple_pay)
           .amount(150)
           .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold % 10)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('Rule: PGAICT', () => {
+      let alertDefinition: AlertDefinition;
+      let counteryparty: Counterparty;
+
+      beforeEach(async () => {
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.PGAICT,
+              enabled: true,
+            },
+            project,
+          ),
+        });
+
+        const correlationId = faker.datatype.uuid();
+        counteryparty = await prismaService.counterparty.create({
+          data: {
+            project: { connect: { id: project.id } },
+            correlationId: correlationId,
+            business: {
+              create: {
+                correlationId: correlationId,
+                companyName: faker.company.name(),
+                registrationNumber: faker.datatype.uuid(),
+                mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+                project: { connect: { id: project.id } },
+                businessType: ALERT_DEFINITIONS.PGAICT.inlineRule.options.customerType,
+              },
+            },
+          },
+        });
+      });
+
+      it('When there are >2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, an alert should be created', async () => {
+        // Noise transactions
+        const { minimumTransactionAmount, transactionFactor, timeAmount } =
+          ALERT_DEFINITIONS.PGAICT.inlineRule.options;
+        await transactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .transactionDate(faker.date.past(2))
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(minimumTransactionAmount * transactionFactor * transactionFactor)
+          .count(10)
+          .create();
+
+        // Arrange
+        await transactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .transactionDate(faker.date.recent(timeAmount - 1))
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(minimumTransactionAmount + 1)
+          .count(10)
+          .create();
+
+        await baseTransactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(minimumTransactionAmount * transactionFactor + 1)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(1);
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+      });
+
+      it('When there are 2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, no alert should be created', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(150)
+          .count(1)
+          .create();
+
+        await baseTransactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(300)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('Rule: PGAIAPM', () => {
+      let alertDefinition: AlertDefinition;
+      let counteryparty: Counterparty;
+
+      beforeEach(async () => {
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.PGAIAPM,
+              enabled: true,
+            },
+            project,
+          ),
+        });
+
+        const correlationId = faker.datatype.uuid();
+        counteryparty = await prismaService.counterparty.create({
+          data: {
+            project: { connect: { id: project.id } },
+            correlationId: correlationId,
+            business: {
+              create: {
+                correlationId: correlationId,
+                companyName: faker.company.name(),
+                registrationNumber: faker.datatype.uuid(),
+                mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+                project: { connect: { id: project.id } },
+                businessType: ALERT_DEFINITIONS.PGAICT.inlineRule.options.customerType,
+              },
+            },
+          },
+        });
+      });
+
+      it('When there are >2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, an alert should be created', async () => {
+        // Noise transactions
+        const { minimumTransactionAmount, transactionFactor, timeAmount } =
+          ALERT_DEFINITIONS.PGAICT.inlineRule.options;
+        await transactionFactory
+          .direction(TransactionDirection.outbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .transactionDate(faker.date.past(2))
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(minimumTransactionAmount * transactionFactor * transactionFactor)
+          .count(10)
+          .create();
+
+        await transactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.apm)
+          .transactionDate(faker.date.past(1))
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(minimumTransactionAmount + 1)
+          .count(10)
+          .create();
+
+        // Arrange
+        await transactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.apm)
+          .transactionDate(faker.date.recent(timeAmount - 1))
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(minimumTransactionAmount + 1)
+          .count(10)
+          .create();
+
+        await baseTransactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.debit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(minimumTransactionAmount * transactionFactor + 1)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(1);
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+      });
+
+      it('When there are 2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, no alert should be created', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(150)
+          .count(1)
+          .create();
+
+        await baseTransactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(300)
+          .count(1)
           .create();
 
         // Act
