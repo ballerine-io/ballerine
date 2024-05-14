@@ -9,7 +9,7 @@ import { Button, Card } from '@ballerine/ui';
 export const Approved = withSessionProtected(() => {
   const { t } = useTranslation();
   const { customer } = useCustomer();
-  const exitFromApp = useAppExit();
+  const { exit, isExitAvailable } = useAppExit();
 
   return (
     <div className="flex h-full items-center justify-center">
@@ -29,9 +29,9 @@ export const Approved = withSessionProtected(() => {
             {t('approved.content', { companyName: customer?.displayName })}
           </p>
         </div>
-        {customer && (
+        {customer && isExitAvailable && (
           <div className="flex justify-center">
-            <Button variant="secondary" onClick={exitFromApp}>
+            <Button variant="secondary" onClick={exit}>
               {t('backToPortal', { companyName: customer.displayName })}
             </Button>
           </div>
