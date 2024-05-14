@@ -8,9 +8,15 @@ export type Cell = { type: string } & {
   [key: string]: unknown;
 };
 
-export type Block = Array<Cell>;
+export type Block = Cell[];
 
-export type Blocks = Array<Block>;
+export type Blocks = Block[];
+
+export type FlattenOnce<T extends any[]> = T extends [infer U, ...infer V]
+  ? U extends any[]
+    ? [...U, ...FlattenOnce<V extends any[] ? V : []>]
+    : [U, ...FlattenOnce<V extends any[] ? V : []>]
+  : [];
 
 /**
  * Allow the consumer of `@ballerine/blocks` to register their own cell types.
@@ -70,13 +76,11 @@ export type CellsMap = {
   [TType in CellType]: FunctionComponent<ExtractCellProps<TType>>;
 };
 
-export type InferAllButLastArrayElements<T extends Array<any>> = T extends [...infer U, any]
-  ? U
-  : [];
+export type InferAllButLastArrayElements<T extends any[]> = T extends [...infer U, any] ? U : [];
 
-export type InferLastArrayElement<T extends Array<any>> = T extends [...any, infer U] ? U : never;
+export type InferLastArrayElement<T extends any[]> = T extends [...any, infer U] ? U : never;
 
-export type InferArrayElement<T extends Array<any>> = T extends Array<infer U> ? U : never;
+export type InferArrayElement<T extends any[]> = T extends Array<infer U> ? U : never;
 
 export interface BlocksProps<TCell extends Cells> {
   /**
@@ -92,13 +96,13 @@ export interface BlocksProps<TCell extends Cells> {
    * @description Output of `createBlocks.build()`
    * @see {@link BlockBuilder.build}
    */
-  blocks: Array<Array<TCell>>;
+  blocks: TCell[][];
   /**
    * The `block` prop is only passed when the `Block` property component is passed.
    */
   Block?: FunctionComponent<{
-    children: ReactNode | Array<ReactNode>;
-    block: Array<TCell>;
+    children: ReactNode | ReactNode[];
+    block: TCell[];
   }>;
   /**
    * @description children as a function - provides access to the current block and cell
@@ -109,8 +113,8 @@ export interface BlocksProps<TCell extends Cells> {
   children: (
     Cell: CellsMap[keyof CellsMap],
     cell: ComponentProps<CellsMap[keyof CellsMap]>,
-    block: Array<TCell>,
-  ) => ReactNode | Array<ReactNode>;
+    block: TCell[],
+  ) => ReactNode | ReactNode[];
 }
 
 export type InvalidCellMessage =
@@ -226,6 +230,10 @@ export class BlocksBuilder<
     }
 
     return this.#__blocks;
+  }
+
+  buildFlat() {
+    return this.#__blocks.flat(1) as FlattenOnce<TBlocks>;
   }
 
   #__logger(message: string) {

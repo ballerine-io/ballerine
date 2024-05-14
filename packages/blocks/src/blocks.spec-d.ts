@@ -8,12 +8,12 @@ type TCell =
     }
   | {
       type: 'headings';
-      value: Array<string>;
+      value: string[];
     };
 
 const createTestBlocks = () =>
   createBlocks<TCell>({
-    debug: true,
+    debug: !process.env.CI,
     verbose: true,
   });
 
@@ -312,6 +312,52 @@ describe('blocks #types', () => {
         type: 'heading';
         value: typeof blockOneCellOne;
       }>();
+    });
+  });
+
+  describe('when calling `buildFlat`', () => {
+    it('should infer an array of cells with a depth of `1`', () => {
+      // Arrange
+      const blockOneCellOne = generateCellValue({
+        block: 1,
+        cell: 1,
+      });
+      const blockOneCellTwo = [
+        generateCellValue({
+          block: 1,
+          cell: 2,
+        }),
+      ];
+      const blockTwoCellOne = [
+        generateCellValue({
+          block: 2,
+          cell: 1,
+        }),
+      ];
+      const blockTwoCellTwo = generateCellValue({
+        block: 2,
+        cell: 2,
+      });
+      const blocks = createTestBlocks()
+        .addBlock()
+        .addCell({ type: 'heading', value: blockOneCellOne })
+        .addCell({ type: 'headings', value: blockOneCellTwo })
+        .addBlock()
+        .addCell({ type: 'headings', value: blockTwoCellOne })
+        .addCell({ type: 'heading', value: blockTwoCellTwo });
+
+      // Act
+      const builtBlocks = blocks.buildFlat();
+
+      // Assert
+      expectTypeOf<typeof builtBlocks>().toEqualTypeOf<
+        [
+          { type: 'heading'; value: typeof blockOneCellOne },
+          { type: 'headings'; value: typeof blockOneCellTwo },
+          { type: 'headings'; value: typeof blockTwoCellOne },
+          { type: 'heading'; value: typeof blockTwoCellTwo },
+        ]
+      >();
     });
   });
 });
