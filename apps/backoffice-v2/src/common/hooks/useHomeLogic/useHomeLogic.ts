@@ -9,14 +9,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 export const useHomeLogic = () => {
   const locale = useLocale();
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const navigate = useNavigate();
   const [{ from, to }, setSearchParams] = useZodSearchParams(HomeSearchSchema);
   const { data: session } = useAuthenticatedUserQuery();
   const { firstName, fullName, avatarUrl } = session?.user || {};
-  const queryParams = from || to ? `?from=${from}&to=${to}` : '';
-  const statisticsLink = `/${locale}/home/statistics${queryParams}`;
-  const workflowsLink = `/${locale}/home/workflows${queryParams}`;
+  const statisticsLink = `/${locale}/home/statistics${search}`;
+  const workflowsLink = `/${locale}/home/workflows${search}`;
 
   useEffect(() => {
     if (pathname !== `/${locale}` && pathname !== `/${locale}/home`) {
