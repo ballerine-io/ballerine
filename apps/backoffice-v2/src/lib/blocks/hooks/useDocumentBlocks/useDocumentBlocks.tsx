@@ -292,7 +292,7 @@ export const useDocumentBlocks = ({
                       onClick={onMutateApproveTaskById({
                         taskId: id,
                         contextUpdateMethod: 'base',
-                        comment: commentValue,
+                        comment: commentValue || undefined,
                       })}
                     >
                       Approve
