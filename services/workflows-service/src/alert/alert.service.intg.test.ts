@@ -1106,7 +1106,7 @@ describe('AlertService', () => {
         });
       });
 
-      it.only('When there are >2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, an alert should be created', async () => {
+      it('When there are >2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, an alert should be created', async () => {
         // Noise transactions
         const { minimumTransactionAmount, transactionFactor, timeAmount } =
           ALERT_DEFINITIONS.PGAICT.inlineRule.options;

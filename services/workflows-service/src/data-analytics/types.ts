@@ -27,13 +27,6 @@ export type InlineRule = {
       options: Omit<TPeerGroupTransactionAverageOptions, 'projectId'>;
     }
   | {
-      fnName: 'evaluateTransactionAvg';
-      options: Omit<
-        TPeerGroupTransactionAverageOptions,
-        'projectId' | 'customerType' | 'timeAmount' | 'timeUnit'
-      >;
-    }
-  | {
       fnName: 'evaluateDormantAccount';
     }
 );
