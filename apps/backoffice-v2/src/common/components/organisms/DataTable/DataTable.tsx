@@ -60,7 +60,7 @@ export interface IDataTableProps<TData, TValue = any> {
     row?: ComponentProps<typeof TableRow>;
     body?: ComponentProps<typeof TableBody>;
     cell?: ComponentProps<typeof TableCell>;
-    emptyCell?: ComponentProps<typeof TableCell>;
+    noDataCell?: ComponentProps<typeof TableCell>;
     caption?: ComponentProps<typeof TableCaption>;
   };
 
@@ -294,8 +294,8 @@ export const DataTable = <TData extends RowData, TValue = any>({
               >
                 <TableCell
                   colSpan={columns?.length}
-                  {...props?.cell}
-                  className={ctw('p-4', props?.emptyCell?.className)}
+                  {...props?.noDataCell}
+                  className={ctw('p-4', props?.noDataCell?.className)}
                 >
                   No results.
                 </TableCell>
