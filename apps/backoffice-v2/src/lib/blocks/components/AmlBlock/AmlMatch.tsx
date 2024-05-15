@@ -28,20 +28,20 @@ export const AmlMatch = ({ match }: IAmlMatchProps) => {
 
   return (
     <div className={`flex flex-col gap-y-2`}>
-      <div className={`flex gap-x-6 px-4 font-semibold`}>
-        <span className={`w-[100px] text-left`}>Type</span>
+      <div className={`flex gap-x-10 px-4 font-semibold`}>
+        <span className={`w-[150px] text-left`}>Type</span>
         <span className={`w-full text-left`}>Source Name</span>
-        <span className={`w-[120px] text-left`}>Source URL</span>
+        <span className={`w-[150px] text-left`}>Source URL</span>
         <span className={`w-[150px] text-left`}>Date</span>
       </div>
       {orderedTypes.map(type =>
-        match[type.key].map(item => (
-          <div key={type.key} className={`flex gap-x-6 px-4`}>
-            <span className={`w-[100px] text-left`}>{type.header}</span>
+        match[type.key].map((item, index) => (
+          <div key={`${type.key}-${index}`} className={`flex gap-x-10 px-4`}>
+            <span className={`w-[150px] text-left`}>{type.header}</span>
             <TextWithNAFallback className={`w-full text-left`}>
               {item[type.accessor]}
             </TextWithNAFallback>
-            <TextWithNAFallback className={`w-[120px] text-left`}>
+            <TextWithNAFallback className={`w-[150px] text-left`}>
               {item.source && (
                 <a
                   className={buttonVariants({

@@ -207,23 +207,6 @@ jobs:
               }
             }
 
-      # - name: Deploy from branch - Update dev env in the HelmChart
-      #   continue-on-error: true
-      #   if: ${{ failure() && github.event.inputs.deploy_to_dev == 'true' }}
-      #   uses: fjogeleit/yaml-update-action@main
-      #   with:
-      #     repository: ballerine-io/cloud-infra-config
-      #     branch: iamops/blue-green
-      #     commitChange: true
-      #     message: 'Update wf-service image Version to sha-${{ needs.build-and-push-image.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
-      #     token: ${{ secrets.GIT_TOKEN }}
-      #     changes: |
-      #       {
-      #         "kubernetes/helm/wf-service/dev-custom-values.yaml": {
-      #           "image.tag": "${{ needs.build-and-push-image.outputs.docker_tag }}"
-      #         }
-      #       }
-
   release:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/heads/prod') || startsWith(github.ref, 'refs/heads/dev') || startsWith(github.ref, 'refs/heads/sb') || github.event.inputs.deploy_to_dev == 'true'
