@@ -377,4 +377,6 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           tags: ${{ steps.eemeta.outputs.tags }}
           build-args: |
-            BASE_IMAGE=${{needs.build-and-push-image.outputs.docker_full_image}}
+            "BASE_IMAGE=${{needs.build-and-push-image.outputs.docker_full_image}}"
+            "RELEASE=${{ needs.build-and-push-image.outputs.bumped_tag }}"
+            "SHORT_SHA=${{ needs.build-and-push-image.outputs.sha_short }}"
