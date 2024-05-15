@@ -8,12 +8,12 @@ type TCell =
     }
   | {
       type: 'headings';
-      value: Array<string>;
+      value: string[];
     };
 
 const createTestBlocks = () =>
   createBlocks<TCell>({
-    debug: true,
+    debug: !process.env.CI,
     verbose: true,
   });
 
@@ -339,6 +339,32 @@ describe('blocks #integration', () => {
       // Assert
       expect(firstCell).toEqual({ type: 'heading', value: blockOneCellOne });
       expect(secondCell).toEqual({ type: 'headings', value: blockTwoCellOne });
+    });
+  });
+
+  describe('when calling `buildFlat`', () => {
+    it('should return an array of blocks with a depth of `1`', () => {
+      // Arrange
+      const blockOneCellOne = generateCellValue({ block: 1, cell: 1 });
+      const blockOneCellTwo = [generateCellValue({ block: 1, cell: 2 })];
+      const blockTwoCellOne = [generateCellValue({ block: 2, cell: 1 })];
+      const blockTwoCellTwo = generateCellValue({ block: 2, cell: 2 });
+      const blocks = createTestBlocks()
+        .addBlock()
+        .addCell({ type: 'heading', value: blockOneCellOne })
+        .addCell({ type: 'headings', value: blockOneCellTwo })
+        .addBlock()
+        .addCell({ type: 'headings', value: blockTwoCellOne })
+        .addCell({ type: 'heading', value: blockTwoCellTwo })
+        .buildFlat();
+
+      // Assert
+      expect(blocks).toEqual([
+        { type: 'heading', value: blockOneCellOne },
+        { type: 'headings', value: blockOneCellTwo },
+        { type: 'headings', value: blockTwoCellOne },
+        { type: 'heading', value: blockTwoCellTwo },
+      ]);
     });
   });
 });
