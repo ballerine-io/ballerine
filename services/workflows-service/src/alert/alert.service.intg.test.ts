@@ -1,5 +1,4 @@
-import { businessIds } from './../../scripts/generate-end-user';
-import { PrismaService } from '@/prisma/prisma.service';
+import { PrismaService } from './../prisma/prisma.service';
 import {
   AlertDefinition,
   Counterparty,
@@ -25,10 +24,29 @@ import {
   ALERT_DEFINITIONS,
   getAlertDefinitionCreateData,
 } from '../../scripts/alerts/generate-alerts';
-import { AsyncFunction } from 'type-fest/source/async-return-type';
 type AsyncTransactionFactoryCallback = (
   transactionFactory: TransactionFactory,
 ) => Promise<TransactionFactory | void>;
+
+const createTransactionsWithCounterpartyAsync = async (
+  project: Project | undefined,
+  prismaService: PrismaService,
+  callback: AsyncTransactionFactoryCallback,
+) => {
+  const counteryparty = await createCounterparty(prismaService, project);
+
+  let baseTransactionFactory = new TransactionFactory({
+    prisma: prismaService,
+    projectId: counteryparty.projectId,
+  })
+    .withCounterpartyBeneficiary(counteryparty.id)
+    .direction(TransactionDirection.inbound)
+    .paymentMethod(PaymentMethod.credit_card);
+
+  (await callback(baseTransactionFactory)) as TransactionFactory;
+
+  return baseTransactionFactory;
+};
 
 describe('AlertService', () => {
   let prismaService: PrismaService;
@@ -91,25 +109,6 @@ describe('AlertService', () => {
     describe('Rule: DORMANT', () => {
       let alertDefinition: AlertDefinition;
 
-      const createTransactionsWithCounterpartyAsync = async (
-        project: Project | undefined,
-        callback: AsyncTransactionFactoryCallback,
-      ) => {
-        const counteryparty = await createCounterparty(prismaService, project);
-
-        let baseTransactionFactory = new TransactionFactory({
-          prisma: prismaService,
-          projectId: counteryparty.projectId,
-        })
-          .withCounterpartyBeneficiary(counteryparty.id)
-          .direction(TransactionDirection.inbound)
-          .paymentMethod(PaymentMethod.credit_card);
-
-        (await callback(baseTransactionFactory)) as TransactionFactory;
-
-        return baseTransactionFactory;
-      };
-
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
@@ -128,6 +127,7 @@ describe('AlertService', () => {
         // Arrange
         const baseTransactionFactory = await createTransactionsWithCounterpartyAsync(
           project,
+          prismaService,
           async (transactionFactory: TransactionFactory) => {
             const castedTransactionFactory = transactionFactory as TransactionFactory;
 
@@ -153,10 +153,14 @@ describe('AlertService', () => {
       test('When there no activity in the project', async () => {
         // Arrange
         const newProject = undefined;
-        await createTransactionsWithCounterpartyAsync(newProject, async transactionFactory => {
-          await transactionFactory.transactionDate(faker.date.past(10)).count(9).create();
-          await transactionFactory.transactionDate(faker.date.recent(30)).count(1).create();
-        });
+        await createTransactionsWithCounterpartyAsync(
+          newProject,
+          prismaService,
+          async transactionFactory => {
+            await transactionFactory.transactionDate(faker.date.past(10)).count(9).create();
+            await transactionFactory.transactionDate(faker.date.recent(30)).count(1).create();
+          },
+        );
 
         // Act
         await alertService.checkAllAlerts();
