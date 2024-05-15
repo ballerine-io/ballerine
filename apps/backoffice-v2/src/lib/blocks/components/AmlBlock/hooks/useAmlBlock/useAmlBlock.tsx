@@ -89,7 +89,10 @@ export const useAmlBlock = (data: Array<TWorkflowById['context']['aml']>) => {
             type: 'dataTable',
             value: {
               data: matches,
-              props: { scroll: { className: 'h-[50vh]' }, cell: { className: '!p-0' } },
+              props: {
+                scroll: { className: ctw('h-[50vh]', { 'h-[100px]': totalMatches === 0 }) },
+                cell: { className: '!p-0' },
+              },
               CollapsibleContent: ({ row: match }) => <AmlMatch match={match} />,
               columns: [
                 columnHelper.display({
