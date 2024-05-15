@@ -25,7 +25,7 @@ export class AppLoggerService implements LoggerService, OnModuleDestroy {
     this.logger.info(message, { ...this.getLogMetadata(), logData });
   }
 
-  error(error: Error | string | unknown, logData: LogPayload = {}) {
+  error(error: unknown, logData: LogPayload = {}) {
     const payload: any = { ...this.getLogMetadata(), logData };
 
     if (typeof error === 'string') {
