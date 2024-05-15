@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 
 import { WarningFilledSvg } from '@/common/components/atoms/icons';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import dayjs from 'dayjs';
 
 export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
   const getCell = useCallback(() => {
@@ -74,6 +75,8 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
     }
   }, [pluginsOutput, workflow]);
 
+  console.log({ businessInfo: pluginsOutput?.businessInformation });
+
   return useMemo(() => {
     const cell = getCell();
 
@@ -88,9 +91,31 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
         value: createBlocksTyped()
           .addBlock()
           .addCell({
-            id: 'nested-details-heading',
-            type: 'heading',
-            value: 'Registry Information',
+            id: 'title-with-actions',
+            type: 'container',
+            props: {
+              className: 'items-end',
+            },
+            value: createBlocksTyped()
+              .addBlock()
+              .addCell({
+                id: 'nested-details-heading',
+                type: 'heading',
+                value: 'Registry Information',
+              })
+              .addCell({
+                type: 'paragraph',
+                props: { className: 'text-xs text-black/60' },
+                value: `Check conducted: ${
+                  pluginsOutput?.businessInformation?.invokedAt
+                    ? dayjs(pluginsOutput?.businessInformation?.invokedAt).format(
+                        'DD/MM/YYYY HH:mm',
+                      )
+                    : 'N/A'
+                }`,
+              })
+              .build()
+              .flat(1),
           })
           .addCell({
             id: 'nested-details-subheading',
