@@ -1,4 +1,4 @@
-import { Alert, AlertDefinition, Business, User } from '@prisma/client';
+import { Alert, AlertDefinition, Business, EndUser, User } from '@prisma/client';
 
 export type TExecutionDetails = {
   checkpoint: {
@@ -20,11 +20,11 @@ export const BulkStatus = {
 export type TBulkStatus = (typeof BulkStatus)[keyof typeof BulkStatus];
 
 export type TAlertResponse = Alert & {
-  alertDefinition: Pick<AlertDefinition, 'description' | 'label'>;
+  alertDefinition: Pick<AlertDefinition, 'description' | 'correlationId'>;
   assignee: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>;
   counterparty: {
-    business: Pick<Business, 'id' | 'companyName'>;
-    endUser: Pick<User, 'id' | 'firstName' | 'lastName'>;
+    business: Pick<Business, 'id' | 'companyName' | 'correlationId'>;
+    endUser: Pick<EndUser, 'id' | 'firstName' | 'lastName' | 'correlationId'>;
   };
 };
 

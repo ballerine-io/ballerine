@@ -63,15 +63,17 @@ model EndUser {
   approvalState ApprovalState @default(NEW)
   stateReason   String?       @db.VarChar
 
-  firstName      String    @db.VarChar
-  lastName       String    @db.VarChar
-  email          String?   @db.Text
-  phone          String?   @db.VarChar
-  country        String?   @db.VarChar
-  dateOfBirth    DateTime?
-  avatarUrl      String?
-  nationalId     String?   @db.VarChar
-  additionalInfo Json?
+  firstName         String    @db.VarChar
+  lastName          String    @db.VarChar
+  email             String?   @db.Text
+  phone             String?   @db.VarChar
+  country           String?   @db.VarChar
+  dateOfBirth       DateTime?
+  avatarUrl         String?
+  nationalId        String?   @db.VarChar
+  additionalInfo    Json?
+  activeMonitorings Json      @default("[]")
+  amlHits           Json      @default("[]")
 
   workflowRuntimeData WorkflowRuntimeData[]
 
@@ -414,7 +416,7 @@ model UiDefinition {
   uiSchema      Json // JSON schmea of how to render UI
   schemaOptions Json? // Document Schemas, rejectionReasons: {}, documenTypes: {}, documenCateogries: {}
   uiOptions     Json? // how the view will look, overall
-  createdAt     DateTime @default(now())
+  createdAt     DateTime  @default(now())
   updatedAt     DateTime? @updatedAt
 
   projectId          String
@@ -569,7 +571,11 @@ enum PaymentProcessor {
 enum PaymentBrandName {
   visa
   mastercard
-  dci // diners club international
+  diners
+  jcb
+  discover
+  china_union_pay // China UnionPay
+  american_express // American Express
   scb_pay_now
   ocbc_pay_now
   atome
@@ -702,11 +708,11 @@ enum AlertStatus {
 }
 
 model AlertDefinition {
-  id          String     @id @default(cuid())
-  crossEnvKey String?    @unique
-  label       String
+  id          String  @id @default(cuid())
+  crossEnvKey String? @unique
+  correlationId       String
   name        String
-  enabled     Boolean    @default(true)
+  enabled     Boolean @default(true)
   description String?
 
   projectId String
@@ -732,7 +738,7 @@ model AlertDefinition {
 
   alert Alert[]
 
-  @@unique([label, projectId])
+  @@unique([correlationId, projectId])
   @@index([projectId])
 }
 
