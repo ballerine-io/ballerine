@@ -1,5 +1,6 @@
 import { Button } from '@/common/components/atoms/Button/Button';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { DEFAULT_PROCESS_TRACKER_PROCESSES } from '@/common/components/molecules/ProcessTracker/constants';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
@@ -37,14 +38,13 @@ import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCase
 import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/useWebsiteMonitoringReportBlock';
 import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
+import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { Send } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { toast } from 'sonner';
-import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
-import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
-import { DEFAULT_PROCESS_TRACKER_PROCESSES } from '@/common/components/molecules/ProcessTracker/constants';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -153,8 +153,8 @@ export const useDefaultBlocksLogic = () => {
     directorsStorageFilesQueryResult,
   );
 
-  const companySanctions = workflow?.context?.pluginsOutput?.companySanctions?.data?.map(
-    sanction => ({
+  const companySanctions = useMemo(() => {
+    const sanctions = workflow?.context?.pluginsOutput?.companySanctions?.data?.map(sanction => ({
       sources: sanction?.entity?.sources,
       officialLists: sanction?.entity?.officialLists,
       fullReport: sanction,
@@ -166,8 +166,15 @@ export const useDefaultBlocksLogic = () => {
       furtherInformation: sanction?.entity?.furtherInformation,
       alternativeNames: sanction?.entity?.otherNames,
       places: sanction?.entity?.places,
-    }),
-  );
+    }));
+
+    const checkDate = workflow?.context?.pluginsOutput?.companySanctions?.invokedAt;
+
+    return {
+      sanctions,
+      checkDate,
+    };
+  }, [workflow?.context?.pluginsOutput?.companySanctions]);
 
   const ubosRegistryProvided = workflow?.context?.pluginsOutput?.ubo?.data?.uboGraph?.map(ubo => ({
     name: ubo?.name,

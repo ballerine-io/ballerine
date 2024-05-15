@@ -93,9 +93,6 @@ export const useKybRegistryInfoBlock = ({ pluginsOutput, workflow }) => {
           .addCell({
             id: 'title-with-actions',
             type: 'container',
-            props: {
-              className: 'items-end',
-            },
             value: createBlocksTyped()
               .addBlock()
               .addCell({

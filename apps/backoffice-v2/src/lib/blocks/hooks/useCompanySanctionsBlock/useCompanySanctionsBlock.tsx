@@ -1,14 +1,14 @@
-import { Badge } from '@ballerine/ui';
-import * as React from 'react';
-import { ComponentProps, useMemo } from 'react';
-import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { WarningFilledSvg } from '@/common/components/atoms/icons';
-import { toTitleCase } from 'string-ts';
 import { isValidUrl } from '@/common/utils/is-valid-url';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { Badge } from '@ballerine/ui';
+import dayjs from 'dayjs';
+import { ComponentProps, useMemo } from 'react';
+import { toTitleCase } from 'string-ts';
 
-export const useCompanySanctionsBlock = companySanctions => {
+export const useCompanySanctionsBlock = ({ sanctions, checkDate }) => {
   return useMemo(() => {
-    if (!Array.isArray(companySanctions)) {
+    if (!Array.isArray(sanctions)) {
       return [];
     }
 
@@ -20,8 +20,27 @@ export const useCompanySanctionsBlock = companySanctions => {
           ...createBlocksTyped()
             .addBlock()
             .addCell({
-              type: 'heading',
-              value: 'Company Sanctions',
+              id: 'title-with-actions',
+              type: 'container',
+              props: {
+                className: 'items-end',
+              },
+              value: createBlocksTyped()
+                .addBlock()
+                .addCell({
+                  id: 'nested-details-heading',
+                  type: 'heading',
+                  value: 'Company Sanctions',
+                })
+                .addCell({
+                  type: 'paragraph',
+                  props: { className: 'text-xs text-black/60' },
+                  value: `Check conducted: ${
+                    checkDate ? dayjs(checkDate).format('DD/MM/YYYY HH:mm') : 'N/A'
+                  }`,
+                })
+                .build()
+                .flat(1),
             })
             .addCell({
               type: 'container',
@@ -82,8 +101,8 @@ export const useCompanySanctionsBlock = companySanctions => {
                     ],
                     data: [
                       {
-                        totalMatches: companySanctions?.length,
-                        fullReport: companySanctions,
+                        totalMatches: sanctions?.length,
+                        fullReport: sanctions,
                         scanStatus: 'Completed',
                       },
                     ],
@@ -94,7 +113,7 @@ export const useCompanySanctionsBlock = companySanctions => {
             })
             .build()
             .flat(1),
-          ...companySanctions?.flatMap((sanction, index) =>
+          ...sanctions?.flatMap((sanction, index) =>
             createBlocksTyped()
               .addBlock()
               .addCell({
@@ -328,5 +347,5 @@ export const useCompanySanctionsBlock = companySanctions => {
         ],
       })
       .build();
-  }, [companySanctions]);
+  }, [sanctions, checkDate]);
 };
