@@ -123,7 +123,7 @@ describe('AlertService', () => {
         expect(ALERT_DEFINITIONS.DORMANT).not.toHaveProperty('options');
       });
 
-      test('When there are activity in the last 180 days', async () => {
+      test('When there is activity in the last 180 days', async () => {
         // Arrange
         const baseTransactionFactory = await createTransactionsWithCounterpartyAsync(
           project,
@@ -150,7 +150,7 @@ describe('AlertService', () => {
         expect(alerts[0]?.counterpartyId).toEqual(counterpartyBeneficiary);
       });
 
-      test('When there no activity in the project', async () => {
+      test('When there is no activity in the project', async () => {
         // Arrange
         const newProject = undefined;
         await createTransactionsWithCounterpartyAsync(
