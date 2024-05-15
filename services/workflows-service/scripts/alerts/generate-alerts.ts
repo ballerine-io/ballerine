@@ -468,6 +468,16 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
+  DORMANT: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
+    description: `First activity of client after a long period of dormancy`,
+    inlineRule: {
+      id: 'DORMANT',
+      fnName: 'evaluateDormantAccount',
+      subjects: ['counterpartyId'],
+    },
+  },
 } as const satisfies Record<string, Parameters<typeof getAlertDefinitionCreateData>[0]>;
 
 export const getAlertDefinitionCreateData = (
