@@ -60,11 +60,8 @@ export class WinstonLogger implements IAppLogger {
     this.logger.info(message, payload);
   }
 
-  error(error: Error | string, payload: LogPayload = {}) {
-    this.logger.error({
-      message: error,
-      payload,
-    });
+  error(error: Error | string) {
+    this.logger.error(error);
   }
 
   warn(message: string, payload: LogPayload = {}) {
