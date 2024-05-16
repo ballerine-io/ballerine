@@ -476,6 +476,10 @@ export const ALERT_DEFINITIONS = {
       id: 'DORMANT',
       fnName: 'evaluateDormantAccount',
       subjects: ['counterpartyId'],
+      options: {
+        timeAmount: 180,
+        timeUnit: TIME_UNITS.days,
+      },
     },
   },
 } as const satisfies Record<string, Parameters<typeof getAlertDefinitionCreateData>[0]>;

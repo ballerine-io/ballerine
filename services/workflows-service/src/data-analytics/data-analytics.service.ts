@@ -7,6 +7,7 @@ import {
   HighTransactionTypePercentage,
   TransactionLimitHistoricAverageOptions,
   TPeerGroupTransactionAverageOptions,
+  TDormantAccountOptions,
 } from './types';
 import { AggregateType, TIME_UNITS } from './consts';
 import { Prisma, TransactionDirection } from '@prisma/client';
@@ -49,6 +50,7 @@ export class DataAnalyticsService {
 
       case 'evaluateDormantAccount':
         return await this[inlineRule.fnName]({
+          ...inlineRule.options,
           projectId,
         });
     }
@@ -220,53 +222,6 @@ export class DataAnalyticsService {
     `);
   }
 
-  // async evaluateTransactionLimitHistoricAverageInbound({
-  //   projectId,
-  //   transactionDirection,
-  //   paymentMethod,
-  //   minimumCount,
-  //   minimumTransactionAmount,
-  //   transactionFactor,
-  // }: TransactionLimitHistoricAverageOptions) {
-  //   if (!['=', '!='].includes(paymentMethod.operator)) {
-  //     throw new Error('Invalid operator');
-  //   }
-
-  //   return await this._executeQuery<Array<{ counterpartyId: string }>>(Prisma.sql`
-  //     WITH transactionsData AS (
-  //       SELECT
-  //         "counterpartyBeneficiaryId" ,
-  //         count(*) AS count,
-  //         avg("transactionBaseAmount") AS avg
-  //       FROM
-  //         "TransactionRecord" tr
-  //       WHERE
-  //         "transactionDirection"::text = ${transactionDirection}
-  //         AND "paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${paymentMethod.value}
-  //         AND "projectId" = ${projectId}
-  //       GROUP BY
-  //         "counterpartyBeneficiaryId"
-  //       HAVING COUNT(*) > ${minimumCount}
-  //     )
-  //     SELECT
-  //       tr."counterpartyBeneficiaryId" as "counterpartyId"
-  //     FROM
-  //       "TransactionRecord" tr
-  //       JOIN transactionsData td ON
-  //         tr."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
-  //     WHERE
-  //       tr."transactionDirection"::text = ${transactionDirection}
-  //       AND "projectId" = ${projectId}
-  //       AND "paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${paymentMethod.value}
-  //       AND "transactionBaseAmount" > ${minimumTransactionAmount}
-  //       AND "transactionBaseAmount" > (
-  //         ${transactionFactor} * avg
-  //       )
-  //     GROUP BY
-  //       tr."counterpartyBeneficiaryId"
-  //   `);
-  // }
-
   async evaluatePaymentUnexpected({
     projectId,
     factor = 2,
@@ -291,30 +246,19 @@ export class DataAnalyticsService {
     return results;
   }
 
-  async evaluateDormantAccount({ projectId }: { projectId: string }) {
-    //   const query: Prisma.Sql = Prisma.sql`
-    //   SELECT
-    //   tr."counterpartyBeneficiaryId" as "counterpartyId",
-    //   COUNT(
-    //     CASE WHEN tr."transactionDate" >= CURRENT_DATE - INTERVAL '180 days' THEN
-    //       tr."id"
-    //     END) AS "totalTransactionWithinSixMonths",
-    //   COUNT(tr."id") AS "totalTransactionAllTime"
-    // FROM
-    //   "TransactionRecord" AS "tr"
-    // WHERE
-    //   tr."projectId" = '${projectId}'
-    //   AND tr."counterpartyBeneficiaryId" IS NOT NULL
-    //     GROUP BY
-    //   tr."counterpartyBeneficiaryId";
-    // `;
+  async evaluateDormantAccount({ projectId, timeAmount, timeUnit }: TDormantAccountOptions) {
+    if (!projectId) {
+      throw new Error('projectId is required');
+    }
 
     const query: Prisma.Sql = Prisma.sql`
   WITH transactions AS (
     SELECT
       tr."counterpartyBeneficiaryId" AS "counterpartyId",
       count(
-        CASE WHEN tr."transactionDate" >= CURRENT_DATE - INTERVAL '180 days' THEN
+        CASE WHEN tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+          `${timeAmount} ${timeUnit}`,
+        )}' THEN
           tr."id"
         END) AS "totalTransactionWithinSixMonths",
       count(tr."id") AS "totalTransactionAllTime"
