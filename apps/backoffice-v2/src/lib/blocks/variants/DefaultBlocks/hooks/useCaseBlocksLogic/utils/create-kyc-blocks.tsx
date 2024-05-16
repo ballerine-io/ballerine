@@ -13,7 +13,7 @@ export const createKycBlocks = (workflow: TWorkflowById) => {
 
   childWorkflows.forEach(childWorkflow => {
     blocks.addCell({
-      type: 'nodeCell',
+      type: 'node',
       value: (
         <KycBlock
           parentWorkflowId={workflow.id}

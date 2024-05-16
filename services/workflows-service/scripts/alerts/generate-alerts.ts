@@ -379,12 +379,12 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
     },
   },
   TLHAICC: {
-    enabled: true,
+    enabled: false,
     defaultSeverity: AlertSeverity.medium,
     description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
     inlineRule: {
       id: 'TLHAICC',
-      fnName: 'evaluateTransactionLimitHistoricAverageInbound',
+      fnName: 'evaluateTransactionAvg',
       subjects: ['counterpartyId'],
       options: {
         transactionDirection: TransactionDirection.inbound,
@@ -395,16 +395,19 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
         },
         minimumTransactionAmount: 100,
         transactionFactor: 1,
+        customerType: undefined,
+        timeUnit: undefined,
+        timeAmount: undefined,
       },
     },
   },
   TLHAIAPM: {
-    enabled: true,
+    enabled: false,
     defaultSeverity: AlertSeverity.medium,
     description: `Transaction Limit - Historic Average - Inbound - Inbound transaction exceeds client's historical average`,
     inlineRule: {
       id: 'TLHAIAPM',
-      fnName: 'evaluateTransactionLimitHistoricAverageInbound',
+      fnName: 'evaluateTransactionAvg',
       subjects: ['counterpartyId'],
       options: {
         transactionDirection: TransactionDirection.inbound,
@@ -415,7 +418,68 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
         },
         minimumTransactionAmount: 100,
         transactionFactor: 1,
+        customerType: undefined,
+        timeUnit: undefined,
+        timeAmount: undefined,
       },
+    },
+  },
+  PGAICT: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `An Credit card inbound transaction value was over the peer group average within a set period of time`,
+    inlineRule: {
+      id: 'PGAICT',
+      fnName: 'evaluateTransactionAvg',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '=',
+        },
+        minimumTransactionAmount: 100,
+        transactionFactor: 2,
+        customerType: 'test',
+        timeAmount: SEVEN_DAYS,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  PGAIAPM: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `An non credit card inbound transaction value was over the peer group average within a set period of time`,
+    inlineRule: {
+      id: 'PGAIAPM',
+      fnName: 'evaluateTransactionAvg',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '!=',
+        },
+        customerType: 'test',
+        minimumTransactionAmount: 100,
+        transactionFactor: 2,
+
+        timeAmount: SEVEN_DAYS,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  DORMANT: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
+    description: `First activity of client after a long period of dormancy`,
+    inlineRule: {
+      id: 'DORMANT',
+      fnName: 'evaluateDormantAccount',
+      options: undefined,
+      subjects: ['counterpartyId'],
     },
   },
 } as const satisfies Record<
@@ -510,7 +574,6 @@ export const getAlertDefinitionCreateData = (
 
   return {
     inlineRule,
-    label: id,
     name: id,
     enabled,
     defaultSeverity,
@@ -519,6 +582,7 @@ export const getAlertDefinitionCreateData = (
       ...(dedupeStrategy ?? {}),
     },
     monitoringType: monitoringType ?? MonitoringType.transaction_monitoring,
+    correlationId: id,
     rulesetId: `set-${id}`,
     description: description,
     ruleId: id,
@@ -535,8 +599,8 @@ export const getAlertDefinitionCreateData = (
 export const generateAlertDefinitions = async (
   prisma: PrismaClient | PrismaTransaction,
   {
-    createdBy = 'SYSTEM',
     project,
+    createdBy = 'SYSTEM',
     alertsDefConfiguration = TRANSACTIONS_ALERT_DEFINITIONS,
   }: {
     alertsDefConfiguration?:
@@ -544,6 +608,7 @@ export const generateAlertDefinitions = async (
       | typeof MERCHANT_MONITORING_ALERT_DEFINITIONS;
     createdBy?: string;
     project: Project;
+    alertsDef?: Partial<typeof TRANSACTIONS_ALERT_DEFINITIONS>;
   },
   {
     crossEnvKeyPrefix = undefined,
@@ -554,8 +619,7 @@ export const generateAlertDefinitions = async (
   Promise.all(
     Object.values(alertsDefConfiguration)
       .map(alert => ({
-        label: alert.inlineRule.id,
-        enable: false,
+        correlationId: alert.inlineRule.id,
         ...alert,
       }))
       .filter(alert => alert.enabled)
@@ -567,7 +631,12 @@ export const generateAlertDefinitions = async (
         };
 
         return prisma.alertDefinition.upsert({
-          where: { label_projectId: { label: alertDef.inlineRule.id, projectId: project.id } },
+          where: {
+            correlationId_projectId: {
+              correlationId: alertDef.correlationId,
+              projectId: project.id,
+            },
+          },
           create: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
           update: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
           include: {
