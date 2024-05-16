@@ -61,10 +61,11 @@ export const AlertsFilters: FunctionComponent<{
         label: 'Correlation Id',
         type: 'multi-select',
         params: {
-          options: correlationIds.map(label => ({
-            label,
-            value: label,
-          })),
+          options:
+            correlationIds?.map(label => ({
+              label,
+              value: label,
+            })) || [],
         },
       },
     ],

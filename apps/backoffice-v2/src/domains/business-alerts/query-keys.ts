@@ -1,5 +1,5 @@
-import { fetchAlertDefinitionByAlertId, fetchAlertLabels } from '@/domains/alerts/fetchers';
-import { fetchBusinessAlerts } from '@/domains/business-alerts/fetchers';
+import { fetchAlertDefinitionByAlertId } from '@/domains/alerts/fetchers';
+import { fetchAlertLabels, fetchBusinessAlerts } from '@/domains/business-alerts/fetchers';
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 export const businessAlertsQueryKeys = createQueryKeys('alerts', {
