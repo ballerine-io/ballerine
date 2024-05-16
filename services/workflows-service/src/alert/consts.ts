@@ -29,6 +29,9 @@ export const TransactionAlertLabel = {
   HVIC_APM: 'HVIC_APM',
   HVIC_CC: 'HVIC_CC',
   SHCAR_C: 'SHCAR_C',
+  PGAICT: 'PGAICT',
+  PGAIAPM: 'PGAIAPM',
+  DORMANT: 'DORMANT',
   HPC: 'HPC',
 } as const;
 

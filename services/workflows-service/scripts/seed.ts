@@ -8,7 +8,6 @@ import { env } from '../src/env';
 import type { InputJsonValue } from '../src/types';
 import { seedTransactionsAlerts } from './alerts/generate-alerts';
 import { generateTransactions } from './alerts/generate-transactions';
-import { seedBusinessReports } from './business-reports/seed-business-reports';
 import { customSeed } from './custom-seed';
 import {
   baseFilterAssigneeSelect,
@@ -987,8 +986,6 @@ async function seed() {
       .filter(Boolean) as string[],
     agentUserIds: agentUsers.map(({ id }) => id),
   });
-
-  await seedBusinessReports(client, { project: project1, businessRiskIds });
   // TODO: create business with enduser attched to them
   // await client.business.create({
   //   data: {

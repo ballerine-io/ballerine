@@ -1,5 +1,9 @@
+import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { computeHash } from '@/common/utils/sign/sign';
+import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
+import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
 import * as errors from '@/errors';
 import { PrismaService } from '@/prisma/prisma.service';
 import { isFkConstraintError } from '@/prisma/prisma.util';
@@ -14,14 +18,10 @@ import {
   BusinessReport,
   MonitoringType,
 } from '@prisma/client';
-import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
-import { FindAlertsDto } from './dtos/get-alerts.dto';
-import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
-import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
-import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
 import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
-import { computeHash } from '@/common/utils/sign/sign';
+import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
+import { FindAlertsDto } from './dtos/get-alerts.dto';
 import { TDedupeStrategy, TExecutionDetails } from './types';
 
 const DEFAULT_DEDUPE_STRATEGIES = {
@@ -98,8 +98,8 @@ export class AlertService {
           },
           alertDefinition: {
             monitoringType,
-            label: {
-              in: findAlertsDto.filter?.label,
+            correlationId: {
+              in: findAlertsDto.filter?.correlationIds,
             },
           },
           ...(findAlertsDto.filter?.assigneeId && {
@@ -381,17 +381,17 @@ export class AlertService {
     return status;
   }
 
-  async getAlertLabels({ projectId }: { projectId: TProjectId }) {
+  async getAlertCorrelationIds({ projectId }: { projectId: TProjectId }) {
     const alertDefinitions = await this.alertDefinitionRepository.findMany(
       {
         select: {
-          label: true,
+          correlationId: true,
         },
       },
       [projectId],
     );
 
-    return alertDefinitions.map(({ label }) => label);
+    return alertDefinitions.map(({ correlationId }) => correlationId);
   }
 
   async getAlertsByEntityId(entityId: string, projectId: string) {

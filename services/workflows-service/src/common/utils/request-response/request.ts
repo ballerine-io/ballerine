@@ -27,5 +27,6 @@ export const getReqMetadataObj = (req: Request<unknown>) => {
     url: req.originalUrl,
     method: req.method,
     headers: cleanHeaders,
+    body: req.body,
   };
 };
