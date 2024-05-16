@@ -480,6 +480,10 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
       fnName: 'evaluateDormantAccount',
       options: undefined,
       subjects: ['counterpartyId'],
+      options: {
+        timeAmount: 180,
+        timeUnit: TIME_UNITS.days,
+      },
     },
   },
 } as const satisfies Record<

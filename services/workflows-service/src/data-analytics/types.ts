@@ -28,7 +28,7 @@ export type InlineRule = {
     }
   | {
       fnName: 'evaluateDormantAccount';
-      options: undefined;
+      options: Omit<TDormantAccountOptions, 'projectId'>;
     }
   | {
       fnName: 'checkMerchantOngoingAlert';
@@ -107,4 +107,10 @@ export type TPeerGroupTransactionAverageOptions = TransactionLimitHistoricAverag
   customerType?: string;
   timeUnit?: TimeUnit;
   timeAmount?: number;
+};
+
+export type TDormantAccountOptions = {
+  projectId: TProjectId;
+  timeAmount: number;
+  timeUnit: TimeUnit;
 };
