@@ -68,7 +68,6 @@ export const getTabsToBlocksMap = (
     associated_companies: [
       ...associatedCompaniesBlock,
       ...associatedCompaniesInformationBlock,
-      ...createKycBlocks(workflow as TWorkflowById),
       ...createAssociatedCompanyDocumentBlocks(workflow, blocksCreationParams),
     ],
     directors: [
