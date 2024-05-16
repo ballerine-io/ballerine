@@ -287,7 +287,7 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
     const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
       documents as TDocumentsWithoutPageType,
-      // @ts-expect-error - we don't validate `context` is an object1
+      // @ts-expect-error - we don't validate `context` is an object
       context.entity.id || context.entity.ballerineEntityId,
       currentProjectId,
       customer.name,
