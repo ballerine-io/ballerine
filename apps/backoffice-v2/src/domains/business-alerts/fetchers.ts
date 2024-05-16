@@ -91,7 +91,6 @@ export const BusinessAlertsListSchema = z.array(
       severity: z.string(),
     }),
     severity: z.enum(BusinessAlertSeverities),
-    label: z.string(),
     alertDetails: z.string(),
     // amountOfTxs: z.number(),
     assignee: ObjectWithIdSchema.extend({

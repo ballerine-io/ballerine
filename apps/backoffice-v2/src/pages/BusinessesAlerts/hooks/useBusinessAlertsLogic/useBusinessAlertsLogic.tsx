@@ -1,7 +1,6 @@
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
 import { useSearch } from '@/common/hooks/useSearch/useSearch';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
-import { useAlertLabelsQuery } from '@/domains/alerts/hooks/queries/useAlertLabelsQuery/useAlertLabelsQuery';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useBusinessAlertsQuery } from '@/domains/business-alerts/hooks/queries/useBusinessAlertsQuery/useBusinessAlertsQuery';
 import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
@@ -33,8 +32,6 @@ export const useBusinessAlertsLogic = () => {
   );
 
   console.log({ alerts, pageSize });
-  const { data: labels } = useAlertLabelsQuery();
-  const sortedLabels = useMemo(() => labels?.slice()?.sort(), [labels]);
   const { onPaginate, onPrevPage, onNextPage } = usePagination();
   const isLastPage = (alerts?.length ?? 0) < pageSize || alerts?.length === 0;
   const { search, onSearch } = useSearch({
@@ -45,7 +42,6 @@ export const useBusinessAlertsLogic = () => {
     alerts,
     isLoadingAlerts,
     assignees: sortedAssignees,
-    labels: sortedLabels,
     authenticatedUser: session?.user,
     page,
     pageSize,
