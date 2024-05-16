@@ -9,7 +9,7 @@ const SourceInfoSchema = z
   .optional()
   .nullable();
 
-const HitSchema = z.object({
+export const HitSchema = z.object({
   matchedName: z.string().optional().nullable(),
   dateOfBirth: z.string().optional().nullable(),
   countries: z.array(z.string()).optional().nullable(),
@@ -19,14 +19,17 @@ const HitSchema = z.object({
   sanctions: z.array(SourceInfoSchema).optional().nullable(),
   pep: z.array(SourceInfoSchema).optional().nullable(),
   adverseMedia: z.array(SourceInfoSchema).optional().nullable(),
+  fitnessProbity: z.array(SourceInfoSchema).optional().nullable(),
 });
+
+export type THit = z.infer<typeof HitSchema>;
 
 export const AmlSchema = z.object({
   hits: z.array(HitSchema).optional().nullable(),
   createdAt: z.string().optional().nullable(),
 });
 
-export type TAml = z.output<typeof AmlSchema>;
+export type TAml = z.infer<typeof AmlSchema>;
 
 export const amlAdapter = (aml: TAml) => {
   const { hits, createdAt } = aml;
@@ -47,6 +50,7 @@ export const amlAdapter = (aml: TAml) => {
           warnings,
           pep,
           adverseMedia,
+          fitnessProbity,
         }) => ({
           matchedName,
           dateOfBirth,
@@ -54,28 +58,34 @@ export const amlAdapter = (aml: TAml) => {
           matchTypes: matchTypes?.join(', ') ?? '',
           aka: aka?.join(', ') ?? '',
           sanctions:
-            sanctions?.map(sanction => ({
+            sanctions?.filter(Boolean).map(sanction => ({
               sanction: sanction?.sourceName,
               date: sanction?.date,
               source: sanction?.sourceUrl,
             })) ?? [],
           warnings:
-            warnings?.map(warning => ({
+            warnings?.filter(Boolean).map(warning => ({
               warning: warning?.sourceName,
               date: warning?.date,
               source: warning?.sourceUrl,
             })) ?? [],
           pep:
-            pep?.map(pepItem => ({
+            pep?.filter(Boolean).map(pepItem => ({
               person: pepItem?.sourceName,
               date: pepItem?.date,
               source: pepItem?.sourceUrl,
             })) ?? [],
           adverseMedia:
-            adverseMedia?.map(adverseMediaItem => ({
+            adverseMedia?.filter(Boolean).map(adverseMediaItem => ({
               entry: adverseMediaItem?.sourceName,
               date: adverseMediaItem?.date,
               source: adverseMediaItem?.sourceUrl,
+            })) ?? [],
+          fitnessProbity:
+            fitnessProbity?.filter(Boolean).map(fitnessProbityItem => ({
+              entry: fitnessProbityItem?.sourceName,
+              date: fitnessProbityItem?.date,
+              source: fitnessProbityItem?.sourceUrl,
             })) ?? [],
         }),
       ) ?? [],

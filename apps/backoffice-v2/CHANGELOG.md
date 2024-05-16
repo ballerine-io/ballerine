@@ -1,5 +1,12 @@
 # @ballerine/backoffice-v2
 
+## 0.7.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/blocks@0.2.3
+
 ## 0.7.7
 
 ### Patch Changes
