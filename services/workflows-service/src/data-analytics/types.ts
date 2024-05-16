@@ -28,6 +28,7 @@ export type InlineRule = {
     }
   | {
       fnName: 'evaluateDormantAccount';
+      options: Omit<TDormantAccountOptions, 'projectId'>;
     }
 );
 
@@ -93,4 +94,10 @@ export type TPeerGroupTransactionAverageOptions = TransactionLimitHistoricAverag
   customerType?: string;
   timeUnit?: TimeUnit;
   timeAmount?: number;
+};
+
+export type TDormantAccountOptions = {
+  projectId: TProjectId;
+  timeAmount: number;
+  timeUnit: TimeUnit;
 };
