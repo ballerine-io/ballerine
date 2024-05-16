@@ -1,11 +1,14 @@
 import { z } from 'zod';
 import { CaseStatus, CaseStatuses } from '../../enums';
 
-export const SearchSchema = z.object({
+export const BaseSearchSchema = z.object({
   sortDir: z.enum(['asc', 'desc']).catch('desc'),
   pageSize: z.coerce.number().int().positive().catch(50),
   page: z.coerce.number().int().positive().catch(1),
   search: z.string().catch(''),
+});
+
+export const SearchSchema = BaseSearchSchema.extend({
   filterId: z.string().catch(''),
   entity: z.string().catch(''),
 });

@@ -10,16 +10,18 @@ import { useUIElementHandlers } from '@/components/organisms/UIRenderer/hooks/us
 import { useUIElementState } from '@/components/organisms/UIRenderer/hooks/useUIElementState';
 import { UIElementComponent } from '@/components/organisms/UIRenderer/types';
 import { UIPage } from '@/domains/collection-flow';
+import { useFlowTracking } from '@/hooks/useFlowTracking';
 import { Button } from '@ballerine/ui';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition }) => {
   const { helpers } = useDynamicUIContext();
   const { onClickHandler } = useUIElementHandlers(definition);
   const { state } = useDynamicUIContext();
   const { state: uiElementState } = useUIElementState(definition);
-  const { currentPage } = usePageResolverContext();
+  const { currentPage, pages } = usePageResolverContext();
   const { errors } = usePageContext();
+  const isValid = useMemo(() => !Object.values(errors).length, [errors]);
 
   const setPageElementsTouched = useCallback(
     (page: UIPage, state: UIState) => {
@@ -54,6 +56,8 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
     [helpers, errors],
   );
 
+  const { trackFinish } = useFlowTracking();
+
   const handleClick = useCallback(() => {
     setPageElementsTouched(
       // @ts-ignore
@@ -61,13 +65,20 @@ export const SubmitButton: UIElementComponent<{ text: string }> = ({ definition 
       state,
     );
     onClickHandler();
-  }, [currentPage, state, setPageElementsTouched, onClickHandler]);
+
+    const isFinishPage = currentPage?.name === pages.at(-1)?.name;
+
+    if (isFinishPage && isValid) {
+      trackFinish();
+    }
+  }, [currentPage, pages, state, isValid, setPageElementsTouched, onClickHandler, trackFinish]);
 
   return (
     <Button
       variant="secondary"
       onClick={handleClick}
       disabled={state.isLoading || uiElementState.isLoading}
+      data-testid={definition.name}
     >
       {definition.options.text || 'Submit'}
     </Button>

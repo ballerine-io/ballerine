@@ -122,6 +122,7 @@ export const BusinessAddressInfoPage = {
         },
         {
           type: 'json-form',
+          name: 'business-address-form',
           options: {
             jsonFormDefinition: {
               required: [

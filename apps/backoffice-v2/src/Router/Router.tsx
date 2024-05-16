@@ -17,8 +17,19 @@ import { UnauthenticatedLayout } from '@/domains/auth/components/Unauthenticated
 import { Locale } from '@/pages/Locale/Locale.page';
 import { unauthenticatedLayoutLoader } from '@/domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
 import { Document } from '@/pages/Document/Document.page';
+import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
+import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
+import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
+import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
+import { Profiles } from '@/pages/Profiles/Profiles.page';
+import { Individuals } from '@/pages/Profiles/Individuals/Individuals.page';
 
 const router = createBrowserRouter([
+  {
+    path: '/*',
+    element: <NotFoundRedirect />,
+    errorElement: <RouteError />,
+  },
   {
     path: '/',
     element: <Root />,
@@ -73,6 +84,37 @@ const router = createBrowserRouter([
                         path: '/:locale/case-management/entities/:entityId',
                         element: <Entity />,
                         loader: entityLoader,
+                        errorElement: <RouteError />,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                path: '/:locale/profiles',
+                element: <Profiles />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/profiles/individuals',
+                    element: <Individuals />,
+                    errorElement: <RouteError />,
+                  },
+                ],
+              },
+              {
+                path: '/:locale/transaction-monitoring',
+                element: <TransactionMonitoring />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/transaction-monitoring/alerts',
+                    element: <TransactionMonitoringAlerts />,
+                    errorElement: <RouteError />,
+                    children: [
+                      {
+                        path: '/:locale/transaction-monitoring/alerts/:alertId',
+                        element: <TransactionMonitoringAlertsAnalysisPage />,
                         errorElement: <RouteError />,
                       },
                     ],

@@ -2,9 +2,11 @@ import { ArrowLeft } from 'lucide-react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
 import { useStateManagerContext } from '@/components/organisms/DynamicUI/StateManager/components/StateProvider';
 import { useDynamicUIContext } from '@/components/organisms/DynamicUI/hooks/useDynamicUIContext';
-import { usePageResolverContext } from '@/components/organisms/DynamicUI/PageResolver/hooks/usePageResolverContext';
+import { useCustomer } from '@/components/providers/CustomerProvider';
+import { useAppExit } from '@/hooks/useAppExit/useAppExit';
 import { ctw } from '@ballerine/ui';
 
 export const Navigation = () => {
@@ -12,13 +14,21 @@ export const Navigation = () => {
   const { t } = useTranslation();
   const { stateApi } = useStateManagerContext();
   const { currentPage } = usePageResolverContext();
+  const { customer } = useCustomer();
+  const exitFromApp = useAppExit();
 
   const isFirstStep = currentPage?.number === 1;
-  const isDisabled = state.isLoading || isFirstStep;
+  const isDisabled = state.isLoading;
 
   const onPrevious = useCallback(() => {
-    return stateApi.sendEvent('PREVIOUS');
-  }, [stateApi]);
+    if (!isFirstStep) {
+      stateApi.sendEvent('PREVIOUS');
+      return;
+    }
+
+    exitFromApp();
+    return;
+  }, [stateApi, exitFromApp]);
 
   return (
     <button
@@ -30,7 +40,11 @@ export const Navigation = () => {
       type={'button'}
     >
       <ArrowLeft className="inline" />
-      <span className="pl-2 align-middle text-sm font-bold">{t('back')}</span>
+      <span className="pl-2 align-middle text-sm font-bold">
+        {isFirstStep && customer
+          ? t('backToPortal', { companyName: customer.displayName })
+          : t('back')}
+      </span>
     </button>
   );
 };

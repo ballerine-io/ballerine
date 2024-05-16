@@ -1,9 +1,9 @@
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
-import { Paper } from '@/components/atoms/Paper';
-import { ComponentProps, FocusEvent, useCallback, useMemo } from 'react';
-import { ThemeProvider } from '@mui/material';
 import { muiTheme } from '@/common/mui-theme';
+import { Paper } from '@/components/atoms/Paper';
+import { ThemeProvider } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import { ComponentProps, FocusEvent, useCallback, useMemo } from 'react';
 
 export interface AutocompleteOption {
   value: string;
@@ -20,6 +20,7 @@ export interface AutocompleteInputProps {
   placeholder?: string;
   name?: string;
   disabled?: boolean;
+  testId?: string;
   onChange: (event: AutocompleteChangeEvent) => void;
   onBlur?: (event: FocusEvent<any>) => void;
 }
@@ -30,6 +31,7 @@ export const AutocompleteInput = ({
   placeholder,
   name,
   disabled,
+  testId,
   onChange,
   onBlur,
 }: AutocompleteInputProps) => {
@@ -73,6 +75,11 @@ export const AutocompleteInput = ({
             disableRipple: true,
           },
         }}
+        renderOption={(props, option) => (
+          <li {...props} key={option} data-testid={testId ? `${testId}-option` : undefined}>
+            {option}
+          </li>
+        )}
         renderInput={params => (
           <TextField
             {...params}
@@ -95,6 +102,7 @@ export const AutocompleteInput = ({
             //@ts-nocheck
             inputProps={{
               ...params.inputProps,
+              'data-testid': testId,
               className: 'py-0 px-0 h-9',
             }}
             onChange={handleInputChange}

@@ -15,12 +15,15 @@ import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { DefaultContextSchema } from '@ballerine/common';
+import { AnyRecord } from '@ballerine/common';
 import { Injectable } from '@nestjs/common';
-import { Customer, EndUser, UiDefinitionContext } from '@prisma/client';
+import { EndUser, UiDefinitionContext, WorkflowRuntimeData } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { randomUUID } from 'crypto';
 import keyBy from 'lodash/keyBy';
+import get from 'lodash/get';
+import { BUILT_IN_EVENT } from '@ballerine/workflow-core';
+import { TCustomerWithDefinitionsFeatures } from '@/customer/types';
 
 @Injectable()
 export class CollectionFlowService {
@@ -37,7 +40,7 @@ export class CollectionFlowService {
     protected readonly fileService: FileService,
   ) {}
 
-  async getCustomerDetails(projectId: TProjectId): Promise<Customer> {
+  async getCustomerDetails(projectId: TProjectId): Promise<TCustomerWithDefinitionsFeatures> {
     return this.customerService.getByProjectId(projectId);
   }
 
@@ -45,14 +48,30 @@ export class CollectionFlowService {
     return await this.endUserService.getById(endUserId, {}, [projectId]);
   }
 
-  traverseUiSchema(uiSchema: Record<string, unknown>, language: string) {
+  traverseUiSchema(
+    uiSchema: Record<string, unknown>,
+    context: WorkflowRuntimeData['context'],
+    language: string,
+  ) {
     for (const key in uiSchema) {
       if (typeof uiSchema[key] === 'object' && uiSchema[key] !== null) {
         // If the property is an object (including arrays), recursively traverse it
         // @ts-expect-error - error from Prisma types fix
-        this.traverseUiSchema(uiSchema[key], language);
+        this.traverseUiSchema(uiSchema[key], context, language);
       } else if (typeof uiSchema[key] === 'string') {
-        uiSchema[key] = this.translationService.translate(uiSchema[key] as string, language);
+        const options: AnyRecord = {};
+
+        if (uiSchema.labelVariables) {
+          Object.entries(uiSchema.labelVariables).forEach(([key, value]) => {
+            options[key] = get(context, value);
+          });
+        }
+
+        uiSchema[key] = this.translationService.translate(
+          uiSchema[key] as string,
+          language,
+          options,
+        );
       }
     }
 
@@ -61,6 +80,7 @@ export class CollectionFlowService {
 
   async getFlowConfiguration(
     configurationId: string,
+    context: WorkflowRuntimeData['context'],
     language: string,
     projectIds: TProjectIds,
   ): Promise<FlowConfigurationModel> {
@@ -82,7 +102,12 @@ export class CollectionFlowService {
       config: workflowDefinition.config,
       uiSchema: {
         // @ts-expect-error - error from Prisma types fix
-        elements: this.traverseUiSchema(uiDefintion.uiSchema.elements, language) as UiSchemaStep[],
+        elements: this.traverseUiSchema(
+          // @ts-expect-error - error from Prisma types fix
+          uiDefintion.uiSchema.elements,
+          context,
+          language,
+        ) as UiSchemaStep[],
       },
       definition: uiDefintion.definition
         ? (uiDefintion.definition as unknown as UiDefDefinition)
@@ -166,37 +191,6 @@ export class CollectionFlowService {
     return workflowData ? workflowData : null;
   }
 
-  async updateWorkflowRuntimeData(payload: UpdateFlowDto, tokenScope: ITokenScope) {
-    const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
-      tokenScope.workflowRuntimeDataId,
-      {},
-      [tokenScope.projectId] as TProjectIds,
-    );
-
-    if (payload.data.endUser) {
-      await this.endUserService.updateById(tokenScope.endUserId, {
-        data: { ...payload.data.endUser, projectId: tokenScope.projectId },
-      });
-    }
-
-    if (payload.data.ballerineEntityId && payload.data.business) {
-      await this.businessService.updateById(payload.data.ballerineEntityId, {
-        data: { ...payload.data.business, projectId: tokenScope.projectId },
-      });
-    }
-
-    const { state, ...resetContext } = payload.data.context as Record<string, any>;
-
-    return await this.workflowService.createOrUpdateWorkflowRuntime({
-      workflowDefinitionId: workflowRuntime.workflowDefinitionId,
-      context: resetContext as DefaultContextSchema,
-      config: workflowRuntime.config,
-      parentWorkflowId: undefined,
-      projectIds: [tokenScope.projectId],
-      currentProjectId: tokenScope.projectId,
-    });
-  }
-
   async updateWorkflowRuntimeLanguage(language: string, tokenScope: ITokenScope) {
     const workflowRuntime = await this.workflowService.getWorkflowRuntimeDataById(
       tokenScope.workflowRuntimeDataId,
@@ -222,18 +216,16 @@ export class CollectionFlowService {
       });
     }
 
-    return await this.workflowService.syncContextById(
-      tokenScope.workflowRuntimeDataId,
-      payload.data.context as DefaultContextSchema,
+    return await this.workflowService.event(
+      {
+        id: tokenScope.workflowRuntimeDataId,
+        name: BUILT_IN_EVENT.UPDATE_CONTEXT,
+        payload: {
+          context: payload.data.context,
+        },
+      },
+      [tokenScope.projectId],
       tokenScope.projectId,
-    );
-  }
-
-  async resubmitFlow(flowId: string, projectIds: TProjectIds, currentProjectId: TProjectId) {
-    await this.workflowService.event(
-      { id: flowId, name: 'RESUBMITTED' },
-      projectIds,
-      currentProjectId,
     );
   }
 

@@ -34,6 +34,7 @@ export class RequestIdMiddleware implements NestMiddleware {
     const logFn = () => {
       const endTime = new Date();
       cleanup();
+
       if (isRelevantReq) {
         reqMetadata = {
           ...reqMetadata,

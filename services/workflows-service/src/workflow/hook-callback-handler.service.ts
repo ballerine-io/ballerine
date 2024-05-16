@@ -1,23 +1,31 @@
-import { set } from 'lodash';
-import { Injectable } from '@nestjs/common';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { BusinessService } from '@/business/business.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { AnyRecord } from '@ballerine/common';
+import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
+import { TDocumentsWithoutPageType } from '@/common/types';
+import { CustomerService } from '@/customer/customer.service';
+import type { InputJsonValue, TProjectId, TProjectIds } from '@/types';
 import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-names';
 import { WorkflowService } from '@/workflow/workflow.service';
-import { WorkflowRuntimeData } from '@prisma/client';
-import * as tmp from 'tmp';
+import { AnyRecord, ProcessStatus, TDocument } from '@ballerine/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { BusinessReportType, Customer, WorkflowRuntimeData } from '@prisma/client';
 import fs from 'fs';
-import { CustomerService } from '@/customer/customer.service';
-import type { TProjectId, TProjectIds } from '@/types';
-import { TDocumentsWithoutPageType } from '@/common/types';
-import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
+import { get, isObject, set } from 'lodash';
+import * as tmp from 'tmp';
+import { EndUserService } from '@/end-user/end-user.service';
+import { z } from 'zod';
+import { EndUserActiveMonitoringsSchema } from '@/end-user/end-user.schema';
 
 @Injectable()
 export class HookCallbackHandlerService {
   constructor(
     protected readonly workflowService: WorkflowService,
     protected readonly customerService: CustomerService,
+    protected readonly businessReportService: BusinessReportService,
+    protected readonly businessService: BusinessService,
     private readonly logger: AppLoggerService,
+    private readonly endUserService: EndUserService,
   ) {}
 
   async handleHookResponse({
@@ -35,7 +43,30 @@ export class HookCallbackHandlerService {
     currentProjectId: TProjectId;
   }) {
     if (processName === 'kyc-unified-api') {
-      return await this.mapCallbackDataToIndividual(
+      const context = await this.mapCallbackDataToIndividual(
+        data,
+        workflowRuntime,
+        resultDestinationPath,
+        currentProjectId,
+      );
+
+      const aml = data.aml as { endUserId: string; hits: unknown[] } | undefined;
+
+      if (aml) {
+        await this.updateEndUserWithAmlData({
+          sessionId: data.id as string,
+          amlHits: aml.hits,
+          withActiveMonitoring: workflowRuntime.config.hasUboOngoingMonitoring ?? false,
+          endUserId: aml.endUserId,
+          projectId: currentProjectId,
+        });
+      }
+
+      return context;
+    }
+
+    if (processName === 'website-monitoring') {
+      return await this.prepareWebsiteMonitoringContext(
         data,
         workflowRuntime,
         resultDestinationPath,
@@ -43,18 +74,194 @@ export class HookCallbackHandlerService {
       );
     }
 
-    set(workflowRuntime.context, resultDestinationPath, data);
+    if (processName === 'merchant-audit-report') {
+      return await this.prepareMerchantAuditReportContext(
+        data,
+        workflowRuntime,
+        resultDestinationPath,
+        currentProjectId,
+      );
+    }
 
-    await this.workflowService.updateWorkflowRuntimeData(
-      workflowRuntime.id,
-      {
-        context: workflowRuntime.context,
-      },
+    const removeLastKeyFromPath = (path: string) => {
+      return path?.split('.')?.slice(0, -1)?.join('.');
+    };
+
+    const resultDestinationPathWithoutLastKey = removeLastKeyFromPath(resultDestinationPath);
+    const result = get(workflowRuntime.context, resultDestinationPathWithoutLastKey);
+
+    const resultWithData = set({}, resultDestinationPath, data);
+
+    //@ts-ignore
+    if (isObject(result) && result.status) {
+      return set(
+        resultWithData,
+        `${resultDestinationPathWithoutLastKey}.status`,
+        ProcessStatus.SUCCESS,
+      );
+    }
+
+    return resultWithData;
+  }
+
+  async prepareWebsiteMonitoringContext(
+    data: AnyRecord,
+    workflowRuntime: WorkflowRuntimeData,
+    resultDestinationPath: string,
+    currentProjectId: TProjectId,
+  ) {
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+
+    const { context } = workflowRuntime;
+    const { reportData, base64Pdf, reportId, reportType } = data;
+
+    const { documents, pdfReportBallerineFileId } =
+      await this.__peristPDFReportDocumentWithWorkflowDocuments({
+        context,
+        customer,
+        projectId: currentProjectId,
+        base64PDFString: base64Pdf as string,
+      });
+
+    const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
+    ]);
+
+    if (!business) throw new BadRequestException('Business not found.');
+
+    await this.businessReportService.create({
+      data: {
+        type: reportType as BusinessReportType,
+        report: {
+          reportFileId: pdfReportBallerineFileId,
+          data: reportData as InputJsonValue,
+          reportId: reportId as string,
+        },
+        businessId: business.id,
+        projectId: currentProjectId,
+      },
+    });
+
+    set(workflowRuntime.context, resultDestinationPath, { reportData });
+    workflowRuntime.context.documents = documents;
+
+    return context;
+  }
+
+  async prepareMerchantAuditReportContext(
+    data: AnyRecord,
+    workflowRuntime: WorkflowRuntimeData,
+    resultDestinationPath: string,
+    currentProjectId: TProjectId,
+  ) {
+    const { reportData, base64Pdf, reportId, reportType } = data;
+    const { context } = workflowRuntime;
+
+    const businessId = context.entity.id as string;
+
+    const customer = await this.customerService.getByProjectId(currentProjectId);
+
+    const { pdfReportBallerineFileId } = await this.__peristPDFReportDocumentWithWorkflowDocuments({
+      context,
+      customer,
+      projectId: currentProjectId,
+      base64PDFString: base64Pdf as string,
+    });
+
+    const reportContent = {
+      data: reportData,
+      reportFileId: pdfReportBallerineFileId,
+      reportId,
+    } as Record<string, object | string>;
+
+    await this.businessReportService.create({
+      data: {
+        type: reportType as BusinessReportType,
+        report: reportContent,
+        businessId: businessId,
+        projectId: currentProjectId,
+      },
+    });
+
+    return context;
+  }
+
+  private async __peristPDFReportDocumentWithWorkflowDocuments({
+    context,
+    base64PDFString,
+    projectId,
+    customer,
+  }: {
+    context: any;
+    base64PDFString: string;
+    projectId: TProjectId;
+    customer: Customer;
+  }) {
+    const contextClone = structuredClone(context);
+
+    const pdfDocument: TDocument = {
+      category: 'website-monitoring',
+      type: 'pdf-report',
+      pages: [
+        {
+          provider: 'base64',
+          uri: base64PDFString,
+          fileName: 'report.pdf',
+        },
+      ],
+      issuer: {
+        country: 'GB',
+      },
+      propertiesSchema: {},
+      properties: {},
+    };
+
+    contextClone.documents = [...contextClone.documents, pdfDocument];
+
+    let persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
+      [pdfDocument] as unknown as TDocumentsWithoutPageType,
+      contextClone.entity.id || context.entity.ballerineEntityId,
+      projectId,
+      customer.name,
     );
 
-    return data;
+    let pdfReportBallerineFileId = '';
+
+    //@ts-ignore
+    persistedDocuments = persistedDocuments.map(document => {
+      const isPDFReportDocument = document.pages.find(
+        //@ts-ignore
+        documentPage => documentPage.uri === base64PDFString,
+      );
+
+      if (isPDFReportDocument) {
+        return {
+          ...document,
+          pages: document.pages.map(documentPage => {
+            pdfReportBallerineFileId = documentPage.ballerineFileId as string;
+
+            //@ts-ignore
+            if (documentPage.uri === base64PDFString) {
+              return {
+                //@ts-ignore
+                type: documentPage.type,
+                ballerineFileId: documentPage.ballerineFileId,
+                fileName: documentPage.fileName,
+              };
+            }
+          }),
+        };
+      }
+
+      return document;
+    });
+
+    return {
+      documents: persistedDocuments,
+      pdfReportBallerineFileId,
+    };
   }
+
   async mapCallbackDataToIndividual(
     data: AnyRecord,
     workflowRuntime: WorkflowRuntimeData,
@@ -62,14 +269,14 @@ export class HookCallbackHandlerService {
     currentProjectId: TProjectId,
   ) {
     const attributePath = resultDestinationPath.split('.');
-    const context = workflowRuntime.context;
+    const context = JSON.parse(JSON.stringify(workflowRuntime.context));
     const kycDocument = data.document as AnyRecord;
     const entity = this.formatEntityData(data);
     const issuer = this.formatIssuerData(kycDocument);
     const documentProperties = this.formatDocumentProperties(data, kycDocument);
     const pages = await this.formatPages(data);
     const decision = this.formatDecision(data);
-    const documentCategory = kycDocument.type as string;
+    const documentCategory = (kycDocument.type as AnyRecord)?.value as string;
     const documents = this.formatDocuments(
       documentCategory,
       pages,
@@ -80,6 +287,7 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
     const persistedDocuments = await this.workflowService.copyDocumentsPagesFilesAndCreate(
       documents as TDocumentsWithoutPageType,
+      // @ts-expect-error - we don't validate `context` is an object
       context.entity.id || context.entity.ballerineEntityId,
       currentProjectId,
       customer.name,
@@ -91,13 +299,12 @@ export class HookCallbackHandlerService {
       aml: data.aml,
     };
 
+    // @ts-expect-error - we don't validate `context` is an object
     this.setNestedProperty(context, attributePath, result);
+    // @ts-expect-error - we don't validate `context` is an object
     context.documents = persistedDocuments;
-    await this.workflowService.updateWorkflowRuntimeData(
-      workflowRuntime.id,
-      { context: context },
-      currentProjectId,
-    );
+
+    return context;
   }
 
   private formatDocuments(
@@ -114,7 +321,7 @@ export class HookCallbackHandlerService {
         pages: pages,
         issuer: issuer,
         properties: documentProperties,
-        issuingVersion: kycDocument['issueNumber'],
+        issuingVersion: kycDocument['issueNumber'] || 1,
       },
     ];
 
@@ -122,30 +329,43 @@ export class HookCallbackHandlerService {
   }
 
   private formatDecision(data: AnyRecord) {
+    const insights = data.insights as AnyRecord[]; // Explicitly type 'insights' as 'AnyRecord[]'
+
     return {
       status: data.decision,
       decisionReason: data.reason,
-      riskLabels: data.riskLabels,
+      decisionScore: data.decisionScore,
+      riskLabels:
+        insights &&
+        insights.map &&
+        insights
+          .map((insight: AnyRecord) => {
+            if (insight.result === 'yes') {
+              return insight.label;
+            }
+          })
+          .filter((x: any) => Boolean(x))
+          .join(', '),
     };
   }
 
   private formatEntityData(data: AnyRecord) {
     const person = data.person as AnyRecord;
     const additionalInfo = {
-      gender: person['gender'],
-      nationality: person['nationality'],
-      yearOfBirth: person['yearOfBirth'],
-      placeOfBirth: person['placeOfBirth'],
-      pepSanctionMatch: person['pepSanctionMatch'],
-      addresses: person['addresses'],
+      gender: (person['gender'] as any)?.value,
+      nationality: (person['nationality'] as any)?.value,
+      // yearOfBirth: person['yearOfBirth'],
+      placeOfBirth: (person['placeOfBirth'] as any)?.value,
+      // pepSanctionMatch: person['pepSanctionMatch'],
+      addresses: (person['addresses'] as any)?.value,
     };
 
     const entityInformation = {
-      nationalId: person['idNumber'],
-      firstName: person['firstName'],
-      lastName: person['lastName'],
-      dateOfBirth: person['dateOfBirth'],
-      email: person['email'],
+      // nationalId: person['idNumber'],
+      firstName: (person['firstName'] as any)?.value,
+      lastName: (person['lastName'] as any)?.value,
+      dateOfBirth: (person['dateOfBirth'] as any)?.value,
+      // email: person['email'],
       additionalInfo: additionalInfo,
     };
     const entity = {
@@ -158,16 +378,17 @@ export class HookCallbackHandlerService {
 
   private formatIssuerData(kycDocument: AnyRecord) {
     const additionalIssuerInfor = {
-      validFrom: kycDocument['validFrom'],
-      validUntil: kycDocument['validUntil'],
-      firstIssue: kycDocument['firstIssue'],
+      validFrom: (kycDocument['validFrom'] as any)?.value,
+      validUntil: (kycDocument['validUntil'] as any)?.value, // Add type assertion here
+      firstIssue: (kycDocument['firstIssue'] as any)?.value,
     };
     const issuer = {
       additionalInfo: additionalIssuerInfor,
-      country: kycDocument['country'],
-      name: kycDocument['issuedBy'],
-      city: kycDocument['placeOfIssue'],
+      country: (kycDocument['country'] as any)?.value,
+      // name: kycDocument['issuedBy'],
+      city: (kycDocument['placeOfIssue'] as any)?.value,
     };
+
     return issuer;
   }
 
@@ -201,12 +422,13 @@ export class HookCallbackHandlerService {
   private formatDocumentProperties(data: AnyRecord, kycDocument: AnyRecord) {
     const person = data.person as AnyRecord;
     const properties = {
-      expiryDate: kycDocument['validUntil'],
-      idNumber: person['idNumber'],
-      validFrom: kycDocument['validFrom'],
-      validUntil: kycDocument['validUntil'],
-      firstIssue: kycDocument['firstIssue'],
+      expiryDate: (kycDocument['validUntil'] as any)?.value,
+      idNumber: (person['idNumber'] as any)?.value,
+      validFrom: (kycDocument['validFrom'] as any)?.value,
+      validUntil: (kycDocument['validUntil'] as any)?.value,
+      firstIssue: (kycDocument['firstIssue'] as any)?.value,
     };
+
     return properties;
   }
 
@@ -226,5 +448,42 @@ export class HookCallbackHandlerService {
         current = current[path[i] as keyof typeof current];
       }
     }
+  }
+
+  private async updateEndUserWithAmlData({
+    sessionId,
+    endUserId,
+    amlHits,
+    withActiveMonitoring,
+    projectId,
+  }: {
+    sessionId: string;
+    endUserId: string;
+    amlHits: unknown[];
+    withActiveMonitoring: boolean;
+    projectId: TProjectId;
+  }) {
+    const endUser = await this.endUserService.getById(endUserId, {}, [projectId]);
+
+    return await this.endUserService.updateById(endUserId, {
+      data: {
+        amlHits: amlHits as InputJsonValue,
+        ...(withActiveMonitoring
+          ? {
+              activeMonitorings: [
+                ...(endUser.activeMonitorings as z.infer<typeof EndUserActiveMonitoringsSchema>),
+                {
+                  type: 'aml',
+                  vendor: 'veriff',
+                  monitoredUntil: new Date(
+                    new Date().setFullYear(new Date().getFullYear() + 3),
+                  ).toISOString(),
+                  sessionId,
+                },
+              ],
+            }
+          : {}),
+      },
+    });
   }
 }

@@ -31,7 +31,7 @@ export const useRegistryInfoBlock = ({ pluginsOutputKeys, filteredPluginsOutput,
                   })
                   .addCell({
                     type: 'subheading',
-                    value: 'Registry-provided data',
+                    value: 'Registry-Provided Data',
                   })
                   .build()
                   .flat(1),

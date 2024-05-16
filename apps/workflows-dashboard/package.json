@@ -1,7 +1,7 @@
 {
   "name": "@ballerine/workflows-dashboard",
   "private": false,
-  "version": "0.1.11",
+  "version": "0.2.2",
   "type": "module",
   "scripts": {
     "spellcheck": "cspell \"*\"",
@@ -53,8 +53,8 @@
     "zod": "^3.22.3"
   },
   "devDependencies": {
-    "@ballerine/config": "^1.0.3",
-    "@ballerine/eslint-config-react": "^1.0.4",
+    "@ballerine/config": "^1.1.2",
+    "@ballerine/eslint-config-react": "^2.0.2",
     "@cspell/cspell-types": "^6.31.1",
     "@types/axios": "^0.14.0",
     "@types/classnames": "^2.3.1",
@@ -79,7 +79,7 @@
     "tailwindcss": "^3.2.7",
     "ts-jest": "^29.1.0",
     "typescript": "^5.0.2",
-    "vite": "^4.3.9",
+    "vite": "^4.5.3",
     "vite-plugin-checker": "^0.6.1",
     "vite-tsconfig-paths": "^4.0.7"
   }

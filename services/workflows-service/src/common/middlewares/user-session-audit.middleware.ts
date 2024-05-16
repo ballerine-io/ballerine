@@ -18,6 +18,7 @@ export class UserSessionAuditMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: (error?: any) => void) {
     const authenticatedEntity = req.user as unknown as AuthenticatedEntity;
     const user = authenticatedEntity?.user;
+
     if (req.session && user) {
       if (this.isUpdateCanBePerformed(user.lastActiveAt!)) {
         await this.trackAuthorizedAction(user, new Date());

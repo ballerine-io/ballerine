@@ -1,50 +1,52 @@
+import { defaultPrismaTransactionOptions, isRecordNotFoundError } from '@/prisma/prisma.util';
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
-import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
 import { NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
-import * as nestAccessControl from 'nest-access-control';
+// import * as nestAccessControl from 'nest-access-control';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { Public } from '@/common/decorators/public.decorator';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
+import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
+import { env } from '@/env';
+import { PrismaService } from '@/prisma/prisma.service';
+import type { TProjectId, TProjectIds } from '@/types';
+import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
+import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
+import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
+import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
+import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
+import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
+import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
+import { plainToClass } from 'class-transformer';
+import type { Response } from 'express';
 import * as errors from '../errors';
-import { IntentDto } from './dtos/intent';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
+import { WorkflowRunDto } from './dtos/workflow-run';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
-import type { Response } from 'express';
-import { WorkflowRunDto } from './dtos/workflow-run';
-import { plainToClass } from 'class-transformer';
-import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
-import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
-import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
-import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
-import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
-import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
-import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import type { TProjectId, TProjectIds } from '@/types';
-import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { Public } from '@/common/decorators/public.decorator';
-import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
-import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
-import { env } from '@/env';
 
 @swagger.ApiBearerAuth()
-@swagger.ApiTags('external/workflows')
+@swagger.ApiTags('Workflows')
 @common.Controller('external/workflows')
 export class WorkflowControllerExternal {
   constructor(
     protected readonly service: WorkflowService,
     protected readonly normalizeService: HookCallbackHandlerService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    // @nestAccessControl.InjectRolesBuilder()
+    // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     private readonly workflowTokenService: WorkflowTokenService,
     private readonly workflowDefinitionService: WorkflowDefinitionService,
+    private readonly prismaService: PrismaService,
   ) {}
 
   // GET /workflows
@@ -94,6 +96,7 @@ export class WorkflowControllerExternal {
       {},
       projectIds,
     );
+
     if (!workflowRuntimeData) {
       throw new NotFoundException(`No resource with id [${params.id}] was found`);
     }
@@ -127,31 +130,9 @@ export class WorkflowControllerExternal {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
-  }
-
-  // POST /intent
-  @common.Post('/intent')
-  @swagger.ApiOkResponse()
-  @common.HttpCode(200)
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  @UseCustomerAuthGuard()
-  async intent(
-    @common.Body() { intentName, entityId }: IntentDto,
-    @ProjectIds() projectIds: TProjectIds,
-    @CurrentProject() currentProjectId: TProjectId,
-  ) {
-    const entityType = intentName === 'kycSignup' ? 'endUser' : 'business';
-
-    // @TODO: Rename to intent or getRunnableWorkflowDataByIntent?
-    return await this.service.resolveIntent(
-      intentName,
-      entityId,
-      entityType,
-      projectIds,
-      currentProjectId,
-    );
   }
 
   @common.Post('/run')
@@ -174,6 +155,7 @@ export class WorkflowControllerExternal {
 
     const hasSalesforceRecord =
       Boolean(body.salesforceObjectName) && Boolean(body.salesforceRecordId);
+
     const latestDefinitionVersion = await this.workflowDefinitionService.getLatestVersion(
       workflowId,
       projectIds,
@@ -318,28 +300,50 @@ export class WorkflowControllerExternal {
     @common.Body() hookResponse: any,
   ): Promise<void> {
     try {
-      const workflowRuntime = await this.service.getWorkflowRuntimeDataByIdUnscoped(params.id);
-      await this.normalizeService.handleHookResponse({
-        workflowRuntime: workflowRuntime,
-        data: hookResponse,
-        resultDestinationPath: query.resultDestination || 'hookResponse',
-        processName: query.processName,
-        projectIds: [workflowRuntime.projectId],
-        currentProjectId: workflowRuntime.projectId,
-      });
-
-      await this.service.event(
-        {
+      await this.prismaService.$transaction(async transaction => {
+        const workflowRuntime = await this.service.getWorkflowRuntimeDataByIdAndLockUnscoped({
           id: params.id,
-          name: params.event,
-        },
-        [workflowRuntime.projectId],
-        workflowRuntime.projectId,
-      );
+          transaction,
+        });
+
+        const context = await this.normalizeService.handleHookResponse({
+          workflowRuntime: workflowRuntime,
+          data: hookResponse,
+          resultDestinationPath: query.resultDestination || 'hookResponse',
+          processName: query.processName,
+          projectIds: [workflowRuntime.projectId],
+          currentProjectId: workflowRuntime.projectId,
+        });
+
+        await this.service.event(
+          {
+            id: params.id,
+            name: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+            payload: {
+              newContext: context,
+              arrayMergeOption: ARRAY_MERGE_OPTION.REPLACE,
+            },
+          },
+          [workflowRuntime.projectId],
+          workflowRuntime.projectId,
+          transaction,
+        );
+
+        await this.service.event(
+          {
+            id: params.id,
+            name: params.event,
+          },
+          [workflowRuntime.projectId],
+          workflowRuntime.projectId,
+          transaction,
+        );
+      }, defaultPrismaTransactionOptions);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new errors.NotFoundException(`No resource was found for ${JSON.stringify(params)}`);
       }
+
       throw error;
     }
 

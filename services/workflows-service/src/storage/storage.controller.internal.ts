@@ -4,7 +4,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import type { Response } from 'express';
-import * as nestAccessControl from 'nest-access-control';
+// import * as nestAccessControl from 'nest-access-control';
 import { StorageService } from './storage.service';
 import * as errors from '../errors';
 import { fileFilter } from './file-filter';
@@ -29,13 +29,14 @@ import mime from 'mime';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 
 // Temporarily identical to StorageControllerExternal
+@swagger.ApiExcludeController()
 @swagger.ApiTags('Storage')
 @common.Controller('internal/storage')
 export class StorageControllerInternal {
   constructor(
     protected readonly service: StorageService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    // @nestAccessControl.InjectRolesBuilder()
+    // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     protected readonly logger: AppLoggerService,
     protected readonly httpService: HttpService,
   ) {}
@@ -124,7 +125,6 @@ export class StorageControllerInternal {
       persistedFile.mimeType ||
       mime.getType(persistedFile.fileName || persistedFile.uri || '') ||
       undefined;
-    const root = path.parse(os.homedir()).root;
 
     if (persistedFile.fileNameInBucket && format === 'signed-url') {
       const signedUrl = await createPresignedUrlWithClient({
@@ -132,6 +132,7 @@ export class StorageControllerInternal {
         fileNameInBucket: persistedFile.fileNameInBucket,
         mimeType,
       });
+
       return res.json({ signedUrl, mimeType });
     }
 
@@ -149,10 +150,18 @@ export class StorageControllerInternal {
     if (!isBase64(persistedFile.uri) && this._isUri(persistedFile)) {
       const downloadFilePath = await this.__downloadFileFromRemote(persistedFile);
 
-      return res.sendFile(downloadFilePath, { root: root });
+      return res.sendFile(this.__getAbsoluteFilePAth(downloadFilePath));
     }
 
-    return res.sendFile(persistedFile.fileNameOnDisk, { root: root });
+    return res.sendFile(this.__getAbsoluteFilePAth(persistedFile.fileNameOnDisk));
+  }
+
+  private __getAbsoluteFilePAth(filePath: string) {
+    if (!path.isAbsolute(filePath)) return filePath;
+
+    const rootDir = path.parse(os.homedir()).root;
+
+    return path.join(rootDir, filePath);
   }
 
   private async __downloadFileFromRemote(persistedFile: File) {

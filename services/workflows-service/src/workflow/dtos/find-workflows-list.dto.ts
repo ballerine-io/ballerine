@@ -1,14 +1,7 @@
+import { PageDto, sortDirections, validateOrderBy } from '@/common/dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { WorkflowRuntimeDataStatus } from '@prisma/client';
 import { z } from 'zod';
-
-class PageDto {
-  @ApiProperty()
-  number!: number;
-
-  @ApiProperty()
-  size!: number;
-}
 
 class FilterDto {
   @ApiProperty()
@@ -41,24 +34,6 @@ export class FindWorkflowsListDto {
   filter?: FilterDto;
 }
 
-const validateOrderBy = (value: unknown, validColumns: readonly string[]) => {
-  if (typeof value !== 'string') {
-    throw new Error('Invalid orderBy');
-  }
-
-  const [column = '', direction = ''] = value.split(':');
-
-  if (!validColumns.includes(column)) {
-    throw new Error(`Invalid column: ${column}`);
-  }
-
-  // @ts-expect-error
-  if (!sortDirections.includes(direction)) {
-    throw new Error(`Invalid direction: ${direction}`);
-  }
-
-  return value;
-};
 export const FindWorkflowsListSchema = z.object({
   filterId: z.string(),
   orderBy: z.string(),
@@ -78,7 +53,6 @@ export const FindWorkflowsListSchema = z.object({
     .optional(),
 });
 
-const sortDirections = ['asc', 'desc'] as const;
 const sortableColumnsIndividuals = ['createdAt', 'firstName', 'lastName', 'email'] as const;
 const sortableColumnsBusinesses = ['createdAt', 'companyName'] as const;
 

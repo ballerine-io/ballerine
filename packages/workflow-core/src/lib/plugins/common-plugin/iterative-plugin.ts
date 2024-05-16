@@ -1,6 +1,7 @@
 import { TContext, Transformer, Transformers } from '../../utils';
 import { IterativePluginParams } from './types';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
+import { logger } from '../../logger';
 
 export class IterativePlugin {
   public static pluginType = 'iterative';
@@ -18,43 +19,47 @@ export class IterativePlugin {
     this.action = pluginParams.action;
     this.successAction = pluginParams.successAction;
     this.errorAction = pluginParams.errorAction;
-    console.log(`Constructed IterativePlugin with params: ${JSON.stringify(pluginParams)}`);
+
+    logger.log(`Constructed IterativePlugin`, { ...pluginParams });
   }
 
-  async invoke(context: TContext, config: unknown) {
-    console.log('invoke() method called');
+  async invoke(context: TContext) {
+    logger.log('invoke() method called');
 
-    const iterationParams = await this.transformData(this.iterateOn, {
-      ...context,
-      workflowRuntimeConfig: config,
-    });
+    const iterationParams = await this.transformData(this.iterateOn, context);
 
     if (!Array.isArray(iterationParams)) {
-      console.error('Iterative plugin could not find iterate on param');
-      return this.composeErrorResponse('Iterative plugin could not find iterate on param');
+      logger.error('Iterative plugin could not find iterate on param');
+      // return this.composeErrorResponse('Iterative plugin could not find iterate on param');
+      return {
+        callbackAction: this.successAction,
+        warnnings: ['Iterative plugin could not find iterate on param'],
+      };
     }
 
     for (const param of iterationParams) {
-      console.log(`Performing action for param: ${JSON.stringify(param)}`);
+      logger.log(`Performing action for param`, { param });
       await this.action(param as TContext);
     }
 
-    console.log('All actions completed successfully');
+    logger.log('All actions completed successfully');
+
     return { callbackAction: this.successAction };
   }
 
   async transformData(transformers: Transformers, record: AnyRecord) {
-    console.log('transformData() method called');
+    logger.log('transformData() method called');
     let mutatedRecord = record;
 
     for (const transformer of transformers) {
       mutatedRecord = await this.transformByTransformer(transformer, mutatedRecord);
     }
+
     return mutatedRecord;
   }
 
   async transformByTransformer(transformer: Transformer, record: AnyRecord) {
-    console.log(`transformByTransformer() called for mapping: ${transformer.mapping}`);
+    logger.log(`transformByTransformer() called for mapping`, { mapping: transformer.mapping });
 
     try {
       return (await transformer.transform(record, { input: 'json', output: 'json' })) as AnyRecord;
@@ -63,13 +68,17 @@ export class IterativePlugin {
         isErrorWithMessage(error) ? error.message : ''
       } for transformer mapping: ${transformer.mapping}`;
 
-      console.error(errorMessage);
+      logger.error('Error transformating data', {
+        mapping: transformer.mapping,
+        ...(isErrorWithMessage(error) && { errorMessage: error.message }),
+      });
       throw new Error(errorMessage);
     }
   }
 
   composeErrorResponse(errorMessage: string) {
-    console.error(`Composing error response with message: ${errorMessage}`);
+    logger.error(`Composing error response with message`, { errorMessage });
+
     return { callbackAction: this.errorAction, error: errorMessage };
   }
 }

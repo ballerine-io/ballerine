@@ -4,7 +4,9 @@ import type { Request, Response } from 'express';
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import { ProjectIds } from '@/common/decorators/project-ids.decorator';
 import type { TProjectIds } from '@/types';
+import { ApiExcludeController } from '@nestjs/swagger';
 
+@ApiExcludeController()
 @common.Controller('salesforce')
 export class SalesforceController {
   constructor(public salesforceService: SalesforceService) {}

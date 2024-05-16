@@ -187,6 +187,18 @@ const complexFormScheme: RJSFSchema = {
         type: 'string',
       },
     },
+    favoriteColor: {
+      type: 'string',
+      title: 'Favorite Color',
+      oneOf: [
+        {
+          title: 'Yellow',
+          const: 'yellow',
+        },
+        { title: 'Blue', const: 'blue' },
+        { title: 'Purple', const: 'purple' },
+      ],
+    },
     childrens: {
       title: 'Childrens',
       type: 'array',
@@ -246,6 +258,9 @@ const complexFormUISchema = {
       { title: 'Watermelon', const: 'watermelon' },
       { title: 'Kiwi', const: 'kiwi' },
     ],
+  },
+  favoriteColor: {
+    'ui:field': 'RadioInput',
   },
   childrens: {
     addText: 'Add Children',
@@ -446,6 +461,18 @@ export const CustomSubmitButtonsLayout = {
       uiSchema={customSubmitLayoutUISchema}
       onSubmit={() => {}}
       disabled
+    />
+  ),
+};
+
+export const WithTestId = {
+  render: () => (
+    <DynamicForm
+      schema={customSubmitLayoutSchema}
+      uiSchema={customSubmitLayoutUISchema}
+      onSubmit={() => {}}
+      disabled
+      testId="rjsf-form-test-id"
     />
   ),
 };

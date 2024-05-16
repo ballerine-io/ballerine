@@ -1,5 +1,18 @@
-import { toTitleCase } from 'string-ts';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { ctw } from '@/common/utils/ctw/ctw';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
+import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
+import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
+import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { checkCanApprove } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-approve/check-can-approve';
+import { checkCanReject } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-reject/check-can-reject';
+import { checkCanRevision } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-revision/check-can-revision';
+import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
+import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import {
   composePickableCategoryType,
@@ -7,26 +20,14 @@ import {
   getIsEditable,
   isExistingSchemaForDocument,
 } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
+import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
+import { CommonWorkflowStates, StateTag } from '@ballerine/common';
+import { Button } from '@ballerine/ui';
+import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback, useMemo } from 'react';
-import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
-import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
-import { getPostRemoveDecisionEventName } from '@/pages/Entity/get-post-remove-decision-event-name';
-import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
-import { CommonWorkflowStates, StateTag } from '@ballerine/common';
-import { X } from 'lucide-react';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
-import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
-import { getPostDecisionEventName } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
-import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
-import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
-import { useRejectTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRejectTaskByIdMutation/useRejectTaskByIdMutation';
-import { checkCanRevision } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-revision/check-can-revision';
-import { checkCanReject } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-reject/check-can-reject';
-import { checkCanApprove } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-approve/check-can-approve';
+import { toTitleCase } from 'string-ts';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -67,7 +68,6 @@ export const useDocumentBlocks = ({
 }) => {
   const issuerCountryCode = extractCountryCodeFromWorkflow(workflow);
   const documentsSchemas = getDocumentsSchemas(issuerCountryCode, workflow);
-  const postDecisionEventName = getPostDecisionEventName(workflow);
   const documents = useMemo(() => selectWorkflowDocuments(workflow), [workflow]);
   const documentPages = useMemo(
     () => documents.flatMap(({ pages }) => pages?.map(({ ballerineFileId }) => ballerineFileId)),
@@ -77,11 +77,8 @@ export const useDocumentBlocks = ({
   const documentPagesResults = useDocumentPageImages(documents, storageFilesQueryResult);
 
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
-    useApproveTaskByIdMutation(workflow?.id, postDecisionEventName);
-  const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(
-    workflow?.id,
-    postDecisionEventName,
-  );
+    useApproveTaskByIdMutation(workflow?.id);
+  const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(workflow?.id);
   const onMutateApproveTaskById = useCallback(
     ({
         taskId,
@@ -94,11 +91,7 @@ export const useDocumentBlocks = ({
         mutateApproveTaskById({ documentId: taskId, contextUpdateMethod }),
     [mutateApproveTaskById],
   );
-  const postRemoveDecisionEventName = getPostRemoveDecisionEventName(workflow);
-  const { mutate: onMutateRemoveDecisionById } = useRemoveDecisionTaskByIdMutation(
-    workflow?.id,
-    postRemoveDecisionEventName,
-  );
+  const { mutate: onMutateRemoveDecisionById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
 
   return (
     documents?.flatMap(
@@ -252,17 +245,47 @@ export const useDocumentBlocks = ({
               },
             })
             .addCell({
-              type: 'callToAction',
+              type: 'dialog',
               value: {
-                text: 'Approve',
-                onClick: onMutateApproveTaskById({
-                  taskId: id,
-                  contextUpdateMethod: 'base',
-                }),
+                trigger: (
+                  <MotionButton
+                    {...motionButtonProps}
+                    animate={{
+                      ...motionButtonProps.animate,
+                      opacity: !canApprove ? 0.5 : motionButtonProps.animate.opacity,
+                    }}
+                    disabled={!canApprove}
+                    size={'wide'}
+                    variant={'success'}
+                  >
+                    Approve
+                  </MotionButton>
+                ),
+                title: `Approval confirmation`,
+                description: <p className={`text-sm`}>Are you sure you want to approve?</p>,
+                close: (
+                  <div className={`space-x-2`}>
+                    <Button type={'button'} variant={`secondary`}>
+                      Cancel
+                    </Button>
+                    <Button
+                      disabled={!canApprove}
+                      onClick={onMutateApproveTaskById({
+                        taskId: id,
+                        contextUpdateMethod: 'base',
+                      })}
+                    >
+                      Approve
+                    </Button>
+                  </div>
+                ),
                 props: {
-                  disabled: !canApprove,
-                  size: 'wide',
-                  variant: 'success',
+                  content: {
+                    className: 'mb-96',
+                  },
+                  title: {
+                    className: `text-2xl`,
+                  },
                 },
               },
             })

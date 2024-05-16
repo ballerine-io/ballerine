@@ -16,6 +16,7 @@ const entitySchema = Type.Object(
 );
 
 export const defaultContextSchema = Type.Object({
+  aml: Type.Optional(Type.Unknown()),
   entity: Type.Union([
     Type.Composite([entitySchema, Type.Object({ id: Type.String() })]),
     Type.Composite([entitySchema, Type.Object({ ballerineEntityId: Type.String() })]),
@@ -75,19 +76,21 @@ export const defaultContextSchema = Type.Object({
                   Type.String(),
                   Type.String({
                     enum: [
-                      'Wrong document',
-                      'Fake document',
+                      'Wrong category',
                       'Spam',
                       'Ownership mismatch - Name',
                       'Ownership mismatch - National ID',
-                      'Unknown document type',
                       'Bad image quality',
                       'Missing page',
                       'Invalid document',
                       'Expired document',
-                      'Unreadable document',
+                      'Password protected',
                       'Blurry image',
+                      'Short statement period',
+                      'Document out of range',
+                      'Outside restricted area',
                       'Other',
+                      'Partial information',
                     ],
                   }),
                 ]),
@@ -127,7 +130,9 @@ export const defaultContextSchema = Type.Object({
             Type.Object(
               {
                 ballerineFileId: Type.Optional(Type.String()),
-                provider: Type.String({ enum: ['gcs', 'http', 'stream', 'file-system', 'ftp'] }),
+                provider: Type.String({
+                  enum: ['gcs', 'http', 'stream', 'file-system', 'ftp', 'base64'],
+                }),
                 uri: Type.String({ format: 'uri' }),
                 type: Type.Optional(
                   Type.String({

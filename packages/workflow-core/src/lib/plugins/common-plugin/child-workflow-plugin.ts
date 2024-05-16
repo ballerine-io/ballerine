@@ -25,21 +25,45 @@ export class ChildWorkflowPlugin {
   }
 
   async invoke(context: TContext) {
+    console.log(`Invoking child workflow plugin`, {
+      name: this.name,
+      definitionId: this.definitionId,
+      parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
+    });
     const childWorkflowContext = await this.transformData(this.transformers || [], context);
 
-    void this.action({
-      parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
-      definitionId: this.definitionId,
-      initOptions: {
-        context: childWorkflowContext,
-        event: this.initEvent,
-        config: {
-          language: this.parentWorkflowRuntimeConfig.language,
+    try {
+      await this.action({
+        parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
+        definitionId: this.definitionId,
+        initOptions: {
+          context: childWorkflowContext,
+          event: this.initEvent,
+          config: {
+            language: this.parentWorkflowRuntimeConfig.language,
+          },
         },
-      },
-    });
-
-    return Promise.resolve();
+      });
+      console.log(`Child workflow plugin invoked`, {
+        name: this.name,
+        definitionId: this.definitionId,
+        parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
+      });
+    } catch (error) {
+      console.error(`Error occurred while invoking child workflow plugin`, {
+        error,
+        name: this.name,
+        definitionId: this.definitionId,
+        parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
+      });
+    } finally {
+      console.log(`Child workflow plugin completed`, {
+        name: this.name,
+        definitionId: this.definitionId,
+        parentWorkflowRuntimeId: this.parentWorkflowRuntimeId,
+      });
+      return Promise.resolve();
+    }
   }
 
   async transformData(transformers: Transformers, record: AnyRecord) {

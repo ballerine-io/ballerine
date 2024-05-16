@@ -5,7 +5,7 @@ import { fetchServiceFromModule, initiateNestApp } from '@/test/helpers/nest-app
 import { EndUserControllerExternal } from '@/end-user/end-user.controller.external';
 import { faker } from '@faker-js/faker';
 import { EndUserService } from '@/end-user/end-user.service';
-import { PrismaModule } from 'nestjs-prisma';
+import { PrismaModule } from '@/prisma/prisma.module';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { FilterService } from '@/filter/filter.service';
 import { FilterRepository } from '@/filter/filter.repository';
@@ -34,6 +34,9 @@ import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.re
 import { ClsModule } from 'nestjs-cls';
 import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
+import { BusinessService } from '@/business/business.service';
+
+const API_KEY = faker.datatype.uuid();
 
 describe('#EndUserControllerExternal', () => {
   let app: INestApplication;
@@ -57,6 +60,7 @@ describe('#EndUserControllerExternal', () => {
       StorageService,
       WorkflowEventEmitterService,
       BusinessRepository,
+      BusinessService,
       WorkflowDefinitionRepository,
       WorkflowRuntimeDataRepository,
       WorkflowService,
@@ -91,8 +95,8 @@ describe('#EndUserControllerExternal', () => {
 
     customer = await createCustomer(
       await app.get(PrismaService),
-      'someRandomId',
-      'secret3',
+      faker.datatype.uuid(),
+      API_KEY,
       '',
       '',
       'webhook-shared-secret',
@@ -103,8 +107,6 @@ describe('#EndUserControllerExternal', () => {
   describe('POST /end-user', () => {
     it('creates an end-user', async () => {
       expect(await endUserService.list({}, [project.id])).toHaveLength(0);
-
-      const apiKey = (customer.authenticationConfiguration as { authValue: string }).authValue;
       const response = await request(app.getHttpServer())
         .post('/external/end-users')
         .send({
@@ -114,7 +116,7 @@ describe('#EndUserControllerExternal', () => {
           firstName: 'test',
           lastName: 'lastName',
         })
-        .set('authorization', `Bearer ${apiKey}`);
+        .set('authorization', `Bearer ${API_KEY}`);
 
       if (response.status !== 201) {
         console.log(response.body);

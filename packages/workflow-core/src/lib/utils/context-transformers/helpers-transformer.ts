@@ -3,8 +3,15 @@ import { TContext } from '../types';
 import { search } from 'jmespath';
 import { AnyRecord } from '@ballerine/common';
 import merge from 'lodash.merge';
+import { logger } from '../../logger';
 
-export type THelperMethod = 'regex' | 'imageUrlToBase64' | 'remove' | 'mergeArrayEachItemWithValue';
+export type THelperMethod =
+  | 'regex'
+  | 'imageUrlToBase64'
+  | 'remove'
+  | 'mergeArrayEachItemWithValue'
+  | 'omit'
+  | 'setTimeToRecordUTC';
 export class HelpersTransformer extends BaseContextTransformer {
   name = 'helpers-transformer';
   mapping: THelperFormatingLogic;
@@ -36,24 +43,24 @@ export class HelpersTransformer extends BaseContextTransformer {
 
   mergeArrayEachItemWithValue(
     context: Parameters<typeof this.transform>[0],
-    attribute: Array<AnyRecord>,
+    attribute: AnyRecord[],
     _value: string,
     options: { mapJmespath: string; mergeWithJmespath: string },
   ) {
     const jmespathResult = search(context, options.mapJmespath);
     const mergeWithResult = search(context, options.mergeWithJmespath);
+
     if (!jmespathResult || !mergeWithResult) {
-      console.warn(
-        'mergeArrayEachItemWithValue: jmespathResult or mergeWithResult is null',
-        options.mergeWithJmespath,
-        options.mapJmespath,
-      );
+      logger.warn('mergeArrayEachItemWithValue: jmespathResult or mergeWithResult is null', {
+        mergeWithJmespath: options.mergeWithJmespath,
+        mapJmespath: options.mapJmespath,
+      });
 
       return attribute;
     }
 
     if (jmespathResult.length == 0) {
-      console.log('jmespathResult: is 0', options.mapJmespath);
+      logger.log('jmespathResult: is 0', { mapJmespath: options.mapJmespath });
 
       return attribute;
     }
@@ -61,8 +68,17 @@ export class HelpersTransformer extends BaseContextTransformer {
     return jmespathResult.map((item: AnyRecord) => merge(item, mergeWithResult));
   }
 
-  remove(..._args: Array<any>) {
+  remove(..._args: any[]) {
     return undefined;
+  }
+
+  setTimeToRecordUTC(
+    _context: Parameters<typeof this.transform>[0],
+    attribute: string,
+    value: string,
+    _options: unknown,
+  ) {
+    return new Date().getTime();
   }
 
   regex(
@@ -93,14 +109,15 @@ export class HelpersTransformer extends BaseContextTransformer {
     return base64Prefix + base64Image;
   }
 
-  getNestedProperty(record: Record<string, any>, path: Array<string>) {
+  getNestedProperty(record: Record<string, any>, path: string[]) {
     return path.reduce((prev, curr) => {
       return prev ? prev[curr] : null;
     }, record);
   }
 
-  setNestedProperty(obj: Record<string, any>, path: Array<string>, value: unknown) {
+  setNestedProperty(obj: Record<string, any>, path: string[], value: unknown) {
     let current = obj;
+
     for (let i = 0; i < path.length; i++) {
       if (i === path.length - 1) {
         current[path[i] as keyof typeof current] = value;
@@ -110,5 +127,15 @@ export class HelpersTransformer extends BaseContextTransformer {
         current = current[path[i] as keyof typeof current];
       }
     }
+  }
+
+  omit(_context: TContext, attribute: AnyRecord, value: string[]) {
+    const result = structuredClone(attribute);
+
+    for (const key of value) {
+      delete result[key];
+    }
+
+    return result;
   }
 }

@@ -1,5 +1,6 @@
+import { CustomerSubscriptionSchema } from './schemas/zod-schemas';
 import * as common from '@nestjs/common';
-import { Request, UseGuards } from '@nestjs/common';
+import { Request, UseGuards, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { CustomerService } from '@/customer/customer.service';
 import { Customer, Prisma } from '@prisma/client';
@@ -10,8 +11,12 @@ import { AuthenticatedEntity } from '@/types';
 import { CustomerAuthGuard } from '@/common/guards/customer-auth.guard';
 import { createDemoMockData } from '../../scripts/workflows/workflow-runtime';
 import { PrismaService } from '@/prisma/prisma.service';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
+import { CustomerSubscriptionDto } from './dtos/customer-config-create.dto';
+import { ValidationError } from '@/errors';
 
-@swagger.ApiTags('external/customers')
+@swagger.ApiTags('Customers')
+@swagger.ApiExcludeController()
 @common.Controller('external/customers')
 export class CustomerControllerExternal {
   constructor(
@@ -25,6 +30,7 @@ export class CustomerControllerExternal {
   @swagger.ApiForbiddenResponse()
   async create(@common.Body() customerCreateModel: CustomerCreateDto) {
     const { projectName, ...customer } = customerCreateModel;
+
     if (projectName) {
       (customer as Prisma.CustomerCreateInput).projects = {
         create: { name: customerCreateModel.projectName! },
@@ -63,5 +69,24 @@ export class CustomerControllerExternal {
   @swagger.ApiForbiddenResponse()
   find(@Request() req: any): Partial<Customer> {
     return (req.user as AuthenticatedEntity).customer!;
+  }
+
+  @common.Post('subscriptions')
+  @swagger.ApiOkResponse({ type: CustomerSubscriptionDto })
+  @swagger.ApiForbiddenResponse()
+  @swagger.ApiBadRequestResponse({ type: ValidationError })
+  @UseGuards(CustomerAuthGuard)
+  @UsePipes(new ZodValidationPipe(CustomerSubscriptionSchema, 'body'))
+  async createSubscriptions(
+    @common.Body() data: CustomerSubscriptionDto,
+    @Request() req: any,
+  ): Promise<Pick<Customer, 'subscriptions'>> {
+    const customer = (req.user as AuthenticatedEntity).customer!;
+
+    const { subscriptions, ...updatedCustomer } = await this.service.updateById(customer.id!, {
+      data,
+    });
+
+    return { subscriptions: data.subscriptions };
   }
 }

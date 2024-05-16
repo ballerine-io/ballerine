@@ -20,6 +20,8 @@ export const useLanguageParam = () => {
           from: state?.from,
         },
       });
+
+      location.reload();
     },
     [navigate, state],
   );

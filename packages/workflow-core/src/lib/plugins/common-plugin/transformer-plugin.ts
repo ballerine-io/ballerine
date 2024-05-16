@@ -1,6 +1,7 @@
 import { ISerializableMappingPluginParams } from '../../plugins/common-plugin/types';
 import { SerializableValidatableTransformer } from '../../plugins/external-plugin';
 import { HelpersTransformer, TContext, THelperFormatingLogic } from '../../utils';
+import { logger } from '../../logger';
 
 export interface HelpersTransformerParams {
   mapping: THelperFormatingLogic;
@@ -27,8 +28,8 @@ export class TransformerPlugin implements ISerializableMappingPluginParams {
     this.stateNames = params.stateNames;
   }
 
-  async invoke(context: TContext, config: unknown) {
-    console.log('invoke() method called');
+  async invoke(context: TContext) {
+    logger.log('invoke() method called');
 
     for (const transformParams of this.transformers) {
       const transformer = this.createTransformer(
@@ -36,10 +37,10 @@ export class TransformerPlugin implements ISerializableMappingPluginParams {
         transformParams.mapping,
       );
 
-      transformer.transform({ ...context, workflowRuntimeConfig: config });
+      transformer.transform(context);
     }
 
-    console.log('Transform performed successfully.');
+    logger.log('Transform performed successfully.');
     return {};
   }
 

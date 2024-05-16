@@ -13,14 +13,15 @@ import { getWebhooks, Webhook } from '@/events/get-webhooks';
 import { ConfigService } from '@nestjs/config';
 import type { TAuthenticationConfiguration } from '@/customer/types';
 import { CustomerService } from '@/customer/customer.service';
-import { env } from '@/env';
 import { sign } from '@/common/utils/sign/sign';
 
-const getExtensionFromMimeType = (mimeType: string): string => {
-  const parts = mimeType.split('/');
-  if (parts.length === 2) {
-    return parts[1] as string;
+const getExtensionFromMimeType = (mimeType: string) => {
+  const parts = mimeType?.split('/');
+
+  if (parts?.length === 2) {
+    return parts[1];
   }
+
   return mimeType;
 };
 
@@ -73,6 +74,7 @@ export class DocumentChangedWebhookCaller {
         idDoc: id,
       });
       accumulator[id] = doc;
+
       return accumulator;
     }, {});
 
@@ -82,6 +84,7 @@ export class DocumentChangedWebhookCaller {
         this.logger.log('handleWorkflowEvent::anyDocumentStatusChanged::getDocumentId::  ', {
           idDoc: id,
         });
+
         return (
           (!oldDocument.decision && newDocumentsByIdentifier[id]?.decision) ||
           (oldDocument.decision &&
@@ -95,6 +98,7 @@ export class DocumentChangedWebhookCaller {
       this.logger.log('handleWorkflowEvent:: Skipped, ', {
         anyDocumentStatusChanged,
       });
+
       return;
     }
 
@@ -107,10 +111,30 @@ export class DocumentChangedWebhookCaller {
     data.updatedRuntimeData.context.documents.forEach((doc: any) => {
       delete doc.propertiesSchema;
 
-      doc.pages.forEach((page: any) => {
+      doc.pages.forEach((page: DefaultContextSchema['documents'][number]['pages'][number]) => {
+        if (!page?.type) {
+          this.logger.warn('No document page type found', {
+            workflowRuntimeDataId: data.updatedRuntimeData.id,
+            document: doc,
+          });
+
+          return;
+        }
+
+        const formattedType = getExtensionFromMimeType(page.type)?.replace('jpeg', 'jpg');
+
+        if (!formattedType) {
+          this.logger.warn('No formatted document page type found', {
+            workflowRuntimeDataId: data.updatedRuntimeData.id,
+            document: doc,
+          });
+
+          return;
+        }
+
         // fix type
-        // delete mime from mime type and rename jpeg to jpg / shoud be removed after deprecation period (BAL-703)
-        page.type = getExtensionFromMimeType(page.type as string).replace('jpeg', 'jpg');
+        // delete mime from mime type and rename jpeg to jpg / should be removed after deprecation period (BAL-703)
+        page.type = formattedType;
       });
     });
 
@@ -155,6 +179,15 @@ export class DocumentChangedWebhookCaller {
         eventName: 'workflow.context.document.changed',
         apiVersion,
         timestamp: new Date().toISOString(),
+        assignee: data.assignee
+          ? {
+              id: data.assignee.id,
+              firstName: data.assignee.firstName,
+              lastName: data.assignee.lastName,
+              email: data.assignee.email,
+            }
+          : null,
+        assignedAt: data.assignedAt,
         workflowCreatedAt: data.updatedRuntimeData.createdAt,
         workflowResolvedAt: data.updatedRuntimeData.resolvedAt,
         workflowDefinitionId: data.updatedRuntimeData.workflowDefinitionId,
@@ -167,7 +200,7 @@ export class DocumentChangedWebhookCaller {
 
       const res = await this.#__axios.post(url, payload, {
         headers: {
-          'X-Authorization': env.WEBHOOK_SECRET,
+          'X-Authorization': webhookSharedSecret,
           'X-HMAC-Signature': sign({ payload, key: webhookSharedSecret }),
         },
       });

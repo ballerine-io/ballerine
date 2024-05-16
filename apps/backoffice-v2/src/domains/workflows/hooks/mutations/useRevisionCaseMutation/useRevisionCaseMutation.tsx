@@ -1,14 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Action } from '../../../../../common/enums';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { t } from 'i18next';
 import { fetchWorkflowEvent } from '../../../fetchers';
 import { workflowsQueryKeys } from '../../../query-keys';
 
 export const useRevisionCaseMutation = ({
-  onSelectNextEntity,
+  onSelectNextCase,
 }: {
-  onSelectNextEntity?: VoidFunction;
+  onSelectNextCase?: VoidFunction;
 }) => {
   const queryClient = useQueryClient();
 

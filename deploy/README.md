@@ -25,55 +25,19 @@ To start using the `docker-compose.yml` file in a repository, you need to clone 
 4. Once the cloning process is complete, navigate to the cloned repository directory:
 
     ```shell
-    cd deploy
+    cd ballerine;
     ```
 
-## Understanding the docker-compose.yml File
-
-The `docker-compose.yml` file in the cloned repository defines the services and configurations required for the project. Take some time to understand the structure and content of the file. It typically contains service definitions, volumes, networks, and other configurations specific to the project.
-
-## Running Containers with Docker Compose
-
-To start the Docker services defined in the `docker-compose.yml` file, follow these steps:
-
-1. Open a terminal or command prompt.
-2. Navigate to the root directory of the cloned repository (where the `docker-compose.yml` file is located).
+5. Run the ballerine_install script with domain name incase Ballerine is installed on any cloud provider
 
     ```shell
-    cd deploy
+    ./ballerine_install.sh <domain_name>
     ```
 
-    or download the docker-compose file directly like below
+    For Example:
 
     ```shell
-    mkdir ballerine; cd ballerine
-    curl https://raw.githubusercontent.com/ballerine-io/ballerine/dev/deploy/docker-compose.yml -o docker-compose.yml
-    docker-compose up -d  --force-recreate;
-    ```
-
-3. Run the following command to start the containers:
-
-    ```shell
-    docker-compose up
-    ```
-
-    Docker Compose will read the `docker-compose.yml` file and initiate the containers accordingly. The container logs will be displayed in the terminal.
-
-    If you prefer to run the containers in the background, use the detached mode with the `-d` flag:
-
-    ```shell
-    docker-compose up -d
-    ```
-
-4. Once the containers are running, you can access the services as specified in the repository's documentation or the `docker-compose.yml` file.
-
-## Running DEV Containers with Docker Compose
-
-To start the containers in Dev mode for easy debugging do the following.
-
-    ```shell
-    cd deploy/
-    docker-compose up -f docker-compose-dev.yml
+    ./ballerine_install.sh gpwf.eu-central-1.ballerine.io
     ```
 
 ## Additional Docker Compose Commands

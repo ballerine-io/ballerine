@@ -1,17 +1,10 @@
+import { SubscriptionSchema } from '@/common/types';
+import { WorkflowDefinitionConfigThemeSchema } from '@ballerine/common';
 import { z } from 'zod';
-
-export const SubscriptionSchema = z.discriminatedUnion('type', [
-  z
-    .object({
-      type: z.literal('webhook'),
-      url: z.string().url(),
-      events: z.array(z.string().nonempty()),
-    })
-    .strict(),
-]);
 
 export const ConfigSchema = z
   .object({
+    isAssociatedCompanyKybEnabled: z.boolean().optional(),
     isCaseOverviewEnabled: z.boolean().optional(),
     isLegacyReject: z.boolean().optional(),
     isLockedDocumentCategoryAndType: z.boolean().optional(),
@@ -62,6 +55,10 @@ export const ConfigSchema = z
       .boolean()
       .optional()
       .describe('Indicates if workflow could be created in backoffice'),
+    kybOnExitAction: z.enum(['send-event', 'redirect-to-customer-portal']).optional(),
+    reportConfig: z.record(z.string(), z.unknown()).optional(),
+    theme: WorkflowDefinitionConfigThemeSchema.optional(),
+    hasUboOngoingMonitoring: z.boolean().optional(),
   })
   .strict()
   .optional();

@@ -1,5 +1,5 @@
 import { t } from 'i18next';
-import toast from 'react-hot-toast';
+import { toast } from 'sonner';
 import { ComponentProps, useCallback, useRef, useState } from 'react';
 
 import { IDocumentsProps } from '../../interfaces';
@@ -11,6 +11,7 @@ import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { useTesseract } from '@/common/hooks/useTesseract/useTesseract';
 import { createArrayOfNumbers } from '@/common/utils/create-array-of-numbers/create-array-of-numbers';
 import { useStorageFileByIdQuery } from '@/domains/storage/hooks/queries/useStorageFileByIdQuery/useStorageFileByIdQuery';
+import { copyToClipboard } from '@/common/utils/copy-to-clipboard/copy-to-clipboard';
 
 export const useDocuments = (documents: IDocumentsProps['documents']) => {
   const initialImage = documents?.[0];
@@ -45,9 +46,7 @@ export const useDocuments = (documents: IDocumentsProps['documents']) => {
         throw new Error('No document OCR text found');
       }
 
-      await navigator.clipboard.writeText(text);
-
-      toast.success(t('toast:copy_to_clipboard', { text }));
+      await copyToClipboard(text)();
     } catch (err) {
       console.error(err);
 
