@@ -421,6 +421,14 @@ export class DataAnalyticsService {
       throw new Error('projectId is required');
     }
 
+    const lastLargePeriodClause = Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+      `${activeUserPeriod.timeAmount} ${activeUserPeriod.timeUnit}`,
+    )}'`;
+
+    const lastDaysPeriodClause = Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+      `${lastDaysPeriod.timeAmount} ${lastDaysPeriod.timeUnit}`,
+    )}'`;
+
     const conditions: Prisma.Sql[] = [
       Prisma.sql`tr."projectId" = ${projectId}`,
       Prisma.sql`tr."counterpartyBeneficiaryId" IS NOT NULL`,
@@ -428,48 +436,66 @@ export class DataAnalyticsService {
       Prisma.sql`tr."paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${
         paymentMethod.value
       }`,
-      Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
-        `${activeUserPeriod.timeAmount} ${activeUserPeriod.timeUnit}`,
-      )}'`,
+      lastLargePeriodClause,
     ];
 
-    // TODO: extract count to a variable and resude in select + having section
     return await this._executeQuery<Array<{ counterpartyId: string }>>(
       Prisma.sql`
-    WITH "transactionsData" AS (
       SELECT
-        "counterpartyBeneficiaryId",
-        COUNT(id) filter (where tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
-          `${activeUserPeriod.timeAmount} ${activeUserPeriod.timeUnit}`,
-        )}')as totalTransactionWithinSixMonths,
-        COUNT(id) filter (where tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
-          `${lastDaysPeriod.timeAmount} ${lastDaysPeriod.timeUnit}`,
-        )}')as totalLastDays
-      FROM
-        "TransactionRecord" tr
-      WHERE
-        ${Prisma.join(conditions, ' AND ')}
-      GROUP BY
-        "counterpartyBeneficiaryId"
-      HAVING COUNT(
-        CASE WHEN tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
-          `${lastDaysPeriod.timeAmount} ${lastDaysPeriod.timeUnit}`,
-        )}' THEN
-          tr."id"
-        END) > ${minimumCount} -- have to keep the filter of 180 rows 
-    )
-    SELECT
-      tr."counterpartyBeneficiaryId" AS "counterpartyId"
+      "counterpartyBeneficiaryId",
+      COUNT(id) FILTER (WHERE ${lastLargePeriodClause}) AS lasSixMonths,
+      COUNT(id) FILTER (WHERE ${lastDaysPeriodClause}) AS lastDays
     FROM
-      "TransactionRecord" tr
-      JOIN "transactionsData" td ON tr."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
+      "TransactionRecord"
     WHERE
-
-
+      ${Prisma.join(conditions, ' AND ')}
     GROUP BY
-      tr."counterpartyBeneficiaryId";
+      "counterpartyBeneficiaryId"
+    HAVING
+      COUNT(id) FILTER (WHERE ${lastDaysPeriodClause}) > ${minimumCount} -- A condition that is used to ensure that we are calculating an average of active users
+      AND COUNT(id) FILTER (WHERE ${lastDaysPeriodClause}) > -- AS lastDaysPeriod
+      ((${transactionFactor} * COUNT(id) FILTER (WHERE ${lastLargePeriodClause}) -- AS lastLargePeriod
+        - COUNT(id) FILTER (WHERE ${lastDaysPeriodClause})
+    ) / 59);
       `,
     );
+
+    // // TODO: extract count to a variable and resude in select + having section
+    // return await this._executeQuery<Array<{ counterpartyId: string }>>(
+    //   Prisma.sql`
+    // WITH "transactionsData" AS (
+    //   SELECT
+    //     "counterpartyBeneficiaryId",
+    //     COUNT(id) filter (where tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+    //       `${activeUserPeriod.timeAmount} ${activeUserPeriod.timeUnit}`,
+    //     )}')as totalTransactionWithinSixMonths,
+    //     COUNT(id) filter (where tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+    //       `${lastDaysPeriod.timeAmount} ${lastDaysPeriod.timeUnit}`,
+    //     )}')as totalLastDays
+    //   FROM
+    //     "TransactionRecord" tr
+    //   WHERE
+    //     ${Prisma.join(conditions, ' AND ')}
+    //   GROUP BY
+    //     "counterpartyBeneficiaryId"
+    //   HAVING COUNT(
+    //     CASE WHEN tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+    //       `${lastDaysPeriod.timeAmount} ${lastDaysPeriod.timeUnit}`,
+    //     )}' THEN
+    //       tr."id"
+    //     END) > ${minimumCount} -- have to keep the filter of 180 rows
+    // )
+    // SELECT
+    //   tr."counterpartyBeneficiaryId" AS "counterpartyId"
+    // FROM
+    //   "TransactionRecord" tr
+    //   JOIN "transactionsData" td ON tr."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
+    // WHERE
+
+    // GROUP BY
+    //   tr."counterpartyBeneficiaryId";
+    //   `,
+    // );
   }
 
   private async _executeQuery<T = unknown>(query: Prisma.Sql) {
