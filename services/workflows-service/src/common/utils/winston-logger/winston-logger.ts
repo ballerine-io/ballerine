@@ -1,6 +1,6 @@
 import { IAppLogger, LogPayload } from '@/common/abstract-logger/abstract-logger';
 import { env } from '@/env';
-import { createLogger, format, transports, Logger as TWinstonLogger } from 'winston';
+import { createLogger, format, Logger as TWinstonLogger, transports } from 'winston';
 
 export class WinstonLogger implements IAppLogger {
   private logger: TWinstonLogger;
