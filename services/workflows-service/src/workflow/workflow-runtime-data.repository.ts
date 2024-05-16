@@ -1,4 +1,10 @@
 import { PrismaService } from '@/prisma/prisma.service';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import type { PrismaTransaction, TProjectIds } from '@/types';
+import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
+import { TEntityType } from '@/workflow/types';
+import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
+import { ARRAY_MERGE_OPTION, ArrayMergeOption } from '@ballerine/workflow-core';
 import { Injectable } from '@nestjs/common';
 import {
   Prisma,
@@ -6,13 +12,7 @@ import {
   WorkflowRuntimeData,
   WorkflowRuntimeDataStatus,
 } from '@prisma/client';
-import { TEntityType } from '@/workflow/types';
 import { merge } from 'lodash';
-import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
-import { ProjectScopeService } from '@/project/project-scope.service';
-import type { PrismaTransaction, TProjectIds } from '@/types';
-import { toPrismaOrderBy } from '@/workflow/utils/toPrismaOrderBy';
-import { ARRAY_MERGE_OPTION, ArrayMergeOption } from '@ballerine/workflow-core';
 
 /**
  * Columns that are related to the state of the workflow runtime data.
@@ -51,6 +51,12 @@ export class WorkflowRuntimeDataRepository {
     return await this.prisma.workflowRuntimeData.findMany(
       this.scopeService.scopeFindMany(args, projectIds),
     );
+  }
+
+  async findManyUnscoped<T extends Prisma.WorkflowRuntimeDataFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindManyArgs>,
+  ) {
+    return await this.prisma.workflowRuntimeData.findMany(args);
   }
 
   async findOne<T extends Prisma.WorkflowRuntimeDataFindFirstArgs>(
@@ -351,5 +357,31 @@ export class WorkflowRuntimeDataRepository {
     `;
 
     return (await this.prisma.$queryRaw(sql)) as WorkflowRuntimeData[];
+  }
+
+  async findFirstByEntityId<T extends Prisma.WorkflowRuntimeDataFindFirstArgs>(
+    entityId: string,
+    projectIds: TProjectIds,
+    args?: Prisma.SelectSubset<T, Prisma.WorkflowRuntimeDataFindFirstArgs>,
+  ) {
+    return await this.prisma.workflowRuntimeData.findFirst(
+      this.scopeService.scopeFindFirst(
+        {
+          ...args,
+          where: {
+            ...args?.where,
+            OR: [
+              {
+                endUserId: entityId,
+              },
+              {
+                businessId: entityId,
+              },
+            ],
+          },
+        },
+        projectIds,
+      ),
+    );
   }
 }

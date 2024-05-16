@@ -1,9 +1,8 @@
+import { CaretSortIcon } from '@radix-ui/react-icons';
 import clsx from 'clsx';
 import { CheckIcon } from 'lucide-react';
-import { CaretSortIcon } from '@radix-ui/react-icons';
 import React, { FocusEvent, FunctionComponent, useCallback, useMemo, useState } from 'react';
 
-import { DropdownInputProps, DropdownOption } from './types';
 import {
   Button,
   Command,
@@ -16,6 +15,7 @@ import {
   PopoverTrigger,
   ScrollArea,
 } from '@/components/atoms';
+import { DropdownInputProps, DropdownOption } from './types';
 
 const dropdownItemVariants: Record<
   string,
@@ -49,6 +49,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
   notFoundText,
   searchable = false,
   disabled,
+  testId,
   onChange,
   onBlur,
   props,
@@ -97,6 +98,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
             props?.trigger?.className,
           )}
           disabled={disabled}
+          data-testid={testId ? `${testId}-trigger` : undefined}
         >
           <span className="flex-1 text-left">
             {selectedOption ? selectedOption.label : placeholder}
@@ -105,6 +107,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent
+        disablePortal
         align={props?.content?.align || 'center'}
         style={{ width: 'var(--radix-popover-trigger-width)' }}
         className={clsx('p-2', props?.content?.className)}
@@ -121,6 +124,7 @@ export const DropdownInput: FunctionComponent<DropdownInputProps> = ({
                 <CommandItem
                   value={option.label}
                   key={option.value}
+                  data-testid={testId ? `${testId}-option` : undefined}
                   onSelect={(label: string) => {
                     const option = options.find(
                       option => option.label.toLocaleLowerCase() === label.toLocaleLowerCase(),

@@ -15,6 +15,7 @@ export const composeKybWithAssociatedCompaniesDefinition = ({
 }) => {
   return {
     id: definitionId,
+    crossEnvKey: 'kyb_with_associated_companies_example',
     name: definitionName,
     version: 1,
     variant: WorkflowDefinitionVariant.KYB,

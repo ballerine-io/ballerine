@@ -1,4 +1,4 @@
 import { z } from 'zod';
 import { AuthenticatedUserSchema } from './validation-schemas';
 
-export type TAuthenticatedUser = z.infer<typeof AuthenticatedUserSchema>;
+export type TAuthenticatedUser = z.output<typeof AuthenticatedUserSchema>;

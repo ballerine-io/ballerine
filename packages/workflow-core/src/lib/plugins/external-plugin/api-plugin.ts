@@ -1,12 +1,13 @@
 import { TContext, Transformer, Transformers, Validator } from '../../utils';
 import { AnyRecord, isErrorWithMessage, isObject } from '@ballerine/common';
 import { IApiPluginParams } from './types';
+import { logger } from '../../logger';
 
 export class ApiPlugin {
   public static pluginType = 'http';
   public static pluginKind = 'api';
   name: string;
-  stateNames: Array<string>;
+  stateNames: string[];
   url: string;
   method: IApiPluginParams['method'];
   headers: IApiPluginParams['headers'];
@@ -52,7 +53,10 @@ export class ApiPlugin {
 
       const urlWithoutPlaceholders = this.replaceValuePlaceholders(this.url, context);
 
-      console.log(`API Plugin :: Sending ${this.method} API request to ${urlWithoutPlaceholders}`);
+      logger.log('API Plugin - Sending API request', {
+        url: urlWithoutPlaceholders,
+        method: this.method,
+      });
 
       const apiResponse = await this.makeApiRequest(
         urlWithoutPlaceholders,
@@ -61,9 +65,10 @@ export class ApiPlugin {
         this.composeRequestHeaders(this.headers!, context),
       );
 
-      console.log(
-        `API Plugin :: Received ${apiResponse.statusText} response from ${urlWithoutPlaceholders}`,
-      );
+      logger.log('API Plugin - Received response', {
+        status: apiResponse.statusText,
+        url: urlWithoutPlaceholders,
+      });
 
       if (apiResponse.ok) {
         const result = await apiResponse.json();
@@ -84,7 +89,9 @@ export class ApiPlugin {
         }
 
         if (this.successAction) {
-          return this.returnSuccessResponse(this.successAction, responseBody);
+          return this.returnSuccessResponse(this.successAction, {
+            ...responseBody,
+          });
         }
 
         return {};
@@ -140,6 +147,7 @@ export class ApiPlugin {
     }
 
     const res = await fetch(url, requestParams);
+
     if ([204, 202].includes(res.status)) {
       return {
         ok: true,
@@ -184,9 +192,11 @@ export class ApiPlugin {
     validationContext: TValidationContext,
   ) {
     const returnArgKey = `isValid${validationContext}`;
+
     if (!schemaValidator) return { [returnArgKey]: true };
 
     const { isValid, errorMessage } = await schemaValidator.validate(transformedRequest);
+
     return { [returnArgKey]: isValid, errorMessage };
   }
 
@@ -202,6 +212,7 @@ export class ApiPlugin {
 
   replaceValuePlaceholders(content: string, context: TContext) {
     const placeholders = content.match(/{(.*?)}/g);
+
     if (!placeholders) return content;
 
     let replacedContent = content;

@@ -1,13 +1,13 @@
-import React, { FunctionComponent } from 'react';
-import { Badge } from '@ballerine/ui';
 import { StateTag } from '@ballerine/common';
+import { Badge } from '@ballerine/ui';
+import { FunctionComponent } from 'react';
 
-import { IActionsProps } from './interfaces';
-import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
-import { ctw } from '../../../../common/utils/ctw/ctw';
-import { AssignDropdown } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
-import { tagToBadgeData } from './consts';
 import { ActionsVariant } from '@/pages/Entity/components/Case/actions-variants/ActionsVariant/ActionsVariant';
+import { AssignDropdown } from '../../../../common/components/atoms/AssignDropdown/AssignDropdown';
+import { ctw } from '../../../../common/utils/ctw/ctw';
+import { tagToBadgeData } from './consts';
+import { useCaseActionsLogic } from './hooks/useCaseActionsLogic/useCaseActionsLogic';
+import { IActionsProps } from './interfaces';
 
 /**
  * @description To be used by {@link Case}. Displays the entity's full name, avatar, and handles the reject/approve mutation.
@@ -35,6 +35,7 @@ export const Actions: FunctionComponent<IActionsProps> = ({
     assignees,
     onMutateAssignWorkflow,
     workflowDefinition,
+    isWorkflowCompleted,
   } = useCaseActionsLogic({ workflowId: id, fullName });
 
   return (
@@ -47,12 +48,13 @@ export const Actions: FunctionComponent<IActionsProps> = ({
             onMutateAssignWorkflow(id, id === authenticatedUser?.id);
           }}
           authenticatedUserId={authenticatedUser?.id}
+          isDisabled={isWorkflowCompleted}
         />
       </div>
       <div className={`flex h-20 justify-between`}>
         <div className={`flex flex-col space-y-3`}>
           <h2
-            className={ctw(`text-4xl font-semibold leading-9`, {
+            className={ctw(`w-[35ch] break-all text-4xl font-semibold leading-9`, {
               'h-8 w-[24ch] animate-pulse rounded-md bg-gray-200 theme-dark:bg-neutral-focus':
                 isLoadingCase,
             })}

@@ -15,8 +15,10 @@ import type { TProjectId, TProjectIds } from '@/types';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 import * as common from '@nestjs/common';
+import { ApiExcludeController } from '@nestjs/swagger';
 
 @UseTokenAuthGuard()
+@ApiExcludeController()
 @common.Controller('collection-flow')
 export class ColectionFlowController {
   constructor(

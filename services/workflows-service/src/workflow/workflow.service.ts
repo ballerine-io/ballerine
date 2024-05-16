@@ -1,5 +1,7 @@
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
 import { BusinessRepository } from '@/business/business.repository';
+import { BusinessService } from '@/business/business.service';
+import { ajv } from '@/common/ajv/ajv.validator';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { SortOrder } from '@/common/query-filters/sort-order';
@@ -9,6 +11,13 @@ import { logDocumentWithoutId } from '@/common/utils/log-document-without-id/log
 import { CustomerService } from '@/customer/customer.service';
 import { EndUserRepository } from '@/end-user/end-user.repository';
 import { EndUserService } from '@/end-user/end-user.service';
+import { env } from '@/env';
+import { ValidationError } from '@/errors';
+import { PrismaService } from '@/prisma/prisma.service';
+import {
+  beginTransactionIfNotExistCurry,
+  defaultPrismaTransactionOptions,
+} from '@/prisma/prisma.util';
 import { ProjectScopeService } from '@/project/project-scope.service';
 import { FileService } from '@/providers/file/file.service';
 import { SalesforceService } from '@/salesforce/salesforce.service';
@@ -19,7 +28,9 @@ import type {
   TProjectId,
   TProjectIds,
 } from '@/types';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UserService } from '@/user/user.service';
+import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { assignIdToDocuments } from '@/workflow/assign-id-to-documents';
 import { WorkflowAssigneeId } from '@/workflow/dtos/workflow-assignee-id';
 import { WorkflowDefinitionCloneDto } from '@/workflow/dtos/workflow-definition-clone';
@@ -34,6 +45,8 @@ import {
   DefaultContextSchema,
   getDocumentId,
   isErrorWithMessage,
+  isObject,
+  ProcessStatus,
 } from '@ballerine/common';
 import {
   ARRAY_MERGE_OPTION,
@@ -66,6 +79,7 @@ import {
 } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { isEqual, merge } from 'lodash';
+import mime from 'mime';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
 import { WorkflowDefinitionFindManyArgs } from './dtos/workflow-definition-find-many-args';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
@@ -78,20 +92,8 @@ import {
   WorkflowRuntimeListQueryResult,
 } from './types';
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
-import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
-import mime from 'mime';
-import { env } from '@/env';
-import { ValidationError } from '@/errors';
-import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { ajv } from '@/common/ajv/ajv.validator';
-import { PrismaService } from '@/prisma/prisma.service';
-import {
-  beginTransactionIfNotExistCurry,
-  defaultPrismaTransactionOptions,
-} from '@/prisma/prisma.util';
-import { BusinessService } from '@/business/business.service';
 
 type TEntityId = string;
 
@@ -281,6 +283,31 @@ export class WorkflowService {
             );
           },
         ),
+        pluginsOutput: Object.fromEntries(
+          Object.entries(workflow.context.pluginsOutput || {}).map(([pluginName, pluginValue]) => {
+            if (
+              isObject(pluginValue) &&
+              pluginValue.status === ProcessStatus.IN_PROGRESS &&
+              pluginValue.invokedAt
+            ) {
+              const parsedDate = new Date(Number(pluginValue.invokedAt));
+
+              const TIMEOUT_IN_MS = 24 * 60 * 60 * 1000;
+
+              return [
+                pluginName,
+                {
+                  ...pluginValue,
+                  ...(parsedDate && !isNaN(parsedDate.getTime())
+                    ? { isRequestTimedOut: Date.now() - parsedDate.getTime() > TIMEOUT_IN_MS }
+                    : {}),
+                },
+              ];
+            }
+
+            return [pluginName, pluginValue];
+          }),
+        ),
       },
       entity: getEntity(workflow),
       endUser: undefined,
@@ -299,6 +326,11 @@ export class WorkflowService {
     currentProjectId: TProjectId,
     transaction: PrismaTransaction,
   ) {
+    this.logger.log('Persisting child event', {
+      childPluginConfig,
+      projectIds,
+      currentProjectId,
+    });
     const childWorkflow = (
       await this.createOrUpdateWorkflowRuntime(
         {
@@ -339,6 +371,12 @@ export class WorkflowService {
         currentProjectId,
         transaction,
       );
+    } else {
+      this.logger.warn('Child workflow not created', {
+        childPluginConfig,
+        projectIds,
+        currentProjectId,
+      });
     }
 
     return childWorkflow;
@@ -351,6 +389,13 @@ export class WorkflowService {
     transaction?: PrismaTransaction,
   ) {
     return await this.workflowDefinitionRepository.findById(id, args, projectIds, transaction);
+  }
+
+  async getWorkflowsByState(state: string[], args: Prisma.WorkflowRuntimeDataFindManyArgs) {
+    return await this.workflowRuntimeDataRepository.findManyUnscoped({
+      where: { state: { in: state } },
+      ...args,
+    });
   }
 
   async listActiveWorkflowsRuntimeStates(projectIds: TProjectIds) {
@@ -1354,7 +1399,10 @@ export class WorkflowService {
       }> = [];
 
       // Creating new workflow
-      if (!existingWorkflowRuntimeData || mergedConfig?.allowMultipleActiveWorkflows) {
+      if (
+        !existingWorkflowRuntimeData ||
+        (existingWorkflowRuntimeData && mergedConfig?.allowMultipleActiveWorkflows)
+      ) {
         const contextWithoutDocumentPageType = {
           ...contextToInsert,
           documents: this.omitTypeFromDocumentsPages(contextToInsert.documents),
@@ -1525,10 +1573,9 @@ export class WorkflowService {
         // Updating existing workflow
         this.logger.log('existing documents', existingWorkflowRuntimeData.context.documents);
         this.logger.log('documents', contextToInsert.documents);
-        // contextToInsert.documents = updateDocuments(
-        //   existingWorkflowRuntimeData.context.documents,
-        //   context.documents,
-        // );
+
+        contextToInsert.documents = assignIdToDocuments(contextToInsert.documents);
+
         const documentsWithPersistedImages = await this.copyDocumentsPagesFilesAndCreate(
           contextToInsert?.documents,
           entityId,
@@ -1836,6 +1883,10 @@ export class WorkflowService {
           );
 
           if (!runnableChildWorkflow || !childPluginConfiguration.initOptions.event) {
+            this.logger.log('Child workflow not runnable', {
+              childWorkflowId: runnableChildWorkflow?.workflowRuntimeData.id,
+            });
+
             return;
           }
 
@@ -2194,6 +2245,24 @@ export class WorkflowService {
       {
         forceEmit: true,
       },
+    );
+  }
+
+  async updateById(workflowRuntimeDataId: string, args: Prisma.WorkflowRuntimeDataUpdateInput) {
+    return await this.workflowRuntimeDataRepository.updateById(workflowRuntimeDataId, {
+      data: args,
+    });
+  }
+
+  async getByEntityId(
+    entityId: string,
+    projectId: TProjectId,
+    args?: Parameters<WorkflowRuntimeDataRepository['findById']>[1],
+  ) {
+    return await this.workflowRuntimeDataRepository.findFirstByEntityId(
+      entityId,
+      [projectId],
+      args,
     );
   }
 }

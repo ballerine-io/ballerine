@@ -9,6 +9,7 @@ import { Controller } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 
 @UseTokenAuthGuard()
+@swagger.ApiExcludeController()
 @Controller('collection-flow/end-user')
 export class CollectionFlowEndUserController {
   constructor(

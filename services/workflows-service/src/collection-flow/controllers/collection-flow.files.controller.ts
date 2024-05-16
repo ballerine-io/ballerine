@@ -19,13 +19,15 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiExcludeController } from '@nestjs/swagger';
 import type { Response } from 'express';
 import * as errors from '../../errors';
 
 export const COLLECTION_FLOW_FILES_API_PATH = 'collection-flow/files';
 
 @UseTokenAuthGuard()
-@Controller(COLLECTION_FLOW_FILES_API_PATH)
+@ApiExcludeController()
+@Controller('collection-flow/files')
 export class CollectionFlowFilesController {
   private readonly logger = new Logger(CollectionFlowFilesController.name);
 

@@ -1,27 +1,27 @@
-import * as React from 'react';
+import { StateTag, TStateTags, isObject } from '@ballerine/common';
 import { ComponentProps, useCallback, useMemo } from 'react';
-import { isObject, StateTag, TStateTags } from '@ballerine/common';
 
-import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
-import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
-import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
-import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
-import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
-import { toTitleCase } from 'string-ts';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
+import { ctw } from '@/common/utils/ctw/ctw';
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useApproveCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useApproveCaseAndDocumentsMutation/useApproveCaseAndDocumentsMutation';
 import { useRevisionCaseAndDocumentsMutation } from '@/domains/entities/hooks/mutations/useRevisionCaseAndDocumentsMutation/useRevisionCaseAndDocumentsMutation';
-import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
-import { Button } from '@ballerine/ui';
-import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
 import { useAmlBlock } from '@/lib/blocks/components/AmlBlock/hooks/useAmlBlock/useAmlBlock';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
+import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { Button } from '@ballerine/ui';
+import { toTitleCase } from 'string-ts';
+import { MotionBadge } from '../../../../../../common/components/molecules/MotionBadge/MotionBadge';
+import { capitalize } from '../../../../../../common/utils/capitalize/capitalize';
+import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
+import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
+import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
+import { Separator } from '@/common/components/atoms/Separator/Separator';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -52,6 +52,7 @@ export const useKycBlock = ({
       if (!results[docIndex]) {
         results[docIndex] = [];
       }
+
       results[docIndex][pageIndex] = docsData?.shift()?.data;
     });
   });
@@ -104,7 +105,9 @@ export const useKycBlock = ({
     }
 
     return kycSessionKeys.map(
-      key => kycSessionKeys[key]?.result?.vendorResult?.aml ?? kycSessionKeys[key]?.result?.aml,
+      key =>
+        childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.vendorResult?.aml ??
+        childWorkflow?.context?.pluginsOutput?.kyc_session[key]?.result?.aml,
     );
   }, [kycSessionKeys]);
 
@@ -326,11 +329,6 @@ export const useKycBlock = ({
             childWorkflow?.context?.entity?.data?.lastName,
           )}`,
         })
-        .addCell({
-          id: 'actions',
-          type: 'container',
-          value: getDecisionStatusOrAction(childWorkflow?.tags),
-        })
         .build()
         .flat(1),
     })
@@ -347,6 +345,31 @@ export const useKycBlock = ({
       value: createBlocksTyped()
         .addBlock()
         .addCell(headerCell)
+        .addCell({
+          type: 'node',
+          value: <Separator className={`my-2`} />,
+        })
+        .addCell({
+          id: 'title-with-actions',
+          type: 'container',
+          props: { className: 'mt-2' },
+          value: createBlocksTyped()
+            .addBlock()
+            .addCell({
+              type: 'heading',
+              value: 'Identity Verification Results',
+              props: {
+                className: 'mt-0',
+              },
+            })
+            .addCell({
+              type: 'container',
+              props: { className: 'space-x-4' },
+              value: getDecisionStatusOrAction(childWorkflow?.tags),
+            })
+            .build()
+            .flat(1),
+        })
         .addCell({
           id: 'kyc-block',
           type: 'container',
@@ -416,10 +439,6 @@ export const useKycBlock = ({
                     .build()
                     .flat(1),
                 })
-                .addCell({
-                  type: 'container',
-                  value: amlBlock,
-                })
                 .build()
                 .flat(1),
             })
@@ -432,6 +451,14 @@ export const useKycBlock = ({
             })
             .build()
             .flat(1),
+        })
+        .addCell({
+          type: 'node',
+          value: <Separator className={`my-2`} />,
+        })
+        .addCell({
+          type: 'container',
+          value: amlBlock,
         })
         .build()
         .flat(1),

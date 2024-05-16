@@ -4,11 +4,8 @@ import passport from 'passport';
 import dayjs from 'dayjs';
 import cookieSession from 'cookie-session';
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { swaggerDocumentOptions, swaggerPath, swaggerSetupOptions } from './swagger';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
-import { PathItemObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore - there is an issue with helmet types
 import helmet from 'helmet';
@@ -18,6 +15,8 @@ import { ClsMiddleware } from 'nestjs-cls';
 import * as Sentry from '@sentry/node';
 import { ConfigService } from '@nestjs/config';
 import { AppLoggerService } from './common/app-logger/app-logger.service';
+import { exceptionValidationFactory } from './errors';
+import swagger from '@/swagger/swagger';
 
 // This line is used to improve Sentry's stack traces
 // https://docs.sentry.io/platforms/node/typescript/#changing-events-frames
@@ -126,6 +125,7 @@ const main = async () => {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      exceptionFactory: exceptionValidationFactory,
     }),
   );
   app.enableVersioning({
@@ -133,18 +133,7 @@ const main = async () => {
     defaultVersion: '1',
   });
 
-  const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
-
-  /** check if there is Public decorator for each path (action) and its method (findMany / findOne) on each controller */
-  Object.values(document.paths).forEach((path: PathItemObject) => {
-    Object.values(path).forEach((method: { security: string[] | unknown }) => {
-      if (Array.isArray(method.security) && method.security.includes('isPublic')) {
-        method.security = [];
-      }
-    });
-  });
-
-  SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
+  swagger.initialize(app);
 
   app.enableShutdownHooks();
 

@@ -10,11 +10,11 @@ import dayjs from 'dayjs';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
 import { Injectable } from '@nestjs/common';
 import { PasswordService } from '@/auth/password/password.service';
-import { PrismaService } from 'nestjs-prisma';
 import { createCustomer } from '@/test/helpers/create-customer';
 import { createProject } from '@/test/helpers/create-project';
 import { ProjectModule } from '@/project/project.module';
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 class FakePasswordService {

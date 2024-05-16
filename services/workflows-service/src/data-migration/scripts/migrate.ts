@@ -1,13 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '@/app.module';
-import { DataMigrationVersion, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import * as path from 'path';
 import * as fs from 'fs';
 import { INestApplicationContext } from '@nestjs/common';
 import { env } from '@/env';
 import { DataMigrationRepository } from '@/data-migration/data-migration.repository';
-import console from 'console';
 import { DATA_MIGRATION_FOLDER_RELATIVE_PATH } from './consts';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { SentryService } from '@/sentry/sentry.service';
 
 interface IMigrationProcess {
   version: string; // also the timestamp
@@ -62,24 +63,32 @@ const fetchEnvMigrationFiles = async () => {
   return migrationFiles;
 };
 
-export const migrate = async () => {
+export const migrate = async (appContext: INestApplicationContext) => {
   const client = new PrismaClient();
-  const appContext = await NestFactory.createApplicationContext(AppModule);
 
   const dataMigrationRepository = appContext.get(DataMigrationRepository);
+
+  const logger = appContext.get(AppLoggerService);
+
+  const sentryService = appContext.get(SentryService);
+
+  logger.log('Starting Data Migration');
+
   const migrationFilesPath = await fetchEnvMigrationFiles();
 
-  const latestSuccessfulMigration = await dataMigrationRepository.getLatestTimestamp();
   const migrationProcessesToRun = await calculateMigrationProcessToRun(
     migrationFilesPath,
-    latestSuccessfulMigration as DataMigrationVersion,
+    dataMigrationRepository,
+    logger,
   );
 
   for (const migrationProcess of migrationProcessesToRun) {
     const migrationVersion = migrationProcess.version;
-    console.log(
+
+    logger.log(
       `Running Data Migration: ${migrationProcess.fileName.split('/').pop()!.replace('.js', '')}`,
     );
+
     const runningMigration = await dataMigrationRepository.create({
       data: {
         version: migrationVersion,
@@ -98,6 +107,8 @@ export const migrate = async () => {
       });
     } catch (error) {
       if (error instanceof Error) {
+        sentryService.captureException(error);
+
         await dataMigrationRepository.updateById(runningMigration.id, {
           data: {
             version: migrationVersion,
@@ -122,42 +133,73 @@ export const migrate = async () => {
 
 const calculateMigrationProcessToRun = async (
   migrationFilesPath: string[],
-  latestSuccessfulMigration: DataMigrationVersion,
+  dataMigrationRepository: DataMigrationRepository,
+  logger: AppLoggerService,
 ) => {
+  const migrationRows = await dataMigrationRepository.list();
+
+  const oldMigrationsSet = new Set(migrationRows.map(row => row.version));
+
+  const relevantMigrationFilesPath = migrationFilesPath.filter(filePath => {
+    if (filePath.includes('.map')) {
+      return false;
+    }
+
+    const fileVersionMatches = filePath.match(/\d{14}/) || [];
+
+    if (fileVersionMatches.length === 0 || !fileVersionMatches[0]) {
+      logger.warn('Migration file does not have a valid file version', { filePath });
+      return false;
+    }
+
+    return !oldMigrationsSet.has(fileVersionMatches[0]);
+  });
+
   return (
     await Promise.all(
-      migrationFilesPath
-        .filter(filePath => filePath.match(/\d{14}/)?.[0] !== null)
-        .filter(filePath => !filePath.includes('.map'))
-        .map(async filePath => {
-          const { migrate } = (await import(filePath)) as {
-            migrate: IMigrationProcess['migrate'];
-          };
+      relevantMigrationFilesPath.map(async filePath => {
+        const { migrate } = (await import(filePath)) as {
+          migrate: IMigrationProcess['migrate'];
+        };
 
-          const version = filePath.match(/\d{14}/)![0]!;
-          return {
-            version: version,
-            fileName: filePath,
-            migrate,
-          } satisfies IMigrationProcess;
-        }),
+        const version = filePath.match(/\d{14}/)![0]!;
+        return {
+          version: version,
+          fileName: filePath,
+          migrate,
+        } satisfies IMigrationProcess;
+      }),
     )
-  )
-    .filter(migrationProcess => {
-      const latestMigrationVersion = latestSuccessfulMigration?.version
-        ? Number(latestSuccessfulMigration?.version)
-        : 0;
-      return Number(migrationProcess.version) > latestMigrationVersion;
-    })
-    .sort((a, b) => Number(a.version) - Number(b.version));
+  ).sort((a, b) => Number(a.version) - Number(b.version));
 };
 
-migrate()
-  .then(() => {
-    console.log('Migration finished');
-    process.exit(0);
-  })
-  .catch(err => {
-    console.error('Error during application context initialization:', err);
-    process.exit(1);
-  });
+const main = async () => {
+  const app = await NestFactory.createApplicationContext(AppModule);
+
+  app.enableShutdownHooks();
+
+  const logger = app.get(AppLoggerService);
+  const sentryService = app.get(SentryService);
+
+  try {
+    await migrate(app);
+
+    setTimeout(() => {
+      return process.exit(0);
+    }, 2000);
+  } catch (error: unknown) {
+    logger.error('Error during running migration', { error });
+
+    if (error instanceof Error || typeof error === 'string') {
+      sentryService.captureException(error);
+    }
+
+    setTimeout(() => {
+      return process.exit(1);
+    }, 2000);
+  } finally {
+    await app.close();
+  }
+};
+
+main();
