@@ -101,3 +101,22 @@ export type TDormantAccountOptions = {
   timeAmount: number;
   timeUnit: TimeUnit;
 };
+
+export type HighVelocityHistoricAverageOptions = {
+  projectId: TProjectId;
+  transactionDirection: TransactionDirection;
+  paymentMethod: {
+    value: PaymentMethod;
+    operator: '=' | '!=';
+  };
+  activeUserPeriod: {
+    timeUnit?: TimeUnit;
+    timeAmount?: number;
+  };
+  lastDaysPeriod: {
+    timeUnit?: TimeUnit;
+    timeAmount?: number;
+  };
+  minimumCount: number;
+  transactionFactor: number;
+};
