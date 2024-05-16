@@ -70,7 +70,7 @@ const getTransactionCreateData = ({ projectId }: { projectId: string }): Transac
     transactionAmount: amount,
     transactionCurrency: 'USD',
     transactionBaseCurrency: 'USD',
-    transactionDate: faker.date.recent(30),
+    transactionDate: faker.helpers.arrayElement([faker.date.past(1), faker.date.recent(30)]),
     transactionCorrelationId: faker.datatype.uuid(),
     transactionDescription: faker.lorem.sentence(),
     transactionCategory: faker.commerce.product(),
