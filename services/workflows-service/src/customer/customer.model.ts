@@ -54,3 +54,17 @@ export class CustomerModel {
   @IsString()
   country?: string;
 }
+
+export class Subscription {
+  @ApiProperty()
+  url!: string;
+
+  @ApiProperty()
+  events!: string[];
+
+  @ApiProperty({
+    example: 'webhook',
+    default: 'webhook',
+  })
+  type!: string;
+}

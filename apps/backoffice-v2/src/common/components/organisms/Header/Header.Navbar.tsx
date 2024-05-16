@@ -1,11 +1,11 @@
-import { FunctionComponent } from 'react';
+import { Fragment, FunctionComponent } from 'react';
 import { NavItem } from './Header.NavItem';
-import { useFiltersQuery } from '../../../../domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { ctw } from '../../../utils/ctw/ctw';
-import { TRoutes } from '../../../../Router/types';
-import { ClipboardCheck } from 'lucide-react';
-import { useSearchParamsByEntity } from '../../../hooks/useSearchParamsByEntity/useSearchParamsByEntity';
-import { useSelectEntityFilterOnMount } from '../../../../domains/entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
+import { ChevronDown } from 'lucide-react';
+import { Collapsible } from '@/common/components/molecules/Collapsible/Collapsible';
+import { CollapsibleTrigger } from '@/common/components/molecules/Collapsible/Collapsible.Trigger';
+import { CollapsibleContent } from '@/common/components/molecules/Collapsible/Collapsible.Content';
+import { useNavbarLogic } from '@/common/components/organisms/Header/hooks/useNavbarLogic/useNavbarLogic';
 
 /**
  * @description A nav element which wraps {@link NavItem} components of the app's routes. Supports nested routes.
@@ -15,60 +15,91 @@ import { useSelectEntityFilterOnMount } from '../../../../domains/entities/hooks
  * @constructor
  */
 export const Navbar: FunctionComponent = () => {
-  const { data: filters } = useFiltersQuery();
-  const [searchParams] = useSearchParamsByEntity();
-  const navItems = [
-    // {
-    //   text: 'Home',
-    //   href: '/',
-    //   icon: <Home />,
-    //   key: 'nav-item-home',
-    // },
-  ] satisfies TRoutes;
-
-  useSelectEntityFilterOnMount();
+  const { navItems, filterId, checkIsActiveFilterGroup } = useNavbarLogic();
 
   return (
-    <nav>
-      {navItems.map(({ text, key, icon, children }) => (
-        <ul className={`menu menu-compact w-full space-y-2`} key={key}>
-          {children?.length > 0 ? (
-            <>
-              <li className={`menu-title`}>
-                <span className={`gap-x-2`}>{text}</span>
-              </li>
-              {children?.map(({ text, href, key }) => (
-                <NavItem href={href} key={key}>
-                  {icon} {text}
-                </NavItem>
-              ))}
-            </>
-          ) : (
-            <NavItem href={''} key={key}>
-              {icon} {text}
-            </NavItem>
-          )}
-        </ul>
-      ))}
-      <ul className={`menu menu-compact w-full space-y-2`}>
-        {filters?.map(({ id, name }) => (
-          <NavItem
-            key={id}
-            href={`/en/case-management/entities?filterId=${id}`}
-            className={ctw(
-              `gap-x-[10px] px-2 capitalize active:bg-muted-foreground/30 active:text-foreground`,
-              {
-                'rounded-lg bg-[#EEEEEE] font-bold': id === searchParams?.filterId,
-              },
+    <nav className={`space-y-3`}>
+      {navItems.map(navItem => {
+        const isActiveFilterGroup = checkIsActiveFilterGroup(navItem);
+
+        return (
+          <Fragment key={`${navItem.key}-${isActiveFilterGroup}`}>
+            {!!navItem.children && (
+              <Collapsible defaultOpen={isActiveFilterGroup} className={`space-y-2`}>
+                <CollapsibleTrigger
+                  className={ctw(
+                    `flex w-full items-center justify-between gap-x-2 rounded-lg p-2 text-sm font-semibold text-[#8990AC] hover:bg-[#EBEEF9] [&[data-state=open]>svg]:rotate-0`,
+                    {
+                      'bg-white text-[#20232E]': isActiveFilterGroup,
+                    },
+                  )}
+                >
+                  <div
+                    className={ctw(`flex items-center gap-x-3 text-left`, {
+                      '[&>svg]:stroke-[#8990AC]': !isActiveFilterGroup,
+                    })}
+                  >
+                    {navItem.icon}
+                    {navItem.text}
+                  </div>
+                  <ChevronDown
+                    size={10}
+                    className={`rotate-[-90deg] transition-transform duration-200 ease-in-out`}
+                  />
+                  <span className="sr-only">Toggle</span>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <ul className={`w-full space-y-2 ps-[1.9rem]`}>
+                    {!!navItem.children?.length &&
+                      navItem.children?.map(childNavItem => (
+                        <NavItem
+                          href={childNavItem.href}
+                          key={childNavItem.key}
+                          className={ctw(
+                            `gap-x-1 px-1.5 py-2 text-xs capitalize hover:bg-[#EBEEF9] hover:text-[#5E688E] active:bg-[#e0e4f6] [&:not([aria-current=page])]:text-[#8990AC]`,
+                            childNavItem.filterId
+                              ? {
+                                  'font-semibold text-[#20232E]':
+                                    childNavItem.filterId === filterId,
+                                  'text-[#8990AC] aria-[current=page]:font-normal':
+                                    childNavItem.filterId !== filterId,
+                                }
+                              : {},
+                          )}
+                        >
+                          <span>{childNavItem.icon}</span>
+                          {childNavItem.text}
+                        </NavItem>
+                      ))}
+                    {!navItem.children?.length && (
+                      <li className={`pe-1.5 ps-2.5 text-xs text-[#8990AC]`}>No items found</li>
+                    )}
+                  </ul>
+                </CollapsibleContent>
+              </Collapsible>
             )}
-          >
-            <div className="flex items-center">
-              <ClipboardCheck size={15} />
-            </div>
-            <div>{name}</div>
-          </NavItem>
-        ))}
-      </ul>
+            {!navItem.children && (
+              <ul className={`w-full space-y-2`} key={navItem.key}>
+                <NavItem
+                  href={navItem.href}
+                  key={navItem.key}
+                  className={ctw(
+                    `flex items-center gap-x-1 px-1.5 py-1 text-sm font-semibold capitalize text-[#8990AC] hover:bg-[#EBEEF9] hover:text-[#5E688E] active:bg-[#e0e4f6]`,
+                    {
+                      'bg-white text-[#20232E]': navItem.filterId === filterId,
+                    },
+                  )}
+                >
+                  <div className={`flex items-center gap-x-3 text-left`}>
+                    {navItem.icon}
+                    {navItem.text}
+                  </div>
+                </NavItem>
+              </ul>
+            )}
+          </Fragment>
+        );
+      })}
     </nav>
   );
 };

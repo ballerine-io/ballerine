@@ -1,5 +1,121 @@
 # @ballerine/common
 
+## 0.9.5
+
+### Patch Changes
+
+- updated enums
+
+## 0.9.4
+
+### Patch Changes
+
+- updated document schemas
+
+## 0.9.3
+
+### Patch Changes
+
+- Added workflow definition theme schemas
+
+## 0.9.2
+
+### Patch Changes
+
+- update schemas
+
+## 0.9.1
+
+### Patch Changes
+
+- bumo
+
+## 0.9.0
+
+### Minor Changes
+
+- 9fe7a5c10: Bump
+
+### Patch Changes
+
+- ver bump
+- 9fe7a5c10: bump
+- 9fe7a5c10: Added base64 provider type
+- 9fe7a5c10: bump
+- 9fe7a5c10: Version bump
+
+## 0.9.0-11210907c.0
+
+### Minor Changes
+
+- Bump
+
+## 0.8.0
+
+### Minor Changes
+
+- version bump
+
+## 0.7.49
+
+### Patch Changes
+
+- version bump
+
+## 0.7.48
+
+### Patch Changes
+
+- Updated context schema
+
+## 0.7.47
+
+### Patch Changes
+
+- Version bump existing changes
+
+## 0.7.46
+
+### Patch Changes
+
+- version bump
+
+## 0.7.45
+
+### Patch Changes
+
+- Updated common enums
+
+## 0.7.44
+
+### Patch Changes
+
+- Fixes for concurrency fixes
+
+## 0.7.43
+
+### Patch Changes
+
+- Ver bump
+
+## 0.7.42
+
+### Patch Changes
+
+- updated document schema validation and text
+
+## 0.7.41
+
+### Patch Changes
+
+- updating versions
+
+## 0.7.40
+
+### Patch Changes
+
+- version bump
+
 ## 0.7.39
 
 ### Patch Changes

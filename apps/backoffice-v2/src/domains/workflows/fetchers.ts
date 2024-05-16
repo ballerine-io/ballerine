@@ -10,6 +10,7 @@ import { zPropertyKey } from '@/lib/zod/utils/z-property-key/z-property-key';
 import { IWorkflowId } from './interfaces';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { WorkflowDefinitionByIdSchema } from '@/domains/workflow-definitions/fetchers';
+import { AmlSchema } from '@/lib/blocks/components/AmlBlock/utils/aml-adapter';
 
 export const fetchWorkflows = async (params: {
   filterId: string;
@@ -65,6 +66,7 @@ export const BaseWorkflowByIdSchema = z.object({
   workflowDefinition: WorkflowDefinitionByIdSchema,
   createdAt: z.string().datetime(),
   context: z.object({
+    aml: AmlSchema.optional(),
     documents: z.array(z.any()).default([]),
     entity: z.record(z.any(), z.any()),
     parentMachine: ObjectWithIdSchema.extend({
@@ -80,14 +82,16 @@ export const BaseWorkflowByIdSchema = z.object({
       .optional(),
     flowConfig: z
       .object({
-        stepsProgress: z.record(
-          z.string(),
-          z.object({
-            // TODO Until backwards compatibility is handled
-            number: z.number().default(0),
-            isCompleted: z.boolean(),
-          }),
-        ),
+        stepsProgress: z
+          .record(
+            z.string(),
+            z.object({
+              // TODO Until backwards compatibility is handled
+              number: z.number().default(0),
+              isCompleted: z.boolean(),
+            }),
+          )
+          .or(z.undefined()),
       })
       .optional(),
   }),
@@ -235,7 +239,6 @@ export const updateWorkflowDecision = async ({
   body: {
     decision: string | null;
     reason?: string;
-    postUpdateEventName?: string;
   };
   contextUpdateMethod: 'base' | 'director';
 }) => {

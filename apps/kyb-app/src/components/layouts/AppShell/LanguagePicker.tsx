@@ -44,9 +44,9 @@ export const LanguagePicker = () => {
         trigger: { icon: <GlobeIcon />, className: 'px-3 gap-x-2 bg-black/5' },
       }}
       onChange={selectedLanguage => {
-        setLanguage(selectedLanguage);
         updateLanguage(selectedLanguage);
         i18next.changeLanguage(selectedLanguage);
+        setLanguage(selectedLanguage);
       }}
     />
   );

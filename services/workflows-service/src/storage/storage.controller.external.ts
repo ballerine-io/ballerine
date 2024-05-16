@@ -4,7 +4,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import * as swagger from '@nestjs/swagger';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import type { Response } from 'express';
-import * as nestAccessControl from 'nest-access-control';
+// import * as nestAccessControl from 'nest-access-control';
 import { StorageService } from './storage.service';
 import * as errors from '../errors';
 import { fileFilter } from './file-filter';
@@ -26,8 +26,8 @@ import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
 export class StorageControllerExternal {
   constructor(
     protected readonly service: StorageService,
-    @nestAccessControl.InjectRolesBuilder()
-    protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
+    // @nestAccessControl.InjectRolesBuilder()
+    // protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
     protected readonly scopeService: ProjectScopeService,
     protected readonly customerService: CustomerService,
   ) {}
@@ -122,10 +122,13 @@ export class StorageControllerExternal {
     if (!persistedFile) {
       throw new errors.NotFoundException('file not found');
     }
+
     let customer;
+
     if (projectIds?.[0]) {
       customer = await this.customerService.getByProjectId(projectIds?.[0]);
     }
+
     if (persistedFile.fileNameInBucket) {
       const localFilePath = await downloadFileFromS3(
         AwsS3FileConfig.getBucketName(process.env) as string,
@@ -135,6 +138,7 @@ export class StorageControllerExternal {
       return res.sendFile(localFilePath, { root: '/' });
     } else {
       const root = path.parse(os.homedir()).root;
+
       return res.sendFile(persistedFile.fileNameOnDisk, { root: root });
     }
   }

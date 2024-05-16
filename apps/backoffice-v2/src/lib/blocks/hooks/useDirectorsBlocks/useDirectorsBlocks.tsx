@@ -1,38 +1,37 @@
-import React, { useCallback, useMemo } from 'react';
-import { getDocumentsByCountry, StateTag, TDocument } from '@ballerine/common';
-import { ctw } from '@ballerine/ui';
-import { UseQueryResult } from '@tanstack/react-query';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
+import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
+import { getRevisionReasonsForDocument } from '@/lib/blocks/components/DirectorsCallToAction/helpers';
+import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { DecisionStatus, Director } from '@/lib/blocks/hooks/useDirectorsBlocks/types';
+import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
+import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import {
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
 } from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { motionBadgeProps } from '../../motion-badge-props';
-import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
-import { useRemoveDecisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRemoveDecisionTaskByIdMutation/useRemoveDecisionTaskByIdMutation';
-import { getPostRemoveDecisionEventName } from '@/pages/Entity/get-post-remove-decision-event-name';
-import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
-import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
-import { getPostDecisionEventName } from '../../components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
-import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { StateTag, TDocument, getDocumentsByCountry } from '@ballerine/common';
+import { Button, ctw } from '@ballerine/ui';
+import { UseQueryResult } from '@tanstack/react-query';
 import { X } from 'lucide-react';
-import { getRevisionReasonsForDocument } from '@/lib/blocks/components/DirectorsCallToAction/helpers';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
+import React, { useCallback, useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
-import { DecisionStatus, Director } from '@/lib/blocks/hooks/useDirectorsBlocks/types';
+import { motionBadgeProps } from '../../motion-badge-props';
 
 export const useDirectorsBlocks = ({
   workflow,
   documentFiles,
   documentImages,
   onReuploadNeeded,
-  isLoadingReuploadNeeded,
 }: {
   workflow: TWorkflowById;
   documentFiles: UseQueryResult[];
-  documentImages: Array<Array<string>>;
+  documentImages: string[][];
   onReuploadNeeded: ({
     workflowId,
     documentId,
@@ -42,12 +41,8 @@ export const useDirectorsBlocks = ({
     documentId: string;
     reason?: string;
   }) => () => void;
-  isLoadingReuploadNeeded: boolean;
 }) => {
-  const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(
-    workflow?.id,
-    getPostRemoveDecisionEventName(workflow),
-  );
+  const { mutate: removeDecisionById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
 
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
@@ -78,9 +73,8 @@ export const useDirectorsBlocks = ({
     });
   }, [documents, removeDecisionById]);
 
-  const postApproveEventName = getPostDecisionEventName(workflow);
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
-    useApproveTaskByIdMutation(workflow?.id, postApproveEventName);
+    useApproveTaskByIdMutation(workflow?.id);
   const onMutateApproveTaskById = useCallback(
     ({
         taskId,
@@ -241,20 +235,54 @@ export const useDirectorsBlocks = ({
               return approvedBadgeBlock;
             } else {
               if (decisionStatus !== 'revision') {
+                const isApproveDisabled =
+                  (!isDoneWithRevision && Boolean(document?.decision?.status)) ||
+                  noAction ||
+                  isLoadingApproveTaskById;
                 const approveButtonBlock = createBlocksTyped()
                   .addBlock()
                   .addCell({
-                    type: 'callToActionLegacy',
+                    type: 'dialog',
                     value: {
-                      text: 'Approve',
+                      trigger: (
+                        <MotionButton
+                          {...motionButtonProps}
+                          animate={{
+                            ...motionButtonProps.animate,
+                            opacity: isApproveDisabled ? 0.5 : motionButtonProps.animate.opacity,
+                          }}
+                          disabled={isApproveDisabled}
+                          size={'wide'}
+                          variant={'success'}
+                        >
+                          Approve
+                        </MotionButton>
+                      ),
+                      title: `Approval confirmation`,
+                      description: <p className={`text-sm`}>Are you sure you want to approve?</p>,
+                      close: (
+                        <div className={`space-x-2`}>
+                          <Button type={'button'} variant={`secondary`}>
+                            Cancel
+                          </Button>
+                          <Button
+                            disabled={isApproveDisabled}
+                            onClick={onMutateApproveTaskById({
+                              taskId: document.id,
+                              contextUpdateMethod: 'director',
+                            })}
+                          >
+                            Approve
+                          </Button>
+                        </div>
+                      ),
                       props: {
-                        decision: 'approve',
-                        id: document.id,
-                        contextUpdateMethod: 'director',
-                        disabled:
-                          (!isDoneWithRevision && Boolean(document?.decision?.status)) || noAction,
-                        workflow,
-                        onReuploadNeeded,
+                        content: {
+                          className: 'mb-96',
+                        },
+                        title: {
+                          className: `text-2xl`,
+                        },
                       },
                     },
                   })

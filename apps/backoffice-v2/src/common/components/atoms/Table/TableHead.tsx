@@ -4,7 +4,7 @@ import { ctw } from '../../../utils/ctw/ctw';
 export const TableHead = React.forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <th
     ref={ref}
     className={ctw(
@@ -12,6 +12,9 @@ export const TableHead = React.forwardRef<
       className,
     )}
     {...props}
-  />
+  >
+    {children}
+  </th>
 ));
+
 TableHead.displayName = 'TableHead';

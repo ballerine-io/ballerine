@@ -2,12 +2,15 @@ import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
 import { useCustomer } from '@/components/providers/CustomerProvider';
+import { useAppExit } from '@/hooks/useAppExit/useAppExit';
 import { withSessionProtected } from '@/hooks/useSessionQuery/hocs/withSessionProtected';
 import { Button, Card } from '@ballerine/ui';
 
 export const Success = withSessionProtected(() => {
   const { t } = useTranslation();
   const { customer } = useCustomer();
+
+  const exitFromApp = useAppExit();
 
   return (
     <div className="flex h-full items-center justify-center">
@@ -26,14 +29,9 @@ export const Success = withSessionProtected(() => {
             {t('success.content')}
           </h2>
         </div>
-        {customer?.displayName && customer?.websiteUrl && (
+        {customer?.displayName && (
           <div className="flex justify-center">
-            <Button
-              variant="secondary"
-              onClick={() => {
-                location.href = customer.websiteUrl;
-              }}
-            >
+            <Button variant="secondary" onClick={exitFromApp}>
               {t('backToPortal', { companyName: customer.displayName })}
             </Button>
           </div>

@@ -10,4 +10,6 @@ export const tagToBadgeData = {
   [StateTag.PENDING_PROCESS]: { variant: 'warning', text: 'Pending ID Verification' },
   [StateTag.FAILURE]: { variant: 'destructive', text: 'Failed' },
   [StateTag.DATA_ENRICHMENT]: { variant: 'violet', text: 'Awaiting 3rd Party Data' },
+  [StateTag.DISMISSED]: { variant: 'success', text: 'Dismissed' },
+  [StateTag.FLAGGED]: { variant: 'destructive', text: 'Flagged' },
 } as const;

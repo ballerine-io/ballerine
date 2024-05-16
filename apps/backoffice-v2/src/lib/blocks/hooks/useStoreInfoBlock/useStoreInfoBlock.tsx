@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
-import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { useMemo } from 'react';
 
 export const useStoreInfoBlock = ({ storeInfo, workflow }) => {
   return useMemo(() => {
@@ -20,7 +20,7 @@ export const useStoreInfoBlock = ({ storeInfo, workflow }) => {
           })
           .addCell({
             type: 'subheading',
-            value: 'User-provided data',
+            value: 'User-Provided Data',
           })
           .addCell({
             type: 'container',

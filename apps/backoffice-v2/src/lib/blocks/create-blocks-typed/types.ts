@@ -1,11 +1,3 @@
-import { Block } from '@ballerine/blocks';
-import { ComponentProps, ReactNode } from 'react';
-import { MotionBadge } from '@/common/components/molecules/MotionBadge/MotionBadge';
-import { TWorkflowById } from '@/domains/workflows/fetchers';
-import { GenericAsyncFunction, GenericFunction } from '@/common/types';
-import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { AnyObject } from '@ballerine/ui';
-import { CommonWorkflowStates } from '@ballerine/common';
 import {
   Table,
   TableBody,
@@ -15,11 +7,21 @@ import {
   TableHeader,
   TableRow,
 } from '@/common/components/atoms/Table';
-import { ColumnDef, TableOptions } from '@tanstack/react-table';
 import { Dialog } from '@/common/components/molecules/Dialog/Dialog';
-import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
+import { MotionBadge } from '@/common/components/molecules/MotionBadge/MotionBadge';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { GenericAsyncFunction, GenericFunction } from '@/common/types';
+import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { ICallToActionLegacyProps } from '@/lib/blocks/components/CallToActionLegacy/interfaces';
+import { ICallToActionDocumentSelection } from '@/lib/blocks/components/DirectorsCallToAction/interfaces';
 import { IEditableDetailsDocument } from '@/lib/blocks/components/EditableDetails/interfaces';
+import { TPDFViewerCell } from '@/lib/blocks/components/PDFViewerCell/interfaces';
+import { Block } from '@ballerine/blocks';
+import { CommonWorkflowStates } from '@ballerine/common';
+import { AnyChildren, AnyObject } from '@ballerine/ui';
+import { ColumnDef, TableOptions } from '@tanstack/react-table';
+import { ComponentProps, ReactNode } from 'react';
+import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
 
 export type TBlockCell = {
   type: 'block';
@@ -188,7 +190,7 @@ export type TTableCell = {
   value: {
     caption?: ComponentProps<typeof TableCaption>['children'];
     columns: Array<ColumnDef<unknown>>;
-    data: Array<unknown>;
+    data: unknown[];
     props?: {
       table?: ComponentProps<typeof Table>;
       header?: ComponentProps<typeof TableHeader>;
@@ -202,6 +204,11 @@ export type TTableCell = {
   };
 };
 
+export type TDataTableCell = {
+  type: 'dataTable';
+  value: ComponentProps<typeof DataTable>;
+};
+
 export type TParagraphCell = {
   type: 'paragraph';
   value: ReactNode | ReactNode[];
@@ -211,6 +218,11 @@ export type TParagraphCell = {
 export type TDialogCell = {
   type: 'dialog';
   value: ComponentProps<typeof Dialog>;
+};
+
+export type TNodeCell = {
+  type: 'node';
+  value: AnyChildren;
 };
 
 export type TCell =
@@ -230,5 +242,8 @@ export type TCell =
   | TMapCell
   | TCaseCallToActionLegacyCell
   | TTableCell
+  | TDataTableCell
   | TParagraphCell
-  | TDialogCell;
+  | TDialogCell
+  | TNodeCell
+  | TPDFViewerCell;

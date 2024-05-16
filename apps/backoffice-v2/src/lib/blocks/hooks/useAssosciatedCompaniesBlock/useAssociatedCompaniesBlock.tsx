@@ -6,18 +6,19 @@ import { associatedCompanyAdapter } from './associated-company-adapter';
 import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 
-export const motionButtonProps: ComponentProps<typeof MotionButton> = {
+export const motionButtonProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
   initial: { y: 10, opacity: 0 },
   transition: { type: 'spring', bounce: 0.3 },
   animate: { y: 0, opacity: 1, transition: { duration: 0.2 } },
-};
+} satisfies ComponentProps<typeof MotionButton>;
 
 export const useAssociatedCompaniesBlock = ({
   workflows,
   dialog,
+  isAssociatedCompanyKybEnabled,
 }: {
-  workflows: Array<TWorkflowById>;
+  workflows: TWorkflowById[];
   dialog: {
     Title: FunctionComponent<{
       associatedCompany: ReturnType<typeof associatedCompanyAdapter>;
@@ -30,6 +31,7 @@ export const useAssociatedCompaniesBlock = ({
     }>;
     Close: FunctionComponent<{ associatedCompany: ReturnType<typeof associatedCompanyAdapter> }>;
   };
+  isAssociatedCompanyKybEnabled: boolean;
 }) => {
   const transformedAssociatedCompanies = useMemo(
     () => workflows?.map(workflow => associatedCompanyAdapter(workflow)),
@@ -143,7 +145,8 @@ export const useAssociatedCompaniesBlock = ({
                           })
                           .build()
                           .flat(1),
-                        ...(associatedCompany?.nextEvents?.includes('START_ASSOCIATED_COMPANY_KYB')
+                        ...(isAssociatedCompanyKybEnabled &&
+                        associatedCompany?.nextEvents?.includes('START_ASSOCIATED_COMPANY_KYB')
                           ? createBlocksTyped()
                               .addBlock()
                               .addCell({

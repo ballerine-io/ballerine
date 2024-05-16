@@ -31,6 +31,7 @@ export class FileRepository {
     projectIds: TProjectIds,
   ): Promise<File | null> {
     const { where, ...restArgs } = args;
+
     return await this.prisma.file.findFirst(
       this.scopeService.scopeFindFirst(
         {

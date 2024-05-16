@@ -17,6 +17,10 @@ declare global {
       startTime: number;
     }
   }
+
+  interface BigInt {
+    toJSON(): string;
+  }
 }
 
 export {};

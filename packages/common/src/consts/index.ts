@@ -8,21 +8,26 @@ export const StateTag = {
   COLLECTION_FLOW: 'collection_flow',
   FAILURE: 'failure',
   DATA_ENRICHMENT: 'data_enrichment',
+  FLAGGED: 'flagged',
+  DISMISSED: 'dismissed',
 } as const;
 
 export const StateTags = [
   StateTag.APPROVED,
   StateTag.REJECTED,
+  StateTag.RESOLVED,
   StateTag.REVISION,
   StateTag.MANUAL_REVIEW,
   StateTag.PENDING_PROCESS,
   StateTag.COLLECTION_FLOW,
-  StateTag.RESOLVED,
   StateTag.FAILURE,
-] as const;
+  StateTag.DATA_ENRICHMENT,
+  StateTag.FLAGGED,
+  StateTag.DISMISSED,
+] as const satisfies ReadonlyArray<(typeof StateTag)[keyof typeof StateTag]>;
 
 export const CommonWorkflowEvent = {
-  TASK_REVIEWED: 'TASK_REVIEWED',
+  START: 'START',
   CASE_REVIEWED: 'CASE_REVIEWED',
   RETURN_TO_REVIEW: 'RETURN_TO_REVIEW',
   RESUBMITTED: 'RESUBMITTED',
@@ -30,14 +35,19 @@ export const CommonWorkflowEvent = {
   APPROVE: 'approve',
   REVISION: 'revision',
   RESOLVE: 'resolve',
+  FLAG: 'flag',
+  DISMISS: 'dismiss',
 } as const;
 
 export const CommonWorkflowStates = {
+  IDLE: 'idle',
   MANUAL_REVIEW: 'manual_review',
   REJECTED: 'rejected',
   APPROVED: 'approved',
   RESOLVED: 'resolved',
   REVISION: 'revision',
+  FLAGGED: 'flagged',
+  DISMISSED: 'dismissed',
 } as const;
 
 export type TStateTag = (typeof StateTags)[number];
@@ -49,6 +59,7 @@ export const WorkflowDefinitionVariant = {
   KYB_WITH_ASSOCIATED_COMPANIES: 'KYB_WITH_ASSOCIATED_COMPANIES',
   KYC: 'KYC',
   DEFAULT: 'DEFAULT',
+  ONGOING: 'ONGOING',
 } as const;
 
 export type TStateTags = typeof StateTags;
@@ -85,3 +96,19 @@ export const UnifiedApiReasons = [
 export type TUnifiedApiReason = (typeof UnifiedApiReasons)[number];
 
 export type TUnifiedApiReasons = typeof UnifiedApiReasons;
+
+export const WorkflowDefinitionConfigThemeEnum = {
+  KYC: 'kyc',
+  KYB: 'kyb',
+  DOCUMENTS_REVIEW: 'documents-review',
+} as const;
+
+export const WorkflowDefinitionConfigThemes = [
+  WorkflowDefinitionConfigThemeEnum.KYB,
+  WorkflowDefinitionConfigThemeEnum.KYC,
+  WorkflowDefinitionConfigThemeEnum.DOCUMENTS_REVIEW,
+] as const satisfies ReadonlyArray<
+  (typeof WorkflowDefinitionConfigThemeEnum)[keyof typeof WorkflowDefinitionConfigThemeEnum]
+>;
+
+export type TWorkflowDefinitionConfigTheme = (typeof WorkflowDefinitionConfigThemes)[number];

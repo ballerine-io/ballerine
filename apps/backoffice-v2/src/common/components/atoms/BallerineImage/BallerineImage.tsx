@@ -1,8 +1,8 @@
-import { forwardRef, ReactEventHandler, useCallback, useEffect, useState } from 'react';
-import { IBallerineImageProps } from './interfaces';
 import { isFunction } from '@ballerine/common';
-import { PhotoSvg } from '../icons';
+import { forwardRef, ReactEventHandler, useCallback, useEffect, useState } from 'react';
 import { ctw } from '../../../utils/ctw/ctw';
+import { PhotoSvg } from '../icons';
+import { IBallerineImageProps } from './interfaces';
 
 /**
  * @description An img element with default styling, and a Skeleton placeholder.
@@ -55,7 +55,7 @@ export const BallerineImage = forwardRef<HTMLImageElement, IBallerineImageProps>
             <div className="d-full flex items-center justify-center">{placeholder}</div>
           ) : (
             <div className={`d-full flex items-center justify-center`}>
-              <PhotoSvg className={`w-[70%]`} />
+              <PhotoSvg className={`w-[24px]`} />
             </div>
           )}
         </div>

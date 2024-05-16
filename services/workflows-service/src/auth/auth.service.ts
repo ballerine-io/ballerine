@@ -19,8 +19,10 @@ export class AuthService {
 
       const { id, firstName, lastName, roles } = user;
       const roleList = roles as string[];
+
       return { id, email, firstName, lastName, roles: roleList };
     }
+
     return null;
   }
 }

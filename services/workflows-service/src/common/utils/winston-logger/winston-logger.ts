@@ -1,6 +1,6 @@
 import { IAppLogger, LogPayload } from '@/common/abstract-logger/abstract-logger';
 import { env } from '@/env';
-import { createLogger, format, transports, Logger as TWinstonLogger } from 'winston';
+import { createLogger, format, Logger as TWinstonLogger, transports } from 'winston';
 
 export class WinstonLogger implements IAppLogger {
   private logger: TWinstonLogger;
@@ -11,15 +11,18 @@ export class WinstonLogger implements IAppLogger {
     const jsonFormat = format.combine(format.timestamp(), format.json(), format.uncolorize());
 
     const prettyFormat = format.combine(
+      format.errors({ stack: true }),
       format.colorize({ all: true }),
       format.timestamp(),
       format.splat(),
       format.printf(({ timestamp, level, message, ...metadata }) => {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         let msg = `${timestamp} [${level}] : ${message} `;
+
         if (Object.keys(metadata).length > 0) {
           msg += JSON.stringify(metadata, null, 2);
         }
+
         return msg;
       }),
     );
@@ -57,8 +60,12 @@ export class WinstonLogger implements IAppLogger {
     this.logger.info(message, payload);
   }
 
-  error(message: string, payload: LogPayload = {}) {
-    this.logger.error(message, payload);
+  error(error: Error | string, payload: LogPayload = {}) {
+    if (typeof error === 'string') {
+      this.logger.error({ message: error, ...payload });
+    } else {
+      this.logger.error({ error, ...payload });
+    }
   }
 
   warn(message: string, payload: LogPayload = {}) {

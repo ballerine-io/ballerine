@@ -9,6 +9,7 @@ export class RemoveTempFileInterceptor implements NestInterceptor {
   constructor(private readonly logger: AppLoggerService) {}
   private deleteTempFile(req: Request) {
     const filePath = req?.file?.path;
+
     if (filePath) {
       try {
         // Your logic to handle deletion (for example, using fs.unlink)

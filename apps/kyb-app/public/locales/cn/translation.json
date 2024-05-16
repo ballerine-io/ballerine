@@ -6,7 +6,7 @@
   "contact": "接触 {{companyName}} 获取支持",
   "backToPortal": "返回 {{companyName}} 门户",
   "addLabel": "添加",
-  "optionalLabel": "（选修的）",
+  "optionalLabel": "（选填）",
   "rejected": {
     "header": "帐户激活被拒绝",
     "content": "激活您的帐户时似乎出现问题。"

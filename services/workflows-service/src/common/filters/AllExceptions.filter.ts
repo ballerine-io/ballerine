@@ -1,11 +1,11 @@
 import { env } from '@/env';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { inspect } from 'util';
 import { ArgumentsHost, Catch, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
 import type { Request, Response } from 'express';
 import { HttpStatusCode } from 'axios';
-import { AjvValidationError } from '@/errors';
+import { ValidationError } from '@/errors';
+import { inspect } from 'node:util';
 
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
@@ -22,8 +22,9 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
   }
 
   private _handleHttpErrorResponse(exception: unknown, request: Request, response: Response) {
+    const errors = exception instanceof ValidationError ? { errors: exception.getErrors() } : {};
+
     const serverError = this.getHttpException(exception);
-    const errors = exception instanceof AjvValidationError ? exception.serializeErrors() : [];
 
     if (this._logErrorIfRelevant(serverError.getStatus())) {
       this.logError(request, serverError);
@@ -34,11 +35,14 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
       .setHeader('Content-Type', 'application/json')
       .json({
         errorCode: String(HttpStatusCode[serverError.getStatus()]),
-        message: serverError.message,
-        errors,
+        message:
+          typeof serverError.getResponse() === 'string'
+            ? serverError.getResponse()
+            : serverError.message,
         statusCode: serverError.getStatus(),
         timestamp: new Date().toISOString(),
         path: request.url,
+        ...errors,
       });
   }
 
@@ -49,7 +53,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     }
 
     return new InternalServerErrorException({
-      cause: inspect(exception),
+      cause: exception,
     });
   }
 
@@ -62,18 +66,16 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     return (status >= 400 && ![401, 403].includes(status)) || env.LOG_LEVEL === 'debug';
   }
 
-  private logError(request: Request<unknown>, error: HttpException | AjvValidationError) {
+  private logError(request: Request<unknown>, error: HttpException) {
     const status = error.getStatus();
     const message = this.composeLogMesesageForStatus(status);
-    const errors = error instanceof AjvValidationError ? error.serializeErrors() : [];
     const errorRes = error.getResponse() as HttpException | undefined;
 
     this.logger.error(message, {
       name: error.name,
       status,
-      error: errorRes,
+      error: inspect(errorRes),
       message: error.message,
-      errors,
       responseTime: Date.now() - request.startTime,
     });
   }
@@ -86,6 +88,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     } else if (status >= 500) {
       message = message + ' - Server Error:';
     }
+
     return message;
   }
 }

@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
-import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
+import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { useMemo } from 'react';
 
 export const useDirectorsUserProvidedBlock = directorsUserProvided => {
   return useMemo(() => {
@@ -20,7 +20,7 @@ export const useDirectorsUserProvidedBlock = directorsUserProvided => {
           })
           .addCell({
             type: 'subheading',
-            value: 'User-provided Data',
+            value: 'User-Provided Data',
             props: {
               className: 'mb-4',
             },

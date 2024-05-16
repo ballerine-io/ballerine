@@ -36,6 +36,7 @@ export const initHttpMoudle = () =>
       };
 
       const timeout = configService.get('HTTP_TIMEOUT_IN_MS', 10_000);
+
       return {
         timeout,
         maxRedirects: configService.get('HTTP_MAX_REDIRECTS', 10),

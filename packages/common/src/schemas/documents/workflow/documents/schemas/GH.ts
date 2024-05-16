@@ -6,6 +6,7 @@ const alphaNumeric = '^[a-zA-Z0-9]*$';
 
 export const getGhanaDocuments = (): TDocument[] => {
   const TypeAlphanumericString = Type.String({ pattern: '^[a-zA-Z0-9]*$' });
+  const TypeNonEmptyAlphanumericString = Type.String({ pattern: '^[a-zA-Z0-9]*$', minLength: 1 });
   const TypeAlphanumericWithSpacesString = Type.String({ pattern: '^[\\sa-zA-Z0-9]*$' });
   const TypePastDate = Type.String({
     format: 'date',
@@ -16,7 +17,7 @@ export const getGhanaDocuments = (): TDocument[] => {
     formatMinimum: new Date().toISOString().split('T')[0],
   });
   const TypeNationalIdNumber = Type.String({ pattern: ghNationalIdNumber });
-  const TypeStringAtLeastOneWord = Type.String({ minLength: 1 });
+  const TypeNonEmptyString = Type.String({ minLength: 1 });
   const TypeStringEnum = <T extends string[]>(values: [...T]) =>
     Type.Unsafe<T[number]>({
       type: 'string',
@@ -39,6 +40,20 @@ export const getGhanaDocuments = (): TDocument[] => {
         timeRun: Type.Optional(Type.String()),
       }),
     },
+    {
+      category: 'business_document',
+      type: 'mtn_statement',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        msisdn: Type.String({ pattern: '^233[0-9]{9}$' }),
+        accountHolderName: Type.String(),
+        from: Type.Optional(Type.String({ format: 'date' })),
+        to: Type.Optional(Type.String({ format: 'date' })),
+        timeRun: Type.Optional(Type.String()),
+      }),
+    },
 
     //     {
     //       category: 'financial_information',
@@ -48,13 +63,51 @@ export const getGhanaDocuments = (): TDocument[] => {
     //       version: 1,
     //       propertiesSchema: Type.Object({
     //         msisdn: Type.String({ pattern: '^233[0-9]{9}$' }),
-    //         accountHolderName: TypeStringAtLeastOneWord,
+    //         accountHolderName: TypeNonEmptyString,
     //         from: Type.String({ format: 'date' }),
     //         to: Type.String({ format: 'date' }),
     //         timeRun: Type.String(),
     //       }),
     //     },
 
+    {
+      category: 'business_document',
+      type: 'bank_statement',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        issuer: TypeStringEnum([
+          'Absa Bank Ghana Limited',
+          'Access Bank Ghana Plc',
+          'Agricultural Development Bank of Ghana',
+          'Bank of Africa Ghana Limited',
+          'CalBank Limited',
+          'Consolidated Bank Ghana Limited',
+          'Ecobank Ghana Limited',
+          'FBN Bank Ghana Limited',
+          'Fidelity Bank Ghana Limited',
+          'First Atlantic Bank Limited',
+          'First National Bank Ghana',
+          'GCB Bank Limited',
+          'Guaranty Trust Bank Ghana Limited',
+          'National Investment Bank Limited',
+          'OmniBSIC Bank Ghana Limited',
+          'Prudential Bank Limited',
+          'Republic Bank Ghana',
+          'Societe Generale Ghana Limited',
+          'Stanbic Bank Ghana Limited',
+          'Standard Chartered Bank Ghana Limited',
+          'United Bank for Africa Ghana Limited',
+          'Zenith Bank Ghana Limited',
+        ]),
+        printDate: Type.String({ format: 'date-time' }),
+        accountHolderName: TypeNonEmptyString,
+        from: Type.String({ format: 'date' }),
+        to: Type.String({ format: 'date' }),
+        accountNumber: Type.Optional(Type.String()),
+      }),
+    },
     {
       category: 'financial_information',
       type: 'bank_statement',
@@ -87,7 +140,7 @@ export const getGhanaDocuments = (): TDocument[] => {
           'Zenith Bank Ghana Limited',
         ]),
         printDate: Type.String({ format: 'date-time' }),
-        accountHolderName: TypeStringAtLeastOneWord,
+        accountHolderName: TypeNonEmptyString,
         from: Type.String({ format: 'date' }),
         to: Type.String({ format: 'date' }),
         accountNumber: Type.Optional(Type.String()),
@@ -656,7 +709,7 @@ export const getGhanaDocuments = (): TDocument[] => {
 
     // Proof of Registration
     {
-      category: 'proof_of_registration',
+      category: 'business_document',
       type: 'certificate_of_registration',
       issuer: { country: 'GH' },
       issuingVersion: 1,
@@ -670,6 +723,19 @@ export const getGhanaDocuments = (): TDocument[] => {
     },
     {
       category: 'proof_of_registration',
+      type: 'certificate_of_registration',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        taxIdNumber: TypeAlphanumericString,
+        registrationNumber: TypeAlphanumericString,
+        issueDate: TypePastDate,
+      }),
+    },
+    {
+      category: 'business_document',
       type: 'operating_permit',
       issuer: { country: 'GH' },
       issuingVersion: 1,
@@ -679,6 +745,32 @@ export const getGhanaDocuments = (): TDocument[] => {
         registrationNumber: Type.Optional(TypeAlphanumericString),
         issueDate: TypePastDate,
         expirationDate: TypeFutureDate,
+      }),
+    },
+    {
+      category: 'proof_of_registration',
+      type: 'operating_permit',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        registrationNumber: Type.Optional(TypeAlphanumericString),
+        issueDate: TypePastDate,
+        expirationDate: TypeFutureDate,
+      }),
+    },
+    {
+      category: 'business_document',
+      type: 'district_assembly_certificate',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        certificateNumber: TypeAlphanumericString,
+        businessName: TypeAlphanumericWithSpacesString,
+        registrationNumber: Type.Optional(TypeAlphanumericString),
+        issueDate: TypePastDate,
       }),
     },
     {
@@ -696,6 +788,23 @@ export const getGhanaDocuments = (): TDocument[] => {
     },
     // Proof of Ownership
     {
+      category: 'business_document',
+      type: 'form_a',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        registrationNumber: TypeNonEmptyAlphanumericString,
+        taxIdNumber: TypeAlphanumericString,
+        issueDate: TypePastDate,
+        firstName: Type.String(),
+        middleName: Type.Optional(Type.String()),
+        lastName: Type.String(),
+        dateOfBirth: TypePastDate,
+      }),
+    },
+    {
       category: 'proof_of_ownership',
       type: 'form_a',
       issuer: { country: 'GH' },
@@ -703,14 +812,24 @@ export const getGhanaDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object({
         businessName: Type.String(),
-        registrationNumber: TypeAlphanumericString,
+        registrationNumber: TypeNonEmptyAlphanumericString,
         taxIdNumber: TypeAlphanumericString,
         issueDate: TypePastDate,
         firstName: Type.String(),
         middleName: Type.Optional(Type.String()),
         lastName: Type.String(),
         dateOfBirth: TypePastDate,
-        nationalIdNumber: TypeNationalIdNumber,
+      }),
+    },
+    {
+      category: 'business_document',
+      type: 'receipt_for_permit',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        issueDate: TypePastDate,
       }),
     },
     {
@@ -721,6 +840,18 @@ export const getGhanaDocuments = (): TDocument[] => {
       version: 1,
       propertiesSchema: Type.Object({
         businessName: Type.String(),
+        issueDate: TypePastDate,
+      }),
+    },
+    {
+      category: 'business_document',
+      type: 'property_rate',
+      issuer: { country: 'GH' },
+      issuingVersion: 1,
+      version: 1,
+      propertiesSchema: Type.Object({
+        businessName: Type.String(),
+        payerName: Type.String(),
         issueDate: TypePastDate,
       }),
     },

@@ -1,28 +1,20 @@
-import { FunctionComponent } from 'react';
 import { AccordionCard, HoverCard, HoverCardContent, HoverCardTrigger } from '@ballerine/ui';
+import { FunctionComponent } from 'react';
 
-import { useProcessTrackerLogic } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTrackerLogic/useProcessTrackerLogic';
+import { Icon } from '@/common/components/molecules/ProcessTracker/constants';
+import { useProcessTracker } from '@/common/components/molecules/ProcessTracker/hooks/useProcessTracker/useProcessTracker';
 import { IProcessTrackerProps } from '@/common/components/molecules/ProcessTracker/interfaces';
 import { HelpCircle } from 'lucide-react';
-import { Icon } from '@/common/components/molecules/ProcessTracker/constants';
 
 export const ProcessTracker: FunctionComponent<IProcessTrackerProps> = ({
-  tags,
   plugins,
-  context,
-  childWorkflows,
+  workflow,
+  processes,
 }) => {
-  const {
-    uncollapsedItemValue,
-    onValueChange,
-    thirdPartyProcessesSubitems,
-    collectionFlowSubitems,
-    uboFlowsSubitems,
-  } = useProcessTrackerLogic({
-    tags,
+  const { uncollapsedItemValue, onValueChange, trackedProcesses } = useProcessTracker({
     plugins,
-    context,
-    childWorkflows,
+    workflow,
+    processes,
   });
 
   return (
@@ -69,17 +61,9 @@ export const ProcessTracker: FunctionComponent<IProcessTrackerProps> = ({
           Processes
         </AccordionCard.Title>
         <AccordionCard.Content>
-          <AccordionCard.Item
-            title={`Collection flow`}
-            value={`Collection flow`}
-            subitems={collectionFlowSubitems}
-          />
-          <AccordionCard.Item
-            title={`3rd party processes`}
-            value={`3rd party processes`}
-            subitems={thirdPartyProcessesSubitems}
-          />
-          <AccordionCard.Item title={`UBO flows`} value={`UBO flows`} subitems={uboFlowsSubitems} />
+          {trackedProcesses.map(({ name, title, subitems }) => (
+            <AccordionCard.Item key={name} title={title} value={name} subitems={subitems} />
+          ))}
         </AccordionCard.Content>
       </AccordionCard>
     </div>

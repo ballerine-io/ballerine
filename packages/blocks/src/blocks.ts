@@ -1,19 +1,132 @@
-import type {
-  Block,
-  Blocks,
-  BlocksOptions,
-  Cell,
-  InferAllButLastArrayElements,
-  InferLastArrayElement,
-  InvalidCellMessage,
-} from '@/types';
 import { dump, log, raise } from '@ballerine/common';
+import type { ComponentProps, FunctionComponent, ReactNode } from 'react';
 
-export const createBlocks = <TCell extends Cell | InvalidCellMessage = InvalidCellMessage>(
-  options: BlocksOptions = {},
-) =>
-  new BlocksBuilder<// @ts-expect-error - A generic should always be provided.
-  TCell>([], options);
+/**
+ * A cell may have any property as long as it has a `type` property to discriminate a union by.
+ */
+export type Cell = { type: string } & {
+  [key: string]: unknown;
+};
+
+export type Block = Cell[];
+
+export type Blocks = Block[];
+
+/**
+ * Takes an array of arrays and flattens it once. [[1,2], [3,4]] => [1,2,3,4]
+ */
+export type FlattenOnce<T extends any[]> = T extends [infer U, ...infer V]
+  ? U extends any[]
+    ? [...U, ...FlattenOnce<V extends any[] ? V : []>]
+    : [U, ...FlattenOnce<V extends any[] ? V : []>]
+  : [];
+
+/**
+ * Allow the consumer of `@ballerine/blocks` to register their own cell types.
+ * @example
+ * declare module '@ballerine/blocks' {
+ *    interface BlocksClient {
+ *      cells: typeof blocks; // createBlocks<TCell>();
+ *    }
+ *  }
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface BlocksClient {
+  // cells: ReturnType<typeof createBlocks<TCell>>;
+}
+
+/**
+ * Infer the generic passed into an instance of `BlocksBuilder`.
+ */
+type InferBlocksBuilderGeneric<TClass extends BlocksBuilder<any>> = TClass extends BlocksBuilder<
+  infer TCell
+>
+  ? TCell
+  : never;
+
+/**
+ * Infer the generic passed into the instance of `BlocksBuilder` registered by the consumer of `@ballerine/blocks`.
+ */
+export type Cells =
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  InferBlocksBuilderGeneric<BlocksClient['cells']>;
+
+/**
+ * Extract the type of cell from the registered cells.
+ */
+export type CellType = Cells['type'];
+
+/**
+ * Extract the props of a cell by type from the registered cells.
+ * @example
+ * const Cell: FunctionComponent<ExtractCellProps<'text'>> = ({ text }) => <p>{text}</p>;
+ */
+export type ExtractCellProps<TType extends CellType> = Omit<
+  Extract<Cells, { type: TType }>,
+  'type'
+>;
+
+/**
+ * A type to help build objects of cell components.
+ * @example
+ * const cells: CellsMap = {
+ *    text: TextCell,
+ *    image: ImageCell,
+ *  }
+ */
+export type CellsMap = {
+  [TType in CellType]: FunctionComponent<ExtractCellProps<TType>>;
+};
+
+export type InferAllButLastArrayElements<T extends any[]> = T extends [...infer U, any] ? U : [];
+
+export type InferLastArrayElement<T extends any[]> = T extends [...any, infer U] ? U : never;
+
+export type InferArrayElement<T extends any[]> = T extends Array<infer U> ? U : never;
+
+export interface BlocksProps<TCell extends Cells> {
+  /**
+   * @description A map of cell components
+   * @example
+   * const cells: CellsMap = {
+   *    text: TextCell,
+   *    image: ImageCell,
+   *  }
+   */
+  cells: CellsMap;
+  /**
+   * @description Output of `createBlocks.build()`
+   * @see {@link BlockBuilder.build}
+   */
+  blocks: TCell[][];
+  /**
+   * The `block` prop is only passed when the `Block` property component is passed.
+   */
+  Block?: FunctionComponent<{
+    children: ReactNode | ReactNode[];
+    block: TCell[];
+  }>;
+  /**
+   * @description children as a function - provides access to the current block and cell
+   * @param Cell
+   * @param cell
+   * @param block
+   */
+  children: (
+    Cell: CellsMap[keyof CellsMap],
+    cell: ComponentProps<CellsMap[keyof CellsMap]>,
+    block: TCell[],
+  ) => ReactNode | ReactNode[];
+}
+
+export type InvalidCellMessage =
+  "Please provide a union of available cell types discriminated by '{ type: string; }'";
+
+export interface BlocksOptions {
+  debug?: boolean;
+  verbose?: boolean;
+}
 
 export class BlocksBuilder<
   TCell extends Cell,
@@ -122,6 +235,10 @@ export class BlocksBuilder<
     return this.#__blocks;
   }
 
+  buildFlat() {
+    return this.#__blocks.flat(1) as FlattenOnce<TBlocks>;
+  }
+
   #__logger(message: string) {
     try {
       log(!!this.#__options?.debug, {
@@ -140,3 +257,9 @@ export class BlocksBuilder<
     }
   }
 }
+
+export const createBlocks = <TCell extends Cell | InvalidCellMessage = InvalidCellMessage>(
+  options: BlocksOptions = {},
+) =>
+  new BlocksBuilder<// @ts-expect-error - A generic should always be provided.
+  TCell>([], options);

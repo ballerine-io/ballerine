@@ -1,45 +1,50 @@
-import { useParams } from 'react-router-dom';
-import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useWorkflowByIdQuery } from '@/domains/workflows/hooks/queries/useWorkflowByIdQuery/useWorkflowByIdQuery';
+import { Button } from '@/common/components/atoms/Button/Button';
+import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
-import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
 import { useRevisionTaskByIdMutation } from '@/domains/entities/hooks/mutations/useRevisionTaskByIdMutation/useRevisionTaskByIdMutation';
-import { useCallback, useMemo } from 'react';
-import toast from 'react-hot-toast';
-import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
-import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
 import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { useEventMutation } from '@/domains/workflows/hooks/mutations/useEventMutation/useEventMutation';
-import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
-import { Button } from '@/common/components/atoms/Button/Button';
-import { ctw } from '@/common/utils/ctw/ctw';
-import { Send } from 'lucide-react';
 import { useAssociatedCompaniesInformationBlock } from '@/lib/blocks/hooks/useAssociatedCompaniesInformationBlock/useAssociatedCompaniesInformationBlock';
-import { getPostDecisionEventName } from '@/lib/blocks/components/CallToActionLegacy/hooks/useCallToActionLegacyLogic/useCallToActionLegacyLogic';
-import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
-import { useRegistryInfoBlock } from '@/lib/blocks/hooks/useRegistryInfoBlock/useRegistryInfoBlock';
-import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBlock/useKybRegistryInfoBlock';
-import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
-import { useEntityInfoBlock } from '@/lib/blocks/hooks/useEntityInfoBlock/useEntityInfoBlock';
-import { useMapBlock } from '@/lib/blocks/hooks/useMapBlock/useMapBlock';
-import { useStoreInfoBlock } from '@/lib/blocks/hooks/useStoreInfoBlock/useStoreInfoBlock';
-import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
-import { useBankingDetailsBlock } from '@/lib/blocks/hooks/useBankingDetailsBlock/useBankingDetailsBlock';
-import { useProcessingDetailsBlock } from '@/lib/blocks/hooks/useProcessingDetailsBlock/useProcessingDetailsBlock';
-import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
-import { useMainContactBlock } from '@/lib/blocks/hooks/useMainContactBlock/useMainContactBlock';
-import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
-import { useUbosBlock } from '@/lib/blocks/hooks/useUbosBlock/useUbosBlock';
-import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
-import { useDirectorsBlocks } from '@/lib/blocks/hooks/useDirectorsBlocks';
-import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
-import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
 import { associatedCompanyAdapter } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/associated-company-adapter';
 import {
   motionButtonProps,
   useAssociatedCompaniesBlock,
 } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { useBankingDetailsBlock } from '@/lib/blocks/hooks/useBankingDetailsBlock/useBankingDetailsBlock';
+import { useCaseInfoBlock } from '@/lib/blocks/hooks/useCaseInfoBlock/useCaseInfoBlock';
+import { useCompanySanctionsBlock } from '@/lib/blocks/hooks/useCompanySanctionsBlock/useCompanySanctionsBlock';
+import { useDirectorsBlocks } from '@/lib/blocks/hooks/useDirectorsBlocks';
+import { useDirectorsRegistryProvidedBlock } from '@/lib/blocks/hooks/useDirectorsRegistryProvidedBlock/useDirectorsRegistryProvidedBlock';
+import { useDirectorsUserProvidedBlock } from '@/lib/blocks/hooks/useDirectorsUserProvidedBlock/useDirectorsUserProvidedBlock';
+import { useDocumentBlocks } from '@/lib/blocks/hooks/useDocumentBlocks/useDocumentBlocks';
+import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages';
+import { useDocumentReviewBlocks } from '@/lib/blocks/hooks/useDocumentReviewBlocks/useDocumentReviewBlocks';
+import { useKYCBusinessInformationBlock } from '@/lib/blocks/hooks/useKYCBusinessInformationBlock/useKYCBusinessInformationBlock';
+import { useKybRegistryInfoBlock } from '@/lib/blocks/hooks/useKybRegistryInfoBlock/useKybRegistryInfoBlock';
+import { useMainContactBlock } from '@/lib/blocks/hooks/useMainContactBlock/useMainContactBlock';
+import { useMainRepresentativeBlock } from '@/lib/blocks/hooks/useMainRepresentativeBlock/useMainRepresentativeBlock';
+import { useMapBlock } from '@/lib/blocks/hooks/useMapBlock/useMapBlock';
+import { useProcessTrackerBlock } from '@/lib/blocks/hooks/useProcessTrackerBlock/useProcessTrackerBlock';
+import { useProcessingDetailsBlock } from '@/lib/blocks/hooks/useProcessingDetailsBlock/useProcessingDetailsBlock';
+import { useRegistryInfoBlock } from '@/lib/blocks/hooks/useRegistryInfoBlock/useRegistryInfoBlock';
+import { useStoreInfoBlock } from '@/lib/blocks/hooks/useStoreInfoBlock/useStoreInfoBlock';
+import { useUbosRegistryProvidedBlock } from '@/lib/blocks/hooks/useUbosRegistryProvidedBlock/useUbosRegistryProvidedBlock';
+import { useUbosUserProvidedBlock } from '@/lib/blocks/hooks/useUbosUserProvidedBlock/useUbosUserProvidedBlock';
+import { useWebsiteBasicRequirementBlock } from '@/lib/blocks/hooks/useWebsiteBasicRequirementBlock/useWebsiteBasicRequirementBlock';
+import { useWebsiteMonitoringBlock } from '@/lib/blocks/hooks/useWebsiteMonitoringBlock/useWebsiteMonitoringBlock';
+import { useCaseBlocks } from '@/lib/blocks/variants/DefaultBlocks/hooks/useCaseBlocksLogic/useCaseBlocks';
+import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMonitoringBlocks/hooks/useWebsiteMonitoringReportBlock/useWebsiteMonitoringReportBlock';
+import { useCaseDecision } from '@/pages/Entity/components/Case/hooks/useCaseDecision/useCaseDecision';
+import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
+import { omitPropsFromObject } from '@/pages/Entity/hooks/useEntityLogic/utils';
+import { selectDirectorsDocuments } from '@/pages/Entity/selectors/selectDirectorsDocuments';
+import { Send } from 'lucide-react';
+import { useCallback, useMemo } from 'react';
+import { toast } from 'sonner';
+import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
+import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
+import { DEFAULT_PROCESS_TRACKER_PROCESSES } from '@/common/components/molecules/ProcessTracker/constants';
 
 const pluginsOutputBlacklist = [
   'companySanctions',
@@ -50,21 +55,15 @@ const pluginsOutputBlacklist = [
 ] as const;
 
 export const useDefaultBlocksLogic = () => {
-  const { entityId: workflowId } = useParams();
-  const filterId = useFilterId();
-  const { data: workflow, isLoading } = useWorkflowByIdQuery({
-    workflowId,
-    filterId,
-  });
+  const { data: workflow, isLoading } = useCurrentCaseQuery();
   const { data: session } = useAuthenticatedUserQuery();
   const caseState = useCaseState(session?.user, workflow);
   const { noAction } = useCaseDecision();
   const isWorkflowLevelResolution =
     workflow?.workflowDefinition?.config?.workflowLevelResolution ??
     workflow?.context?.entity?.type === 'business';
-  const postDecisionEventName = getPostDecisionEventName(workflow);
   const { mutate: mutateRevisionTaskById, isLoading: isLoadingReuploadNeeded } =
-    useRevisionTaskByIdMutation(postDecisionEventName);
+    useRevisionTaskByIdMutation();
   const onReuploadNeeded = useCallback(
     ({
         workflowId,
@@ -118,6 +117,7 @@ export const useDefaultBlocksLogic = () => {
   const {
     store,
     bank: bankDetails,
+    ubos: ubosUserProvided = [],
     directors: directorsUserProvided = [],
     mainRepresentative,
     mainContact,
@@ -148,7 +148,7 @@ export const useDefaultBlocksLogic = () => {
   );
 
   const directorsStorageFilesQueryResult = useStorageFilesQuery(directorDocumentPages);
-  const directorsDocumentPagesResults: Array<Array<string>> = useDocumentPageImages(
+  const directorsDocumentPagesResults: string[][] = useDocumentPageImages(
     directorsDocuments,
     directorsStorageFilesQueryResult,
   );
@@ -169,7 +169,7 @@ export const useDefaultBlocksLogic = () => {
     }),
   );
 
-  const ubos = workflow?.context?.pluginsOutput?.ubo?.data?.uboGraph?.map(ubo => ({
+  const ubosRegistryProvided = workflow?.context?.pluginsOutput?.ubo?.data?.uboGraph?.map(ubo => ({
     name: ubo?.name,
     percentage: ubo?.shareHolders?.[0]?.sharePercentage,
     type: ubo?.type,
@@ -231,7 +231,7 @@ export const useDefaultBlocksLogic = () => {
     },
   });
 
-  const entityInfoBlock = useEntityInfoBlock({
+  const entityInfoBlock = useCaseInfoBlock({
     entity: workflow?.context?.entity,
     entityDataAdditionalInfo,
     workflow,
@@ -275,7 +275,13 @@ export const useDefaultBlocksLogic = () => {
 
   const companySanctionsBlock = useCompanySanctionsBlock(companySanctions);
 
-  const ubosBlock = useUbosBlock(ubos, workflow?.context?.pluginsOutput?.ubo?.message);
+  const ubosUserProvidedBlock = useUbosUserProvidedBlock(ubosUserProvided);
+
+  const ubosRegistryProvidedBlock = useUbosRegistryProvidedBlock(
+    ubosRegistryProvided,
+    workflow?.context?.pluginsOutput?.ubo?.message,
+    workflow?.context?.pluginsOutput?.ubo?.isRequestTimedOut,
+  );
 
   const directorsUserProvidedBlock = useDirectorsUserProvidedBlock(directorsUserProvided);
 
@@ -305,6 +311,13 @@ export const useDefaultBlocksLogic = () => {
     [mutateEvent],
   );
 
+  const plugins = useCasePlugins({ workflow });
+  const processTrackerBlock = useProcessTrackerBlock({
+    workflow,
+    plugins,
+    processes: DEFAULT_PROCESS_TRACKER_PROCESSES,
+  });
+
   const associatedCompaniesBlock = useAssociatedCompaniesBlock({
     workflows: kybChildWorkflows,
     onClose,
@@ -313,6 +326,10 @@ export const useDefaultBlocksLogic = () => {
       Trigger: props => (
         <MotionButton
           {...motionButtonProps}
+          animate={{
+            ...motionButtonProps.animate,
+            opacity: !caseState.actionButtonsEnabled ? 0.5 : motionButtonProps.animate.opacity,
+          }}
           variant="outline"
           className={'ms-3.5'}
           disabled={!caseState.actionButtonsEnabled}
@@ -343,35 +360,46 @@ export const useDefaultBlocksLogic = () => {
         </Button>
       ),
     },
+    isAssociatedCompanyKybEnabled:
+      !!workflow?.workflowDefinition?.config?.isAssociatedCompanyKybEnabled,
   });
 
   const associatedCompaniesInformationBlock = useAssociatedCompaniesInformationBlock(
     kybChildWorkflows ?? [],
   );
 
-  const blocks = useMemo(() => {
+  const websiteMonitoringBlocks = useWebsiteMonitoringReportBlock();
+  const documentReviewBlocks = useDocumentReviewBlocks();
+  const businessInformationBlocks = useKYCBusinessInformationBlock();
+
+  const allBlocks = useMemo(() => {
     if (!workflow?.context?.entity) return [];
 
     return [
-      ...websiteMonitoringBlock,
-      ...entityInfoBlock,
-      ...registryInfoBlock,
-      ...kybRegistryInfoBlock,
-      ...companySanctionsBlock,
-      ...directorsUserProvidedBlock,
-      ...directorsRegistryProvidedBlock,
-      ...directorsDocumentsBlocks,
-      ...ubosBlock,
-      ...storeInfoBlock,
-      ...websiteBasicRequirementBlock,
-      ...bankingDetailsBlock,
-      ...processingDetailsBlock,
-      ...mainContactBlock,
-      ...mainRepresentativeBlock,
-      ...mapBlock,
-      ...parentDocumentBlocks,
-      ...associatedCompaniesBlock,
-      ...associatedCompaniesInformationBlock,
+      websiteMonitoringBlock,
+      entityInfoBlock,
+      registryInfoBlock,
+      kybRegistryInfoBlock,
+      companySanctionsBlock,
+      ubosUserProvidedBlock,
+      ubosRegistryProvidedBlock,
+      directorsUserProvidedBlock,
+      directorsRegistryProvidedBlock,
+      directorsDocumentsBlocks,
+      storeInfoBlock,
+      websiteBasicRequirementBlock,
+      bankingDetailsBlock,
+      processingDetailsBlock,
+      mainContactBlock,
+      mainRepresentativeBlock,
+      mapBlock,
+      parentDocumentBlocks,
+      associatedCompaniesBlock,
+      associatedCompaniesInformationBlock,
+      processTrackerBlock,
+      websiteMonitoringBlocks,
+      documentReviewBlocks,
+      businessInformationBlocks,
     ];
   }, [
     associatedCompaniesBlock,
@@ -390,19 +418,39 @@ export const useDefaultBlocksLogic = () => {
     processingDetailsBlock,
     registryInfoBlock,
     storeInfoBlock,
-    ubosBlock,
+    ubosUserProvidedBlock,
+    ubosRegistryProvidedBlock,
     websiteBasicRequirementBlock,
     websiteMonitoringBlock,
+    processTrackerBlock,
+    websiteMonitoringBlocks,
+    documentReviewBlocks,
+    businessInformationBlocks,
     workflow?.context?.entity,
   ]);
 
-  return {
-    blocks,
-    kybChildWorkflows,
-    workflowId,
+  const {
+    activeTab,
+    blocks = [],
+    tabs,
+    setActiveTab,
+  } = useCaseBlocks({
+    workflow,
+    config: workflow?.workflowDefinition?.config,
+    blocks: allBlocks,
     onReuploadNeeded,
     isLoadingReuploadNeeded,
-    kycChildWorkflows,
+  });
+
+  const availableTabs = useMemo(() => tabs.filter(tab => !tab.hidden), [tabs]);
+
+  return {
+    blocks,
+    onReuploadNeeded,
+    isLoadingReuploadNeeded,
     isLoading,
+    activeTab,
+    tabs: availableTabs,
+    setActiveTab,
   };
 };

@@ -40,7 +40,7 @@ export type DynamicUIComponent<TProps, TParams = AnyObject> = React.ComponentTyp
 >;
 
 export const withDynamicUIInput = (
-  Component: RJSFInputAdapter<any, any> & { inputIndex?: number | null },
+  Component: RJSFInputAdapter<any, any> & { inputIndex?: number | null; testId?: string },
 ) => {
   function Wrapper(props: RJSFInputProps) {
     const inputId = (props.idSchema as AnyObject)?.$id as string;
@@ -69,7 +69,7 @@ export const withDynamicUIInput = (
     const definition = useMemo(() => {
       const inputIndex = getInputIndex(inputId || '');
 
-      const definition = {
+      return {
         ...baseDefinition,
         name: inputIndex !== null ? `${baseDefinition.name}[${inputIndex}]` : baseDefinition.name,
         valueDestination: injectIndexToDestinationIfNeeded(
@@ -78,7 +78,6 @@ export const withDynamicUIInput = (
           inputIndex,
         ),
       };
-      return definition;
     }, [baseDefinition, inputId]);
 
     const { state: elementState, setState: setElementState } = useUIElementState(definition);
@@ -129,12 +128,16 @@ export const withDynamicUIInput = (
           formData={value}
           definition={definition}
           inputIndex={inputIndex}
+          testId={definition.name}
           onChange={handleChange}
           onBlur={handleBlur}
         />
         {!!warnings.length && <ErrorsList errors={warnings.map(err => err.message)} />}
         {isTouched && !!validationErrors.length && (
-          <ErrorsList errors={validationErrors.map(error => error.message)} />
+          <ErrorsList
+            testId={definition.name}
+            errors={validationErrors.map(error => error.message)}
+          />
         )}
       </div>
     );

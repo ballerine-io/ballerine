@@ -5,7 +5,7 @@ import { ISerializableHttpPluginParams } from './types';
 
 function createWorkflowRunner(
   definition: WorkflowRunnerArgs['definition'],
-  apiPluginsSchemas: Array<ISerializableHttpPluginParams>,
+  apiPluginsSchemas: ISerializableHttpPluginParams[],
 ) {
   return new WorkflowRunner({
     definition,

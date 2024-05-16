@@ -1,4 +1,4 @@
-import { AjvValidationError } from '@/errors';
+import { ValidationError } from '@/errors';
 import { TProjectId, TProjectIds } from '@/types';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowRunDto } from '@/workflow/dtos/workflow-run';
@@ -66,7 +66,7 @@ export class CaseManagementService {
     const isValid = validate(entity);
 
     if (!isValid) {
-      throw new AjvValidationError(validate.errors);
+      throw ValidationError.fromAjvError(validate.errors!);
     }
   }
 }

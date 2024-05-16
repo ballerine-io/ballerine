@@ -7,7 +7,7 @@ By default, it is accessible at http://localhost:3000
 
 Runs tests.
 
-### `npm run build`
+### `npm run build` 
 
 Builds the app for production in the `dist` folder.
 
@@ -37,7 +37,7 @@ npm start
 
 ## Getting Started - Docker Compose
 
-In the `server` subdirectory, run:
+In the `server` subdirectory, run: 
 
 ```console
 npm run compose:up

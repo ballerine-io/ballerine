@@ -1,8 +1,8 @@
 import qs from 'qs';
 import { parseNullAndEmptyArrayDeep } from './parse-null-and-empty-array-deep';
-import { IUseZodSearchParams } from '../interfaces';
+import { ISerializedSearchParams } from '../interfaces';
 
-export const defaultDeserializer: NonNullable<IUseZodSearchParams['deserializer']> = (
+export const defaultDeserializer: NonNullable<ISerializedSearchParams['deserializer']> = (
   searchParams: string,
 ) => {
   const parsedSearchParams = qs.parse(searchParams, {

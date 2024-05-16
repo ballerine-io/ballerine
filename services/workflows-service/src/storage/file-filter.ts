@@ -12,6 +12,7 @@ export const FILE_TYPE_NOT_SUPPORTED_MSG = 'File type not supported';
 
 export const fileFilter: MulterOptions['fileFilter'] = (req, file, callback) => {
   const MAX_FILE_SIZE = FILE_MAX_SIZE_IN_KB;
+
   if (file.size >= MAX_FILE_SIZE) {
     return callback(new UnprocessableEntityException(FILE_SIZE_EXCEEDED_MSG), false);
   }
@@ -19,5 +20,6 @@ export const fileFilter: MulterOptions['fileFilter'] = (req, file, callback) => 
   if (!file.originalname.match(SUPPORTED_FILE_EXT_REGEX)) {
     return callback(new UnprocessableEntityException(FILE_TYPE_NOT_SUPPORTED_MSG), false);
   }
+
   callback(null, true);
 };

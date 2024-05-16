@@ -1,6 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { Prisma } from '@prisma/client';
 import { StateTag } from '@ballerine/common';
+import { z } from 'zod';
+import { EndUserAmlHitsSchema } from '@/end-user/end-user.schema';
 
 export const endUserIds = [
   'ckkt3qnv40001qxtt7nmj9r2r',
@@ -48,7 +50,8 @@ export const businessIds = [
 ];
 
 export const generateBusiness = ({
-  id,
+  id: id = faker.datatype.uuid(),
+  correlationId = faker.datatype.uuid(),
   companyName = faker.company.name(),
   registrationNumber = faker.datatype.uuid(),
   legalForm = faker.company.companySuffix(),
@@ -76,7 +79,8 @@ export const generateBusiness = ({
   workflow,
   projectId,
 }: {
-  id: string;
+  id?: string;
+  correlationId?: string;
   companyName?: string;
   registrationNumber?: string;
   legalForm?: string;
@@ -99,7 +103,7 @@ export const generateBusiness = ({
     registrationDocument: string;
     financialStatement: string;
   };
-  workflow: {
+  workflow?: {
     runtimeId?: string;
     workflowDefinitionId: string;
     workflowDefinitionVersion: number;
@@ -108,10 +112,9 @@ export const generateBusiness = ({
   };
   projectId: string;
 }): Prisma.BusinessCreateInput => {
-  const { runtimeId, workflowDefinitionId, workflowDefinitionVersion, context, state } = workflow;
-
-  return {
+  const data: Prisma.BusinessCreateInput = {
     id,
+    correlationId,
     companyName,
     registrationNumber,
     legalForm,
@@ -130,7 +133,11 @@ export const generateBusiness = ({
     shareholderStructure: JSON.stringify(shareholderStructure),
     project: { connect: { id: projectId } },
     approvalState: 'PROCESSING',
-    workflowRuntimeData: {
+  };
+
+  if (workflow) {
+    const { runtimeId, workflowDefinitionId, workflowDefinitionVersion, context, state } = workflow;
+    data.workflowRuntimeData = {
       create: {
         id: runtimeId,
         workflowDefinitionVersion,
@@ -141,12 +148,14 @@ export const generateBusiness = ({
         state: state,
         tags: [StateTag.MANUAL_REVIEW],
       },
-    },
-  };
+    };
+  }
+
+  return data;
 };
 
 export const generateEndUser = ({
-  id,
+  id = faker.datatype.uuid(),
   correlationId = faker.datatype.uuid(),
   firstName = faker.name.firstName(),
   lastName = faker.name.lastName(),
@@ -156,8 +165,9 @@ export const generateEndUser = ({
   avatarUrl = faker.image.avatar(),
   workflow,
   projectId,
+  connectBusinesses,
 }: {
-  id: string;
+  id?: string;
   correlationId?: string;
   firstName?: string;
   lastName?: string;
@@ -165,7 +175,7 @@ export const generateEndUser = ({
   phone?: string;
   dateOfBirth?: Date;
   avatarUrl?: string;
-  workflow: {
+  workflow?: {
     workflowDefinitionId: string;
     workflowDefinitionVersion: number;
     context: Prisma.InputJsonValue;
@@ -173,8 +183,8 @@ export const generateEndUser = ({
     state: string;
   };
   projectId: string;
+  connectBusinesses?: boolean;
 }): Prisma.EndUserCreateInput => {
-  const { workflowDefinitionId, workflowDefinitionVersion, context, state } = workflow;
   let res: Prisma.EndUserCreateInput = {
     id,
     correlationId,
@@ -185,28 +195,90 @@ export const generateEndUser = ({
     phone,
     dateOfBirth,
     avatarUrl,
+    activeMonitorings: Array.from({ length: faker.datatype.number({ min: 0, max: 3 }) }, () => ({
+      type: 'aml',
+      vendor: 'veriff',
+      monitoredUntil: new Date(new Date().setFullYear(new Date().getFullYear() + 3)).toISOString(),
+      sessionId: faker.datatype.uuid(),
+    })),
+    amlHits: Array.from(
+      { length: faker.datatype.number({ min: 0, max: 3 }) },
+      () =>
+        ({
+          vendor: 'veriff',
+          matchedName: faker.name.fullName(),
+          countries: [faker.address.country()],
+          warnings: [
+            {
+              date: faker.date.recent(2).toISOString(),
+              sourceName: faker.company.name(),
+              sourceUrl: faker.internet.url(),
+            },
+          ],
+          sanctions: [
+            {
+              date: faker.date.recent(2).toISOString(),
+              sourceUrl: faker.internet.url(),
+              sourceName: faker.company.name(),
+            },
+          ],
+          fitnessProbity: [
+            {
+              date: faker.date.recent(2).toISOString(),
+              sourceName: faker.company.name(),
+              sourceUrl: faker.internet.url(),
+            },
+          ],
+          pep: [
+            {
+              date: faker.date.recent(2).toISOString(),
+              sourceUrl: faker.internet.url(),
+              sourceName: faker.company.name(),
+            },
+          ],
+          adverseMedia: [
+            {
+              date: faker.date.recent(2).toISOString(),
+              sourceName: faker.company.name(),
+              sourceUrl: faker.internet.url(),
+            },
+          ],
+          matchTypes: ['PEP'],
+        } satisfies z.infer<typeof EndUserAmlHitsSchema>[number]),
+    ),
     project: { connect: { id: projectId } },
-  };
-
-  if (workflowDefinitionId) {
-    res = {
-      ...res,
-      workflowRuntimeData: {
-        create: {
-          state,
-          context,
-          projectId,
-          workflowDefinitionId,
-          workflowDefinitionVersion,
-          createdAt: faker.date.recent(2),
-          parentRuntimeDataId: workflow.parentRuntimeId,
-          tags: [StateTag.MANUAL_REVIEW],
-        },
+    ...(connectBusinesses && {
+      businesses: {
+        connect: businessIds.map(id => ({ id })),
       },
-    };
-  }
+    }),
+  };
 
   res.project = { connect: { id: projectId } };
 
-  return res;
+  if (!workflow) {
+    return res;
+  }
+
+  const { workflowDefinitionId, workflowDefinitionVersion, context, state } = workflow;
+
+  if (!workflowDefinitionId) {
+    return res;
+  }
+
+  return {
+    ...res,
+    workflowRuntimeData: {
+      create: {
+        state,
+        context,
+        projectId,
+        workflowDefinitionId,
+        workflowDefinitionVersion,
+        createdAt: faker.date.recent(2),
+        parentRuntimeDataId: workflow.parentRuntimeId,
+        tags: [StateTag.MANUAL_REVIEW],
+      },
+    },
+  };
 };

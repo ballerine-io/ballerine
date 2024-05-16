@@ -1,6 +1,7 @@
 import { ApiPlugin } from './api-plugin';
 import { IApiPluginParams } from './types';
 import { AnyRecord } from '@ballerine/common';
+import { logger } from '../../logger';
 export class EmailPlugin extends ApiPlugin {
   public static pluginType = 'http';
   public static pluginKind = 'email';
@@ -48,7 +49,7 @@ export class EmailPlugin extends ApiPlugin {
     payload.adapter ??= 'sendgrid';
 
     if (payload.adapter === 'log') {
-      console.log('Email payload: ', emailPayload);
+      logger.log('Skipping email send', { emailPayload });
 
       return {
         ok: true,

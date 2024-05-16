@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@ballerine/config",
-  "version": "1.0.4",
+  "version": "1.1.2",
   "description": "",
   "main": "index.js",
   "scripts": {},

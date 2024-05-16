@@ -16,7 +16,7 @@
     "mainContact": "Main Contact",
     "bankingDetails": "Banking Details",
     "storeInfo": "Store Info",
-    "directorsDescription": "Add all of the directors of the company.",
+    "directorsDescription": "<p>Add all the directors of the company.</p>",
     "imShareholder": "I own 25% or more of the company",
     "imDirector": "I am a director in the company",
     "shareholder": "Shareholder",
@@ -71,6 +71,8 @@
     "associatedCompanies": "Associated companies",
     "associatedCompaniesDescription": "Add all companies that own more than 25% of the company.",
     "noCompaniesWithMoreThan": "There are no companies with more than 25%",
+    "policiesAndComplianceDocuments": "Policies and Compliance Documents",
+    "additionalRequirements": "Additional Requirements",
     "email": {
       "label": "Email",
       "hint": "name@companyhk.com"
@@ -152,6 +154,10 @@
     "holderName": {
       "label": "Cardholder Name",
       "hint": "John W. Doe"
+    },
+    "companyAccountHolderName": {
+      "label": "Company Account Holder Name",
+      "hint": "OpenAI Technologies, Inc."
     },
     "accountHolderName": {
       "label": "Account Holder Name",
@@ -270,12 +276,12 @@
       "label": "Monthly Number of Transactions",
       "hint": "500"
     },
-    "estimatedMonthlySalesClipsPay": {
-      "label": "Est. Monthly Sales Volume through ClipsPay (USD)",
+    "estimatedMonthlySales": {
+      "label": "Est. Monthly Sales Volume through {{customerName}} (USD)",
       "hint": "400,000"
     },
-    "estimatedMonthlyTransactionsClipsPay": {
-      "label": "Est. Monthly Number of Transactions through ClipsPay",
+    "estimatedMonthlyTransactions": {
+      "label": "Est. Monthly Number of Transactions through {{customerName}}",
       "hint": "150"
     },
     "averageTicketAmount": {
@@ -308,14 +314,60 @@
     },
     "certificateOfIncorporation": {
       "label": "Certificate of Incorporation",
-      "description": "Not older than 6 months."
+      "description": {
+        "3months": "Not older than 3 months",
+        "6months": "Not older than 6 months"
+      }
     },
     "businessRegistrationCertificate": {
       "label": "Business Registration Certificate",
-      "description": "Notarized document"
+      "description": {
+        "regular": "Notarized document",
+        "3months": "Notarized document (Not older than 3 months)"
+      }
     },
     "corporateTaxCertificate": {
       "label": "Corporate Tax Certificate"
+    },
+    "proofOfAddress": {
+      "label": "Proof of Address"
+    },
+    "copyOfBusinessLicense": {
+      "label": "Copy of Business License"
+    },
+    "memorandumOfArticle": {
+      "label": "Memorandum of Article (M&A)"
+    },
+    "businessOwnershipStructureChart": {
+      "label": "Business Ownership Structure Chart"
+    },
+    "tenancyAgreement": {
+      "label": "Tenancy Agreement"
+    },
+    "taxReturn": {
+      "label": "Tax Return",
+      "description": "IRAS notice of assessment"
+    },
+    "settlementBankAccountStatement": {
+      "label": "Settlement bank account statement"
+    },
+    "financialStatements": {
+      "label": "Financial Statements"
+    },
+    "latest3MonthsCardProcessingStatements": {
+      "label": "Latest 3 months card processing statements",
+      "description": "Including credit card charge back and refund information"
+    },
+    "transactionInformation": {
+      "label": "Transaction Information",
+      "description": "e.g. daily summary report"
+    },
+    "psiDssDocuments": {
+      "label": "PSI DSS Documents"
+    },
+    "mailingAcknowledgementOrFormSample": {
+      "label": "Mailing, acknowledgement or form sample",
+      "description": "Applicable for Mail / Order / Form Application"
     },
     "certificateOfGoodStanding": {
       "label": "Certificate of Good Standing",
@@ -326,6 +378,12 @@
     },
     "pictureOfCompanySeal": {
       "label": "Picture of the company seal"
+    },
+    "proofOfBankAccount": {
+      "label": "Proof of bank account"
+    },
+    "otherSupplementaryInformation": {
+      "label": "Other supplementary information (Supplement according to the onboarding document checklist)"
     },
     "domainCertificate": {
       "label": "Domain purchase record / certificate"
@@ -394,7 +452,7 @@
     "documents": {
       "bankStatement": {
         "label": "Bank Statement",
-        "description": "Not older than 6 months.",
+        "description": "Not older than 6 months",
         "error": "Bank Statement is Required"
       },
       "companyStructure": {
@@ -408,11 +466,11 @@
       },
       "utilityBill": {
         "label": "Company Utility Bill as Proof of Address",
-        "description": "Not older than 6 months."
+        "description": "Not older than 6 months"
       },
       "certificateOfIncorporation": {
         "label": "Certificate of Incorporation",
-        "description": "Not older than 6 months."
+        "description": "Not older than 6 months"
       },
       "businessUtilityBill": {
         "label": "Utility Bill",
@@ -420,7 +478,7 @@
       },
       "proofOfAddress": {
         "label": "Company Utility Bill as Proof of Address",
-        "description": "Not older than 6 months.",
+        "description": "Not older than 6 months",
         "error": "Proof of Address is Required"
       }
     },
@@ -476,7 +534,7 @@
     },
     "required": {
       "phone": "A valid phone number is required.",
-      "dateOfBirth": "Date of birth is required.",
+      "dateOfBirth": "Date of Birth is required.",
       "firstName": "First name is required.",
       "postalCode": "Postal code is required.",
       "lastName": "Last name is required.",
@@ -489,6 +547,7 @@
       "numberOfEmployees": "Number of employees is required.",
       "taxIdentificationNumber": "Tax identification number is required.",
       "companyName": "Company name is required.",
+      "relationship": "Relationship is required.",
       "country": "Country is required.",
       "city": "City is required.",
       "street": "Street is required.",
@@ -503,11 +562,16 @@
       "percentageOfOwnership": "Percentage of ownership is required.",
       "ubos": "UBOs are required.",
       "directors": "Directors are required.",
+      "companies": "Mark the checkbox or add a company.",
       "holderName": "Holder name is required.",
+      "companyAccountHolderName": "Company account holder name is required.",
       "holderFullAddress": "Holder full address is required.",
       "accountNumber": "Account number is required.",
       "swiftCode": "SWIFT code is required.",
+      "routeNumber": "Route Number is required.",
       "bankName": "Bank name is required.",
+      "bankCode": "Bank code is required.",
+      "subBranch": "Sub-branch number is required.",
       "bankAddress": "Bank address is required.",
       "currency": "Account currency is required",
       "mobileAppName": "Mobile App Name should not be empty.",
@@ -534,8 +598,7 @@
       "companyWebsite": "Company Website is required.",
       "bankCountry": "Bank Country is required.",
       "companyRegistrationNumber": "Company registration number is required.",
-      "role": "Title is required.",
-      "dateOfBirth": "Date of Birth is required."
+      "role": "Title is required."
     },
     "minLength": {
       "firstName": "First name must be at least 2 characters long.",
@@ -553,6 +616,7 @@
       "nationality": "Invalid nationality. Please select from the available options.",
       "fullAddress": "Full address should be at least 10 characters long.",
       "holderName": "Holder name should be at least 5 characters long.",
+      "companyAccountHolderName": "Company account holder name should be at least 5 characters long.",
       "holderFullAddress": "Holder full address should be at least 10 characters long.",
       "accountNumber": "Account number should be at least 6 characters long.",
       "iban": "IBAN should be at least 15 characters long.",
@@ -574,7 +638,7 @@
       "firstName": "First name should not exceed 50 characters.",
       "lastName": "Last name should not exceed 50 characters.",
       "email": "Email should not exceed 100 characters.",
-      "businessType": "Business type should not exceed 50 characters.",
+      "businessType": "Business type should not exceed 100 characters.",
       "taxIdentificationNumber": "Tax ID should not exceed 15 characters.",
       "companyName": "Company name should not exceed 100 characters.",
       "country": "Country code should have exactly 2 characters.",
@@ -585,6 +649,7 @@
       "nationalId": "Identity number should not exceed 20 characters.",
       "fullAddress": "Full address should not exceed 200 characters.",
       "holderName": "Holder name should not exceed 50 characters.",
+      "companyAccountHolderName": "Company account holder name should not exceed 50 characters.",
       "holderFullAddress": "Holder full address should not exceed 200 characters.",
       "accountNumber": "Account number should not exceed 34 characters.",
       "iban": "IBAN should not exceed 34 characters.",

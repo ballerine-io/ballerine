@@ -1,7 +1,10 @@
 import { AuthModule } from '@/auth/auth.module';
 import { WorkflowTokenRepository } from '@/auth/workflow-token/workflow-token.repository';
 import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { BusinessReportModule } from '@/business-report/business-report.module';
+import { BusinessModule } from '@/business/business.module';
 import { BusinessRepository } from '@/business/business.repository';
+import { BusinessService } from '@/business/business.service';
 import { ACLModule } from '@/common/access-control/acl.module';
 import { EntityRepository } from '@/common/entity/entity.repository';
 import { CustomerModule } from '@/customer/customer.module';
@@ -20,13 +23,13 @@ import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integra
 import { SalesforceService } from '@/salesforce/salesforce.service';
 import { FileRepository } from '@/storage/storage.repository';
 import { StorageService } from '@/storage/storage.service';
+import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
+import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
 import { UserRepository } from '@/user/user.repository';
 import { UserService } from '@/user/user.service';
+import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definition.module';
 import { WorkflowDefinitionRepository } from '@/workflow-defintion/workflow-definition.repository';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
-import { WorkflowDefinitionModule } from '@/workflow-defintion/workflow-definition.module';
-import { UiDefinitionService } from '@/ui-definition/ui-definition.service';
-import { UiDefinitionRepository } from '@/ui-definition/ui-definition.repository';
 import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
 import { WorkflowEventEmitterService } from '@/workflow/workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from '@/workflow/workflow-runtime-data.repository';
@@ -34,7 +37,7 @@ import { WorkflowControllerExternal } from '@/workflow/workflow.controller.exter
 import { WorkflowControllerInternal } from '@/workflow/workflow.controller.internal';
 import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
-import { Module, forwardRef } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
@@ -45,7 +48,9 @@ import { Module, forwardRef } from '@nestjs/common';
     ProjectModule,
     PrismaModule,
     CustomerModule,
+    BusinessReportModule,
     WorkflowDefinitionModule,
+    BusinessModule,
   ],
   providers: [
     WorkflowDefinitionRepository,
@@ -54,6 +59,7 @@ import { Module, forwardRef } from '@nestjs/common';
     EndUserRepository,
     EndUserService,
     BusinessRepository,
+    BusinessService,
     EntityRepository,
     StorageService,
     FileRepository,
