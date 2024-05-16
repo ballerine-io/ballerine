@@ -186,7 +186,7 @@ export const DataTable = <TData extends RowData, TValue = any>({
   });
 
   return (
-    <div className="d-full relative overflow-auto rounded-md border bg-white shadow">
+    <div className="relative overflow-auto rounded-md border bg-white shadow">
       <ScrollArea orientation="both" {...props?.scroll}>
         <Table {...props?.table}>
           {caption && (
