@@ -15,13 +15,17 @@ export class LocalAuthGuard extends AuthGuard('local') {
       const SupabaseClient = createClient(
         env.TELEMETRY_SUPABASE_URL,
         env.TELEMETRY_SUPABASE_API_KEY,
+        {
+          db: { schema: 'public' },
+        },
       );
 
       const fullUrl = `${request.protocol}://${request.get('Host')}${request.originalUrl}`;
 
-      await SupabaseClient.schema('public')
-        .from('logins')
-        .insert([{ url: fullUrl }]);
+      await SupabaseClient.from('logins').insert([{ url: fullUrl }]);
+
+      // @TODO: Set timeout
+      // @TODO: Handle errors
     }
 
     return result as boolean;
