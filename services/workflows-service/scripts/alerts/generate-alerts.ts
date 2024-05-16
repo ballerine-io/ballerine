@@ -478,7 +478,6 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
     inlineRule: {
       id: 'DORMANT',
       fnName: 'evaluateDormantAccount',
-      options: undefined,
       subjects: ['counterpartyId'],
       options: {
         timeAmount: 180,
