@@ -38,9 +38,9 @@ export class FilterDto {
   @ApiProperty({
     type: [String],
     required: false,
-    name: 'filter[label][0]',
+    name: 'filter[correlationIds][0]',
   })
-  label?: string[];
+  correlationIds?: string[];
 }
 
 export class FindAlertsDto {
@@ -102,7 +102,7 @@ export const FindAlertsSchema = z.object({
         .optional(),
       status: z.array(z.nativeEnum(AlertStatus)).optional(),
       state: z.array(z.nativeEnum(AlertState)).optional(),
-      label: z.array(z.string()).optional(),
+      correlationIds: z.array(z.string()).optional(),
     })
     .optional(),
 });

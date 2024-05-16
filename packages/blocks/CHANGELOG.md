@@ -1,5 +1,11 @@
 # @ballerine/blocks
 
+## 0.2.3
+
+### Patch Changes
+
+- Added buildFlat to the blocks packages to reduce the need for .build().flat(1)
+
 ## 0.2.2
 
 ### Patch Changes

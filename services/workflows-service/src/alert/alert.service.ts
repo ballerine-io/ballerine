@@ -16,13 +16,13 @@ import {
 } from '@prisma/client';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
-import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
-import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
 import _ from 'lodash';
 import { AlertExecutionStatus } from './consts';
 import { computeHash } from '@/common/utils/sign/sign';
 import { TDedupeStrategy, TExecutionDetails } from './types';
+import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
+import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 
 const DEFAULT_DEDUPE_STRATEGIES = {
   cooldownTimeframeInMinutes: 60 * 24,
@@ -98,8 +98,8 @@ export class AlertService {
           },
           alertDefinition: {
             monitoringType,
-            label: {
-              in: findAlertsDto.filter?.label,
+            correlationId: {
+              in: findAlertsDto.filter?.correlationIds,
             },
           },
           ...(findAlertsDto.filter?.assigneeId && {
@@ -381,17 +381,17 @@ export class AlertService {
     return status;
   }
 
-  async getAlertLabels({ projectId }: { projectId: TProjectId }) {
+  async getAlertCorrelationIds({ projectId }: { projectId: TProjectId }) {
     const alertDefinitions = await this.alertDefinitionRepository.findMany(
       {
         select: {
-          label: true,
+          correlationId: true,
         },
       },
       [projectId],
     );
 
-    return alertDefinitions.map(({ label }) => label);
+    return alertDefinitions.map(({ correlationId }) => correlationId);
   }
 
   async getAlertsByEntityId(entityId: string, projectId: string) {

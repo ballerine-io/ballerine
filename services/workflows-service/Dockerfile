@@ -6,7 +6,9 @@ RUN apt-get install dumb-init
 WORKDIR /app
 
 ARG RELEASE
-ENV RELEASE ${RELEASE:-unknown}
+ENV RELEASE=${RELEASE:-unknown}
+ARG SHORT_SHA
+ENV SHORT_SHA=${SHORT_SHA}
 
 COPY ./package.json .
 
@@ -20,6 +22,11 @@ RUN npm run build
 CMD [ "dumb-init", "npm", "run", "dev", "--host" ]
 
 FROM node:18.17.1-bullseye-slim as prod
+
+ARG RELEASE
+ENV RELEASE=${RELEASE:-unknown}
+ARG SHORT_SHA
+ENV SHORT_SHA=${SHORT_SHA}
 
 WORKDIR /app
 

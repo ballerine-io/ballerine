@@ -89,9 +89,7 @@ export const columns = [
       const counterpartyOriginatorName = info.getValue();
 
       return (
-        <TextWithNAFallback className="text-sm font-semibold">
-          {counterpartyOriginatorName}
-        </TextWithNAFallback>
+        <TextWithNAFallback className="text-sm">{counterpartyOriginatorName}</TextWithNAFallback>
       );
     },
     header: 'Originator Name',
@@ -101,7 +99,7 @@ export const columns = [
       const counterpartyOriginatorCorrelationId = info.getValue();
 
       return (
-        <TextWithNAFallback className="text-sm font-semibold">
+        <TextWithNAFallback className="text-sm">
           {counterpartyOriginatorCorrelationId}
         </TextWithNAFallback>
       );
@@ -113,9 +111,7 @@ export const columns = [
       const counterpartyBeneficiaryName = info.getValue();
 
       return (
-        <TextWithNAFallback className="text-sm font-semibold">
-          {counterpartyBeneficiaryName}
-        </TextWithNAFallback>
+        <TextWithNAFallback className="text-sm">{counterpartyBeneficiaryName}</TextWithNAFallback>
       );
     },
     header: 'Beneficiary Name',
@@ -125,7 +121,7 @@ export const columns = [
       const counterpartyBeneficiaryCorrelationId = info.getValue();
 
       return (
-        <TextWithNAFallback className="text-sm font-semibold">
+        <TextWithNAFallback className="text-sm">
           {counterpartyBeneficiaryCorrelationId}
         </TextWithNAFallback>
       );
@@ -137,9 +133,7 @@ export const columns = [
       const paymentMethod = info.getValue() ?? '';
 
       return (
-        <TextWithNAFallback className="text-sm font-semibold">
-          {titleCase(paymentMethod)}
-        </TextWithNAFallback>
+        <TextWithNAFallback className="text-sm">{titleCase(paymentMethod)}</TextWithNAFallback>
       );
     },
     header: 'Payment Method',

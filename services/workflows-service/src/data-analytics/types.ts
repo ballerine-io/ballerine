@@ -1,9 +1,9 @@
 import { PaymentMethod, TransactionDirection, TransactionRecordType } from '@prisma/client';
 import { AggregateType, TIME_UNITS } from './consts';
-import type { MerchantAlertLabel, TransactionAlertLabel } from '@/alert/consts';
+import { TProjectId } from '@/types';
 
 export type InlineRule = {
-  id: keyof typeof MerchantAlertLabel | keyof typeof TransactionAlertLabel | string;
+  id: string;
   subjects: string[] | readonly string[];
 } & (
   | {
@@ -19,17 +19,20 @@ export type InlineRule = {
       options: Omit<TCustomersTransactionTypeOptions, 'projectId'>;
     }
   | {
-      fnName: 'evaluateTransactionLimitHistoricAverageInbound';
+      fnName: 'evaluateTransactionAvg';
       options: Omit<TransactionLimitHistoricAverageOptions, 'projectId'>;
+    }
+  | {
+      fnName: 'evaluateTransactionAvg';
+      options: Omit<TPeerGroupTransactionAverageOptions, 'projectId'>;
+    }
+  | {
+      fnName: 'evaluateDormantAccount';
+      options: undefined;
     }
   | {
       fnName: 'checkMerchantOngoingAlert';
       options: CheckRiskScoreOptions;
-    }
-  | {
-      // since we don't know the other options, we can use never
-      fnName: unknown;
-      options: never;
     }
 );
 
@@ -43,7 +46,7 @@ export type TExcludedCounterparty = {
 export type TimeUnit = (typeof TIME_UNITS)[keyof typeof TIME_UNITS];
 
 export type TransactionsAgainstDynamicRulesType = {
-  projectId: string;
+  projectId: TProjectId;
   havingAggregate?: TAggregations;
   amountBetween?: {
     min: number;
@@ -62,7 +65,7 @@ export type TransactionsAgainstDynamicRulesType = {
 };
 
 export type HighTransactionTypePercentage = {
-  projectId: string;
+  projectId: TProjectId;
   transactionType: TransactionRecordType;
   subjectColumn: 'counterpartyOriginatorId' | 'counterpartyBeneficiaryId';
   minimumCount: number;
@@ -72,7 +75,7 @@ export type HighTransactionTypePercentage = {
 };
 
 export type TCustomersTransactionTypeOptions = {
-  projectId: string;
+  projectId: TProjectId;
   transactionType?: TransactionRecordType[] | readonly TransactionRecordType[];
   threshold?: number;
   paymentMethods?: PaymentMethod[] | readonly PaymentMethod[];
@@ -83,7 +86,7 @@ export type TCustomersTransactionTypeOptions = {
 };
 
 export type TransactionLimitHistoricAverageOptions = {
-  projectId: string;
+  projectId: TProjectId;
   transactionDirection: TransactionDirection;
   paymentMethod: {
     value: PaymentMethod;
@@ -98,4 +101,10 @@ export type CheckRiskScoreOptions = {
   increaseRiskScorePercentage?: number;
   increaseRiskScore?: number;
   maxRiskScoreThreshold?: number;
+};
+
+export type TPeerGroupTransactionAverageOptions = TransactionLimitHistoricAverageOptions & {
+  customerType?: string;
+  timeUnit?: TimeUnit;
+  timeAmount?: number;
 };

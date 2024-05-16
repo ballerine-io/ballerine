@@ -9,6 +9,8 @@ export class SentryService {
 
   public captureException(error: Error | string): void {
     Sentry.withScope(scope => {
+      scope.setExtra('error', error);
+
       this._setExtraData(scope);
 
       this._setLevel(error, scope);
@@ -21,6 +23,8 @@ export class SentryService {
 
   public captureHttpException(error: Error | string, request?: Request): void {
     Sentry.withScope(scope => {
+      scope.setExtra('error', error);
+
       this._setExtraData(scope, request);
 
       this._setLevel(error, scope);

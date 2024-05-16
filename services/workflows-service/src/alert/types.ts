@@ -21,7 +21,7 @@ export const BulkStatus = {
 export type TBulkStatus = (typeof BulkStatus)[keyof typeof BulkStatus];
 
 export type TAlertResponse = Alert & {
-  alertDefinition: Pick<AlertDefinition, 'description' | 'label'>;
+  alertDefinition: Pick<AlertDefinition, 'description' | 'correlationId'>;
   assignee: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>;
 };
 

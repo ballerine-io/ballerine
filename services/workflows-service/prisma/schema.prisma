@@ -716,7 +716,7 @@ enum MonitoringType {
 model AlertDefinition {
   id          String  @id @default(cuid())
   crossEnvKey String? @unique
-  label       String
+  correlationId     String
   monitoringType    MonitoringType
   name        String
   enabled     Boolean @default(true)
@@ -745,7 +745,7 @@ model AlertDefinition {
 
   alert Alert[]
 
-  @@unique([label, projectId])
+  @@unique([correlationId, projectId])
   @@index([projectId])
 }
 
@@ -853,7 +853,6 @@ model BusinessReport {
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-
 
   @@index([createdAt])
   @@index([businessId])

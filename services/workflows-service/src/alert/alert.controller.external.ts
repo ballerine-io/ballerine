@@ -64,7 +64,7 @@ export class AlertControllerExternal {
         include: {
           alertDefinition: {
             select: {
-              label: true,
+              correlationId: true,
               description: true,
             },
           },
@@ -106,7 +106,7 @@ export class AlertControllerExternal {
 
       return {
         ...alertWithoutDefinition,
-        label: alertDefinition.label,
+        correlationId: alertDefinition.correlationId,
         assignee: assignee
           ? {
               id: assignee?.id,
@@ -150,7 +150,7 @@ export class AlertControllerExternal {
         include: {
           alertDefinition: {
             select: {
-              label: true,
+              correlationId: true,
               description: true,
             },
           },
@@ -185,7 +185,7 @@ export class AlertControllerExternal {
 
       return {
         ...alertWithoutDefinition,
-        label: alertDefinition.label,
+        correlationId: alertDefinition.correlationId,
         assignee: assignee
           ? {
               id: assignee?.id,
