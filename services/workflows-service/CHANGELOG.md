@@ -1,5 +1,105 @@
 # @ballerine/workflows-service
 
+## 0.7.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.5
+  - @ballerine/workflow-core@0.6.8
+  - @ballerine/workflow-node-sdk@0.6.8
+
+## 0.7.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.4
+  - @ballerine/workflow-core@0.6.7
+  - @ballerine/workflow-node-sdk@0.6.7
+
+## 0.7.5
+
+### Patch Changes
+
+- Added workflow definition theme schemas
+- Updated dependencies
+  - @ballerine/common@0.9.3
+  - @ballerine/workflow-core@0.6.6
+  - @ballerine/workflow-node-sdk@0.6.6
+
+## 0.7.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.2
+  - @ballerine/workflow-core@0.6.5
+  - @ballerine/workflow-node-sdk@0.6.5
+
+## 0.7.3
+
+### Patch Changes
+
+- Fixed invokedAt to be UTC epoch
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.4
+  - @ballerine/workflow-node-sdk@0.6.4
+
+## 0.7.2
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies [0244d3ea1]
+  - @ballerine/workflow-core@0.6.3
+  - @ballerine/workflow-node-sdk@0.6.3
+
+## 0.7.1
+
+### Patch Changes
+
+- bumo
+- Updated dependencies
+  - @ballerine/workflow-core@0.6.2
+  - @ballerine/workflow-node-sdk@0.6.2
+  - @ballerine/common@0.9.1
+
+## 0.7.0
+
+### Minor Changes
+
+- 9fe7a5c10: Bump
+
+### Patch Changes
+
+- ver bump
+- 9fe7a5c10: bump alpha
+- 9fe7a5c10: bump
+- 9fe7a5c10: Version bump
+- Updated dependencies
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+  - @ballerine/common@0.9.0
+  - @ballerine/workflow-core@0.6.1
+  - @ballerine/workflow-node-sdk@0.6.1
+
+## 0.7.0-11210907c.0
+
+### Minor Changes
+
+- Bump
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.0-11210907c.0
+  - @ballerine/workflow-core@0.6.1-11210907c.0
+  - @ballerine/workflow-node-sdk@0.6.1-11210907c.0
+
 ## 0.6.0
 
 ### Minor Changes

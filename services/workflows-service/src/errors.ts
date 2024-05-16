@@ -35,6 +35,10 @@ class DetailedValidationError {
   path!: string;
 }
 
+export const exceptionValidationFactory = (errors: ClassValidatorValidationError[]) => {
+  return ValidationError.fromClassValidator(errors);
+};
+
 export class ValidationError extends common.BadRequestException {
   @ApiProperty()
   statusCode!: number;
@@ -53,12 +57,10 @@ export class ValidationError extends common.BadRequestException {
       },
       'Validation error',
     );
-
-    this.errors = errors;
   }
 
   getErrors() {
-    return this.errors;
+    return (this.getResponse() as ValidationError).errors;
   }
 
   static fromAjvError(error: Array<ErrorObject<string, Record<string, any>, unknown>>) {
@@ -80,11 +82,31 @@ export class ValidationError extends common.BadRequestException {
   }
 
   static fromClassValidator(error: ClassValidatorValidationError[]) {
+    const flattenedErrors = flattenValidationErrors(error);
+
     return new ValidationError(
-      error.map(({ property, constraints = {} }) => ({
+      flattenedErrors.map(({ property, constraints = {} }) => ({
         message: `${Object.values(constraints).join(', ')}.`,
         path: property,
       })),
     );
   }
 }
+
+const flattenValidationErrors = (
+  errors: ClassValidatorValidationError[],
+): ClassValidatorValidationError[] => {
+  const flattenedErrors: ClassValidatorValidationError[] = [];
+
+  for (const error of errors) {
+    flattenedErrors.push(error);
+
+    if (error.children) {
+      for (const child of error.children) {
+        flattenedErrors.push(...flattenValidationErrors([child]));
+      }
+    }
+  }
+
+  return flattenedErrors;
+};

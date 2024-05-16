@@ -55,7 +55,7 @@ export class AlertControllerExternal {
       include: {
         alertDefinition: {
           select: {
-            label: true,
+            correlationId: true,
             description: true,
           },
         },
@@ -64,6 +64,7 @@ export class AlertControllerExternal {
             id: true,
             firstName: true,
             lastName: true,
+            avatarUrl: true,
           },
         },
         counterparty: {
@@ -95,21 +96,26 @@ export class AlertControllerExternal {
 
       return {
         ...alertWithoutDefinition,
-        label: alertDefinition.label,
+        correlationId: alertDefinition.correlationId,
         assignee: assignee
           ? {
               id: assignee?.id,
               fullName: `${assignee?.firstName} ${assignee?.lastName}`,
+              avatarUrl: assignee?.avatarUrl,
             }
           : null,
         alertDetails: alertDefinition.description,
         subject: counterparty.business
           ? {
+              type: 'business',
               id: counterparty.business.id,
               name: counterparty.business.companyName,
+              correlationId: counterparty.business.correlationId,
             }
           : {
+              type: 'counterparty',
               id: counterparty.endUser.id,
+              correlationId: counterparty.endUser.correlationId,
               name: `${counterparty.endUser.firstName} ${counterparty.endUser.lastName}`,
             },
         decision: state,

@@ -3,6 +3,9 @@ import { Customer, PrismaClient, Project, User, UserToProject } from '@prisma/cl
 import * as runtime from '@prisma/client/runtime/library';
 
 export type InputJsonValue = Omit<JsonValue, 'null'>;
+export type NullableJsonNullValueInput = {
+  set: null;
+};
 
 export interface IObjectWithId {
   id: string;
@@ -37,3 +40,7 @@ export type GenericFunction = (...args: AnyArray) => any;
 export type GenericAsyncFunction = (...args: AnyArray) => Promise<any>;
 
 export type PrismaTransaction = Omit<PrismaClient, runtime.ITXClientDenyList>;
+
+export type PrismaTransactionMethod = Parameters<PrismaClient['$transaction']>[0];
+
+export type PrismaTransactionClient = Parameters<PrismaTransactionMethod>[0];

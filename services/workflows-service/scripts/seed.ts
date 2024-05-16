@@ -1,3 +1,4 @@
+import { hashKey } from './../src/customer/api-key/utils';
 import { faker } from '@faker-js/faker';
 import { Business, Customer, EndUser, Prisma, PrismaClient, Project } from '@prisma/client';
 import { hash } from 'bcrypt';
@@ -80,11 +81,12 @@ async function createCustomer(
       id: `customer-${id}`,
       name: `customer-${id}`,
       displayName: `Customer ${id}`,
+      apiKeys: {
+        create: {
+          hashedKey: await hashKey(apiKey),
+        },
+      },
       authenticationConfiguration: {
-        apiType: 'API_KEY',
-        authValue: apiKey,
-        validUntil: '',
-        isValid: '',
         webhookSharedSecret,
       },
       logoImageUri: logoImageUri,
@@ -943,24 +945,6 @@ async function seed() {
     project1.id,
   );
 
-  await client.$transaction(async () =>
-    endUserIds.map(async (id, index) =>
-      client.endUser.create({
-        /// I tried to fix that so I can run through ajv, currently it doesn't like something in the schema (anyOf  )
-        data: generateEndUser({
-          id,
-          workflow: {
-            workflowDefinitionId: kycManualMachineId,
-            workflowDefinitionVersion: manualMachineVersion,
-            context: await createMockEndUserContextData(id, index + 1),
-            state: DEFAULT_INITIAL_STATE,
-          },
-          projectId: project1.id,
-        }),
-      }),
-    ),
-  );
-
   await client.$transaction(async tx => {
     businessRiskIds.map(async (id, index) => {
       const riskWf = async () => ({
@@ -1021,6 +1005,26 @@ async function seed() {
   //     },
   //   },
   // });
+
+  await client.$transaction(async () =>
+    endUserIds.map(async (id, index) =>
+      client.endUser.create({
+        /// I tried to fix that so I can run through ajv, currently it doesn't like something in the schema (anyOf  )
+        data: generateEndUser({
+          id,
+          workflow: {
+            workflowDefinitionId: kycManualMachineId,
+            workflowDefinitionVersion: manualMachineVersion,
+            context: await createMockEndUserContextData(id, index + 1),
+            state: DEFAULT_INITIAL_STATE,
+          },
+          projectId: project1.id,
+          connectBusinesses: Math.random() > 0.5,
+        }),
+      }),
+    ),
+  );
+
   void client.$disconnect();
 
   console.info('Seeding database with custom seed...');

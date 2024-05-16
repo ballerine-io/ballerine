@@ -63,15 +63,17 @@ model EndUser {
   approvalState ApprovalState @default(NEW)
   stateReason   String?       @db.VarChar
 
-  firstName      String    @db.VarChar
-  lastName       String    @db.VarChar
-  email          String?   @db.Text
-  phone          String?   @db.VarChar
-  country        String?   @db.VarChar
-  dateOfBirth    DateTime?
-  avatarUrl      String?
-  nationalId     String?   @db.VarChar
-  additionalInfo Json?
+  firstName         String    @db.VarChar
+  lastName          String    @db.VarChar
+  email             String?   @db.Text
+  phone             String?   @db.VarChar
+  country           String?   @db.VarChar
+  dateOfBirth       DateTime?
+  avatarUrl         String?
+  nationalId        String?   @db.VarChar
+  additionalInfo    Json?
+  activeMonitorings Json      @default("[]")
+  amlHits           Json      @default("[]")
 
   workflowRuntimeData WorkflowRuntimeData[]
 
@@ -133,14 +135,16 @@ model Business {
   bankInformation         Json?
   approvalState           ApprovalState @default(NEW) // Current status of the KYB process for the business entity
   mccCode                 Int?
+  metadata                Json? // Additional metadata for the business entity and processes
 
   workflowRuntimeData  WorkflowRuntimeData[]
   endUsers             EndUser[]
   endUsersOnBusinesses EndUsersOnBusinesses[]
 
-  projectId    String
-  project      Project        @relation(fields: [projectId], references: [id])
-  Counterparty Counterparty[]
+  projectId       String
+  project         Project          @relation(fields: [projectId], references: [id])
+  Counterparty    Counterparty[]
+  businessReports BusinessReport[]
 
   @@unique([projectId, correlationId])
   @@index([companyName])
@@ -151,7 +155,9 @@ model Business {
 }
 
 model WorkflowDefinition {
-  id              String  @id @default(cuid())
+  id String @id @default(cuid())
+
+  crossEnvKey     String? @unique
   displayName     String?
   reviewMachineId String?
   name            String
@@ -182,6 +188,8 @@ model WorkflowDefinition {
 
   @@unique([name, version, projectId, definitionType])
   @@index([projectId, name, definitionType])
+  @@index([variant, projectId])
+  @@index(version)
 }
 
 enum WorkflowRuntimeDataStatus {
@@ -284,6 +292,13 @@ enum CustomerStatuses {
   terminated
 }
 
+enum BusinessReportType {
+  ONGOING_MERCHANT_REPORT_T1
+  ONGOING_MERCHANT_REPORT_T2
+  MERCHANT_REPORT_T1
+  MERCHANT_REPORT_T2
+}
+
 model Customer {
   id                          String           @id @default(cuid())
   name                        String           @unique
@@ -297,15 +312,37 @@ model Customer {
   language                    String?
   websiteUrl                  String?
   subscriptions               Json?
+  features                    Json? // Features enabled for the customer
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   projects Project[]
+  apiKeys  ApiKey[]
 
   @@index(name)
   @@index(customerStatus)
-  @@index([authenticationConfiguration(ops: JsonbPathOps)], type: Gin)
+}
+
+model ApiKey {
+  id String @id @default(cuid())
+
+  customerId String
+
+  hashedKey String
+
+  validUntil DateTime?
+
+  additionalInfo Json?
+  rotationInfo   Json?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  @@unique([hashedKey])
 }
 
 model Project {
@@ -329,6 +366,7 @@ model Project {
   AlertDefinition          AlertDefinition[]
   Alert                    Alert[]
   Counterparty             Counterparty[]
+  BusinessReport           BusinessReport[]
 
   @@unique([name, customerId])
   @@index(name)
@@ -378,6 +416,8 @@ model UiDefinition {
   uiSchema      Json // JSON schmea of how to render UI
   schemaOptions Json? // Document Schemas, rejectionReasons: {}, documenTypes: {}, documenCateogries: {}
   uiOptions     Json? // how the view will look, overall
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
 
   projectId          String
   project            Project            @relation(fields: [projectId], references: [id])
@@ -414,6 +454,40 @@ model DataMigrationVersion {
 
   @@index([migratedAt])
   @@index([status, version])
+}
+
+enum DataSyncStatus {
+  new
+  synced
+  unsynced
+  pending_approval
+  failed
+}
+
+enum DataSyncTables {
+  WorkflowDefinition
+  UiDefinition
+  AlertDefinition
+}
+
+model DataSync {
+  id           String         @id @default(cuid())
+  table        DataSyncTables
+  crossEnvKey  String
+  fullDataHash String
+
+  status        DataSyncStatus @default(new)
+  diff          Json?
+  failureReason String?
+  auditLog      Json?
+  syncedColumns Json
+
+  createdAt   DateTime  @default(now())
+  lastCheckAt DateTime?
+  lastSyncAt  DateTime?
+
+  @@unique([table, crossEnvKey])
+  @@index([status])
 }
 
 enum TransactionRecordType {
@@ -456,7 +530,7 @@ enum PaymentMethod {
   pay_pal
   apple_pay
   google_pay
-  apn
+  apm
 }
 
 enum PaymentType {
@@ -464,14 +538,6 @@ enum PaymentType {
   scheduled
   recurring
   refund
-}
-
-enum PaymentChannel {
-  online
-  mobile_app
-  in_store
-  telephone
-  mail_order
 }
 
 enum PaymentIssuer {
@@ -505,7 +571,11 @@ enum PaymentProcessor {
 enum PaymentBrandName {
   visa
   mastercard
-  dci // diners club international
+  diners
+  jcb
+  discover
+  china_union_pay // China UnionPay
+  american_express // American Express
   scb_pay_now
   ocbc_pay_now
   atome
@@ -545,11 +615,12 @@ model TransactionRecord {
   paymentBrandName PaymentBrandName?
   paymentMethod    PaymentMethod?
   paymentType      PaymentType?
-  paymentChannel   PaymentChannel?
+  paymentChannel   String?
   paymentIssuer    PaymentIssuer?
   paymentGateway   PaymentGateway?
   paymentAcquirer  PaymentAcquirer?
   paymentProcessor PaymentProcessor?
+  paymentMccCode   Int?
 
   cardFingerprint   String?
   cardIssuedCountry String?
@@ -636,18 +707,12 @@ enum AlertStatus {
   completed @map("300")
 }
 
-enum AlertType {
-  high_risk_transaction
-  dormant_account_activity
-  unusual_pattern
-}
-
 model AlertDefinition {
-  id          String     @id @default(cuid())
-  label       String
-  type        AlertType?
+  id          String  @id @default(cuid())
+  crossEnvKey String? @unique
+  correlationId       String
   name        String
-  enabled     Boolean    @default(true)
+  enabled     Boolean @default(true)
   description String?
 
   projectId String
@@ -659,9 +724,9 @@ model AlertDefinition {
   inlineRule Json
   createdBy  String @default("SYSTEM")
 
-  dedupeStrategy   Json
-  config           Json
-  defaultSeverity  AlertSeverity
+  dedupeStrategy  Json
+  config          Json
+  defaultSeverity AlertSeverity
 
   tags           String[] // Tags for the alert
   additionalInfo Json // Additional information
@@ -673,13 +738,13 @@ model AlertDefinition {
 
   alert Alert[]
 
-  @@unique([label, projectId])
+  @@unique([correlationId, projectId])
   @@index([projectId])
 }
 
 model Alert {
   id String @id @default(cuid())
-  
+
   alertDefinitionId String
   alertDefinition   AlertDefinition @relation(fields: [alertDefinitionId], references: [id], onUpdate: Cascade, onDelete: NoAction)
 
@@ -760,4 +825,24 @@ model Counterparty {
 
   @@unique([projectId, correlationId])
   @@index([correlationId])
+}
+
+model BusinessReport {
+  id     String             @id @default(cuid())
+  type   BusinessReportType
+  report Json
+
+  businessId String
+  projectId  String
+
+  business Business @relation(fields: [businessId], references: [id])
+  project  Project  @relation(fields: [projectId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([businessId])
+  @@index([projectId])
+  @@index([type])
 }

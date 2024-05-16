@@ -15,15 +15,16 @@ export const StateTag = {
 export const StateTags = [
   StateTag.APPROVED,
   StateTag.REJECTED,
+  StateTag.RESOLVED,
   StateTag.REVISION,
   StateTag.MANUAL_REVIEW,
   StateTag.PENDING_PROCESS,
   StateTag.COLLECTION_FLOW,
-  StateTag.RESOLVED,
   StateTag.FAILURE,
+  StateTag.DATA_ENRICHMENT,
   StateTag.FLAGGED,
   StateTag.DISMISSED,
-] as const;
+] as const satisfies ReadonlyArray<(typeof StateTag)[keyof typeof StateTag]>;
 
 export const CommonWorkflowEvent = {
   START: 'START',
@@ -95,3 +96,19 @@ export const UnifiedApiReasons = [
 export type TUnifiedApiReason = (typeof UnifiedApiReasons)[number];
 
 export type TUnifiedApiReasons = typeof UnifiedApiReasons;
+
+export const WorkflowDefinitionConfigThemeEnum = {
+  KYC: 'kyc',
+  KYB: 'kyb',
+  DOCUMENTS_REVIEW: 'documents-review',
+} as const;
+
+export const WorkflowDefinitionConfigThemes = [
+  WorkflowDefinitionConfigThemeEnum.KYB,
+  WorkflowDefinitionConfigThemeEnum.KYC,
+  WorkflowDefinitionConfigThemeEnum.DOCUMENTS_REVIEW,
+] as const satisfies ReadonlyArray<
+  (typeof WorkflowDefinitionConfigThemeEnum)[keyof typeof WorkflowDefinitionConfigThemeEnum]
+>;
+
+export type TWorkflowDefinitionConfigTheme = (typeof WorkflowDefinitionConfigThemes)[number];

@@ -8,6 +8,8 @@ import { TextInputAdapter } from '@/components/organisms/DynamicForm/components/
 import { RJSFInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/types';
 import { RegistryFieldsType } from '@rjsf/utils';
 import { MultiSelectProps, MultiSelectValue } from '@/components';
+import { CountryPicker } from '@/components/organisms/DynamicForm/components/custom-inputs/CountryPicker';
+import { RadioInputAdapter } from '@/components/organisms/DynamicForm/components/RSJVInputAdaters/RadioInputAdapter';
 
 export const fields: Record<
   keyof RegistryFieldsType,
@@ -28,4 +30,8 @@ export const fields: Record<
   PhoneInput: PhoneInputAdapter,
   AutocompleteInput: AutocompleteTextInputAdapter,
   Multiselect: MultiselectInputAdapter,
+
+  // CustomInputs
+  CountryPicker: CountryPicker,
+  RadioInput: RadioInputAdapter,
 };

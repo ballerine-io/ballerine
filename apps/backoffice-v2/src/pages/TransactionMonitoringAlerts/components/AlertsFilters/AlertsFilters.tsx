@@ -2,15 +2,15 @@ import { FunctionComponent, useCallback, useMemo } from 'react';
 import { TUsers } from '@/domains/users/types';
 import { MultiSelect } from '@/common/components/atoms/MultiSelect/MultiSelect';
 import { useFilter } from '@/common/hooks/useFilter/useFilter';
-import { AlertStatuses, AlertTypes } from '@/domains/alerts/fetchers';
+import { AlertStatuses } from '@/domains/alerts/fetchers';
 import { titleCase } from 'string-ts';
 import { keyFactory } from '@/common/utils/key-factory/key-factory';
 
 export const AlertsFilters: FunctionComponent<{
   assignees: TUsers;
-  labels: string[];
+  correlationIds: string[];
   authenticatedUserId: string | null;
-}> = ({ assignees, labels, authenticatedUserId }) => {
+}> = ({ assignees, correlationIds, authenticatedUserId }) => {
   const assigneeOptions = useMemo(
     () =>
       assignees?.map(assignee => ({
@@ -19,14 +19,7 @@ export const AlertsFilters: FunctionComponent<{
       })) ?? [],
     [authenticatedUserId, assignees],
   );
-  const alertTypeOptions = useMemo(
-    () =>
-      AlertTypes?.map(alertType => ({
-        label: titleCase(alertType),
-        value: alertType,
-      })) ?? [],
-    [],
-  );
+
   const statusOptions = useMemo(
     () =>
       AlertStatuses?.map(status => ({
@@ -48,22 +41,21 @@ export const AlertsFilters: FunctionComponent<{
       ],
     },
     {
-      title: 'Alert Type',
-      accessor: 'alertType',
-      options: alertTypeOptions,
-    },
-    {
       title: 'Status',
       accessor: 'status',
       options: statusOptions,
     },
     {
-      title: 'Label',
-      accessor: 'label',
-      options: labels.map(label => ({
-        label,
-        value: label,
-      })),
+      title: 'Correlation Id',
+      accessor: 'correlationIds',
+      options: useMemo(
+        () =>
+          correlationIds.map(label => ({
+            label,
+            value: label,
+          })),
+        [correlationIds],
+      ),
     },
   ] satisfies Array<{
     title: string;

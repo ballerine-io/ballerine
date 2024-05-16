@@ -1,23 +1,25 @@
-import { TLocalFilePath, TRemoteFileConfig, TS3BucketConfig } from './types/files-types';
-import * as tmp from 'tmp';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { IStreamableFileProvider } from './types/interfaces';
-import { TFileServiceProvider } from './types';
-import { getDocumentId, isErrorWithMessage, isType } from '@ballerine/common';
-import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
-import type { TProjectId } from '@/types';
-import { randomUUID } from 'crypto';
-import { z } from 'zod';
-import { StorageService } from '@/storage/storage.service';
-import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
-import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.service';
-import { LocalFileService } from '@/providers/file/file-provider/local-file.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { streamToBuffer } from '@/common/stream-to-buffer/stream-to-buffer';
-import { Readable } from 'stream';
-import * as fs from 'fs/promises';
-import { HttpService } from '@nestjs/axios';
 import { getFileMetadata } from '@/common/get-file-metadata/get-file-metadata';
+import { streamToBuffer } from '@/common/stream-to-buffer/stream-to-buffer';
+import { AwsS3FileConfig } from '@/providers/file/file-provider/aws-s3-file.config';
+import { AwsS3FileService } from '@/providers/file/file-provider/aws-s3-file.service';
+import { Base64FileService } from '@/providers/file/file-provider/base64-file.service';
+import { HttpFileService } from '@/providers/file/file-provider/http-file.service';
+import { LocalFileService } from '@/providers/file/file-provider/local-file.service';
+import { StorageService } from '@/storage/storage.service';
+import type { TProjectId } from '@/types';
+import { getDocumentId, isErrorWithMessage, isType } from '@ballerine/common';
+import { HttpService } from '@nestjs/axios';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { randomUUID } from 'crypto';
+import * as fs from 'fs/promises';
+import { Base64 } from 'js-base64';
+import { Readable } from 'stream';
+import * as tmp from 'tmp';
+import { z } from 'zod';
+import { TFileServiceProvider } from './types';
+import { TLocalFilePath, TRemoteFileConfig, TS3BucketConfig } from './types/files-types';
+import { IStreamableFileProvider } from './types/interfaces';
 
 @Injectable()
 export class FileService {
@@ -219,6 +221,13 @@ export class FileService {
       };
     }
 
+    if (provider == 'base64' && z.string().refine(Base64.isValid).parse(uri)) {
+      return {
+        sourceServiceProvider: new Base64FileService(),
+        sourceRemoteFileConfig: uri as TRemoteFileConfig,
+      };
+    }
+
     return {
       sourceServiceProvider: new LocalFileService(),
       sourceRemoteFileConfig: uri,
@@ -338,7 +347,9 @@ export class FileService {
         ? fileInfo?.remoteFilePath?.fileNameInBucket
         : undefined,
       projectId,
-      mimeType: fileInfo?.mimeType,
+      // After copy of file that was created from base64 its losing mimeType
+      // Forcing to use mimeType of source file when provider is base64
+      mimeType: fileDetails.provider === 'base64' ? fileType.mimeType : fileInfo?.mimeType,
       fileName: fileDetails.fileName,
     });
 

@@ -1,6 +1,6 @@
-import { Prisma } from '@prisma/client';
-import { PrismaTransaction } from '@/types';
 import { PrismaService } from '@/prisma/prisma.service';
+import { PrismaTransaction } from '@/types';
+import { Prisma } from '@prisma/client';
 
 export const PRISMA_RECORD_NOT_FOUND_ERROR = 'P2025';
 export const PRISMA_FOREIGN_KEY_CONSTRAINT_ERROR = 'P2003';
@@ -78,4 +78,12 @@ export const beginTransactionIfNotExistCurry = ({
 export const defaultPrismaTransactionOptions: PrismaTransactionOptions = {
   maxWait: 60_000,
   timeout: 60_000,
+};
+
+export const isPrismaClientKnownRequestError = (
+  error: unknown,
+): error is Prisma.PrismaClientKnownRequestError => {
+  return (
+    error instanceof Error && 'name' in error && error.name === 'PrismaClientKnownRequestError'
+  );
 };

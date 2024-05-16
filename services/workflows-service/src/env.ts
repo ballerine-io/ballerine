@@ -25,6 +25,7 @@ export const env = createEnv({
     PORT: z.coerce.number(),
     DB_URL: z.string().url(),
     SESSION_SECRET: z.string(),
+    HASHING_KEY_SECRET: z.string(),
     SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().nonnegative().gt(0).default(60),
     BACKOFFICE_CORS_ORIGIN: z.string().transform(urlArrayTransformer),
     WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().transform(urlArrayTransformer),
@@ -44,12 +45,7 @@ export const env = createEnv({
     AWS_S3_BUCKET_SECRET: z.string().optional(),
     API_KEY: z.string(),
     SENTRY_DSN: z.string().nullable().optional(),
-    WEBHOOK_SECRET: z
-      .string()
-      .optional()
-      .describe(
-        'Deprecated. Should use `customer.authenticationConfiguration.webhookSharedSecret` instead.',
-      ),
+    RELEASE: z.string().nullable().optional(),
     ADMIN_API_KEY: z.string().optional(),
     MAIL_ADAPTER: z
       .enum(['sendgrid', 'log'])

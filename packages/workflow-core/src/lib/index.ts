@@ -43,6 +43,8 @@ export {
   JsonSchemaValidator,
   validateDefinitionLogic,
 } from './utils';
+export { logger } from './logger';
+export { setLogger } from './logger';
 export { HttpError } from './errors';
 export { createWorkflow } from './create-workflow';
 export { BUILT_IN_EVENT } from './built-in-event';

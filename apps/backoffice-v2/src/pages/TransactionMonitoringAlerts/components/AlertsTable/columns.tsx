@@ -14,6 +14,8 @@ import { severityToClassName } from '@/pages/TransactionMonitoringAlerts/compone
 import { IndeterminateCheckbox } from '@/common/components/atoms/IndeterminateCheckbox/IndeterminateCheckbox';
 import { SnakeCase, titleCase } from 'string-ts';
 import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
+import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEllipsesWithTitle';
+import { buttonVariants } from '@/common/components/atoms/Button/Button';
 
 const columnHelper = createColumnHelper<
   TAlertsList[number] & {
@@ -64,17 +66,17 @@ export const columns = [
     },
     header: 'Updated At',
   }),
-  columnHelper.accessor('label', {
+  columnHelper.accessor('correlationId', {
     cell: info => {
-      const label = info.getValue();
+      const correlationId = info.getValue();
 
       return (
-        <Badge variant="secondary" className="max-w-[8rem]" title={label}>
-          <div className="truncate">{label}</div>
+        <Badge variant="secondary" className="max-w-[8rem]" title={correlationId}>
+          <div className="truncate">{correlationId}</div>
         </Badge>
       );
     },
-    header: 'Label',
+    header: 'Correlation Id',
   }),
   columnHelper.accessor('subject', {
     cell: info => {
@@ -83,6 +85,39 @@ export const columns = [
       return <TextWithNAFallback>{subject.name}</TextWithNAFallback>;
     },
     header: 'Subject',
+  }),
+  columnHelper.accessor('subject.type', {
+    cell: info => {
+      const subjectType = info.getValue();
+
+      return (
+        <TextWithNAFallback className={`max-w-[12ch]`}>{titleCase(subjectType)}</TextWithNAFallback>
+      );
+    },
+    header: 'Subject Type',
+  }),
+  columnHelper.accessor('subject.correlationId', {
+    cell: info => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
+      const { ref, styles } = useEllipsesWithTitle<HTMLSpanElement>();
+      const subjectId = info.getValue();
+
+      return (
+        <div className={`w-[11.8ch]`}>
+          <TextWithNAFallback
+            className={buttonVariants({
+              variant: 'ghost',
+              className: '!block !p-0 text-sm',
+            })}
+            style={styles}
+            ref={ref}
+          >
+            {subjectId}
+          </TextWithNAFallback>
+        </div>
+      );
+    },
+    header: 'Subject ID',
   }),
   columnHelper.accessor('severity', {
     cell: info => {
@@ -98,7 +133,7 @@ export const columns = [
             'w-20 py-0.5 font-bold',
           )}
         >
-          {severity}
+          {titleCase(severity ?? '')}
         </TextWithNAFallback>
       );
     },
@@ -108,7 +143,7 @@ export const columns = [
     cell: info => {
       const alertDetails = info.getValue();
 
-      return <TextWithNAFallback>{alertDetails}</TextWithNAFallback>;
+      return <TextWithNAFallback className={`max-w-[40ch]`}>{alertDetails}</TextWithNAFallback>;
     },
     header: 'Alert Details',
   }),
@@ -129,7 +164,7 @@ export const columns = [
           {!assignee && <UserCircle2 className={'stroke-[#E4E4E7]'} size={22} />}
           {assignee && (
             <Avatar className={`d-[1.375rem]`}>
-              <AvatarImage />
+              <AvatarImage src={assignee?.avatarUrl} />
               <AvatarFallback className={'bg-[#DCE1E8] text-xs'}>
                 {createInitials(assignee?.fullName)}
               </AvatarFallback>

@@ -7,15 +7,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../../../../common/components/atoms/Table';
+} from '@/common/components/atoms/Table';
 import { ColumnDef, RowData, TableOptions } from '@tanstack/react-table';
 
-export interface ITableCellProps<TData extends RowData, TValue = unknown> {
+export interface ITableCellProps<TData extends RowData, TValue = any> {
   // Props to be used explicitly by the cell inside 'value'. Props outside 'value' to be used by the blocks API.
   value: {
     caption?: ComponentProps<typeof TableCaption>['children'];
     columns: Array<ColumnDef<TData, TValue>>;
-    data: Array<TData>;
+    data: TData[];
 
     // Component props
     props?: {

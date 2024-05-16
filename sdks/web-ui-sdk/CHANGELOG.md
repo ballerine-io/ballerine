@@ -1,5 +1,62 @@
 # web-ui-sdk
 
+## 1.5.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.5
+
+## 1.5.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.4
+
+## 1.5.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.3
+
+## 1.5.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.2
+
+## 1.5.2
+
+### Patch Changes
+
+- bumo
+- Updated dependencies
+  - @ballerine/common@0.9.1
+
+## 1.5.1
+
+### Patch Changes
+
+- ver bump
+- 9fe7a5c10: bump
+- Updated dependencies
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+  - @ballerine/common@0.9.0
+
+## 1.5.1-11210907c.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.0-11210907c.0
+
 ## 1.5.0
 
 ### Minor Changes

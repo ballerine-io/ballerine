@@ -1,4 +1,4 @@
-import { Alert, AlertDefinition, Business, User } from '@prisma/client';
+import { Alert, AlertDefinition, Business, EndUser, User } from '@prisma/client';
 
 export type TExecutionDetails = {
   checkpoint: {
@@ -12,14 +12,6 @@ export type TDedupeStrategy = {
   cooldownTimeframeInMinutes: number;
 };
 
-export type TAuthenticationConfiguration = {
-  apiType: 'API_KEY' | 'OAUTH2' | 'BASIC_AUTH';
-  authValue: string;
-  validUntil?: string;
-  isValid: boolean;
-  webhookSharedSecret: string;
-};
-
 export const BulkStatus = {
   SUCCESS: 'success',
   FAILED: 'failed',
@@ -28,11 +20,11 @@ export const BulkStatus = {
 export type TBulkStatus = (typeof BulkStatus)[keyof typeof BulkStatus];
 
 export type TAlertResponse = Alert & {
-  alertDefinition: Pick<AlertDefinition, 'description' | 'label'>;
-  assignee: Pick<User, 'id' | 'firstName' | 'lastName'>;
+  alertDefinition: Pick<AlertDefinition, 'description' | 'correlationId'>;
+  assignee: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>;
   counterparty: {
-    business: Pick<Business, 'id' | 'companyName'>;
-    endUser: Pick<User, 'id' | 'firstName' | 'lastName'>;
+    business: Pick<Business, 'id' | 'companyName' | 'correlationId'>;
+    endUser: Pick<EndUser, 'id' | 'firstName' | 'lastName' | 'correlationId'>;
   };
 };
 

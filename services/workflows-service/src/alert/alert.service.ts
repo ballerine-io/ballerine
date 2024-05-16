@@ -88,8 +88,8 @@ export class AlertService {
             in: findAlertsDto.filter?.status,
           },
           alertDefinition: {
-            label: {
-              in: findAlertsDto.filter?.label,
+            correlationId: {
+              in: findAlertsDto.filter?.correlationIds,
             },
           },
           ...(findAlertsDto.filter?.assigneeId && {
@@ -317,16 +317,27 @@ export class AlertService {
     return status;
   }
 
-  async getAlertLabels({ projectId }: { projectId: TProjectId }) {
+  async getAlertCorrelationIds({ projectId }: { projectId: TProjectId }) {
     const alertDefinitions = await this.alertDefinitionRepository.findMany(
       {
         select: {
-          label: true,
+          correlationId: true,
         },
       },
       [projectId],
     );
 
-    return alertDefinitions.map(({ label }) => label);
+    return alertDefinitions.map(({ correlationId }) => correlationId);
+  }
+
+  async getAlertsByEntityId(entityId: string, projectId: string) {
+    return this.alertRepository.findMany(
+      {
+        where: {
+          counterpartyId: entityId,
+        },
+      },
+      [projectId],
+    );
   }
 }

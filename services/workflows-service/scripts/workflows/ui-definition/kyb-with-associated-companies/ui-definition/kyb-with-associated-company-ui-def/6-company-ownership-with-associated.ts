@@ -260,6 +260,7 @@ export const CompanyOwnershipWithAssociatedCPage = {
         },
         {
           type: 'json-form',
+          name: 'im-shareholder-checkbox-form',
           options: {
             jsonFormDefinition: {
               required: ['im-shareholder-checkbox'],
@@ -443,6 +444,7 @@ export const CompanyOwnershipWithAssociatedCPage = {
         },
         {
           type: 'json-form',
+          name: 'there-no-companies-with-more-than-25-form',
           elements: [
             {
               type: 'checkbox',
