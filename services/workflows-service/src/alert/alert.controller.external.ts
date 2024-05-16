@@ -13,7 +13,7 @@ import * as common from '@nestjs/common';
 import { Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { Alert, AlertDefinition, MonitoringType } from '@prisma/client';
-import express from 'express';
+import * as express from 'express';
 import * as errors from '../errors';
 import { AlertAssigneeUniqueDto, AlertUpdateResponse } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
@@ -64,7 +64,7 @@ export class AlertControllerExternal {
         include: {
           alertDefinition: {
             select: {
-              label: true,
+              correlationId: true,
               description: true,
             },
           },
@@ -106,7 +106,7 @@ export class AlertControllerExternal {
 
       return {
         ...alertWithoutDefinition,
-        label: alertDefinition.label,
+        correlationId: alertDefinition.correlationId,
         assignee: assignee
           ? {
               id: assignee?.id,
@@ -150,7 +150,7 @@ export class AlertControllerExternal {
         include: {
           alertDefinition: {
             select: {
-              label: true,
+              correlationId: true,
               description: true,
             },
           },
@@ -185,7 +185,7 @@ export class AlertControllerExternal {
 
       return {
         ...alertWithoutDefinition,
-        label: alertDefinition.label,
+        correlationId: alertDefinition.correlationId,
         assignee: assignee
           ? {
               id: assignee?.id,

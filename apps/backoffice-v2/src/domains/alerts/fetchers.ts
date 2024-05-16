@@ -82,7 +82,7 @@ export const AlertsListSchema = z.array(
       type: z.enum(['business', 'counterparty']),
     }),
     severity: z.enum(AlertSeverities),
-    label: z.string(),
+    correlationId: z.string(),
     alertDetails: z.string(),
     // amountOfTxs: z.number(),
     assignee: ObjectWithIdSchema.extend({
@@ -178,13 +178,13 @@ export const fetchAlertDefinitionByAlertId = async ({ alertId }: { alertId: stri
   return handleZodError(error, alertDefinition);
 };
 
-export const AlertLabelsSchema = z.array(z.string());
+export const AlertCorrelationIdsSchema = z.array(z.string());
 
-export const fetchAlertLabels = async () => {
+export const fetchAlertCorrelationIds = async () => {
   const [alertDefinition, error] = await apiClient({
-    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/internal/alerts/labels`,
+    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/internal/alerts/correlationIds`,
     method: Method.GET,
-    schema: AlertLabelsSchema,
+    schema: AlertCorrelationIdsSchema,
   });
 
   return handleZodError(error, alertDefinition);

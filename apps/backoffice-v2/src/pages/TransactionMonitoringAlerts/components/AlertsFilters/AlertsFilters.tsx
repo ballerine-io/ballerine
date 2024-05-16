@@ -1,7 +1,7 @@
 import { Filters } from '@/common/components/organisms/Filters/Filters';
 import { FiltersHeader } from '@/common/components/organisms/Filters/Filters.Header';
+import { FiltersInput } from '@/common/components/organisms/Filters/Filters.Input';
 import { FiltersList } from '@/common/components/organisms/Filters/Filters.List';
-import { FiltersInput } from '@/common/components/organisms/Filters/Filters.input';
 import { IFilterDefinition, IFilterValue } from '@/common/components/organisms/Filters/interfaces';
 import { TFiltersInputID } from '@/common/components/organisms/Filters/types';
 import { useFilter } from '@/common/hooks/useFilter/useFilter';
@@ -12,9 +12,9 @@ import { titleCase } from 'string-ts';
 
 export const AlertsFilters: FunctionComponent<{
   assignees: TUsers;
-  labels: string[];
+  correlationIds: string[];
   authenticatedUserId: string | null;
-}> = ({ assignees, labels, authenticatedUserId }) => {
+}> = ({ assignees, correlationIds, authenticatedUserId }) => {
   const assigneeOptions = useMemo(
     () =>
       assignees?.map(assignee => ({
@@ -57,20 +57,19 @@ export const AlertsFilters: FunctionComponent<{
         },
       },
       {
-        label: 'Label',
-        id: 'label',
+        id: 'correlationIds',
+        label: 'Correlation Id',
         type: 'multi-select',
         params: {
-          options: labels.map(label => ({
+          options: correlationIds.map(label => ({
             label,
             value: label,
           })),
         },
       },
     ],
-    [assigneeOptions, labels, statusOptions],
+    [assigneeOptions, correlationIds, statusOptions],
   );
-  console.log('filters', filters);
   const { filter, onFilter } = useFilter();
   const filterValues = useMemo(
     () => Object.entries(filter || {}).map(([key, value]) => ({ id: key, value })),
