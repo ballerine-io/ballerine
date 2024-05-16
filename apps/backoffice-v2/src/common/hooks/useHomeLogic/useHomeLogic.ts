@@ -16,6 +16,8 @@ export const useHomeLogic = () => {
   const { firstName, fullName, avatarUrl } = session?.user || {};
   const statisticsLink = `/${locale}/home/statistics${search}`;
   const workflowsLink = `/${locale}/home/workflows${search}`;
+  const isStatisticsActive = pathname === `/${locale}/home/statistics`;
+  const defaultTabValue = isStatisticsActive ? statisticsLink : workflowsLink;
 
   useEffect(() => {
     if (pathname !== `/${locale}` && pathname !== `/${locale}/home`) {
@@ -41,8 +43,7 @@ export const useHomeLogic = () => {
     avatarUrl,
     statisticsLink,
     workflowsLink,
-    pathname,
-    locale,
+    defaultTabValue,
     handleDateRangeChange,
   };
 };

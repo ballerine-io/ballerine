@@ -19,8 +19,7 @@ export const Home: FunctionComponent = () => {
     avatarUrl,
     statisticsLink,
     workflowsLink,
-    pathname,
-    locale,
+    defaultTabValue,
   } = useHomeLogic();
 
   return (
@@ -43,16 +42,16 @@ export const Home: FunctionComponent = () => {
         />
       </div>
       <div>
-        <Tabs defaultValue={pathname} key={pathname}>
+        <Tabs defaultValue={defaultTabValue} key={defaultTabValue}>
           <TabsList>
-            <TabsTrigger asChild={true} value={`/${locale}/home/statistics`}>
+            <TabsTrigger asChild={true} value={statisticsLink}>
               <NavLink to={statisticsLink}>Statistics</NavLink>
             </TabsTrigger>
-            <TabsTrigger asChild={true} value={`/${locale}/home/workflows`}>
+            <TabsTrigger asChild={true} value={workflowsLink}>
               <NavLink to={workflowsLink}>Workflows</NavLink>
             </TabsTrigger>
           </TabsList>
-          <TabsContent value={pathname}>
+          <TabsContent value={defaultTabValue}>
             <Outlet />
           </TabsContent>
         </Tabs>
