@@ -25,6 +25,8 @@ export class WebhooksService {
     endUserId: string;
     data: IndividualAmlWebhookInput['data'];
   }) {
+    this.logger.log('Started handling individual AML hit', { endUserId });
+
     const { projectId, ...rest } = await this.endUserRepository.findByIdUnscoped(endUserId, {
       select: {
         approvalState: true,
@@ -85,10 +87,12 @@ export class WebhooksService {
     });
 
     if (hits.length === 0) {
+      this.logger.log('No AML hits found', { endUserId });
+
       return;
     }
 
-    await this.workflowService.createOrUpdateWorkflowRuntime({
+    const workflow = await this.workflowService.createOrUpdateWorkflowRuntime({
       workflowDefinitionId,
       context: {
         aml: data,
@@ -105,5 +109,7 @@ export class WebhooksService {
       projectIds: [projectId],
       currentProjectId: projectId,
     });
+
+    this.logger.log(`Created workflow for AML hits`, { workflow });
   }
 }
