@@ -1296,7 +1296,7 @@ describe('AlertService', () => {
           ),
         });
 
-        const counteryparty = await createCounterparty(prismaService, project);
+        counteryparty = await createCounterparty(prismaService, project);
 
         oldTransactionFactory = transactionFactory
           .withCounterpartyBeneficiary(counteryparty.id)
@@ -1315,8 +1315,8 @@ describe('AlertService', () => {
         await oldTransactionFactory.amount(10).count(3).create();
 
         await oldTransactionFactory
-          .transactionDate(faker.date.past(3))
-          .amount(10)
+          .transactionDate(faker.date.recent(3, '2020-01-01T00:00:00.000Z'))
+          .amount(3)
           .count(3)
           .create();
 
@@ -1342,9 +1342,9 @@ describe('AlertService', () => {
             hash: expect.any(String),
           },
           executionRow: {
-            counterpartyId: expect.any(String),
-            recentDaysTransactionCount: `${thresholdTransaction}`,
+            counterpartyId: counteryparty.id,
             historicalTransactionCount: '7',
+            recentDaysTransactionCount: `${thresholdTransaction}`,
           },
         });
       });
@@ -1358,6 +1358,99 @@ describe('AlertService', () => {
         await txFactory.amount(10).count(3).create();
 
         const thresholdTransaction = ALERT_DEFINITIONS.HVHAI_CC.inlineRule.options.minimumCount + 1;
+
+        await txFactory
+          .transactionDate(faker.date.recent(2))
+          .amount(300)
+          .count(thresholdTransaction)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('Rule: HVHAI_APM', () => {
+      let oldTransactionFactory: TransactionFactory;
+
+      let alertDefinition: AlertDefinition;
+      let counteryparty: Counterparty;
+
+      beforeEach(async () => {
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.HVHAI_APM,
+              enabled: true,
+            },
+            project,
+          ),
+        });
+
+        counteryparty = await createCounterparty(prismaService, project);
+
+        oldTransactionFactory = transactionFactory
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.apple_pay)
+          .transactionDate(faker.date.recent(100));
+      });
+
+      it(`Trigger an alert when there inbound and non credit card transactions more than 180 days ago
+          had more than a set X within the last 3 days`, async () => {
+        // Arrange
+        await oldTransactionFactory.amount(10).count(3).create();
+
+        await oldTransactionFactory
+          .transactionDate(faker.date.recent(3, '2020-01-01T00:00:00.000Z'))
+          .amount(3)
+          .count(3)
+          .create();
+
+        const thresholdTransaction =
+          ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.minimumCount + 1;
+        await oldTransactionFactory
+          .transactionDate(faker.date.recent(2))
+          .amount(300)
+          .count(thresholdTransaction)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(1);
+
+        expect(alerts[0]?.severity).toEqual('medium');
+
+        expect(alerts[0]?.executionDetails).toMatchObject({
+          checkpoint: {
+            hash: expect.any(String),
+          },
+          executionRow: {
+            counterpartyId: counteryparty.id,
+            historicalTransactionCount: '7',
+            recentDaysTransactionCount: `${thresholdTransaction}`,
+          },
+        });
+      });
+
+      it(`When there active users with no inbound credit card`, async () => {
+        // Arrange
+        const txFactory = oldTransactionFactory
+          .direction(TransactionDirection.outbound)
+          .paymentMethod(PaymentMethod.apple_pay);
+
+        await txFactory.amount(10).count(3).create();
+
+        const thresholdTransaction =
+          ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.minimumCount + 1;
 
         await txFactory
           .transactionDate(faker.date.recent(2))

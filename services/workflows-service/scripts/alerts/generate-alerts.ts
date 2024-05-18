@@ -509,12 +509,12 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
-  HANUMIAPM: {
+  HVHAI_APM: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
     description: `Total number of incoming credit cards transactions exceeds client’s historical average`,
     inlineRule: {
-      id: 'HANUMIAPM',
+      id: 'HVHAI_APM',
       fnName: 'evaluateHighVelocityHistoricAverage',
       subjects: ['counterpartyId'],
       options: {
