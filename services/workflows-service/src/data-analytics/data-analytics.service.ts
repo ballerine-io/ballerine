@@ -52,6 +52,12 @@ export class DataAnalyticsService {
           ...inlineRule.options,
           projectId,
         });
+
+      case 'evaluateHighVelocityHistoricAverage':
+        return await this[inlineRule.fnName]({
+          ...inlineRule.options,
+          projectId,
+        });
     }
 
     this.logger.error(`No evaluation function found`, {
@@ -195,6 +201,7 @@ export class DataAnalyticsService {
     timeAmount,
     timeUnit,
   }: HighTransactionTypePercentage) {
+    // TODO: Optimize this query with HAVING c
     return await this._executeQuery<Array<{ counterpartyId: string }>>(Prisma.sql`
       WITH "transactionsData" AS (
         SELECT

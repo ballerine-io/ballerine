@@ -483,13 +483,13 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
-  HANUMICC: {
+  HVHAI_CC: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
     description: `Total number of incoming credit cards transactions exceeds client’s historical average`,
     inlineRule: {
-      id: 'HANUMICC',
-      fnName: 'evaluateHighTransactionTypePercentage',
+      id: 'HVHAI_CC',
+      fnName: 'evaluateHighVelocityHistoricAverage',
       subjects: ['counterpartyId'],
       options: {
         transactionDirection: TransactionDirection.inbound,
@@ -516,7 +516,7 @@ export const ALERT_DEFINITIONS = {
     description: `Total number of incoming credit cards transactions exceeds client’s historical average`,
     inlineRule: {
       id: 'HANUMIAPM',
-      fnName: 'evaluateHighTransactionTypePercentage',
+      fnName: 'evaluateHighVelocityHistoricAverage',
       subjects: ['counterpartyId'],
       options: {
         transactionDirection: TransactionDirection.inbound,

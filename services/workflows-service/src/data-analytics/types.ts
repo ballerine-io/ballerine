@@ -31,7 +31,7 @@ export type InlineRule = {
       options: Omit<TDormantAccountOptions, 'projectId'>;
     }
   | {
-      fnName: 'evaluateHighTransactionTypePercentage';
+      fnName: 'evaluateHighVelocityHistoricAverage';
       options: Omit<HighVelocityHistoricAverageOptions, 'projectId'>;
     }
 );

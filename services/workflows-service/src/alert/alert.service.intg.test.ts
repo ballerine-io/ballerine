@@ -1278,7 +1278,7 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(0);
       });
     });
-    describe('Rule: HANUMICC', () => {
+    describe('Rule: HVHAI_CC', () => {
       let alertDefinition: AlertDefinition;
       let counteryparty: Counterparty;
 
@@ -1286,7 +1286,7 @@ describe('AlertService', () => {
         alertDefinition = await prismaService.alertDefinition.create({
           data: getAlertDefinitionCreateData(
             {
-              ...ALERT_DEFINITIONS.HANUMICC,
+              ...ALERT_DEFINITIONS.HVHAI_CC,
               enabled: true,
             },
             project,
