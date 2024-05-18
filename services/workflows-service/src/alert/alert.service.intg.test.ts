@@ -176,7 +176,13 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.STRUC_CC, project),
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.STRUC_CC,
+              enabled: true,
+            },
+            project,
+          ),
         });
 
         expect(
@@ -271,7 +277,13 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.STRUC_APM, project),
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.STRUC_APM,
+              enabled: true,
+            },
+            project,
+          ),
         });
 
         expect(
@@ -373,7 +385,13 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.CHVC_C, project),
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.CHVC_C,
+              enabled: true,
+            },
+            project,
+          ),
         });
       });
 
@@ -433,7 +451,13 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.SHCAC_C, project),
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.SHCAC_C,
+              enabled: true,
+            },
+            project,
+          ),
         });
       });
 
@@ -1252,6 +1276,40 @@ describe('AlertService', () => {
         // Assert
         const alerts = await prismaService.alert.findMany();
         expect(alerts).toHaveLength(0);
+      });
+    });
+    describe('Rule: HANUMICC', () => {
+      let alertDefinition: AlertDefinition;
+      let counteryparty: Counterparty;
+
+      beforeEach(async () => {
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.HANUMICC,
+              enabled: true,
+            },
+            project,
+          ),
+        });
+
+        const correlationId = faker.datatype.uuid();
+        counteryparty = await prismaService.counterparty.create({
+          data: {
+            project: { connect: { id: project.id } },
+            correlationId: correlationId,
+            business: {
+              create: {
+                correlationId: correlationId,
+                companyName: faker.company.name(),
+                registrationNumber: faker.datatype.uuid(),
+                mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+                project: { connect: { id: project.id } },
+                businessType: ALERT_DEFINITIONS.PGAICT.inlineRule.options.customerType,
+              },
+            },
+          },
+        });
       });
     });
   });

@@ -1,4 +1,15 @@
+import {
+  ALERT_DEDUPE_STRATEGY_DEFAULT,
+  SEVEN_DAYS,
+  THREE_DAYS,
+  TWENTY_ONE_DAYS,
+  daysToMinutesConverter,
+} from '@/alert/consts';
+import { TDedupeStrategy } from '@/alert/types';
+import { AggregateType, TIME_UNITS } from '@/data-analytics/consts';
 import { InlineRule } from '@/data-analytics/types';
+import { InputJsonValue, PrismaTransaction } from '@/types';
+import { faker } from '@faker-js/faker';
 import {
   AlertSeverity,
   AlertState,
@@ -10,16 +21,6 @@ import {
   TransactionDirection,
   TransactionRecordType,
 } from '@prisma/client';
-import { faker } from '@faker-js/faker';
-import { AggregateType, TIME_UNITS } from '@/data-analytics/consts';
-import { InputJsonValue, PrismaTransaction } from '@/types';
-import { TDedupeStrategy } from '@/alert/types';
-import {
-  ALERT_DEDUPE_STRATEGY_DEFAULT,
-  SEVEN_DAYS,
-  TWENTY_ONE_DAYS,
-  daysToMinutesConverter,
-} from '@/alert/consts';
 
 const tags = [
   ...new Set([
@@ -479,6 +480,60 @@ export const ALERT_DEFINITIONS = {
       options: {
         timeAmount: 180,
         timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  HANUMICC: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `Total number of incoming credit cards transactions exceeds client’s historical average`,
+    inlineRule: {
+      id: 'HANUMICC',
+      fnName: 'evaluateHighTransactionTypePercentage',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 3,
+        transactionFactor: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '=',
+        },
+        activeUserPeriod: {
+          timeAmount: 180,
+          timeUnit: TIME_UNITS.days,
+        },
+        lastDaysPeriod: {
+          timeAmount: THREE_DAYS,
+          timeUnit: TIME_UNITS.days,
+        },
+      },
+    },
+  },
+  HANUMIAPM: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `Total number of incoming credit cards transactions exceeds client’s historical average`,
+    inlineRule: {
+      id: 'HANUMIAPM',
+      fnName: 'evaluateHighTransactionTypePercentage',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 3,
+        transactionFactor: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '!=',
+        },
+        activeUserPeriod: {
+          timeAmount: 180,
+          timeUnit: TIME_UNITS.days,
+        },
+        lastDaysPeriod: {
+          timeAmount: THREE_DAYS,
+          timeUnit: TIME_UNITS.days,
+        },
       },
     },
   },
