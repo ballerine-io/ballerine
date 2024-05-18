@@ -116,11 +116,10 @@ export type HighVelocityHistoricAverageOptions = {
     operator: '=' | '!=';
   };
   activeUserPeriod: {
-    timeUnit: TimeUnit;
     timeAmount: number;
   };
   lastDaysPeriod: {
-    timeUnit: TimeUnit;
     timeAmount: number;
   };
+  timeUnit: TimeUnit;
 };

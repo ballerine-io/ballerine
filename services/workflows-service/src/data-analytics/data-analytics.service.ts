@@ -423,17 +423,22 @@ export class DataAnalyticsService {
     transactionFactor,
     activeUserPeriod,
     lastDaysPeriod,
+    timeUnit,
   }: HighVelocityHistoricAverageOptions) {
     if (!projectId) {
       throw new Error('projectId is required');
     }
 
-    const lastLargePeriodClause = Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
-      `${activeUserPeriod.timeAmount} ${activeUserPeriod.timeUnit}`,
+    const historicalTransactionClause = Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+      `${activeUserPeriod.timeAmount} ${timeUnit}`,
     )}'`;
 
-    const lastDaysPeriodClause = Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
-      `${lastDaysPeriod.timeAmount} ${lastDaysPeriod.timeUnit}`,
+    const recentDaysClause = Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+      `${lastDaysPeriod.timeAmount} ${timeUnit}`,
+    )}'`;
+
+    const substractPeriodClause = Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+      `${activeUserPeriod.timeAmount - lastDaysPeriod.timeAmount} ${timeUnit}`,
     )}'`;
 
     const conditions: Prisma.Sql[] = [
@@ -443,26 +448,26 @@ export class DataAnalyticsService {
       Prisma.sql`tr."paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${
         paymentMethod.value
       }`,
-      lastLargePeriodClause,
+      historicalTransactionClause,
     ];
 
     return await this._executeQuery<Array<{ counterpartyId: string }>>(
       Prisma.sql`
       SELECT
-      "counterpartyBeneficiaryId",
-      COUNT(id) FILTER (WHERE ${lastLargePeriodClause}) AS lasSixMonths,
-      COUNT(id) FILTER (WHERE ${lastDaysPeriodClause}) AS lastDays
+      "counterpartyBeneficiaryId" AS "counterpartyId",
+      COUNT(id) FILTER (WHERE ${historicalTransactionClause}) AS "historicalTransactionCount",
+      COUNT(id) FILTER (WHERE ${recentDaysClause}) AS "recentDaysTransactionCount"
     FROM
-      "TransactionRecord"
+      "TransactionRecord" as "tr"
     WHERE
       ${Prisma.join(conditions, ' AND ')}
     GROUP BY
       "counterpartyBeneficiaryId"
     HAVING
-      COUNT(id) FILTER (WHERE ${lastDaysPeriodClause}) > ${minimumCount} -- A condition that is used to ensure that we are calculating an average of active users
-      AND COUNT(id) FILTER (WHERE ${lastDaysPeriodClause}) > -- AS lastDaysPeriod
-      ((${transactionFactor} * COUNT(id) FILTER (WHERE ${lastLargePeriodClause}) -- AS lastLargePeriod
-        - COUNT(id) FILTER (WHERE ${lastDaysPeriodClause})
+      COUNT(id) FILTER (WHERE ${recentDaysClause}) > ${minimumCount} -- A condition that is used to ensure that we are calculating an average of active users
+      AND COUNT(id) FILTER (WHERE ${recentDaysClause}) > -- AS largePeriodTransactionCount
+      ((${transactionFactor} * COUNT(id) FILTER (WHERE ${substractPeriodClause})
+        - COUNT(id) FILTER (WHERE ${recentDaysClause})
     ) / 59);
       `,
     );

@@ -1278,7 +1278,10 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(0);
       });
     });
+
     describe('Rule: HVHAI_CC', () => {
+      let oldTransactionFactory: TransactionFactory;
+
       let alertDefinition: AlertDefinition;
       let counteryparty: Counterparty;
 
@@ -1293,23 +1296,81 @@ describe('AlertService', () => {
           ),
         });
 
-        const correlationId = faker.datatype.uuid();
-        counteryparty = await prismaService.counterparty.create({
-          data: {
-            project: { connect: { id: project.id } },
-            correlationId: correlationId,
-            business: {
-              create: {
-                correlationId: correlationId,
-                companyName: faker.company.name(),
-                registrationNumber: faker.datatype.uuid(),
-                mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
-                project: { connect: { id: project.id } },
-                businessType: ALERT_DEFINITIONS.PGAICT.inlineRule.options.customerType,
-              },
-            },
+        const counteryparty = await createCounterparty(prismaService, project);
+
+        oldTransactionFactory = transactionFactory
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .transactionDate(faker.date.recent(100));
+      });
+
+      it(`Trigger an alert when there inbound credit card transactions more than 180 days ago
+          had more than a set X within the last 3 days`, async () => {
+        // Has the customer been active for over 180 days (Has the customer had at least 1 Inbound credit card transactions more than 180 days ago)? (A condition that is used to ensure that we are calculating an average from an available representative sample of data - this condition would cause the rule not to alert in the customer's first 180 days of their credit card life cycle)
+        // Has the customer had more than a set [Number] of Inbound credit card transactions within the last 3 days? (A condition that is used to exclude cases when the number of Inbound credit card transactions in 3 days is more than 2 times greater than the customer's 3-day historic average number of Inbound credit card transactions, although of an insignificantly low number)
+        // Has the customer's number of Inbound credit card transactions in 3 days been more than a set [Factor] times greater than the customer's 3-day average number of Inbound credit card transactions (when the average is caclulated from the 177 days preceding the evaluated 3 days)?
+
+        // Arrange
+        await oldTransactionFactory.amount(10).count(3).create();
+
+        await oldTransactionFactory
+          .transactionDate(faker.date.past(3))
+          .amount(10)
+          .count(3)
+          .create();
+
+        const thresholdTransaction = ALERT_DEFINITIONS.HVHAI_CC.inlineRule.options.minimumCount + 1;
+        await oldTransactionFactory
+          .transactionDate(faker.date.recent(2))
+          .amount(300)
+          .count(thresholdTransaction)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(1);
+
+        expect(alerts[0]?.severity).toEqual('medium');
+
+        expect(alerts[0]?.executionDetails).toMatchObject({
+          checkpoint: {
+            hash: expect.any(String),
+          },
+          executionRow: {
+            counterpartyId: expect.any(String),
+            recentDaysTransactionCount: `${thresholdTransaction}`,
+            historicalTransactionCount: '7',
           },
         });
+      });
+
+      it(`When there active users with no inbound credit card`, async () => {
+        // Arrange
+        const txFactory = oldTransactionFactory
+          .direction(TransactionDirection.outbound)
+          .paymentMethod(PaymentMethod.apple_pay);
+
+        await txFactory.amount(10).count(3).create();
+
+        const thresholdTransaction = ALERT_DEFINITIONS.HVHAI_CC.inlineRule.options.minimumCount + 1;
+
+        await txFactory
+          .transactionDate(faker.date.recent(2))
+          .amount(300)
+          .count(thresholdTransaction)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
       });
     });
   });

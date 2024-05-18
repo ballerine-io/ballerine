@@ -501,12 +501,11 @@ export const ALERT_DEFINITIONS = {
         },
         activeUserPeriod: {
           timeAmount: 180,
-          timeUnit: TIME_UNITS.days,
         },
         lastDaysPeriod: {
           timeAmount: THREE_DAYS,
-          timeUnit: TIME_UNITS.days,
         },
+        timeUnit: TIME_UNITS.days,
       },
     },
   },
@@ -528,12 +527,11 @@ export const ALERT_DEFINITIONS = {
         },
         activeUserPeriod: {
           timeAmount: 180,
-          timeUnit: TIME_UNITS.days,
         },
         lastDaysPeriod: {
           timeAmount: THREE_DAYS,
-          timeUnit: TIME_UNITS.days,
         },
+        timeUnit: TIME_UNITS.days,
       },
     },
   },
