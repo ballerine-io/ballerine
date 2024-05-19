@@ -24,11 +24,10 @@ const uniqueArrayByKey = (array: AnyArray, key: PropertyKey) => {
   return [...new Map(array.map(item => [item[key], item])).values()] as TDropdownOption[];
 };
 
-const NONE_EDITABLE_FIELDS = ['category'] as const;
-export const getIsEditable = (isEditable: boolean, title: string) => {
-  if (NONE_EDITABLE_FIELDS.includes(title)) return false;
+const NON_EDITABLE_FIELDS = ['category'] as const;
 
-  return isEditable;
+export const checkIsEditable = ({ isEditable, field }: { isEditable: boolean; field: string }) => {
+  return !NON_EDITABLE_FIELDS.includes(field) && isEditable;
 };
 
 export const composePickableCategoryType = (
@@ -37,17 +36,20 @@ export const composePickableCategoryType = (
   documentsSchemas: TDocument[],
   config?: Record<any, any> | null,
 ) => {
-  const documentCategoryDropdownOptions: Array<TDropdownOption> = [];
-  const documentTypesDropdownOptions: Array<TDropdownOption> = [];
+  const documentCategoryDropdownOptions: TDropdownOption[] = [];
+  const documentTypesDropdownOptions: TDropdownOption[] = [];
   documentsSchemas.forEach(document => {
     const category = document.category;
+
     if (category) {
       documentCategoryDropdownOptions.push({
         value: category,
         label: toTitleCase(category),
       });
     }
+
     const type = document.type;
+
     if (type) {
       documentTypesDropdownOptions.push({
         dependantOn: 'category',
@@ -67,7 +69,7 @@ export const composePickableCategoryType = (
     ...composeDataFormCell('type', typeDropdownOptions, typeValue, isEditable),
   };
 };
-export const isExistingSchemaForDocument = (documentsSchemas: Array<TDocument>) => {
+export const isExistingSchemaForDocument = (documentsSchemas: TDocument[]) => {
   return documentsSchemas?.length > 0;
 };
 
