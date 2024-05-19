@@ -30,6 +30,10 @@ export type InlineRule = {
       fnName: 'evaluateDormantAccount';
       options: Omit<TDormantAccountOptions, 'projectId'>;
     }
+  | {
+      fnName: 'evaluateHighVelocityHistoricAverage';
+      options: Omit<HighVelocityHistoricAverageOptions, 'projectId'>;
+    }
 );
 
 export type TAggregations = keyof typeof AggregateType;
@@ -99,5 +103,23 @@ export type TPeerGroupTransactionAverageOptions = TransactionLimitHistoricAverag
 export type TDormantAccountOptions = {
   projectId: TProjectId;
   timeAmount: number;
+  timeUnit: TimeUnit;
+};
+
+export type HighVelocityHistoricAverageOptions = {
+  projectId: TProjectId;
+  transactionDirection: TransactionDirection;
+  transactionFactor: number;
+  minimumCount: number;
+  paymentMethod: {
+    value: PaymentMethod;
+    operator: '=' | '!=';
+  };
+  activeUserPeriod: {
+    timeAmount: number;
+  };
+  lastDaysPeriod: {
+    timeAmount: number;
+  };
   timeUnit: TimeUnit;
 };
