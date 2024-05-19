@@ -621,10 +621,16 @@ export const generateFakeAlertsAndDefinitions = async (
     agentUserIds: string[];
   },
 ) => {
-  const alertDefinitions = await generateAlertDefinitions(prisma, {
-    project,
-    createdBy: faker.internet.userName(),
-  });
+  const alertDefinitions = await generateAlertDefinitions(
+    prisma,
+    {
+      project,
+      createdBy: faker.internet.userName(),
+    },
+    {
+      crossEnvKeyPrefix: generateCrossEnvKey(project),
+    },
+  );
 
   await Promise.all(
     alertDefinitions.map(alertDefinition =>
@@ -647,4 +653,22 @@ export const generateFakeAlertsAndDefinitions = async (
       }),
     ),
   );
+};
+export const generateCrossEnvKey = (project: Project) => {
+  if (!project?.name) {
+    return;
+  }
+
+  let crossEnvKeyPrefix = project.name
+    .toUpperCase()
+    .replace(' ', '_')
+    .replace(/[_-]?PROJECT[_-]?/g, 'P')
+    .replace(/[_-]?DEFAULT[_-]?/g, '')
+    .replace('-', '_')
+    .replace('__', '_');
+
+  if (crossEnvKeyPrefix.charAt(crossEnvKeyPrefix.length - 1) == '_') {
+    crossEnvKeyPrefix = crossEnvKeyPrefix.substring(0, crossEnvKeyPrefix.length - 1);
+  }
+  return crossEnvKeyPrefix;
 };
