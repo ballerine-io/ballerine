@@ -125,7 +125,9 @@ export type HighVelocityHistoricAverageOptions = {
   lastDaysPeriod: {
     timeAmount: number;
   };
+  timeUnit: TimeUnit;
 };
+
 export type TMultipleMerchantsOneCounterparty = {
   projectId: TProjectId;
   excludedCounterparty?: TExcludedCounterparty;

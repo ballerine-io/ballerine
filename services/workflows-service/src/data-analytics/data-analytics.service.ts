@@ -490,6 +490,7 @@ export class DataAnalyticsService {
 
     const conditions: Prisma.Sql[] = [
       Prisma.sql`tr."projectId" = ${projectId}`,
+      Prisma.sql`tr."counterpartyBeneficiaryId" IS NOT NULL`,
       !!timeAmount &&
         !!timeUnit &&
         Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
@@ -511,36 +512,15 @@ export class DataAnalyticsService {
 
     return await this._executeQuery<Array<{ counterpartyId: string }>>(
       Prisma.sql`
-    WITH "transactionsData" AS (
-      SELECT
-        "counterpartyBeneficiaryId",
-        COUNT(*) AS count,
-        avg("transactionBaseAmount") AS avg
+      SELECT "counterpartyBeneficiaryId" as "counterpartyId",
+              COUNT(distinct "counterpartyOriginatorId")
       FROM
-        "TransactionRecord" tr ${
-          customerType
-            ? Prisma.sql`JOIN "Counterparty" AS cp ON tr."counterpartyBeneficiaryId" = cp.id
-               JOIN "Business" AS b ON cp."businessId" = b.id`
-            : Prisma.empty
-        }
+        "TransactionRecord" as tr
       WHERE
         ${Prisma.join(conditions, ' AND ')}
       GROUP BY
         "counterpartyBeneficiaryId"
-      HAVING COUNT(*) > ${minimumCount}
-    )
-    SELECT
-      tr."counterpartyBeneficiaryId" AS "counterpartyId"
-    FROM
-      "TransactionRecord" tr
-      JOIN "transactionsData" td ON tr."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
-    WHERE
-      "transactionBaseAmount" > ${minimumTransactionAmount}
-      AND "transactionBaseAmount" > (
-        ${transactionFactor} * avg
-      )
-    GROUP BY
-      tr."counterpartyBeneficiaryId";
+      HAVING COUNT(distinct "counterpartyOriginatorId") > ${minimumTransactionAmount};
       `,
     );
   }
