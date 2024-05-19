@@ -34,6 +34,10 @@ export type InlineRule = {
       fnName: 'evaluateHighVelocityHistoricAverage';
       options: Omit<HighVelocityHistoricAverageOptions, 'projectId'>;
     }
+  | {
+      fnName: 'evaluateMultipleMerchantsOneCounterparty';
+      options: Omit<TMultipleMerchantsOneCounterparty, 'projectId'>;
+    }
 );
 
 export type TAggregations = keyof typeof AggregateType;
@@ -121,5 +125,11 @@ export type HighVelocityHistoricAverageOptions = {
   lastDaysPeriod: {
     timeAmount: number;
   };
+};
+export type TMultipleMerchantsOneCounterparty = {
+  projectId: TProjectId;
+  excludedCounterparty?: TExcludedCounterparty;
+  minimumTransactionAmount: number;
+  timeAmount: number;
   timeUnit: TimeUnit;
 };

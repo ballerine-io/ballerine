@@ -444,7 +444,6 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
-
   PGAIAPM: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
@@ -531,6 +530,30 @@ export const ALERT_DEFINITIONS = {
         lastDaysPeriod: {
           timeAmount: THREE_DAYS,
         },
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  MMOC_C: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
+    description: ``,
+    inlineRule: {
+      id: 'MMOC_C',
+      fnName: 'evaluateTransactionAvg',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '!=',
+        },
+        customerType: 'test',
+        minimumTransactionAmount: 100,
+        transactionFactor: 2,
+
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
       },
     },

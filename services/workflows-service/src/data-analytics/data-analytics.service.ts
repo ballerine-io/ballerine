@@ -8,6 +8,7 @@ import {
   TPeerGroupTransactionAverageOptions,
   TDormantAccountOptions,
   HighVelocityHistoricAverageOptions,
+  TMultipleMerchantsOneCounterparty,
 } from './types';
 import { AggregateType, TIME_UNITS } from './consts';
 import { Prisma } from '@prisma/client';
@@ -471,43 +472,77 @@ export class DataAnalyticsService {
     ) / 59);
       `,
     );
+  }
 
-    // // TODO: extract count to a variable and resude in select + having section
-    // return await this._executeQuery<Array<{ counterpartyId: string }>>(
-    //   Prisma.sql`
-    // WITH "transactionsData" AS (
-    //   SELECT
-    //     "counterpartyBeneficiaryId",
-    //     COUNT(id) filter (where tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
-    //       `${activeUserPeriod.timeAmount} ${activeUserPeriod.timeUnit}`,
-    //     )}')as totalTransactionWithinSixMonths,
-    //     COUNT(id) filter (where tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
-    //       `${lastDaysPeriod.timeAmount} ${lastDaysPeriod.timeUnit}`,
-    //     )}')as totalLastDays
-    //   FROM
-    //     "TransactionRecord" tr
-    //   WHERE
-    //     ${Prisma.join(conditions, ' AND ')}
-    //   GROUP BY
-    //     "counterpartyBeneficiaryId"
-    //   HAVING COUNT(
-    //     CASE WHEN tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
-    //       `${lastDaysPeriod.timeAmount} ${lastDaysPeriod.timeUnit}`,
-    //     )}' THEN
-    //       tr."id"
-    //     END) > ${minimumCount} -- have to keep the filter of 180 rows
-    // )
-    // SELECT
-    //   tr."counterpartyBeneficiaryId" AS "counterpartyId"
-    // FROM
-    //   "TransactionRecord" tr
-    //   JOIN "transactionsData" td ON tr."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
-    // WHERE
+  async evaluateMultipleMerchantsOneCounterparty({
+    projectId,
+    timeUnit,
+    timeAmount,
+    minimumTransactionAmount,
+    excludedCounterparty = {
+      counterpartyBeneficiaryIds: [],
+      counterpartyOriginatorIds: [],
+    },
+  }: TMultipleMerchantsOneCounterparty) {
+    if (!projectId) {
+      throw new Error('projectId is required');
+    }
 
-    // GROUP BY
-    //   tr."counterpartyBeneficiaryId";
-    //   `,
-    // );
+    const conditions: Prisma.Sql[] = [
+      Prisma.sql`tr."projectId" = ${projectId}`,
+      !!timeAmount &&
+        !!timeUnit &&
+        Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+          `${timeAmount} ${timeUnit}`,
+        )}'`,
+    ].filter(Boolean);
+
+    if (excludedCounterparty) {
+      (excludedCounterparty.counterpartyBeneficiaryIds || []).forEach(id =>
+        // @TODO: Check against correlationId
+        conditions.push(Prisma.sql`"counterpartyBeneficiaryId" NOT LIKE ${id}`),
+      );
+
+      (excludedCounterparty.counterpartyOriginatorIds || []).forEach(id =>
+        // @TODO: Check against correlationId
+        conditions.push(Prisma.sql`"counterpartyOriginatorId" NOT LIKE ${id}`),
+      );
+    }
+
+    return await this._executeQuery<Array<{ counterpartyId: string }>>(
+      Prisma.sql`
+    WITH "transactionsData" AS (
+      SELECT
+        "counterpartyBeneficiaryId",
+        COUNT(*) AS count,
+        avg("transactionBaseAmount") AS avg
+      FROM
+        "TransactionRecord" tr ${
+          customerType
+            ? Prisma.sql`JOIN "Counterparty" AS cp ON tr."counterpartyBeneficiaryId" = cp.id
+               JOIN "Business" AS b ON cp."businessId" = b.id`
+            : Prisma.empty
+        }
+      WHERE
+        ${Prisma.join(conditions, ' AND ')}
+      GROUP BY
+        "counterpartyBeneficiaryId"
+      HAVING COUNT(*) > ${minimumCount}
+    )
+    SELECT
+      tr."counterpartyBeneficiaryId" AS "counterpartyId"
+    FROM
+      "TransactionRecord" tr
+      JOIN "transactionsData" td ON tr."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
+    WHERE
+      "transactionBaseAmount" > ${minimumTransactionAmount}
+      AND "transactionBaseAmount" > (
+        ${transactionFactor} * avg
+      )
+    GROUP BY
+      tr."counterpartyBeneficiaryId";
+      `,
+    );
   }
 
   private async _executeQuery<T = unknown>(query: Prisma.Sql) {
