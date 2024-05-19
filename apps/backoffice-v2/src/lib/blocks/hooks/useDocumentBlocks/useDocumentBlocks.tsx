@@ -15,9 +15,9 @@ import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages'
 import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import {
+  checkIsEditable,
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
-  getIsEditable,
   isExistingSchemaForDocument,
 } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
@@ -386,7 +386,7 @@ export const useDocumentBlocks = ({
                         isEditable:
                           isEditableDecision &&
                           caseState.writeEnabled &&
-                          getIsEditable(isEditable, title),
+                          checkIsEditable({ isEditable, field: title }),
                         dropdownOptions,
                         minimum: formatMinimum,
                         maximum: formatMaximum,
