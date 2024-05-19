@@ -288,8 +288,8 @@ jobs:
       - name: Fetch submodule branch
         run: |
           cd services/workflows-service/prisma/data-migrations
-          git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ github.ref_name }}
-          git checkout ${{ github.ref_name }}
+          git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/dev
+          git checkout dev
           cd ../../../..
 
       - name: Set up Docker Buildx
