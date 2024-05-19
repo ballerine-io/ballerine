@@ -15,9 +15,9 @@ import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages'
 import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import {
+  checkIsEditable,
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
-  getIsEditable,
   isExistingSchemaForDocument,
 } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
@@ -28,6 +28,7 @@ import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
+import { checkIsBusiness } from '@/common/utils/check-is-business/check-is-business';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -376,6 +377,7 @@ export const useDocumentBlocks = ({
                     ]) => {
                       const fieldValue = value || (properties?.[title] ?? '');
                       const isEditableDecision = isDoneWithRevision || !decision?.status;
+                      const isEditableType = title === 'type' && !checkIsBusiness(workflow);
 
                       return {
                         title,
@@ -386,7 +388,8 @@ export const useDocumentBlocks = ({
                         isEditable:
                           isEditableDecision &&
                           caseState.writeEnabled &&
-                          getIsEditable(isEditable, title),
+                          isEditableType &&
+                          checkIsEditable({ isEditable, field: title }),
                         dropdownOptions,
                         minimum: formatMinimum,
                         maximum: formatMaximum,
