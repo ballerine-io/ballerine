@@ -1352,6 +1352,11 @@ export class WorkflowService {
       const result = ConfigSchema.safeParse(config);
 
       if (!result.success) {
+        this.logger.error('Invalid workflow config', {
+          config,
+          error: result.error,
+        });
+
         throw ValidationError.fromZodError(result.error);
       }
 

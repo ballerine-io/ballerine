@@ -1,14 +1,14 @@
-import 'react-image-crop/dist/ReactCrop.css';
 import { FunctionComponent } from 'react';
+import 'react-image-crop/dist/ReactCrop.css';
 
-import { ctw } from '@/common/utils/ctw/ctw';
-import { IDocumentsProps } from './interfaces';
-import { useDocuments } from './hooks/useDocuments/useDocuments';
+import { DownloadFile } from '@/common/components/molecules/DownloadFile/DownloadFile';
 import { ImageEditor } from '@/common/components/molecules/ImageEditor/ImageEditor';
 import { ImageViewer } from '@/common/components/organisms/ImageViewer/ImageViewer';
-import { DownloadFile } from '@/common/components/molecules/DownloadFile/DownloadFile';
-import { DocumentsToolbar } from '@/pages/Entity/components/Case/Case.Documents.Toolbar';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { keyFactory } from '@/common/utils/key-factory/key-factory';
+import { DocumentsToolbar } from '@/pages/Entity/components/Case/Case.Documents.Toolbar';
+import { useDocuments } from './hooks/useDocuments/useDocuments';
+import { IDocumentsProps } from './interfaces';
 
 /**
  * @description To be used by {@link Case}, and be wrapped by {@link Case.Content}. Displays a single entity's documents using {@link ImageViewer}. Displays documents[0].imageUrl if no document was selected yet.
