@@ -15,7 +15,7 @@ export const Navigation = () => {
   const { stateApi } = useStateManagerContext();
   const { currentPage } = usePageResolverContext();
   const { customer } = useCustomer();
-  const exitFromApp = useAppExit();
+  const { exit, isExitAvailable } = useAppExit();
 
   const isFirstStep = currentPage?.number === 1;
   const isDisabled = state.isLoading;
@@ -26,9 +26,11 @@ export const Navigation = () => {
       return;
     }
 
-    exitFromApp();
+    exit();
     return;
-  }, [stateApi, exitFromApp]);
+  }, [stateApi, exit]);
+
+  if (isFirstStep && !isExitAvailable) return null;
 
   return (
     <button

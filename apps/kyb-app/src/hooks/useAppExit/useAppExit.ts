@@ -25,5 +25,9 @@ export const useAppExit = () => {
     }
   }, [trackExit, customer]);
 
-  return exit;
+  return {
+    exit,
+    isExitAvailable:
+      uiSchema?.config?.kybOnExitAction === 'send-event' ? true : !!customer?.websiteUrl,
+  };
 };
