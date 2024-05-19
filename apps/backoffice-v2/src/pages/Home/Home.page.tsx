@@ -7,13 +7,13 @@ import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
 import { DateRangePicker } from '@/common/components/molecules/DateRangePicker/DateRangePicker';
 import { useHomeLogic } from '@/common/hooks/useHomeLogic/useHomeLogic';
+import { t } from 'i18next';
 
 export const Home: FunctionComponent = () => {
   const {
-    handleDateRangeChange,
+    onDateRangeChange,
     from,
     to,
-    t,
     firstName,
     fullName,
     avatarUrl,
@@ -37,17 +37,17 @@ export const Home: FunctionComponent = () => {
           </h3>
         </div>
         <DateRangePicker
-          onChange={handleDateRangeChange}
+          onChange={onDateRangeChange}
           value={{ from: from ? new Date(from) : undefined, to: to ? new Date(to) : undefined }}
         />
       </div>
       <div>
         <Tabs defaultValue={defaultTabValue} key={defaultTabValue}>
           <TabsList>
-            <TabsTrigger asChild={true} value={statisticsLink}>
+            <TabsTrigger asChild value={statisticsLink}>
               <NavLink to={statisticsLink}>Statistics</NavLink>
             </TabsTrigger>
-            <TabsTrigger asChild={true} value={workflowsLink}>
+            <TabsTrigger asChild value={workflowsLink}>
               <NavLink to={workflowsLink}>Workflows</NavLink>
             </TabsTrigger>
           </TabsList>
