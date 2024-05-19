@@ -28,6 +28,7 @@ import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
+import { checkIsBusiness } from '@/common/utils/check-is-business/check-is-business';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -376,6 +377,7 @@ export const useDocumentBlocks = ({
                     ]) => {
                       const fieldValue = value || (properties?.[title] ?? '');
                       const isEditableDecision = isDoneWithRevision || !decision?.status;
+                      const isEditableType = title === 'type' && !checkIsBusiness(workflow);
 
                       return {
                         title,
@@ -386,6 +388,7 @@ export const useDocumentBlocks = ({
                         isEditable:
                           isEditableDecision &&
                           caseState.writeEnabled &&
+                          isEditableType &&
                           checkIsEditable({ isEditable, field: title }),
                         dropdownOptions,
                         minimum: formatMinimum,
