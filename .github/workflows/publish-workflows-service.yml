@@ -292,7 +292,6 @@ jobs:
   build-and-push-ee-image:
     runs-on: ubuntu-latest
     needs: [build-and-push-image, check_if_data_migration_needed]
-    if: ${{ needs.check_if_data_migration_needed.outputs.should_build == 'true' }}
 
     permissions:
       contents: read
@@ -301,11 +300,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        
+      - name: Checkout cloud-infra-config repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 1
-          submodules: 'recursive'
+          repository: ballerine-io/wf-data-migration
           token: ${{ secrets.SUBMODULES_TOKEN }}
-
+          ref: ${{ github.ref_name }}
+          fetch-depth: 1
+          path: services/workflows-service/prisma/data-migrations
+          
       - name: Cache Docker layers
         id: cache
         uses: actions/cache@v2
@@ -315,14 +319,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
             ${{ runner.os }}-docker-
-
-      - name: Fetch submodule branch
-        id: fetch-submodule
-        run: |
-          cd services/workflows-service/prisma/data-migrations
-          git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ github.ref_name }}
-          git checkout ${{ github.ref_name }}
-          cd ../../../..
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
