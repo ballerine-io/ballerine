@@ -20,13 +20,19 @@ export const useNavbarLogic = () => {
     {
       text: 'Businesses',
       icon: <Building size={20} />,
-      children:
-        businessesFilters?.map(({ id, name }) => ({
+      children: [
+        {
+          text: 'Merchant Monitoring',
+          href: `/en/merchant-monitoring`,
+          key: 'nav-item-merchant-monitoring',
+        },
+        ...(businessesFilters?.map(({ id, name }) => ({
           filterId: id,
           text: name,
           href: `/en/case-management/entities?filterId=${id}`,
           key: `nav-item-${id}`,
-        })) ?? [],
+        })) ?? []),
+      ],
       key: 'nav-item-businesses',
     },
     {
