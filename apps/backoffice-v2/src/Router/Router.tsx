@@ -23,6 +23,7 @@ import { Root } from '@/pages/Root/Root.page';
 import { SignIn } from '@/pages/SignIn/SignIn.page';
 import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
 import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
+import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
 import { FunctionComponent } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
@@ -116,7 +117,7 @@ const router = createBrowserRouter([
                     children: [
                       {
                         path: '/:locale/transaction-monitoring/alerts/:alertId',
-                        element: <TransactionMonitoringAlerts />,
+                        element: <TransactionMonitoringAlertsAnalysisPage />,
                         errorElement: <RouteError />,
                       },
                     ],
