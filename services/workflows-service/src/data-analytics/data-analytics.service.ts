@@ -478,7 +478,7 @@ export class DataAnalyticsService {
     projectId,
     timeUnit,
     timeAmount,
-    minimumTransactionAmount,
+    minimumCount,
     excludedCounterparty = {
       counterpartyBeneficiaryIds: [],
       counterpartyOriginatorIds: [],
@@ -520,7 +520,7 @@ export class DataAnalyticsService {
         ${Prisma.join(conditions, ' AND ')}
       GROUP BY
         "counterpartyBeneficiaryId"
-      HAVING COUNT(distinct "counterpartyOriginatorId") > ${minimumTransactionAmount};
+      HAVING COUNT(distinct "counterpartyOriginatorId") > ${minimumCount};
       `,
     );
   }

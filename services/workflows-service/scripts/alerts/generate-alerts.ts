@@ -534,25 +534,39 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
-  MMOC_C: {
+  MMOC_CC: {
     enabled: true,
     defaultSeverity: AlertSeverity.high,
-    description: ``,
+    description: `Credit card numbers that are appearing in too many different merchant IDs for credit card transactions`,
     inlineRule: {
-      id: 'MMOC_C',
-      fnName: 'evaluateTransactionAvg',
+      id: 'MMOC_CC',
+      fnName: 'evaluateMultipleMerchantsOneCounterparty',
       subjects: ['counterpartyId'],
       options: {
-        transactionDirection: TransactionDirection.inbound,
-        minimumCount: 2,
-        paymentMethod: {
-          value: PaymentMethod.credit_card,
-          operator: '!=',
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
         },
-        customerType: 'test',
-        minimumTransactionAmount: 100,
-        transactionFactor: 2,
-
+        minimumCount: 2,
+        timeAmount: SEVEN_DAYS,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  MMOC_APM: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
+    description: `Non-credit card numbers that are appearing in too many different merchant IDs for credit card transactions`,
+    inlineRule: {
+      id: 'MMOC_APM',
+      fnName: 'evaluateMultipleMerchantsOneCounterparty',
+      subjects: ['counterpartyId'],
+      options: {
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
+        minimumCount: 2,
         timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
       },

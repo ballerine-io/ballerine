@@ -131,7 +131,7 @@ export type HighVelocityHistoricAverageOptions = {
 export type TMultipleMerchantsOneCounterparty = {
   projectId: TProjectId;
   excludedCounterparty?: TExcludedCounterparty;
-  minimumTransactionAmount: number;
+  minimumCount: number;
   timeAmount: number;
   timeUnit: TimeUnit;
 };
