@@ -305,7 +305,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ballerine-io/wf-data-migration
-          token: ${{ secrets.GIT_TOKEN }}
+          token: ${{ secrets.SUBMODULES_TOKEN }}
           ref: ${{ github.ref_name }}
           fetch-depth: 1
           path: services/workflows-service/prisma/data-migrations
