@@ -159,7 +159,7 @@ jobs:
           severity: 'CRITICAL'
 
   update-helm-chart:
-    needs: build-and-push-image
+    needs: build-and-push-ee-image
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -198,12 +198,12 @@ jobs:
           repository: ballerine-io/cloud-infra-config
           branch: iamops/blue-green
           commitChange: true
-          message: 'Update wf-service image Version to sha-${{ needs.build-and-push-image.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
+          message: 'Update wf-service image Version to sha-${{ needs.build-and-push-ee-image.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
               "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
-                "image.tag": "${{ needs.build-and-push-image.outputs.docker_tag }}"
+                "image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}"
               }
             }
 
@@ -323,6 +323,7 @@ jobs:
           git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ github.ref_name }}
           git checkout -b ${{ github.ref_name }} origin/${{ github.ref_name }}
           git pull origin ${{ github.ref_name }}
+          echo "SUBMODULE_SHA_SHORT=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
           cd ../../../..
 
       - name: Set up Docker Buildx
@@ -347,7 +348,7 @@ jobs:
           images: ${{needs.build-and-push-image.outputs.docker_image}}-ee
           tags: |
             type=raw,value=${{ github.ref_name }}
-            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ github.ref_name }}
+            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ env.SUBMODULE_SHA_SHORT }}-${{ github.ref_name }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
             type=sha,format=short
 
