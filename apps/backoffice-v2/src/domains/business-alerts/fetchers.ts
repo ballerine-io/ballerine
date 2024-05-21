@@ -1,110 +1,33 @@
 import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
 import { env } from '@/common/env/env';
-import { TObjectValues } from '@/common/types';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
+import { AlertItemSchema, TAlertState } from '@/domains/alerts/fetchers';
 import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
 import qs from 'qs';
 import { z } from 'zod';
 
-export const BusinessAlertSeverity = {
-  CRITICAL: 'critical',
-  HIGH: 'high',
-  MEDIUM: 'medium',
-  LOW: 'low',
-} as const;
-
-export const BusinessAlertSeverities = [
-  BusinessAlertSeverity.CRITICAL,
-  BusinessAlertSeverity.HIGH,
-  BusinessAlertSeverity.MEDIUM,
-  BusinessAlertSeverity.LOW,
-] as const satisfies ReadonlyArray<TObjectValues<typeof BusinessAlertSeverity>>;
-
-export const BusinessAlertStatus = {
-  NEW: 'new',
-  PENDING: 'pending',
-  COMPLETED: 'completed',
-} as const;
-
-export const BusinessAlertStatuses = [
-  BusinessAlertStatus.NEW,
-  BusinessAlertStatus.PENDING,
-  BusinessAlertStatus.COMPLETED,
-] as const satisfies ReadonlyArray<TObjectValues<typeof BusinessAlertStatus>>;
-
-export const BusinessAlertState = {
-  TRIGGERED: 'triggered',
-  UNDER_REVIEW: 'under_review',
-  ESCALATED: 'escalated',
-  REJECTED: 'rejected',
-  DISMISSED: 'dismissed',
-  CLEARED: 'cleared',
-} as const;
-
-export const BusinessAlertStates = [
-  BusinessAlertState.TRIGGERED,
-  BusinessAlertState.UNDER_REVIEW,
-  BusinessAlertState.ESCALATED,
-  BusinessAlertState.REJECTED,
-  BusinessAlertState.DISMISSED,
-  BusinessAlertState.CLEARED,
-] as const satisfies ReadonlyArray<TObjectValues<typeof BusinessAlertState>>;
-
-export const businessAlertStateToDecision = {
-  REJECTED: 'reject',
-  CLEARED: 'clear',
-  REVERT_DECISION: 'revert decision',
-} as const satisfies Partial<Record<keyof typeof BusinessAlertState | (string & {}), string>>;
-
-export const businessAlertDecisionToState = {
-  REJECT: 'rejected',
-  CLEAR: 'cleared',
-  REVERT_DECISION: 'triggered',
-} as const satisfies Partial<Record<keyof typeof BusinessAlertState | (string & {}), string>>;
-
-export type TBusinessAlertSeverity = (typeof BusinessAlertSeverities)[number];
-
-export type TBusinessAlertSeverities = typeof BusinessAlertSeverities;
-
-export type TBusinessAlertState = (typeof BusinessAlertStates)[number];
-
-export type TBusinessAlertStates = typeof BusinessAlertStates;
-
-export const BusinessAlertsListSchema = z.array(
-  ObjectWithIdSchema.extend({
-    dataTimestamp: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-    subject: ObjectWithIdSchema.extend({
-      companyName: z.string(),
-      businessReports: z.any(),
-    }),
-    additionalInfo: z.object({
-      alertReason: z.string(),
-      businessCompanyName: z.string(),
-      businessId: z.string(),
-      previousRiskScore: z.number(),
-      projectId: z.string(),
-      reportId: z.string().optional(),
-      riskScore: z.number(),
-      severity: z.string(),
-    }),
-    severity: z.enum(BusinessAlertSeverities),
-    alertDetails: z.string(),
-    // amountOfTxs: z.number(),
-    assignee: ObjectWithIdSchema.extend({
-      fullName: z.string(),
-      avatarUrl: z.string().nullable().optional(),
-    })
-      .nullable()
-      .default(null),
-    status: z.enum(BusinessAlertStatuses),
-    decision: z.enum(BusinessAlertStates).nullable().default(null),
-    counterpartyId: z.string().nullable().default(null),
+export const BusinessAlertItem = AlertItemSchema.extend({
+  subject: ObjectWithIdSchema.extend({
+    companyName: z.string(),
+    businessReports: z.any(),
   }),
-);
+  additionalInfo: z.object({
+    alertReason: z.string(),
+    businessCompanyName: z.string(),
+    businessId: z.string(),
+    previousRiskScore: z.number(),
+    projectId: z.string(),
+    reportId: z.string().optional(),
+    riskScore: z.number(),
+    severity: z.string(),
+  }),
+});
 
+export const BusinessAlertsListSchema = z.array(BusinessAlertItem);
+
+export type TBusinessAlertItem = z.output<typeof BusinessAlertItem>;
 export type TBusinessAlertsList = z.output<typeof BusinessAlertsListSchema>;
 export type AlertEntityType = 'transaction' | 'business';
 
@@ -151,7 +74,7 @@ export const updateAlertsDecisionByIds = async ({
   decision,
   alertIds,
 }: {
-  decision: TBusinessAlertState;
+  decision: TAlertState;
   alertIds: string[];
 }) => {
   const [alerts, error] = await apiClient({

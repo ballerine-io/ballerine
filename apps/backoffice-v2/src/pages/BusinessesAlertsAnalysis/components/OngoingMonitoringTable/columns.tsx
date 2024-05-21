@@ -1,10 +1,12 @@
 import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { TBusinessReport } from '@/domains/business-reports/fetchers';
-import { severityToClassName } from '@/pages/BusinessesAlerts/components/BusinessAlertsTable/severity-to-class-name';
 import { getSeverityFromRiskScore } from '@/pages/BusinessesAlerts/components/BusinessAlertsTable/utils/get-severity-from-risk-score';
 import { DownloadReportButton } from '@/pages/BusinessesAlertsAnalysis/components/OngoingMonitoringTable/components/DownloadReportButton/DownloadReportButton';
-import { severityToTextClassName } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/severity-to-class-name';
+import {
+  severityToClassName,
+  severityToTextClassName,
+} from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/severity-to-class-name';
 import { Badge } from '@ballerine/ui';
 import { createColumnHelper } from '@tanstack/react-table';
 import dayjs from 'dayjs';

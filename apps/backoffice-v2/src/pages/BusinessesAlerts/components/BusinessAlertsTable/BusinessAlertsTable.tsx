@@ -68,12 +68,6 @@ export const BusinessAlertsTable: FunctionComponent<IAlertsTableProps> = ({ data
                     const itemId = cell.id.replace(`_${cell.column.id}`, '');
                     const item = data.find(item => item.id === itemId);
 
-                    console.log(
-                      `/${locale}/businesses/alerts/${itemId}${search}&businessId=${
-                        item?.additionalInfo?.businessId ?? ''
-                      }`,
-                    );
-
                     return (
                       <TableCell key={cell.id} className={`p-0`}>
                         {cell.column.id === 'select' &&

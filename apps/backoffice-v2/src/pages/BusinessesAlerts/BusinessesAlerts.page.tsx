@@ -11,7 +11,6 @@ export const BusinessesAlerts = () => {
     alerts,
     isLoadingAlerts,
     assignees,
-    labels,
     authenticatedUser,
     page,
     correlationIds,
@@ -30,7 +29,6 @@ export const BusinessesAlerts = () => {
         <div>
           <AlertsHeader
             assignees={assignees ?? []}
-            labels={labels ?? []}
             authenticatedUser={authenticatedUser}
             search={search}
             correlationIds={correlationIds ?? []}
