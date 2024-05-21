@@ -53,10 +53,7 @@ export type TimeUnit = (typeof TIME_UNITS)[keyof typeof TIME_UNITS];
 export type TransactionsAgainstDynamicRulesType = {
   projectId: TProjectId;
   havingAggregate?: TAggregations;
-  amountBetween?: {
-    min: number;
-    max: number;
-  };
+  amountBetween?: { min: number; max: number };
   timeAmount?: number;
   transactionType?: TransactionRecordType[] | readonly TransactionRecordType[];
   timeUnit?: TimeUnit;

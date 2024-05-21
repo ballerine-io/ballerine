@@ -1,4 +1,3 @@
-import { BusinessReportService } from '@/business-report/business-report.service';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
@@ -20,11 +19,10 @@ import {
 export class DataAnalyticsService {
   constructor(
     protected readonly prisma: PrismaService,
-    protected readonly businessReportService: BusinessReportService,
     protected readonly logger: AppLoggerService,
   ) {}
 
-  async runInlineRule(projectId: string, inlineRule: InlineRule, args?: any) {
+  async runInlineRule(projectId: string, inlineRule: InlineRule) {
     switch (inlineRule.fnName) {
       case 'evaluateHighTransactionTypePercentage':
         return await this[inlineRule.fnName]({

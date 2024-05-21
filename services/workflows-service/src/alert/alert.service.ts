@@ -209,7 +209,6 @@ export class AlertService {
     const ruleExecutionResults = await this.dataAnalyticsService.runInlineRule(
       alertDefinition.projectId,
       inlineRule,
-      args,
     );
 
     if (
