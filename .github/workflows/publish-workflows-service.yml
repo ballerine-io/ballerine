@@ -302,7 +302,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         
-      - name: Checkout cloud-infra-config repository
+      - name: Checkout wf-data-migration
         uses: actions/checkout@v4
         with:
           repository: ballerine-io/wf-data-migration
