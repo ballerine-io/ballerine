@@ -1,17 +1,17 @@
-import { Search } from '@/pages/TransactionMonitoringAlerts/components/Search';
-import { AlertsFilters } from 'src/pages/TransactionMonitoringAlerts/components/AlertsFilters';
-import React, { ComponentProps, FunctionComponent, useCallback } from 'react';
-import { TUsers } from '@/domains/users/types';
 import { useSelect } from '@/common/hooks/useSelect/useSelect';
-import { useAssignAlertsByIdsMutation } from '@/domains/alerts/hooks/mutations/useAssignAlertsMutation/useAssignAlertsMutation';
-import { AlertsAssignDropdown } from '@/pages/TransactionMonitoringAlerts/components/AlertsAssignDropdown/AlertsAssignDropdown';
-import { alertDecisionToState, AlertStates, alertStateToDecision } from '@/domains/alerts/fetchers';
-import { capitalize, lowerCase } from 'string-ts';
-import { useAlertsDecisionByIdsMutation } from '@/domains/alerts/hooks/mutations/useAlertsDecisionByIdsMutation/useAlertsDecisionByIdsMutation';
-import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
-import { AlertsDecisionDropdown } from '@/pages/TransactionMonitoringAlerts/components/AlertsDecisionDropdown/AlertsDecisionDropdown';
-import { COMING_SOON_ALERT_DECISIONS } from '@/pages/TransactionMonitoringAlerts/constants';
 import { TObjectValues } from '@/common/types';
+import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
+import { AlertStates, alertDecisionToState, alertStateToDecision } from '@/domains/alerts/fetchers';
+import { useAlertsDecisionByIdsMutation } from '@/domains/alerts/hooks/mutations/useAlertsDecisionByIdsMutation/useAlertsDecisionByIdsMutation';
+import { useAssignAlertsByIdsMutation } from '@/domains/alerts/hooks/mutations/useAssignAlertsMutation/useAssignAlertsMutation';
+import { TUsers } from '@/domains/users/types';
+import { AlertsAssignDropdown } from '@/pages/TransactionMonitoringAlerts/components/AlertsAssignDropdown/AlertsAssignDropdown';
+import { AlertsDecisionDropdown } from '@/pages/TransactionMonitoringAlerts/components/AlertsDecisionDropdown/AlertsDecisionDropdown';
+import { Search } from '@/pages/TransactionMonitoringAlerts/components/Search';
+import { COMING_SOON_ALERT_DECISIONS } from '@/pages/TransactionMonitoringAlerts/constants';
+import { ComponentProps, FunctionComponent, useCallback } from 'react';
+import { AlertsFilters } from 'src/pages/TransactionMonitoringAlerts/components/AlertsFilters';
+import { capitalize, lowerCase } from 'string-ts';
 
 export const decisionToClassName = {
   [lowerCase(alertStateToDecision.REJECTED)]: 'text-destructive',

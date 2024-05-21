@@ -14,6 +14,7 @@ export const BusinessesAlerts = () => {
     labels,
     authenticatedUser,
     page,
+    correlationIds,
     onPrevPage,
     onNextPage,
     onPaginate,
@@ -32,6 +33,7 @@ export const BusinessesAlerts = () => {
             labels={labels ?? []}
             authenticatedUser={authenticatedUser}
             search={search}
+            correlationIds={correlationIds ?? []}
             onSearch={onSearch}
           />
         </div>

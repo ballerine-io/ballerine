@@ -1,6 +1,7 @@
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
 import { useSearch } from '@/common/hooks/useSearch/useSearch';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
+import { useAlertCorrelationIdsQuery } from '@/domains/alerts/hooks/queries/useAlertLabelsQuery/useAlertLabelsQuery';
 import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
 import { useBusinessAlertsQuery } from '@/domains/business-alerts/hooks/queries/useBusinessAlertsQuery/useBusinessAlertsQuery';
 import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
@@ -21,6 +22,7 @@ export const useBusinessAlertsLogic = () => {
     sortBy,
     entityType: 'business',
   });
+  const { data: correlationIds } = useAlertCorrelationIdsQuery();
   const { data: assignees } = useUsersQuery();
   const sortedAssignees = useMemo(
     () =>
@@ -44,6 +46,7 @@ export const useBusinessAlertsLogic = () => {
     authenticatedUser: session?.user,
     page,
     pageSize,
+    correlationIds,
     onPrevPage,
     onNextPage,
     onPaginate,
