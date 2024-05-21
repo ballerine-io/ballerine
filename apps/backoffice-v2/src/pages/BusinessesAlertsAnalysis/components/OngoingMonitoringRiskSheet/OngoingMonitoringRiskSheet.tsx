@@ -21,11 +21,11 @@ export const OngoingMonitoringRiskSheet: FunctionComponent<IOngoingMonitoringRis
             <h2 className="text-2xl font-bold">Ongoing monitoring risk change</h2>
             <div className="mb-10 flex flex-col gap-1">
               <h3 className="text-sm font-bold">Summary</h3>
-              <div className="max-w-[88ch] text-sm text-[#64748B]">
+              <p className="max-w-[88ch] text-sm text-[#64748B]">
                 The ongoing monitoring has detected new violations on the merchant, that have raised
                 its risk score. <br />
                 Please review the violations and resolve.{' '}
-              </div>
+              </p>
             </div>
           </div>
           <div>
