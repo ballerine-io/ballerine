@@ -107,7 +107,7 @@ Once the process is complete,  _2 tabs_   will open in your browser:
 1. http://localhost:5201/ - for the _KYB document collection flow_
    OR http://localhost:5202 - for the _KYC document collection flow_
 2. http://localhost:5137/ - for the  _backoffice_
-   (It's recommended to have them positioned side-by-side).
+   (See username/password below, It's recommended to have them positioned side-by-side).
 
    <sub>If the required tabs have not opened automatically, please use the links we have provided above.</sub>
 
