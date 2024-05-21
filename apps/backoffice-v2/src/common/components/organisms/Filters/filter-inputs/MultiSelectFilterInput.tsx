@@ -11,7 +11,7 @@ export interface IMultiSelectFilterParams {
 }
 
 export const MultiselectFilterInput: FunctionComponent<
-  IFilterInputParams<IMultiSelectFilterParams, string[]>
+  IFilterInputParams<IMultiSelectFilterParams, Array<string | null>>
 > = ({ inputParams, filter, value, onChange, clear }) => {
   const { options } = inputParams;
 

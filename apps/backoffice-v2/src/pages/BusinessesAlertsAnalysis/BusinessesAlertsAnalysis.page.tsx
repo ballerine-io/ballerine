@@ -4,8 +4,6 @@ import { useBusinessAlertsAnalysisLogic } from '@/pages/BusinessesAlertsAnalysis
 export const BusinessesAlertsAnalysisPage = () => {
   const { businessReports, onNavigateBack } = useBusinessAlertsAnalysisLogic();
 
-  console.log({ businessReports });
-
   return (
     <OngoingMonitoringRiskSheet
       businessReports={businessReports ?? []}

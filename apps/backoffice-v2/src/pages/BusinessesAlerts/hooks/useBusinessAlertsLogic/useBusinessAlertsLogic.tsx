@@ -31,7 +31,6 @@ export const useBusinessAlertsLogic = () => {
     [assignees, session?.user?.id],
   );
 
-  console.log({ alerts, pageSize });
   const { onPaginate, onPrevPage, onNextPage } = usePagination();
   const isLastPage = (alerts?.length ?? 0) < pageSize || alerts?.length === 0;
   const { search, onSearch } = useSearch({

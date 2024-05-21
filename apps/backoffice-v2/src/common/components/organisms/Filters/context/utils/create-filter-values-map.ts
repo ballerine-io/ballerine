@@ -9,7 +9,7 @@ export const createFilterValuesMap = ({
   values: IFilterValue[];
 }) => {
   const plainValues = values.reduce((object, value) => {
-    object[value.id] = value.value;
+    object[value.accessor] = value.value;
 
     return object;
   }, {} as Record<string, unknown>);
