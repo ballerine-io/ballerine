@@ -36,6 +36,7 @@ export const AlertsFilters: FunctionComponent<{
     () => [
       {
         id: 'assigneeId',
+        accessor: 'assigneeId',
         label: 'Assignee',
         type: 'multi-select',
         params: {
@@ -50,6 +51,7 @@ export const AlertsFilters: FunctionComponent<{
       },
       {
         id: 'status',
+        accessor: 'status',
         label: 'Status',
         type: 'multi-select',
         params: {
@@ -58,6 +60,7 @@ export const AlertsFilters: FunctionComponent<{
       },
       {
         id: 'correlationIds',
+        accessor: 'correlationIds',
         label: 'Correlation Id',
         type: 'multi-select',
         params: {
@@ -73,7 +76,7 @@ export const AlertsFilters: FunctionComponent<{
   );
   const { filter, onFilter } = useFilter();
   const filterValues = useMemo(
-    () => Object.entries(filter || {}).map(([key, value]) => ({ id: key, value })),
+    () => Object.entries(filter || {}).map(([key, value]) => ({ accessor: key, value })),
     [filter],
   );
 
@@ -86,7 +89,7 @@ export const AlertsFilters: FunctionComponent<{
 
   const onFilterChange = useCallback(
     (filterValue: IFilterValue) => {
-      onFilter(filterValue.id)(filterValue.value as Array<string | null>);
+      onFilter(filterValue.accessor)(filterValue.value as Array<string | null>);
     },
     [onFilter],
   );
@@ -99,7 +102,7 @@ export const AlertsFilters: FunctionComponent<{
       onChange={onFilterChange}
     >
       <FiltersHeader title="Filters" />
-      <FiltersList>{params => <FiltersInput {...params} />}</FiltersList>
+      <FiltersList>{params => <FiltersInput key={params.filter.id} {...params} />}</FiltersList>
     </Filters>
   );
 };

@@ -2,12 +2,13 @@ import { IFiltersProviderProps } from '@/common/components/organisms/Filters/con
 import { TFiltersContext } from '@/common/components/organisms/Filters/context/types';
 import { createFilterValuesMap } from '@/common/components/organisms/Filters/context/utils/create-filter-values-map';
 import { TFiltersInputID } from '@/common/components/organisms/Filters/types';
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponentWithChildren } from '@/common/types';
+import { useCallback, useMemo } from 'react';
 import { filtersContext } from './filters.context';
 
 const { Provider } = filtersContext;
 
-export const FiltersProvider: FunctionComponent<IFiltersProviderProps> = ({
+export const FiltersProvider: FunctionComponentWithChildren<IFiltersProviderProps> = ({
   children,
   values,
   filters,

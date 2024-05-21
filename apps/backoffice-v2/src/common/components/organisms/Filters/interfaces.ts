@@ -3,6 +3,7 @@ import { AnyChildren } from '@ballerine/ui';
 
 export interface IFilterDefinition<TFilterParams = unknown> {
   id: TFiltersInputID;
+  accessor: string;
   label: string;
   params: TFilterParams;
   defaultValue?: unknown;
@@ -14,11 +15,11 @@ export interface IFilterInputParams<TInputParams = unknown, TInputValue = unknow
   inputParams: TInputParams;
   value: TInputValue;
   clear: () => void;
-  onChange: (value: Array<string | null>) => void;
+  onChange: (value: TInputValue) => void;
 }
 
 export interface IFilterValue {
-  id: string;
+  accessor: string;
   value: unknown;
 }
 
