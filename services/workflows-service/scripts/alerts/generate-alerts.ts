@@ -586,7 +586,6 @@ export const getAlertDefinitionCreateData = (
     },
     monitoringType: monitoringType ?? MonitoringType.transaction_monitoring,
     correlationId: id,
-    //@ts-ignore
     rulesetId: `set-${id}`,
     description: description,
     ruleId: id,

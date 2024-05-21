@@ -15,7 +15,7 @@ export const getBusinessAlertsSearchSchema = () =>
         assigneeId: z.array(z.string().nullable()).catch([]),
         status: z.array(z.enum(AlertStatuses)).catch([AlertStatus.NEW]),
         state: z.array(z.string().nullable()).catch([]),
-        label: z.array(z.string()).catch([]),
+        correlationIds: z.array(z.string()).catch([]),
       })
       .catch({
         assigneeId: [],
