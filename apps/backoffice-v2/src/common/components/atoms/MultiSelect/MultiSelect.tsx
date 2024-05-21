@@ -63,7 +63,7 @@ export const MultiSelect = <
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 border">
-          <PlusCircledIcon className="mr-2 size-4" />
+          <PlusCircledIcon className="size-4 mr-2" />
           {title}
           {selected?.length > 0 && (
             <>
@@ -107,7 +107,7 @@ export const MultiSelect = <
                   <CommandItem key={option.value} onSelect={() => onSelectChange(option.value)}>
                     <div
                       className={ctw(
-                        'mr-2 flex size-4 items-center justify-center rounded-sm border border-primary',
+                        'size-4 mr-2 flex items-center justify-center rounded-sm border border-primary',
                         isSelected
                           ? 'bg-primary text-primary-foreground'
                           : 'opacity-50 [&_svg]:invisible',
