@@ -1,6 +1,6 @@
-import { PaymentMethod, TransactionDirection, TransactionRecordType } from '@prisma/client';
-import { AggregateType, TIME_UNITS } from './consts';
 import { TProjectId } from '@/types';
+import { TransactionDirection, PaymentMethod, TransactionRecordType } from '@prisma/client';
+import { AggregateType, TIME_UNITS } from './consts';
 
 export type InlineRule = {
   id: string;
@@ -31,8 +31,8 @@ export type InlineRule = {
       options: Omit<TDormantAccountOptions, 'projectId'>;
     }
   | {
-      fnName: 'checkMerchantOngoingAlert';
-      options: CheckRiskScoreOptions;
+      fnName: 'evaluateHighVelocityHistoricAverage';
+      options: Omit<HighVelocityHistoricAverageOptions, 'projectId'>;
     }
 );
 
@@ -48,10 +48,7 @@ export type TimeUnit = (typeof TIME_UNITS)[keyof typeof TIME_UNITS];
 export type TransactionsAgainstDynamicRulesType = {
   projectId: TProjectId;
   havingAggregate?: TAggregations;
-  amountBetween?: {
-    min: number;
-    max: number;
-  };
+  amountBetween?: { min: number; max: number };
   timeAmount?: number;
   transactionType?: TransactionRecordType[] | readonly TransactionRecordType[];
   timeUnit?: TimeUnit;
@@ -97,12 +94,6 @@ export type TransactionLimitHistoricAverageOptions = {
   transactionFactor: number;
 };
 
-export type CheckRiskScoreOptions = {
-  increaseRiskScorePercentage?: number;
-  increaseRiskScore?: number;
-  maxRiskScoreThreshold?: number;
-};
-
 export type TPeerGroupTransactionAverageOptions = TransactionLimitHistoricAverageOptions & {
   customerType?: string;
   timeUnit?: TimeUnit;
@@ -112,5 +103,23 @@ export type TPeerGroupTransactionAverageOptions = TransactionLimitHistoricAverag
 export type TDormantAccountOptions = {
   projectId: TProjectId;
   timeAmount: number;
+  timeUnit: TimeUnit;
+};
+
+export type HighVelocityHistoricAverageOptions = {
+  projectId: TProjectId;
+  transactionDirection: TransactionDirection;
+  transactionFactor: number;
+  minimumCount: number;
+  paymentMethod: {
+    value: PaymentMethod;
+    operator: '=' | '!=';
+  };
+  activeUserPeriod: {
+    timeAmount: number;
+  };
+  lastDaysPeriod: {
+    timeAmount: number;
+  };
   timeUnit: TimeUnit;
 };
