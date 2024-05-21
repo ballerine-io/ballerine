@@ -113,15 +113,15 @@ Once the process is complete,  _2 tabs_   will open in your browser:
 
    **Steps to go over the flow:**
 
-1.  Go to the backoffice tab to review the new user that was created
+1.  Go to the Backoffice tab to review the new user that was created
    1.1. Sign-in with the following credentials:
       - **Email:** `admin@admin.com`
       - **Password:** `admin`
    1.2. Under the business menu, choose "KYB with UBOs" to view the list of cases currently undergoing.
-2.  On the collection flow, fill the required fields on each step
-3.  Go through and complete the flow. As you go through the collection flow, you should see the progress in the backoffice case.
-4.  Once the collection flow is finished, you can see the new state is "manual review," and you can choose to Approve, Reject, or Ask to Resubmit.
-5.  Ask to resubmit, go back to the collection flow to re-upload, then go back to the backoffice to see the updated information
+2.  On the Collection flow, fill in the required fields on each step.
+3.  Go through and complete the flow. As you go through the collection flow, you should see the progress in the Backoffice case.
+4.  Once the collection flow is finished, you can see the new state is "manual review," Assign the case to yourself, and then you will be able to choose to Approve, Reject, or Ask to Resubmit.
+5.  Ask to resubmit a document, go back to the collection flow to re-upload, then go back to the Backoffice to see the updated information.
 
 * Note: some components are currently in beta, if you run into an issue please ping us on Slack
 
