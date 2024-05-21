@@ -10,7 +10,19 @@ export const useBusinessAlertsAnalysisLogic = () => {
   });
   const navigate = useNavigate();
   const onNavigateBack = useCallback(() => {
-    navigate(-1);
+    const previousPath = sessionStorage.getItem(
+      'business-transaction-monitoring:transactions-drawer:previous-path',
+    );
+
+    if (!previousPath) {
+      navigate('../');
+
+      return;
+    }
+
+    navigate(previousPath);
+
+    sessionStorage.removeItem('business-transaction-monitoring:transactions-drawer:previous-path');
   }, [navigate]);
 
   return {
