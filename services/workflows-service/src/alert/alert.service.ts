@@ -196,7 +196,7 @@ export class AlertService {
 
     const alertCreateArgs = (await Promise.all(alertDefinitionsCheck))
       .filter(Boolean)
-      .sort((a, b) => this.sortBySeverity(a[0].defaultSeverity, b[0].defaultSeverity))[0];
+      .sort((a, b) => this.orderedBySeverity(a[0].defaultSeverity, b[0].defaultSeverity))[0];
 
     return alertCreateArgs && (await this.createAlert(...alertCreateArgs));
   }
@@ -404,7 +404,7 @@ export class AlertService {
     );
   }
 
-  sortBySeverity(a: AlertSeverity, b: AlertSeverity) {
+  orderedBySeverity(a: AlertSeverity, b: AlertSeverity) {
     const alertSeverityToNumber = (severity: AlertSeverity) => {
       switch (severity) {
         case AlertSeverity.high:
