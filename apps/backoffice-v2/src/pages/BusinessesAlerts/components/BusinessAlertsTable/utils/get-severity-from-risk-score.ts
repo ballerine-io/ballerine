@@ -1,17 +1,17 @@
-import { BusinessAlertSeverity, TBusinessAlertSeverity } from '@/domains/business-alerts/fetchers';
+import { AlertSeverity, TAlertSeverity } from '@/domains/alerts/fetchers';
 
-export const getSeverityFromRiskScore = (riskScore: number): TBusinessAlertSeverity => {
+export const getSeverityFromRiskScore = (riskScore: number): TAlertSeverity => {
   if (riskScore <= 39) {
-    return BusinessAlertSeverity.LOW;
+    return AlertSeverity.LOW;
   }
 
   if (riskScore <= 69) {
-    return BusinessAlertSeverity.MEDIUM;
+    return AlertSeverity.MEDIUM;
   }
 
   if (riskScore <= 84) {
-    return BusinessAlertSeverity.HIGH;
+    return AlertSeverity.HIGH;
   }
 
-  return BusinessAlertSeverity.HIGH;
+  return AlertSeverity.HIGH;
 };

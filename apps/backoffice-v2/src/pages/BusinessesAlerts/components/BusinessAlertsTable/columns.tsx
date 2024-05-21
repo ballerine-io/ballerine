@@ -21,8 +21,6 @@ import { titleCase } from 'string-ts';
 
 const columnHelper = createColumnHelper<
   TBusinessAlertsList[number] & {
-    // TODO: Change type once decisions PR is merged
-    // Computed from `alert.state`
     decision: string;
   }
 >();
@@ -119,14 +117,6 @@ export const columns = [
     },
     header: 'Report Risk Score',
   }),
-  // columnHelper.accessor('amountOfTxs', {
-  //   cell: info => {
-  //     const value = info.getValue();
-  //
-  //     return <TextWithNAFallback>{value}</TextWithNAFallback>;
-  //   },
-  //   header: '# of TXs',
-  // }),
   columnHelper.accessor('assignee', {
     cell: info => {
       const assignee = info.getValue();
