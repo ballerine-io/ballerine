@@ -4,7 +4,6 @@ import {
   MerchantAlertLabel,
   SEVEN_DAYS,
   THREE_DAYS,
-  TransactionAlertLabel,
   TWENTY_ONE_DAYS,
 } from '@/alert/consts';
 import { TDedupeStrategy } from '@/alert/types';
@@ -36,7 +35,7 @@ const tags = [
   ]),
 ];
 
-export const TRANSACTIONS_ALERT_DEFINITIONS = {
+export const ALERT_DEFINITIONS = {
   PAY_HCA_CC: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
@@ -374,7 +373,6 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
         minimumCount: 3,
         minimumPercentage: 50,
         timeAmount: TWENTY_ONE_DAYS,
-
         timeUnit: TIME_UNITS.days,
       },
     },
@@ -538,17 +536,7 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
       },
     },
   },
-} as const satisfies Record<
-  Partial<keyof typeof TransactionAlertLabel>,
-  {
-    inlineRule: InlineRule & InputJsonValue;
-    defaultSeverity: AlertSeverity;
-    dedupeStrategy?: TDedupeStrategy;
-    monitoringType?: MonitoringType;
-    enabled?: boolean;
-    description?: string;
-  }
->;
+} as const satisfies Record<string, Parameters<typeof getAlertDefinitionCreateData>[0]>;
 
 export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
   MERCHANT_ONGOING_RISK_ALERT_RISK_INCREASE: {
@@ -657,14 +645,14 @@ export const generateAlertDefinitions = async (
   {
     project,
     createdBy = 'SYSTEM',
-    alertsDefConfiguration = TRANSACTIONS_ALERT_DEFINITIONS,
+    alertsDef = ALERT_DEFINITIONS,
   }: {
     alertsDefConfiguration?:
-      | typeof TRANSACTIONS_ALERT_DEFINITIONS
+      | typeof ALERT_DEFINITIONS
       | typeof MERCHANT_MONITORING_ALERT_DEFINITIONS;
     createdBy?: string;
     project: Project;
-    alertsDef?: Partial<typeof TRANSACTIONS_ALERT_DEFINITIONS>;
+    alertsDef?: Partial<typeof ALERT_DEFINITIONS>;
   },
   {
     crossEnvKeyPrefix = undefined,
@@ -673,7 +661,7 @@ export const generateAlertDefinitions = async (
   } = {},
 ) =>
   Promise.all(
-    Object.values(alertsDefConfiguration)
+    Object.values(alertsDef)
       .map(alert => ({
         correlationId: alert.inlineRule.id,
         ...alert,
@@ -769,7 +757,7 @@ export const seedTransactionsAlerts = async (
   },
 ) => {
   const transactionsAlertDef = await generateAlertDefinitions(prisma, {
-    alertsDefConfiguration: TRANSACTIONS_ALERT_DEFINITIONS,
+    alertsDefConfiguration: ALERT_DEFINITIONS,
     project,
     createdBy: faker.internet.userName(),
   });
