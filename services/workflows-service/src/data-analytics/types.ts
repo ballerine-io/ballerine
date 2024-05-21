@@ -31,6 +31,10 @@ export type InlineRule = {
       options: Omit<TDormantAccountOptions, 'projectId'>;
     }
   | {
+      fnName: 'checkMerchantOngoingAlert';
+      options: CheckRiskScoreOptions;
+    }
+  | {
       fnName: 'evaluateHighVelocityHistoricAverage';
       options: Omit<HighVelocityHistoricAverageOptions, 'projectId'>;
     }
@@ -92,6 +96,12 @@ export type TransactionLimitHistoricAverageOptions = {
   minimumCount: number;
   minimumTransactionAmount: number;
   transactionFactor: number;
+};
+
+export type CheckRiskScoreOptions = {
+  increaseRiskScorePercentage?: number;
+  increaseRiskScore?: number;
+  maxRiskScoreThreshold?: number;
 };
 
 export type TPeerGroupTransactionAverageOptions = TransactionLimitHistoricAverageOptions & {
