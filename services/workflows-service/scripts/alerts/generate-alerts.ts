@@ -1,10 +1,11 @@
 import {
   ALERT_DEDUPE_STRATEGY_DEFAULT,
+  daysToMinutesConverter,
   MerchantAlertLabel,
   SEVEN_DAYS,
-  TWENTY_ONE_DAYS,
+  THREE_DAYS,
   TransactionAlertLabel,
-  daysToMinutesConverter,
+  TWENTY_ONE_DAYS,
 } from '@/alert/consts';
 import { TDedupeStrategy } from '@/alert/types';
 import { AggregateType, TIME_UNITS } from '@/data-analytics/consts';
@@ -481,6 +482,58 @@ export const TRANSACTIONS_ALERT_DEFINITIONS = {
       subjects: ['counterpartyId'],
       options: {
         timeAmount: 180,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  HVHAI_CC: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `Total number of incoming credit cards transactions exceeds client’s historical average`,
+    inlineRule: {
+      id: 'HVHAI_CC',
+      fnName: 'evaluateHighVelocityHistoricAverage',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 3,
+        transactionFactor: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '=',
+        },
+        activeUserPeriod: {
+          timeAmount: 180,
+        },
+        lastDaysPeriod: {
+          timeAmount: THREE_DAYS,
+        },
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  HVHAI_APM: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `Total number of incoming credit cards transactions exceeds client’s historical average`,
+    inlineRule: {
+      id: 'HVHAI_APM',
+      fnName: 'evaluateHighVelocityHistoricAverage',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 3,
+        transactionFactor: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '!=',
+        },
+        activeUserPeriod: {
+          timeAmount: 180,
+        },
+        lastDaysPeriod: {
+          timeAmount: THREE_DAYS,
+        },
         timeUnit: TIME_UNITS.days,
       },
     },
