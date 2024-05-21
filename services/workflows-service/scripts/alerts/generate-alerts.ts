@@ -537,7 +537,7 @@ export const ALERT_DEFINITIONS = {
   MMOC_CC: {
     enabled: true,
     defaultSeverity: AlertSeverity.high,
-    description: `Credit card numbers that are appearing in too many different merchant IDs for credit card transactions`,
+    description: `Card numbers that are appearing in too many different merchant IDs for credit card transactions`,
     inlineRule: {
       id: 'MMOC_CC',
       fnName: 'evaluateMultipleMerchantsOneCounterparty',
@@ -556,7 +556,7 @@ export const ALERT_DEFINITIONS = {
   MMOC_APM: {
     enabled: true,
     defaultSeverity: AlertSeverity.high,
-    description: `Non-credit card numbers that are appearing in too many different merchant IDs for credit card transactions`,
+    description: `Card numbers that are appearing in too many different merchant IDs for non credit card transactions`,
     inlineRule: {
       id: 'MMOC_APM',
       fnName: 'evaluateMultipleMerchantsOneCounterparty',

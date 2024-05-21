@@ -9,11 +9,15 @@ import {
   TDormantAccountOptions,
   HighVelocityHistoricAverageOptions,
   TMultipleMerchantsOneCounterparty,
+  TExcludedCounterparty,
 } from './types';
 import { AggregateType, TIME_UNITS } from './consts';
 import { Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isEmpty } from 'lodash';
+
+const COUNTERPARTY_ORIGINATOR_JOIN_CLAUSE = Prisma.sql`JOIN "Counterparty" AS "cpOriginator" ON "tr"."counterpartyOriginatorId" = "cpOriginator"."id"`;
+const COUNTERPARTY_BENEFICIARY_JOIN_CLAUSE = Prisma.sql`JOIN "Counterparty" AS "cpBeneficiary" ON "tr"."counterpartyBeneficiaryId" = "cpBeneficiary"."id"`;
 
 @Injectable()
 export class DataAnalyticsService {
@@ -59,6 +63,12 @@ export class DataAnalyticsService {
           ...inlineRule.options,
           projectId,
         });
+
+      case 'evaluateMultipleMerchantsOneCounterparty':
+        return await this[inlineRule.fnName]({
+          ...inlineRule.options,
+          projectId,
+        });
     }
 
     this.logger.error(`No evaluation function found`, {
@@ -66,6 +76,56 @@ export class DataAnalyticsService {
     });
 
     throw new Error(`No evaluation function found for rule name: ${(inlineRule as InlineRule).id}`);
+  }
+
+  private _buildExcludedCounterpartyClause(
+    excludedCounterparty: TExcludedCounterparty = {
+      counterpartyBeneficiaryIds: [],
+      counterpartyOriginatorIds: [],
+    },
+  ) {
+    const excludedCounterpartyClause: {
+      conditions: Prisma.Sql[];
+      join: Prisma.Sql[];
+    } = {
+      conditions: [],
+      join: [],
+    };
+    if (excludedCounterparty) {
+      if (excludedCounterparty.counterpartyBeneficiaryIds.length) {
+        excludedCounterpartyClause.join.push(COUNTERPARTY_BENEFICIARY_JOIN_CLAUSE);
+
+        (excludedCounterparty.counterpartyBeneficiaryIds || []).forEach(id =>
+          excludedCounterpartyClause.conditions.push(
+            Prisma.sql`"cpBeneficiary"."correlationId" NOT LIKE ${id}`,
+          ),
+        );
+      }
+
+      if (excludedCounterparty.counterpartyOriginatorIds.length) {
+        excludedCounterpartyClause.join.push(COUNTERPARTY_ORIGINATOR_JOIN_CLAUSE);
+
+        (excludedCounterparty.counterpartyOriginatorIds || []).forEach(id =>
+          excludedCounterpartyClause.conditions.push(
+            Prisma.sql`"cpOriginator"."correlationId" NOT LIKE ${id}`,
+          ),
+        );
+      }
+    }
+
+    const excludedCounterpartyWhereClause = excludedCounterpartyClause.conditions.length
+      ? Prisma.join(excludedCounterpartyClause.conditions, ' OR ', '(', ')')
+      : Prisma.empty;
+
+    const excludedCounterpartyJoinClause = excludedCounterpartyClause.conditions.length
+      ? Prisma.join(excludedCounterpartyClause.join, '\n ')
+      : Prisma.empty;
+
+    return {
+      excludedCounterpartyClause,
+      excludedCounterpartyWhereClause,
+      excludedCounterpartyJoinClause,
+    };
   }
 
   async evaluateTransactionsAgainstDynamicRules({
@@ -102,7 +162,7 @@ export class DataAnalyticsService {
 
     if (!isEmpty(transactionType)) {
       conditions.push(
-        Prisma.sql`tr."transactionType"::text IN (${Prisma.join([...transactionType], ',')})`,
+        Prisma.sql`"tr"."transactionType"::text IN (${Prisma.join([...transactionType], ',')})`,
       );
     }
 
@@ -176,18 +236,18 @@ export class DataAnalyticsService {
     switch (havingAggregate) {
       case AggregateType.COUNT:
         havingClause = `${AggregateType.COUNT}(id)`;
-        query = Prisma.sql`SELECT ${selectClause}, COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
+        query = Prisma.sql`SELECT ${selectClause}, COUNT(id) AS "transactionCount" FROM "TransactionRecord" "tr" WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
           havingClause,
         )} > ${amountThreshold}`;
         break;
       case AggregateType.SUM:
-        havingClause = `${AggregateType.SUM}(tr."transactionBaseAmount")`;
-        query = Prisma.sql`SELECT ${selectClause}, SUM(tr."transactionBaseAmount") AS "totalAmount", COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
+        havingClause = `${AggregateType.SUM}("tr"."transactionBaseAmount")`;
+        query = Prisma.sql`SELECT ${selectClause}, SUM("tr"."transactionBaseAmount") AS "totalAmount", COUNT(id) AS "transactionCount" FROM "TransactionRecord" "tr" WHERE ${whereClause} GROUP BY ${groupByClause} HAVING ${Prisma.raw(
           havingClause,
         )} > ${amountThreshold}`;
         break;
       default:
-        query = Prisma.sql`SELECT ${selectClause}, COUNT(id) AS "transactionCount" FROM "TransactionRecord" tr WHERE ${whereClause} GROUP BY ${groupByClause}`;
+        query = Prisma.sql`SELECT ${selectClause}, COUNT(id) AS "transactionCount" FROM "TransactionRecord" "tr" WHERE ${whereClause} GROUP BY ${groupByClause}`;
     }
 
     return await this._executeQuery<Array<Record<string, unknown>>>(query);
@@ -240,12 +300,12 @@ export class DataAnalyticsService {
   }) {
     // TODO: get the customer expected amount from the customer's config
     const conditions: Prisma.Sql[] = [
-      Prisma.sql`tr."projectId" = ${projectId}`,
+      Prisma.sql`"tr"."projectId" = ${projectId}`,
       Prisma.sql`jsonb_exists(config, 'customer_expected_amount') AND ((config ->> 'customer_expected_amount')::numeric * ${factor}) != ${customerExpectedAmount}`,
-      Prisma.sql`tr."transactionAmount" > (config ->> 'customer_expected_amount')::numeric`,
+      Prisma.sql`"tr"."transactionAmount" > (config ->> 'customer_expected_amount')::numeric`,
     ];
 
-    const query: Prisma.Sql = Prisma.sql`SELECT tr."businessId" , tr."transactionAmount" FROM "TransactionRecord" as "tr"
+    const query: Prisma.Sql = Prisma.sql`SELECT "tr"."businessId" , "tr"."transactionAmount" FROM "TransactionRecord" as "tr"
     WHERE ${Prisma.join(conditions, ' AND ')} `;
 
     const results = await this.prisma.$queryRaw(query);
@@ -261,21 +321,21 @@ export class DataAnalyticsService {
     const query: Prisma.Sql = Prisma.sql`
   WITH transactions AS (
     SELECT
-      tr."counterpartyBeneficiaryId" AS "counterpartyId",
+      "tr"."counterpartyBeneficiaryId" AS "counterpartyId",
       count(
-        CASE WHEN tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+        CASE WHEN "tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
           `${timeAmount} ${timeUnit}`,
         )}' THEN
-          tr."id"
+          "tr"."id"
         END) AS "totalTransactionWithinSixMonths",
-      count(tr."id") AS "totalTransactionAllTime"
+      count("tr"."id") AS "totalTransactionAllTime"
     FROM
       "TransactionRecord" AS "tr"
     WHERE 
-      tr."projectId" = ${projectId}
-      AND  tr."counterpartyBeneficiaryId" IS NOT NULL
+      "tr"."projectId" = ${projectId}
+      AND  "tr"."counterpartyBeneficiaryId" IS NOT NULL
     GROUP BY
-      tr."counterpartyBeneficiaryId"
+      "tr"."counterpartyBeneficiaryId"
   )
   SELECT
     *
@@ -308,10 +368,10 @@ export class DataAnalyticsService {
     }
 
     const conditions: Prisma.Sql[] = [
-      Prisma.sql`tr."projectId" = '${projectId}'`,
-      Prisma.sql`tr."businessId" IS NOT NULL`,
+      Prisma.sql`"tr"."projectId" = '${projectId}'`,
+      Prisma.sql`"tr"."businessId" IS NOT NULL`,
       // TODO: should we use equation instead of IN clause?
-      Prisma.sql`tr."transactionType"::text IN (${Prisma.join(transactionType, ',')})`,
+      Prisma.sql`"tr"."transactionType"::text IN (${Prisma.join(transactionType, ',')})`,
       Prisma.sql`"transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
         `${timeAmount} ${timeUnit}`,
       )}'`,
@@ -324,7 +384,10 @@ export class DataAnalyticsService {
     // High Velocity - Refund
     const groupBy = {
       clause: Prisma.join(
-        [Prisma.raw(`tr."businessId"`), isPerBrand ? Prisma.raw(`paymentBrandName`) : Prisma.empty],
+        [
+          Prisma.raw(`"tr"."businessId"`),
+          isPerBrand ? Prisma.raw(`paymentBrandName`) : Prisma.empty,
+        ],
         ',',
       ),
     };
@@ -336,7 +399,7 @@ export class DataAnalyticsService {
         havingClause = `${AggregateType.COUNT}(id)`;
         break;
       case AggregateType.SUM:
-        havingClause = `${AggregateType.SUM}(tr."transactionBaseAmount")`;
+        havingClause = `${AggregateType.SUM}("tr"."transactionBaseAmount")`;
         break;
       default:
         throw new Error(`Invalid aggregate type: ${havingAggregate}`);
@@ -367,14 +430,14 @@ export class DataAnalyticsService {
     }
 
     const conditions: Prisma.Sql[] = [
-      Prisma.sql`tr."projectId" = ${projectId}`,
+      Prisma.sql`"tr"."projectId" = ${projectId}`,
       Prisma.sql`"transactionDirection"::text = ${transactionDirection}`,
-      Prisma.sql`tr."paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${
+      Prisma.sql`"tr"."paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${
         paymentMethod.value
       }`,
       !!timeAmount &&
         !!timeUnit &&
-        Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+        Prisma.sql`"tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
           `${timeAmount} ${timeUnit}`,
         )}'`,
       !!customerType && Prisma.sql`b."businessType" = ${customerType}`,
@@ -388,10 +451,10 @@ export class DataAnalyticsService {
         COUNT(*) AS count,
         avg("transactionBaseAmount") AS avg
       FROM
-        "TransactionRecord" tr ${
+        "TransactionRecord" "tr" ${
           customerType
-            ? Prisma.sql`JOIN "Counterparty" AS cp ON tr."counterpartyBeneficiaryId" = cp.id
-               JOIN "Business" AS b ON cp."businessId" = b.id`
+            ? Prisma.sql`JOIN "Counterparty" AS "cp" ON "tr"."counterpartyBeneficiaryId" = "cp".id
+               JOIN "Business" AS b ON "cp"."businessId" = b.id`
             : Prisma.empty
         }
       WHERE
@@ -401,17 +464,17 @@ export class DataAnalyticsService {
       HAVING COUNT(*) > ${minimumCount}
     )
     SELECT
-      tr."counterpartyBeneficiaryId" AS "counterpartyId"
+      "tr"."counterpartyBeneficiaryId" AS "counterpartyId"
     FROM
       "TransactionRecord" tr
-      JOIN "transactionsData" td ON tr."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
+      JOIN "transactionsData" td ON "tr"."counterpartyBeneficiaryId" = td."counterpartyBeneficiaryId"
     WHERE
       "transactionBaseAmount" > ${minimumTransactionAmount}
       AND "transactionBaseAmount" > (
         ${transactionFactor} * avg
       )
     GROUP BY
-      tr."counterpartyBeneficiaryId";
+      "tr"."counterpartyBeneficiaryId";
       `,
     );
   }
@@ -430,23 +493,23 @@ export class DataAnalyticsService {
       throw new Error('projectId is required');
     }
 
-    const historicalTransactionClause = Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+    const historicalTransactionClause = Prisma.sql`"tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
       `${activeUserPeriod.timeAmount} ${timeUnit}`,
     )}'`;
 
-    const recentDaysClause = Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+    const recentDaysClause = Prisma.sql`"tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
       `${lastDaysPeriod.timeAmount} ${timeUnit}`,
     )}'`;
 
-    const substractPeriodClause = Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+    const substractPeriodClause = Prisma.sql`"tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
       `${activeUserPeriod.timeAmount - lastDaysPeriod.timeAmount} ${timeUnit}`,
     )}'`;
 
     const conditions: Prisma.Sql[] = [
-      Prisma.sql`tr."projectId" = ${projectId}`,
-      Prisma.sql`tr."counterpartyBeneficiaryId" IS NOT NULL`,
-      Prisma.sql`tr."transactionDirection"::text = ${transactionDirection}`,
-      Prisma.sql`tr."paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${
+      Prisma.sql`"tr"."projectId" = ${projectId}`,
+      Prisma.sql`"tr"."counterpartyBeneficiaryId" IS NOT NULL`,
+      Prisma.sql`"tr"."transactionDirection"::text = ${transactionDirection}`,
+      Prisma.sql`"tr"."paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${
         paymentMethod.value
       }`,
       historicalTransactionClause,
@@ -479,48 +542,46 @@ export class DataAnalyticsService {
     timeUnit,
     timeAmount,
     minimumCount,
-    excludedCounterparty = {
-      counterpartyBeneficiaryIds: [],
-      counterpartyOriginatorIds: [],
-    },
+    excludedCounterparty,
   }: TMultipleMerchantsOneCounterparty) {
     if (!projectId) {
       throw new Error('projectId is required');
     }
 
     const conditions: Prisma.Sql[] = [
-      Prisma.sql`tr."projectId" = ${projectId}`,
-      Prisma.sql`tr."counterpartyBeneficiaryId" IS NOT NULL`,
+      Prisma.sql`"tr"."projectId" = ${projectId}`,
+      Prisma.sql`"tr"."counterpartyOriginatorId" IS NOT NULL`,
+      Prisma.sql`"cpOriginator"."correlationId" LIKE '%****%'`,
       !!timeAmount &&
         !!timeUnit &&
-        Prisma.sql`tr."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+        Prisma.sql`"tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
           `${timeAmount} ${timeUnit}`,
         )}'`,
     ].filter(Boolean);
 
-    if (excludedCounterparty) {
-      (excludedCounterparty.counterpartyBeneficiaryIds || []).forEach(id =>
-        // @TODO: Check against correlationId
-        conditions.push(Prisma.sql`"counterpartyBeneficiaryId" NOT LIKE ${id}`),
-      );
+    const { excludedCounterpartyWhereClause, excludedCounterpartyClause } =
+      this._buildExcludedCounterpartyClause(excludedCounterparty);
 
-      (excludedCounterparty.counterpartyOriginatorIds || []).forEach(id =>
-        // @TODO: Check against correlationId
-        conditions.push(Prisma.sql`"counterpartyOriginatorId" NOT LIKE ${id}`),
-      );
-    }
+    const join = [COUNTERPARTY_ORIGINATOR_JOIN_CLAUSE, ...excludedCounterpartyClause.join];
+
+    const uniqueJoinMap = new Map(join.map(item => [item.sql, item]));
+    const uniqueJoinClause = [...uniqueJoinMap.values()];
 
     return await this._executeQuery<Array<{ counterpartyId: string }>>(
       Prisma.sql`
-      SELECT "counterpartyBeneficiaryId" as "counterpartyId",
-              COUNT(distinct "counterpartyOriginatorId")
+      SELECT 
+        "tr"."counterpartyOriginatorId" as "counterpartyId",
+        COUNT(distinct "tr"."counterpartyBeneficiaryId")
       FROM
-        "TransactionRecord" as tr
+        "TransactionRecord" as "tr" ${Prisma.join(uniqueJoinClause, '\n ')}
       WHERE
-        ${Prisma.join(conditions, ' AND ')}
+        ${Prisma.join(
+          [...conditions, excludedCounterpartyWhereClause].filter(cond => cond != Prisma.empty),
+          ' AND ',
+        )}
       GROUP BY
-        "counterpartyBeneficiaryId"
-      HAVING COUNT(distinct "counterpartyOriginatorId") > ${minimumCount};
+        "counterpartyOriginatorId"
+      HAVING COUNT(distinct "tr"."counterpartyBeneficiaryId") > ${minimumCount};
       `,
     );
   }
