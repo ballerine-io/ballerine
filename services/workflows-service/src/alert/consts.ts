@@ -1,3 +1,4 @@
+export const THREE_DAYS = 3;
 export const SEVEN_DAYS = 7;
 export const TWENTY_ONE_DAYS = 21;
 
