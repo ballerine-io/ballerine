@@ -5,10 +5,11 @@ import { useWebsiteMonitoringReportBlock } from '@/lib/blocks/variants/WebsiteMo
 import { useCasePlugins } from '@/pages/Entity/hooks/useCasePlugins/useCasePlugins';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { BlocksComponent } from '@ballerine/blocks';
+import { NoBlocks } from '@/lib/blocks/components/NoBlocks/NoBlocks';
 
 export const WebsiteMonitoringBlocks = () => {
   const blocks = useWebsiteMonitoringReportBlock();
-  const { data: workflow } = useCurrentCaseQuery();
+  const { data: workflow, isLoading } = useCurrentCaseQuery();
   const plugins = useCasePlugins({ workflow: workflow as TWorkflowById });
   const processes = ['merchant-monitoring'];
 
@@ -20,6 +21,7 @@ export const WebsiteMonitoringBlocks = () => {
       <BlocksComponent blocks={blocks} cells={cells}>
         {(Cell, cell) => <Cell {...cell} />}
       </BlocksComponent>
+      {!isLoading && !blocks?.length && <NoBlocks />}
     </div>
   );
 };
