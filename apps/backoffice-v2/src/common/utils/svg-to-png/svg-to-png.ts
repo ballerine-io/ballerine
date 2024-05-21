@@ -13,7 +13,6 @@ export const svgToPng = (imageUrl: string): Promise<string> => {
       const dataUrl = canvas.toDataURL('image/png');
 
       resolve(dataUrl);
-      document.body.removeChild(canvas);
     };
     img.onerror = error => {
       reject(error);
