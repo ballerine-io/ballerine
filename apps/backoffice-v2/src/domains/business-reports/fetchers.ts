@@ -3,12 +3,18 @@ import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { TBusinessReportType } from '@/domains/business-reports/types';
+import qs from 'qs';
 
 export const BusinessReportSchema = z
   .object({
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     report: z.object({
+      data: z.object({
+        summary: z.object({
+          riskScore: z.number(),
+        }),
+      }),
       reportFileId: z.string(),
     }),
     business: z
@@ -43,9 +49,27 @@ export const fetchLatestBusinessReport = async ({
   return handleZodError(error, filter);
 };
 
-export const fetchBusinessReports = async ({ reportType }: { reportType: TBusinessReportType }) => {
+export const fetchBusinessReports = async ({
+  reportType,
+  ...params
+}: {
+  reportType: TBusinessReportType;
+  page: {
+    number: number;
+    size: number;
+  };
+  orderBy: string;
+}) => {
+  const queryParams = qs.stringify(
+    {
+      ...params,
+      type: reportType,
+    },
+    { encode: false },
+  );
+
   const [filter, error] = await apiClient({
-    endpoint: `business-reports/?type=${reportType}`,
+    endpoint: `business-reports/?${queryParams}`,
     method: Method.GET,
     schema: BusinessReportsSchema,
   });

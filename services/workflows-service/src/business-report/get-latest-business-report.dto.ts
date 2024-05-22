@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BusinessReportType } from '@prisma/client';
 import { IsIn, IsNotEmpty, IsString } from 'class-validator';
 
-export class GetBusinessReportsDto {
+export class GetLatestBusinessReportDto {
   @ApiProperty({
     required: true,
   })

@@ -23,6 +23,9 @@ export const MerchantMonitoringTable: FunctionComponent<{
       columns={columns}
       CellContentWrapper={Cell}
       sortByField={`createdAt`}
+      options={{
+        enableSorting: true,
+      }}
       props={{ scroll: { className: 'h-full' }, cell: { className: '!p-0' } }}
     />
   );

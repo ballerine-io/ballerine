@@ -26,7 +26,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
         {Array.isArray(businessReports) && !businessReports.length && !isloadingBusinessReports && (
           <NoBusinessReports />
         )}
-        <div className={`flex items-center gap-x-2`}>
+        <div className={`mt-auto flex items-center gap-x-2`}>
           <UrlPagination
             page={page}
             onPrevPage={onPrevPage}

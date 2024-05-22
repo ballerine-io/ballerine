@@ -35,7 +35,7 @@ export const TransactionMonitoringAlerts = () => {
         />
         {isNonEmptyArray(alerts) && <AlertsTable data={alerts ?? []} />}
         {Array.isArray(alerts) && !alerts.length && !isLoadingAlerts && <NoAlerts />}
-        <div className={`flex items-center gap-x-2`}>
+        <div className={`mt-auto flex items-center gap-x-2`}>
           <UrlPagination
             page={page}
             onPrevPage={onPrevPage}

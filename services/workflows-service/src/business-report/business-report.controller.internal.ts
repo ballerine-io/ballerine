@@ -6,7 +6,13 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import * as errors from '@/errors';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { BusinessReportService } from '@/business-report/business-report.service';
-import { GetBusinessReportsDto } from '@/business-report/get-business-reports.dto';
+import { GetLatestBusinessReportDto } from '@/business-report/get-latest-business-report.dto';
+import {
+  ListBusinessReportsDto,
+  ListBusinessReportsSchema,
+} from '@/business-report/list-business-reports.dto';
+import { Prisma } from '@prisma/client';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 
 @common.Controller('internal/business-reports')
 @swagger.ApiExcludeController()
@@ -16,12 +22,47 @@ export class BusinessReportControllerInternal {
     protected readonly logger: AppLoggerService,
   ) {}
 
+  @common.Get('/')
+  @swagger.ApiOkResponse({ type: [String] })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
+  async listBusinessReports(
+    @CurrentProject() currentProjectId: TProjectId,
+    @Query() searchQueryParams: ListBusinessReportsDto,
+  ) {
+    return await this.businessReportService.findMany(
+      {
+        where: {
+          type: searchQueryParams.type,
+        },
+        select: {
+          createdAt: true,
+          updatedAt: true,
+          report: true,
+          business: {
+            select: {
+              companyName: true,
+              country: true,
+              website: true,
+            },
+          },
+        },
+        take: searchQueryParams.page.size,
+        skip: (searchQueryParams.page.number - 1) * searchQueryParams.page.size,
+        orderBy: searchQueryParams.orderBy as
+          | Prisma.Enumerable<Prisma.BusinessReportOrderByWithRelationInput>
+          | undefined,
+      },
+      [currentProjectId],
+    );
+  }
+
   @common.Get('/latest')
   @swagger.ApiOkResponse({ type: [String] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async getLatestBusinessReport(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() searchQueryParams: GetBusinessReportsDto,
+    @Query() searchQueryParams: GetLatestBusinessReportDto,
   ) {
     return await this.businessReportService.findFirst(
       {

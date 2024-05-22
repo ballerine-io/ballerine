@@ -27,7 +27,7 @@ export const Individuals = () => {
         {Array.isArray(individualsProfiles) &&
           !individualsProfiles.length &&
           !isLoadingIndividualsProfiles && <NoProfiles />}
-        <div className={`flex items-center gap-x-2`}>
+        <div className={`mt-auto flex items-center gap-x-2`}>
           <UrlPagination
             page={page}
             onPrevPage={onPrevPage}
