@@ -709,7 +709,7 @@ enum AlertStatus {
 
 model AlertDefinition {
   id          String  @id @default(cuid())
-  crossEnvKey String? @unique
+  crossEnvKey String @unique
   correlationId       String
   name        String
   enabled     Boolean @default(true)
