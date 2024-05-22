@@ -46,10 +46,6 @@ export class CompanySanctionsPagePDF extends IPDFRenderer<TCompanySanctionsData>
   }
 
   private isEmpty(data: TCompanySanctionsData) {
-    if (!data.sanctions?.length) {
-      return true;
-    }
-
-    return false;
+    return !data.sanctions?.length;
   }
 }

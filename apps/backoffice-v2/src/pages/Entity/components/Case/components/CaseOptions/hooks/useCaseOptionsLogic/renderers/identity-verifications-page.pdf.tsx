@@ -62,8 +62,6 @@ export class IdentityVerificationsPagePDF extends IPDFRenderer<TIdentityVerifica
   }
 
   private isEmpty(data: TIdentityVerificationsData) {
-    if (!data.items?.length) return true;
-
-    return false;
+    return !data.items?.length;
   }
 }

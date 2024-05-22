@@ -67,16 +67,10 @@ export class RegistryPagePDF extends IPDFRenderer<TRegistryInformationData> {
       data.registeredAt,
     ];
 
-    if (
-      values.every(value => {
-        if (Array.isArray(value) && !value.length) return true;
+    return values.every(value => {
+      if (Array.isArray(value) && !value.length) return true;
 
-        return !value;
-      })
-    ) {
-      return true;
-    }
-
-    return false;
+      return !value;
+    });
   }
 }

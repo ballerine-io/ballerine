@@ -112,8 +112,6 @@ export class IndividualSantcionsPagePDF extends IPDFRenderer<TIndividualSanction
   }
 
   private isEmpty(data: TIndividualSanctionsData) {
-    if (!data.items?.length) return true;
-
-    return false;
+    return !data.items?.length;
   }
 }

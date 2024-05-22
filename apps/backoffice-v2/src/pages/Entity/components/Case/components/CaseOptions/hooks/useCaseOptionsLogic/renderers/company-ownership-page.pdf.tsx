@@ -41,10 +41,6 @@ export class CompanyOwnershipPagePDF extends IPDFRenderer<TCompanyOwnershipData>
   }
 
   private isEmpty(data: TCompanyOwnershipData) {
-    if (!data.items?.length) {
-      return true;
-    }
-
-    return false;
+    return !data.items?.length;
   }
 }
