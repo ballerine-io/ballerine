@@ -1,4 +1,20 @@
-import { PrismaService } from './../prisma/prisma.service';
+import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
+import { AlertRepository } from '@/alert/alert.repository';
+import { AlertService } from '@/alert/alert.service';
+import { BusinessReportRepository } from '@/business-report/business-report.repository';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { createCustomer } from '@/test/helpers/create-customer';
+import { createProject } from '@/test/helpers/create-project';
+import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
+import { commonTestingModules } from '@/test/helpers/nest-app-helper';
+import {
+  TransactionFactory,
+  createEndUserCounterparty,
+} from '@/transaction/test-utils/transaction-factory';
+import { faker } from '@faker-js/faker';
+import { Test } from '@nestjs/testing';
 import {
   AlertDefinition,
   Counterparty,
@@ -8,29 +24,13 @@ import {
   TransactionDirection,
   TransactionRecordType,
 } from '@prisma/client';
-import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
-import { createCustomer } from '@/test/helpers/create-customer';
-import { faker } from '@faker-js/faker';
-import { createProject } from '@/test/helpers/create-project';
-import {
-  TransactionFactory,
-  createEndUserCounterparty,
-} from '@/transaction/test-utils/transaction-factory';
-import { AlertService } from '@/alert/alert.service';
-import { commonTestingModules } from '@/test/helpers/nest-app-helper';
-import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
-import { ProjectScopeService } from '@/project/project-scope.service';
-import { Test } from '@nestjs/testing';
-import { AlertRepository } from '@/alert/alert.repository';
-import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import {
   ALERT_DEFINITIONS,
   generateAlertDefinitions,
   getAlertDefinitionCreateData,
 } from '../../scripts/alerts/generate-alerts';
-import { InputJsonValue } from '@/types';
-import { BusinessReportService } from '@/business-report/business-report.service';
-import { BusinessReportRepository } from '@/business-report/business-report.repository';
+
+import { PrismaService } from './../prisma/prisma.service';
 
 type AsyncTransactionFactoryCallback = (
   transactionFactory: TransactionFactory,
@@ -84,6 +84,8 @@ describe('AlertService', () => {
         ProjectScopeService,
         AlertRepository,
         AlertDefinitionRepository,
+        BusinessReportService,
+        BusinessReportRepository,
         BusinessReportService,
         BusinessReportRepository,
         AlertService,
