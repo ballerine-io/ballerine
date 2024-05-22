@@ -12,17 +12,13 @@ import { Document, pdf } from '@react-pdf/renderer';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
-const downloadFile = (file: File) => {
-  const link = document.createElement('a');
+const openFile = (blob: Blob) => {
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
 
-  link.href = URL.createObjectURL(file);
-  link.download = file.name;
-
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-
-  URL.revokeObjectURL(link.href);
+  setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 10_000);
 };
 
 export const useCaseOptionsLogic = () => {
@@ -47,9 +43,7 @@ export const useCaseOptionsLogic = () => {
 
       const PDFBlob = await pdf(<Document>{pages}</Document>).toBlob();
 
-      const pdfFile = new File([PDFBlob], 'certificate.pdf');
-
-      downloadFile(pdfFile);
+      openFile(PDFBlob);
     } catch (error) {
       console.error(`Failed to download PDF certificate: ${error}`);
       toast.error('Failed to download PDF certificate.');
