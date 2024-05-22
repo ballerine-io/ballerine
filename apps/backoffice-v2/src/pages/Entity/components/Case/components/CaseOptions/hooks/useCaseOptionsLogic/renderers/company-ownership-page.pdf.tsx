@@ -5,8 +5,6 @@ import {
   EmptyCompanyOwnershipPage,
   TCompanyOwnershipData,
 } from '@/pages/Entity/pdfs/case-information/pages/CompanyOwnershipPage';
-import get from 'lodash/get';
-import map from 'lodash/map';
 
 export class CompanyOwnershipPagePDF extends IPDFRenderer<TCompanyOwnershipData> {
   static PDF_NAME = 'companyOwnershipPage';
@@ -22,10 +20,10 @@ export class CompanyOwnershipPagePDF extends IPDFRenderer<TCompanyOwnershipData>
 
   async getData() {
     const pdfData: TCompanyOwnershipData = {
-      companyName: get(this.workflow.context, 'entity.data.companyName', ''),
+      companyName: this.workflow?.context?.entity?.data?.companyName || '',
       creationDate: new Date(),
       logoUrl: await this.getLogoUrl(),
-      items: map(get(this?.workflow, 'context.pluginsOutput.ubo.data.uboGraph', []), ubo => ({
+      items: (this.workflow?.context?.pluginsOutput?.ubo?.data?.uboGraph || []).map((ubo: any) => ({
         companyName: ubo?.name,
         companyType: ubo?.type,
         ownershipPercentage: ubo?.shareHolders?.[0]?.sharePercentage,

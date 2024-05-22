@@ -5,8 +5,6 @@ import {
   EmptyCompanySanctionsPage,
   TCompanySanctionsData,
 } from '@/pages/Entity/pdfs/case-information/pages/CompanySanctionsPage';
-import get from 'lodash/get';
-import map from 'lodash/map';
 
 export class CompanySanctionsPagePDF extends IPDFRenderer<TCompanySanctionsData> {
   static PDF_NAME = 'companySanctionsPage';
@@ -22,18 +20,17 @@ export class CompanySanctionsPagePDF extends IPDFRenderer<TCompanySanctionsData>
 
   async getData() {
     const pdfData: TCompanySanctionsData = {
-      companyName: get(this.workflow.context, 'entity.data.companyName', ''),
+      companyName: this.workflow?.context?.entity?.data?.companyName || '',
       creationDate: new Date(),
       logoUrl: await this.getLogoUrl(),
-      sanctions: map(
-        get(this.workflow.context, 'pluginsOutput.companySanctions.data', []),
-        sanction => ({
-          name: get(sanction, 'entity.name', ''),
-          reviewDate: get(sanction, 'entity.lastReviewed', ''),
-          labels: get(sanction, 'entity.categories', []),
-          sources: map(get(sanction, 'entity.sources', []), source => get(source, 'url', '')),
-          addresses: get(sanction, 'entity.places', []),
-          matchReasons: get(sanction, 'matchedFields', []),
+      sanctions: (this.workflow?.context?.pluginsOutput?.companySanctions?.data || []).map(
+        (sanction: any) => ({
+          name: sanction.entity.name,
+          reviewDate: sanction.entity.lastReviewed,
+          labels: sanction.entity.categories,
+          sources: sanction.entity.sources.map((source: { url: string }) => source.url),
+          addresses: sanction.entity.places,
+          matchReasons: sanction.matchedFields,
         }),
       ),
     };

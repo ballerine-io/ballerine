@@ -5,7 +5,6 @@ import {
 } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage';
 import { TRegistryInformationData } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/registry-information.schema';
 import { TitlePageSchema } from '@/pages/Entity/pdfs/case-information/pages/TitlePage';
-import get from 'lodash/get';
 
 export class RegistryPagePDF extends IPDFRenderer<TRegistryInformationData> {
   static PDF_NAME = 'titlePage';
@@ -21,31 +20,27 @@ export class RegistryPagePDF extends IPDFRenderer<TRegistryInformationData> {
 
   async getData() {
     const pdfData: TRegistryInformationData = {
-      companyName: get(this.workflow.context, 'entity.data.companyName', ''),
+      companyName: this.workflow?.context?.entity?.data?.companyName || '',
       creationDate: new Date(),
       logoUrl: await this.getLogoUrl(),
-      registrationNumber: get(this.workflow.context, 'entity.data.registrationNumber', ''),
-      incorporationDate: get(
-        this.workflow.context,
-        'entity.data.additionalInfo.dateOfEstablishment',
-        null,
-      ),
-      companyType: get(this.workflow.context, 'entity.data.businessType', ''),
+      registrationNumber: this.workflow.context?.entity?.data?.registrationNumber || '',
+      incorporationDate:
+        this.workflow.context?.entity?.data?.additionalInfo?.dateOfEstablishment || null,
+      companyType: this.workflow.context?.entity?.data?.businessType || '',
       // companyStatus is missing in context
-      companyStatus: get(this.workflow.context, 'entity.data.status', ''),
-
+      companyStatus: this.workflow.context?.entity?.data?.status || '',
       registrationAddress: [
-        get(this.workflow.context, 'entity.data.headquarters.street', ''),
-        get(this.workflow.context, 'entity.data.headquarters.streetNumber', ''),
-        get(this.workflow.context, 'entity.data.headquarters.city', ''),
-        get(this.workflow.context, 'entity.data.headquarters.country', ''),
-        get(this.workflow.context, 'entity.data.headquarters.postalCode', ''),
+        this.workflow.context?.entity?.data?.headquarters?.street || '',
+        this.workflow.context?.entity?.data?.headquarters?.streetNumber || '',
+        this.workflow.context?.entity?.data?.headquarters?.city || '',
+        this.workflow.context?.entity?.data?.headquarters?.country || '',
+        this.workflow.context?.entity?.data?.headquarters?.postalCode || '',
       ]
         .filter(Boolean)
         .join(', '),
-      registryPage: get(this.workflow.context, 'entity.data.registryPage', ''),
+      registryPage: this.workflow.context?.entity?.data?.registryPage || '',
       lastUpdate: new Date(),
-      registeredAt: get(this.workflow.context, 'entity.data.registeredAt', ''),
+      registeredAt: this.workflow.context?.entity?.data?.registeredAt || '',
     };
 
     return pdfData;

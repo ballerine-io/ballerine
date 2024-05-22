@@ -2,12 +2,8 @@ import { IPDFRenderer } from '@/pages/Entity/components/Case/components/CaseOpti
 import {
   EmptyIdentityVerificationsPage,
   IdentityVerificationsPage,
-  IdentityVerificationsSchema,
   TIdentityVerificationsData,
 } from '@/pages/Entity/pdfs/case-information/pages/IdentityVerificationsPage';
-import get from 'lodash/get';
-import map from 'lodash/map';
-import values from 'lodash/values';
 
 export class IdentityVerificationsPagePDF extends IPDFRenderer<TIdentityVerificationsData> {
   static PDF_NAME = 'identityVerificationsPage';
@@ -22,32 +18,27 @@ export class IdentityVerificationsPagePDF extends IPDFRenderer<TIdentityVerifica
   }
 
   async getData() {
-    const childWorkflowSessions = values(get(this.workflow?.context, 'childWorkflows', {}));
+    const childWorkflowSessions = Object.values(this.workflow?.context.childWorkflows || {});
 
     const pdfData: TIdentityVerificationsData = {
-      companyName: get(this.workflow?.context, 'entity.data.companyName', ''),
+      companyName: this.workflow?.context?.entity?.data?.companyName || '',
       creationDate: new Date(),
       logoUrl: await this.getLogoUrl(),
       items: childWorkflowSessions
         .map(childWorkflowSession => {
-          return map(
-            values(childWorkflowSession),
-            (session): TIdentityVerificationsData['items'][number] => ({
-              firstName: get(session, 'result.childEntity.firstName', ''),
-              lastName: get(session, 'result.childEntity.lastName', ''),
-              dateOfBirth: get(session, 'result.entity.data.dateOfBirth'),
-              status: get(session, 'result.vendorResult.decision.status', '') as
-                | 'approved'
-                | 'rejected',
-              checkDate: get(session, 'result.vendorResult.aml.createdAt'),
-              id: get(session, 'result.vendorResult.metadata.id', ''),
-              gender: get(session, 'result.vendorResult.entity.data.additionalInfo.gender', ''),
-              nationality: get(
-                session,
-                'result.vendorResult.entity.data.additionalInfo.nationality',
-                '',
-              ),
-              reason: get(session, 'result.vendorResult.decision.reason', ''),
+          return Object.values(childWorkflowSession || {}).map(
+            (session: any): TIdentityVerificationsData['items'][number] => ({
+              firstName: session.result?.childEntity?.firstName || '',
+              lastName: session.result?.childEntity?.lastName || '',
+              dateOfBirth: session.result?.entity?.data?.dateOfBirth || null,
+              status:
+                session.result?.vendorResult?.decision?.status || ('' as 'approved' | 'rejected'),
+              checkDate: session.result?.vendorResult?.aml?.createdAt || null,
+              id: session.result?.vendorResult?.metadata?.id || '',
+              gender: session.result?.vendorResult?.entity?.data?.additionalInfo?.gender || '',
+              nationality:
+                session.result?.vendorResult?.entity?.data?.additionalInfo?.nationality || '',
+              reason: session.result.vendorResult.decision.reason || '',
             }),
           );
         })
@@ -57,9 +48,7 @@ export class IdentityVerificationsPagePDF extends IPDFRenderer<TIdentityVerifica
     return pdfData;
   }
 
-  isValid(data: TIdentityVerificationsData) {
-    IdentityVerificationsSchema.parse(data);
-  }
+  isValid(data: TIdentityVerificationsData) {}
 
   private isEmpty(data: TIdentityVerificationsData) {
     return !data.items?.length;

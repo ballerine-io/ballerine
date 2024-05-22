@@ -189,9 +189,6 @@ importers:
       libphonenumber-js:
         specifier: ^1.10.49
         version: 1.10.49
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
       lucide-react:
         specifier: ^0.239.0
         version: 0.239.0(react@18.2.0)
@@ -310,9 +307,6 @@ importers:
       '@types/leaflet':
         specifier: ^1.9.3
         version: 1.9.8
-      '@types/lodash':
-        specifier: ^4.14.191
-        version: 4.14.201
       '@types/node':
         specifier: ^18.11.13
         version: 18.17.19
@@ -21083,7 +21077,7 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.3)
+      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.5)
       debug: 3.2.7
       eslint: 8.54.0
       eslint-import-resolver-node: 0.3.9
@@ -21248,7 +21242,7 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.3)
+      '@typescript-eslint/parser': 5.62.0(eslint@8.54.0)(typescript@4.9.5)
       array-includes: 3.1.7
       array.prototype.findlastindex: 1.2.3
       array.prototype.flat: 1.3.2

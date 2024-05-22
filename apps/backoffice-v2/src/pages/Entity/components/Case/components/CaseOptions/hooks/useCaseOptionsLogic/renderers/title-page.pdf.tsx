@@ -4,7 +4,6 @@ import {
   TitlePage,
   TitlePageSchema,
 } from '@/pages/Entity/pdfs/case-information/pages/TitlePage';
-import get from 'lodash/get';
 
 export class TitlePagePDF extends IPDFRenderer<TTitlePageData> {
   static PDF_NAME = 'titlePage';
@@ -18,7 +17,7 @@ export class TitlePagePDF extends IPDFRenderer<TTitlePageData> {
 
   async getData() {
     const pdfData: TTitlePageData = {
-      companyName: get(this.workflow.context, 'entity.data.companyName', ''),
+      companyName: this.workflow.context?.entity?.data?.companyName || '',
       creationDate: new Date(),
       logoUrl: await this.getLogoUrl(),
     };

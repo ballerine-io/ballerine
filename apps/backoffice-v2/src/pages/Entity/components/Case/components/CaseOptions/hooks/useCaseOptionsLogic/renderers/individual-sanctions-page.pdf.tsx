@@ -8,8 +8,6 @@ import {
   IndividualSanctionsSchema,
   TIndividualSanctionsData,
 } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/individual-sanctions.schema';
-import get from 'lodash/get';
-import values from 'lodash/values';
 
 export class IndividualSantcionsPagePDF extends IPDFRenderer<TIndividualSanctionsData> {
   static PDF_NAME = 'individualSanctionsPage';
@@ -25,20 +23,18 @@ export class IndividualSantcionsPagePDF extends IPDFRenderer<TIndividualSanction
 
   async getData() {
     const pdfData: TIndividualSanctionsData = {
-      companyName: get(this.workflow.context, 'entity.data.companyName', ''),
+      companyName: this.workflow.context?.entity?.data?.companyName || '',
       creationDate: new Date(),
       logoUrl: await this.getLogoUrl(),
       items: this.extractAmlSessions().map(session => {
-        const rawAml = get(session, 'result.vendorResult.aml', {});
+        const rawAml = session.result?.vendorResult?.aml || {};
         const amlData = amlAdapter(rawAml);
 
         return {
           checkDate: amlData.dateOfCheck ?? undefined,
-          fullName: `${get(session, 'result.childEntity.firstName', '')} ${get(
-            session,
-            'result.childEntity.lastName',
-            '',
-          ).trim()}`,
+          fullName: `${session.result?.childEntity?.firstName || ''} ${
+            session.result?.childEntity?.lastName || ''
+          }`,
           matchesCount: amlData.totalMatches,
           names: amlData.matches.map(match => match.aka).flat(0),
           warnings: amlData.matches
@@ -97,10 +93,10 @@ export class IndividualSantcionsPagePDF extends IPDFRenderer<TIndividualSanction
   }
 
   private extractAmlSessions() {
-    const childWorkflowSessions = values(get(this.workflow?.context, 'childWorkflows', {}));
+    const childWorkflowSessions = Object.values(this.workflow?.context?.childWorkflows || {});
     const sessions = childWorkflowSessions
       .map(childWorkflowSession => {
-        return values(childWorkflowSession);
+        return Object.values(childWorkflowSession || {});
       })
       .flat(1);
 
