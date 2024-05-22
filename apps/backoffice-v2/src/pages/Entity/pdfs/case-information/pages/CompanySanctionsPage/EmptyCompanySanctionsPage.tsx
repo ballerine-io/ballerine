@@ -46,8 +46,7 @@ export const EmptyCompanySanctionsPage: FunctionComponent<IEmptyCompanySanctions
                   </Typography>
                 </View>
                 <Typography styles={[tw('text-[#00BD59]')]} weight="bold">
-                  {0}
-                  {' matches'}
+                  0 matches
                 </Typography>
               </View>
             </View>
