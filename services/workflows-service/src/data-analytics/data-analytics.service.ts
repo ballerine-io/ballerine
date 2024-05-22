@@ -65,7 +65,9 @@ export class DataAnalyticsService {
       inlineRule,
     });
 
-    throw new Error(`No evaluation function found for rule name: ${(inlineRule as InlineRule).id}`);
+    throw new Error(
+      `No evaluation function found for rule name: ${String((inlineRule as InlineRule).id)}`,
+    );
   }
 
   async checkMerchantOngoingAlert(
