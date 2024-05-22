@@ -1,10 +1,10 @@
-import { FunctionComponent, useCallback, useMemo } from 'react';
-import { TUsers } from '@/domains/users/types';
 import { MultiSelect } from '@/common/components/atoms/MultiSelect/MultiSelect';
 import { useFilter } from '@/common/hooks/useFilter/useFilter';
-import { AlertStatuses } from '@/domains/alerts/fetchers';
-import { titleCase } from 'string-ts';
 import { keyFactory } from '@/common/utils/key-factory/key-factory';
+import { AlertStatuses } from '@/domains/alerts/fetchers';
+import { TUsers } from '@/domains/users/types';
+import { FunctionComponent, useCallback, useMemo } from 'react';
+import { titleCase } from 'string-ts';
 
 export const AlertsFilters: FunctionComponent<{
   assignees: TUsers;
@@ -50,10 +50,10 @@ export const AlertsFilters: FunctionComponent<{
       accessor: 'correlationIds',
       options: useMemo(
         () =>
-          correlationIds.map(label => ({
+          correlationIds?.map(label => ({
             label,
             value: label,
-          })),
+          })) || [],
         [correlationIds],
       ),
     },

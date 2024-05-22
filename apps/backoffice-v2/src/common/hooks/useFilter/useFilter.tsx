@@ -1,5 +1,5 @@
-import { useCallback } from 'react';
 import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchParams/useSerializedSearchParams';
+import { useCallback } from 'react';
 
 export const useFilter = () => {
   const [{ filter }, setSearchParams] = useSerializedSearchParams();
@@ -19,8 +19,19 @@ export const useFilter = () => {
     [filter, setSearchParams],
   );
 
+  const onClear = useCallback((accessor: string) => {
+    setSearchParams({
+      filter: {
+        ...filter,
+        [accessor]: [],
+      },
+      page: '1',
+    });
+  }, []);
+
   return {
     filter,
+    onClear,
     onFilter,
   };
 };

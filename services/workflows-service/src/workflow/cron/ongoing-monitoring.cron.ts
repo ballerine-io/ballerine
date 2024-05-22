@@ -20,6 +20,7 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Business, Project } from '@prisma/client';
 import get from 'lodash/get';
+import { SentryService } from '@/sentry/sentry.service';
 
 @Injectable()
 export class OngoingMonitoringCron {
@@ -33,84 +34,91 @@ export class OngoingMonitoringCron {
     protected readonly customerService: CustomerService,
     protected readonly businessService: BusinessService,
     protected readonly businessReportService: BusinessReportService,
+    protected readonly sentryService: SentryService,
   ) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleCron() {
-    const lockAcquired = await this.prisma.acquireLock(this.lockKey);
+    await this.prisma.$transaction(async transaction => {
+      const lockAcquired = await this.prisma.acquireLock(transaction, this.lockKey);
 
-    if (!lockAcquired) {
-      this.logger.log('Lock not acquired, another instance might be running the job.');
+      if (!lockAcquired) {
+        this.logger.log('Lock not acquired, another instance might be running the job.');
 
-      return;
-    }
+        return;
+      }
 
-    try {
-      const customers = await this.customerService.list({
-        select: { projects: true, features: true, id: true },
-      });
+      try {
+        const customers = await this.customerService.list({
+          select: { projects: true, features: true, id: true },
+        });
 
-      const processConfiguration = await this.fetchCustomerFeatureConfiguration(customers);
+        const processConfiguration = await this.fetchCustomerFeatureConfiguration(customers);
 
-      for (const {
-        projectIds,
-        workflowDefinition,
-        definitionConfig: customerProcessConfig,
-      } of processConfiguration) {
-        const businesses = await this.businessService.list({}, projectIds);
+        for (const {
+          projectIds,
+          workflowDefinition,
+          definitionConfig: customerProcessConfig,
+        } of processConfiguration) {
+          const businesses = await this.businessService.list({}, projectIds);
 
-        for (const business of businesses) {
-          try {
-            const businessProcessConfig =
-              business.metadata &&
-              business.metadata.featureConfig &&
-              this.extractDefinitionConfig(business.metadata.featureConfig);
+          for (const business of businesses) {
+            try {
+              const businessProcessConfig =
+                business.metadata &&
+                business.metadata.featureConfig &&
+                this.extractDefinitionConfig(business.metadata.featureConfig);
 
-            const { options: processConfig } = (businessProcessConfig || customerProcessConfig)!;
-            const intervalInDays = processConfig.intervalInDays;
-            const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
+              const { options: processConfig } = (businessProcessConfig || customerProcessConfig)!;
+              const intervalInDays = processConfig.intervalInDays;
+              const lastReceivedReport = await this.findLastBusinessReport(business, projectIds);
 
-            if (!lastReceivedReport) {
-              this.logger.debug(`No initial report found for business: ${business.id}`);
+              if (!lastReceivedReport) {
+                this.logger.debug(`No initial report found for business: ${business.id}`);
 
-              continue;
+                continue;
+              }
+
+              const lastReportFinishedDate = lastReceivedReport.createdAt;
+              const dateToRunReport = new Date(
+                new Date().setTime(
+                  lastReportFinishedDate.getTime() + intervalInDays * 24 * 60 * 60 * 1000,
+                ),
+              );
+
+              if (dateToRunReport <= new Date()) {
+                await this.invokeOngoingAuditReport({
+                  business: business as Business & {
+                    metadata?: { featureConfig?: Record<string, TCustomerFeatures> };
+                  },
+                  workflowDefinitionConfig: processConfig,
+                  workflowDefinitionId: workflowDefinition.id,
+                  currentProjectId: business.projectId,
+                  projectIds: projectIds,
+                  lastReportId: lastReceivedReport.reportId,
+                  checkTypes: processConfig?.checkTypes,
+                  reportType: this.processFeatureName,
+                });
+              }
+            } catch (error) {
+              this.logger.error(
+                `Failed to Invoke Ongoing Report for businessId: ${
+                  business.id
+                } - An error occurred: ${isErrorWithMessage(error) && error.message}`,
+              );
             }
-
-            const lastReportFinishedDate = lastReceivedReport.createdAt;
-            const dateToRunReport = new Date(
-              new Date().setTime(
-                lastReportFinishedDate.getTime() + intervalInDays * 24 * 60 * 60 * 1000,
-              ),
-            );
-
-            if (dateToRunReport <= new Date()) {
-              await this.invokeOngoingAuditReport({
-                business: business as Business & {
-                  metadata?: { featureConfig?: Record<string, TCustomerFeatures> };
-                },
-                workflowDefinitionConfig: processConfig,
-                workflowDefinitionId: workflowDefinition.id,
-                currentProjectId: business.projectId,
-                projectIds: projectIds,
-                lastReportId: lastReceivedReport.reportId,
-                checkTypes: processConfig?.checkTypes,
-                reportType: this.processFeatureName,
-              });
-            }
-          } catch (error) {
-            this.logger.error(
-              `Failed to Invoke Ongoing Report for businessId: ${
-                business.id
-              } - An error occurred: ${isErrorWithMessage(error) && error.message}`,
-            );
           }
         }
+      } catch (error) {
+        this.logger.error(`An error occurred: ${isErrorWithMessage(error) && error.message}`);
+      } finally {
+        const lockReleased = await this.prisma.releaseLock(transaction, this.lockKey);
+
+        if (!lockReleased) {
+          this.sentryService.captureException(new Error(`Failed to release lock: ${this.lockKey}`));
+        }
       }
-    } catch (error) {
-      this.logger.error(`An error occurred: ${isErrorWithMessage(error) && error.message}`);
-    } finally {
-      await this.prisma.releaseLock(this.lockKey);
-    }
+    });
   }
 
   private async findLastBusinessReport(business: Business, projectIds: TProjectIds) {

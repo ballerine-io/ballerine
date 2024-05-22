@@ -1,12 +1,12 @@
-import qs from 'qs';
 import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
-import { z } from 'zod';
-import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
-import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
+import { env } from '@/common/env/env';
 import { TObjectValues } from '@/common/types';
 import { getOriginUrl } from '@/common/utils/get-origin-url/get-url-origin';
-import { env } from '@/common/env/env';
+import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
+import { ObjectWithIdSchema } from '@/lib/zod/utils/object-with-id/object-with-id';
+import qs from 'qs';
+import { z } from 'zod';
 
 export const AlertSeverity = {
   CRITICAL: 'critical',
@@ -72,32 +72,34 @@ export type TAlertState = (typeof AlertStates)[number];
 
 export type TAlertStates = typeof AlertStates;
 
-export const AlertsListSchema = z.array(
-  ObjectWithIdSchema.extend({
-    dataTimestamp: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-    subject: ObjectWithIdSchema.extend({
-      name: z.string(),
-      correlationId: z.string(),
-      type: z.enum(['business', 'counterparty']),
-    }),
-    severity: z.enum(AlertSeverities),
+export const AlertItemSchema = ObjectWithIdSchema.extend({
+  dataTimestamp: z.string().datetime(),
+  updatedAt: z.string().datetime(),
+  subject: ObjectWithIdSchema.extend({
+    name: z.string(),
     correlationId: z.string(),
-    alertDetails: z.string(),
-    // amountOfTxs: z.number(),
-    assignee: ObjectWithIdSchema.extend({
-      fullName: z.string(),
-      avatarUrl: z.string().nullable().optional(),
-    })
-      .nullable()
-      .default(null),
-    status: z.enum(AlertStatuses),
-    decision: z.enum(AlertStates).nullable().default(null),
-    counterpartyId: z.string().nullable().default(null),
+    type: z.enum(['business', 'counterparty']),
   }),
-);
+  severity: z.enum(AlertSeverities),
+  correlationId: z.string(),
+  alertDetails: z.string(),
+  // amountOfTxs: z.number(),
+  assignee: ObjectWithIdSchema.extend({
+    fullName: z.string(),
+    avatarUrl: z.string().nullable().optional(),
+  })
+    .nullable()
+    .default(null),
+  status: z.enum(AlertStatuses),
+  decision: z.enum(AlertStates).nullable().default(null),
+  counterpartyId: z.string().nullable().default(null),
+});
 
+export const AlertsListSchema = z.array(AlertItemSchema);
+
+export type TAlertItem = z.output<typeof AlertItemSchema>;
 export type TAlertsList = z.output<typeof AlertsListSchema>;
+export type AlertEntityType = 'transaction' | 'business';
 
 export const fetchAlerts = async (params: {
   orderBy: string;
@@ -106,11 +108,17 @@ export const fetchAlerts = async (params: {
     size: number;
   };
   filter: Record<string, unknown>;
+  entityType: AlertEntityType;
 }) => {
   const queryParams = qs.stringify(params, { encode: false });
+  let url = `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts?${queryParams}`;
+
+  if (params.entityType === 'business') {
+    url = `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts/business-report?${queryParams}`;
+  }
 
   const [alerts, error] = await apiClient({
-    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts?${queryParams}`,
+    url,
     method: Method.GET,
     schema: AlertsListSchema,
   });

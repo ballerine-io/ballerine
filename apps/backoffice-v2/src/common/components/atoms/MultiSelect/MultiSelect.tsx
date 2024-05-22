@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useState } from 'react';
+import { Separator } from '@/common/components/atoms/Separator/Separator';
 import {
   Badge,
   Button,
@@ -9,13 +9,13 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-  ctw,
   Popover,
   PopoverContent,
   PopoverTrigger,
+  ctw,
 } from '@ballerine/ui';
 import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons';
-import { Separator } from '@/common/components/atoms/Separator/Separator';
+import { ReactNode, useCallback, useState } from 'react';
 
 interface IMultiSelectProps<
   TOption extends {
@@ -63,7 +63,7 @@ export const MultiSelect = <
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 border">
-          <PlusCircledIcon className="mr-2 h-4 w-4" />
+          <PlusCircledIcon className="size-4 mr-2" />
           {title}
           {selected?.length > 0 && (
             <>
@@ -107,13 +107,13 @@ export const MultiSelect = <
                   <CommandItem key={option.value} onSelect={() => onSelectChange(option.value)}>
                     <div
                       className={ctw(
-                        'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                        'size-4 mr-2 flex items-center justify-center rounded-sm border border-primary',
                         isSelected
                           ? 'bg-primary text-primary-foreground'
                           : 'opacity-50 [&_svg]:invisible',
                       )}
                     >
-                      <CheckIcon className={ctw('h-4 w-4')} />
+                      <CheckIcon className={ctw('size-4')} />
                     </div>
                     {option.icon}
                     <span>{option.label}</span>
