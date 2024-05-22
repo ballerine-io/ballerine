@@ -1543,8 +1543,6 @@ describe('AlertService', () => {
 
         expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
 
-        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
-
         expect(alerts[0]?.executionDetails).toMatchObject({
           checkpoint: {
             hash: expect.any(String),
