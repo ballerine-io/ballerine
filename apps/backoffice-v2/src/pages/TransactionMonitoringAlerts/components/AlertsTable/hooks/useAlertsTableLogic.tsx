@@ -23,6 +23,10 @@ export const useAlertsTableLogic = ({ data }: IUseAlertsTableLogic) => {
     const itemId = cell.id.replace(`_${cell.column.id}`, '');
     const item = data.find(item => item.id === itemId);
 
+    if (cell.column.id === 'select') {
+      return children;
+    }
+
     return (
       <Link
         to={`/${locale}/transaction-monitoring/alerts/${itemId}${search}&businessId=${
