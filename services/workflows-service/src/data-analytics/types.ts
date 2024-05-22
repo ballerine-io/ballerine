@@ -1,6 +1,6 @@
+import { TProjectId } from '@/types';
 import { TransactionDirection, PaymentMethod, TransactionRecordType } from '@prisma/client';
 import { AggregateType, TIME_UNITS } from './consts';
-import { TProjectId } from '@/types';
 
 export type InlineRule = {
   id: string;
@@ -28,6 +28,11 @@ export type InlineRule = {
     }
   | {
       fnName: 'evaluateDormantAccount';
+      options: Omit<TDormantAccountOptions, 'projectId'>;
+    }
+  | {
+      fnName: 'evaluateHighVelocityHistoricAverage';
+      options: Omit<HighVelocityHistoricAverageOptions, 'projectId'>;
     }
 );
 
@@ -41,7 +46,7 @@ export type TExcludedCounterparty = {
 export type TimeUnit = (typeof TIME_UNITS)[keyof typeof TIME_UNITS];
 
 export type TransactionsAgainstDynamicRulesType = {
-  projectId: string;
+  projectId: TProjectId;
   havingAggregate?: TAggregations;
   amountBetween?: { min: number; max: number };
   timeAmount?: number;
@@ -57,7 +62,7 @@ export type TransactionsAgainstDynamicRulesType = {
 };
 
 export type HighTransactionTypePercentage = {
-  projectId: string;
+  projectId: TProjectId;
   transactionType: TransactionRecordType;
   subjectColumn: 'counterpartyOriginatorId' | 'counterpartyBeneficiaryId';
   minimumCount: number;
@@ -67,7 +72,7 @@ export type HighTransactionTypePercentage = {
 };
 
 export type TCustomersTransactionTypeOptions = {
-  projectId: string;
+  projectId: TProjectId;
   transactionType?: TransactionRecordType[] | readonly TransactionRecordType[];
   threshold?: number;
   paymentMethods?: PaymentMethod[] | readonly PaymentMethod[];
@@ -78,7 +83,7 @@ export type TCustomersTransactionTypeOptions = {
 };
 
 export type TransactionLimitHistoricAverageOptions = {
-  projectId: string;
+  projectId: TProjectId;
   transactionDirection: TransactionDirection;
   paymentMethod: {
     value: PaymentMethod;
@@ -93,4 +98,28 @@ export type TPeerGroupTransactionAverageOptions = TransactionLimitHistoricAverag
   customerType?: string;
   timeUnit?: TimeUnit;
   timeAmount?: number;
+};
+
+export type TDormantAccountOptions = {
+  projectId: TProjectId;
+  timeAmount: number;
+  timeUnit: TimeUnit;
+};
+
+export type HighVelocityHistoricAverageOptions = {
+  projectId: TProjectId;
+  transactionDirection: TransactionDirection;
+  transactionFactor: number;
+  minimumCount: number;
+  paymentMethod: {
+    value: PaymentMethod;
+    operator: '=' | '!=';
+  };
+  activeUserPeriod: {
+    timeAmount: number;
+  };
+  lastDaysPeriod: {
+    timeAmount: number;
+  };
+  timeUnit: TimeUnit;
 };

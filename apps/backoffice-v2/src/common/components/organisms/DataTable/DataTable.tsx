@@ -60,6 +60,7 @@ export interface IDataTableProps<TData, TValue = any> {
     row?: ComponentProps<typeof TableRow>;
     body?: ComponentProps<typeof TableBody>;
     cell?: ComponentProps<typeof TableCell>;
+    noDataCell?: ComponentProps<typeof TableCell>;
     caption?: ComponentProps<typeof TableCaption>;
   };
 
@@ -185,7 +186,7 @@ export const DataTable = <TData extends RowData, TValue = any>({
   });
 
   return (
-    <div className="d-full relative overflow-auto rounded-md border bg-white shadow">
+    <div className="relative overflow-auto rounded-md border bg-white shadow">
       <ScrollArea orientation="both" {...props?.scroll}>
         <Table {...props?.table}>
           {caption && (
@@ -293,8 +294,8 @@ export const DataTable = <TData extends RowData, TValue = any>({
               >
                 <TableCell
                   colSpan={columns?.length}
-                  {...props?.cell}
-                  className={ctw('!py-px !pl-3.5', props?.cell?.className)}
+                  {...props?.noDataCell}
+                  className={ctw('p-4', props?.noDataCell?.className)}
                 >
                   No results.
                 </TableCell>
