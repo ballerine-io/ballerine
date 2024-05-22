@@ -6,23 +6,23 @@ import { plainToClass } from 'class-transformer';
 import type { Request } from 'express';
 import * as errors from '../errors';
 // import * as nestAccessControl from 'nest-access-control';
-import { BusinessFindManyArgs } from './dtos/business-find-many-args';
-import { BusinessWhereUniqueInput } from './dtos/business-where-unique-input';
+import { BusinessInformation } from '@/business/dtos/business-information';
+import { BusinessUpdateDto } from '@/business/dtos/business.update';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
+import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
+import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import type { TProjectId, TProjectIds } from '@/types';
+import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definition-find-many-args';
+import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
+import { WorkflowDefinitionModel } from '@/workflow/workflow-definition.model';
+import { WorkflowService } from '@/workflow/workflow.service';
 import { BusinessModel } from './business.model';
 import { BusinessService } from './business.service';
-import { isRecordNotFoundError } from '@/prisma/prisma.util';
 import { BusinessCreateDto } from './dtos/business-create';
-import { WorkflowDefinitionModel } from '@/workflow/workflow-definition.model';
-import { WorkflowDefinitionFindManyArgs } from '@/workflow/dtos/workflow-definition-find-many-args';
-import { WorkflowService } from '@/workflow/workflow.service';
-import { makeFullWorkflow } from '@/workflow/utils/make-full-workflow';
-import { BusinessUpdateDto } from '@/business/dtos/business.update';
-import { BusinessInformation } from '@/business/dtos/business-information';
-import { UseKeyAuthOrSessionGuard } from '@/common/decorators/use-key-auth-or-session-guard.decorator';
-import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
-import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import type { TProjectId, TProjectIds } from '@/types';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { BusinessFindManyArgs } from './dtos/business-find-many-args';
+import { BusinessWhereUniqueInput } from './dtos/business-where-unique-input';
 
 @swagger.ApiTags('Businesses')
 @common.Controller('external/businesses')
@@ -86,7 +86,8 @@ export class BusinessControllerExternal {
   @swagger.ApiOkResponse({ type: BusinessModel })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
   @swagger.ApiForbiddenResponse()
-  @UseCustomerAuthGuard()
+  // @UseCustomerAuthGuard()
+  @UseKeyAuthOrSessionGuard()
   async getById(
     @common.Param() params: BusinessWhereUniqueInput,
     @ProjectIds() projectIds: TProjectIds,

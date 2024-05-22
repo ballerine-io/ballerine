@@ -14,6 +14,7 @@ import {
 import { BusinessReportService } from '@/business-report/business-report.service';
 import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
 import { WorkflowService } from '@/workflow/workflow.service';
+import { SentryService } from '@/sentry/sentry.service';
 
 describe('OngoingMonitoringCron', () => {
   let service: OngoingMonitoringCron;
@@ -27,13 +28,14 @@ describe('OngoingMonitoringCron', () => {
     const module = await Test.createTestingModule({
       providers: [
         OngoingMonitoringCron,
-        { provide: PrismaService, useValue: mockPrismaService() },
+        PrismaService,
         { provide: AppLoggerService, useValue: mockLoggerService() },
         { provide: CustomerService, useValue: mockCustomerService() },
         { provide: BusinessService, useValue: mockBusinessService() },
         { provide: WorkflowService, useValue: mockWorkflowService },
         { provide: WorkflowDefinitionService, useValue: mockWorkflowDefinitionService },
         { provide: BusinessReportService, useValue: mockBusinessReportService },
+        { provide: SentryService, useValue: mockSentryService() },
       ],
     }).compile();
 
@@ -46,7 +48,6 @@ describe('OngoingMonitoringCron', () => {
 
   describe('handleCron', () => {
     it('should process businesses correctly when the lock is acquired', async () => {
-      jest.spyOn(prismaService, 'acquireLock').mockResolvedValue(true);
       jest.spyOn(customerService, 'list').mockResolvedValue(mockCustomers());
       jest.spyOn(businessService, 'list').mockResolvedValue(mockBusinesses());
       // Mock additional service methods as needed
@@ -82,6 +83,9 @@ describe('OngoingMonitoringCron', () => {
   const mockPrismaService = () => ({
     acquireLock: jest.fn(),
     releaseLock: jest.fn(),
+    $transaction: jest.fn(async transactionFunction => {
+      return mockPrismaService;
+    }),
   });
 
   const mockWorkflowService = {
@@ -96,6 +100,10 @@ describe('OngoingMonitoringCron', () => {
 
   const mockBusinessService = () => ({
     list: jest.fn(),
+  });
+
+  const mockSentryService = () => ({
+    captureException: jest.fn(),
   });
 
   const mockLoggerService = () => ({

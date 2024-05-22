@@ -1,8 +1,8 @@
-import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
+import { TRouteWithChildren, TRoutes } from '@/Router/types';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
-import { useCallback, useMemo } from 'react';
+import { useFiltersQuery } from '@/domains/filters/hooks/queries/useFiltersQuery/useFiltersQuery';
 import { Building, Goal, Users } from 'lucide-react';
-import { TRoutes, TRouteWithChildren } from '@/Router/types';
+import { useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
 export const useNavbarLogic = () => {
@@ -20,13 +20,19 @@ export const useNavbarLogic = () => {
     {
       text: 'Businesses',
       icon: <Building size={20} />,
-      children:
-        businessesFilters?.map(({ id, name }) => ({
+      children: [
+        ...(businessesFilters?.map(({ id, name }) => ({
           filterId: id,
           text: name,
           href: `/en/case-management/entities?filterId=${id}`,
           key: `nav-item-${id}`,
-        })) ?? [],
+        })) ?? []),
+        {
+          text: 'Ongoing Moniotring',
+          href: `/en/businesses/alerts`,
+          key: 'nav-item-business-alerts',
+        },
+      ],
       key: 'nav-item-businesses',
     },
     {

@@ -1,28 +1,50 @@
-import { z } from 'zod';
 import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
+import { z } from 'zod';
 
 export const BusinessReportSchema = z
   .object({
+    riskScore: z.number(),
     report: z.object({
       reportFileId: z.string(),
+      reportId: z.string(),
     }),
+    createdAt: z.string(),
   })
   .optional();
+
+export type TBusinessReport = z.infer<typeof BusinessReportSchema>;
+
+export const fetchLatestBusinessReport = async ({
+  businessId,
+  reportType,
+}: {
+  businessId: string;
+  reportType: 'MERCHANT_REPORT_T1' | ('ONGOING_MERCHANT_REPORT_T1' & (string & {}));
+}) => {
+  const [businessReports, error] = await apiClient({
+    endpoint: `business-reports/latest?businessId=${businessId}&type=${reportType}`,
+    method: Method.GET,
+    schema: BusinessReportSchema,
+  });
+  console.log({ error });
+
+  return handleZodError(error, businessReports);
+};
 
 export const fetchBusinessReports = async ({
   businessId,
   reportType,
 }: {
   businessId: string;
-  reportType: 'MERCHANT_REPORT_T1' & (string & {});
+  reportType: 'MERCHANT_REPORT_T1' | ('ONGOING_MERCHANT_REPORT_T1' & (string & {}));
 }) => {
-  const [filter, error] = await apiClient({
-    endpoint: `business-reports/latest?businessId=${businessId}&type=${reportType}`,
+  const [businessReports, error] = await apiClient({
+    endpoint: `business-reports/?businessId=${businessId}&type=${reportType}`,
     method: Method.GET,
-    schema: BusinessReportSchema,
+    schema: z.array(BusinessReportSchema),
   });
 
-  return handleZodError(error, filter);
+  return handleZodError(error, businessReports);
 };

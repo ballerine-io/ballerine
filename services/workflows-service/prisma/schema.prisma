@@ -714,13 +714,13 @@ enum MonitoringType {
 }
 
 model AlertDefinition {
-  id          String  @id @default(cuid())
-  crossEnvKey String? @unique
-  correlationId     String
-  monitoringType    MonitoringType
-  name        String
-  enabled     Boolean @default(true)
-  description String?
+  id             String         @id @default(cuid())
+  crossEnvKey    String?        @unique
+  correlationId  String
+  monitoringType MonitoringType
+  name           String
+  enabled        Boolean        @default(true)
+  description    String?
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
@@ -839,17 +839,17 @@ model Counterparty {
 }
 
 model BusinessReport {
-  id     String             @id @default(cuid())
-  type   BusinessReportType
-  reportId String           @unique
-  report Json
+  id       String             @id @default(cuid())
+  type     BusinessReportType
+  reportId String             @unique
+  report   Json
 
   riskScore  Int
   businessId String
   business   Business @relation(fields: [businessId], references: [id])
 
-  projectId  String
-  project    Project @relation(fields: [projectId], references: [id])
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt

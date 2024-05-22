@@ -666,7 +666,7 @@ export const getAlertDefinitionCreateData = (
     inlineRule,
     correlationId: id,
     name: id,
-    rulesetId: `set-${id}`,
+    rulesetId: `set-${String(id)}`,
     description: description,
     ruleId: id,
     createdBy: createdBy,

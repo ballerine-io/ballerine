@@ -1,10 +1,10 @@
 import { SheetContent } from '@/common/components/atoms/Sheet';
 import { Sheet } from '@/common/components/atoms/Sheet/Sheet';
-import React, { FunctionComponent, ReactNode } from 'react';
+import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
 import { TTransactionsList } from '@/domains/transactions/fetchers';
 import { ExpandedTransactionDetails } from '@/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisSheet/ExpandedTransactionDetails';
 import { columns } from '@/pages/TransactionMonitoringAlertsAnalysis/components/AlertAnalysisSheet/columns';
-import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
+import { FunctionComponent, ReactNode } from 'react';
 
 export interface IAlertAnalysisProps {
   onOpenStateChange: () => void;

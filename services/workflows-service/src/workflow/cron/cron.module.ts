@@ -4,9 +4,10 @@ import { CustomerModule } from '@/customer/customer.module';
 import { OngoingMonitoringCron } from '@/workflow/cron/ongoing-monitoring.cron';
 import { WorkflowModule } from '@/workflow/workflow.module';
 import { Module } from '@nestjs/common';
+import { SentryModule } from '@/sentry/sentry.module';
 
 @Module({
-  imports: [WorkflowModule, BusinessModule, CustomerModule, BusinessReportModule],
+  imports: [WorkflowModule, BusinessModule, CustomerModule, BusinessReportModule, SentryModule],
   providers: [OngoingMonitoringCron],
 })
 export class CronModule {}

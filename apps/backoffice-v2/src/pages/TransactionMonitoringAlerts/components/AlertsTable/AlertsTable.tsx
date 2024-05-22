@@ -1,8 +1,8 @@
-import React, { FunctionComponent } from 'react';
-import { IAlertsTableProps } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/interfaces';
 import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
-import { columns } from './columns';
 import { useAlertsTableLogic } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/hooks/useAlertsTableLogic';
+import { IAlertsTableProps } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable/interfaces';
+import { FunctionComponent } from 'react';
+import { columns } from './columns';
 
 export const AlertsTable: FunctionComponent<IAlertsTableProps> = ({ data }) => {
   const { Cell } = useAlertsTableLogic({ data });

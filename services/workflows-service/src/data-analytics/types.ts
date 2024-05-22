@@ -1,9 +1,10 @@
+import { MerchantAlertLabel } from '@/alert/consts';
 import { TProjectId } from '@/types';
-import { TransactionDirection, PaymentMethod, TransactionRecordType } from '@prisma/client';
+import { PaymentMethod, TransactionDirection, TransactionRecordType } from '@prisma/client';
 import { AggregateType, TIME_UNITS } from './consts';
 
 export type InlineRule = {
-  id: string;
+  id: keyof typeof MerchantAlertLabel | string;
   subjects: string[] | readonly string[];
 } & (
   | {
