@@ -1,4 +1,3 @@
-import { svgToPng } from '@/common/utils/svg-to-png/svg-to-png';
 import { TCustomer } from '@/domains/customer/fetchers';
 import { useCustomerQuery } from '@/domains/customer/hook/queries/useCustomerQuery/userCustomerQuery';
 import { TWorkflowById } from '@/domains/workflows/fetchers';
@@ -32,7 +31,6 @@ export const useCaseOptionsLogic = () => {
   const { data: customer } = useCustomerQuery();
 
   const genereateAndDownloadPDFCertificate = useCallback(async () => {
-    await svgToPng(customer?.logoImageUri || '').then(result => console.log(result));
     try {
       setIsGeneratingPDF(true);
 
