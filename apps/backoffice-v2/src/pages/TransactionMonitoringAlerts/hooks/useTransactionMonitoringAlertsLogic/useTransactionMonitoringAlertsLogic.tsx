@@ -1,16 +1,16 @@
-import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
-import { getAlertsSearchSchema } from '@/pages/TransactionMonitoringAlerts/get-alerts-search-schema';
-import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
-import { useAlertsQuery } from '@/domains/alerts/hooks/queries/useAlertsQuery/useAlertsQuery';
-import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
-import { useMemo } from 'react';
 import { usePagination } from '@/common/hooks/usePagination/usePagination';
 import { useSearch } from '@/common/hooks/useSearch/useSearch';
+import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
+import { getAlertsSearchSchema } from '@/domains/alerts/helpers/get-alerts-search-schema';
 import { useAlertCorrelationIdsQuery } from '@/domains/alerts/hooks/queries/useAlertLabelsQuery/useAlertLabelsQuery';
+import { useAlertsQuery } from '@/domains/alerts/hooks/queries/useAlertsQuery/useAlertsQuery';
+import { useAuthenticatedUserQuery } from '@/domains/auth/hooks/queries/useAuthenticatedUserQuery/useAuthenticatedUserQuery';
+import { useUsersQuery } from '@/domains/users/hooks/queries/useUsersQuery/useUsersQuery';
+import { useMemo } from 'react';
 
 export const useTransactionMonitoringAlertsLogic = () => {
   const { data: session } = useAuthenticatedUserQuery();
-  const AlertsSearchSchema = getAlertsSearchSchema(session?.user?.id);
+  const AlertsSearchSchema = getAlertsSearchSchema();
   const [{ filter, sortBy, sortDir, page, pageSize, search: searchValue }] =
     useZodSearchParams(AlertsSearchSchema);
   const { data: alerts, isLoading: isLoadingAlerts } = useAlertsQuery({
@@ -20,6 +20,7 @@ export const useTransactionMonitoringAlertsLogic = () => {
     search: searchValue,
     sortDir,
     sortBy,
+    entityType: 'transaction',
   });
   const { data: assignees } = useUsersQuery();
   const sortedAssignees = useMemo(

@@ -1,26 +1,26 @@
-import { z } from 'zod';
 import { isErrorWithCode } from '@ballerine/common';
-import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form } from '../../common/components/organisms/Form/Form';
-import { Button } from '../../common/components/atoms/Button/Button';
-import { Input } from '../../common/components/atoms/Input/Input';
-import { Card } from '../../common/components/atoms/Card/Card';
-import { BallerineLogo } from '../../common/components/atoms/icons';
-import { useSignInMutation } from '../../domains/auth/hooks/mutations/useSignInMutation/useSignInMutation';
 import { FunctionComponent, useCallback } from 'react';
-import { useAuthContext } from '../../domains/auth/context/AuthProvider/hooks/useAuthContext/useAuthContext';
-import { useIsAuthenticated } from '../../domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
-import { CardHeader } from '../../common/components/atoms/Card/Card.Header';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Button } from '../../common/components/atoms/Button/Button';
+import { Card } from '../../common/components/atoms/Card/Card';
 import { CardContent } from '../../common/components/atoms/Card/Card.Content';
+import { CardHeader } from '../../common/components/atoms/Card/Card.Header';
+import { ErrorAlert } from '../../common/components/atoms/ErrorAlert/ErrorAlert';
+import { Input } from '../../common/components/atoms/Input/Input';
+import { BallerineLogo } from '../../common/components/atoms/icons';
+import { FullScreenLoader } from '../../common/components/molecules/FullScreenLoader/FullScreenLoader';
+import { Form } from '../../common/components/organisms/Form/Form';
+import { FormControl } from '../../common/components/organisms/Form/Form.Control';
 import { FormField } from '../../common/components/organisms/Form/Form.Field';
 import { FormItem } from '../../common/components/organisms/Form/Form.Item';
 import { FormLabel } from '../../common/components/organisms/Form/Form.Label';
-import { FormControl } from '../../common/components/organisms/Form/Form.Control';
 import { FormMessage } from '../../common/components/organisms/Form/Form.Message';
 import { env } from '../../common/env/env';
-import { ErrorAlert } from '../../common/components/atoms/ErrorAlert/ErrorAlert';
-import { FullScreenLoader } from '../../common/components/molecules/FullScreenLoader/FullScreenLoader';
+import { useAuthContext } from '../../domains/auth/context/AuthProvider/hooks/useAuthContext/useAuthContext';
+import { useIsAuthenticated } from '../../domains/auth/context/AuthProvider/hooks/useIsAuthenticated/useIsAuthenticated';
+import { useSignInMutation } from '../../domains/auth/hooks/mutations/useSignInMutation/useSignInMutation';
 
 export const SignIn: FunctionComponent = () => {
   const SignInSchema = z.object({
@@ -55,6 +55,8 @@ export const SignIn: FunctionComponent = () => {
   });
 
   // Handles a flash of content on sign in
+  console.log({ isAuthenticated });
+
   if (isAuthenticated) return <FullScreenLoader />;
 
   return (

@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { getErrorMessageFromPrismaError } from '@/common/filters/HttpExceptions.filter';
+import { isPrismaClientKnownRequestError } from '@/prisma/prisma.util';
+import { SentryService } from '@/sentry/sentry.service';
+import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
 import { TransactionRepository } from '@/transaction/transaction.repository';
+import { TProjectId } from '@/types';
+import { Injectable } from '@nestjs/common';
+import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { TransactionCreateDto } from './dtos/transaction-create.dto';
 import { TransactionEntityMapper } from './transaction.mapper';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { GetTransactionsDto } from './dtos/get-transactions.dto';
-import { TProjectId } from '@/types';
-import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
-import { SentryService } from '@/sentry/sentry.service';
-import { isPrismaClientKnownRequestError } from '@/prisma/prisma.util';
-import { getErrorMessageFromPrismaError } from '@/common/filters/HttpExceptions.filter';
 
 @Injectable()
 export class TransactionService {
@@ -50,6 +50,7 @@ export class TransactionService {
         }
 
         let errorMessage = 'Unknown error';
+
         if (isPrismaClientKnownRequestError(error)) {
           errorMessage = getErrorMessageFromPrismaError(error);
         } else {

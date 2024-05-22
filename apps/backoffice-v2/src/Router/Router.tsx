@@ -1,28 +1,31 @@
-import React, { FunctionComponent } from 'react';
+import { RouteError } from '@/common/components/atoms/RouteError/RouteError';
 import { env } from '@/common/env/env';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { AuthenticatedLayout } from '@/domains/auth/components/AuthenticatedLayout';
+import { authenticatedLayoutLoader } from '@/domains/auth/components/AuthenticatedLayout/AuthenticatedLayout.loader';
+import { UnauthenticatedLayout } from '@/domains/auth/components/UnauthenticatedLayout';
+import { unauthenticatedLayoutLoader } from '@/domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
+import { Businesses } from '@/pages/Businesses/Businesses';
+import { BusinessesAlerts } from '@/pages/BusinessesAlerts/BusinessesAlerts.page';
+import { BusinessesAlertsAnalysisPage } from '@/pages/BusinessesAlertsAnalysis/BusinessesAlertsAnalysis.page';
+import { CaseManagement } from '@/pages/CaseManagement/CaseManagement.page';
+import { Document } from '@/pages/Document/Document.page';
+import { entitiesLoader } from '@/pages/Entities/Entities.loader';
+import { Entities } from '@/pages/Entities/Entities.page';
+import { entityLoader } from '@/pages/Entity/Entity.loader';
+import { Entity } from '@/pages/Entity/Entity.page';
+import { Locale } from '@/pages/Locale/Locale.page';
+import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
+import { Individuals } from '@/pages/Profiles/Individuals/Individuals.page';
+import { Profiles } from '@/pages/Profiles/Profiles.page';
 import { RootError } from '@/pages/Root/Root.error';
+import { rootLoader } from '@/pages/Root/Root.loader';
 import { Root } from '@/pages/Root/Root.page';
 import { SignIn } from '@/pages/SignIn/SignIn.page';
-import { Entity } from '@/pages/Entity/Entity.page';
-import { Entities } from '@/pages/Entities/Entities.page';
-import { RouteError } from '@/common/components/atoms/RouteError/RouteError';
-import { CaseManagement } from '@/pages/CaseManagement/CaseManagement.page';
-import { rootLoader } from '@/pages/Root/Root.loader';
-import { entitiesLoader } from '@/pages/Entities/Entities.loader';
-import { authenticatedLayoutLoader } from '@/domains/auth/components/AuthenticatedLayout/AuthenticatedLayout.loader';
-import { entityLoader } from '@/pages/Entity/Entity.loader';
-import { AuthenticatedLayout } from '@/domains/auth/components/AuthenticatedLayout';
-import { UnauthenticatedLayout } from '@/domains/auth/components/UnauthenticatedLayout';
-import { Locale } from '@/pages/Locale/Locale.page';
-import { unauthenticatedLayoutLoader } from '@/domains/auth/components/UnauthenticatedLayout/UnauthenticatedLayout.loader';
-import { Document } from '@/pages/Document/Document.page';
-import { NotFoundRedirect } from '@/pages/NotFound/NotFound';
-import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
 import { TransactionMonitoring } from '@/pages/TransactionMonitoring/TransactionMonitoring';
+import { TransactionMonitoringAlerts } from '@/pages/TransactionMonitoringAlerts/TransactionMonitoringAlerts.page';
 import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMonitoringAlertsAnalysis/TransactionMonitoringAlertsAnalysis.page';
-import { Profiles } from '@/pages/Profiles/Profiles.page';
-import { Individuals } from '@/pages/Profiles/Individuals/Individuals.page';
+import { FunctionComponent } from 'react';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 const router = createBrowserRouter([
   {
@@ -115,6 +118,25 @@ const router = createBrowserRouter([
                       {
                         path: '/:locale/transaction-monitoring/alerts/:alertId',
                         element: <TransactionMonitoringAlertsAnalysisPage />,
+                        errorElement: <RouteError />,
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                path: '/:locale/businesses',
+                element: <Businesses />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/businesses/alerts',
+                    element: <BusinessesAlerts />,
+                    errorElement: <RouteError />,
+                    children: [
+                      {
+                        path: '/:locale/businesses/alerts/:alertId',
+                        element: <BusinessesAlertsAnalysisPage />,
                         errorElement: <RouteError />,
                       },
                     ],
