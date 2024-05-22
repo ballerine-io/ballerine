@@ -377,7 +377,8 @@ export const useDocumentBlocks = ({
                     ]) => {
                       const fieldValue = value || (properties?.[title] ?? '');
                       const isEditableDecision = isDoneWithRevision || !decision?.status;
-                      const isEditableType = title === 'type' && !checkIsBusiness(workflow);
+                      const isEditableType =
+                        (title === 'type' && !checkIsBusiness(workflow)) || title !== 'type';
 
                       return {
                         title,
@@ -388,8 +389,8 @@ export const useDocumentBlocks = ({
                         isEditable:
                           isEditableDecision &&
                           caseState.writeEnabled &&
-                          isEditableType &&
-                          checkIsEditable({ isEditable, field: title }),
+                          checkIsEditable({ isEditable, field: title }) &&
+                          isEditableType,
                         dropdownOptions,
                         minimum: formatMinimum,
                         maximum: formatMaximum,

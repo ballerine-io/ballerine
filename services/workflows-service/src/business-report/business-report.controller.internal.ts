@@ -1,13 +1,13 @@
-import { BusinessReportService } from '@/business-report/business-report.service';
-import { GetBusinessReportDto } from '@/business-report/dto/get-business-report.dto';
-import { GetBusinessReportsDto } from '@/business-report/dto/get-business-reports.dto';
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import * as errors from '@/errors';
-import type { TProjectId } from '@/types';
 import * as common from '@nestjs/common';
 import { Query } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
+import type { TProjectId } from '@/types';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import * as errors from '@/errors';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { GetBusinessReportDto } from '@/business-report/dto/get-business-report.dto';
+import { GetBusinessReportsDto } from '@/business-report/dto/get-business-reports.dto';
 
 @common.Controller('internal/business-reports')
 @swagger.ApiExcludeController()
@@ -45,8 +45,6 @@ export class BusinessReportControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
     @Query() searchQueryParams: GetBusinessReportsDto,
   ) {
-    console.log('project id', currentProjectId, searchQueryParams);
-
     return await this.businessReportService.findMany(
       {
         where: {

@@ -1,5 +1,4 @@
 import { AlertDefinitionService } from '@/alert-definition/alert-definition.service';
-import { AlertService } from '@/alert/alert.service';
 import { ProjectAssigneeGuard } from '@/alert/guards/project-assignee.guard';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
@@ -11,9 +10,10 @@ import type { AuthenticatedEntity, TProjectId } from '@/types';
 import { UserData } from '@/user/user-data.decorator';
 import * as common from '@nestjs/common';
 import { Res } from '@nestjs/common';
+import { AlertService } from '@/alert/alert.service';
+
 import * as swagger from '@nestjs/swagger';
 import { Alert, AlertDefinition, MonitoringType } from '@prisma/client';
-import * as express from 'express';
 import * as errors from '../errors';
 import { AlertAssigneeUniqueDto, AlertUpdateResponse } from './dtos/assign-alert.dto';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
@@ -25,6 +25,7 @@ import {
   TAlertTransactionResponse,
   TBulkAssignAlertsResponse,
 } from './types';
+import express from 'express';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Alerts')

@@ -37,7 +37,7 @@ export class OngoingMonitoringCron {
     protected readonly sentryService: SentryService,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleCron() {
     await this.prisma.$transaction(async transaction => {
       const lockAcquired = await this.prisma.acquireLock(transaction, this.lockKey);
