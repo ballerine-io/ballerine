@@ -171,7 +171,7 @@ export class AlertService {
       );
 
       if (alertResultData) {
-        const { reportId, id: businessReportId, businessId, projectId } = businessReport;
+        const { id: businessReportId, businessId, projectId } = businessReport;
         const subjects = { businessId, projectId };
 
         const subjectArray = Object.entries(subjects).map(([key, value]) => ({
@@ -186,7 +186,6 @@ export class AlertService {
           { subjectArray },
           {
             ...alertResultData,
-            reportId,
             businessReportId,
             businessCompanyName,
           },
@@ -194,11 +193,13 @@ export class AlertService {
       }
     });
 
-    const alertCreateArgs = (await Promise.all(alertDefinitionsCheck))
-      .filter(Boolean)
-      .sort((a, b) => this.orderedBySeverity(a[0].defaultSeverity, b[0].defaultSeverity))[0];
+    const evaluatedRulesResults = (await Promise.all(alertDefinitionsCheck)).filter(Boolean);
 
-    return alertCreateArgs && (await this.createAlert(...alertCreateArgs));
+    const alertArgs = evaluatedRulesResults[0];
+
+    if (alertArgs) {
+      return await this.createAlert(...alertArgs);
+    }
   }
 
   private async checkAlert(alertDefinition: AlertDefinition, ...args: any[]) {
@@ -388,6 +389,11 @@ export class AlertService {
         },
       },
       [projectId],
+      {
+        orderBy: {
+          defaultSeverity: 'desc',
+        },
+      },
     );
 
     return alertDefinitions.map(({ correlationId }) => correlationId);

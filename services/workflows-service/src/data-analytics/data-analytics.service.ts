@@ -133,7 +133,12 @@ export class DataAnalyticsService {
       return;
     }
 
-    let ruleResult;
+    let ruleResult:
+      | {
+          severity: AlertSeverity;
+          alertReason: string;
+        }
+      | undefined;
 
     if (maxRiskScoreThreshold && currentRiskScore >= maxRiskScoreThreshold) {
       ruleResult = {
