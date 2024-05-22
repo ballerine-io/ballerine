@@ -145,7 +145,7 @@ model Business {
   project         Project          @relation(fields: [projectId], references: [id])
   Counterparty    Counterparty[]
   businessReports BusinessReport[]
-  alerts          Alert[]
+  alerts     Alert[]
 
   @@unique([projectId, correlationId])
   @@index([companyName])
@@ -851,8 +851,8 @@ model BusinessReport {
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@index([createdAt])
   @@index([businessId])

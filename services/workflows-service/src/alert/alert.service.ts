@@ -1,9 +1,5 @@
-import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { AlertRepository } from '@/alert/alert.repository';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { computeHash } from '@/common/utils/sign/sign';
-import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
-import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
 import * as errors from '@/errors';
 import { PrismaService } from '@/prisma/prisma.service';
 import { isFkConstraintError } from '@/prisma/prisma.util';
@@ -18,11 +14,15 @@ import {
   BusinessReport,
   MonitoringType,
 } from '@prisma/client';
-import _ from 'lodash';
-import { AlertExecutionStatus } from './consts';
 import { CreateAlertDefinitionDto } from './dtos/create-alert-definition.dto';
 import { FindAlertsDto } from './dtos/get-alerts.dto';
+import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
+import _ from 'lodash';
+import { AlertExecutionStatus } from './consts';
+import { computeHash } from '@/common/utils/sign/sign';
 import { TDedupeStrategy, TExecutionDetails } from './types';
+import { CheckRiskScoreOptions, InlineRule } from '@/data-analytics/types';
+import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 
 const DEFAULT_DEDUPE_STRATEGIES = {
   cooldownTimeframeInMinutes: 60 * 24,
@@ -171,7 +171,7 @@ export class AlertService {
       );
 
       if (alertResultData) {
-        const { reportId, id: businessReportId, businessId, projectId } = businessReport;
+        const { id: businessReportId, businessId, projectId } = businessReport;
         const subjects = { businessId, projectId };
 
         const subjectArray = Object.entries(subjects).map(([key, value]) => ({
@@ -186,7 +186,6 @@ export class AlertService {
           { subjectArray },
           {
             ...alertResultData,
-            reportId,
             businessReportId,
             businessCompanyName,
           },
@@ -194,11 +193,13 @@ export class AlertService {
       }
     });
 
-    const alertCreateArgs = (await Promise.all(alertDefinitionsCheck))
-      .filter(Boolean)
-      .sort((a, b) => this.sortBySeverity(a[0].defaultSeverity, b[0].defaultSeverity))[0];
+    const evaluatedRulesResults = (await Promise.all(alertDefinitionsCheck)).filter(Boolean);
 
-    return alertCreateArgs && (await this.createAlert(...alertCreateArgs));
+    const alertArgs = evaluatedRulesResults[0];
+
+    if (alertArgs) {
+      return await this.createAlert(...alertArgs);
+    }
   }
 
   private async checkAlert(alertDefinition: AlertDefinition, ...args: any[]) {
@@ -388,6 +389,11 @@ export class AlertService {
         },
       },
       [projectId],
+      {
+        orderBy: {
+          defaultSeverity: 'desc',
+        },
+      },
     );
 
     return alertDefinitions.map(({ correlationId }) => correlationId);
@@ -404,7 +410,7 @@ export class AlertService {
     );
   }
 
-  sortBySeverity(a: AlertSeverity, b: AlertSeverity) {
+  orderedBySeverity(a: AlertSeverity, b: AlertSeverity) {
     const alertSeverityToNumber = (severity: AlertSeverity) => {
       switch (severity) {
         case AlertSeverity.high:

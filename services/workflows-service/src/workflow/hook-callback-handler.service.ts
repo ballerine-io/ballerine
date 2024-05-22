@@ -150,7 +150,7 @@ export class HookCallbackHandlerService {
     if (!business) throw new BadRequestException('Business not found.');
 
     const currentReportId = reportId as string;
-    const existantBusinessReport = await this.businessReportService.findFirst(
+    const existantBusinessReport = await this.businessReportService.findFirstOrThrow(
       {
         where: {
           businessId: business.id,

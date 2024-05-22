@@ -1,9 +1,5 @@
-import { AppLoggerService } from '@/common/app-logger/app-logger.service';
-import { PrismaService } from '@/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { AlertSeverity, BusinessReport, BusinessReportType, Prisma } from '@prisma/client';
-import { isEmpty } from 'lodash';
-import { AggregateType, TIME_UNITS } from './consts';
+import { PrismaService } from '@/prisma/prisma.service';
 import {
   CheckRiskScoreOptions,
   HighTransactionTypePercentage,
@@ -14,6 +10,10 @@ import {
   TPeerGroupTransactionAverageOptions,
   TransactionsAgainstDynamicRulesType,
 } from './types';
+import { AggregateType, TIME_UNITS } from './consts';
+import { AlertSeverity, BusinessReport, BusinessReportType, Prisma } from '@prisma/client';
+import { AppLoggerService } from '@/common/app-logger/app-logger.service';
+import { isEmpty } from 'lodash';
 
 @Injectable()
 export class DataAnalyticsService {
@@ -133,7 +133,12 @@ export class DataAnalyticsService {
       return;
     }
 
-    let ruleResult;
+    let ruleResult:
+      | {
+          severity: AlertSeverity;
+          alertReason: string;
+        }
+      | undefined;
 
     if (maxRiskScoreThreshold && currentRiskScore >= maxRiskScoreThreshold) {
       ruleResult = {

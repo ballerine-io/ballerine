@@ -440,12 +440,14 @@ export const ALERT_DEFINITIONS = {
         },
         minimumTransactionAmount: 100,
         transactionFactor: 2,
+
         customerType: 'test',
         timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
       },
     },
   },
+
   PGAIAPM: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
@@ -617,8 +619,6 @@ export const getAlertDefinitionCreateData = (
   const id = inlineRule.id;
 
   return {
-    inlineRule,
-    name: id,
     enabled,
     defaultSeverity,
     dedupeStrategy: {
@@ -626,7 +626,9 @@ export const getAlertDefinitionCreateData = (
       ...(dedupeStrategy ?? {}),
     },
     monitoringType: monitoringType ?? MonitoringType.transaction_monitoring,
+    inlineRule,
     correlationId: id,
+    name: id,
     rulesetId: `set-${id}`,
     description: description,
     ruleId: id,
