@@ -31,8 +31,16 @@ export type InlineRule = {
       options: Omit<TDormantAccountOptions, 'projectId'>;
     }
   | {
+      fnName: 'checkMerchantOngoingAlert';
+      options: CheckRiskScoreOptions;
+    }
+  | {
       fnName: 'evaluateHighVelocityHistoricAverage';
       options: Omit<HighVelocityHistoricAverageOptions, 'projectId'>;
+    }
+  | {
+      fnName: 'evaluateMultipleMerchantsOneCounterparty';
+      options: Omit<TMultipleMerchantsOneCounterparty, 'projectId'>;
     }
 );
 
@@ -94,6 +102,12 @@ export type TransactionLimitHistoricAverageOptions = {
   transactionFactor: number;
 };
 
+export type CheckRiskScoreOptions = {
+  increaseRiskScorePercentage?: number;
+  increaseRiskScore?: number;
+  maxRiskScoreThreshold?: number;
+};
+
 export type TPeerGroupTransactionAverageOptions = TransactionLimitHistoricAverageOptions & {
   customerType?: string;
   timeUnit?: TimeUnit;
@@ -121,5 +135,13 @@ export type HighVelocityHistoricAverageOptions = {
   lastDaysPeriod: {
     timeAmount: number;
   };
+  timeUnit: TimeUnit;
+};
+
+export type TMultipleMerchantsOneCounterparty = {
+  projectId: TProjectId;
+  excludedCounterparty?: TExcludedCounterparty;
+  minimumCount: number;
+  timeAmount: number;
   timeUnit: TimeUnit;
 };
