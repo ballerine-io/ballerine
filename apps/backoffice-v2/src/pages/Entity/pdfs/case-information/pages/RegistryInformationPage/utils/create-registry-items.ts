@@ -1,9 +1,7 @@
 import { TRegistryInformationData } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/registry-information.schema';
 import { IRegistryInformationItem } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/types';
 
-export const createRegistryItems = (
-  registryInformationData: TRegistryInformationData,
-): IRegistryInformationItem[] => {
+export const registryItemsAdapter = (registryInformationData: TRegistryInformationData) => {
   const {
     companyName,
     registrationNumber,
@@ -69,5 +67,5 @@ export const createRegistryItems = (
       value: registryPage || '',
       valueType: 'link',
     },
-  ];
+  ] satisfies IRegistryInformationItem[];
 };

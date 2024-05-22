@@ -5,7 +5,7 @@ import { CaseInformationPageSection } from '@/pages/Entity/pdfs/case-information
 import { CaseInformationPageSectionHeader } from '@/pages/Entity/pdfs/case-information/components/CaseInformationPageSectionHeader/CaseInformationPageSectionHeader';
 import { ValueOrNone } from '@/pages/Entity/pdfs/case-information/pages/IndividualSanctionsPage/components/IndividualSanctionsItem/ValueOrNone';
 import { TRegistryInformationData } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/registry-information.schema';
-import { createRegistryItems } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/utils/create-registry-items';
+import { registryItemsAdapter } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/utils/create-registry-items';
 import { Link, Typography, tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
@@ -19,7 +19,7 @@ export const RegistryInformationPage: FunctionComponent<IRegistryInformationPage
 }) => {
   const { companyName, logoUrl } = data;
 
-  const registryItems = createRegistryItems(data);
+  const registryItems = registryItemsAdapter(data);
 
   return (
     <CaseInformationPageContainer>
