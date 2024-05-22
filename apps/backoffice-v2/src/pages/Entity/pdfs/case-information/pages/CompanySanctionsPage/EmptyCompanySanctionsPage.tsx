@@ -6,6 +6,7 @@ import { CaseInformationPageSectionHeader } from '@/pages/Entity/pdfs/case-infor
 import { TEmptyCompanySanctionsPageData } from '@/pages/Entity/pdfs/case-information/pages/CompanySanctionsPage/empty-company-sanctions.schema';
 import { Typography, tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
+import dayjs from 'dayjs';
 import { FunctionComponent } from 'react';
 
 interface IEmptyCompanySanctionsPageProps {
@@ -28,7 +29,7 @@ export const EmptyCompanySanctionsPage: FunctionComponent<IEmptyCompanySanctions
             {/* Company Sanctions section --- start */}
             <CaseInformationPageSectionHeader
               title="Company Sanctions"
-              subtitle={`Check conducted at: ${new Date().toISOString()}`}
+              subtitle={`Check conducted at: ${dayjs().format('D MMM YYYY HH:mm')}`}
             />
             <View style={tw('flex flex-col gap-2')}>
               <View style={tw('flex flex-row')}>

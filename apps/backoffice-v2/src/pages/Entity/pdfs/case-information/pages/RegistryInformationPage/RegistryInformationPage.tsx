@@ -8,6 +8,7 @@ import { TRegistryInformationData } from '@/pages/Entity/pdfs/case-information/p
 import { registryItemsAdapter } from '@/pages/Entity/pdfs/case-information/pages/RegistryInformationPage/utils/create-registry-items';
 import { Link, Typography, tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
+import dayjs from 'dayjs';
 import { FunctionComponent } from 'react';
 
 export interface IRegistryInformationPageProps {
@@ -32,7 +33,7 @@ export const RegistryInformationPage: FunctionComponent<IRegistryInformationPage
             {/* Registry Information section --- start */}
             <CaseInformationPageSectionHeader
               title="Registry Information"
-              subtitle={`Check conducted at: ${new Date().toISOString()}`}
+              subtitle={`Check conducted at: ${dayjs().format('D MMM YYYY HH:mm')}`}
             />
             <View style={tw('flex flex-row gap-4')}>
               <View style={tw('flex flex-col gap-1 w-[80px]')}>
