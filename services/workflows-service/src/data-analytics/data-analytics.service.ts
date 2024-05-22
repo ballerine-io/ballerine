@@ -580,7 +580,7 @@ export class DataAnalyticsService {
           ' AND ',
         )}
       GROUP BY
-        "counterpartyOriginatorId"
+        "tr"."counterpartyOriginatorId"
       HAVING COUNT(distinct "tr"."counterpartyBeneficiaryId") > ${minimumCount};
       `,
     );
