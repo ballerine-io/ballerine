@@ -7,7 +7,7 @@ import { TEmptyIndividualSanctionsPageData } from '@/pages/Entity/pdfs/case-info
 import { Typography, tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
-import poweredByLogo from './assets/title-page-ballerine-logo.png';
+import poweredByLogo from '../../assets/title-page-ballerine-logo.png';
 
 interface IEmptyIndividualSanctionsPageProps {
   data: TEmptyIndividualSanctionsPageData;

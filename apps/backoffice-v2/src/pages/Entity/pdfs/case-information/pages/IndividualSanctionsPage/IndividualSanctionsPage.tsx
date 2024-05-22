@@ -8,7 +8,7 @@ import { TIndividualSanctionsData } from '@/pages/Entity/pdfs/case-information/p
 import { tw } from '@ballerine/react-pdf-toolkit';
 import { View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
-import poweredByLogo from './assets/title-page-ballerine-logo.png';
+import poweredByLogo from '../../assets/title-page-ballerine-logo.png';
 
 interface IIndividualSanctionsPageProps {
   data: TIndividualSanctionsData;
