@@ -9,12 +9,9 @@ import { IndividualSantcionsPagePDF } from '@/pages/Entity/components/Case/compo
 import { RegistryPagePDF } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/registry-page.pdf';
 import { TitlePagePDF } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/title-page.pdf';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
-import { registerFont } from '@ballerine/react-pdf-toolkit';
-import { Document, Font, pdf } from '@react-pdf/renderer';
+import { Document, pdf } from '@react-pdf/renderer';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
-
-registerFont(Font);
 
 const downloadFile = (file: File) => {
   const link = document.createElement('a');
