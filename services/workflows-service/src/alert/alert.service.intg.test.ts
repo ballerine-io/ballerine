@@ -1,4 +1,3 @@
-import { InlineRule } from '@/data-analytics/types';
 import { PrismaService } from './../prisma/prisma.service';
 import {
   AlertDefinition,
@@ -30,6 +29,9 @@ import {
   getAlertDefinitionCreateData,
 } from '../../scripts/alerts/generate-alerts';
 import { InputJsonValue } from '@/types';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { BusinessReportRepository } from '@/business-report/business-report.repository';
+
 type AsyncTransactionFactoryCallback = (
   transactionFactory: TransactionFactory,
 ) => Promise<TransactionFactory | void>;
@@ -54,7 +56,7 @@ const createTransactionsWithCounterpartyAsync = async (
 ) => {
   const counteryparty = await createCounterparty(prismaService, project);
 
-  let baseTransactionFactory = new TransactionFactory({
+  const baseTransactionFactory = new TransactionFactory({
     prisma: prismaService,
     projectId: counteryparty.projectId,
   })
@@ -82,6 +84,8 @@ describe('AlertService', () => {
         ProjectScopeService,
         AlertRepository,
         AlertDefinitionRepository,
+        BusinessReportService,
+        BusinessReportRepository,
         AlertService,
       ],
     }).compile();
@@ -1588,7 +1592,6 @@ describe('AlertService', () => {
     });
   });
 });
-
 const createCounterparty = async (
   prismaService: PrismaService,
   proj?: Pick<Project, 'id'>,

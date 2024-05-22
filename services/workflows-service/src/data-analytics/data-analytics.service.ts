@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import {
-  InlineRule,
-  TransactionsAgainstDynamicRulesType,
-  TCustomersTransactionTypeOptions,
+  CheckRiskScoreOptions,
   HighTransactionTypePercentage,
-  TPeerGroupTransactionAverageOptions,
-  TDormantAccountOptions,
   HighVelocityHistoricAverageOptions,
+  InlineRule,
+  TCustomersTransactionTypeOptions,
+  TDormantAccountOptions,
+  TPeerGroupTransactionAverageOptions,
+  TransactionsAgainstDynamicRulesType,
   TMultipleMerchantsOneCounterparty,
   TExcludedCounterparty,
 } from './types';
 import { AggregateType, TIME_UNITS } from './consts';
-import { Prisma } from '@prisma/client';
+import { AlertSeverity, BusinessReport, BusinessReportType, Prisma } from '@prisma/client';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { isEmpty } from 'lodash';
 
@@ -126,6 +127,118 @@ export class DataAnalyticsService {
       excludedCounterpartyWhereClause,
       excludedCounterpartyJoinClause,
     };
+  }
+
+  async checkMerchantOngoingAlert(
+    businessReport: BusinessReport,
+    {
+      increaseRiskScorePercentage,
+      increaseRiskScore,
+      maxRiskScoreThreshold,
+    }: CheckRiskScoreOptions,
+    alertSeverity: AlertSeverity,
+  ) {
+    const { report, businessId, projectId } = businessReport;
+
+    if (
+      !(
+        report as {
+          data: {
+            previousReport?: unknown;
+          };
+        }
+      ).data.previousReport
+    ) {
+      return;
+    }
+
+    const {
+      data: {
+        summary: { riskScore: currentRiskScore },
+        previousReport: {
+          summary: { riskScore: previousRiskScore },
+          reportType: previousReportType,
+        },
+      },
+    } = report as {
+      data: {
+        summary: {
+          riskScore: number;
+        };
+        previousReport: {
+          summary: {
+            riskScore: number;
+          };
+          reportType: BusinessReportType;
+        };
+      };
+    };
+
+    if (previousReportType !== BusinessReportType.ONGOING_MERCHANT_REPORT_T1) {
+      this.logger.warn(`Previous report type is not ONGOING_MERCHANT_REPORT_T1`);
+
+      return;
+    }
+
+    if (currentRiskScore < previousRiskScore) {
+      return;
+    }
+
+    if (!(maxRiskScoreThreshold || increaseRiskScore || increaseRiskScorePercentage)) {
+      this.logger.warn(`Rule for ${businessId} ${projectId} missing required options`, {
+        maxRiskScoreThreshold,
+        increaseRiskScore,
+        increaseRiskScorePercentage,
+      });
+
+      return;
+    }
+
+    let ruleResult:
+      | {
+          severity: AlertSeverity;
+          alertReason: string;
+        }
+      | undefined;
+
+    if (maxRiskScoreThreshold && currentRiskScore >= maxRiskScoreThreshold) {
+      ruleResult = {
+        severity: alertSeverity,
+        alertReason: `The risk score has exceeded the threshold of ${maxRiskScoreThreshold}`,
+      };
+    }
+
+    if (increaseRiskScore && currentRiskScore - previousRiskScore >= increaseRiskScore) {
+      ruleResult = {
+        severity: alertSeverity,
+        alertReason: `The risk score has been increased by more than ${increaseRiskScore} from previous monitoring`,
+      };
+    }
+
+    if (
+      increaseRiskScorePercentage &&
+      ((currentRiskScore - previousRiskScore) / previousRiskScore) * 100 >=
+        increaseRiskScorePercentage
+    ) {
+      ruleResult = {
+        severity: alertSeverity,
+        alertReason: `The risk score has been significantly increased from previous monitoring`,
+      };
+    }
+
+    if (!ruleResult) {
+      return;
+    }
+
+    const executionDetails = {
+      businessId: businessId,
+      projectId: projectId,
+      riskScore: currentRiskScore,
+      previousRiskScore,
+      ...ruleResult,
+    };
+
+    return executionDetails;
   }
 
   async evaluateTransactionsAgainstDynamicRules({
@@ -331,7 +444,7 @@ export class DataAnalyticsService {
       count("tr"."id") AS "totalTransactionAllTime"
     FROM
       "TransactionRecord" AS "tr"
-    WHERE 
+    WHERE
       "tr"."projectId" = ${projectId}
       AND  "tr"."counterpartyBeneficiaryId" IS NOT NULL
     GROUP BY
@@ -343,7 +456,7 @@ export class DataAnalyticsService {
     transactions
   WHERE
     "totalTransactionAllTime" > 1
-    AND "totalTransactionWithinSixMonths" = 1;  
+    AND "totalTransactionWithinSixMonths" = 1;
   `;
 
     return await this._executeQuery<Array<Record<string, unknown>>>(query);
