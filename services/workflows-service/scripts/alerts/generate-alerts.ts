@@ -447,7 +447,6 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
-
   PGAIAPM: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
@@ -534,6 +533,44 @@ export const ALERT_DEFINITIONS = {
         lastDaysPeriod: {
           timeAmount: THREE_DAYS,
         },
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  MMOC_CC: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
+    description: `Card numbers that are appearing in too many different merchant IDs for credit card transactions`,
+    inlineRule: {
+      id: 'MMOC_CC',
+      fnName: 'evaluateMultipleMerchantsOneCounterparty',
+      subjects: ['counterpartyId'],
+      options: {
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
+        minimumCount: 2,
+        timeAmount: SEVEN_DAYS,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  MMOC_APM: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
+    description: `Card numbers that are appearing in too many different merchant IDs for non credit card transactions`,
+    inlineRule: {
+      id: 'MMOC_APM',
+      fnName: 'evaluateMultipleMerchantsOneCounterparty',
+      subjects: ['counterpartyId'],
+      options: {
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
+        minimumCount: 2,
+        timeAmount: SEVEN_DAYS,
         timeUnit: TIME_UNITS.days,
       },
     },
