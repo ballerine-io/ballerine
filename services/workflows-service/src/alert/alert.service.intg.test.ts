@@ -1527,8 +1527,6 @@ describe('AlertService', () => {
       });
 
       it(`Trigger an alert`, async () => {
-        // Arrange
-
         // Act
         await alertService.checkAllAlerts();
 
@@ -1538,19 +1536,26 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(1);
 
         expect(alerts[0]?.severity).toEqual('high');
+
+        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+
+        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+
+        expect(alerts[0]?.executionDetails).toMatchObject({
+          checkpoint: {
+            hash: expect.any(String),
+          },
+          executionRow: {
+            counterpartyId: counteryparty.id,
+            counterpertyInManyBusinessesCount: `${
+              ALERT_DEFINITIONS.MMOC_CC.inlineRule.options.minimumCount + 1
+            }`,
+          },
+        });
       });
 
       it(`When ignore the originator counter party`, async () => {
         // Arrange
-        const alertDef = getAlertDefinitionCreateData(
-          {
-            ...ALERT_DEFINITIONS.MMOC_CC,
-
-            enabled: true,
-          },
-          project,
-        );
-
         await generateAlertDefinitions(prismaService, {
           project,
           alertsDef: {
@@ -1577,6 +1582,7 @@ describe('AlertService', () => {
 
         // Assert
         const alerts = await prismaService.alert.findMany();
+
         expect(alerts).toHaveLength(0);
       });
     });

@@ -571,7 +571,7 @@ export class DataAnalyticsService {
       Prisma.sql`
       SELECT 
         "tr"."counterpartyOriginatorId" as "counterpartyId",
-        COUNT(distinct "tr"."counterpartyBeneficiaryId")
+        COUNT(distinct "tr"."counterpartyBeneficiaryId") as "counterpertyInManyBusinessesCount"
       FROM
         "TransactionRecord" as "tr" ${Prisma.join(uniqueJoinClause, '\n ')}
       WHERE
