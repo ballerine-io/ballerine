@@ -174,7 +174,7 @@ jobs:
         with:
           repository: ballerine-io/cloud-infra-config
           token: ${{ secrets.GIT_TOKEN }}
-          ref: iamops/blue-green
+          ref: main
           fetch-depth: 1
           sparse-checkout: |
             kubernetes/helm/wf-service
@@ -196,7 +196,7 @@ jobs:
         uses: fjogeleit/yaml-update-action@main
         with:
           repository: ballerine-io/cloud-infra-config
-          branch: iamops/blue-green
+          branch: main
           commitChange: true
           message: 'Update wf-service image Version to sha-${{ needs.build-and-push-ee-image.outputs.wf_m_sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
