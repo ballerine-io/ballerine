@@ -9,7 +9,6 @@ import { Case } from '../Entity/components/Case/Case';
 import { Cases } from './components/Cases/Cases';
 import { useEntities } from './hooks/useEntities/useEntities';
 import { NoCases } from '@/pages/Entities/components/NoCases/NoCases';
-import { OngoingMonitoringRiskSheet } from '@/pages/BusinessesAlertsAnalysis/components/OngoingMonitoringRiskSheet';
 
 export const Entities: FunctionComponent = () => {
   const {
@@ -27,54 +26,6 @@ export const Entities: FunctionComponent = () => {
     skeletonEntities,
     isManualCaseCreationEnabled,
   } = useEntities();
-
-  return (
-    <OngoingMonitoringRiskSheet
-      businessReports={[
-        {
-          createdAt: '2021-10-01T00:00:00.000Z',
-          report: {
-            reportFileId: '1',
-            reportId: '1',
-          },
-          riskScore: 1,
-        },
-        {
-          createdAt: '2021-10-02T00:00:00.000Z',
-          report: {
-            reportFileId: '2',
-            reportId: '2',
-          },
-          riskScore: 2,
-        },
-        {
-          createdAt: '2021-10-03T00:00:00.000Z',
-          report: {
-            reportFileId: '3',
-            reportId: '3',
-          },
-          riskScore: 3,
-        },
-        {
-          createdAt: '2021-10-04T00:00:00.000Z',
-          report: {
-            reportFileId: '4',
-            reportId: '4',
-          },
-          riskScore: 4,
-        },
-        {
-          createdAt: '2021-10-05T00:00:00.000Z',
-          report: {
-            reportFileId: '5',
-            reportId: '5',
-          },
-          riskScore: 5,
-        },
-      ]}
-      onOpenStateChange={() => {}}
-    />
-  );
 
   return (
     <>
