@@ -612,7 +612,7 @@ export const getAlertDefinitionCreateData = (
     dedupeStrategy?: Partial<TDedupeStrategy>;
     description?: string;
   },
-  project: Project,
+  project_id: string,
   createdBy: string = 'SYSTEM',
   extraColumns: any = {},
 ) => {
@@ -638,14 +638,14 @@ export const getAlertDefinitionCreateData = (
     tags: [],
     additionalInfo: {},
     ...extraColumns,
-    projectId: project.id,
+    projectId: project_id,
   };
 };
 
 export const generateAlertDefinitions = async (
   prisma: PrismaClient | PrismaTransaction,
   {
-    project,
+    projectId,
     createdBy = 'SYSTEM',
     alertsDef = ALERT_DEFINITIONS,
   }: {
@@ -653,8 +653,8 @@ export const generateAlertDefinitions = async (
       | typeof ALERT_DEFINITIONS
       | typeof MERCHANT_MONITORING_ALERT_DEFINITIONS;
     createdBy?: string;
-    project: Project;
-    alertsDef?: Partial<typeof ALERT_DEFINITIONS>;
+    projectId: string;
+    alertsDef?: Partial<typeof ALERT_DEFINITIONS | typeof MERCHANT_MONITORING_ALERT_DEFINITIONS>;
   },
   {
     crossEnvKeyPrefix = undefined,
@@ -680,11 +680,11 @@ export const generateAlertDefinitions = async (
           where: {
             correlationId_projectId: {
               correlationId: alertDef.correlationId,
-              projectId: project.id,
+              projectId: projectId,
             },
           },
-          create: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
-          update: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
+          create: getAlertDefinitionCreateData(alertDef, projectId, createdBy, extraColumns),
+          update: getAlertDefinitionCreateData(alertDef, projectId, createdBy, extraColumns),
           include: {
             alert: true,
           },
@@ -760,13 +760,13 @@ export const seedTransactionsAlerts = async (
 ) => {
   const transactionsAlertDef = await generateAlertDefinitions(prisma, {
     alertsDefConfiguration: ALERT_DEFINITIONS,
-    project,
+    projectId: project.id,
     createdBy: faker.internet.userName(),
   });
 
   const merchantMonitoringAlertDef = await generateAlertDefinitions(prisma, {
     alertsDefConfiguration: MERCHANT_MONITORING_ALERT_DEFINITIONS,
-    project,
+    projectId: project.id,
     createdBy: faker.internet.userName(),
   });
 
