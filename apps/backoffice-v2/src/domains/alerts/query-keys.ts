@@ -1,12 +1,25 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 import {
-  fetchAlertDefinitionByAlertId,
   fetchAlertCorrelationIds,
+  fetchAlertDefinitionByAlertId,
   fetchAlerts,
 } from '@/domains/alerts/fetchers';
 
 export const alertsQueryKeys = createQueryKeys('alerts', {
-  list: ({ sortBy, sortDir, page, pageSize, ...params }) => {
+  list: ({
+    sortBy,
+    sortDir,
+    page,
+    pageSize,
+    ...params
+  }: {
+    sortBy: string;
+    sortDir: string;
+    page: number;
+    pageSize: number;
+    search: string;
+    filter: Record<string, unknown>;
+  }) => {
     const data = {
       ...params,
       orderBy: `${sortBy}:${sortDir}`,

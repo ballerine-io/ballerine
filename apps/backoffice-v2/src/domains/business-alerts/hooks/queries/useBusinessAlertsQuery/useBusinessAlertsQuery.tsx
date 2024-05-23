@@ -9,7 +9,6 @@ export const useBusinessAlertsQuery = ({
   pageSize,
   search,
   filter,
-  entityType,
 }: {
   sortBy: string;
   sortDir: string;
@@ -28,7 +27,6 @@ export const useBusinessAlertsQuery = ({
       page,
       pageSize,
       search,
-      entityType,
     }),
     enabled: isAuthenticated && !!sortBy && !!sortDir && !!page && !!pageSize,
     staleTime: 100_000,

@@ -55,7 +55,6 @@ export const SignIn: FunctionComponent = () => {
   });
 
   // Handles a flash of content on sign in
-  console.log({ isAuthenticated });
 
   if (isAuthenticated) return <FullScreenLoader />;
 

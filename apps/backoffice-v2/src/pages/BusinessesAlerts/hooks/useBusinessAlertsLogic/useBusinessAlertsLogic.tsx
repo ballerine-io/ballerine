@@ -13,14 +13,13 @@ export const useBusinessAlertsLogic = () => {
   const AlertsSearchSchema = getAlertsSearchSchema();
   const [{ filter, sortBy, sortDir, page, pageSize, search: searchValue }] =
     useZodSearchParams(AlertsSearchSchema);
-  const { data: alerts = [], isLoading: isLoadingAlerts } = useBusinessAlertsQuery({
+  const { data: alerts, isLoading: isLoadingAlerts } = useBusinessAlertsQuery({
     filter,
     page,
     pageSize,
     search: searchValue,
     sortDir,
     sortBy,
-    entityType: 'business',
   });
   const { data: correlationIds } = useAlertCorrelationIdsQuery();
   const { data: assignees } = useUsersQuery();

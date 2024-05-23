@@ -6,7 +6,7 @@ import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback
 import { createInitials } from '@/common/utils/create-initials/create-initials';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
-import { TBusinessAlertsList } from '@/domains/business-alerts/fetchers';
+import { TBusinessAlerts } from '@/domains/business-alerts/fetchers';
 import { getSeverityFromRiskScore } from '@/pages/BusinessesAlerts/components/BusinessAlertsTable/utils/get-severity-from-risk-score';
 import {
   severityToClassName,
@@ -20,7 +20,7 @@ import { ComponentProps } from 'react';
 import { titleCase } from 'string-ts';
 
 const columnHelper = createColumnHelper<
-  TBusinessAlertsList[number] & {
+  TBusinessAlerts[number] & {
     decision: string;
   }
 >();

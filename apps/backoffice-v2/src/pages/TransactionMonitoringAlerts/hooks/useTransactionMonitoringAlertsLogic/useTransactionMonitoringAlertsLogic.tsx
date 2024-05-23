@@ -20,7 +20,6 @@ export const useTransactionMonitoringAlertsLogic = () => {
     search: searchValue,
     sortDir,
     sortBy,
-    entityType: 'transaction',
   });
   const { data: assignees } = useUsersQuery();
   const sortedAssignees = useMemo(

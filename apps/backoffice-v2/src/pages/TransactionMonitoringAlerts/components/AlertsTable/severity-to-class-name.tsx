@@ -1,14 +1,9 @@
 import { Badge } from '@ballerine/ui';
 import { ComponentProps } from 'react';
+import { TAlertSeverity } from '@/domains/alerts/fetchers';
 
-export const severityToClassName = {
-  HIGH: 'bg-destructive/20 text-destructive',
-  MEDIUM: 'bg-orange-100 text-orange-300',
-  LOW: 'bg-success/20 text-success',
-  CRITICAL: 'bg-destructive text-background',
-  DEFAULT: 'bg-foreground text-background',
-} as const satisfies Record<
-  'HIGH' | 'MEDIUM' | 'LOW' | 'CRITICAL' | 'DEFAULT',
+type SeverityToClassName = Record<
+  Uppercase<TAlertSeverity> | 'DEFAULT',
   ComponentProps<typeof Badge>['className']
 >;
 
@@ -18,7 +13,12 @@ export const severityToTextClassName = {
   LOW: 'text-success',
   CRITICAL: 'text-background',
   DEFAULT: 'text-background',
-} as const satisfies Record<
-  'HIGH' | 'MEDIUM' | 'LOW' | 'CRITICAL' | 'DEFAULT',
-  ComponentProps<typeof Badge>['className']
->;
+} as const satisfies SeverityToClassName;
+
+export const severityToClassName = {
+  HIGH: `bg-destructive/20 ${severityToTextClassName.HIGH}`,
+  MEDIUM: `bg-orange-100 ${severityToTextClassName.MEDIUM}`,
+  LOW: `bg-success/20 ${severityToTextClassName.LOW}`,
+  CRITICAL: `bg-destructive ${severityToTextClassName.CRITICAL}`,
+  DEFAULT: `bg-foreground ${severityToTextClassName.DEFAULT}`,
+} as const satisfies SeverityToClassName;

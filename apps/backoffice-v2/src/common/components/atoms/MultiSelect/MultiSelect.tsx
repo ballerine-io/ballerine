@@ -9,10 +9,10 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
+  ctw,
   Popover,
   PopoverContent,
   PopoverTrigger,
-  ctw,
 } from '@ballerine/ui';
 import { CheckIcon, PlusCircledIcon } from '@radix-ui/react-icons';
 import { ReactNode, useCallback, useState } from 'react';
@@ -63,7 +63,7 @@ export const MultiSelect = <
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 border">
-          <PlusCircledIcon className="size-4 mr-2" />
+          <PlusCircledIcon className="mr-2 d-4" />
           {title}
           {selected?.length > 0 && (
             <>
@@ -107,13 +107,13 @@ export const MultiSelect = <
                   <CommandItem key={option.value} onSelect={() => onSelectChange(option.value)}>
                     <div
                       className={ctw(
-                        'size-4 mr-2 flex items-center justify-center rounded-sm border border-primary',
+                        'mr-2 flex items-center justify-center rounded-sm border border-primary d-4',
                         isSelected
                           ? 'bg-primary text-primary-foreground'
                           : 'opacity-50 [&_svg]:invisible',
                       )}
                     >
-                      <CheckIcon className={ctw('size-4')} />
+                      <CheckIcon className={ctw('d-4')} />
                     </div>
                     {option.icon}
                     <span>{option.label}</span>
