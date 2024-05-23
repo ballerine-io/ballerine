@@ -3,9 +3,7 @@ import { ComponentProps, FunctionComponent } from 'react';
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
 import { ctw } from '@/common/utils/ctw/ctw';
 
-type TDownloadReportButtonProps = ComponentProps<'a'>;
-
-export const OpenUrlInNewTabButton: FunctionComponent<TDownloadReportButtonProps> = ({
+export const OpenUrlInNewTabButton: FunctionComponent<ComponentProps<'a'>> = ({
   href,
   ...props
 }) => {
