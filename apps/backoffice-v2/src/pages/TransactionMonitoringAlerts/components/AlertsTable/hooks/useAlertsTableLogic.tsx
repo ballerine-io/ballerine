@@ -2,10 +2,10 @@ import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { Link, useLocation } from 'react-router-dom';
 import React, { useCallback } from 'react';
 import { IDataTableProps } from '@/common/components/organisms/DataTable/DataTable';
-import { TAlertsList } from '@/domains/alerts/fetchers';
+import { TAlerts } from '@/domains/alerts/fetchers';
 
 interface IUseAlertsTableLogic {
-  data: TAlertsList;
+  data: TAlerts;
 }
 
 export const useAlertsTableLogic = ({ data }: IUseAlertsTableLogic) => {

@@ -72,7 +72,7 @@ export type TAlertState = (typeof AlertStates)[number];
 
 export type TAlertStates = typeof AlertStates;
 
-export const AlertItemSchema = ObjectWithIdSchema.extend({
+export const AlertSchema = ObjectWithIdSchema.extend({
   dataTimestamp: z.string().datetime(),
   updatedAt: z.string().datetime(),
   subject: ObjectWithIdSchema.extend({
@@ -95,11 +95,10 @@ export const AlertItemSchema = ObjectWithIdSchema.extend({
   counterpartyId: z.string().nullable().default(null),
 });
 
-export const AlertsListSchema = z.array(AlertItemSchema);
+export const AlertsListSchema = z.array(AlertSchema);
 
-export type TAlertItem = z.output<typeof AlertItemSchema>;
-export type TAlertsList = z.output<typeof AlertsListSchema>;
-export type AlertEntityType = 'transaction' | 'business';
+export type TAlert = z.output<typeof AlertSchema>;
+export type TAlerts = z.output<typeof AlertsListSchema>;
 
 export const fetchAlerts = async (params: {
   orderBy: string;
@@ -108,17 +107,11 @@ export const fetchAlerts = async (params: {
     size: number;
   };
   filter: Record<string, unknown>;
-  entityType: AlertEntityType;
 }) => {
   const queryParams = qs.stringify(params, { encode: false });
-  let url = `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts?${queryParams}`;
-
-  if (params.entityType === 'business') {
-    url = `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts/business-report?${queryParams}`;
-  }
 
   const [alerts, error] = await apiClient({
-    url,
+    url: `${getOriginUrl(env.VITE_API_URL)}/api/v1/external/alerts?${queryParams}`,
     method: Method.GET,
     schema: AlertsListSchema,
   });

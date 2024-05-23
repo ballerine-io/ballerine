@@ -1,5 +1,5 @@
-import { TBusinessAlertsList } from '@/domains/business-alerts/fetchers';
+import { TBusinessAlerts } from '@/domains/business-alerts/fetchers';
 
 export interface IAlertsTableProps {
-  data: TBusinessAlertsList;
+  data: TBusinessAlerts;
 }

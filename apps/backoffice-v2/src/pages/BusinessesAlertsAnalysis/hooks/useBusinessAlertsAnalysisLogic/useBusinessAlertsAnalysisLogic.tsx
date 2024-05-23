@@ -1,12 +1,13 @@
 import { useSerializedSearchParams } from '@/common/hooks/useSerializedSearchParams/useSerializedSearchParams';
-import { useGetBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useGetBusinessReportsQuery/useGetBusinessReportsQuery';
+import { useBusinessReportsQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportsQuery/useBusinessReportsQuery';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const useBusinessAlertsAnalysisLogic = () => {
   const [{ businessId }] = useSerializedSearchParams();
-  const { data: businessReports = [] } = useGetBusinessReportsQuery({
+  const { data: businessReports = [] } = useBusinessReportsQuery({
     businessId: (businessId as string) ?? '',
+    reportType: 'ONGOING_MERCHANT_REPORT_T1',
   });
   const navigate = useNavigate();
   const onNavigateBack = useCallback(() => {

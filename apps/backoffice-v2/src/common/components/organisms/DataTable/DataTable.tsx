@@ -53,7 +53,9 @@ export interface IDataTableProps<TData, TValue = any> {
 
   // Component props
   props?: {
-    scroll?: Partial<ComponentProps<typeof ScrollArea>>;
+    container?: ComponentProps<'div'>;
+    scroll?: Omit<ComponentProps<typeof ScrollArea>, 'orientation'> &
+      Partial<Pick<ComponentProps<typeof ScrollArea>, 'orientation'>>;
     table?: ComponentProps<typeof Table>;
     header?: ComponentProps<typeof TableHeader>;
     head?: ComponentProps<typeof TableHead>;
@@ -186,7 +188,13 @@ export const DataTable = <TData extends RowData, TValue = any>({
   });
 
   return (
-    <div className="relative overflow-auto rounded-md border bg-white shadow">
+    <div
+      {...props?.container}
+      className={ctw(
+        'relative overflow-auto rounded-md border bg-white shadow',
+        props?.container?.className,
+      )}
+    >
       <ScrollArea orientation="both" {...props?.scroll}>
         <Table {...props?.table}>
           {caption && (

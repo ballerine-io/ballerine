@@ -16,19 +16,21 @@ export const BusinessReportSchema = z
 
 export type TBusinessReport = z.infer<typeof BusinessReportSchema>;
 
+export type TBusinessReportType = ('MERCHANT_REPORT_T1' | 'ONGOING_MERCHANT_REPORT_T1') &
+  (string & {});
+
 export const fetchLatestBusinessReport = async ({
   businessId,
   reportType,
 }: {
   businessId: string;
-  reportType: 'MERCHANT_REPORT_T1' | ('ONGOING_MERCHANT_REPORT_T1' & (string & {}));
+  reportType: TBusinessReportType;
 }) => {
   const [businessReports, error] = await apiClient({
     endpoint: `business-reports/latest?businessId=${businessId}&type=${reportType}`,
     method: Method.GET,
     schema: BusinessReportSchema,
   });
-  console.log({ error });
 
   return handleZodError(error, businessReports);
 };
@@ -38,7 +40,7 @@ export const fetchBusinessReports = async ({
   reportType,
 }: {
   businessId: string;
-  reportType: 'MERCHANT_REPORT_T1' | ('ONGOING_MERCHANT_REPORT_T1' & (string & {}));
+  reportType: TBusinessReportType;
 }) => {
   const [businessReports, error] = await apiClient({
     endpoint: `business-reports/?businessId=${businessId}&type=${reportType}`,

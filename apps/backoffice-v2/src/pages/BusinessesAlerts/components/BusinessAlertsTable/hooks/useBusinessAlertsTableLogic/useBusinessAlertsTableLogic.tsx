@@ -1,11 +1,11 @@
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 
 import { IDataTableProps } from '@/common/components/organisms/DataTable/DataTable';
-import { TBusinessAlertsList } from '@/domains/business-alerts/fetchers';
+import { TBusinessAlerts } from '@/domains/business-alerts/fetchers';
 import { useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-export const useBusinessAlertsTableLogic = ({ data }: { data: TBusinessAlertsList }) => {
+export const useBusinessAlertsTableLogic = ({ data }: { data: TBusinessAlerts }) => {
   const locale = useLocale();
   const { pathname, search } = useLocation();
 

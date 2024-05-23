@@ -2,7 +2,7 @@ import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback
 import { ctw } from '@/common/utils/ctw/ctw';
 import { TBusinessReport } from '@/domains/business-reports/fetchers';
 import { getSeverityFromRiskScore } from '@/pages/BusinessesAlerts/components/BusinessAlertsTable/utils/get-severity-from-risk-score';
-import { DownloadReportButton } from '@/pages/BusinessesAlertsAnalysis/components/OngoingMonitoringTable/components/DownloadReportButton/DownloadReportButton';
+import { OpenUrlInNewTabButton } from '@/common/components/atoms/OpenUrlInNewTabButton/OpenUrlInNewTabButton';
 import {
   severityToClassName,
   severityToTextClassName,
@@ -11,6 +11,7 @@ import { Badge } from '@ballerine/ui';
 import { createColumnHelper } from '@tanstack/react-table';
 import dayjs from 'dayjs';
 import { titleCase } from 'string-ts';
+import { useStorageFileByIdQuery } from '@/domains/storage/hooks/queries/useStorageFileByIdQuery/useStorageFileByIdQuery';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
@@ -33,7 +34,6 @@ export const columns = [
   columnHelper.accessor('riskScore', {
     cell: info => {
       const riskScore = info.getValue();
-
       const severity = getSeverityFromRiskScore(riskScore);
 
       return (
@@ -64,16 +64,16 @@ export const columns = [
     },
     header: 'Risk Score',
   }),
-  columnHelper.accessor('report', {
+  columnHelper.accessor('report.reportFileId', {
     cell: info => {
-      const reportDetails = info.getValue();
+      const reportFileId = info.getValue();
+      // eslint-disable-next-line react-hooks/rules-of-hooks -- ESLint doesn't like `cell` not being `Cell`.
+      const { data: signedUrl } = useStorageFileByIdQuery(reportFileId ?? '', {
+        isEnabled: !!reportFileId,
+        withSignedUrl: true,
+      });
 
-      return (
-        <DownloadReportButton
-          reportId={reportDetails.reportId}
-          fileId={reportDetails.reportFileId}
-        />
-      );
+      return <OpenUrlInNewTabButton href={signedUrl ?? ''} />;
     },
     header: '',
   }),

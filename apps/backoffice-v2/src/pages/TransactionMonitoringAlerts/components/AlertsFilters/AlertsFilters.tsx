@@ -53,7 +53,7 @@ export const AlertsFilters: FunctionComponent<{
           correlationIds?.map(label => ({
             label,
             value: label,
-          })) || [],
+          })) ?? [],
         [correlationIds],
       ),
     },
