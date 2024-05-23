@@ -1,5 +1,5 @@
 import { createColumnHelper } from '@tanstack/react-table';
-import { TAlerts, TAlertState } from '@/domains/alerts/fetchers';
+import { TAlert, TAlertState } from '@/domains/alerts/fetchers';
 import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import dayjs from 'dayjs';
 import { Badge } from '@ballerine/ui';
@@ -18,7 +18,7 @@ import { useEllipsesWithTitle } from '@/common/hooks/useEllipsesWithTitle/useEll
 import { buttonVariants } from '@/common/components/atoms/Button/Button';
 
 const columnHelper = createColumnHelper<
-  TAlerts[number] & {
+  TAlert & {
     // TODO: Change type once decisions PR is merged
     // Computed from `alert.state`
     decision: string;

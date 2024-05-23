@@ -612,7 +612,7 @@ export const getAlertDefinitionCreateData = (
     dedupeStrategy?: Partial<TDedupeStrategy>;
     description?: string;
   },
-  project_id: string,
+  projectId: string,
   createdBy: string = 'SYSTEM',
   extraColumns: any = {},
 ) => {
@@ -638,7 +638,7 @@ export const getAlertDefinitionCreateData = (
     tags: [],
     additionalInfo: {},
     ...extraColumns,
-    projectId: project_id,
+    projectId,
   };
 };
 
