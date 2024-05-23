@@ -577,7 +577,7 @@ export const getAlertDefinitionCreateData = (
     config: { config: {} },
     tags: [],
     additionalInfo: {},
-    crossEnvKey: extraColumns.crossEnvKey || 'test' + Math.random(),
+    crossEnvKey: extraColumns.crossEnvKey
     project: {
       connect: {
         id: project.id,
