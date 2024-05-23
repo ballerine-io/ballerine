@@ -1,5 +1,5 @@
 import { BaseSearchSchema } from '@/common/hooks/useSearchParamsByEntity/validation-schemas';
-import { AlertStatus, AlertStatuses, TAlerts } from '@/domains/alerts/fetchers';
+import { AlertStatus, AlertStatuses, TAlert } from '@/domains/alerts/fetchers';
 import { BooleanishSchema } from '@/lib/zod/utils/checkers';
 import { z } from 'zod';
 
@@ -7,7 +7,7 @@ export const getAlertsSearchSchema = () =>
   BaseSearchSchema.extend({
     sortBy: z
       .enum(['dataTimestamp', 'status'] as const satisfies ReadonlyArray<
-        Extract<keyof TAlerts[number], 'dataTimestamp' | 'status'>
+        Extract<keyof TAlert, 'dataTimestamp' | 'status'>
       >)
       .catch('dataTimestamp'),
     filter: z
