@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BusinessReportType } from '@prisma/client';
-import { IsIn, IsNotEmpty, IsString } from 'class-validator';
+import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class GetLatestBusinessReportDto {
   @ApiProperty({
@@ -11,8 +11,9 @@ export class GetLatestBusinessReportDto {
   businessId!: string;
 
   @ApiProperty({
-    required: true,
+    required: false,
   })
   @IsIn(Object.values(BusinessReportType))
-  type!: BusinessReportType;
+  @IsOptional()
+  type?: BusinessReportType;
 }

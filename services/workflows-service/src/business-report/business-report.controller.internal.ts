@@ -13,6 +13,7 @@ import {
 } from '@/business-report/list-business-reports.dto';
 import { Prisma } from '@prisma/client';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
+import { GetBusinessReportDto } from '@/business-report/dto/get-business-report.dto';
 
 @common.Controller('internal/business-reports')
 @swagger.ApiExcludeController()
@@ -22,7 +23,28 @@ export class BusinessReportControllerInternal {
     protected readonly logger: AppLoggerService,
   ) {}
 
-  @common.Get('/')
+  @common.Get('/latest')
+  @swagger.ApiOkResponse({ type: [String] })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async getLatestBusinessReport(
+    @CurrentProject() currentProjectId: TProjectId,
+    @Query() searchQueryParams: GetLatestBusinessReportDto,
+  ) {
+    return await this.businessReportService.findFirstOrThrow(
+      {
+        where: {
+          businessId: searchQueryParams.businessId,
+          type: searchQueryParams.type,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
+      [currentProjectId],
+    );
+  }
+
+  @common.Get()
   @swagger.ApiOkResponse({ type: [String] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
@@ -33,7 +55,8 @@ export class BusinessReportControllerInternal {
     return await this.businessReportService.findMany(
       {
         where: {
-          type: searchQueryParams.type,
+          businessId: searchQueryParams.businessId,
+          ...(searchQueryParams.type ? { type: searchQueryParams.type } : {}),
         },
         select: {
           createdAt: true,
@@ -47,29 +70,9 @@ export class BusinessReportControllerInternal {
             },
           },
         },
-        take: searchQueryParams.page.size,
-        skip: (searchQueryParams.page.number - 1) * searchQueryParams.page.size,
         orderBy: searchQueryParams.orderBy as
           | Prisma.Enumerable<Prisma.BusinessReportOrderByWithRelationInput>
           | undefined,
-      },
-      [currentProjectId],
-    );
-  }
-
-  @common.Get('/latest')
-  @swagger.ApiOkResponse({ type: [String] })
-  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async getLatestBusinessReport(
-    @CurrentProject() currentProjectId: TProjectId,
-    @Query() searchQueryParams: GetLatestBusinessReportDto,
-  ) {
-    return await this.businessReportService.findFirst(
-      {
-        where: {
-          businessId: searchQueryParams.businessId,
-          type: searchQueryParams.type,
-        },
       },
       [currentProjectId],
     );

@@ -159,7 +159,7 @@ jobs:
           severity: 'CRITICAL'
 
   update-helm-chart:
-    needs: build-and-push-image
+    needs: build-and-push-ee-image
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -174,7 +174,7 @@ jobs:
         with:
           repository: ballerine-io/cloud-infra-config
           token: ${{ secrets.GIT_TOKEN }}
-          ref: iamops/blue-green
+          ref: main
           fetch-depth: 1
           sparse-checkout: |
             kubernetes/helm/wf-service
@@ -196,14 +196,14 @@ jobs:
         uses: fjogeleit/yaml-update-action@main
         with:
           repository: ballerine-io/cloud-infra-config
-          branch: iamops/blue-green
+          branch: main
           commitChange: true
-          message: 'Update wf-service image Version to sha-${{ needs.build-and-push-image.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
+          message: 'Update wf-service image Version to sha-${{ needs.build-and-push-ee-image.outputs.wf_m_sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
               "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
-                "image.tag": "${{ needs.build-and-push-image.outputs.docker_tag }}"
+                "image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}"
               }
             }
 
@@ -293,6 +293,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-and-push-image, check_if_data_migration_needed]
     if: ${{ needs.check_if_data_migration_needed.outputs.should_build == 'true' }}
+    outputs:
+      wf_m_sha_short: ${{ steps.fetch-submodule.outputs.wf_m_sha_short }} # short sha of the commit
+      docker_tag: ${{ steps.docker-version.outputs.wf_m_tag }} 
 
     permissions:
       contents: read
@@ -321,7 +324,11 @@ jobs:
         run: |
           cd services/workflows-service/prisma/data-migrations
           git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ github.ref_name }}
-          git checkout ${{ github.ref_name }}
+          git checkout -b ${{ github.ref_name }} origin/${{ github.ref_name }}
+          git pull origin ${{ github.ref_name }}
+          WF_M_SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "sha_short=$WF_M_SHORT_SHA"
+          echo "wf_m_sha_short=$WF_M_SHORT_SHA" >> $GITHUB_OUTPUT
           cd ../../../..
 
       - name: Set up Docker Buildx
@@ -346,9 +353,24 @@ jobs:
           images: ${{needs.build-and-push-image.outputs.docker_image}}-ee
           tags: |
             type=raw,value=${{ github.ref_name }}
-            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ github.ref_name }}
+            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-${{ github.ref_name }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
             type=sha,format=short
+
+      - name: Docker metadata version
+        id: docker-version
+        run: |
+          DOCKER_IMAGE=${{needs.build-and-push-image.outputs.docker_image}}-ee
+          DOCKER_TAG=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-${{ github.ref_name }}
+          DOCKER_FULL_IMAGE=$DOCKER_IMAGE:$DOCKER_TAG
+
+          echo "DOCKER_IMAGE=$DOCKER_IMAGE"
+          echo "DOCKER_TAG=$DOCKER_TAG"
+          echo "DOCKER_FULL_IMAGE=$DOCKER_FULL_IMAGE"
+
+          echo "wf_m_image=$DOCKER_IMAGE" >> $GITHUB_OUTPUT
+          echo "wf_m_tag=$DOCKER_TAG" >> $GITHUB_OUTPUT
+          echo "wf_m_full_image=$DOCKER_FULL_IMAGE" >> $GITHUB_OUTPUT
 
       - name: Build and push ee Docker image
         uses: docker/build-push-action@v5
