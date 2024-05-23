@@ -676,7 +676,7 @@ export const getAlertDefinitionCreateData = (
     config: { config: {} },
     tags: [],
     additionalInfo: {},
-    crossEnvKey: extraColumns.crossEnvKey
+    crossEnvKey: extraColumns.crossEnvKey,
     project: {
       connect: {
         id: project.id,

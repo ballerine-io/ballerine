@@ -1544,6 +1544,8 @@ describe('AlertService', () => {
               enabled: true,
             },
             project,
+            undefined,
+            { crossEnvKey: 'TEST' },
           ),
         });
 
