@@ -46,9 +46,9 @@ export const columns = [
     },
     header: 'Created At',
   }),
-  columnHelper.accessor('additionalInfo', {
+  columnHelper.accessor('additionalInfo.businessCompanyName', {
     cell: info => {
-      const { businessCompanyName } = info.getValue();
+      const businessCompanyName = info.getValue();
 
       return (
         <span className={`whitespace-nowrap font-semibold`}>{valueOrNA(businessCompanyName)}</span>
@@ -56,17 +56,17 @@ export const columns = [
     },
     header: 'Business',
   }),
-  columnHelper.accessor('additionalInfo', {
+  columnHelper.accessor('additionalInfo.alertReason', {
     cell: info => {
-      const { alertReason } = info.getValue();
+      const alertReason = info.getValue();
 
       return <div className="min-w-[250px] font-semibold">{alertReason}</div>;
     },
     header: 'Reason',
   }),
-  columnHelper.accessor('additionalInfo', {
+  columnHelper.accessor('additionalInfo.severity', {
     cell: info => {
-      const { severity } = info.getValue();
+      const severity = info.getValue();
 
       return (
         <TextWithNAFallback
@@ -84,9 +84,9 @@ export const columns = [
     },
     header: 'Severity',
   }),
-  columnHelper.accessor('additionalInfo', {
+  columnHelper.accessor('additionalInfo.riskScore', {
     cell: info => {
-      const { riskScore } = info.getValue();
+      const riskScore = info.getValue();
       const severity = getSeverityFromRiskScore(riskScore);
 
       return (
