@@ -129,7 +129,7 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
 
     const { context } = workflowRuntime;
-    const { reportData: unvalidatedReportData, base64Pdf, reportId, reportType } = data;
+    const { reportData: onboardingReortData, base64Pdf, reportId, reportType } = data;
     const reportData = ReportWithRiskScoreSchema;
 
     const { documents, pdfReportBallerineFileId } =
@@ -140,8 +140,7 @@ export class HookCallbackHandlerService {
         base64PDFString: base64Pdf as string,
       });
 
-    const reportRiskScore =
-      ReportWithRiskScoreSchema.parse(unvalidatedReportData).summary.riskScore;
+    const reportRiskScore = ReportWithRiskScoreSchema.parse(onboardingReortData).summary.riskScore;
 
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
@@ -150,7 +149,7 @@ export class HookCallbackHandlerService {
     if (!business) throw new BadRequestException('Business not found.');
 
     const currentReportId = reportId as string;
-    const existantBusinessReport = await this.businessReportService.findFirstOrThrow(
+    const existantBusinessReport = await this.businessReportService.findFirst(
       {
         where: {
           businessId: business.id,
@@ -167,7 +166,7 @@ export class HookCallbackHandlerService {
           riskScore: reportRiskScore as number,
           report: {
             reportFileId: pdfReportBallerineFileId,
-            data: reportData as InputJsonValue,
+            data: onboardingReortData as InputJsonValue,
           },
           reportId: currentReportId,
           businessId: business.id,
@@ -226,7 +225,7 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
 
     if (comparedToReportId) {
-      const comparedToReport = await this.businessReportService.findFirstOrThrow(
+      const comparedToReport = await this.businessReportService.findFirst(
         {
           where: {
             businessId,

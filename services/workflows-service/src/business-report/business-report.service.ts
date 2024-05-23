@@ -48,6 +48,13 @@ export class BusinessReportService {
     );
   }
 
+  async findFirst<T extends Prisma.BusinessReportFindFirstArgs>(
+    args: Prisma.SelectSubset<T, Prisma.BusinessReportFindFirstArgs>,
+    projectIds: TProjectIds,
+  ) {
+    return await this.businessReportRepository.findFirst(args, projectIds);
+  }
+
   async findFirstOrThrow<T extends Prisma.BusinessReportFindFirstArgs>(
     args: Prisma.SelectSubset<T, Prisma.BusinessReportFindFirstArgs>,
     projectIds: TProjectIds,
