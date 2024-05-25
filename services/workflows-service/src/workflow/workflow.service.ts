@@ -131,7 +131,7 @@ export class WorkflowService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
+  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
     const select = {
       id: true,
       name: true,
@@ -142,14 +142,41 @@ export class WorkflowService {
       extensions: true,
       persistStates: true,
       submitStates: true,
-      parentRuntimeDataId: true,
     };
 
     if (data.isPublic) {
-      return await this.workflowDefinitionRepository.createUnscoped({ data, select });
+      return await this.workflowDefinitionRepository.createUnscoped({
+        data: {
+          ...data,
+          definition: data.definition as InputJsonValue,
+          contextSchema: data.contextSchema as InputJsonValue,
+          documentsSchema: data.documentsSchema as InputJsonValue,
+          config: data.config as InputJsonValue,
+          supportedPlatforms: data.supportedPlatforms as InputJsonValue,
+          extensions: data.extensions as InputJsonValue,
+          backend: data.backend as InputJsonValue,
+          persistStates: data.persistStates as InputJsonValue,
+          submitStates: data.submitStates as InputJsonValue,
+        },
+        select,
+      });
     }
 
-    return await this.workflowDefinitionRepository.create({ data, select });
+    return await this.workflowDefinitionRepository.create({
+      data: {
+        ...data,
+        definition: data.definition as InputJsonValue,
+        contextSchema: data.contextSchema as InputJsonValue,
+        documentsSchema: data.documentsSchema as InputJsonValue,
+        config: data.config as InputJsonValue,
+        supportedPlatforms: data.supportedPlatforms as InputJsonValue,
+        extensions: data.extensions as InputJsonValue,
+        backend: data.backend as InputJsonValue,
+        persistStates: data.persistStates as InputJsonValue,
+        submitStates: data.submitStates as InputJsonValue,
+      },
+      select,
+    });
   }
 
   async cloneWorkflowDefinition(data: WorkflowDefinitionCloneDto, projectId: string) {
