@@ -1,11 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BusinessReportType, Prisma } from '@prisma/client';
-import { IsIn, IsOptional } from 'class-validator';
+import { IsIn, IsOptional, IsString } from 'class-validator';
 import { PageDto, sortDirections, validateOrderBy } from '@/common/dto';
 import { z } from 'zod';
 import { SortableByModel } from '@/common/types';
 
 export class ListBusinessReportsDto {
+  @IsOptional()
+  @IsString()
+  businessId?: string;
+
   @ApiProperty({
     required: true,
   })
@@ -29,11 +33,49 @@ export class ListBusinessReportsDto {
   orderBy?: `${string}:asc` | `${string}:desc`;
 }
 
-const sortableColumnsAlerts: SortableByModel<Prisma.BusinessReportOrderByWithRelationInput> = [
+const sortableColumnsAlerts: Array<
+  SortableByModel<Prisma.BusinessReportOrderByWithRelationInput>[number] | `business.${string}`
+> = [
   'createdAt',
   'updatedAt',
-  'report',
+  'business.website',
+  'business.companyName',
+  'business.country',
+  'riskScore',
 ];
+
+const toOrderBy = (orderBy: string) => {
+  const [column = '', direction = ''] = orderBy.split(':');
+
+  if (!column || !direction) throw new Error('Invalid orderBy');
+
+  return {
+    [column]: direction,
+  };
+};
+
+const toRelationalOrderBy = (orderBy: string) => {
+  const [column = '', direction = ''] = orderBy.split(':');
+  const keys = column.split('.');
+
+  const result: Record<PropertyKey, any> = {};
+  let current = result;
+
+  for (let i = 0; i < keys.length - 1; i++) {
+    const key = keys[i];
+
+    current[key as keyof typeof current] = {};
+    current = current[key as keyof typeof current];
+  }
+
+  const lastKey = keys[keys.length - 1];
+
+  if (!lastKey) return;
+
+  current[lastKey as keyof typeof current] = direction;
+
+  return result;
+};
 
 export const ListBusinessReportsSchema = z.object({
   page: z.object({
@@ -45,13 +87,11 @@ export const ListBusinessReportsSchema = z.object({
       validateOrderBy(value, sortableColumnsAlerts),
     )
     .transform(value => {
-      const [column = '', direction = ''] = value.split(':');
+      if (value.includes('.')) {
+        return toRelationalOrderBy(value);
+      }
 
-      if (!column || !direction) throw new Error('Invalid orderBy');
-
-      return {
-        [column]: direction,
-      };
+      return toOrderBy(value);
     })
     .optional(),
 });

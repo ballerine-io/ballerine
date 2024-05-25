@@ -13,7 +13,6 @@ import {
 } from '@/business-report/list-business-reports.dto';
 import { Prisma } from '@prisma/client';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
-import { GetBusinessReportDto } from '@/business-report/dto/get-business-report.dto';
 
 @common.Controller('internal/business-reports')
 @swagger.ApiExcludeController()
@@ -52,6 +51,8 @@ export class BusinessReportControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
     @Query() searchQueryParams: ListBusinessReportsDto,
   ) {
+    this.logger.log('test', { test: searchQueryParams });
+
     return await this.businessReportService.findMany(
       {
         where: {
@@ -62,6 +63,7 @@ export class BusinessReportControllerInternal {
           createdAt: true,
           updatedAt: true,
           report: true,
+          riskScore: true,
           business: {
             select: {
               companyName: true,

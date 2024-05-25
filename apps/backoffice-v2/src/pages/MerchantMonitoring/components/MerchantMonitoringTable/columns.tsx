@@ -71,7 +71,7 @@ export const columns = [
     },
     header: 'Country',
   }),
-  columnHelper.accessor('report.riskScore', {
+  columnHelper.accessor('riskScore', {
     cell: info => {
       const riskScore = info.getValue();
 

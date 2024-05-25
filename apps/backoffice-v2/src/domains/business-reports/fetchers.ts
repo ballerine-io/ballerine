@@ -9,12 +9,8 @@ export const BusinessReportSchema = z
   .object({
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
+    riskScore: z.number(),
     report: z.object({
-      data: z.object({
-        summary: z.object({
-          riskScore: z.number(),
-        }),
-      }),
       reportFileId: z.string(),
     }),
     business: z
