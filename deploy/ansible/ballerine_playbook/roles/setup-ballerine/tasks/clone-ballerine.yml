@@ -1,0 +1,9 @@
+---
+- name: Clone Ballerine
+  git:
+    repo: https://github.com/ballerine-io/ballerine.git
+    dest: "{{ install_dir }}"
+    version: dev
+    clone: yes
+    update: yes
+  ignore_errors: yes
