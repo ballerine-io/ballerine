@@ -11,10 +11,10 @@ export const DefaultBlocks = () => {
   return (
     <div className="relative flex h-full flex-col">
       {!!tabs.length && (
-        <div className="mb-12">
-          <div className="fixed z-[50] mt-[-8px] h-12 w-full bg-white pb-10 pt-2">
+        <div className="sticky top-0 z-50 flex flex-row bg-white py-2">
+          <div>
             <Tabs value={activeTab?.name} onValueChange={setActiveTab}>
-              <TabsList>
+              <TabsList className="flex h-auto flex-row flex-wrap justify-start md:!justify-center">
                 {tabs.map(tab => (
                   <TabsTrigger key={tab.name} value={tab.name} disabled={tab.disabled}>
                     {tab.displayName}
