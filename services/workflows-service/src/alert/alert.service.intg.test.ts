@@ -1592,7 +1592,7 @@ describe('AlertService', () => {
       });
     });
 
-    describe.only('Rule: MGAV_CC', () => {
+    describe('Rule: MGAV_CC', () => {
       let counterpartiesA: Array<Awaited<ReturnType<typeof createEndUserCounterparty>>> = [];
       let alertDefinition: AlertDefinition;
 
@@ -1704,7 +1704,7 @@ describe('AlertService', () => {
       });
     });
 
-    describe.only('Rule: MGAV_APM', () => {
+    describe('Rule: MGAV_APM', () => {
       let counterpartiesA: Array<Awaited<ReturnType<typeof createEndUserCounterparty>>> = [];
       let alertDefinition: AlertDefinition;
 
