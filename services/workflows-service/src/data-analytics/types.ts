@@ -43,6 +43,10 @@ export type InlineRule = {
       fnName: 'evaluateMultipleMerchantsOneCounterparty';
       options: Omit<TMultipleMerchantsOneCounterparty, 'projectId'>;
     }
+  | {
+      fnName: 'evaluateMerchantGroupAverage';
+      options: Omit<TMerchantGroupAverage, 'projectId'>;
+    }
 );
 
 export type TAggregations = keyof typeof AggregateType;
@@ -145,4 +149,17 @@ export type TMultipleMerchantsOneCounterparty = {
   minimumCount: number;
   timeAmount: number;
   timeUnit: TimeUnit;
+};
+
+export type TMerchantGroupAverage = {
+  projectId: TProjectId;
+  customerType?: string;
+  timeAmount: number;
+  timeUnit: TimeUnit;
+  paymentMethod: {
+    value: PaymentMethod;
+    operator: '=' | '!=';
+  };
+  minimumCount: number;
+  transactionFactor: number;
 };
