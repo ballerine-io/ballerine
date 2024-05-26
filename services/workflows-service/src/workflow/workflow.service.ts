@@ -144,25 +144,7 @@ export class WorkflowService {
       submitStates: true,
     };
 
-    if (data.isPublic) {
-      return await this.workflowDefinitionRepository.createUnscoped({
-        data: {
-          ...data,
-          definition: data.definition as InputJsonValue,
-          contextSchema: data.contextSchema as InputJsonValue,
-          documentsSchema: data.documentsSchema as InputJsonValue,
-          config: data.config as InputJsonValue,
-          supportedPlatforms: data.supportedPlatforms as InputJsonValue,
-          extensions: data.extensions as InputJsonValue,
-          backend: data.backend as InputJsonValue,
-          persistStates: data.persistStates as InputJsonValue,
-          submitStates: data.submitStates as InputJsonValue,
-        },
-        select,
-      });
-    }
-
-    return await this.workflowDefinitionRepository.create({
+    const createWorkflowDefinitionPayload = {
       data: {
         ...data,
         definition: data.definition as InputJsonValue,
@@ -176,7 +158,15 @@ export class WorkflowService {
         submitStates: data.submitStates as InputJsonValue,
       },
       select,
-    });
+    } satisfies Parameters<WorkflowDefinitionRepository['create']>['0'];
+
+    if (data.isPublic) {
+      return await this.workflowDefinitionRepository.createUnscoped(
+        createWorkflowDefinitionPayload,
+      );
+    }
+
+    return await this.workflowDefinitionRepository.create(createWorkflowDefinitionPayload);
   }
 
   async cloneWorkflowDefinition(data: WorkflowDefinitionCloneDto, projectId: string) {
