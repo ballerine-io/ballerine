@@ -641,6 +641,7 @@ export const getAlertDefinitionCreateData = (
     monitoringType = MonitoringType.transaction_monitoring,
     enabled = false,
     dedupeStrategy = ALERT_DEDUPE_STRATEGY_DEFAULT,
+    correlationId,
   }: {
     inlineRule: InlineRule;
     defaultSeverity: AlertSeverity;
@@ -648,6 +649,7 @@ export const getAlertDefinitionCreateData = (
     enabled: boolean;
     dedupeStrategy?: Partial<TDedupeStrategy>;
     description?: string;
+    correlationId?: string;
   },
   project: Project,
   createdBy: string = 'SYSTEM',
@@ -666,7 +668,7 @@ export const getAlertDefinitionCreateData = (
     },
     monitoringType: monitoringType ?? MonitoringType.transaction_monitoring,
     inlineRule,
-    correlationId: id,
+    correlationId: correlationId || id,
     name: id,
     rulesetId: `set-${id}`,
     description: description,
