@@ -1,4 +1,5 @@
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { checkIsBusiness } from '@/common/utils/check-is-business/check-is-business';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
@@ -15,21 +16,19 @@ import { useDocumentPageImages } from '@/lib/blocks/hooks/useDocumentPageImages'
 import { motionBadgeProps } from '@/lib/blocks/motion-badge-props';
 import { useCaseState } from '@/pages/Entity/components/Case/hooks/useCaseState/useCaseState';
 import {
+  checkIsEditable,
   composePickableCategoryType,
   extractCountryCodeFromWorkflow,
-  getIsEditable,
   isExistingSchemaForDocument,
 } from '@/pages/Entity/hooks/useEntityLogic/utils';
 import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
 import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
 import { CommonWorkflowStates, StateTag } from '@ballerine/common';
-import { TextArea } from '@ballerine/ui';
-import { Button } from '@ballerine/ui';
+import { Button, TextArea } from '@ballerine/ui';
 import { X } from 'lucide-react';
 import * as React from 'react';
-import { FunctionComponent, useCallback, useMemo } from 'react';
+import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { toTitleCase } from 'string-ts';
-import { useState } from 'react';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -396,6 +395,8 @@ export const useDocumentBlocks = ({
                     ]) => {
                       const fieldValue = value || (properties?.[title] ?? '');
                       const isEditableDecision = isDoneWithRevision || !decision?.status;
+                      const isEditableType =
+                        (title === 'type' && !checkIsBusiness(workflow)) || title !== 'type';
 
                       return {
                         title,
@@ -406,7 +407,8 @@ export const useDocumentBlocks = ({
                         isEditable:
                           isEditableDecision &&
                           caseState.writeEnabled &&
-                          getIsEditable(isEditable, title),
+                          checkIsEditable({ isEditable, field: title }) &&
+                          isEditableType,
                         dropdownOptions,
                         minimum: formatMinimum,
                         maximum: formatMaximum,

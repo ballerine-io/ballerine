@@ -41,6 +41,10 @@ export const useUpdateDocumentByIdMutation = ({
       const previousWorkflow = queryClient.getQueryData(workflowById.queryKey);
 
       queryClient.setQueryData(workflowById.queryKey, (oldWorkflow: TWorkflowById) => {
+        if (!oldWorkflow) {
+          return;
+        }
+
         return {
           ...oldWorkflow,
           context: {
@@ -49,6 +53,7 @@ export const useUpdateDocumentByIdMutation = ({
               if (doc.id === documentId) {
                 return document;
               }
+
               return doc;
             }),
           },

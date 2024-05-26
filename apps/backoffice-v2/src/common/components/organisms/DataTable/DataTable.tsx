@@ -60,6 +60,7 @@ export interface IDataTableProps<TData, TValue = any> {
     row?: ComponentProps<typeof TableRow>;
     body?: ComponentProps<typeof TableBody>;
     cell?: ComponentProps<typeof TableCell>;
+    noDataCell?: ComponentProps<typeof TableCell>;
     caption?: ComponentProps<typeof TableCaption>;
   };
 
@@ -185,7 +186,7 @@ export const DataTable = <TData extends RowData, TValue = any>({
   });
 
   return (
-    <div className="d-full relative overflow-auto rounded-md border bg-white shadow">
+    <div className="relative overflow-auto rounded-md border bg-white shadow">
       <ScrollArea orientation="both" {...props?.scroll}>
         <Table {...props?.table}>
           {caption && (
@@ -216,28 +217,31 @@ export const DataTable = <TData extends RowData, TValue = any>({
                         props?.head?.className,
                       )}
                     >
-                      {header.column.id === 'select' && (
+                      {header.column.id === 'select' && !header.isPlaceholder && (
                         <span className={'pe-4'}>
                           {flexRender(header.column.columnDef.header, header.getContext())}
                         </span>
                       )}
-                      {header.column.getCanSort() && header.column.id !== 'select' && (
-                        <button
-                          className="flex h-9 flex-row items-center gap-x-2 px-3 text-left text-[#A3A3A3]"
-                          onClick={() => header.column.toggleSorting()}
-                        >
-                          <span>
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                          </span>
-                          <ChevronDown
-                            className={ctw('d-4', {
-                              'rotate-180': header.column.getIsSorted() === 'asc',
-                            })}
-                          />
-                        </button>
-                      )}
+                      {header.column.getCanSort() &&
+                        !header.isPlaceholder &&
+                        header.column.id !== 'select' && (
+                          <button
+                            className="flex h-9 flex-row items-center gap-x-2 px-3 text-left text-[#A3A3A3]"
+                            onClick={() => header.column.toggleSorting()}
+                          >
+                            <span>
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                            </span>
+                            <ChevronDown
+                              className={ctw('d-4', {
+                                'rotate-180': header.column.getIsSorted() === 'asc',
+                              })}
+                            />
+                          </button>
+                        )}
                       {!header.column.getCanSort() &&
                         !header.isPlaceholder &&
+                        header.column.id !== 'select' &&
                         flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );
@@ -293,8 +297,8 @@ export const DataTable = <TData extends RowData, TValue = any>({
               >
                 <TableCell
                   colSpan={columns?.length}
-                  {...props?.cell}
-                  className={ctw('!py-px !pl-3.5', props?.cell?.className)}
+                  {...props?.noDataCell}
+                  className={ctw('p-4', props?.noDataCell?.className)}
                 >
                   No results.
                 </TableCell>

@@ -11,10 +11,10 @@ export class AlertDefinitionRepository {
     protected readonly scopeService: ProjectScopeService,
   ) {}
 
-  async findByAlertId<T extends Omit<Prisma.AlertDefinitionFindFirstOrThrowArgs, 'where'>>(
+  async findByAlertId(
     alertId: string,
     projectIds: TProjectIds,
-    args?: Prisma.SelectSubset<T, Omit<Prisma.AlertDefinitionFindFirstOrThrowArgs, 'where'>>,
+    args?: Omit<Prisma.AlertDefinitionFindFirstOrThrowArgs, 'where'>,
   ) {
     return this.findFirst(
       {
@@ -49,22 +49,25 @@ export class AlertDefinitionRepository {
   async findMany<T extends Prisma.AlertDefinitionFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.AlertDefinitionFindManyArgs>,
     projectIds: TProjectIds,
+    { orderBy }: { orderBy?: Prisma.AlertDefinitionOrderByWithRelationInput } = {},
   ): Promise<AlertDefinition[]> {
     const queryArgs = this.scopeService.scopeFindMany(args, projectIds);
 
-    return await this.prisma.alertDefinition.findMany(queryArgs);
+    return await this.prisma.alertDefinition.findMany({
+      ...queryArgs,
+      orderBy,
+    });
   }
 
-  async findById<T extends Omit<Prisma.AlertDefinitionFindFirstOrThrowArgs, 'where'>>(
+  async findById(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.AlertDefinitionFindFirstOrThrowArgs, 'where'>>,
+    args: Omit<Prisma.AlertDefinitionFindFirstOrThrowArgs, 'where'>,
     projectIds: TProjectIds,
   ): Promise<AlertDefinition> {
     const queryArgs = this.scopeService.scopeFindOne(
       {
         ...args,
         where: {
-          ...(args as Prisma.AlertDefinitionFindFirstOrThrowArgs)?.where,
           id,
         },
       },
@@ -84,9 +87,9 @@ export class AlertDefinitionRepository {
     });
   }
 
-  async deleteById<T extends Omit<Prisma.AlertDefinitionDeleteArgs, 'where'>>(
+  async deleteById(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.AlertDefinitionDeleteArgs, 'where'>>,
+    args: Omit<Prisma.AlertDefinitionDeleteArgs, 'where'>,
     projectIds: TProjectIds,
   ): Promise<AlertDefinition> {
     return await this.prisma.alertDefinition.delete(
