@@ -24,7 +24,6 @@ on:
       - staging
       - sb
       - demo
-      - test-cd
 
 env:
   REGISTRY: ghcr.io
