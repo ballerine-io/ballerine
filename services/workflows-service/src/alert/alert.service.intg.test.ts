@@ -1,4 +1,20 @@
-import { PrismaService } from '@/prisma/prisma.service';
+import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
+import { AlertRepository } from '@/alert/alert.repository';
+import { AlertService } from '@/alert/alert.service';
+import { BusinessReportRepository } from '@/business-report/business-report.repository';
+import { BusinessReportService } from '@/business-report/business-report.service';
+import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
+import { ProjectScopeService } from '@/project/project-scope.service';
+import { createCustomer } from '@/test/helpers/create-customer';
+import { createProject } from '@/test/helpers/create-project';
+import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
+import { commonTestingModules } from '@/test/helpers/nest-app-helper';
+import {
+  TransactionFactory,
+  createEndUserCounterparty,
+} from '@/transaction/test-utils/transaction-factory';
+import { faker } from '@faker-js/faker';
+import { Test } from '@nestjs/testing';
 import {
   AlertDefinition,
   Counterparty,
@@ -8,22 +24,50 @@ import {
   TransactionDirection,
   TransactionRecordType,
 } from '@prisma/client';
-import { tearDownDatabase } from '@/test/helpers/database-helper';
-import { createCustomer } from '@/test/helpers/create-customer';
-import { faker } from '@faker-js/faker';
-import { createProject } from '@/test/helpers/create-project';
-import { TransactionFactory } from '@/transaction/test-utils/transaction-factory';
-import { AlertService } from '@/alert/alert.service';
-import { commonTestingModules } from '@/test/helpers/nest-app-helper';
-import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
-import { ProjectScopeService } from '@/project/project-scope.service';
-import { Test } from '@nestjs/testing';
-import { AlertRepository } from '@/alert/alert.repository';
-import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import {
   ALERT_DEFINITIONS,
+  generateAlertDefinitions,
   getAlertDefinitionCreateData,
 } from '../../scripts/alerts/generate-alerts';
+
+import { PrismaService } from './../prisma/prisma.service';
+
+type AsyncTransactionFactoryCallback = (
+  transactionFactory: TransactionFactory,
+) => Promise<TransactionFactory | void>;
+
+const maskedVisaCardNumber = () => {
+  const cardNumber: string = faker.finance.creditCardNumber('visa');
+
+  // Extract the required parts of the card number
+  const firstSix = cardNumber.substring(0, 6);
+  const lastFour = cardNumber.substring(cardNumber.length - 4);
+
+  // Construct the masked number with the desired pattern
+  const maskedNumber = `${firstSix}******${lastFour}`.replace('-', '');
+
+  return maskedNumber;
+};
+
+const createTransactionsWithCounterpartyAsync = async (
+  project: Project | undefined,
+  prismaService: PrismaService,
+  callback: AsyncTransactionFactoryCallback,
+) => {
+  const counteryparty = await createCounterparty(prismaService, project);
+
+  const baseTransactionFactory = new TransactionFactory({
+    prisma: prismaService,
+    projectId: counteryparty.projectId,
+  })
+    .withCounterpartyBeneficiary(counteryparty.id)
+    .direction(TransactionDirection.inbound)
+    .paymentMethod(PaymentMethod.credit_card);
+
+  (await callback(baseTransactionFactory)) as TransactionFactory;
+
+  return baseTransactionFactory;
+};
 
 describe('AlertService', () => {
   let prismaService: PrismaService;
@@ -40,6 +84,10 @@ describe('AlertService', () => {
         ProjectScopeService,
         AlertRepository,
         AlertDefinitionRepository,
+        BusinessReportService,
+        BusinessReportRepository,
+        BusinessReportService,
+        BusinessReportRepository,
         AlertService,
       ],
     }).compile();
@@ -50,6 +98,7 @@ describe('AlertService', () => {
   });
 
   beforeEach(async () => {
+    await cleanupDatabase();
     await prismaService.$executeRaw`TRUNCATE TABLE "public"."Alert" CASCADE;`;
     await prismaService.$executeRaw`TRUNCATE TABLE "public"."AlertDefinition" CASCADE;`;
     await prismaService.$executeRaw`TRUNCATE TABLE "public"."TransactionRecord" CASCADE;`;
@@ -82,12 +131,83 @@ describe('AlertService', () => {
         .transactionDate(faker.date.recent(6));
     });
 
+    describe('Rule: DORMANT', () => {
+      let alertDefinition: AlertDefinition;
+
+      beforeEach(async () => {
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.DORMANT,
+              enabled: true,
+            },
+            project,
+          ),
+        });
+
+        expect(ALERT_DEFINITIONS.DORMANT).not.toHaveProperty('options');
+      });
+
+      test('When there is activity in the last 180 days', async () => {
+        // Arrange
+        const baseTransactionFactory = await createTransactionsWithCounterpartyAsync(
+          project,
+          prismaService,
+          async (transactionFactory: TransactionFactory) => {
+            const castedTransactionFactory = transactionFactory as TransactionFactory;
+
+            await castedTransactionFactory.transactionDate(faker.date.past(10)).count(9).create();
+
+            await castedTransactionFactory.transactionDate(faker.date.recent(30)).count(1).create();
+          },
+        );
+
+        const counterpartyBeneficiary =
+          baseTransactionFactory.data.counterpartyBeneficiary?.connect?.id;
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(1);
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(counterpartyBeneficiary);
+      });
+
+      test('When there is no activity in the project', async () => {
+        // Arrange
+        const newProject = undefined;
+        await createTransactionsWithCounterpartyAsync(
+          newProject,
+          prismaService,
+          async transactionFactory => {
+            await transactionFactory.transactionDate(faker.date.past(10)).count(9).create();
+            await transactionFactory.transactionDate(faker.date.recent(30)).count(1).create();
+          },
+        );
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
     describe('Rule: STRUC_CC', () => {
       let alertDefinition: AlertDefinition;
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.STRUC_CC, project),
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.STRUC_CC,
+              enabled: true,
+            },
+            project,
+          ),
         });
 
         expect(
@@ -182,7 +302,13 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.STRUC_APM, project),
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.STRUC_APM,
+              enabled: true,
+            },
+            project,
+          ),
         });
 
         expect(
@@ -284,7 +410,13 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.CHVC_C, project),
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.CHVC_C,
+              enabled: true,
+            },
+            project,
+          ),
         });
       });
 
@@ -344,7 +476,13 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.SHCAC_C, project),
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.SHCAC_C,
+              enabled: true,
+            },
+            project,
+          ),
         });
       });
 
@@ -661,41 +799,36 @@ describe('AlertService', () => {
           ),
         });
 
-        const correlationId = faker.datatype.uuid();
-        counteryparty = await prismaService.counterparty.create({
-          data: {
-            project: { connect: { id: project.id } },
-            correlationId: correlationId,
-            business: {
-              create: {
-                correlationId: correlationId,
-                companyName: faker.company.name(),
-                registrationNumber: faker.datatype.uuid(),
-                mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
-                businessType: faker.lorem.word(),
-                project: { connect: { id: project.id } },
-              },
-            },
-          },
-        });
+        counteryparty = await createCounterparty(prismaService, project);
       });
 
       it('When there are >2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, an alert should be created', async () => {
-        // Arrange
-        await baseTransactionFactory
-          .direction('inbound')
+        const { minimumTransactionAmount } = ALERT_DEFINITIONS.TLHAICC.inlineRule.options;
+
+        const txFactory = transactionFactory
           .paymentMethod(PaymentMethod.credit_card)
-          .withCounterpartyBeneficiary(counteryparty.id)
-          .amount(150)
-          .count(2)
+          .direction(TransactionDirection.inbound)
+          .withCounterpartyBeneficiary(counteryparty.id);
+
+        // Noise
+        await txFactory
+          .paymentMethod(PaymentMethod.apm)
+          .amount(1500)
+          .transactionDate(faker.date.recent(3))
+          .count(1)
           .create();
 
+        // Arrange
+        await txFactory.amount(400).transactionDate(faker.date.past(3)).count(1).create();
+
+        await txFactory.amount(300).transactionDate(faker.date.recent(30)).count(1).create();
+
         await baseTransactionFactory
-          .direction('inbound')
           .paymentMethod(PaymentMethod.credit_card)
-          .withCounterpartyBeneficiary(counteryparty.id)
-          .amount(300)
-          .count(1)
+          .direction(TransactionDirection.inbound)
+          .amount(minimumTransactionAmount + 1)
+          .transactionDate(faker.date.past(2))
+          .count(3)
           .create();
 
         // Act
@@ -711,7 +844,7 @@ describe('AlertService', () => {
       it('When there are 2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, no alert should be created', async () => {
         // Arrange
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(150)
@@ -719,7 +852,7 @@ describe('AlertService', () => {
           .create();
 
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(300)
@@ -772,7 +905,7 @@ describe('AlertService', () => {
       it('When there are >2 APM transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, an alert should be created', async () => {
         // Arrange
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.apple_pay)
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(150)
@@ -780,7 +913,7 @@ describe('AlertService', () => {
           .create();
 
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.pay_pal)
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(300)
@@ -800,7 +933,7 @@ describe('AlertService', () => {
       it('When there are 2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, no alert should be created', async () => {
         // Arrange
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.google_pay)
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(150)
@@ -808,7 +941,7 @@ describe('AlertService', () => {
           .create();
 
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.bank_transfer)
           .withCounterpartyBeneficiary(counteryparty.id)
           .amount(300)
@@ -845,7 +978,7 @@ describe('AlertService', () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
           .amount(2)
           .count(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold + 1)
@@ -867,14 +1000,14 @@ describe('AlertService', () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
           .amount(150)
           .count(ALERT_DEFINITIONS.PAY_HCA_CC.inlineRule.options.amountThreshold % 10)
           .create();
 
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .withBusinessBeneficiary()
           .paymentMethod(PaymentMethod.apple_pay)
           .amount(150)
@@ -913,7 +1046,7 @@ describe('AlertService', () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.debit_card)
           .amount(2)
           .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold + 1)
@@ -935,14 +1068,14 @@ describe('AlertService', () => {
         // Arrange
         await baseTransactionFactory
           .withBusinessBeneficiary()
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .paymentMethod(PaymentMethod.credit_card)
           .amount(150)
           .count(ALERT_DEFINITIONS.PAY_HCA_APM.inlineRule.options.amountThreshold % 10)
           .create();
 
         await baseTransactionFactory
-          .direction('inbound')
+          .direction(TransactionDirection.inbound)
           .withBusinessBeneficiary()
           .paymentMethod(PaymentMethod.apple_pay)
           .amount(150)
@@ -957,5 +1090,542 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(0);
       });
     });
+
+    describe('Rule: PGAICT', () => {
+      let alertDefinition: AlertDefinition;
+      let counteryparty: Counterparty;
+
+      beforeEach(async () => {
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.PGAICT,
+              enabled: true,
+            },
+            project,
+          ),
+        });
+
+        const correlationId = faker.datatype.uuid();
+        counteryparty = await prismaService.counterparty.create({
+          data: {
+            project: { connect: { id: project.id } },
+            correlationId: correlationId,
+            business: {
+              create: {
+                correlationId: correlationId,
+                companyName: faker.company.name(),
+                registrationNumber: faker.datatype.uuid(),
+                mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+                project: { connect: { id: project.id } },
+                businessType: ALERT_DEFINITIONS.PGAICT.inlineRule.options.customerType,
+              },
+            },
+          },
+        });
+      });
+
+      it('When there are >2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, an alert should be created', async () => {
+        // Noise transactions
+        const { minimumTransactionAmount, transactionFactor, timeAmount } =
+          ALERT_DEFINITIONS.PGAICT.inlineRule.options;
+        await transactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .transactionDate(faker.date.past(2))
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(minimumTransactionAmount * transactionFactor * transactionFactor)
+          .count(10)
+          .create();
+
+        // Arrange
+        await transactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .transactionDate(faker.date.recent(timeAmount - 1))
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(minimumTransactionAmount + 1)
+          .count(10)
+          .create();
+
+        await baseTransactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(minimumTransactionAmount * transactionFactor + 1)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(1);
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+      });
+
+      it('When there are 2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, no alert should be created', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(150)
+          .count(1)
+          .create();
+
+        await baseTransactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(300)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('Rule: PGAIAPM', () => {
+      let alertDefinition: AlertDefinition;
+      let counteryparty: Counterparty;
+
+      beforeEach(async () => {
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.PGAIAPM,
+              enabled: true,
+            },
+            project,
+          ),
+        });
+
+        const correlationId = faker.datatype.uuid();
+        counteryparty = await prismaService.counterparty.create({
+          data: {
+            project: { connect: { id: project.id } },
+            correlationId: correlationId,
+            business: {
+              create: {
+                correlationId: correlationId,
+                companyName: faker.company.name(),
+                registrationNumber: faker.datatype.uuid(),
+                mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+                project: { connect: { id: project.id } },
+                businessType: ALERT_DEFINITIONS.PGAICT.inlineRule.options.customerType,
+              },
+            },
+          },
+        });
+      });
+
+      it('When there are >2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, an alert should be created', async () => {
+        // Noise transactions
+        const { minimumTransactionAmount, transactionFactor, timeAmount } =
+          ALERT_DEFINITIONS.PGAICT.inlineRule.options;
+        await transactionFactory
+          .direction(TransactionDirection.outbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .transactionDate(faker.date.past(2))
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(minimumTransactionAmount * transactionFactor * transactionFactor)
+          .count(10)
+          .create();
+
+        await transactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.apm)
+          .transactionDate(faker.date.past(1))
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(minimumTransactionAmount + 1)
+          .count(10)
+          .create();
+
+        // Arrange
+        await transactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.apm)
+          .transactionDate(faker.date.recent(timeAmount - 1))
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(minimumTransactionAmount + 1)
+          .count(10)
+          .create();
+
+        await baseTransactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.debit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(minimumTransactionAmount * transactionFactor + 1)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(1);
+        expect(alerts[0]?.alertDefinitionId).toEqual(alertDefinition.id);
+        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+      });
+
+      it('When there are 2 credit card transactions with >100 base amount and one transaction exceeds the average of all credit card transactions, no alert should be created', async () => {
+        // Arrange
+        await baseTransactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(150)
+          .count(1)
+          .create();
+
+        await baseTransactionFactory
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .amount(300)
+          .count(1)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('Rule: HVHAI_CC', () => {
+      let oldTransactionFactory: TransactionFactory;
+
+      let alertDefinition: AlertDefinition;
+      let counteryparty: Counterparty;
+
+      beforeEach(async () => {
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.HVHAI_CC,
+              enabled: true,
+            },
+            project,
+          ),
+        });
+
+        counteryparty = await createCounterparty(prismaService, project);
+
+        oldTransactionFactory = transactionFactory
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .transactionDate(faker.date.recent(100));
+      });
+
+      it(`Trigger an alert when there inbound credit card transactions more than 180 days ago
+          had more than a set X within the last 3 days`, async () => {
+        // Has the customer been active for over 180 days (Has the customer had at least 1 Inbound credit card transactions more than 180 days ago)? (A condition that is used to ensure that we are calculating an average from an available representative sample of data - this condition would cause the rule not to alert in the customer's first 180 days of their credit card life cycle)
+        // Has the customer had more than a set [Number] of Inbound credit card transactions within the last 3 days? (A condition that is used to exclude cases when the number of Inbound credit card transactions in 3 days is more than 2 times greater than the customer's 3-day historic average number of Inbound credit card transactions, although of an insignificantly low number)
+        // Has the customer's number of Inbound credit card transactions in 3 days been more than a set [Factor] times greater than the customer's 3-day average number of Inbound credit card transactions (when the average is caclulated from the 177 days preceding the evaluated 3 days)?
+
+        // Arrange
+        await oldTransactionFactory.amount(10).count(3).create();
+
+        await oldTransactionFactory
+          .transactionDate(faker.date.recent(3, '2020-01-01T00:00:00.000Z'))
+          .amount(3)
+          .count(3)
+          .create();
+
+        const thresholdTransaction = ALERT_DEFINITIONS.HVHAI_CC.inlineRule.options.minimumCount + 1;
+        await oldTransactionFactory
+          .transactionDate(faker.date.recent(2))
+          .amount(300)
+          .count(thresholdTransaction)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(1);
+
+        expect(alerts[0]?.severity).toEqual('medium');
+
+        expect(alerts[0]?.executionDetails).toMatchObject({
+          checkpoint: {
+            hash: expect.any(String),
+          },
+          executionRow: {
+            counterpartyId: counteryparty.id,
+            historicalTransactionCount: '7',
+            recentDaysTransactionCount: `${thresholdTransaction}`,
+          },
+        });
+      });
+
+      it(`When there active users with no inbound credit card`, async () => {
+        // Arrange
+        const txFactory = oldTransactionFactory
+          .direction(TransactionDirection.outbound)
+          .paymentMethod(PaymentMethod.apple_pay);
+
+        await txFactory.amount(10).count(3).create();
+
+        const thresholdTransaction = ALERT_DEFINITIONS.HVHAI_CC.inlineRule.options.minimumCount + 1;
+
+        await txFactory
+          .transactionDate(faker.date.recent(2))
+          .amount(300)
+          .count(thresholdTransaction)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('Rule: HVHAI_APM', () => {
+      let oldTransactionFactory: TransactionFactory;
+
+      let alertDefinition: AlertDefinition;
+      let counteryparty: Counterparty;
+
+      beforeEach(async () => {
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.HVHAI_APM,
+              enabled: true,
+            },
+            project,
+          ),
+        });
+
+        counteryparty = await createCounterparty(prismaService, project);
+
+        oldTransactionFactory = transactionFactory
+          .withCounterpartyBeneficiary(counteryparty.id)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.apple_pay)
+          .transactionDate(faker.date.recent(100));
+      });
+
+      it(`Trigger an alert when there inbound and non credit card transactions more than 180 days ago
+          had more than a set X within the last 3 days`, async () => {
+        // Arrange
+        await oldTransactionFactory.amount(10).count(3).create();
+
+        await oldTransactionFactory
+          .transactionDate(faker.date.recent(3, '2020-01-01T00:00:00.000Z'))
+          .amount(3)
+          .count(3)
+          .create();
+
+        const thresholdTransaction =
+          ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.minimumCount + 1;
+        await oldTransactionFactory
+          .transactionDate(faker.date.recent(2))
+          .amount(300)
+          .count(thresholdTransaction)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(1);
+
+        expect(alerts[0]?.severity).toEqual('medium');
+
+        expect(alerts[0]?.executionDetails).toMatchObject({
+          checkpoint: {
+            hash: expect.any(String),
+          },
+          executionRow: {
+            counterpartyId: counteryparty.id,
+            historicalTransactionCount: '7',
+            recentDaysTransactionCount: `${thresholdTransaction}`,
+          },
+        });
+      });
+
+      it(`When there active users with no inbound credit card`, async () => {
+        // Arrange
+        const txFactory = oldTransactionFactory
+          .direction(TransactionDirection.outbound)
+          .paymentMethod(PaymentMethod.apple_pay);
+
+        await txFactory.amount(10).count(3).create();
+
+        const thresholdTransaction =
+          ALERT_DEFINITIONS.HVHAI_APM.inlineRule.options.minimumCount + 1;
+
+        await txFactory
+          .transactionDate(faker.date.recent(2))
+          .amount(300)
+          .count(thresholdTransaction)
+          .create();
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('Rule: MMOC_CC', () => {
+      let _transactionFactory: TransactionFactory;
+
+      let alertDefinition: AlertDefinition;
+      let counteryparty: Counterparty;
+
+      beforeEach(async () => {
+        counteryparty = await createEndUserCounterparty({
+          prismaService,
+          projectId: project.id,
+          correlationIdFn: maskedVisaCardNumber,
+        });
+
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.MMOC_CC,
+              enabled: true,
+            },
+            project,
+          ),
+        });
+
+        _transactionFactory = transactionFactory
+          .withBusinessBeneficiary()
+          .withCounterpartyOriginator(counteryparty.id)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .transactionDate(faker.date.recent(6))
+          .count(1);
+
+        await Promise.all(
+          new Array(ALERT_DEFINITIONS.MMOC_CC.inlineRule.options.minimumCount + 1)
+            .fill(null)
+            .map(async () => {
+              return await _transactionFactory.create();
+            }),
+        );
+      });
+
+      it(`Trigger an alert`, async () => {
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(1);
+
+        expect(alerts[0]?.severity).toEqual('high');
+
+        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+
+        expect(alerts[0]?.executionDetails).toMatchObject({
+          checkpoint: {
+            hash: expect.any(String),
+          },
+          executionRow: {
+            counterpartyId: counteryparty.id,
+            counterpertyInManyBusinessesCount: `${
+              ALERT_DEFINITIONS.MMOC_CC.inlineRule.options.minimumCount + 1
+            }`,
+          },
+        });
+      });
+
+      it(`When ignore the originator counter party`, async () => {
+        // Arrange
+        await generateAlertDefinitions(prismaService, {
+          project,
+          alertsDef: {
+            MMOC_CC: {
+              ...ALERT_DEFINITIONS.MMOC_CC,
+              inlineRule: {
+                ...ALERT_DEFINITIONS.MMOC_CC.inlineRule,
+                options: {
+                  ...ALERT_DEFINITIONS.MMOC_CC.inlineRule.options,
+                  excludedCounterparty: {
+                    // @ts-ignore -- change list
+                    counterpartyOriginatorIds: [counteryparty.correlationId],
+                    // @ts-ignore -- change list
+                    counterpartyBeneficiaryIds: [],
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(0);
+      });
+    });
   });
 });
+const createCounterparty = async (
+  prismaService: PrismaService,
+  proj?: Pick<Project, 'id'>,
+  { correlationIdFn }: { correlationIdFn?: () => string } = {},
+) => {
+  const correlationId = correlationIdFn ? correlationIdFn() : faker.datatype.uuid();
+
+  if (!proj) {
+    const customer = await createCustomer(
+      prismaService,
+      faker.datatype.uuid(),
+      faker.datatype.uuid(),
+      '',
+      '',
+      'webhook-shared-secret',
+    );
+
+    proj = await createProject(prismaService, customer, faker.datatype.uuid());
+  }
+
+  return await prismaService.counterparty.create({
+    data: {
+      project: { connect: { id: proj.id } },
+      correlationId,
+      business: {
+        create: {
+          correlationId,
+          companyName: faker.company.name(),
+          registrationNumber: faker.datatype.uuid(),
+          mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+          businessType: faker.lorem.word(),
+          project: { connect: { id: proj.id } },
+        },
+      },
+    },
+  });
+};
