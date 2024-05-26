@@ -1,4 +1,4 @@
-import { hashKey } from './../src/customer/api-key/utils';
+import { hashKey } from '../src/customer/api-key/utils';
 import { faker } from '@faker-js/faker';
 import { Business, Customer, EndUser, Prisma, PrismaClient, Project } from '@prisma/client';
 import { hash } from 'bcrypt';
@@ -34,7 +34,7 @@ import {
 import { generateTransactions } from './alerts/generate-transactions';
 import { generateKycManualReviewRuntimeAndToken } from './workflows/runtime/geneate-kyc-manual-review-runtime-and-token';
 import { Type } from '@sinclair/typebox';
-import { generateFakeAlertsAndDefinitions as generateFakeAlertDefinitions } from './alerts/generate-alerts';
+import { seedTransactionsAlerts } from './alerts/generate-alerts';
 
 const BCRYPT_SALT: string | number = 10;
 
@@ -147,14 +147,6 @@ async function seed() {
   const project2 = await createProject(client, customer2, '2');
 
   const [adminUser, ...agentUsers] = await createUsers({ project1, project2 }, client);
-
-  await generateFakeAlertDefinitions(client, {
-    project: project1,
-    counterparyIds: [...ids1, ...ids2]
-      .map(({ counterpartyOriginatorId }) => counterpartyOriginatorId)
-      .filter(Boolean) as string[],
-    agentUserIds: agentUsers.map(({ id }) => id),
-  });
 
   const kycManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9aaa';
   const kybManualMachineId = 'MANUAL_REVIEW_0002zpeid7bq9bbb';
@@ -945,24 +937,6 @@ async function seed() {
     project1.id,
   );
 
-  await client.$transaction(async () =>
-    endUserIds.map(async (id, index) =>
-      client.endUser.create({
-        /// I tried to fix that so I can run through ajv, currently it doesn't like something in the schema (anyOf  )
-        data: generateEndUser({
-          id,
-          workflow: {
-            workflowDefinitionId: kycManualMachineId,
-            workflowDefinitionVersion: manualMachineVersion,
-            context: await createMockEndUserContextData(id, index + 1),
-            state: DEFAULT_INITIAL_STATE,
-          },
-          projectId: project1.id,
-        }),
-      }),
-    ),
-  );
-
   await client.$transaction(async tx => {
     businessRiskIds.map(async (id, index) => {
       const riskWf = async () => ({
@@ -1004,6 +978,14 @@ async function seed() {
     });
   });
 
+  await seedTransactionsAlerts(client, {
+    project: project1,
+    businessIds: businessRiskIds,
+    counterpartyIds: [...ids1, ...ids2]
+      .map(({ counterpartyOriginatorId }) => counterpartyOriginatorId)
+      .filter(Boolean) as string[],
+    agentUserIds: agentUsers.map(({ id }) => id),
+  });
   // TODO: create business with enduser attched to them
   // await client.business.create({
   //   data: {
@@ -1023,6 +1005,26 @@ async function seed() {
   //     },
   //   },
   // });
+
+  await client.$transaction(async () =>
+    endUserIds.map(async (id, index) =>
+      client.endUser.create({
+        /// I tried to fix that so I can run through ajv, currently it doesn't like something in the schema (anyOf  )
+        data: generateEndUser({
+          id,
+          workflow: {
+            workflowDefinitionId: kycManualMachineId,
+            workflowDefinitionVersion: manualMachineVersion,
+            context: await createMockEndUserContextData(id, index + 1),
+            state: DEFAULT_INITIAL_STATE,
+          },
+          projectId: project1.id,
+          connectBusinesses: Math.random() > 0.5,
+        }),
+      }),
+    ),
+  );
+
   void client.$disconnect();
 
   console.info('Seeding database with custom seed...');

@@ -10,7 +10,7 @@ export const Success = withSessionProtected(() => {
   const { t } = useTranslation();
   const { customer } = useCustomer();
 
-  const exitFromApp = useAppExit();
+  const { exit, isExitAvailable } = useAppExit();
 
   return (
     <div className="flex h-full items-center justify-center">
@@ -29,9 +29,9 @@ export const Success = withSessionProtected(() => {
             {t('success.content')}
           </h2>
         </div>
-        {customer?.displayName && (
+        {customer?.displayName && isExitAvailable && (
           <div className="flex justify-center">
-            <Button variant="secondary" onClick={exitFromApp}>
+            <Button variant="secondary" onClick={exit}>
               {t('backToPortal', { companyName: customer.displayName })}
             </Button>
           </div>

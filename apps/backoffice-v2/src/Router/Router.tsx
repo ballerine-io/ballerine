@@ -24,6 +24,8 @@ import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMoni
 import { Home } from '@/pages/Home/Home.page';
 import { Statistics } from '@/pages/Statistics/Statistics.page';
 import { Workflows } from '@/pages/Workflows/Workflows.page';
+import { Profiles } from '@/pages/Profiles/Profiles.page';
+import { Individuals } from '@/pages/Profiles/Individuals/Individuals.page';
 
 const router = createBrowserRouter([
   {
@@ -88,6 +90,18 @@ const router = createBrowserRouter([
                         errorElement: <RouteError />,
                       },
                     ],
+                  },
+                ],
+              },
+              {
+                path: '/:locale/profiles',
+                element: <Profiles />,
+                errorElement: <RouteError />,
+                children: [
+                  {
+                    path: '/:locale/profiles/individuals',
+                    element: <Individuals />,
+                    errorElement: <RouteError />,
                   },
                 ],
               },

@@ -38,6 +38,9 @@ import { WorkflowControllerInternal } from '@/workflow/workflow.controller.inter
 import { WorkflowService } from '@/workflow/workflow.service';
 import { HttpModule } from '@nestjs/axios';
 import { forwardRef, Module } from '@nestjs/common';
+import { AlertModule } from '@/alert/alert.module';
+import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
+import { AlertDefinitionModule } from '@/alert-definition/alert-definition.module';
 
 @Module({
   controllers: [WorkflowControllerExternal, WorkflowControllerInternal],
@@ -50,7 +53,10 @@ import { forwardRef, Module } from '@nestjs/common';
     CustomerModule,
     BusinessReportModule,
     WorkflowDefinitionModule,
+    AlertModule,
     BusinessModule,
+    DataAnalyticsModule,
+    AlertDefinitionModule,
   ],
   providers: [
     WorkflowDefinitionRepository,

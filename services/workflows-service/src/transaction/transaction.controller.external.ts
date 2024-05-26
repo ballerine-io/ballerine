@@ -2,6 +2,7 @@ import * as swagger from '@nestjs/swagger';
 import { TransactionService } from '@/transaction/transaction.service';
 import {
   TransactionCreateAltDto,
+  TransactionCreateAltDtoWrapper,
   TransactionCreateDto,
 } from '@/transaction/dtos/transaction-create.dto';
 import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
@@ -62,10 +63,6 @@ export class TransactionControllerExternal {
     });
     const creationResponse = creationResponses[0]!;
 
-    if ('error' in creationResponse) {
-      throw creationResponse.error;
-    }
-
     res.status(201).json(creationResponse);
   }
 
@@ -79,20 +76,16 @@ export class TransactionControllerExternal {
         exceptionFactory: exceptionValidationFactory,
       }),
     )
-    body: TransactionCreateAltDto,
+    body: TransactionCreateAltDtoWrapper,
     @Res() res: express.Response,
     @CurrentProject() currentProjectId: types.TProjectId,
   ) {
-    const tranformedPayload = TransactionEntityMapper.altDtoToOriginalDto(body);
+    const tranformedPayload = TransactionEntityMapper.altDtoToOriginalDto(body.data);
     const creationResponses = await this.service.createBulk({
       transactionsPayload: [tranformedPayload],
       projectId: currentProjectId,
     });
     const creationResponse = creationResponses[0]!;
-
-    if ('error' in creationResponse) {
-      throw creationResponse.error;
-    }
 
     res.status(201).json(creationResponse);
   }
@@ -107,15 +100,17 @@ export class TransactionControllerExternal {
   async createAltBulk(
     @Body(
       new ParseArrayPipe({
-        items: TransactionCreateAltDto,
+        items: TransactionCreateAltDtoWrapper,
         exceptionFactory: exceptionValidationFactory,
       }),
     )
-    body: TransactionCreateAltDto[],
+    body: TransactionCreateAltDtoWrapper[],
     @Res() res: express.Response,
     @CurrentProject() currentProjectId: types.TProjectId,
   ) {
-    const tranformedPayload = body.map(TransactionEntityMapper.altDtoToOriginalDto);
+    const tranformedPayload = body.map(({ data }) =>
+      TransactionEntityMapper.altDtoToOriginalDto(data),
+    );
     const creationResponses = await this.service.createBulk({
       transactionsPayload: tranformedPayload,
       projectId: currentProjectId,
@@ -124,12 +119,12 @@ export class TransactionControllerExternal {
     let hasErrors = false;
 
     const response = creationResponses.map(creationResponse => {
-      if ('error' in creationResponse) {
+      if ('errorMessage' in creationResponse) {
         hasErrors = true;
 
         return {
           status: BulkStatus.FAILED,
-          error: creationResponse.error.message,
+          error: creationResponse.errorMessage,
           data: {
             correlationId: creationResponse.correlationId,
           },
@@ -171,12 +166,12 @@ export class TransactionControllerExternal {
     let hasErrors = false;
 
     const response = creationResponses.map(creationResponse => {
-      if ('error' in creationResponse) {
+      if ('errorMessage' in creationResponse) {
         hasErrors = true;
 
         return {
           status: BulkStatus.FAILED,
-          error: creationResponse.error.message,
+          error: creationResponse.errorMessage,
           data: {
             correlationId: creationResponse.correlationId,
           },
