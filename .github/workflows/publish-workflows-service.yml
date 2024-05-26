@@ -2,7 +2,7 @@ name: Publish workflows-service image
 
 on:
   repository_dispatch:
-    types: [trigger-cd-event]
+    types: [invoke-cd-from-external-repo]
   workflow_dispatch:
     inputs:
       deploy_to_dev:
@@ -30,8 +30,24 @@ env:
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
 
 jobs:
+  determine_branch:
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.set-branch.outputs.branch }}
+    steps:
+      - name: Set branch
+        id: set-branch
+        run: |
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            echo "branch=${{ github.event.client_payload.ref }}" >> $GITHUB_OUTPUT
+          else
+            echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+          echo "local branch=${{ github.ref_name }}, client_payload ref=${{ github.event.client_payload.ref }}"
+
   build-and-push-image:
     runs-on: ubuntu-latest
+    needs: determine_branch
     permissions:
       contents: read
       packages: write
@@ -103,8 +119,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ github.ref_name }}
-            type=raw,value=${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
+            type=raw,value=${{ needs.determine_branch.outputs.branch }}
+            type=raw,value=${{ steps.version.outputs.sha_short }}-${{ needs.determine_branch.outputs.branch }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
             type=sha,format=short
 
@@ -112,8 +128,8 @@ jobs:
         id: docker-version
         run: |
           DOCKER_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          DOCKER_TAG=${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
-          DOCKER_FULL_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
+          DOCKER_TAG=${{ steps.version.outputs.sha_short }}-${{ needs.determine_branch.outputs.branch }}
+          DOCKER_FULL_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.sha_short }}-${{ needs.determine_branch.outputs.branch }}
 
           echo "DOCKER_IMAGE=$DOCKER_IMAGE"
           echo "DOCKER_TAG=$DOCKER_TAG"
@@ -159,7 +175,7 @@ jobs:
           severity: 'CRITICAL'
 
   update-helm-chart:
-    needs: build-and-push-ee-image
+    needs: [determine_branch, build-and-push-ee-image]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -174,7 +190,7 @@ jobs:
         with:
           repository: ballerine-io/cloud-infra-config
           token: ${{ secrets.GIT_TOKEN }}
-          ref: iamops/blue-green
+          ref: main
           fetch-depth: 1
           sparse-checkout: |
             kubernetes/helm/wf-service
@@ -183,8 +199,8 @@ jobs:
         id: update_helm_check
         shell: bash
         run: |
-          if [ -f "kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml" ]; then
-            echo "file_name=${{ github.ref_name }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
+          if [ -f "kubernetes/helm/wf-service/${{ needs.determine_branch.outputs.branch }}-custom-values.yaml" ]; then
+            echo "file_name=${{ needs.determine_branch.outputs.branch }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
           elif [ "${{ github.event.inputs.deploy_to_dev }}" == "true" ]; then
             echo "file_name=dev-custom-values.yaml" >> "$GITHUB_OUTPUT"
           else
@@ -196,7 +212,7 @@ jobs:
         uses: fjogeleit/yaml-update-action@main
         with:
           repository: ballerine-io/cloud-infra-config
-          branch: iamops/blue-green
+          branch: main
           commitChange: true
           message: 'Update wf-service image Version to sha-${{ needs.build-and-push-ee-image.outputs.wf_m_sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
@@ -263,6 +279,7 @@ jobs:
 
   check_if_data_migration_needed:
     runs-on: ubuntu-latest
+    needs: determine_branch
     outputs:
       should_build: ${{ steps.check-branch-existance.outputs.should_build }} # short sha of the commit
     steps:
@@ -277,12 +294,15 @@ jobs:
         id: check-branch-existance
         run: |
           cd services/workflows-service/prisma/data-migrations
+          git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ needs.determine_branch.outputs.branch }}
+          git checkout -b ${{ needs.determine_branch.outputs.branch }} origin/${{ needs.determine_branch.outputs.branch }}
+          git pull origin ${{ needs.determine_branch.outputs.branch }}
 
-          is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ github.ref_name }}" | wc -l)
+          is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ needs.determine_branch.outputs.branch }}" | wc -l)
 
           # Check if the branch exists by counting the number of results
           if [ $is_exists -eq 0  ]; then
-            echo "Branch '${{ github.ref_name }}' does not exist."
+            echo "Branch '${{ needs.determine_branch.outputs.branch }}' does not exist."
             echo "should_build=false" >> $GITHUB_OUTPUT
           else
             echo "should_build=true" >> $GITHUB_OUTPUT
@@ -291,7 +311,7 @@ jobs:
 
   build-and-push-ee-image:
     runs-on: ubuntu-latest
-    needs: [build-and-push-image, check_if_data_migration_needed]
+    needs: [build-and-push-image, check_if_data_migration_needed, determine_branch]
     if: ${{ needs.check_if_data_migration_needed.outputs.should_build == 'true' }}
     outputs:
       wf_m_sha_short: ${{ steps.fetch-submodule.outputs.wf_m_sha_short }} # short sha of the commit
@@ -323,9 +343,9 @@ jobs:
         id: fetch-submodule
         run: |
           cd services/workflows-service/prisma/data-migrations
-          git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ github.ref_name }}
-          git checkout -b ${{ github.ref_name }} origin/${{ github.ref_name }}
-          git pull origin ${{ github.ref_name }}
+          git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ needs.determine_branch.outputs.branch }}
+          git checkout -b ${{ needs.determine_branch.outputs.branch }} origin/${{ needs.determine_branch.outputs.branch }}
+          git pull origin ${{ needs.determine_branch.outputs.branch }}
           WF_M_SHORT_SHA=$(git rev-parse --short HEAD)
           echo "sha_short=$WF_M_SHORT_SHA"
           echo "wf_m_sha_short=$WF_M_SHORT_SHA" >> $GITHUB_OUTPUT
@@ -352,8 +372,8 @@ jobs:
         with:
           images: ${{needs.build-and-push-image.outputs.docker_image}}-ee
           tags: |
-            type=raw,value=${{ github.ref_name }}
-            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-${{ github.ref_name }}
+            type=raw,value=${{ needs.determine_branch.outputs.branch }}
+            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-${{ needs.determine_branch.outputs.branch }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
             type=sha,format=short
 
@@ -361,7 +381,7 @@ jobs:
         id: docker-version
         run: |
           DOCKER_IMAGE=${{needs.build-and-push-image.outputs.docker_image}}-ee
-          DOCKER_TAG=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-${{ github.ref_name }}
+          DOCKER_TAG=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-${{ needs.determine_branch.outputs.branch }}
           DOCKER_FULL_IMAGE=$DOCKER_IMAGE:$DOCKER_TAG
 
           echo "DOCKER_IMAGE=$DOCKER_IMAGE"
