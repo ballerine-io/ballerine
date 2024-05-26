@@ -55,27 +55,31 @@ const toOrderBy = (orderBy: string) => {
   };
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment -- ESLint doesn't like recursion
+// @ts-ignore
+const buildNestedObjectDeep = ({ keys, value }: { keys: string[]; value: string }) => {
+  if (keys.length === 0) return value;
+
+  const [firstKey, ...restKeys] = keys;
+
+  if (!firstKey) return value;
+
+  return {
+    [firstKey]: buildNestedObjectDeep({
+      keys: restKeys,
+      value,
+    }),
+  };
+};
+
 const toRelationalOrderBy = (orderBy: string) => {
   const [column = '', direction = ''] = orderBy.split(':');
   const keys = column.split('.');
 
-  const result: Record<PropertyKey, any> = {};
-  let current = result;
-
-  for (let i = 0; i < keys.length - 1; i++) {
-    const key = keys[i];
-
-    current[key as keyof typeof current] = {};
-    current = current[key as keyof typeof current];
-  }
-
-  const lastKey = keys[keys.length - 1];
-
-  if (!lastKey) return;
-
-  current[lastKey as keyof typeof current] = direction;
-
-  return result;
+  return buildNestedObjectDeep({
+    keys,
+    value: direction,
+  });
 };
 
 export const ListBusinessReportsSchema = z.object({
