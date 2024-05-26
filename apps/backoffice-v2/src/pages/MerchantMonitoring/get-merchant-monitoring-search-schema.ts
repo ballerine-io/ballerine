@@ -13,8 +13,12 @@ export const getMerchantMonitoringSearchSchema = (authenticatedUserId: string | 
         'business.companyName',
         'business.country',
         'riskScore',
+        'status',
       ] as const satisfies ReadonlyArray<
-        | Extract<keyof NonNullable<TBusinessReport>, 'createdAt' | 'updatedAt' | 'riskScore'>
+        | Extract<
+            keyof NonNullable<TBusinessReport>,
+            'createdAt' | 'updatedAt' | 'riskScore' | 'status'
+          >
         | 'business.website'
         | 'business.companyName'
         | 'business.country'

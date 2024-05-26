@@ -42,6 +42,7 @@ const sortableColumnsAlerts: Array<
   'business.companyName',
   'business.country',
   'riskScore',
+  'status',
 ];
 
 const toOrderBy = (orderBy: string) => {
