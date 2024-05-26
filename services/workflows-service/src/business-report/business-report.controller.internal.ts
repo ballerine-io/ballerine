@@ -51,8 +51,6 @@ export class BusinessReportControllerInternal {
     @CurrentProject() currentProjectId: TProjectId,
     @Query() searchQueryParams: ListBusinessReportsDto,
   ) {
-    this.logger.log('test', { test: searchQueryParams });
-
     return await this.businessReportService.findMany(
       {
         where: {
@@ -64,6 +62,7 @@ export class BusinessReportControllerInternal {
           updatedAt: true,
           report: true,
           riskScore: true,
+          status: true,
           business: {
             select: {
               companyName: true,

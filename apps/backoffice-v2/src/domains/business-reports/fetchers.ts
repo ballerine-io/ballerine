@@ -4,12 +4,28 @@ import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { TBusinessReportType } from '@/domains/business-reports/types';
 import qs from 'qs';
+import { TObjectValues } from '@/common/types';
+
+export const BusinessReportStatus = {
+  IN_PROGRESS: 'in_progress',
+  COMPLETED: 'completed',
+} as const;
+
+export type TBusinessReportStatus = TObjectValues<typeof BusinessReportStatus>;
+
+export type TBusinessReportStatuses = TBusinessReportStatus[];
+
+export const BusinessReportStatuses = [
+  BusinessReportStatus.IN_PROGRESS,
+  BusinessReportStatus.COMPLETED,
+] as const satisfies readonly TBusinessReportStatus[];
 
 export const BusinessReportSchema = z
   .object({
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     riskScore: z.number(),
+    status: z.enum(BusinessReportStatuses),
     report: z.object({
       reportFileId: z.string(),
     }),

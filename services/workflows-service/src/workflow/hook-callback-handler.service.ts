@@ -9,7 +9,12 @@ import type { UnifiedCallbackNames } from '@/workflow/types/unified-callback-nam
 import { WorkflowService } from '@/workflow/workflow.service';
 import { AnyRecord, ProcessStatus, TDocument } from '@ballerine/common';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { BusinessReportType, Customer, WorkflowRuntimeData } from '@prisma/client';
+import {
+  BusinessReportStatus,
+  BusinessReportType,
+  Customer,
+  WorkflowRuntimeData,
+} from '@prisma/client';
 import fs from 'fs';
 import { get, isObject, set } from 'lodash';
 import * as tmp from 'tmp';
@@ -165,6 +170,7 @@ export class HookCallbackHandlerService {
         create: {
           type: reportType as BusinessReportType,
           riskScore: reportRiskScore as number,
+          status: BusinessReportStatus.completed,
           report: {
             reportFileId: pdfReportBallerineFileId,
             data: reportData as InputJsonValue,
@@ -270,6 +276,7 @@ export class HookCallbackHandlerService {
         reportId: reportId as string,
         projectId: currentProjectId,
         riskScore: reportRiskScore,
+        status: BusinessReportStatus.completed,
       },
     });
 

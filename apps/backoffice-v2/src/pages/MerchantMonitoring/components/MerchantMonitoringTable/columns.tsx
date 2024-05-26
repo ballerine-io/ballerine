@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import React from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 import { TBusinessReport } from '@/domains/business-reports/fetchers';
+import { titleCase } from 'string-ts';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
@@ -83,7 +84,9 @@ export const columns = [
     cell: info => {
       const status = info.getValue();
 
-      return <TextWithNAFallback>{status}</TextWithNAFallback>;
+      return (
+        <TextWithNAFallback className={'font-semibold'}>{titleCase(status)}</TextWithNAFallback>
+      );
     },
     header: 'Status',
   }),
