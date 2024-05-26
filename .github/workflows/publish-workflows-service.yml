@@ -43,6 +43,7 @@ jobs:
           else
             echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           fi
+          echo "local branch=${{ github.ref_name }}, client_payload ref=${{ github.event.client_payload.ref }}"
 
   build-and-push-image:
     runs-on: ubuntu-latest
