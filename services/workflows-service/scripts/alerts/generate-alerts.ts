@@ -681,6 +681,7 @@ export const getAlertDefinitionCreateData = (
     monitoringType = MonitoringType.transaction_monitoring,
     enabled = false,
     dedupeStrategy = ALERT_DEDUPE_STRATEGY_DEFAULT,
+    correlationId,
   }: {
     inlineRule: InlineRule;
     defaultSeverity: AlertSeverity;
@@ -688,10 +689,13 @@ export const getAlertDefinitionCreateData = (
     enabled: boolean;
     dedupeStrategy?: Partial<TDedupeStrategy>;
     description?: string;
+    correlationId?: string;
   },
   project: Project,
   createdBy: string = 'SYSTEM',
-  extraColumns: any = {},
+  extraColumns: {
+    crossEnvKey: string;
+  },
 ) => {
   const id = inlineRule.id;
 
@@ -704,7 +708,7 @@ export const getAlertDefinitionCreateData = (
     },
     monitoringType: monitoringType ?? MonitoringType.transaction_monitoring,
     inlineRule,
-    correlationId: id,
+    correlationId: correlationId || id,
     name: id,
     rulesetId: `set-${String(id)}`,
     description: description,
@@ -714,9 +718,13 @@ export const getAlertDefinitionCreateData = (
     config: { config: {} },
     tags: [],
     additionalInfo: {},
-    ...extraColumns,
-    projectId: project.id,
-  };
+    crossEnvKey: extraColumns.crossEnvKey,
+    project: {
+      connect: {
+        id: project.id,
+      },
+    },
+  } as Prisma.AlertDefinitionCreateInput;
 };
 
 export const generateAlertDefinitions = async (
@@ -746,26 +754,39 @@ export const generateAlertDefinitions = async (
         ...alert,
       }))
       .filter(alert => alert.enabled)
-      .map(alertDef => {
+      .map(async alertDef => {
         const extraColumns = {
           crossEnvKey: crossEnvKeyPrefix
             ? `${crossEnvKeyPrefix}_${alertDef.inlineRule.id}`
-            : undefined,
+            : project.name
+                .toUpperCase()
+                .replace(' ', '_')
+                .replace(/[_-]?PROJECT[_-]?/g, 'P')
+                .replace(/[_-]?DEFAULT[_-]?/g, '')
+                .replace('-', '_')
+                .replace('__', '_') +
+              '_' +
+              alertDef.inlineRule.id,
         };
-
-        return prisma.alertDefinition.upsert({
-          where: {
-            correlationId_projectId: {
-              correlationId: alertDef.correlationId,
-              projectId: project.id,
+        let dbRes;
+        try {
+          dbRes = await prisma.alertDefinition.upsert({
+            where: {
+              crossEnvKey: extraColumns.crossEnvKey,
             },
-          },
-          create: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
-          update: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
-          include: {
-            alert: true,
-          },
-        });
+            create: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
+            update: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
+            include: {
+              alert: true,
+            },
+          });
+        } catch (error) {
+          console.error(error);
+          console.error('Error creating alert definition', alertDef, extraColumns);
+          throw error;
+        }
+
+        return dbRes;
       }),
   );
 

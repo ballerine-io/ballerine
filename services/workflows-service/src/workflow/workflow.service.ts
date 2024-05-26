@@ -131,7 +131,7 @@ export class WorkflowService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
+  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
     const select = {
       id: true,
       name: true,
@@ -142,14 +142,31 @@ export class WorkflowService {
       extensions: true,
       persistStates: true,
       submitStates: true,
-      parentRuntimeDataId: true,
     };
 
+    const createWorkflowDefinitionPayload = {
+      data: {
+        ...data,
+        definition: data.definition as InputJsonValue,
+        contextSchema: data.contextSchema as InputJsonValue,
+        documentsSchema: data.documentsSchema as InputJsonValue,
+        config: data.config as InputJsonValue,
+        supportedPlatforms: data.supportedPlatforms as InputJsonValue,
+        extensions: data.extensions as InputJsonValue,
+        backend: data.backend as InputJsonValue,
+        persistStates: data.persistStates as InputJsonValue,
+        submitStates: data.submitStates as InputJsonValue,
+      },
+      select,
+    } satisfies Parameters<WorkflowDefinitionRepository['create']>['0'];
+
     if (data.isPublic) {
-      return await this.workflowDefinitionRepository.createUnscoped({ data, select });
+      return await this.workflowDefinitionRepository.createUnscoped(
+        createWorkflowDefinitionPayload,
+      );
     }
 
-    return await this.workflowDefinitionRepository.create({ data, select });
+    return await this.workflowDefinitionRepository.create(createWorkflowDefinitionPayload);
   }
 
   async cloneWorkflowDefinition(data: WorkflowDefinitionCloneDto, projectId: string) {
