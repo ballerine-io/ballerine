@@ -11,6 +11,7 @@ import {
   TransactionsAgainstDynamicRulesType,
   TMultipleMerchantsOneCounterparty,
   TExcludedCounterparty,
+  TMerchantGroupAverage,
 } from './types';
 import { AggregateType, TIME_UNITS } from './consts';
 import { AlertSeverity, BusinessReport, BusinessReportType, Prisma } from '@prisma/client';
@@ -66,6 +67,11 @@ export class DataAnalyticsService {
         });
 
       case 'evaluateMultipleMerchantsOneCounterparty':
+        return await this[inlineRule.fnName]({
+          ...inlineRule.options,
+          projectId,
+        });
+      case 'evaluateMerchantGroupAverage':
         return await this[inlineRule.fnName]({
           ...inlineRule.options,
           projectId,
@@ -699,6 +705,110 @@ export class DataAnalyticsService {
       HAVING COUNT(distinct "tr"."counterpartyBeneficiaryId") > ${minimumCount};
       `,
     );
+  }
+
+  async evaluateHighTransactionTypePercentage2({
+    projectId,
+    transactionType,
+    subjectColumn,
+    minimumCount,
+    minimumPercentage,
+    timeAmount,
+    timeUnit,
+  }: HighTransactionTypePercentage) {
+    // TODO: Optimize this query with HAVING c
+    return await this._executeQuery<Array<{ counterpartyId: string }>>(Prisma.sql`
+      WITH "transactionsData" AS (
+        SELECT
+          "${Prisma.raw(subjectColumn)}",
+          COUNT(*) AS "transactionCount",
+          COUNT(*) FILTER (WHERE "transactionType"::text = ${Prisma.sql`${transactionType}`}) AS "filteredTransactionCount"
+        FROM
+          "TransactionRecord"
+        WHERE
+          "projectId" = ${projectId}
+          AND "transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+            `${timeAmount} ${timeUnit}`,
+          )}'
+        GROUP BY
+          "${Prisma.raw(subjectColumn)}"
+      )
+      SELECT
+        "${Prisma.raw(subjectColumn)}" AS "counterpartyId"
+      FROM
+        "transactionsData"
+      WHERE
+        "filteredTransactionCount" >= ${minimumCount}
+        AND "filteredTransactionCount"::decimal / "transactionCount"::decimal * 100 >= ${minimumPercentage}
+    `);
+  }
+
+  async evaluateMerchantGroupAverage({
+    projectId,
+    customerType,
+    timeAmount,
+    timeUnit,
+    transactionFactor,
+    minimumCount,
+    paymentMethod,
+  }: TMerchantGroupAverage) {
+    if (!projectId) {
+      throw new Error('projectId is required');
+    }
+
+    const recentDaysClause = Prisma.sql`"tr"."transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
+      `${timeAmount} ${timeUnit}`,
+    )}'`;
+
+    const transactionsOverAllTimeClause = Prisma.sql`"tr"."transactionDate" < CURRENT_DATE - INTERVAL '${Prisma.raw(
+      `${timeAmount} ${timeUnit}`,
+    )}'`;
+
+    const conditions: Prisma.Sql[] = [
+      Prisma.sql`"tr"."projectId" = ${projectId}`,
+      Prisma.sql`"tr"."paymentMethod"::text ${Prisma.raw(paymentMethod.operator)} ${
+        paymentMethod.value
+      }`,
+      !!customerType && Prisma.sql`b."businessType" = ${customerType}`,
+    ].filter(Boolean);
+
+    const sqlQuery = Prisma.sql`WITH tx_by_business AS
+    (SELECT "tr"."counterpartyBeneficiaryId" AS "counterpartyId",
+            "b"."businessType",
+            COUNT("tr".id) FILTER (
+                                   WHERE ${transactionsOverAllTimeClause}) AS "transactionCount",
+            COUNT("tr".id) FILTER (
+                                   WHERE ${recentDaysClause}) AS "recentDaysTransactionCount"
+     FROM "TransactionRecord" AS "tr"
+     JOIN "Counterparty" AS "cp" ON "tr"."counterpartyBeneficiaryId" = "cp".id
+     JOIN "Business" AS "b" ON "cp"."businessId" = "b".id
+     WHERE ${Prisma.join(conditions, ' AND ')}
+     GROUP BY "tr"."counterpartyBeneficiaryId",
+              "b"."businessType"
+     HAVING -- "transactionCount" > "recentDaysTransactionCount"
+   COUNT("tr".id) FILTER (
+                          WHERE tr."transactionDate" < CURRENT_DATE - INTERVAL '7 days') > COUNT("tr".id) FILTER (
+                                                                                                                  WHERE tr."transactionDate" >= CURRENT_DATE - INTERVAL '7 days')),
+       avg_business AS
+    (SELECT "businessType",
+            SUM("recentDaysTransactionCount") AS "totalTransactionsCount",
+            COUNT(DISTINCT "counterpartyId") AS "merchantCount"
+     FROM tx_by_business
+     WHERE "recentDaysTransactionCount" > ${minimumCount}
+     GROUP BY "businessType"
+     HAVING COUNT(*) > 1
+     AND SUM("recentDaysTransactionCount") > 1)
+  SELECT t."counterpartyId",
+         t."businessType",
+         t."transactionCount",
+         t."recentDaysTransactionCount",
+         (avg_business."totalTransactionsCount" - t."recentDaysTransactionCount")::FLOAT / (avg_business."merchantCount" - 1) AS avg_tx_excluding_current
+  FROM tx_by_business t
+  JOIN avg_business ON t."businessType" = avg_business."businessType"
+  WHERE 
+   t."recentDaysTransactionCount" > ${transactionFactor} * ((avg_business."totalTransactionsCount" - t."recentDaysTransactionCount")::FLOAT / (avg_business."merchantCount" - 1));`;
+
+    return await this._executeQuery<Array<{ counterpartyId: string }>>(sqlQuery);
   }
 
   private async _executeQuery<T = unknown>(query: Prisma.Sql) {
