@@ -1,5 +1,5 @@
-import { Outlet } from 'react-router-dom';
 import { useSelectEntityFilterOnMount } from '@/domains/entities/hooks/useSelectEntityFilterOnMount/useSelectEntityFilterOnMount';
+import { Outlet } from 'react-router-dom';
 
 export const CaseManagement = () => {
   useSelectEntityFilterOnMount();

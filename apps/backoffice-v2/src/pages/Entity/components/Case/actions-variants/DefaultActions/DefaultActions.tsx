@@ -1,15 +1,14 @@
-import { Dialog } from '@/common/components/organisms/Dialog/Dialog';
-import { DialogTrigger } from '@/common/components/organisms/Dialog/Dialog.Trigger';
 import { Button } from '@/common/components/atoms/Button/Button';
-import { ctw } from '@/common/utils/ctw/ctw';
+import { Dialog } from '@/common/components/organisms/Dialog/Dialog';
 import { DialogContent } from '@/common/components/organisms/Dialog/Dialog.Content';
-import { DialogHeader } from '@/common/components/organisms/Dialog/Dialog.Header';
-import { DialogTitle } from '@/common/components/organisms/Dialog/Dialog.Title';
 import { DialogDescription } from '@/common/components/organisms/Dialog/Dialog.Description';
 import { DialogFooter } from '@/common/components/organisms/Dialog/Dialog.Footer';
+import { DialogHeader } from '@/common/components/organisms/Dialog/Dialog.Header';
+import { DialogTitle } from '@/common/components/organisms/Dialog/Dialog.Title';
+import { DialogTrigger } from '@/common/components/organisms/Dialog/Dialog.Trigger';
+import { ctw } from '@/common/utils/ctw/ctw';
 import { DialogClose } from '@radix-ui/react-dialog';
 import { Send } from 'lucide-react';
-import React from 'react';
 
 import { useDefaultActionsLogic } from '@/pages/Entity/components/Case/actions-variants/DefaultActions/hooks/useDefaultActionsLogic/useDefaultActionsLogic';
 
@@ -29,14 +28,14 @@ export const DefaultActions = () => {
   } = useDefaultActionsLogic();
 
   return (
-    <div className={`flex items-center space-x-4 self-start pe-[3.35rem]`}>
+    <div className={`flex flex-wrap items-center gap-4 self-start pe-[3.35rem]`}>
       <Dialog>
         <DialogTrigger asChild>
           <Button
             size="md"
             variant="warning"
             disabled={isLoadingActions || !canRevision}
-            className={ctw({ loading: debouncedIsLoadingRejectCase })}
+            className={ctw({ loading: debouncedIsLoadingRejectCase }, 'whitespace-nowrap')}
           >
             Ask for all re-uploads {canRevision && `(${documentsToReviseCount})`}
           </Button>
