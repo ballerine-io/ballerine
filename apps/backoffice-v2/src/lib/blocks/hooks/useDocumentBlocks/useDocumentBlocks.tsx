@@ -9,6 +9,7 @@ import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorage
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { useCommentInput } from '@/lib/blocks/hooks/useDocumentBlocks/hooks/useCommentInput/useCommentInput';
 import { checkCanApprove } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-approve/check-can-approve';
 import { checkCanReject } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-reject/check-can-reject';
 import { checkCanRevision } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-revision/check-can-revision';
@@ -27,7 +28,7 @@ import { CommonWorkflowStates, StateTag } from '@ballerine/common';
 import { Button, TextArea } from '@ballerine/ui';
 import { X } from 'lucide-react';
 import * as React from 'react';
-import { FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
 
 export const useDocumentBlocks = ({
@@ -81,7 +82,11 @@ export const useDocumentBlocks = ({
     useApproveTaskByIdMutation(workflow?.id);
   const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(workflow?.id);
 
-  const [commentValue, setCommentValue] = useState('');
+  const {
+    value: commentValue,
+    handleChange: handleCommentChange,
+    clear: clearComment,
+  } = useCommentInput();
   const onMutateApproveTaskById = useCallback(
     ({
         taskId,
@@ -94,9 +99,9 @@ export const useDocumentBlocks = ({
       }) =>
       () => {
         mutateApproveTaskById({ documentId: taskId, contextUpdateMethod, comment });
-        setCommentValue('');
+        clearComment();
       },
-    [mutateApproveTaskById],
+    [mutateApproveTaskById, clearComment],
   );
   const { mutate: onMutateRemoveDecisionById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
 
@@ -274,16 +279,12 @@ export const useDocumentBlocks = ({
                   <TextArea
                     placeholder={'Add a comment'}
                     value={commentValue}
-                    onChange={event => setCommentValue(event.target.value)}
+                    onChange={handleCommentChange}
                   />
                 ),
                 close: (
                   <div className={`space-x-2`}>
-                    <Button
-                      type={'button'}
-                      variant={`secondary`}
-                      onClick={() => setCommentValue('')}
-                    >
+                    <Button type={'button'} variant={`secondary`} onClick={clearComment}>
                       Cancel
                     </Button>
                     <Button
