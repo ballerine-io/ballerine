@@ -19,6 +19,10 @@ export class DocumentDecisionUpdateInput {
   @IsString()
   reason?: string;
 
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
   @IsOptional()
   @IsString()
   comment?: string;
