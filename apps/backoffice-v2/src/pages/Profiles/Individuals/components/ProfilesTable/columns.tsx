@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import React from 'react';
 import { titleCase } from 'string-ts';
 import { TObjectValues } from '@/common/types';
-import { TIndividualsProfiles } from '@/domains/profiles/fetchers';
 import { TooltipProvider } from '@/common/components/atoms/Tooltip/Tooltip.Provider';
 import { Tooltip } from '@/common/components/atoms/Tooltip/Tooltip';
 import { TooltipTrigger } from '@/common/components/atoms/Tooltip/Tooltip.Trigger';
@@ -12,6 +11,7 @@ import { TooltipContent } from '@/common/components/atoms/Tooltip/Tooltip.Conten
 import { CopyToClipboard } from '@/common/components/atoms/CopyToClipboard/CopyToClipboard';
 import { CheckCircle } from '@/common/components/atoms/CheckCircle/CheckCircle';
 import { XCircle } from '@/common/components/atoms/XCircle/XCircle';
+import { TIndividualProfile } from '@/domains/profiles/fetchers';
 
 export const Role = {
   UBO: 'UBO',
@@ -51,7 +51,7 @@ export const Sanctions = [
   Sanction.NOT_MONITORED,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof Sanction>>;
 
-const columnHelper = createColumnHelper<TIndividualsProfiles>();
+const columnHelper = createColumnHelper<TIndividualProfile>();
 
 export const columns = [
   columnHelper.accessor('name', {
@@ -94,7 +94,7 @@ export const columns = [
                 <TextWithNAFallback className={`w-[11.8ch] truncate`}>
                   {correlationId}
                 </TextWithNAFallback>
-                <CopyToClipboard textToCopy={correlationId} disabled={!correlationId} />
+                <CopyToClipboard textToCopy={correlationId ?? ''} disabled={!correlationId} />
               </div>
             </TooltipTrigger>
             {correlationId && <TooltipContent>{correlationId}</TooltipContent>}
