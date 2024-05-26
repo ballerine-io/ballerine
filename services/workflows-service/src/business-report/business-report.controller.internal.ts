@@ -6,8 +6,13 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import * as errors from '@/errors';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { BusinessReportService } from '@/business-report/business-report.service';
-import { GetBusinessReportDto } from '@/business-report/dto/get-business-report.dto';
-import { GetBusinessReportsDto } from '@/business-report/dto/get-business-reports.dto';
+import { GetLatestBusinessReportDto } from '@/business-report/get-latest-business-report.dto';
+import {
+  ListBusinessReportsDto,
+  ListBusinessReportsSchema,
+} from '@/business-report/list-business-reports.dto';
+import { Prisma } from '@prisma/client';
+import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 
 @common.Controller('internal/business-reports')
 @swagger.ApiExcludeController()
@@ -22,7 +27,7 @@ export class BusinessReportControllerInternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async getLatestBusinessReport(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() searchQueryParams: GetBusinessReportDto,
+    @Query() searchQueryParams: GetLatestBusinessReportDto,
   ) {
     return await this.businessReportService.findFirstOrThrow(
       {
@@ -41,9 +46,10 @@ export class BusinessReportControllerInternal {
   @common.Get()
   @swagger.ApiOkResponse({ type: [String] })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async getBusinessReports(
+  @common.UsePipes(new ZodValidationPipe(ListBusinessReportsSchema, 'query'))
+  async listBusinessReports(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() searchQueryParams: GetBusinessReportsDto,
+    @Query() searchQueryParams: ListBusinessReportsDto,
   ) {
     return await this.businessReportService.findMany(
       {
@@ -51,9 +57,23 @@ export class BusinessReportControllerInternal {
           businessId: searchQueryParams.businessId,
           ...(searchQueryParams.type ? { type: searchQueryParams.type } : {}),
         },
-        orderBy: {
-          createdAt: 'desc',
+        select: {
+          createdAt: true,
+          updatedAt: true,
+          report: true,
+          riskScore: true,
+          status: true,
+          business: {
+            select: {
+              companyName: true,
+              country: true,
+              website: true,
+            },
+          },
         },
+        orderBy: searchQueryParams.orderBy as
+          | Prisma.Enumerable<Prisma.BusinessReportOrderByWithRelationInput>
+          | undefined,
       },
       [currentProjectId],
     );
