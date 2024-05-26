@@ -278,7 +278,7 @@ export const useDocumentBlocks = ({
                 content: (
                   <TextArea
                     placeholder={'Add a comment'}
-                    value={commentValue}
+                    value={commentValue || ''}
                     onChange={handleCommentChange}
                   />
                 ),
@@ -292,7 +292,7 @@ export const useDocumentBlocks = ({
                       onClick={onMutateApproveTaskById({
                         taskId: id,
                         contextUpdateMethod: 'base',
-                        comment: commentValue || undefined,
+                        comment: commentValue,
                       })}
                     >
                       Approve
