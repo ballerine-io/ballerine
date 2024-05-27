@@ -70,6 +70,48 @@ const createTransactionsWithCounterpartyAsync = async (
   return baseTransactionFactory;
 };
 
+const createCounterparty = async (
+  prismaService: PrismaService,
+  proj?: Pick<Project, 'id'>,
+  {
+    correlationIdFn,
+  }: {
+    correlationIdFn?: () => string;
+  } = {},
+) => {
+  const correlationId = correlationIdFn ? correlationIdFn() : faker.datatype.uuid();
+
+  if (!proj) {
+    const customer = await createCustomer(
+      prismaService,
+      faker.datatype.uuid(),
+      faker.datatype.uuid(),
+      '',
+      '',
+      'webhook-shared-secret',
+    );
+
+    proj = await createProject(prismaService, customer, faker.datatype.uuid());
+  }
+
+  return await prismaService.counterparty.create({
+    data: {
+      project: { connect: { id: proj.id } },
+      correlationId,
+      business: {
+        create: {
+          correlationId,
+          companyName: faker.company.name(),
+          registrationNumber: faker.datatype.uuid(),
+          mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
+          businessType: faker.lorem.word(),
+          project: { connect: { id: proj.id } },
+        },
+      },
+    },
+  });
+};
+
 describe('AlertService', () => {
   let prismaService: PrismaService;
   let alertService: AlertService;
@@ -1866,44 +1908,3 @@ describe('AlertService', () => {
     });
   });
 });
-const createCounterparty = async (
-  prismaService: PrismaService,
-  proj?: Pick<Project, 'id'>,
-  {
-    correlationIdFn,
-  }: {
-    correlationIdFn?: () => string;
-  } = {},
-) => {
-  const correlationId = correlationIdFn ? correlationIdFn() : faker.datatype.uuid();
-
-  if (!proj) {
-    const customer = await createCustomer(
-      prismaService,
-      faker.datatype.uuid(),
-      faker.datatype.uuid(),
-      '',
-      '',
-      'webhook-shared-secret',
-    );
-
-    proj = await createProject(prismaService, customer, faker.datatype.uuid());
-  }
-
-  return await prismaService.counterparty.create({
-    data: {
-      project: { connect: { id: proj.id } },
-      correlationId,
-      business: {
-        create: {
-          correlationId,
-          companyName: faker.company.name(),
-          registrationNumber: faker.datatype.uuid(),
-          mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
-          businessType: faker.lorem.word(),
-          project: { connect: { id: proj.id } },
-        },
-      },
-    },
-  });
-};
