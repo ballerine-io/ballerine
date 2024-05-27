@@ -1,106 +1,110 @@
-import type { InputJsonValue } from '@/types';
-import { UserWhereUniqueInput } from '@/user/dtos/user-where-unique-input';
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 import {
-  IsString,
-  IsOptional,
-  ValidateNested,
-  IsNotEmptyObject,
   IsArray,
+  IsBoolean,
+  IsNotEmptyObject,
+  IsNumber,
   IsObject,
+  IsOptional,
+  IsString,
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class WorkflowDefinitionCreateDto {
-  @ApiProperty({
-    required: true,
-    type: () => UserWhereUniqueInput,
-  })
-  @ValidateNested()
-  @Type(() => UserWhereUniqueInput)
-  user!: UserWhereUniqueInput;
+  @ApiProperty({ required: false, type: String })
+  @IsOptional()
+  @IsString()
+  id?: string;
 
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
+  @ApiProperty({ required: false, type: String, nullable: true })
+  @IsOptional()
+  @IsString()
+  crossEnvKey?: string | null;
+
+  @ApiProperty({ required: false, type: String, nullable: true })
+  @IsOptional()
+  @IsString()
+  displayName?: string | null;
+
+  @ApiProperty({ required: false, type: String, nullable: true })
+  @IsOptional()
+  @IsString()
+  reviewMachineId?: string | null;
+
+  @ApiProperty({ required: true, type: String })
   @IsString()
   name!: string;
 
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  reviewMachineId?: string;
+  @ApiProperty({ required: false, type: Number })
+  @IsOptional()
+  @IsNumber()
+  version?: number;
 
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
+  @ApiProperty({ required: false, type: String, nullable: true })
+  @IsOptional()
+  @IsString()
+  projectId?: string | null;
+
+  @ApiProperty({ required: false, type: Boolean })
+  @IsOptional()
+  @IsBoolean()
+  isPublic?: boolean;
+
+  @ApiProperty({ required: true, type: String })
   @IsString()
   definitionType!: string;
 
-  @ApiProperty({
-    required: false,
-    type: 'object',
-  })
+  @ApiProperty({ required: true, type: Object })
   @IsNotEmptyObject()
-  definition!: InputJsonValue;
+  @IsObject()
+  definition!: Record<string, unknown>;
 
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
+  @ApiProperty({ required: false, type: Object, nullable: true })
+  @IsOptional()
+  @IsObject()
+  contextSchema?: Record<string, unknown> | null;
+
+  @ApiProperty({ required: false, type: Object, nullable: true })
+  @IsOptional()
+  @IsObject()
+  documentsSchema?: Record<string, unknown> | null;
+
+  @ApiProperty({ required: false, type: Object, nullable: true })
+  @IsOptional()
+  @IsObject()
+  config?: Record<string, unknown> | null;
+
+  @ApiProperty({ required: false, type: Array, nullable: true })
+  @IsOptional()
+  @IsArray()
+  supportedPlatforms?: unknown[] | null;
+
+  @ApiProperty({ required: false, type: Object, nullable: true })
+  @IsOptional()
+  @IsObject()
+  extensions?: Record<string, unknown> | null;
+
+  @ApiProperty({ required: false, type: String })
+  @IsOptional()
   @IsString()
-  @IsOptional()
-  state?: string | null;
+  variant?: string;
 
-  @ApiProperty({
-    required: false,
-    type: 'object',
-  })
+  @ApiProperty({ required: false, type: Object, nullable: true })
+  @IsOptional()
   @IsObject()
-  @IsOptional()
-  context?: InputJsonValue;
+  backend?: Record<string, unknown> | null;
 
-  @ApiProperty({
-    required: false,
-    type: 'object',
-  })
-  @IsObject()
+  @ApiProperty({ required: false, type: Array, nullable: true })
   @IsOptional()
-  extensions?: InputJsonValue;
-
-  @ApiProperty({
-    required: false,
-    type: 'object',
-  })
-  @IsObject()
-  @IsOptional()
-  backend?: InputJsonValue;
-
-  @ApiProperty({
-    required: false,
-    type: 'array',
-  })
   @IsArray()
-  @IsOptional()
-  persistStates?: InputJsonValue;
+  persistStates?: unknown[] | null;
 
-  @ApiProperty({
-    required: false,
-    type: 'array',
-  })
+  @ApiProperty({ required: false, type: Array, nullable: true })
+  @IsOptional()
   @IsArray()
-  @IsOptional()
-  submitStates?: InputJsonValue;
+  submitStates?: unknown[] | null;
 
-  @ApiProperty({
-    required: false,
-    type: Boolean,
-  })
-  @Type(() => Boolean)
+  @ApiProperty({ required: false, type: String })
   @IsOptional()
-  isPublic?: boolean;
+  @IsString()
+  createdBy?: string;
 }

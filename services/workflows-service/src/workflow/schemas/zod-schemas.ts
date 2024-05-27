@@ -1,6 +1,6 @@
 import { SubscriptionSchema } from '@/common/types';
-import { WorkflowDefinitionConfigThemeSchema } from '@ballerine/common';
 import { z } from 'zod';
+import { WorkflowDefinitionConfigThemeSchema } from '@ballerine/common';
 
 export const ConfigSchema = z
   .object({
@@ -58,6 +58,7 @@ export const ConfigSchema = z
     kybOnExitAction: z.enum(['send-event', 'redirect-to-customer-portal']).optional(),
     reportConfig: z.record(z.string(), z.unknown()).optional(),
     theme: WorkflowDefinitionConfigThemeSchema.optional(),
+    hasUboOngoingMonitoring: z.boolean().optional(),
   })
   .strict()
   .optional();

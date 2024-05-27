@@ -6,7 +6,8 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import * as errors from '@/errors';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
 import { BusinessReportService } from '@/business-report/business-report.service';
-import { GetBusinessReportsDto } from '@/business-report/get-business-reports.dto';
+import { GetBusinessReportDto } from '@/business-report/dto/get-business-report.dto';
+import { GetBusinessReportsDto } from '@/business-report/dto/get-business-reports.dto';
 
 @common.Controller('internal/business-reports')
 @swagger.ApiExcludeController()
@@ -21,13 +22,37 @@ export class BusinessReportControllerInternal {
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
   async getLatestBusinessReport(
     @CurrentProject() currentProjectId: TProjectId,
-    @Query() searchQueryParams: GetBusinessReportsDto,
+    @Query() searchQueryParams: GetBusinessReportDto,
   ) {
-    return await this.businessReportService.findFirst(
+    return await this.businessReportService.findFirstOrThrow(
       {
         where: {
           businessId: searchQueryParams.businessId,
           type: searchQueryParams.type,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      },
+      [currentProjectId],
+    );
+  }
+
+  @common.Get()
+  @swagger.ApiOkResponse({ type: [String] })
+  @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  async getBusinessReports(
+    @CurrentProject() currentProjectId: TProjectId,
+    @Query() searchQueryParams: GetBusinessReportsDto,
+  ) {
+    return await this.businessReportService.findMany(
+      {
+        where: {
+          businessId: searchQueryParams.businessId,
+          ...(searchQueryParams.type ? { type: searchQueryParams.type } : {}),
+        },
+        orderBy: {
+          createdAt: 'desc',
         },
       },
       [currentProjectId],

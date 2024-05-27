@@ -4,4 +4,7 @@ module.exports = {
     browser: true,
   },
   extends: ['@ballerine/eslint-config'],
+  parserOptions: {
+    project: './tsconfig.eslint.json',
+  },
 };

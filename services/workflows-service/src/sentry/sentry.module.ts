@@ -21,6 +21,7 @@ export class SentryModule implements OnModuleInit, OnModuleDestroy {
   _envName: string;
   _sentryDsn: string | undefined;
   _releaseName: string | undefined;
+  _dist: string | undefined;
 
   constructor(
     protected readonly configService: ConfigService,
@@ -30,6 +31,7 @@ export class SentryModule implements OnModuleInit, OnModuleDestroy {
     this._envName =
       this.configService.get('ENVIRONMENT_NAME') || this.configService.get('NODE_ENV', 'local');
     this._releaseName = this.configService.get('RELEASE');
+    this._dist = this.configService.get('SHORT_SHA');
   }
 
   onModuleInit() {
@@ -40,6 +42,7 @@ export class SentryModule implements OnModuleInit, OnModuleDestroy {
       dsn: this._sentryDsn,
       environment: this._envName,
       release: this._releaseName,
+      dist: this._dist,
       enableTracing: true,
       sampleRate: 1.0,
       normalizeDepth: 15,

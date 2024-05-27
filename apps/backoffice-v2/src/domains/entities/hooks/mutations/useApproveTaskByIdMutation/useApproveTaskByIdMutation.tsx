@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { t } from 'i18next';
-import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fetchers';
-import { workflowsQueryKeys } from '../../../../workflows/query-keys';
+import { toast } from 'sonner';
 import { Action } from '../../../../../common/enums';
 import { useFilterId } from '../../../../../common/hooks/useFilterId/useFilterId';
+import { TWorkflowById, updateWorkflowDecision } from '../../../../workflows/fetchers';
+import { workflowsQueryKeys } from '../../../../workflows/query-keys';
 
 export const useApproveTaskByIdMutation = (workflowId: string) => {
   const queryClient = useQueryClient();
@@ -15,15 +15,18 @@ export const useApproveTaskByIdMutation = (workflowId: string) => {
     mutationFn: ({
       documentId,
       contextUpdateMethod = 'base',
+      comment,
     }: {
       documentId: string;
       contextUpdateMethod?: 'base' | 'director';
+      comment?: string;
     }) =>
       updateWorkflowDecision({
         workflowId,
         documentId,
         body: {
           decision: Action.APPROVE,
+          comment,
         },
         contextUpdateMethod,
       }),

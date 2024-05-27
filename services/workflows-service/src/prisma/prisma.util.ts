@@ -79,3 +79,11 @@ export const defaultPrismaTransactionOptions: PrismaTransactionOptions = {
   maxWait: 60_000,
   timeout: 60_000,
 };
+
+export const isPrismaClientKnownRequestError = (
+  error: unknown,
+): error is Prisma.PrismaClientKnownRequestError => {
+  return (
+    error instanceof Error && 'name' in error && error.name === 'PrismaClientKnownRequestError'
+  );
+};

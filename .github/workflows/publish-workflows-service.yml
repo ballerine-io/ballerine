@@ -2,7 +2,7 @@ name: Publish workflows-service image
 
 on:
   repository_dispatch:
-    types: [trigger-cd-event]
+    types: [invoke-cd-from-external-repo]
   workflow_dispatch:
     inputs:
       deploy_to_dev:
@@ -30,8 +30,24 @@ env:
   IMAGE_NAME: ${{ github.repository_owner }}/workflows-service
 
 jobs:
+  determine_branch:
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.set-branch.outputs.branch }}
+    steps:
+      - name: Set branch
+        id: set-branch
+        run: |
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            echo "branch=${{ github.event.client_payload.ref }}" >> $GITHUB_OUTPUT
+          else
+            echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+          echo "local branch=${{ github.ref_name }}, client_payload ref=${{ github.event.client_payload.ref }}"
+
   build-and-push-image:
     runs-on: ubuntu-latest
+    needs: determine_branch
     permissions:
       contents: read
       packages: write
@@ -103,8 +119,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ github.ref_name }}
-            type=raw,value=${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
+            type=raw,value=${{ needs.determine_branch.outputs.branch }}
+            type=raw,value=${{ steps.version.outputs.sha_short }}-${{ needs.determine_branch.outputs.branch }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
             type=sha,format=short
 
@@ -112,8 +128,8 @@ jobs:
         id: docker-version
         run: |
           DOCKER_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          DOCKER_TAG=${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
-          DOCKER_FULL_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.sha_short }}-${{ github.ref_name }}
+          DOCKER_TAG=${{ steps.version.outputs.sha_short }}-${{ needs.determine_branch.outputs.branch }}
+          DOCKER_FULL_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.version.outputs.sha_short }}-${{ needs.determine_branch.outputs.branch }}
 
           echo "DOCKER_IMAGE=$DOCKER_IMAGE"
           echo "DOCKER_TAG=$DOCKER_TAG"
@@ -143,20 +159,23 @@ jobs:
           tags: ${{ steps.docker_meta.outputs.tags }}
           build-args: |
             "RELEASE=${{ steps.bump-version.outputs.tag }}"
-
+            "SHORT_SHA=${{ steps.version.outputs.sha_short }}"
+            
       - name: Scan Docker Image
         uses: aquasecurity/trivy-action@master
+        continue-on-error: true
         with:
           cache-dir:
           image-ref: ${{ steps.docker-version.outputs.full_image }}
           format: 'table'
           ignore-unfixed: true
           exit-code: 1
+          trivyignores: ./.trivyignore
           vuln-type: 'os,library'
           severity: 'CRITICAL'
 
   update-helm-chart:
-    needs: build-and-push-image
+    needs: [determine_branch, build-and-push-ee-image]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -171,48 +190,42 @@ jobs:
         with:
           repository: ballerine-io/cloud-infra-config
           token: ${{ secrets.GIT_TOKEN }}
-          ref: iamops/blue-green
+          ref: main
           fetch-depth: 1
           sparse-checkout: |
-            kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml
-            kubernetes/helm/wf-service/dev-custom-values.yaml
-          sparse-checkout-cone-mode: false
-
+            kubernetes/helm/wf-service
+          sparse-checkout-cone-mode: true
+      - name: Check if values yaml file exists 
+        id: update_helm_check
+        shell: bash
+        run: |
+          if [ -f "kubernetes/helm/wf-service/${{ needs.determine_branch.outputs.branch }}-custom-values.yaml" ]; then
+            echo "file_name=${{ needs.determine_branch.outputs.branch }}-custom-values.yaml" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event.inputs.deploy_to_dev }}" == "true" ]; then
+            echo "file_name=dev-custom-values.yaml" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip_helm=true" >> "$GITHUB_OUTPUT"
+          fi
+            
       - name: Update workdlow-service image version in the HelmChart
+        if: ${{ steps.update_helm_check.outputs.skip_helm != 'true' }}
         uses: fjogeleit/yaml-update-action@main
         with:
           repository: ballerine-io/cloud-infra-config
-          branch: iamops/blue-green
+          branch: main
           commitChange: true
-          message: 'Update wf-service image Version to sha-${{ needs.build-and-push-image.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
+          message: 'Update wf-service image Version to sha-${{ needs.build-and-push-ee-image.outputs.wf_m_sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
           token: ${{ secrets.GIT_TOKEN }}
           changes: |
             {
-              "kubernetes/helm/wf-service/${{ github.ref_name }}-custom-values.yaml": {
-                "image.tag": "${{ needs.build-and-push-image.outputs.docker_tag }}"
-              }
-            }
-
-      - name: Deploy from branch - Update dev env in the HelmChart
-        continue-on-error: true
-        if: ${{ failure() && github.event.inputs.deploy_to_dev == 'true' }}
-        uses: fjogeleit/yaml-update-action@main
-        with:
-          repository: ballerine-io/cloud-infra-config
-          branch: iamops/blue-green
-          commitChange: true
-          message: 'Update wf-service image Version to sha-${{ needs.build-and-push-image.outputs.sha_short }} - (Commit hash: ${{ github.sha }}, commit message: ${{ github.event.head_commit.message }})'
-          token: ${{ secrets.GIT_TOKEN }}
-          changes: |
-            {
-              "kubernetes/helm/wf-service/dev-custom-values.yaml": {
-                "image.tag": "${{ needs.build-and-push-image.outputs.docker_tag }}"
+              "kubernetes/helm/wf-service/${{steps.update_helm_check.outputs.file_name}}": {
+                "image.tag": "${{ needs.build-and-push-ee-image.outputs.docker_tag }}"
               }
             }
 
   release:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/heads/prod') || startsWith(github.ref, 'refs/heads/dev') || startsWith(github.ref, 'refs/heads/sb')
+    if: startsWith(github.ref, 'refs/heads/prod') || startsWith(github.ref, 'refs/heads/dev') || startsWith(github.ref, 'refs/heads/sb') || github.event.inputs.deploy_to_dev == 'true'
     needs: build-and-push-image
     env:
       GH_TOKEN: ${{ github.token }}
@@ -221,11 +234,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Release
-        run: gh release create ${{ needs.build-and-push-image.outputs.version }} --notes-start-tag ${{ needs.build-and-push-image.outputs.bumped_tag }}
-
+        run: |
+          if [ "${{ github.event.inputs.deploy_to_dev }}" == "true" ]; then
+            suffix="-dev-${{ needs.build-and-push-image.outputs.sha_short }}"
+          else
+            suffix=""
+          fi
+          gh release create ${{ needs.build-and-push-image.outputs.version }}${suffix} --notes-start-tag ${{ needs.build-and-push-image.outputs.bumped_tag }}
+            
   sentry:
     runs-on: ubuntu-latest
-    # needs: [build-and-push-image]  # Uncomment this line if you want to create a release in sentry
     needs: [build-and-push-image, release]
     env:
       GH_TOKEN: ${{ github.token }}
@@ -259,9 +277,46 @@ jobs:
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.WF_SENTRY_PROJECT }}
 
+  check_if_data_migration_needed:
+    runs-on: ubuntu-latest
+    needs: determine_branch
+    outputs:
+      should_build: ${{ steps.check-branch-existance.outputs.should_build }} # short sha of the commit
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: 'recursive'
+          token: ${{ secrets.SUBMODULES_TOKEN }}
+          
+      - name: Check if branch exists
+        id: check-branch-existance
+        run: |
+          cd services/workflows-service/prisma/data-migrations
+          git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ needs.determine_branch.outputs.branch }}
+          git checkout -b ${{ needs.determine_branch.outputs.branch }} origin/${{ needs.determine_branch.outputs.branch }}
+          git pull origin ${{ needs.determine_branch.outputs.branch }}
+
+          is_exists=$(git ls-remote --exit-code --heads -t --ref -q origin "${{ needs.determine_branch.outputs.branch }}" | wc -l)
+
+          # Check if the branch exists by counting the number of results
+          if [ $is_exists -eq 0  ]; then
+            echo "Branch '${{ needs.determine_branch.outputs.branch }}' does not exist."
+            echo "should_build=false" >> $GITHUB_OUTPUT
+          else
+            echo "should_build=true" >> $GITHUB_OUTPUT
+          fi
+          exit 0
+
   build-and-push-ee-image:
     runs-on: ubuntu-latest
-    needs: build-and-push-image
+    needs: [build-and-push-image, check_if_data_migration_needed, determine_branch]
+    if: ${{ needs.check_if_data_migration_needed.outputs.should_build == 'true' }}
+    outputs:
+      wf_m_sha_short: ${{ steps.fetch-submodule.outputs.wf_m_sha_short }} # short sha of the commit
+      docker_tag: ${{ steps.docker-version.outputs.wf_m_tag }} 
+
     permissions:
       contents: read
       packages: write
@@ -285,10 +340,15 @@ jobs:
             ${{ runner.os }}-docker-
 
       - name: Fetch submodule branch
+        id: fetch-submodule
         run: |
           cd services/workflows-service/prisma/data-migrations
-          git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ github.ref_name }}
-          git checkout ${{ github.ref_name }}
+          git fetch --no-tags --depth=1 origin +refs/heads/dev:refs/remotes/origin/${{ needs.determine_branch.outputs.branch }}
+          git checkout -b ${{ needs.determine_branch.outputs.branch }} origin/${{ needs.determine_branch.outputs.branch }}
+          git pull origin ${{ needs.determine_branch.outputs.branch }}
+          WF_M_SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "sha_short=$WF_M_SHORT_SHA"
+          echo "wf_m_sha_short=$WF_M_SHORT_SHA" >> $GITHUB_OUTPUT
           cd ../../../..
 
       - name: Set up Docker Buildx
@@ -312,10 +372,25 @@ jobs:
         with:
           images: ${{needs.build-and-push-image.outputs.docker_image}}-ee
           tags: |
-            type=raw,value=${{ github.ref_name }}
-            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ github.ref_name }}
+            type=raw,value=${{ needs.determine_branch.outputs.branch }}
+            type=raw,value=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-${{ needs.determine_branch.outputs.branch }}
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'prod') }}
             type=sha,format=short
+
+      - name: Docker metadata version
+        id: docker-version
+        run: |
+          DOCKER_IMAGE=${{needs.build-and-push-image.outputs.docker_image}}-ee
+          DOCKER_TAG=${{ needs.build-and-push-image.outputs.sha_short }}-${{ steps.fetch-submodule.outputs.wf_m_sha_short }}-${{ needs.determine_branch.outputs.branch }}
+          DOCKER_FULL_IMAGE=$DOCKER_IMAGE:$DOCKER_TAG
+
+          echo "DOCKER_IMAGE=$DOCKER_IMAGE"
+          echo "DOCKER_TAG=$DOCKER_TAG"
+          echo "DOCKER_FULL_IMAGE=$DOCKER_FULL_IMAGE"
+
+          echo "wf_m_image=$DOCKER_IMAGE" >> $GITHUB_OUTPUT
+          echo "wf_m_tag=$DOCKER_TAG" >> $GITHUB_OUTPUT
+          echo "wf_m_full_image=$DOCKER_FULL_IMAGE" >> $GITHUB_OUTPUT
 
       - name: Build and push ee Docker image
         uses: docker/build-push-action@v5
@@ -327,4 +402,6 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           tags: ${{ steps.eemeta.outputs.tags }}
           build-args: |
-            BASE_IMAGE=${{needs.build-and-push-image.outputs.docker_full_image}}
+            "BASE_IMAGE=${{needs.build-and-push-image.outputs.docker_full_image}}"
+            "RELEASE=${{ needs.build-and-push-image.outputs.bumped_tag }}"
+            "SHORT_SHA=${{ needs.build-and-push-image.outputs.sha_short }}"

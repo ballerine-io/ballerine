@@ -14,6 +14,7 @@ import stableStringify from 'json-stable-stringify';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { InputJsonValue, NullableJsonNullValueInput } from '@/types';
 import { env } from '@/env';
+import { SentryService } from '@/sentry/sentry.service';
 
 type Envionment = 'sandbox' | 'production' | 'development' | 'local';
 export type TableName = 'WorkflowDefinition' | 'UiDefinition' | 'AlertDefinition';
@@ -61,172 +62,224 @@ export const sync = async (objectsToSync: SyncedObject[]) => {
   const appContext = await NestFactory.createApplicationContext(AppModule);
 
   const appLoggerService = appContext.get(AppLoggerService);
+  const sentryService = appContext.get(SentryService);
+  try {
+    appLoggerService.log('Starting sync process', {
+      objectsToSync: objectsToSync.map(obj => ({
+        crossEnvKey: obj.crossEnvKey,
+        tableName: obj.tableName,
+      })),
+    });
 
-  appLoggerService.log('Starting sync process', {
-    objectsToSync: objectsToSync.map(obj => ({
-      crossEnvKey: obj.crossEnvKey,
-      tableName: obj.tableName,
-    })),
-  });
-
-  await client.$transaction(async (transaction: PrismaTransactionalClient) => {
-    for (const object of objectsToSync) {
-      const {
-        crossEnvKey,
-        tableName,
-        columns,
-        syncConfig,
-        dryRunEnvironments,
-        syncedEnvironments,
-        environmentSpeceficConfig,
-      } = object;
-
-      if (columns.id || columns.createdAt || columns.updatedAt) {
-        appLoggerService.error(
-          `Error syncing ${crossEnvKey} in ${tableName}: columns contain reserved keys`,
-        );
-        throw new Error('Columns contain reserved keys');
-      }
-
-      const environmentName = env.ENVIRONMENT_NAME || '';
-      const dryRun = dryRunEnvironments.includes(environmentName);
-
-      if (!syncedEnvironments.includes(environmentName) && !dryRun) {
-        appLoggerService.log(
-          `Skipping sync for ${crossEnvKey} in ${tableName} in ${environmentName}`,
-        );
-        continue;
-      }
-
-      appLoggerService.log('Syncing object', {
-        crossEnvKey,
-        tableName,
-      });
-      let existingRecord: DataSyncPayload['scalars'] | null = null;
-      try {
-        const columnsHash = objectMd5(stableStringify(columns));
-        existingRecord = (await transaction.dataSync.findUnique({
-          where: { table_crossEnvKey: { table: tableName as DataSyncTables, crossEnvKey } },
-        })) as DataSyncPayload['scalars'] | null;
-
-        if (!existingRecord) {
-          existingRecord = await createSyncRecord(
-            transaction,
-            tableName,
+    const stats = {
+      totalSyncObjectsForCurrentEnv: 0,
+      totalSyncObjects: objectsToSync.length,
+      skipped: 0,
+      skippedForCurrentEnv: 0,
+      envCheckSkips: 0,
+      dataHashCheckSkips: 0,
+      diffCheckSkips: 0,
+      successfulSyncs: 0,
+      failedSyncs: 0,
+      newSyncs: 0,
+      markUnsyncedRecords: 0,
+    };
+    await client.$transaction(
+      async (transaction: PrismaTransactionalClient) => {
+        for (const object of objectsToSync) {
+          const {
             crossEnvKey,
+            tableName,
             columns,
-            appLoggerService,
-          );
-        } else {
-          appLoggerService.log(
-            `Found existing record for ${tableName}-${crossEnvKey} in DataSync table`,
-            {
-              existingRecord: {
-                ...existingRecord,
+            syncConfig,
+            dryRunEnvironments = [],
+            syncedEnvironments,
+            environmentSpeceficConfig,
+          } = object;
+
+          if (columns.id || columns.createdAt || columns.updatedAt) {
+            // needs some adjsutments for upsert operations
+            appLoggerService.error(
+              `Error syncing ${crossEnvKey} in ${tableName}: columns contain reserved keys`,
+            );
+            const err = new Error('Columns contain reserved keys');
+            sentryService.captureException(err);
+
+            throw err;
+          }
+
+          const environmentName = env.ENVIRONMENT_NAME || '';
+          const dryRun = dryRunEnvironments.includes(environmentName);
+
+          if (!syncedEnvironments.includes(environmentName) && !dryRun) {
+            appLoggerService.log(
+              `Skipping sync for ${crossEnvKey} in ${tableName} in ${environmentName}`,
+            );
+            stats.envCheckSkips++;
+            stats.skipped++;
+            continue;
+          }
+          stats.totalSyncObjectsForCurrentEnv++;
+
+          appLoggerService.log(`Stating object sync for ${crossEnvKey} in ${tableName}`);
+          let existingRecord: DataSyncPayload['scalars'] | null = null;
+          try {
+            const columnsHash = objectMd5(stableStringify(columns));
+            existingRecord = (await transaction.dataSync.findUnique({
+              where: { table_crossEnvKey: { table: tableName as DataSyncTables, crossEnvKey } },
+            })) as DataSyncPayload['scalars'] | null;
+
+            if (!existingRecord) {
+              existingRecord = await createSyncRecord(
+                transaction,
+                tableName,
+                crossEnvKey,
+                columns,
+                appLoggerService,
+              );
+              stats.newSyncs++;
+            } else {
+              appLoggerService.log(
+                `Found existing record for ${tableName}-${crossEnvKey} in DataSync table`,
+              );
+            }
+
+            if (existingRecord?.fullDataHash === columnsHash) {
+              appLoggerService.log(
+                `No changes detected for ${crossEnvKey} in ${tableName} via hash check, Skipping...`,
+              );
+              stats.dataHashCheckSkips++;
+              stats.skipped++;
+              stats.skippedForCurrentEnv++;
+              continue;
+            }
+
+            const dbRecord = await (transaction as { [key: string]: any })[
+              tableNamesMap[tableName as keyof typeof tableNamesMap]
+            ].findUnique({
+              where: { crossEnvKey },
+            });
+
+            let diff = {} as any;
+            let hasDiff = false;
+            if (Array.isArray(existingRecord.syncedColumns) && dbRecord) {
+              const diffResults = createDiff(
+                existingRecord,
+                dbRecord,
+                columns,
+                diff,
+                crossEnvKey,
+                tableName,
+                appLoggerService,
+              );
+              hasDiff = diffResults.hasDiff;
+
+              if (!hasDiff) {
+                appLoggerService.log(
+                  `No changes detected for ${crossEnvKey} in ${tableName} via diff check, Skipping...`,
+                );
+                stats.diffCheckSkips++;
+                stats.skipped++;
+                stats.skippedForCurrentEnv++;
+
+                continue;
+              }
+
+              diff = diffResults.diff;
+            }
+
+            await preformDataSync(
+              syncConfig,
+              transaction,
+              tableName,
+              crossEnvKey,
+              columns,
+              appLoggerService,
+              dbRecord,
+              environmentSpeceficConfig && environmentSpeceficConfig[environmentName as Envionment],
+            );
+
+            const updatedRecord = await updateSynced(
+              transaction,
+              existingRecord,
+              diff,
+              columnsHash,
+              columns,
+            );
+
+            appLoggerService.log(`Sync Done on ${crossEnvKey} in ${tableName}`, {
+              updatedRecord: {
+                ...updatedRecord,
                 columns: undefined,
                 diff: undefined,
                 auditLog: undefined,
               },
+            });
+            stats.successfulSyncs++;
+          } catch (error) {
+            // I had to add console.error here  because the logger failed to print error object
+            console.error(error);
+            appLoggerService.error(`Error syncing ${crossEnvKey} in ${tableName}:`, {
+              error: error as Error,
+            });
+            sentryService.captureException(error as Error);
+
+            await upsertFailedSync(
+              transaction,
+              tableName,
+              crossEnvKey,
+              error,
+              existingRecord,
+              columns,
+            );
+            stats.failedSyncs++;
+          }
+        }
+
+        // Mark rows in the DataSync table as unsynced if they don't exist in objectsToSync
+        const tableNames = [...new Set(objectsToSync.map(obj => obj.tableName))];
+        const crossEnvKeys = objectsToSync.map(obj => obj.crossEnvKey);
+
+        const unsyncedRecords = await transaction.dataSync.findMany({
+          where: {
+            table: { in: tableNames as DataSyncTables[] },
+            crossEnvKey: { notIn: crossEnvKeys },
+          },
+        });
+
+        if (unsyncedRecords.length > 0) {
+          appLoggerService.log('Marking unsynced records', {
+            unsyncedRecords,
+          });
+
+          stats.markUnsyncedRecords = unsyncedRecords.length;
+
+          await transaction.dataSync.updateMany({
+            where: {
+              table: { in: tableNames as DataSyncTables[] },
+              crossEnvKey: { notIn: crossEnvKeys },
             },
-          );
+            data: {
+              status: 'unsynced',
+              lastCheckAt: new Date(),
+              auditLog: {
+                [`${new Date().toISOString()}`]: {
+                  action: 'unsynced',
+                },
+              },
+            },
+          });
         }
-
-        if (existingRecord?.fullDataHash === columnsHash) {
-          appLoggerService.log(`No changes detected for ${crossEnvKey} in ${tableName}`);
-
-          continue;
-        }
-
-        const dbRecord = await (transaction as { [key: string]: any })[
-          tableNamesMap[tableName as keyof typeof tableNamesMap]
-        ].findUnique({
-          where: { crossEnvKey },
-        });
-
-        let diff = {} as any;
-        if (Array.isArray(existingRecord.syncedColumns) && dbRecord) {
-          diff = createDiff(
-            existingRecord,
-            dbRecord,
-            columns,
-            diff,
-            crossEnvKey,
-            tableName,
-            appLoggerService,
-          );
-        }
-
-        await preformDataSync(
-          syncConfig,
-          transaction,
-          tableName,
-          crossEnvKey,
-          columns,
-          appLoggerService,
-          dbRecord,
-          environmentSpeceficConfig && environmentSpeceficConfig[environmentName as Envionment],
-        );
-
-        const updatedRecord = await updateSynced(
-          transaction,
-          existingRecord,
-          diff,
-          columnsHash,
-          columns,
-        );
-
-        appLoggerService.log(`Sync Done on ${crossEnvKey} in ${tableName}`, {
-          updatedRecord: {
-            ...updatedRecord,
-            columns: undefined,
-            diff: undefined,
-            auditLog: undefined,
-          },
-        });
-      } catch (error) {
-        // I had to add console.error here  because the logger failed to print error object
-        console.error(error);
-        appLoggerService.error(`Error syncing ${crossEnvKey} in ${tableName}:`, {
-          error: error as Error,
-        });
-
-        await upsertFailedSync(client, tableName, crossEnvKey, error, existingRecord, columns);
-      }
-    }
-
-    // Mark rows in the DataSync table as unsynced if they don't exist in objectsToSync
-    const tableNames = [...new Set(objectsToSync.map(obj => obj.tableName))];
-    const crossEnvKeys = objectsToSync.map(obj => obj.crossEnvKey);
-
-    const unsyncedRecords = await transaction.dataSync.findMany({
-      where: {
-        table: { in: tableNames as DataSyncTables[] },
-        crossEnvKey: { notIn: crossEnvKeys },
       },
-    });
+      { timeout: 1000 * 60 * 5, maxWait: 1000 * 60 * 5 },
+    );
 
-    appLoggerService.log('Marking unsynced records', {
-      unsyncedRecords,
-    });
-
-    await transaction.dataSync.updateMany({
-      where: {
-        table: { in: tableNames as DataSyncTables[] },
-        crossEnvKey: { notIn: crossEnvKeys },
-      },
-      data: {
-        status: 'unsynced',
-        lastCheckAt: new Date(),
-        auditLog: {
-          [`${new Date().toISOString()}`]: {
-            action: 'unsynced',
-          },
-        },
-      },
-    });
-  });
-
-  appLoggerService.log('Sync completed successfully');
+    appLoggerService.log('Sync completed successfully', { stats });
+  } catch (err) {
+    console.error(err);
+    sentryService.captureException(err as Error);
+    throw err;
+  }
 };
 async function createSyncRecord(
   transaction: PrismaTransactionalClient,
@@ -270,6 +323,7 @@ function createDiff(
   tableName: string,
   appLoggerService: AppLoggerService,
 ) {
+  let hasDiff = false;
   if (Array.isArray(existingRecord.syncedColumns)) {
     const dbSyncedColumnsData = existingRecord.syncedColumns.reduce((acc: any, column: any) => {
       acc[column] = dbRecord[column];
@@ -279,10 +333,18 @@ function createDiff(
     const columnsJson = columns;
     diff = deepDiff(dbRecordJson, columnsJson);
 
-    appLoggerService.log(`Detected changes for ${crossEnvKey} in ${tableName}`, {
-      diff,
-    });
-    if (objectMd5(stableStringify(dbRecordJson)) !== objectMd5(stableStringify(columnsJson))) {
+    hasDiff = diff && Object.keys(diff).length > 0;
+    if (!hasDiff) {
+      appLoggerService.log(`No changes detected for ${crossEnvKey} in ${tableName}`);
+    } else {
+      appLoggerService.log(`Detected changes for ${crossEnvKey} in ${tableName}`, {
+        diff,
+      });
+    }
+    if (
+      !hasDiff &&
+      objectMd5(stableStringify(dbRecordJson)) !== objectMd5(stableStringify(columnsJson))
+    ) {
       appLoggerService.warn(
         `Data integrity error for ${crossEnvKey} in ${tableName}: MD5 mismatch`,
       );
@@ -293,7 +355,7 @@ function createDiff(
     );
   }
 
-  return diff;
+  return { diff, hasDiff };
 }
 async function preformDataSync(
   syncConfig: { strategy: 'update' | 'partial-deep-merge' | 'upsert' },
@@ -346,14 +408,14 @@ async function preformDataSync(
 }
 
 async function upsertFailedSync(
-  client: PrismaClient,
+  transaction: PrismaTransactionalClient,
   tableName: string,
   crossEnvKey: string,
   error: unknown,
   existingRecord: DataSyncPayload['scalars'] | null,
   columns: any,
 ) {
-  await client.dataSync.upsert({
+  await transaction.dataSync.upsert({
     where: { table_crossEnvKey: { table: tableName as DataSyncTables, crossEnvKey } },
     update: {
       status: 'failed',
