@@ -95,5 +95,17 @@ services:
       timeout: 45s
       interval: 10s
       retries: 10
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    container_name: caddy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - "../deploy/caddy/Caddyfile:/etc/caddy/Caddyfile"
+      - "../deploy/./caddy/site:/srv"
+      - "../deploy/caddy/caddy_data:/data"
+      - "../deploy/caddy/caddy_config:/config"
 volumes:
   postgres15: ~
