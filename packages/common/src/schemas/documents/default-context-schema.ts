@@ -57,6 +57,7 @@ export const defaultContextSchema = Type.Object({
                   Type.Null(),
                 ]),
               ),
+              comment: Type.Optional(Type.String()),
               rejectionReason: Type.Optional(
                 Type.Union([
                   Type.String(),
