@@ -1,6 +1,7 @@
 import { StateTag, TStateTags, isObject } from '@ballerine/common';
 import { ComponentProps, useCallback, useMemo } from 'react';
 
+import { Separator } from '@/common/components/atoms/Separator/Separator';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { ctw } from '@/common/utils/ctw/ctw';
@@ -51,6 +52,7 @@ export const useKycBlock = ({
       if (!results[docIndex]) {
         results[docIndex] = [];
       }
+
       results[docIndex][pageIndex] = docsData?.shift()?.data;
     });
   });
@@ -327,11 +329,6 @@ export const useKycBlock = ({
             childWorkflow?.context?.entity?.data?.lastName,
           )}`,
         })
-        .addCell({
-          id: 'actions',
-          type: 'container',
-          value: getDecisionStatusOrAction(childWorkflow?.tags),
-        })
         .build()
         .flat(1),
     })
@@ -348,6 +345,31 @@ export const useKycBlock = ({
       value: createBlocksTyped()
         .addBlock()
         .addCell(headerCell)
+        .addCell({
+          type: 'node',
+          value: <Separator className={`my-2`} />,
+        })
+        .addCell({
+          id: 'title-with-actions',
+          type: 'container',
+          props: { className: 'mt-2' },
+          value: createBlocksTyped()
+            .addBlock()
+            .addCell({
+              type: 'heading',
+              value: 'Identity Verification Results',
+              props: {
+                className: 'mt-0',
+              },
+            })
+            .addCell({
+              type: 'container',
+              props: { className: 'space-x-4' },
+              value: getDecisionStatusOrAction(childWorkflow?.tags),
+            })
+            .build()
+            .flat(1),
+        })
         .addCell({
           id: 'kyc-block',
           type: 'container',
@@ -417,10 +439,6 @@ export const useKycBlock = ({
                     .build()
                     .flat(1),
                 })
-                .addCell({
-                  type: 'container',
-                  value: amlBlock,
-                })
                 .build()
                 .flat(1),
             })
@@ -433,6 +451,14 @@ export const useKycBlock = ({
             })
             .build()
             .flat(1),
+        })
+        .addCell({
+          type: 'node',
+          value: <Separator className={`my-2`} />,
+        })
+        .addCell({
+          type: 'container',
+          value: amlBlock,
         })
         .build()
         .flat(1),

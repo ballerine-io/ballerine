@@ -3,12 +3,13 @@ import { apiClient } from '@/common/api-client/api-client';
 import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 
-export const BusinessReportSchema = z.object({
-  report: z.object({
-    reportFileId: z.string(),
-  }),
-});
-export const BusinessReportsSchema = z.array(BusinessReportSchema);
+export const BusinessReportSchema = z
+  .object({
+    report: z.object({
+      reportFileId: z.string(),
+    }),
+  })
+  .optional();
 
 export const fetchBusinessReports = async ({
   businessId,

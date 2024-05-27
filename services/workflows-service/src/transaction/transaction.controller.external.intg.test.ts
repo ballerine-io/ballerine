@@ -11,16 +11,13 @@ import {
   EndUser,
   PaymentAcquirer,
   PaymentBrandName,
-  PaymentChannel,
   PaymentGateway,
   PaymentIssuer,
   PaymentMethod,
   PaymentProcessor,
   PaymentType,
   Project,
-  ReviewStatus,
   TransactionDirection,
-  TransactionRecordStatus,
   TransactionRecordType,
 } from '@prisma/client';
 import { createProject } from '@/test/helpers/create-project';
@@ -106,7 +103,7 @@ const getBaseTransactionData = () => {
       brandName: faker.helpers.arrayElement(Object.values(PaymentBrandName)),
       method: faker.helpers.arrayElement(Object.values(PaymentMethod)),
       type: faker.helpers.arrayElement(Object.values(PaymentType)),
-      channel: faker.helpers.arrayElement(Object.values(PaymentChannel)),
+      channel: 'channel-1',
       issuer: faker.helpers.arrayElement(Object.values(PaymentIssuer)),
       gateway: faker.helpers.arrayElement(Object.values(PaymentGateway)),
       acquirer: faker.helpers.arrayElement(Object.values(PaymentAcquirer)),
@@ -437,9 +434,7 @@ describe('#TransactionControllerExternal', () => {
       const successfulTransaction = (response.body as any[]).find(
         ({ status }) => status === BulkStatus.SUCCESS,
       );
-      const failedTransaction = (response.body as any[]).find(
-        ({ status }) => status === BulkStatus.FAILED,
-      );
+
       expect(successfulTransaction).toEqual({
         status: BulkStatus.SUCCESS,
         data: { id: expect.any(String), correlationId: transaction.correlationId },
@@ -451,9 +446,15 @@ describe('#TransactionControllerExternal', () => {
         },
       });
       expect(transactionRecord?.id).toEqual(successfulTransaction.data.id);
+
+      const failedTransaction = (response.body as any[]).find(
+        ({ status }) => status === BulkStatus.FAILED,
+      );
+
       expect(failedTransaction).toEqual({
         status: BulkStatus.FAILED,
-        error: 'Transaction already exists',
+        error:
+          'Another record with the requested (projectId, transactionCorrelationId) already exists',
         data: { correlationId: transaction.correlationId },
       });
     });

@@ -1,6 +1,6 @@
-import { ctw } from '@/common/utils/ctw/ctw';
-import React, { ComponentProps, FunctionComponent } from 'react';
 import { DownloadFileSvg } from '@/common/components/atoms/icons';
+import { ctw } from '@/common/utils/ctw/ctw';
+import { ComponentProps, FunctionComponent } from 'react';
 
 export interface IDownloadFile extends ComponentProps<'div'> {
   heading: string;
