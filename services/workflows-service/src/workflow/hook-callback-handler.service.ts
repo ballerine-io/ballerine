@@ -140,7 +140,7 @@ export class HookCallbackHandlerService {
         base64PDFString: base64Pdf as string,
       });
 
-    const reportRiskScore = reportData.summary.riskScore;
+    const reportRiskScore = reportData?.summary?.riskScore;
 
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
