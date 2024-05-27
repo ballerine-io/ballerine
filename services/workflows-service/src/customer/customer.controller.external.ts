@@ -44,7 +44,13 @@ export class CustomerControllerExternal {
       faker.internet.password(API_KEY_LEN, false, PASSWORD_REGEX);
 
     const createdCustomer = (await this.service.create({
-      data: customer,
+      data: {
+        ...customer,
+        authenticationConfiguration: {
+          ...customer.authenticationConfiguration,
+          authValue: apiKey,
+        },
+      },
       select: {
         id: true,
         name: true,
