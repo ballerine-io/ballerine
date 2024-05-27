@@ -1657,6 +1657,8 @@ describe('AlertService', () => {
               enabled: true,
             },
             project,
+            undefined,
+            { crossEnvKey: 'TEST' },
           ),
         });
 
@@ -1769,6 +1771,8 @@ describe('AlertService', () => {
               enabled: true,
             },
             project,
+            undefined,
+            { crossEnvKey: 'TEST' },
           ),
         });
 
