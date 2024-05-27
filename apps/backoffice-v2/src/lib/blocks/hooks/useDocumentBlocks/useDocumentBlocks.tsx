@@ -1,4 +1,5 @@
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
+import { checkIsBusiness } from '@/common/utils/check-is-business/check-is-business';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import { useApproveTaskByIdMutation } from '@/domains/entities/hooks/mutations/useApproveTaskByIdMutation/useApproveTaskByIdMutation';
@@ -8,6 +9,7 @@ import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorage
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
+import { useCommentInputLogic } from '@/lib/blocks/hooks/useDocumentBlocks/hooks/useCommentInputLogic/useCommentInputLogic';
 import { checkCanApprove } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-approve/check-can-approve';
 import { checkCanReject } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-reject/check-can-reject';
 import { checkCanRevision } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-revision/check-can-revision';
@@ -23,12 +25,11 @@ import {
 import { selectWorkflowDocuments } from '@/pages/Entity/selectors/selectWorkflowDocuments';
 import { getDocumentsSchemas } from '@/pages/Entity/utils/get-documents-schemas/get-documents-schemas';
 import { CommonWorkflowStates, StateTag } from '@ballerine/common';
-import { Button } from '@ballerine/ui';
+import { Button, TextArea } from '@ballerine/ui';
 import { X } from 'lucide-react';
 import * as React from 'react';
 import { FunctionComponent, useCallback, useMemo } from 'react';
 import { toTitleCase } from 'string-ts';
-import { checkIsBusiness } from '@/common/utils/check-is-business/check-is-business';
 
 export const useDocumentBlocks = ({
   workflow,
@@ -80,17 +81,23 @@ export const useDocumentBlocks = ({
   const { mutate: mutateApproveTaskById, isLoading: isLoadingApproveTaskById } =
     useApproveTaskByIdMutation(workflow?.id);
   const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(workflow?.id);
+
+  const { comment, onClearComment, onCommentChange } = useCommentInputLogic();
   const onMutateApproveTaskById = useCallback(
     ({
         taskId,
         contextUpdateMethod,
+        comment,
       }: {
         taskId: string;
         contextUpdateMethod: 'base' | 'director';
+        comment?: string;
       }) =>
-      () =>
-        mutateApproveTaskById({ documentId: taskId, contextUpdateMethod }),
-    [mutateApproveTaskById],
+      () => {
+        mutateApproveTaskById({ documentId: taskId, contextUpdateMethod, comment });
+        onClearComment();
+      },
+    [mutateApproveTaskById, onClearComment],
   );
   const { mutate: onMutateRemoveDecisionById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
 
@@ -264,9 +271,16 @@ export const useDocumentBlocks = ({
                 ),
                 title: `Approval confirmation`,
                 description: <p className={`text-sm`}>Are you sure you want to approve?</p>,
+                content: (
+                  <TextArea
+                    placeholder={'Add a comment'}
+                    value={comment || ''}
+                    onChange={onCommentChange}
+                  />
+                ),
                 close: (
                   <div className={`space-x-2`}>
-                    <Button type={'button'} variant={`secondary`}>
+                    <Button type={'button'} variant={`secondary`} onClick={onClearComment}>
                       Cancel
                     </Button>
                     <Button
@@ -274,6 +288,7 @@ export const useDocumentBlocks = ({
                       onClick={onMutateApproveTaskById({
                         taskId: id,
                         contextUpdateMethod: 'base',
+                        comment,
                       })}
                     >
                       Approve
