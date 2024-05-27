@@ -1,5 +1,11 @@
 # @ballerine/workflow-core
 
+## 0.6.10
+
+### Patch Changes
+
+- Fix validation logic
+
 ## 0.6.9
 
 ### Patch Changes
