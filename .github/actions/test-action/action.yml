@@ -37,3 +37,5 @@ runs:
     - name: Test
       shell: bash
       run: pnpm test
+      env:
+        LOG_LEVEL: error
