@@ -9,7 +9,7 @@ import { useStorageFilesQuery } from '@/domains/storage/hooks/queries/useStorage
 import { TWorkflowById } from '@/domains/workflows/fetchers';
 import { createBlocksTyped } from '@/lib/blocks/create-blocks-typed/create-blocks-typed';
 import { motionButtonProps } from '@/lib/blocks/hooks/useAssosciatedCompaniesBlock/useAssociatedCompaniesBlock';
-import { useCommentInput } from '@/lib/blocks/hooks/useDocumentBlocks/hooks/useCommentInput/useCommentInput';
+import { useCommentInputLogic } from '@/lib/blocks/hooks/useDocumentBlocks/hooks/useCommentInputLogic/useCommentInputLogic';
 import { checkCanApprove } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-approve/check-can-approve';
 import { checkCanReject } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-reject/check-can-reject';
 import { checkCanRevision } from '@/lib/blocks/hooks/useDocumentBlocks/utils/check-can-revision/check-can-revision';
@@ -82,11 +82,7 @@ export const useDocumentBlocks = ({
     useApproveTaskByIdMutation(workflow?.id);
   const { isLoading: isLoadingRejectTaskById } = useRejectTaskByIdMutation(workflow?.id);
 
-  const {
-    value: commentValue,
-    handleChange: handleCommentChange,
-    clear: clearComment,
-  } = useCommentInput();
+  const { comment, onClearComment, onCommentChange } = useCommentInputLogic();
   const onMutateApproveTaskById = useCallback(
     ({
         taskId,
@@ -99,9 +95,9 @@ export const useDocumentBlocks = ({
       }) =>
       () => {
         mutateApproveTaskById({ documentId: taskId, contextUpdateMethod, comment });
-        clearComment();
+        onClearComment();
       },
-    [mutateApproveTaskById, clearComment],
+    [mutateApproveTaskById, onClearComment],
   );
   const { mutate: onMutateRemoveDecisionById } = useRemoveDecisionTaskByIdMutation(workflow?.id);
 
@@ -278,13 +274,13 @@ export const useDocumentBlocks = ({
                 content: (
                   <TextArea
                     placeholder={'Add a comment'}
-                    value={commentValue || ''}
-                    onChange={handleCommentChange}
+                    value={comment || ''}
+                    onChange={onCommentChange}
                   />
                 ),
                 close: (
                   <div className={`space-x-2`}>
-                    <Button type={'button'} variant={`secondary`} onClick={clearComment}>
+                    <Button type={'button'} variant={`secondary`} onClick={onClearComment}>
                       Cancel
                     </Button>
                     <Button
@@ -292,7 +288,7 @@ export const useDocumentBlocks = ({
                       onClick={onMutateApproveTaskById({
                         taskId: id,
                         contextUpdateMethod: 'base',
-                        comment: commentValue,
+                        comment,
                       })}
                     >
                       Approve
