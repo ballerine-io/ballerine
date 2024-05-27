@@ -4,9 +4,9 @@ import * as bcrypt from 'bcrypt';
 
 const ONE_DAY_IN_MS = 1000 * 60 * 60 * 24;
 
-export const PASSWORD_REGEX = /[!@#$%^&*a-zA-Z]/;
+const PASSWORD_REGEX = /[!@#$%^&*a-zA-Z]/;
 
-export const API_KEY_LEN = 50;
+const API_KEY_LEN = 50;
 
 export const KEY_MIN_LENGTH = 5;
 

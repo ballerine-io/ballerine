@@ -14,8 +14,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import { CustomerSubscriptionDto } from './dtos/customer-config-create.dto';
 import { ValidationError } from '@/errors';
-import { faker } from '@faker-js/faker';
-import { API_KEY_LEN, PASSWORD_REGEX } from '@/customer/api-key/utils';
+import { randomUUID } from 'crypto';
 
 @swagger.ApiTags('Customers')
 @swagger.ApiExcludeController()
@@ -39,9 +38,7 @@ export class CustomerControllerExternal {
       };
     }
 
-    const apiKey =
-      customer.authenticationConfiguration?.authValue ??
-      faker.internet.password(API_KEY_LEN, false, PASSWORD_REGEX);
+    const apiKey = customer.authenticationConfiguration?.authValue ?? randomUUID();
 
     const createdCustomer = (await this.service.create({
       data: {
