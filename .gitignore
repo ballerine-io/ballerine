@@ -57,3 +57,4 @@ deploy/caddy/caddy_data
 deploy/caddy/caddy_config
 
 todo.md
+services/workflows-service/test-report.html
