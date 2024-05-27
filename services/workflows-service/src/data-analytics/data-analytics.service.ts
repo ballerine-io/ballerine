@@ -705,42 +705,6 @@ export class DataAnalyticsService {
     );
   }
 
-  async evaluateHighTransactionTypePercentage2({
-    projectId,
-    transactionType,
-    subjectColumn,
-    minimumCount,
-    minimumPercentage,
-    timeAmount,
-    timeUnit,
-  }: HighTransactionTypePercentage) {
-    // TODO: Optimize this query with HAVING c
-    return await this._executeQuery<Array<{ counterpartyId: string }>>(Prisma.sql`
-      WITH "transactionsData" AS (
-        SELECT
-          "${Prisma.raw(subjectColumn)}",
-          COUNT(*) AS "transactionCount",
-          COUNT(*) FILTER (WHERE "transactionType"::text = ${Prisma.sql`${transactionType}`}) AS "filteredTransactionCount"
-        FROM
-          "TransactionRecord"
-        WHERE
-          "projectId" = ${projectId}
-          AND "transactionDate" >= CURRENT_DATE - INTERVAL '${Prisma.raw(
-            `${timeAmount} ${timeUnit}`,
-          )}'
-        GROUP BY
-          "${Prisma.raw(subjectColumn)}"
-      )
-      SELECT
-        "${Prisma.raw(subjectColumn)}" AS "counterpartyId"
-      FROM
-        "transactionsData"
-      WHERE
-        "filteredTransactionCount" >= ${minimumCount}
-        AND "filteredTransactionCount"::decimal / "transactionCount"::decimal * 100 >= ${minimumPercentage}
-    `);
-  }
-
   async evaluateMerchantGroupAverage({
     projectId,
     customerType,

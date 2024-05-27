@@ -1662,7 +1662,9 @@ describe('AlertService', () => {
           ),
         });
 
-        const counterPartyByType = (businessType: string) =>
+        const counterpartyByType = (
+          businessType: string,
+        ): ReturnType<typeof createBusinessCounterparty> =>
           createBusinessCounterparty({
             prismaService,
             projectId: project.id,
@@ -1670,7 +1672,7 @@ describe('AlertService', () => {
           });
 
         counterpartiesA = await Promise.all(
-          new Array(3).fill(null).map(async () => counterPartyByType('businessA')),
+          new Array(3).fill(null).map(async () => counterpartyByType('businessA')),
         );
 
         await Promise.all(
@@ -1776,7 +1778,7 @@ describe('AlertService', () => {
           ),
         });
 
-        const counterPartyByType = (businessType: string) =>
+        const counterpartyByType = (businessType: string) =>
           createBusinessCounterparty({
             prismaService,
             projectId: project.id,
@@ -1784,7 +1786,7 @@ describe('AlertService', () => {
           });
 
         counterpartiesA = await Promise.all(
-          new Array(3).fill(null).map(async () => counterPartyByType('businessA')),
+          new Array(3).fill(null).map(async () => counterpartyByType('businessA')),
         );
 
         await Promise.all(
