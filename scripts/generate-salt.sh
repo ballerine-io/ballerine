@@ -42,7 +42,7 @@ set_bcrypt_salt_mac() {
 # Function to provide instructions for setting the environment variable in Windows 
 set_bcrypt_salt_windows() {
   echo "Adding HASHING_KEY_SECRET for Windows..."
-  sanitized_value=$(printf '%s\n' "$1" | sed 's/\$/^$/g')
+  sanitized_value=$(printf '%s\n' "$secret_value" | sed 's/\$/^$/g')
 }
 
 update_env_file() {
