@@ -70,10 +70,10 @@ importers:
         specifier: ^0.5.1
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.9
+        specifier: 0.6.10
         version: link:../../sdks/workflow-browser-sdk
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.9
+        specifier: 0.6.10
         version: link:../../sdks/workflow-node-sdk
       '@fontsource/inter':
         specifier: ^4.5.15
@@ -398,7 +398,7 @@ importers:
         specifier: 0.5.2
         version: link:../../packages/ui
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.9
+        specifier: 0.6.10
         version: link:../../sdks/workflow-browser-sdk
       '@lukemorales/query-key-factory':
         specifier: ^1.0.3
@@ -826,7 +826,7 @@ importers:
         specifier: 0.9.6
         version: link:../../packages/common
       '@ballerine/workflow-browser-sdk':
-        specifier: 0.6.9
+        specifier: 0.6.10
         version: link:../../sdks/workflow-browser-sdk
       '@felte/reporter-svelte':
         specifier: ^1.1.5
@@ -2019,7 +2019,7 @@ importers:
         specifier: 0.9.6
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.9
+        specifier: 0.6.10
         version: link:../../packages/workflow-core
       xstate:
         specifier: ^4.37.0
@@ -2158,7 +2158,7 @@ importers:
   sdks/workflow-node-sdk:
     dependencies:
       '@ballerine/workflow-core':
-        specifier: 0.6.9
+        specifier: 0.6.10
         version: link:../../packages/workflow-core
       json-logic-js:
         specifier: ^2.0.2
@@ -2403,10 +2403,10 @@ importers:
         specifier: 0.9.6
         version: link:../../packages/common
       '@ballerine/workflow-core':
-        specifier: 0.6.9
+        specifier: 0.6.10
         version: link:../../packages/workflow-core
       '@ballerine/workflow-node-sdk':
-        specifier: 0.6.9
+        specifier: 0.6.10
         version: link:../../sdks/workflow-node-sdk
       '@faker-js/faker':
         specifier: ^7.6.0
