@@ -46,15 +46,12 @@ set_bcrypt_salt_windows() {
 }
 
 update_env_file() {
-  grep -v '^HASHING_KEY_SECRET=' "$env_example_file" > "$env_example_file.tmp" && mv "$env_example_file.tmp" "$env_example_file"
-  grep -v '^HASHING_KEY_SECRET=' "$env_file" > "$env_file.tmp" && mv "$env_file.tmp" "$env_file"
-
-  # Wrap the value in double quotes
   adjusted_value="\"$sanitized_value\""
 
-  # Append the adjusted value to the .env file
-  echo -e "HASHING_KEY_SECRET=$adjusted_value" >> "$env_file"
-  echo -e "HASHING_KEY_SECRET=$adjusted_value" >> "$env_example_file"
+  for file in "$env_file" "$env_example_file"; do
+    grep -v '^HASHING_KEY_SECRET=' "$file" > "${file}.tmp" && mv "${file}.tmp" "$file"
+    echo -e "HASHING_KEY_SECRET=\"$sanitized_value\"" >> "$file"
+  done
   
   echo "HASHING_KEY_SECRET has been set in the .env file with value: $adjusted_value"
 }
