@@ -40,11 +40,11 @@ runs:
       env: 
         LOG_LEVEL: error
         JEST_HTML_REPORTER_INCLUDE_SUITE_FAILURE: "true"
+        JEST_HTML_REPORTER_INCLUDE_FAILURE_MSG: "true"
         JEST_HTML_REPORTER_LOGO: "https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/images/ballerine_logo.svg"
-        JEST_HTML_REPORTER_STATUS_FILTER: "failed"
+        JEST_HTML_REPORTER_PAGE_TITLE: ${{ github.ref_name }}
 
     - name: Store test result
-      if: failure()
       uses: actions/upload-artifact@v4.3.3
       id: artifact-upload-step
       with:
