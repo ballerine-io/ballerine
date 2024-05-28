@@ -5,6 +5,7 @@ import {
   Error as ErrorEnum,
   Errors,
   StatePlugin,
+  WorkflowEvents,
   WorkflowEventWithoutState,
 } from '@ballerine/workflow-core';
 import type { BaseActionObject, StatesConfig } from 'xstate';
@@ -71,7 +72,7 @@ export class WorkflowBrowserSDK {
       },
     });
 
-    this.#__service.subscribe(event => {
+    this.#__service.subscribe(WorkflowEvents.ENTITIES_UPDATE, event => {
       this.#__notify(event as WorkflowEventWithBrowserType);
     });
   }

@@ -73,7 +73,7 @@ describe('workflow-runner', () => {
         expect(workflow.state).toEqual('checkBusinessScoreSuccess');
         expect(
           (
-            workflow.context as {
+            workflow.#__context as {
               pluginsOutput: Record<string, unknown>;
             }
           ).pluginsOutput,
@@ -107,7 +107,7 @@ describe('workflow-runner', () => {
         expect(workflow.state).toEqual('testManually');
         expect(
           (
-            workflow.context as {
+            workflow.#__context as {
               pluginsOutput: Record<string, unknown>;
             }
           ).pluginsOutput,
@@ -145,7 +145,7 @@ describe('workflow-runner', () => {
           expect(workflow.state).toEqual('testManually');
           expect(
             (
-              workflow.context as {
+              workflow.#__context as {
                 pluginsOutput: Record<string, unknown>;
               }
             ).pluginsOutput,
@@ -181,7 +181,7 @@ describe('workflow-runner', () => {
           expect(
             Object.keys(
               (
-                workflow.context as {
+                workflow.#__context as {
                   pluginsOutput: {
                     ballerineEnrichment: Record<string, unknown>;
                   };

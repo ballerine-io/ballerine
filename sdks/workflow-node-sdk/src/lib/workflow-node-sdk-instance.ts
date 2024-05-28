@@ -1,5 +1,5 @@
 import { TCreateWorkflowCoreReturn, WorkflowOptionsNode } from './types';
-import { createWorkflow } from '@ballerine/workflow-core';
+import { createWorkflow, WorkflowEvents } from '@ballerine/workflow-core';
 
 export class WorkflowNodeSDKInstance {
   #__service: TCreateWorkflowCoreReturn;
@@ -8,8 +8,11 @@ export class WorkflowNodeSDKInstance {
     this.#__service = createWorkflow(options);
   }
 
-  subscribe(callback: Parameters<TCreateWorkflowCoreReturn['subscribe']>[0]) {
-    this.#__service.subscribe(callback);
+  subscribe(
+    eventName: Parameters<TCreateWorkflowCoreReturn['subscribe']>[0],
+    callback: Parameters<TCreateWorkflowCoreReturn['subscribe']>[1],
+  ) {
+    this.#__service.subscribe(eventName, callback);
   }
 
   async sendEvent(event: Parameters<TCreateWorkflowCoreReturn['sendEvent']>[0]) {

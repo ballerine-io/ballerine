@@ -1,6 +1,7 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
 import { HttpPlugins, CommonPlugins, StatePlugins } from './plugins/types';
 import {
+  IDispatchEventPluginParams,
   ISerializableChildPluginParams,
   ISerializableHttpPluginParams,
 } from './plugins/external-plugin/types';
@@ -13,11 +14,15 @@ import { TContext } from './utils';
 import { ChildCallabackable } from './workflow-runner';
 import { THelperFormatingLogic } from './utils/context-transformers/types';
 import { AnyRecord } from '@ballerine/common';
+import { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
 export interface Workflow {
-  subscribe: (callback: (event: WorkflowEvent) => void) => void;
+  subscribe: (
+    eventName: keyof typeof WorkflowEvents,
+    callback: (event: WorkflowEvent) => Promise<void>,
+  ) => void;
   sendEvent: (event: Omit<WorkflowEvent, 'state'>) => Promise<void>;
   getSnapshot: () => Record<PropertyKey, any>;
   invokePlugin: (pluginName: string) => Promise<void>;
@@ -27,24 +32,25 @@ export interface Workflow {
 export interface WorkflowEvent {
   type: string;
   state: string;
-  payload?: Record<PropertyKey, any>;
   error?: unknown;
+  payload?: Record<PropertyKey, any>;
 }
 
 export interface WorkflowExtensions {
   statePlugins?: StatePlugins;
-  apiPlugins?: HttpPlugins | Array<ISerializableHttpPluginParams>;
+  dispatchEventPlugins?: DispatchEventPlugin[] | IDispatchEventPluginParams[];
+  apiPlugins?: HttpPlugins | ISerializableHttpPluginParams[];
   commonPlugins?:
     | CommonPlugins
-    | Array<ISerializableCommonPluginParams>
-    | Array<ISerializableMappingPluginParams>;
-  childWorkflowPlugins?: Array<ISerializableChildPluginParams>;
+    | ISerializableCommonPluginParams[]
+    | ISerializableMappingPluginParams[];
+  childWorkflowPlugins?: ISerializableChildPluginParams[];
 }
 
 export interface ChildWorkflowCallback {
-  transformers?: Array<SerializableTransformer>;
+  transformers?: SerializableTransformer[];
   action: 'append';
-  persistenceStates?: Array<string>;
+  persistenceStates?: string[];
   deliverEvent?: string;
 }
 
@@ -69,10 +75,6 @@ export interface WorkflowOptions {
   workflowContext?: WorkflowContext;
   extensions?: WorkflowExtensions;
   invokeChildWorkflowAction?: ChildCallabackable['invokeChildWorkflowAction'];
-}
-
-export interface CallbackInfo {
-  event: string;
 }
 
 export interface WorkflowRunnerArgs {
@@ -111,3 +113,10 @@ export type SerializableTransformer = {
   mapping: string | THelperFormatingLogic;
   options: any;
 };
+
+export const WorkflowEvents = {
+  ENTITIES_UPDATE: 'ENTITIES_UPDATE',
+  STATE_UPDATE: 'STATE_UPDATE',
+  STATUS_UPDATE: 'STATUS_UPDATE',
+  EVALUATION_ERROR: 'EVALUATION_ERROR',
+} as const;

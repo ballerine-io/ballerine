@@ -95,11 +95,18 @@ model EndUser {
   @@index([projectId])
 }
 
+enum BusinessPosition {
+  ubo
+  director
+  authorized_signatory
+}
+
 model EndUsersOnBusinesses {
   endUser    EndUser  @relation(fields: [endUserId], references: [id])
   endUserId  String
   business   Business @relation(fields: [businessId], references: [id])
   businessId String
+  positionInBusiness BusinessPosition[]
 
   @@id([endUserId, businessId])
   @@index([businessId])

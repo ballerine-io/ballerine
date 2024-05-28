@@ -2,6 +2,8 @@ import { TJsonSchema, Transformers, Validator } from '../../utils';
 import { THelperFormatingLogic } from '../../utils/context-transformers/types';
 import { ActionablePlugin } from '../types';
 import { ChildWorkflowPluginParams } from '../common-plugin/types';
+import { WorkflowEvents } from '../../types';
+import { AnyRecord } from '@ballerine/common';
 
 export interface ValidatableTransformer {
   transformers: Transformers;
@@ -10,7 +12,7 @@ export interface ValidatableTransformer {
 export interface IApiPluginParams {
   name: string;
   pluginKind?: string;
-  stateNames: Array<string>;
+  stateNames: string[];
   url: string;
   method: 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'GET';
   request: ValidatableTransformer;
@@ -21,12 +23,24 @@ export interface IApiPluginParams {
   persistResponseDestination?: string;
   displayName: string | undefined;
 
-  invoke?(...args: Array<any>): any;
+  invoke?(...args: any[]): any;
 }
+
+export interface IDispatchEventPluginParams {
+  name: string;
+  payload?: AnyRecord;
+  stateNames: string[];
+  displayName?: string;
+  errorAction?: string;
+  successAction?: string;
+  eventName: keyof typeof WorkflowEvents;
+  transformers?: SerializableValidatableTransformer['transform'];
+}
+
 export interface WebhookPluginParams {
   name: string;
   pluginKind: string;
-  stateNames: Array<string>;
+  stateNames: string[];
   url: string;
   method: IApiPluginParams['method'];
   headers: IApiPluginParams['headers'];
@@ -36,13 +50,13 @@ export interface WebhookPluginParams {
 export interface IterativePluginParams {
   name: string;
   pluginKind: string;
-  stateNames: Array<string>;
+  stateNames: string[];
   iterateOn: Omit<IApiPluginParams['request'], 'schemaValidator'>;
   actionPlugin: ActionablePlugin;
   successAction?: string;
   errorAction?: string;
 
-  invoke?(...args: Array<any>): any;
+  invoke?(...args: any[]): any;
 }
 
 export interface SerializableValidatableTransformer {
@@ -58,12 +72,12 @@ export interface ISerializableHttpPluginParams
   request: SerializableValidatableTransformer;
   response: SerializableValidatableTransformer;
 
-  invoke?(...args: Array<any>): any;
+  invoke?(...args: any[]): any;
 }
 
 export interface SerializableWebhookPluginParams extends Omit<WebhookPluginParams, 'request'> {
   name: string;
-  stateNames: Array<string>;
+  stateNames: string[];
   url: string;
   method: ISerializableHttpPluginParams['method'];
   headers: ISerializableHttpPluginParams['headers'];
@@ -75,15 +89,15 @@ export interface ISerializableChildPluginParams
   pluginKind: string;
   transformers: Omit<SerializableValidatableTransformer, 'schema'>['transform'];
 
-  invoke?(...args: Array<any>): Promise<any>;
+  invoke?(...args: any[]): Promise<any>;
 }
 
 export interface SerializableIterativePluginParams {
   name: string;
-  stateNames: Array<string>;
-  iterateOn: Omit<SerializableValidatableTransformer['transform'], 'schema'>;
+  stateNames: string[];
   successAction?: string;
   errorAction?: string;
+  iterateOn: SerializableValidatableTransformer['transform'];
 
   invoke?(...args: any): void;
 }

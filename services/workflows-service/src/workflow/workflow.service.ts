@@ -60,6 +60,7 @@ import {
   SerializableTransformer,
   THelperFormatingLogic,
   Transformer,
+  WorkflowEvents,
 } from '@ballerine/workflow-core';
 import {
   BadRequestException,
@@ -69,6 +70,8 @@ import {
 } from '@nestjs/common';
 import {
   ApprovalState,
+  BusinessPosition,
+  EndUser,
   Prisma,
   PrismaClient,
   UiDefinitionContext,
@@ -1812,6 +1815,8 @@ export class WorkflowService {
   ): Promise<TEntityId | null> {
     if (entity.ballerineEntityId) {
       return entity.ballerineEntityId as TEntityId;
+    } else if ('data' in entity && isObject(entity.data) && entity.data.ballerineEntityId) {
+      return entity.data.ballerineEntityId as TEntityId;
     } else if (!entity.id) {
       return null;
     } else {
@@ -1874,12 +1879,14 @@ export class WorkflowService {
 
     return await beginTransactionIfNotExist(async transaction => {
       this.logger.log('Workflow event received', { id, type });
+
       const workflowRuntimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
         id,
         {},
         projectIds,
         transaction,
       );
+
       const workflowDefinition = await this.workflowDefinitionRepository.findById(
         workflowRuntimeData.workflowDefinitionId,
         {},
@@ -1926,6 +1933,101 @@ export class WorkflowService {
             transaction,
           );
         },
+      });
+
+      service.subscribe(WorkflowEvents.ENTITIES_UPDATE, async ({ payload }) => {
+        if (!payload) {
+          return;
+        }
+
+        const promises = [];
+        const { ubos, directors } = payload;
+
+        const updatedUbos: Array<{ ballerineEntityId: string }> = [];
+        const updatedDirectors: Array<{ ballerineEntityId: string }> = [];
+
+        if (ubos && Array.isArray(ubos)) {
+          promises.push(
+            ...ubos.map(async ubo => {
+              const data = ubo as Partial<EndUser>;
+
+              const { id: endUserId } = await this.endUserService.create({
+                data: {
+                  email: data.email,
+                  firstName: data.firstName,
+                  lastName: data.lastName,
+                  nationalId: data.nationalId,
+                  additionalInfo: data.additionalInfo,
+                  project: { connect: { id: currentProjectId } },
+                  endUsersOnBusinesses: {
+                    create: {
+                      positionInBusiness: [BusinessPosition.ubo],
+                      business: {
+                        connect: { id: workflowRuntimeData.businessId },
+                      },
+                    },
+                  },
+                } as Prisma.EndUserCreateInput,
+                select: {
+                  id: true,
+                },
+              });
+
+              updatedUbos.push({ ballerineEntityId: endUserId });
+            }),
+          );
+        }
+
+        if (directors && Array.isArray(directors)) {
+          promises.push(
+            ...directors.map(async director => {
+              const data = director as Partial<EndUser>;
+
+              const { id: endUserId } = await this.endUserService.create({
+                data: {
+                  email: data.email,
+                  firstName: data.firstName,
+                  lastName: data.lastName,
+                  nationalId: data.nationalId,
+                  additionalInfo: data.additionalInfo,
+                  project: { connect: { id: currentProjectId } },
+                  endUsersOnBusinesses: {
+                    create: {
+                      positionInBusiness: [BusinessPosition.director],
+                      business: {
+                        connect: { id: workflowRuntimeData.businessId },
+                      },
+                    },
+                  },
+                } as Prisma.EndUserCreateInput,
+                select: {
+                  id: true,
+                },
+              });
+
+              updatedDirectors.push({ ballerineEntityId: endUserId });
+            }),
+          );
+        }
+
+        await Promise.all(promises);
+
+        await service.sendEvent({
+          type: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
+          payload: {
+            arrayMergeOption: ARRAY_MERGE_OPTION.BY_INDEX,
+            newContext: {
+              entity: {
+                data: {
+                  additionalInfo: {
+                    ubos: updatedUbos,
+                    directors: updatedDirectors,
+                  },
+                },
+              },
+            },
+          },
+        });
       });
 
       if (!service.getSnapshot().nextEvents.includes(type)) {
