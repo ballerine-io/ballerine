@@ -2,7 +2,7 @@ import { TTitlePageData } from '@/pages/Entity/pdfs/case-information/pages/Title
 import { List, ListItem, Typography, tw } from '@ballerine/react-pdf-toolkit';
 import { Image, Page, View } from '@react-pdf/renderer';
 import { FunctionComponent } from 'react';
-import poweredByLogo from './assets/title-page-ballerine-logo.png';
+import poweredByLogo from '../../assets/title-page-ballerine-logo.png';
 
 export interface ITitlePageProps {
   data: TTitlePageData;
