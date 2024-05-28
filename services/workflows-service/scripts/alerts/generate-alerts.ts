@@ -862,14 +862,11 @@ export const seedTransactionsAlerts = async (
     createdBy: faker.internet.userName(),
   });
 
-  const merchantMonitoringAlertDef = await generateAlertDefinitions(
-    prisma,
-    {
-      alertsDefConfiguration: MERCHANT_MONITORING_ALERT_DEFINITIONS,
-      project,
-      createdBy: faker.internet.userName(),
-    }
-  );
+  const merchantMonitoringAlertDef = await generateAlertDefinitions(prisma, {
+    alertsDefConfiguration: MERCHANT_MONITORING_ALERT_DEFINITIONS,
+    project,
+    createdBy: faker.internet.userName(),
+  });
 
   await Promise.all([
     ...transactionsAlertDef.map(alertDefinition =>
