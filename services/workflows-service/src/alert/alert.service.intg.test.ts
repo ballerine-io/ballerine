@@ -195,7 +195,6 @@ describe('AlertService', () => {
 
       test('When there is activity in the last 180 days', async () => {
         // Arrange
-        throw new Error('Not implemented');
         const baseTransactionFactory = await createTransactionsWithCounterpartyAsync(
           project,
           prismaService,
