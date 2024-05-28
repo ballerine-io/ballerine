@@ -26,7 +26,7 @@ export const useCaseOptionsLogic = () => {
   const { data: workflow } = useCurrentCaseQuery();
   const { data: customer } = useCustomerQuery();
 
-  const genereateAndDownloadPDFCertificate = useCallback(async () => {
+  const generateAndOpenPDFInNewTab = useCallback(async () => {
     try {
       setIsGeneratingPDF(true);
 
@@ -54,6 +54,6 @@ export const useCaseOptionsLogic = () => {
 
   return {
     isGeneratingPDF,
-    genereateAndDownloadPDFCertificate,
+    generateAndOpenPDFInNewTab,
   };
 };
