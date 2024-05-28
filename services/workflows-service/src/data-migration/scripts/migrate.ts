@@ -85,9 +85,9 @@ export const migrate = async (appContext: INestApplicationContext) => {
   for (const migrationProcess of migrationProcessesToRun) {
     const migrationVersion = migrationProcess.version;
 
-    const fileName = migrationProcess.fileName.split('/').pop();
+    const fileName = migrationProcess.fileName.split('/').pop()!.replace('.js', '');
 
-    logger.log(`Running Data Migration: ${fileName!.replace('.js', '')}`);
+    logger.log(`Running Data Migration: ${fileName}`);
 
     const runningMigration = await dataMigrationRepository.create({
       data: {
