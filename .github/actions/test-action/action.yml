@@ -36,8 +36,9 @@ runs:
 
     - name: Test
       shell: bash
-      run: pnpm test
-      env: 
+      run: pnpm test -- --verbose false
+      env:
+        LOG_LEVEL: error
         JEST_HTML_REPORTER_INCLUDE_SUITE_FAILURE: "true"
         JEST_HTML_REPORTER_LOGO: "https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/images/ballerine_logo.svg"
         JEST_HTML_REPORTER_STATUS_FILTER: "failed"
@@ -50,3 +51,4 @@ runs:
         name: test-report.html
         path: services/workflows-service/
         retention-days: 7
+

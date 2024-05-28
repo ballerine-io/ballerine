@@ -575,6 +575,46 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
+  MGAV_CC: {
+    enabled: false,
+    defaultSeverity: AlertSeverity.high,
+    description: `Merchant's average credit card transaction volume deviating significantly from the norm within their segment`,
+    inlineRule: {
+      id: 'MGAV_CC',
+      fnName: 'evaluateMerchantGroupAverage',
+      subjects: ['counterpartyId'],
+      options: {
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '=',
+        },
+        transactionFactor: 5,
+        minimumCount: 2,
+        timeAmount: SEVEN_DAYS,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  MGAV_APM: {
+    enabled: false,
+    defaultSeverity: AlertSeverity.high,
+    description: `Merchant's average non credit card transaction volume deviating significantly from the norm within their segment`,
+    inlineRule: {
+      id: 'MGAV_APM',
+      fnName: 'evaluateMerchantGroupAverage',
+      subjects: ['counterpartyId'],
+      options: {
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '!=',
+        },
+        transactionFactor: 5,
+        minimumCount: 2,
+        timeAmount: SEVEN_DAYS,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
 } as const satisfies Record<string, Parameters<typeof getAlertDefinitionCreateData>[0]>;
 
 export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
@@ -822,11 +862,15 @@ export const seedTransactionsAlerts = async (
     createdBy: faker.internet.userName(),
   });
 
-  const merchantMonitoringAlertDef = await generateAlertDefinitions(prisma, {
-    alertsDefConfiguration: MERCHANT_MONITORING_ALERT_DEFINITIONS,
-    project,
-    createdBy: faker.internet.userName(),
-  });
+  const merchantMonitoringAlertDef = await generateAlertDefinitions(
+    prisma,
+    {
+      alertsDefConfiguration: MERCHANT_MONITORING_ALERT_DEFINITIONS,
+      project,
+      createdBy: faker.internet.userName(),
+    },
+    { crossEnvKeyPrefix: 'TEST' },
+  );
 
   await Promise.all([
     ...transactionsAlertDef.map(alertDefinition =>
