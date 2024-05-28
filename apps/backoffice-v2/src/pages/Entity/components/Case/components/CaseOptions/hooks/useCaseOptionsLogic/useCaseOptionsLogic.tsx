@@ -9,6 +9,7 @@ import { RegistryPagePDF } from '@/pages/Entity/components/Case/components/CaseO
 import { TitlePagePDF } from '@/pages/Entity/components/Case/components/CaseOptions/hooks/useCaseOptionsLogic/renderers/title-page.pdf';
 import { useCurrentCaseQuery } from '@/pages/Entity/hooks/useCurrentCaseQuery/useCurrentCaseQuery';
 import { Document, pdf } from '@react-pdf/renderer';
+import { t } from 'i18next';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -46,7 +47,7 @@ export const useCaseOptionsLogic = () => {
       openFile(PDFBlob);
     } catch (error) {
       console.error(`Failed to download PDF certificate: ${error}`);
-      toast.error('Failed to download PDF certificate.');
+      toast.error(t('toast:pdf_certificate.error'));
     } finally {
       setIsGeneratingPDF(false);
     }
