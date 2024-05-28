@@ -13,4 +13,13 @@ module.exports = {
   },
   globalSetup: '<rootDir>/src/test/db-setup.ts',
   globalTeardown: '<rootDir>/src/test/db-teardown.ts',
+  reporters: [
+    'default',
+    [
+      './node_modules/jest-html-reporter',
+      {
+        pageTitle: 'Test Report',
+      },
+    ],
+  ],
 };

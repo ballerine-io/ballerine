@@ -449,6 +449,7 @@ enum DataVersionStatus {
 model DataMigrationVersion {
   id            String            @id @default(cuid())
   version       String
+  fileName      String?
   migratedAt    DateTime          @default(now())
   status        DataVersionStatus @default(completed)
   failureReason String?
