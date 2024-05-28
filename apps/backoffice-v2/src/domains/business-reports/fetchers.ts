@@ -5,6 +5,7 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { TBusinessReportType } from '@/domains/business-reports/types';
 import qs from 'qs';
 import { TObjectValues } from '@/common/types';
+import { env } from '@/common/env/env';
 
 export const BusinessReportStatus = {
   IN_PROGRESS: 'in_progress',
@@ -87,4 +88,40 @@ export const fetchBusinessReports = async ({
   });
 
   return handleZodError(error, filter);
+};
+
+export const createBusinessReport = async ({
+  websiteUrl,
+  operatingCountry,
+  companyName,
+  businessId,
+  reportType,
+}:
+  | {
+      websiteUrl: string;
+      operatingCountry?: string;
+      reportType: TBusinessReportType;
+      companyName: string;
+    }
+  | {
+      websiteUrl: string;
+      operatingCountry?: string;
+      reportType: TBusinessReportType;
+      businessId: string;
+    }) => {
+  const [businessReport, error] = await apiClient({
+    endpoint: `business-reports`,
+    method: Method.POST,
+    schema: z.undefined(),
+    body: {
+      websiteUrl,
+      countryCode: operatingCountry,
+      merchantName: companyName,
+      businessId,
+      callbackUrl: `${env.VITE_API_URL}/business-reports/hook`,
+      reportType,
+    },
+  });
+
+  return handleZodError(error, businessReport);
 };

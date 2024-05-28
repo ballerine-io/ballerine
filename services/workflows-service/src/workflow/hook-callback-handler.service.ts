@@ -23,7 +23,7 @@ import { EndUserService } from '@/end-user/end-user.service';
 import { z } from 'zod';
 import { EndUserActiveMonitoringsSchema } from '@/end-user/end-user.schema';
 
-const ReportWithRiskScoreSchema = z
+export const ReportWithRiskScoreSchema = z
   .object({
     summary: z.object({
       riskScore: z.number(),
@@ -135,18 +135,17 @@ export class HookCallbackHandlerService {
 
     const { context } = workflowRuntime;
     const { reportData: unvalidatedReportData, base64Pdf, reportId, reportType } = data;
-    const reportData = ReportWithRiskScoreSchema;
+    const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
 
     const { documents, pdfReportBallerineFileId } =
-      await this.__peristPDFReportDocumentWithWorkflowDocuments({
+      await this.persistPDFReportDocumentWithWorkflowDocuments({
         context,
         customer,
         projectId: currentProjectId,
         base64PDFString: base64Pdf as string,
       });
 
-    const reportRiskScore =
-      ReportWithRiskScoreSchema.parse(unvalidatedReportData).summary.riskScore;
+    const reportRiskScore = reportData.summary.riskScore;
 
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
@@ -253,7 +252,7 @@ export class HookCallbackHandlerService {
       };
     }
 
-    const { pdfReportBallerineFileId } = await this.__peristPDFReportDocumentWithWorkflowDocuments({
+    const { pdfReportBallerineFileId } = await this.persistPDFReportDocumentWithWorkflowDocuments({
       context,
       customer,
       projectId: currentProjectId,
@@ -283,7 +282,7 @@ export class HookCallbackHandlerService {
     return context;
   }
 
-  private async __peristPDFReportDocumentWithWorkflowDocuments({
+  async persistPDFReportDocumentWithWorkflowDocuments({
     context,
     base64PDFString,
     projectId,

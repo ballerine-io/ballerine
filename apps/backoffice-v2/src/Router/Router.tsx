@@ -24,6 +24,7 @@ import { TransactionMonitoringAlertsAnalysisPage } from '@/pages/TransactionMoni
 import { Profiles } from '@/pages/Profiles/Profiles.page';
 import { Individuals } from '@/pages/Profiles/Individuals/Individuals.page';
 import { MerchantMonitoring } from '@/pages/MerchantMonitoring/MerchantMonitoring.page';
+import { MerchantMonitoringCreateCheckPage } from '@/pages/MerchantMonitoringCreateCheck/MerchantMonitoringCreateCheck.page';
 
 const router = createBrowserRouter([
   {
@@ -73,6 +74,11 @@ const router = createBrowserRouter([
               {
                 path: '/:locale/merchant-monitoring',
                 element: <MerchantMonitoring />,
+                errorElement: <RouteError />,
+              },
+              {
+                path: '/:locale/merchant-monitoring/create-check',
+                element: <MerchantMonitoringCreateCheckPage />,
                 errorElement: <RouteError />,
               },
               {
