@@ -73,8 +73,8 @@ export const Combobox = forwardRef<HTMLInputElement, IComboboxProps>(
                     <CommandItem
                       key={item.value}
                       value={item.value}
-                      onSelect={currentValue => {
-                        onChange(currentValue === value ? '' : currentValue);
+                      onSelect={() => {
+                        onChange(item.value === value ? '' : item.value);
                         toggleIsOpenOff();
                       }}
                       {...props?.commandItem}
