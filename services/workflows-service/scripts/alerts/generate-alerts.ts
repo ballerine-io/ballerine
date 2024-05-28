@@ -1,8 +1,21 @@
+import {
+  ALERT_DEDUPE_STRATEGY_DEFAULT,
+  daysToMinutesConverter,
+  MerchantAlertLabel,
+  SEVEN_DAYS,
+  THREE_DAYS,
+  TWENTY_ONE_DAYS,
+} from '@/alert/consts';
+import { TDedupeStrategy } from '@/alert/types';
+import { AggregateType, TIME_UNITS } from '@/data-analytics/consts';
 import { InlineRule } from '@/data-analytics/types';
+import { InputJsonValue, PrismaTransaction } from '@/types';
+import { faker } from '@faker-js/faker';
 import {
   AlertSeverity,
   AlertState,
   AlertStatus,
+  MonitoringType,
   PaymentMethod,
   Prisma,
   PrismaClient,
@@ -10,16 +23,6 @@ import {
   TransactionDirection,
   TransactionRecordType,
 } from '@prisma/client';
-import { faker } from '@faker-js/faker';
-import { AggregateType, TIME_UNITS } from '@/data-analytics/consts';
-import { InputJsonValue, PrismaTransaction } from '@/types';
-import { TDedupeStrategy } from '@/alert/types';
-import {
-  ALERT_DEDUPE_STRATEGY_DEFAULT,
-  SEVEN_DAYS,
-  TWENTY_ONE_DAYS,
-  daysToMinutesConverter,
-} from '@/alert/consts';
 
 const tags = [
   ...new Set([
@@ -357,6 +360,7 @@ export const ALERT_DEFINITIONS = {
     description:
       'High Percentage of Chargebacks - High percentage of chargebacks over a set period of time',
     dedupeStrategy: {
+      mute: false,
       cooldownTimeframeInMinutes: daysToMinutesConverter(TWENTY_ONE_DAYS),
     },
     inlineRule: {
@@ -368,7 +372,7 @@ export const ALERT_DEFINITIONS = {
         subjectColumn: 'counterpartyOriginatorId',
         minimumCount: 3,
         minimumPercentage: 50,
-        timeAmount: 21,
+        timeAmount: TWENTY_ONE_DAYS,
         timeUnit: TIME_UNITS.days,
       },
     },
@@ -443,7 +447,6 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
-
   PGAIAPM: {
     enabled: true,
     defaultSeverity: AlertSeverity.medium,
@@ -482,25 +485,177 @@ export const ALERT_DEFINITIONS = {
       },
     },
   },
+  HVHAI_CC: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `Total number of incoming credit cards transactions exceeds client’s historical average`,
+    inlineRule: {
+      id: 'HVHAI_CC',
+      fnName: 'evaluateHighVelocityHistoricAverage',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 3,
+        transactionFactor: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '=',
+        },
+        activeUserPeriod: {
+          timeAmount: 180,
+        },
+        lastDaysPeriod: {
+          timeAmount: THREE_DAYS,
+        },
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  HVHAI_APM: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    description: `Total number of incoming credit cards transactions exceeds client’s historical average`,
+    inlineRule: {
+      id: 'HVHAI_APM',
+      fnName: 'evaluateHighVelocityHistoricAverage',
+      subjects: ['counterpartyId'],
+      options: {
+        transactionDirection: TransactionDirection.inbound,
+        minimumCount: 3,
+        transactionFactor: 2,
+        paymentMethod: {
+          value: PaymentMethod.credit_card,
+          operator: '!=',
+        },
+        activeUserPeriod: {
+          timeAmount: 180,
+        },
+        lastDaysPeriod: {
+          timeAmount: THREE_DAYS,
+        },
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  MMOC_CC: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
+    description: `Card numbers that are appearing in too many different merchant IDs for credit card transactions`,
+    inlineRule: {
+      id: 'MMOC_CC',
+      fnName: 'evaluateMultipleMerchantsOneCounterparty',
+      subjects: ['counterpartyId'],
+      options: {
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
+        minimumCount: 2,
+        timeAmount: SEVEN_DAYS,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
+  MMOC_APM: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
+    description: `Card numbers that are appearing in too many different merchant IDs for non credit card transactions`,
+    inlineRule: {
+      id: 'MMOC_APM',
+      fnName: 'evaluateMultipleMerchantsOneCounterparty',
+      subjects: ['counterpartyId'],
+      options: {
+        excludedCounterparty: {
+          counterpartyBeneficiaryIds: ['9999999999999999', '999999______9999'],
+          counterpartyOriginatorIds: [],
+        },
+        minimumCount: 2,
+        timeAmount: SEVEN_DAYS,
+        timeUnit: TIME_UNITS.days,
+      },
+    },
+  },
 } as const satisfies Record<string, Parameters<typeof getAlertDefinitionCreateData>[0]>;
+
+export const MERCHANT_MONITORING_ALERT_DEFINITIONS = {
+  MERCHANT_ONGOING_RISK_ALERT_RISK_INCREASE: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.low,
+    monitoringType: MonitoringType.ongoing_merchant_monitoring,
+    description: 'Monitor ongoing risk changes',
+    inlineRule: {
+      id: 'MERCHANT_ONGOING_RISK_ALERT_RISK_INCREASE',
+      fnName: 'checkMerchantOngoingAlert',
+      subjects: ['businessId', 'projectId'],
+      options: {
+        increaseRiskScore: 20,
+      },
+    },
+  },
+  MERCHANT_ONGOING_RISK_ALERT_THRESHOLD: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.high,
+    monitoringType: MonitoringType.ongoing_merchant_monitoring,
+    description: 'Monitor ongoing risk changes',
+    inlineRule: {
+      id: 'MERCHANT_ONGOING_RISK_ALERT_THRESHOLD',
+      fnName: 'checkMerchantOngoingAlert',
+      subjects: ['businessId', 'projectId'],
+      options: {
+        maxRiskScoreThreshold: 60,
+      },
+    },
+  },
+  MERCHANT_ONGOING_RISK_ALERT_PERCENTAGE: {
+    enabled: true,
+    defaultSeverity: AlertSeverity.medium,
+    monitoringType: MonitoringType.ongoing_merchant_monitoring,
+    description: 'Monitor ongoing risk changes',
+    inlineRule: {
+      id: 'MERCHANT_ONGOING_RISK_ALERT_PERCENTAGE',
+      fnName: 'checkMerchantOngoingAlert',
+      subjects: ['businessId', 'projectId'],
+      options: {
+        increaseRiskScorePercentage: 30,
+      },
+    },
+  },
+} as const satisfies Partial<
+  Record<
+    keyof typeof MerchantAlertLabel | string,
+    {
+      inlineRule: InlineRule & InputJsonValue;
+      monitoringType: MonitoringType;
+      defaultSeverity: AlertSeverity;
+      enabled?: boolean;
+      description?: string;
+    }
+  >
+>;
 
 export const getAlertDefinitionCreateData = (
   {
     inlineRule,
     defaultSeverity,
     description,
+    monitoringType = MonitoringType.transaction_monitoring,
     enabled = false,
     dedupeStrategy = ALERT_DEDUPE_STRATEGY_DEFAULT,
+    correlationId,
   }: {
     inlineRule: InlineRule;
     defaultSeverity: AlertSeverity;
+    monitoringType?: MonitoringType;
     enabled: boolean;
     dedupeStrategy?: Partial<TDedupeStrategy>;
     description?: string;
+    correlationId?: string;
   },
   project: Project,
   createdBy: string = 'SYSTEM',
-  extraColumns: any = {},
+  extraColumns: {
+    crossEnvKey: string;
+  },
 ) => {
   const id = inlineRule.id;
 
@@ -511,8 +666,9 @@ export const getAlertDefinitionCreateData = (
       ...ALERT_DEDUPE_STRATEGY_DEFAULT,
       ...(dedupeStrategy ?? {}),
     },
+    monitoringType: monitoringType ?? MonitoringType.transaction_monitoring,
     inlineRule,
-    correlationId: id,
+    correlationId: correlationId || id,
     name: id,
     rulesetId: `set-${id}`,
     description: description,
@@ -522,9 +678,13 @@ export const getAlertDefinitionCreateData = (
     config: { config: {} },
     tags: [],
     additionalInfo: {},
-    ...extraColumns,
-    projectId: project.id,
-  };
+    crossEnvKey: extraColumns.crossEnvKey,
+    project: {
+      connect: {
+        id: project.id,
+      },
+    },
+  } as Prisma.AlertDefinitionCreateInput;
 };
 
 export const generateAlertDefinitions = async (
@@ -534,6 +694,9 @@ export const generateAlertDefinitions = async (
     createdBy = 'SYSTEM',
     alertsDef = ALERT_DEFINITIONS,
   }: {
+    alertsDefConfiguration?:
+      | typeof ALERT_DEFINITIONS
+      | typeof MERCHANT_MONITORING_ALERT_DEFINITIONS;
     createdBy?: string;
     project: Project;
     alertsDef?: Partial<typeof ALERT_DEFINITIONS>;
@@ -551,41 +714,70 @@ export const generateAlertDefinitions = async (
         ...alert,
       }))
       .filter(alert => alert.enabled)
-      .map(alertDef => {
+      .map(async alertDef => {
         const extraColumns = {
           crossEnvKey: crossEnvKeyPrefix
             ? `${crossEnvKeyPrefix}_${alertDef.inlineRule.id}`
-            : undefined,
+            : project.name
+                .toUpperCase()
+                .replace(' ', '_')
+                .replace(/[_-]?PROJECT[_-]?/g, 'P')
+                .replace(/[_-]?DEFAULT[_-]?/g, '')
+                .replace('-', '_')
+                .replace('__', '_') +
+              '_' +
+              alertDef.inlineRule.id,
         };
-
-        return prisma.alertDefinition.upsert({
-          where: {
-            correlationId_projectId: {
-              correlationId: alertDef.correlationId,
-              projectId: project.id,
+        let dbRes;
+        try {
+          dbRes = await prisma.alertDefinition.upsert({
+            where: {
+              crossEnvKey: extraColumns.crossEnvKey,
             },
-          },
-          create: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
-          update: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
-          include: {
-            alert: true,
-          },
-        });
+            create: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
+            update: getAlertDefinitionCreateData(alertDef, project, createdBy, extraColumns),
+            include: {
+              alert: true,
+            },
+          });
+        } catch (error) {
+          console.error(error);
+          console.error('Error creating alert definition', alertDef, extraColumns);
+          throw error;
+        }
+
+        return dbRes;
       }),
   );
 
-const generateFakeAlert = ({
-  severity,
-  counterparyIds,
-  agentUserIds,
-}: {
-  severity: AlertSeverity;
-  counterparyIds: string[];
-  agentUserIds: string[];
-}): Omit<Prisma.AlertCreateManyAlertDefinitionInput, 'projectId'> => {
-  const counterypartyId = faker.helpers.arrayElement(
-    counterparyIds.map(id => ({ counterpartyId: id })),
-  );
+const generateFakeAlert = (
+  options: {
+    severity: AlertSeverity;
+    agentUserIds: string[];
+  } & (
+    | {
+        counterpartyIds: string[];
+      }
+    | {
+        businessIds: string[];
+      }
+  ),
+): Omit<Prisma.AlertCreateManyAlertDefinitionInput, 'projectId'> => {
+  const { severity, agentUserIds } = options;
+
+  let businessId: { businessId: string } | {} = {};
+  let counterpartyId: { counterpartyId: string } | {} = {};
+
+  if ('businessIds' in options) {
+    // For merchant monitoring alerts
+    businessId = faker.helpers.arrayElement(options.businessIds.map(id => ({ businessId: id })));
+  } else if ('counterpartyIds' in options) {
+    // For transaction alerts
+    counterpartyId = faker.helpers.arrayElement(
+      options.counterpartyIds.map(id => ({ counterpartyId: id })),
+    );
+  }
+
   // In chance of 1 to 5, assign an agent to the alert
   const assigneeId =
     faker.datatype.number({ min: 1, max: 5 }) === 1
@@ -605,29 +797,39 @@ const generateFakeAlert = ({
     } as InputJsonValue,
     severity,
     assigneeId,
-    ...counterypartyId,
+    ...counterpartyId,
+    ...businessId,
   };
 };
 
-export const generateFakeAlertsAndDefinitions = async (
+export const seedTransactionsAlerts = async (
   prisma: PrismaClient,
   {
     project,
-    counterparyIds,
+    businessIds,
+    counterpartyIds,
     agentUserIds,
   }: {
     project: Project;
-    counterparyIds: string[];
+    businessIds: string[];
+    counterpartyIds: string[];
     agentUserIds: string[];
   },
 ) => {
-  const alertDefinitions = await generateAlertDefinitions(prisma, {
+  const transactionsAlertDef = await generateAlertDefinitions(prisma, {
+    alertsDefConfiguration: ALERT_DEFINITIONS,
     project,
     createdBy: faker.internet.userName(),
   });
 
-  await Promise.all(
-    alertDefinitions.map(alertDefinition =>
+  const merchantMonitoringAlertDef = await generateAlertDefinitions(prisma, {
+    alertsDefConfiguration: MERCHANT_MONITORING_ALERT_DEFINITIONS,
+    project,
+    createdBy: faker.internet.userName(),
+  });
+
+  await Promise.all([
+    ...transactionsAlertDef.map(alertDefinition =>
       prisma.alert.createMany({
         data: Array.from(
           {
@@ -637,7 +839,7 @@ export const generateFakeAlertsAndDefinitions = async (
             alertDefinitionId: alertDefinition.id,
             projectId: project.id,
             ...generateFakeAlert({
-              counterparyIds,
+              counterpartyIds,
               agentUserIds,
               severity: faker.helpers.arrayElement(Object.values(AlertSeverity)),
             }),
@@ -646,5 +848,5 @@ export const generateFakeAlertsAndDefinitions = async (
         skipDuplicates: true,
       }),
     ),
-  );
+  ]);
 };

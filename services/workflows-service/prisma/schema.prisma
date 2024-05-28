@@ -145,6 +145,7 @@ model Business {
   project         Project          @relation(fields: [projectId], references: [id])
   Counterparty    Counterparty[]
   businessReports BusinessReport[]
+  alerts          Alert[]
 
   @@unique([projectId, correlationId])
   @@index([companyName])
@@ -707,13 +708,19 @@ enum AlertStatus {
   completed @map("300")
 }
 
+enum MonitoringType {
+  transaction_monitoring
+  ongoing_merchant_monitoring
+}
+
 model AlertDefinition {
-  id          String  @id @default(cuid())
-  crossEnvKey String? @unique
-  correlationId       String
-  name        String
-  enabled     Boolean @default(true)
-  description String?
+  id             String         @id @default(cuid())
+  crossEnvKey    String         @unique
+  correlationId  String
+  monitoringType MonitoringType
+  name           String
+  enabled        Boolean        @default(true)
+  description    String?
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onUpdate: Cascade, onDelete: NoAction)
@@ -758,6 +765,7 @@ model Alert {
   severity      AlertSeverity?
 
   executionDetails Json
+  additionalInfo   Json?
 
   assignee   User?     @relation(fields: [assigneeId], references: [id], onUpdate: Cascade, onDelete: NoAction)
   assigneeId String?
@@ -771,6 +779,9 @@ model Alert {
 
   counterpartyId String?
   counterparty   Counterparty? @relation(fields: [counterpartyId], references: [id])
+
+  businessId String?
+  business   Business? @relation(fields: [businessId], references: [id])
 
   @@index([assigneeId])
   @@index([projectId])
@@ -828,15 +839,17 @@ model Counterparty {
 }
 
 model BusinessReport {
-  id     String             @id @default(cuid())
-  type   BusinessReportType
-  report Json
+  id       String             @id @default(cuid())
+  type     BusinessReportType
+  reportId String             @unique
+  report   Json
 
+  riskScore  Int
   businessId String
-  projectId  String
+  business   Business @relation(fields: [businessId], references: [id])
 
-  business Business @relation(fields: [businessId], references: [id])
-  project  Project  @relation(fields: [projectId], references: [id])
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -844,5 +857,6 @@ model BusinessReport {
   @@index([createdAt])
   @@index([businessId])
   @@index([projectId])
+  @@index([riskScore])
   @@index([type])
 }
