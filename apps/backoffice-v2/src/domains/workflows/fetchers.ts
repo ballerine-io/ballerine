@@ -92,7 +92,6 @@ export const BaseWorkflowByIdSchema = z.object({
           .or(z.undefined()),
       })
       .optional(),
-    childWorkflows: z.any().optional(),
   }),
   entity: ObjectWithIdSchema.extend({
     name: z.string(),
