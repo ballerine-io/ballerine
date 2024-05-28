@@ -12,7 +12,7 @@ export class CreateBusinessReportDto {
   @IsOptional()
   @MinLength(1)
   @IsString()
-  businessId?: string;
+  businessCorrelationId?: string;
 
   @ApiProperty({
     required: true,

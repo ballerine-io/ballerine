@@ -9,104 +9,11 @@ import { FormLabel } from '@/common/components/organisms/Form/Form.Label';
 import { FormControl } from '@/common/components/organisms/Form/Form.Control';
 import { Input } from '@ballerine/ui';
 import { FormMessage } from '@/common/components/organisms/Form/Form.Message';
-import { SubmitHandler, useForm } from 'react-hook-form';
 import { CardContent } from '@/common/components/atoms/Card/Card.Content';
 import { Checkbox_ } from '@/common/components/atoms/Checkbox_/Checkbox_';
 import { Combobox } from '@/common/components/organisms/Combobox/Combobox';
-import { countryCodes } from '@ballerine/common';
-import { useCreateBusinessReportMutation } from '@/domains/business-reports/hooks/mutations/useCreateBusinessReportMutation/useCreateBusinessReportMutation';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { ChevronLeft } from 'lucide-react';
-import { useLocale } from '@/common/hooks/useLocale/useLocale';
-
-export const CreateBusinessReportSchema = z
-  .object({
-    websiteUrl: z.string().url({
-      message: 'Invalid website URL',
-    }),
-    companyName: z.union([
-      z
-        .string({
-          required_error: 'Company name is required',
-          invalid_type_error: 'Company name must be a string',
-        })
-        .max(255),
-      z.undefined(),
-    ]),
-    operatingCountry: z.union([
-      z.enum(
-        // @ts-expect-error - countryCodes is an array of strings but its always the same strings
-        countryCodes,
-        {
-          errorMap: () => {
-            return {
-              message: 'Invalid operating country',
-            };
-          },
-        },
-      ),
-      z.undefined(),
-    ]),
-    businessId: z.union([
-      z
-        .string({
-          required_error: 'Business ID is required',
-          invalid_type_error: 'Business ID must be a string',
-        })
-        .max(255),
-      z.undefined(),
-    ]),
-  })
-  .superRefine((v, ctx) => {
-    if (v.companyName || v.businessId) {
-      return;
-    }
-
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Company name or business ID must be provided',
-      path: ['companyName'],
-    });
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'Company name or business ID must be provided',
-      path: ['businessId'],
-    });
-  });
-
-export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
-  const form = useForm({
-    defaultValues: {
-      websiteUrl: undefined,
-      companyName: undefined,
-      operatingCountry: undefined,
-      businessId: undefined,
-    },
-    resolver: zodResolver(CreateBusinessReportSchema),
-  });
-  const { mutate: mutateCreateBusinessReport } = useCreateBusinessReportMutation({
-    reportType: 'MERCHANT_REPORT_T1',
-    onSuccess: () => {
-      form.reset();
-    },
-  });
-  const onSubmit: SubmitHandler<z.output<typeof CreateBusinessReportSchema>> = data => {
-    mutateCreateBusinessReport(data);
-  };
-  const comboboxCountryCodes = countryCodes.map(countryCode => ({
-    label: countryCode,
-    value: countryCode,
-  }));
-  const locale = useLocale();
-
-  return {
-    form,
-    onSubmit,
-    comboboxCountryCodes,
-    locale,
-  };
-};
+import { useMerchantMonitoringCreateBusinessReportPageLogic } from '@/pages/MerchantMonitoringCreateCheck/hooks/useMerchantMonitoringCreateBusinessReportPageLogic/useMerchantMonitoringCreateBusinessReportPageLogic';
 
 export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
   const { comboboxCountryCodes, form, onSubmit, locale } =
@@ -187,7 +94,7 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
                 />
                 <FormField
                   control={form.control}
-                  name="businessId"
+                  name="businessCorrelationId"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Business ID (Optional)</FormLabel>

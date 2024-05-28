@@ -1,8 +1,7 @@
 import * as common from '@nestjs/common';
 import { BadRequestException, Body, Query } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
-import { ApiProperty } from '@nestjs/swagger';
-import type { InputJsonValue, ObjectValues, TProjectId } from '@/types';
+import type { InputJsonValue, TProjectId } from '@/types';
 import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import * as errors from '@/errors';
 import { CurrentProject } from '@/common/decorators/current-project.decorator';
@@ -12,7 +11,7 @@ import {
   ListBusinessReportsDto,
   ListBusinessReportsSchema,
 } from '@/business-report/list-business-reports.dto';
-import { Business, BusinessReportStatus, BusinessReportType, Prisma } from '@prisma/client';
+import { Business, BusinessReportStatus, Prisma } from '@prisma/client';
 import { ZodValidationPipe } from '@/common/pipes/zod.pipe';
 import axios from 'axios';
 import { env } from '@/env';
@@ -24,50 +23,10 @@ import {
 import { CustomerService } from '@/customer/customer.service';
 import { BusinessService } from '@/business/business.service';
 import { AlertService } from '@/alert/alert.service';
-import { IsIn, IsString, MinLength } from 'class-validator';
 import { Public } from '@/common/decorators/public.decorator';
 import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
-
-export class BusinessReportHookSearchQueryParamsDto {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @MinLength(1)
-  businessId!: string;
-}
-
-export class BusinessReportHookBodyDto {
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @MinLength(1)
-  reportId!: string;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsIn(Object.values(BusinessReportType))
-  reportType!: ObjectValues<typeof BusinessReportType>;
-
-  @ApiProperty({
-    required: true,
-    type: Object,
-  })
-  reportData!: Record<string, unknown>;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @MinLength(1)
-  base64Pdf!: string;
-}
+import { BusinessReportHookBodyDto } from '@/business-report/dtos/business-report-hook-body.dto';
+import { BusinessReportHookSearchQueryParamsDto } from '@/business-report/dtos/business-report-hook-search-query-params.dto';
 
 @common.Controller('internal/business-reports')
 @swagger.ApiExcludeController()
@@ -91,18 +50,18 @@ export class BusinessReportControllerInternal {
       countryCode,
       merchantName,
       callbackUrl,
-      businessId,
+      businessCorrelationId,
       reportType,
     }: CreateBusinessReportDto,
     @CurrentProject() currentProjectId: TProjectId,
   ) {
-    if (!merchantName && !businessId) {
+    if (!merchantName && !businessCorrelationId) {
       throw new BadRequestException('Merchant name or business id is required');
     }
 
-    let business: Pick<Business, 'id'> | undefined;
+    let business: Pick<Business, 'correlationId'> | undefined;
 
-    if (!businessId && merchantName) {
+    if (!businessCorrelationId && merchantName) {
       business = await this.businessService.create({
         data: {
           companyName: merchantName,
@@ -111,7 +70,7 @@ export class BusinessReportControllerInternal {
           projectId: currentProjectId,
         },
         select: {
-          id: true,
+          correlationId: true,
           projectId: true,
         },
       });
@@ -124,7 +83,9 @@ export class BusinessReportControllerInternal {
         countryCode,
         merchantName,
         reportType,
-        callbackUrl: `${callbackUrl}?businessId=${business?.id ?? businessId}`,
+        callbackUrl: `${callbackUrl}?businessCorrelationId=${
+          business?.correlationId ?? businessCorrelationId
+        }`,
       },
       {
         headers: {
@@ -145,13 +106,17 @@ export class BusinessReportControllerInternal {
     @Query() searchQueryParams: BusinessReportHookSearchQueryParamsDto,
     @Body() body: BusinessReportHookBodyDto,
   ) {
-    const business = await this.businessService.getByIdUnscoped(searchQueryParams.businessId, {
-      select: {
-        id: true,
-        companyName: true,
-        projectId: true,
+    const business = await this.businessService.getByCorrelationIdUnscoped(
+      searchQueryParams.businessCorrelationId,
+      {
+        select: {
+          id: true,
+          correlationId: true,
+          companyName: true,
+          projectId: true,
+        },
       },
-    });
+    );
     const customer = await this.customerService.getByProjectId(business.projectId);
     const { reportData: unvalidatedReportData, base64Pdf, reportId, reportType } = body;
     const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
@@ -159,7 +124,7 @@ export class BusinessReportControllerInternal {
       await this.hookCallbackService.persistPDFReportDocumentWithWorkflowDocuments({
         context: {
           entity: {
-            id: business.id,
+            ballerineEntityId: business.correlationId,
           },
           documents: [],
         },
@@ -170,18 +135,16 @@ export class BusinessReportControllerInternal {
 
     const reportRiskScore = reportData.summary.riskScore;
 
-    const currentReportId = reportId as string;
-
     const businessReport = await this.businessReportService.create({
       data: {
-        type: reportType as BusinessReportType,
+        type: reportType,
         riskScore: reportRiskScore,
         status: BusinessReportStatus.completed,
         report: {
           reportFileId: pdfReportBallerineFileId,
           data: reportData as InputJsonValue,
         },
-        reportId: currentReportId,
+        reportId,
         businessId: business.id,
         projectId: business.projectId,
       },
@@ -190,7 +153,7 @@ export class BusinessReportControllerInternal {
     this.alertService
       .checkOngoingMonitoringAlert(businessReport, business.companyName)
       .then(() => {
-        this.logger.debug(`Alert Tested for ${currentReportId}}`);
+        this.logger.debug(`Alert Tested for ${reportId}}`);
       })
       .catch(error => {
         this.logger.error(error);

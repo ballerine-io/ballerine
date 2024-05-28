@@ -18,6 +18,7 @@ export const useCreateBusinessReportMutation = ({
       websiteUrl,
       operatingCountry,
       companyName,
+      businessCorrelationId,
     }:
       | {
           websiteUrl: string;
@@ -27,12 +28,13 @@ export const useCreateBusinessReportMutation = ({
       | {
           websiteUrl: string;
           operatingCountry: string;
-          businessId: string;
+          businessCorrelationId: string;
         }) =>
       createBusinessReport({
         websiteUrl,
         operatingCountry,
         companyName,
+        businessCorrelationId,
         reportType,
       }),
     onSuccess: data => {

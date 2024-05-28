@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 export const MerchantMonitoring: FunctionComponent = () => {
   const {
     businessReports,
-    isloadingBusinessReports,
+    isLoadingBusinessReports,
     page,
     onPrevPage,
     onNextPage,
@@ -39,7 +39,7 @@ export const MerchantMonitoring: FunctionComponent = () => {
         {isNonEmptyArray(businessReports) && (
           <MerchantMonitoringTable data={businessReports ?? []} />
         )}
-        {Array.isArray(businessReports) && !businessReports.length && !isloadingBusinessReports && (
+        {Array.isArray(businessReports) && !businessReports.length && !isLoadingBusinessReports && (
           <NoBusinessReports />
         )}
         <div className={`mt-auto flex items-center gap-x-2`}>

@@ -94,7 +94,7 @@ export const createBusinessReport = async ({
   websiteUrl,
   operatingCountry,
   companyName,
-  businessId,
+  businessCorrelationId,
   reportType,
 }:
   | {
@@ -107,7 +107,7 @@ export const createBusinessReport = async ({
       websiteUrl: string;
       operatingCountry?: string;
       reportType: TBusinessReportType;
-      businessId: string;
+      businessCorrelationId: string;
     }) => {
   const [businessReport, error] = await apiClient({
     endpoint: `business-reports`,
@@ -117,7 +117,7 @@ export const createBusinessReport = async ({
       websiteUrl,
       countryCode: operatingCountry,
       merchantName: companyName,
-      businessId,
+      businessCorrelationId,
       callbackUrl: `${env.VITE_API_URL}/business-reports/hook`,
       reportType,
     },

@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { ComponentProps, forwardRef, useState } from 'react';
+import { forwardRef } from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import {
   Command,
@@ -16,45 +16,21 @@ import {
 import { Button } from '@/common/components/atoms/Button/Button';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
-
-export interface IComboboxProps {
-  items: Array<{ value: string; label: string }>;
-  /**
-   * Used for the component's placeholders. E.g. "Select a framework..." or "Select a framework..."
-   */
-  resource: string;
-  value: string;
-  onChange: (value: string) => void;
-  props?: {
-    container?: ComponentProps<'div'>;
-    popover?: ComponentProps<typeof Popover>;
-    popoverTrigger?: ComponentProps<typeof PopoverTrigger>;
-    button?: ComponentProps<typeof Button>;
-    popoverContent?: ComponentProps<typeof PopoverContent>;
-    command?: ComponentProps<typeof Command>;
-    commandInput?: ComponentProps<typeof CommandInput>;
-    commandEmpty?: ComponentProps<typeof CommandEmpty>;
-    scrollArea?: ComponentProps<typeof ScrollArea>;
-    commandGroup?: ComponentProps<typeof CommandGroup>;
-    commandItem?: ComponentProps<typeof CommandItem>;
-    chevronsUpDown?: ComponentProps<typeof ChevronsUpDown>;
-    check?: ComponentProps<typeof Check>;
-    placeholder?: ComponentProps<'span'>;
-  };
-}
+import { IComboboxProps } from '@/common/components/organisms/Combobox/interfaces';
+import { useToggle } from '@/common/hooks/useToggle/useToggle';
 
 export const Combobox = forwardRef<HTMLInputElement, IComboboxProps>(
   ({ items, resource, value, onChange, props }, ref) => {
-    const [open, setOpen] = useState(false);
+    const [isOpen, toggleIsOpen, _toggleIsOpenOn, toggleIsOpenOff] = useToggle();
 
     return (
       <div {...props?.container}>
-        <Popover open={open} onOpenChange={setOpen} {...props?.popover}>
+        <Popover open={isOpen} onOpenChange={toggleIsOpen} {...props?.popover}>
           <PopoverTrigger asChild {...props?.popoverTrigger}>
             <Button
               variant="outline"
               role="combobox"
-              aria-expanded={open}
+              aria-expanded={isOpen}
               {...props?.button}
               className={ctw('w-[200px] justify-between', props?.button?.className)}
             >
@@ -99,7 +75,7 @@ export const Combobox = forwardRef<HTMLInputElement, IComboboxProps>(
                       value={item.value}
                       onSelect={currentValue => {
                         onChange(currentValue === value ? '' : currentValue);
-                        setOpen(false);
+                        toggleIsOpenOff();
                       }}
                       {...props?.commandItem}
                     >

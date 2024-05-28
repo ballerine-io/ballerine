@@ -10,7 +10,7 @@ export const useMerchantMonitoringLogic = () => {
   const { data: session } = useAuthenticatedUserQuery();
   const MerchantMonitoringSearchSchema = getMerchantMonitoringSearchSchema(session?.user?.id);
   const [{ page, pageSize, sortBy, sortDir }] = useZodSearchParams(MerchantMonitoringSearchSchema);
-  const { data: businessReports, isLoading: isloadingBusinessReports } = useBusinessReportsQuery({
+  const { data: businessReports, isLoading: isLoadingBusinessReports } = useBusinessReportsQuery({
     reportType: 'MERCHANT_REPORT_T1',
     page,
     pageSize,
@@ -22,7 +22,7 @@ export const useMerchantMonitoringLogic = () => {
 
   return {
     businessReports,
-    isloadingBusinessReports,
+    isLoadingBusinessReports,
     page,
     onPrevPage,
     onNextPage,
