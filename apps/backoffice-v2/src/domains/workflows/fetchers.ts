@@ -106,7 +106,21 @@ export const BaseWorkflowByIdSchema = z.object({
   }).nullable(),
 });
 
-export type TWorkflowById = z.output<typeof BaseWorkflowByIdSchema>;
+export const WorkflowByIdSchema = BaseWorkflowByIdSchema.extend({
+  childWorkflows: z
+    .array(
+      BaseWorkflowByIdSchema.omit({
+        context: true,
+      }).extend({
+        context: BaseWorkflowByIdSchema.shape.context.omit({
+          flowConfig: true,
+        }),
+      }),
+    )
+    .optional(),
+});
+
+export type TWorkflowById = z.output<typeof WorkflowByIdSchema>;
 
 export const fetchWorkflowById = async ({
   workflowId,
@@ -118,7 +132,7 @@ export const fetchWorkflowById = async ({
   const [workflow, error] = await apiClient({
     endpoint: `workflows/${workflowId}?filterId=${filterId}`,
     method: Method.GET,
-    schema: BaseWorkflowByIdSchema.transform(data => ({
+    schema: WorkflowByIdSchema.transform(data => ({
       ...data,
       context: {
         ...data.context,
@@ -236,7 +250,7 @@ export const updateWorkflowDecision = async ({
     }`,
     method: Method.PATCH,
     body,
-    schema: BaseWorkflowByIdSchema.pick({
+    schema: WorkflowByIdSchema.pick({
       context: true,
     }),
   });
