@@ -792,3 +792,46 @@ export const seedTransactionsAlerts = async (
     ),
   ]);
 };
+
+export const seedOngoingMonitoringAlerts = async (
+  prisma: PrismaClient,
+  {
+    project,
+    businessIds,
+    counterpartyIds,
+    agentUserIds,
+  }: {
+    project: Project;
+    businessIds: string[];
+    counterpartyIds: string[];
+    agentUserIds: string[];
+  },
+) => {
+  const merchantMonitoringAlertDef = await generateAlertDefinitions(prisma, {
+    alertsDefConfiguration: MERCHANT_MONITORING_ALERT_DEFINITIONS,
+    projectId: project.id,
+    createdBy: faker.internet.userName(),
+  });
+
+  await Promise.all([
+    ...merchantMonitoringAlertDef.map(alertDefinition =>
+      prisma.alert.createMany({
+        data: Array.from(
+          {
+            length: faker.datatype.number({ min: 3, max: 5 }),
+          },
+          () => ({
+            alertDefinitionId: alertDefinition.id,
+            projectId: project.id,
+            ...generateFakeAlert({
+              counterpartyIds,
+              agentUserIds,
+              severity: faker.helpers.arrayElement(Object.values(AlertSeverity)),
+            }),
+          }),
+        ),
+        skipDuplicates: true,
+      }),
+    ),
+  ]);
+};
