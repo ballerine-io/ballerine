@@ -6,8 +6,9 @@ import { hash } from 'bcrypt';
 import { hashKey } from '../src/customer/api-key/utils';
 import { env } from '../src/env';
 import type { InputJsonValue } from '../src/types';
-import { seedTransactionsAlerts } from './alerts/generate-alerts';
+import { seedOngoingMonitoringAlerts, seedTransactionsAlerts } from './alerts/generate-alerts';
 import { generateTransactions } from './alerts/generate-transactions';
+import { seedBusinessReports } from './business-reports/seed-business-reports';
 import { customSeed } from './custom-seed';
 import {
   baseFilterAssigneeSelect,
@@ -986,6 +987,17 @@ async function seed() {
       .filter(Boolean) as string[],
     agentUserIds: agentUsers.map(({ id }) => id),
   });
+
+  await seedOngoingMonitoringAlerts(client, {
+    project: project1,
+    businessIds: businessRiskIds,
+    counterpartyIds: [...ids1, ...ids2]
+      .map(({ counterpartyOriginatorId }) => counterpartyOriginatorId)
+      .filter(Boolean) as string[],
+    agentUserIds: agentUsers.map(({ id }) => id),
+  });
+
+  await seedBusinessReports(client, { businessRiskIds, project: project1 });
   // TODO: create business with enduser attched to them
   // await client.business.create({
   //   data: {
