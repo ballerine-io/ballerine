@@ -72,8 +72,8 @@ export class WorkflowBrowserSDK {
       },
     });
 
-    this.#__service.subscribe(WorkflowEvents.ENTITIES_UPDATE, event => {
-      this.#__notify(event as WorkflowEventWithBrowserType);
+    this.#__service.subscribe(WorkflowEvents.ENTITIES_UPDATE, async event => {
+      await this.#__notify(event as WorkflowEventWithBrowserType);
     });
   }
 
