@@ -1,5 +1,5 @@
-import { StateMachine } from 'xstate';
-import {
+import type { StateMachine } from 'xstate';
+import type {
   IDispatchEventPluginParams,
   ISerializableChildPluginParams,
   ISerializableHttpPluginParams,
@@ -7,10 +7,10 @@ import {
   SerializableValidatableTransformer,
   SerializableWebhookPluginParams,
 } from '../../plugins/external-plugin/types';
-import { WorkflowEvents, WorkflowExtensions } from '../../types';
+import type { WorkflowEvents, WorkflowExtensions } from '../../types';
 import { ruleValidator } from './rule-validator';
 import { isErrorWithMessage } from '@ballerine/common';
-import { DispatchEventPlugin } from '@/lib/plugins';
+import type { DispatchEventPlugin } from '@/lib/plugins';
 
 export const extensionsValidator = (
   extensions: WorkflowExtensions,

@@ -1,4 +1,4 @@
-import { createWorkflow, WorkflowEvents } from '@ballerine/workflow-core';
+import { createWorkflow } from '@ballerine/workflow-core';
 import { TCreateWorkflowCoreReturn, WorkflowOptionsNode } from './types';
 
 export class WorkflowNodeSDK {

@@ -1,5 +1,5 @@
 import { TCreateWorkflowCoreReturn, WorkflowOptionsNode } from './types';
-import { createWorkflow, WorkflowEvents } from '@ballerine/workflow-core';
+import { createWorkflow } from '@ballerine/workflow-core';
 
 export class WorkflowNodeSDKInstance {
   #__service: TCreateWorkflowCoreReturn;

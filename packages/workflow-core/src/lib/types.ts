@@ -1,20 +1,20 @@
 import type { MachineConfig, MachineOptions } from 'xstate';
-import { HttpPlugins, CommonPlugins, StatePlugins } from './plugins/types';
-import {
+import type { HttpPlugins, CommonPlugins, StatePlugins } from './plugins/types';
+import type {
   IDispatchEventPluginParams,
   ISerializableChildPluginParams,
   ISerializableHttpPluginParams,
 } from './plugins/external-plugin/types';
-import {
+import type {
   ChildWorkflowPluginParams,
   ISerializableCommonPluginParams,
   ISerializableMappingPluginParams,
 } from './plugins/common-plugin/types';
-import { TContext } from './utils';
-import { ChildCallabackable } from './workflow-runner';
-import { THelperFormatingLogic } from './utils/context-transformers/types';
-import { AnyRecord } from '@ballerine/common';
-import { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
+import type { TContext } from './utils';
+import type { ChildCallabackable } from './workflow-runner';
+import type { THelperFormatingLogic } from './utils/context-transformers/types';
+import type { AnyRecord } from '@ballerine/common';
+import type { DispatchEventPlugin } from './plugins/external-plugin/dispatch-event-plugin';
 
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 

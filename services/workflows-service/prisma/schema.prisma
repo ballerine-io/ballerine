@@ -98,6 +98,7 @@ model EndUser {
 enum BusinessPosition {
   ubo
   director
+  representative
   authorized_signatory
 }
 
@@ -106,7 +107,7 @@ model EndUsersOnBusinesses {
   endUserId  String
   business   Business @relation(fields: [businessId], references: [id])
   businessId String
-  positionInBusiness BusinessPosition[]
+  position BusinessPosition[]
 
   @@id([endUserId, businessId])
   @@index([businessId])

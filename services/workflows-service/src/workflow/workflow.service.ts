@@ -70,8 +70,6 @@ import {
 } from '@nestjs/common';
 import {
   ApprovalState,
-  BusinessPosition,
-  EndUser,
   Prisma,
   PrismaClient,
   UiDefinitionContext,
@@ -97,6 +95,7 @@ import {
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import { entitiesUpdate } from './utils/entities-update';
 
 type TEntityId = string;
 
@@ -1935,100 +1934,15 @@ export class WorkflowService {
         },
       });
 
-      service.subscribe(WorkflowEvents.ENTITIES_UPDATE, async ({ payload }) => {
-        if (!payload) {
-          return;
-        }
-
-        const promises = [];
-        const { ubos, directors } = payload;
-
-        const updatedUbos: Array<{ ballerineEntityId: string }> = [];
-        const updatedDirectors: Array<{ ballerineEntityId: string }> = [];
-
-        if (ubos && Array.isArray(ubos)) {
-          promises.push(
-            ...ubos.map(async ubo => {
-              const data = ubo as Partial<EndUser>;
-
-              const { id: endUserId } = await this.endUserService.create({
-                data: {
-                  email: data.email,
-                  firstName: data.firstName,
-                  lastName: data.lastName,
-                  nationalId: data.nationalId,
-                  additionalInfo: data.additionalInfo,
-                  project: { connect: { id: currentProjectId } },
-                  endUsersOnBusinesses: {
-                    create: {
-                      positionInBusiness: [BusinessPosition.ubo],
-                      business: {
-                        connect: { id: workflowRuntimeData.businessId },
-                      },
-                    },
-                  },
-                } as Prisma.EndUserCreateInput,
-                select: {
-                  id: true,
-                },
-              });
-
-              updatedUbos.push({ ballerineEntityId: endUserId });
-            }),
-          );
-        }
-
-        if (directors && Array.isArray(directors)) {
-          promises.push(
-            ...directors.map(async director => {
-              const data = director as Partial<EndUser>;
-
-              const { id: endUserId } = await this.endUserService.create({
-                data: {
-                  email: data.email,
-                  firstName: data.firstName,
-                  lastName: data.lastName,
-                  nationalId: data.nationalId,
-                  additionalInfo: data.additionalInfo,
-                  project: { connect: { id: currentProjectId } },
-                  endUsersOnBusinesses: {
-                    create: {
-                      positionInBusiness: [BusinessPosition.director],
-                      business: {
-                        connect: { id: workflowRuntimeData.businessId },
-                      },
-                    },
-                  },
-                } as Prisma.EndUserCreateInput,
-                select: {
-                  id: true,
-                },
-              });
-
-              updatedDirectors.push({ ballerineEntityId: endUserId });
-            }),
-          );
-        }
-
-        await Promise.all(promises);
-
-        await service.sendEvent({
-          type: BUILT_IN_EVENT.DEEP_MERGE_CONTEXT,
-          payload: {
-            arrayMergeOption: ARRAY_MERGE_OPTION.BY_INDEX,
-            newContext: {
-              entity: {
-                data: {
-                  additionalInfo: {
-                    ubos: updatedUbos,
-                    directors: updatedDirectors,
-                  },
-                },
-              },
-            },
-          },
-        });
-      });
+      service.subscribe(WorkflowEvents.ENTITIES_UPDATE, ({ payload }) =>
+        entitiesUpdate({
+          endUserService: this.endUserService,
+          projectId: currentProjectId,
+          businessId: workflowRuntimeData.businessId,
+          sendEvent: service.sendEvent,
+          payload,
+        }),
+      );
 
       if (!service.getSnapshot().nextEvents.includes(type)) {
         throw new BadRequestException(
