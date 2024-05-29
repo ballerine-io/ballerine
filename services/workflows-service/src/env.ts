@@ -1,6 +1,7 @@
 import { config } from 'dotenv';
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
+import { Base64 } from 'js-base64';
 
 config({ path: process.env.CI ? '.env.example' : '.env' });
 
@@ -25,7 +26,7 @@ export const env = createEnv({
     PORT: z.coerce.number(),
     DB_URL: z.string().url(),
     SESSION_SECRET: z.string(),
-    HASHING_KEY_SECRET: z.string(),
+    HASHING_KEY_SECRET: z.string().refine(Base64.isValid),
     SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().nonnegative().gt(0).default(60),
     BACKOFFICE_CORS_ORIGIN: z.string().transform(urlArrayTransformer),
     WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().transform(urlArrayTransformer),

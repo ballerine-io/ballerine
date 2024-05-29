@@ -1,6 +1,7 @@
 import { env } from '@/env';
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
+import { Base64 } from 'js-base64';
 
 const ONE_DAY_IN_MS = 1000 * 60 * 60 * 24;
 
@@ -10,7 +11,7 @@ const API_KEY_LEN = 50;
 
 export const KEY_MIN_LENGTH = 5;
 
-const SALT = env.HASHING_KEY_SECRET;
+const SALT = Base64.decode(env.HASHING_KEY_SECRET);
 
 const DEFAULT_HASHIING_OPTIONS = {
   key: undefined,
@@ -24,7 +25,7 @@ export const hashKey = async (key: string, salt?: string) => {
       return reject(new Error('Invalid key length'));
     }
 
-    bcrypt.hash(key, salt ?? SALT, (err, hashedKey) => {
+    bcrypt.hash(key, salt ?? SALT!, (err, hashedKey) => {
       if (err) {
         reject(err);
       } else {
