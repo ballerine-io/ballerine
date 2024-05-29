@@ -129,7 +129,7 @@ const BusinessReportSummary: FunctionComponent = () => {
   return (
     <div className={'space-y-8'}>
       <Card>
-        <CardHeader className={'px-4 pt-4 font-bold'}>Risk Indicators</CardHeader>
+        <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
         <CardContent className={'grid grid-cols-3 gap-4'}>
           {riskIndicators.map(riskIndicator => (
             <RiskIndicator
@@ -141,7 +141,7 @@ const BusinessReportSummary: FunctionComponent = () => {
         </CardContent>
       </Card>
       <Card>
-        <CardHeader className={'px-4 pt-4 font-bold'}>Recommendations</CardHeader>
+        <CardHeader className={'pt-4 font-bold'}>Recommendations</CardHeader>
         <CardContent>
           <ul className={'space-y-2'}>
             {recommendations.map(recommendation => (
