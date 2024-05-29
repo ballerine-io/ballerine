@@ -118,7 +118,7 @@ workflowService:
     DB_URL: ""
     DB_USER: ""
     DB_PASSWORD: ""
-    DB_PORT: "5432"
+    DB_PORT: "5433"
     PORT: "3000"
     COMPOSE_PROJECT_NAME: "ballerine-x"
     SESSION_SECRET: "iGdnj4A0YOhj8dHJK7IWSvQKEZsG7P70FFehuddhFPjtg/bSkzFejYILk4Xue6Ilx9y3IAwzR8pV1gb4"

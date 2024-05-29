@@ -41,7 +41,7 @@ services:
   db:
     image: docker pull sibedge/postgres-plv8:15.3-3.1.7
     ports:
-      - ${DB_PORT}:5432
+      - ${DB_PORT}:5433
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}

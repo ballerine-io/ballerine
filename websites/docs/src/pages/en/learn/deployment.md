@@ -1,6 +1,6 @@
 ---
 title: Deployment
-description: 
+description:
 layout: '../../../layouts/MainLayout.astro'
 ---
 ## Deployment Guide
@@ -22,7 +22,7 @@ layout: '../../../layouts/MainLayout.astro'
     docker-compose up -d
     ```
 
-The application should now be running at the ports defined in your Docker Compose configuration. 
+The application should now be running at the ports defined in your Docker Compose configuration.
 
 ### Kubernetes Deployment (Helm)
 # Install ballerine using helm chart
@@ -90,7 +90,7 @@ postgresql:
     DB_URL: "<Managed DB_URL with databasename>"
     DB_USER: "<Managed DB_USER>"
     DB_PASSWORD: "<Managed DB_PASSWORD>"
-    DB_PORT: "5432"
+    DB_PORT: "5433"
 ```
 
 ### Installing Ballerine helm chart

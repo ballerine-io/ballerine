@@ -63,7 +63,7 @@ postgresql:
     DB_URL: "<Managed DB_URL with databasename>"
     DB_USER: "<Managed DB_USER>"
     DB_PASSWORD: "<Managed DB_PASSWORD>"
-    DB_PORT: "5432"
+    DB_PORT: "5433"
 ```
 
 ### Installing Ballerine helm chart
