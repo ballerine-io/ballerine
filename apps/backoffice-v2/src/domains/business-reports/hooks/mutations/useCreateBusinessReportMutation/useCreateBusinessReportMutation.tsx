@@ -10,7 +10,7 @@ export const useCreateBusinessReportMutation = ({
 }: {
   reportType: TBusinessReportType;
   onSuccess?: <TData>(data: TData) => void;
-} = {}) => {
+}) => {
   const queryClient = useQueryClient();
 
   return useMutation({

@@ -1,7 +1,5 @@
-'use client';
-
 import * as React from 'react';
-import { forwardRef } from 'react';
+import { ElementRef, forwardRef } from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import {
   Command,
@@ -19,7 +17,7 @@ import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea'
 import { IComboboxProps } from '@/common/components/organisms/Combobox/interfaces';
 import { useToggle } from '@/common/hooks/useToggle/useToggle';
 
-export const Combobox = forwardRef<HTMLInputElement, IComboboxProps>(
+export const Combobox = forwardRef<ElementRef<typeof CommandInput>, IComboboxProps>(
   ({ items, resource, value, onChange, props }, ref) => {
     const [isOpen, toggleIsOpen, _toggleIsOpenOn, toggleIsOpenOff] = useToggle();
 

@@ -145,8 +145,6 @@ export class HookCallbackHandlerService {
         base64PDFString: base64Pdf as string,
       });
 
-    const reportRiskScore = reportData.summary.riskScore;
-
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,
     ]);
@@ -168,7 +166,7 @@ export class HookCallbackHandlerService {
       {
         create: {
           type: reportType as BusinessReportType,
-          riskScore: reportRiskScore as number,
+          riskScore: reportData.summary.riskScore,
           status: BusinessReportStatus.completed,
           report: {
             reportFileId: pdfReportBallerineFileId,
@@ -180,7 +178,7 @@ export class HookCallbackHandlerService {
         },
         update: {
           type: reportType as BusinessReportType,
-          riskScore: reportRiskScore,
+          riskScore: reportData.summary.riskScore,
           report: {
             reportFileId: pdfReportBallerineFileId,
             data: reportData as InputJsonValue,
@@ -263,18 +261,16 @@ export class HookCallbackHandlerService {
       data: reportData,
       reportFileId: pdfReportBallerineFileId,
       reportId,
-    } as Record<string, object | string>;
-
-    const reportRiskScore = reportData.summary.riskScore;
+    };
 
     await this.businessReportService.create({
       data: {
         type: reportType as BusinessReportType,
-        report: reportContent,
+        report: reportContent as InputJsonValue,
         businessId: businessId,
         reportId: reportId as string,
         projectId: currentProjectId,
-        riskScore: reportRiskScore,
+        riskScore: reportData.summary.riskScore,
         status: BusinessReportStatus.completed,
       },
     });

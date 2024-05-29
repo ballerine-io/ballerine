@@ -104,7 +104,13 @@ export class BusinessReportControllerInternal {
   @VerifyUnifiedApiSignatureDecorator()
   async createBusinessReportCallback(
     @Query() searchQueryParams: BusinessReportHookSearchQueryParamsDto,
-    @Body() body: BusinessReportHookBodyDto,
+    @Body()
+    {
+      reportData: unvalidatedReportData,
+      base64Pdf,
+      reportId,
+      reportType,
+    }: BusinessReportHookBodyDto,
   ) {
     const business = await this.businessService.getByCorrelationIdUnscoped(
       searchQueryParams.businessCorrelationId,
@@ -118,7 +124,6 @@ export class BusinessReportControllerInternal {
       },
     );
     const customer = await this.customerService.getByProjectId(business.projectId);
-    const { reportData: unvalidatedReportData, base64Pdf, reportId, reportType } = body;
     const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
     const { pdfReportBallerineFileId } =
       await this.hookCallbackService.persistPDFReportDocumentWithWorkflowDocuments({
@@ -133,12 +138,10 @@ export class BusinessReportControllerInternal {
         base64PDFString: base64Pdf as string,
       });
 
-    const reportRiskScore = reportData.summary.riskScore;
-
     const businessReport = await this.businessReportService.create({
       data: {
         type: reportType,
-        riskScore: reportRiskScore,
+        riskScore: reportData.summary.riskScore,
         status: BusinessReportStatus.completed,
         report: {
           reportFileId: pdfReportBallerineFileId,
@@ -158,8 +161,6 @@ export class BusinessReportControllerInternal {
       .catch(error => {
         this.logger.error(error);
       });
-
-    return;
   }
 
   @common.Get('/latest')

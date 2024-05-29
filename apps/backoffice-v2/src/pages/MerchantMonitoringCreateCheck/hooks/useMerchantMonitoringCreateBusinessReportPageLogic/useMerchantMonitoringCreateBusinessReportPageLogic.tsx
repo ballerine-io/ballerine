@@ -28,10 +28,14 @@ export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
   const onSubmit: SubmitHandler<z.output<typeof CreateBusinessReportSchema>> = data => {
     mutateCreateBusinessReport(data);
   };
-  const comboboxCountryCodes = countryCodes.map(countryCode => ({
-    label: countryCode,
-    value: countryCode,
-  }));
+  const comboboxCountryCodes = useMemo(
+    () =>
+      countryCodes.map(countryCode => ({
+        label: countryCode,
+        value: countryCode,
+      })),
+    [],
+  );
   const locale = useLocale();
   const [
     {
