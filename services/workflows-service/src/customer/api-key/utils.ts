@@ -1,4 +1,3 @@
-import { env } from '@/env';
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
 import { Base64 } from 'js-base64';
@@ -11,7 +10,9 @@ const API_KEY_LEN = 50;
 
 export const KEY_MIN_LENGTH = 5;
 
-const SALT = Base64.decode(env.HASHING_KEY_SECRET);
+const SALT = process.env.HASHING_KEY_SECRET_BASE64
+  ? Base64.decode(process.env.HASHING_KEY_SECRET_BASE64)
+  : process.env.HASHING_KEY_SECRET;
 
 const DEFAULT_HASHIING_OPTIONS = {
   key: undefined,

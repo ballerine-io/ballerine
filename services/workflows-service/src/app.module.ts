@@ -1,3 +1,4 @@
+import { ValidationError } from './errors';
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { UserModule } from './user/user.module';
@@ -14,7 +15,7 @@ import { StorageModule } from './storage/storage.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { FilterModule } from '@/filter/filter.module';
-import { configs, env } from '@/env';
+import { configs, env, serverSchema } from '@/env';
 import { SentryModule } from '@/sentry/sentry.module';
 import { RequestIdMiddleware } from '@/common/middlewares/request-id.middleware';
 import { AxiosRequestErrorInterceptor } from '@/common/interceptors/axios-request-error.interceptor';
@@ -43,7 +44,38 @@ import { WebhooksModule } from '@/webhooks/webhooks.module';
 import { BusinessReportModule } from '@/business-report/business-report.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronModule } from '@/workflow/cron/cron.module';
+import { plainToInstance } from 'class-transformer';
+import z from 'zod';
 
+export const validate = (config: Record<string, unknown>) => {
+  //   const _salt = env.HASHING_KEY_SECRET_BASE64 ? Base64.decode(env.HASHING_KEY_SECRET_BASE64) : env.HASHING_KEY_SECRET;
+
+  // if (_salt === undefined || !_salt) {
+  //   throw new Error('Invalid salt value: HASHING_KEY_SECRET_BASE64');
+  // }
+
+  // hashKey('check default salt value', _salt)
+
+  const envServerSchema = z
+    .object(serverSchema)
+    .refine(data => data.HASHING_KEY_SECRET || data.HASHING_KEY_SECRET_BASE64, {
+      message: 'At least one of HASHING_KEY_SECRET or HASHING_KEY_SECRET_BASE64 should be present',
+      path: ['HASHING_KEY_SECRET', 'HASHING_KEY_SECRET_BASE64'],
+    });
+
+  const result = envServerSchema.safeParse(config);
+
+  if (!result.success) {
+    const errors = result.error.errors.map(zodIssue => ({
+      message: zodIssue.message,
+      path: zodIssue.path.join('.'), // Backwards compatibility - Legacy code message excepts array
+    }));
+
+    throw new Error(JSON.stringify(errors, null, 2));
+  }
+
+  return result.data;
+};
 @Module({
   controllers: [SwaggerController],
   imports: [
@@ -74,6 +106,7 @@ import { CronModule } from '@/workflow/cron/cron.module';
     HealthModule,
     PrismaModule,
     ConfigModule.forRoot({
+      validate,
       isGlobal: true,
       load: [configs],
       envFilePath: env.ENV_FILE_NAME ?? '.env',
