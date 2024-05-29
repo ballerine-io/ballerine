@@ -7,7 +7,7 @@ import { countryCodes } from '@ballerine/common';
 import { useLocale } from '@/common/hooks/useLocale/useLocale';
 import { useCallback, useMemo } from 'react';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
-import { MerchantMonitoringCreateBusinessReportPageSearchSchema } from '@/pages/MerchantMonitoringCreateCheck/hooks/useMerchantMonitoringCreateBusinessReportPageLogic/merchant-monitoring-createBusiness-report-page-search-schema';
+import { MerchantMonitoringCreateBusinessReportPageSearchSchema } from '@/pages/MerchantMonitoringCreateCheck/hooks/useMerchantMonitoringCreateBusinessReportPageLogic/merchant-monitoring-create-business-report-page-search-schema';
 
 export const useMerchantMonitoringCreateBusinessReportPageLogic = () => {
   const form = useForm({
