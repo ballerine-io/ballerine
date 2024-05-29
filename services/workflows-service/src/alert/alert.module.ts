@@ -1,5 +1,6 @@
-import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
+// eslint-disable-next-line import/no-cycle
 import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
+import { AlertDefinitionRepository } from '@/alert-definition/alert-definition.repository';
 import { PasswordService } from '@/auth/password/password.service';
 import { UserService } from '@/user/user.service';
 import { forwardRef, HttpStatus, Module } from '@nestjs/common';

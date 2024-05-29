@@ -5,7 +5,9 @@ import { DataAnalyticsService } from '@/data-analytics/data-analytics.service';
 import { DataAnalyticsControllerExternal } from '@/data-analytics/data-analytics.controller.external';
 import { PrismaModule } from '@/prisma/prisma.module';
 import { ProjectScopeService } from '@/project/project-scope.service';
+// eslint-disable-next-line import/no-cycle
 import { BusinessReportModule } from '@/business-report/business-report.module';
+// eslint-disable-next-line import/no-cycle
 import { AlertModule } from '@/alert/alert.module';
 
 @Module({

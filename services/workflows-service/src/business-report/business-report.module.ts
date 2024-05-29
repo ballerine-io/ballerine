@@ -5,10 +5,12 @@ import { BusinessReportService } from '@/business-report/business-report.service
 import { BusinessReportControllerInternal } from '@/business-report/business-report.controller.internal';
 import { BusinessReportRepository } from '@/business-report/business-report.repository';
 import { HttpModule } from '@nestjs/axios';
+// eslint-disable-next-line import/no-cycle
 import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
+// eslint-disable-next-line import/no-cycle
+import { WorkflowModule } from '@/workflow/workflow.module';
 import { AlertModule } from '@/alert/alert.module';
 import { EndUserModule } from '@/end-user/end-user.module';
-import { WorkflowModule } from '@/workflow/workflow.module';
 import { BusinessModule } from '@/business/business.module';
 import { CustomerModule } from '@/customer/customer.module';
 
