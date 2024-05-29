@@ -1,7 +1,7 @@
 import React, { FunctionComponent } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/common/components/atoms/Card/Card';
-import { Button } from '@/common/components/atoms/Button/Button';
+import { Button, buttonVariants } from '@/common/components/atoms/Button/Button';
 import { Form } from '@/common/components/organisms/Form/Form';
 import { FormField } from '@/common/components/organisms/Form/Form.Field';
 import { FormItem } from '@/common/components/organisms/Form/Form.Item';
@@ -37,12 +37,17 @@ export const MerchantMonitoringCreateCheckPage: FunctionComponent = () => {
 
   return (
     <section className="flex h-full flex-col px-6 pb-6 pt-10">
-      <Link
-        to={`/${locale}/merchant-monitoring`}
-        className={'mb-6 flex items-center space-x-[1px] font-semibold'}
-      >
-        <ChevronLeft size={18} /> <span>Back to Reports</span>
-      </Link>
+      <div>
+        <Link
+          to={`/${locale}/merchant-monitoring`}
+          className={buttonVariants({
+            variant: 'ghost',
+            className: 'mb-6 flex items-center space-x-[1px] pe-3 ps-1 font-semibold',
+          })}
+        >
+          <ChevronLeft size={18} /> <span>Back to Reports</span>
+        </Link>
+      </div>
       <h1 className="pb-5 text-2xl font-bold">Create Merchant Check</h1>
       <h3 className="pb-5 text-sm">Registered Company Name</h3>
       <Card>

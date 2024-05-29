@@ -18,7 +18,7 @@ type SeverityToClassName = Record<
 
 export const severityToTextClassName = {
   HIGH: 'text-destructive',
-  MEDIUM: 'text-orange-300',
+  MODERATE: 'text-orange-300',
   LOW: 'text-success',
   CRITICAL: 'text-background',
   DEFAULT: 'text-background',
@@ -26,7 +26,7 @@ export const severityToTextClassName = {
 
 export const severityToClassName = {
   HIGH: `bg-destructive/20 ${severityToTextClassName.HIGH}`,
-  MEDIUM: `bg-orange-100 ${severityToTextClassName.MEDIUM}`,
+  MODERATE: `bg-orange-100 ${severityToTextClassName.MODERATE}`,
   LOW: `bg-success/20 ${severityToTextClassName.LOW}`,
   CRITICAL: `bg-destructive ${severityToTextClassName.CRITICAL}`,
   DEFAULT: `bg-foreground ${severityToTextClassName.DEFAULT}`,
