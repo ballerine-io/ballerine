@@ -88,18 +88,6 @@ if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'loc
   console.log('Environment variables loaded', severEnvVars);
 }
 
-if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {
-  const severEnvVars = Object.keys(serverEnvSchema).reduce((acc, key) => {
-    if (process.env[key]) {
-      acc = { ...acc, [key]: process.env[key]! };
-    }
-
-    return acc;
-  }, {} as Record<string, string>);
-
-  console.log('Environment variables loaded', severEnvVars);
-}
-
 export const env = createEnv({
   /*
    * clientPrefix is required.
