@@ -19,6 +19,13 @@ module.exports = {
       './node_modules/jest-html-reporter',
       {
         pageTitle: 'Test Report',
+        logo: 'https://blrn-cdn-prod.s3.eu-central-1.amazonaws.com/images/ballerine_logo.svg',
+        outputPath: './ci/test-report.html',
+        includeFailureMsg: true,
+        includeSuiteFailure: true,
+        includeConsoleLog: true,
+        includeObsoleteSnapshots: true,
+        sort: 'status',
       },
     ],
   ],
