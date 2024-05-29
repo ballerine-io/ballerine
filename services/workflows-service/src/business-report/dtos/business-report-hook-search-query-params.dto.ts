@@ -8,5 +8,5 @@ export class BusinessReportHookSearchQueryParamsDto {
   })
   @IsString()
   @MinLength(1)
-  businessCorrelationId!: string;
+  businessId!: string;
 }

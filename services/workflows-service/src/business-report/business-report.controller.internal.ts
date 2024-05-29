@@ -49,7 +49,6 @@ export class BusinessReportControllerInternal {
       websiteUrl,
       countryCode,
       merchantName,
-      callbackUrl,
       businessCorrelationId,
       reportType,
     }: CreateBusinessReportDto,
@@ -59,7 +58,7 @@ export class BusinessReportControllerInternal {
       throw new BadRequestException('Merchant name or business id is required');
     }
 
-    let business: Pick<Business, 'correlationId'> | undefined;
+    let business: Pick<Business, 'id' | 'correlationId'> | undefined;
 
     if (!businessCorrelationId && merchantName) {
       business = await this.businessService.create({
@@ -70,10 +69,20 @@ export class BusinessReportControllerInternal {
           projectId: currentProjectId,
         },
         select: {
+          id: true,
           correlationId: true,
-          projectId: true,
         },
       });
+    }
+
+    if (businessCorrelationId) {
+      business =
+        (await this.businessService.getByCorrelationId(businessCorrelationId, [currentProjectId], {
+          select: {
+            id: true,
+            correlationId: true,
+          },
+        })) ?? undefined;
     }
 
     await axios.post(
@@ -83,9 +92,7 @@ export class BusinessReportControllerInternal {
         countryCode,
         merchantName,
         reportType,
-        callbackUrl: `${callbackUrl}?businessCorrelationId=${
-          business?.correlationId ?? businessCorrelationId
-        }`,
+        callbackUrl: `${env.APP_API_URL}/business-reports/hook?businessId=${business?.id}`,
       },
       {
         headers: {
@@ -113,11 +120,10 @@ export class BusinessReportControllerInternal {
     }: BusinessReportHookBodyDto,
   ) {
     const business = await this.businessService.getByCorrelationIdUnscoped(
-      searchQueryParams.businessCorrelationId,
+      searchQueryParams.businessId,
       {
         select: {
           id: true,
-          correlationId: true,
           companyName: true,
           projectId: true,
         },
@@ -129,7 +135,7 @@ export class BusinessReportControllerInternal {
       await this.hookCallbackService.persistPDFReportDocumentWithWorkflowDocuments({
         context: {
           entity: {
-            ballerineEntityId: business.correlationId,
+            id: business.id,
           },
           documents: [],
         },

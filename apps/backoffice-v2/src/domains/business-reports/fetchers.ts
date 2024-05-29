@@ -5,7 +5,6 @@ import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error
 import { TBusinessReportType } from '@/domains/business-reports/types';
 import qs from 'qs';
 import { TObjectValues } from '@/common/types';
-import { env } from '@/common/env/env';
 
 export const BusinessReportStatus = {
   IN_PROGRESS: 'in_progress',
@@ -118,7 +117,6 @@ export const createBusinessReport = async ({
       countryCode: operatingCountry,
       merchantName: companyName,
       businessCorrelationId,
-      callbackUrl: `${env.VITE_API_URL}/business-reports/hook`,
       reportType,
     },
   });

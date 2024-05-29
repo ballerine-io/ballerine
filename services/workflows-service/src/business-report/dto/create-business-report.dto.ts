@@ -43,14 +43,6 @@ export class CreateBusinessReportDto {
     required: true,
     type: String,
   })
-  @MinLength(1)
-  @IsString()
-  callbackUrl!: string;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
   @IsIn(Object.values(BusinessReportType))
   reportType!: ObjectValues<typeof BusinessReportType>;
 }

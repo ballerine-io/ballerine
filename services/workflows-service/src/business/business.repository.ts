@@ -65,8 +65,8 @@ export class BusinessRepository {
 
   async findByCorrelationId<T extends Omit<Prisma.BusinessFindFirstArgs, 'where'>>(
     id: string,
-    args: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindFirstArgs, 'where'>>,
     projectIds: TProjectIds,
+    args?: Prisma.SelectSubset<T, Omit<Prisma.BusinessFindFirstArgs, 'where'>>,
   ) {
     return await this.prisma.business.findFirst(
       this.scopeService.scopeFindFirst(

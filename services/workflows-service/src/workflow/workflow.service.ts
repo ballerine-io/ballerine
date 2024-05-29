@@ -1797,7 +1797,6 @@ export class WorkflowService {
       if (entity.type === 'business') {
         const res = await this.businessRepository.findByCorrelationId(
           entity.id as TEntityId,
-          {},
           projectIds,
         );
 
