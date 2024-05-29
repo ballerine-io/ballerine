@@ -16,7 +16,7 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 export interface IComboboxProps {
   items: Array<{ value: string; label: string }>;
   /**
-   * Used for the component's placeholders. E.g. "Select a framework..." or "Select a framework..."
+   * Used for the component's placeholders. E.g. "Select a framework..." or "Search a framework..."
    */
   resource: string;
   value: string;
