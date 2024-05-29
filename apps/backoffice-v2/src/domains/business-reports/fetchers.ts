@@ -22,6 +22,7 @@ export const BusinessReportStatuses = [
 
 export const BusinessReportSchema = z
   .object({
+    id: z.string(),
     createdAt: z.string().datetime(),
     updatedAt: z.string().datetime(),
     riskScore: z.number(),

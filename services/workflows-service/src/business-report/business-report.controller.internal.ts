@@ -205,6 +205,7 @@ export class BusinessReportControllerInternal {
           ...(searchQueryParams.type ? { type: searchQueryParams.type } : {}),
         },
         select: {
+          id: true,
           createdAt: true,
           updatedAt: true,
           report: true,

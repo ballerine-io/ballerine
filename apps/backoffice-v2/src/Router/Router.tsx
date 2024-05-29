@@ -25,6 +25,7 @@ import { Profiles } from '@/pages/Profiles/Profiles.page';
 import { Individuals } from '@/pages/Profiles/Individuals/Individuals.page';
 import { MerchantMonitoring } from '@/pages/MerchantMonitoring/MerchantMonitoring.page';
 import { MerchantMonitoringCreateCheckPage } from '@/pages/MerchantMonitoringCreateCheck/MerchantMonitoringCreateCheck.page';
+import { MerchantMonitoringBusinessReport } from '@/pages/MerchantMonitoringBusinessReport/MerchantMonitoringBusinessReport.page';
 
 const router = createBrowserRouter([
   {
@@ -74,6 +75,11 @@ const router = createBrowserRouter([
               {
                 path: '/:locale/merchant-monitoring',
                 element: <MerchantMonitoring />,
+                errorElement: <RouteError />,
+              },
+              {
+                path: '/:locale/merchant-monitoring/:businessReportId',
+                element: <MerchantMonitoringBusinessReport />,
                 errorElement: <RouteError />,
               },
               {

@@ -6,9 +6,9 @@ import { BusinessReportStatus, TBusinessReport } from '@/domains/business-report
 import { titleCase } from 'string-ts';
 
 import { severityToClassName, severityToTextClassName } from '@/common/constants';
-import { Badge } from '@ballerine/ui';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { getSeverityFromRiskScore } from '@/common/utils/get-severity-from-risk-score';
+import { Badge } from '@ballerine/ui';
 
 const columnHelper = createColumnHelper<TBusinessReport>();
 
