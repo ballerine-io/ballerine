@@ -1,19 +1,21 @@
 import React, { ElementType, forwardRef, ReactNode } from 'react';
 import { ctw } from '@/common/utils/ctw/ctw';
-import { valueOrNA } from '@/common/utils/value-or-na/value-or-na';
 import {
   PolymorphicComponentProps,
   PolymorphicComponentPropsWithRef,
   PolymorphicRef,
 } from '@/common/types';
+import { valueOrFallback } from '@/common/utils/value-or-fallback/value-or-fallback';
 
 export type TTextWithNAFallback = <TElement extends ElementType = 'span'>(
-  props: PolymorphicComponentPropsWithRef<TElement>,
+  props: PolymorphicComponentPropsWithRef<TElement> & {
+    checkFalsy?: boolean;
+  },
 ) => ReactNode;
 
 export const TextWithNAFallback: TTextWithNAFallback = forwardRef(
   <TElement extends ElementType = 'span'>(
-    { as, children, className, ...props }: PolymorphicComponentProps<TElement>,
+    { as, children, className, checkFalsy = true, ...props }: PolymorphicComponentProps<TElement>,
     ref?: PolymorphicRef<TElement>,
   ) => {
     const Component = as ?? 'span';
@@ -29,7 +31,9 @@ export const TextWithNAFallback: TTextWithNAFallback = forwardRef(
         )}
         ref={ref}
       >
-        {valueOrNA(children)}
+        {valueOrFallback('N/A', {
+          checkFalsy,
+        })(children)}
       </Component>
     );
   },

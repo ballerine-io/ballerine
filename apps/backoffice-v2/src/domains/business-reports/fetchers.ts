@@ -88,3 +88,38 @@ export const fetchBusinessReports = async ({
 
   return handleZodError(error, filter);
 };
+
+export const createBusinessReport = async ({
+  websiteUrl,
+  operatingCountry,
+  companyName,
+  businessCorrelationId,
+  reportType,
+}:
+  | {
+      websiteUrl: string;
+      operatingCountry?: string;
+      reportType: TBusinessReportType;
+      companyName: string;
+    }
+  | {
+      websiteUrl: string;
+      operatingCountry?: string;
+      reportType: TBusinessReportType;
+      businessCorrelationId: string;
+    }) => {
+  const [businessReport, error] = await apiClient({
+    endpoint: `business-reports`,
+    method: Method.POST,
+    schema: z.undefined(),
+    body: {
+      websiteUrl,
+      countryCode: operatingCountry,
+      merchantName: companyName,
+      businessCorrelationId,
+      reportType,
+    },
+  });
+
+  return handleZodError(error, businessReport);
+};
