@@ -13,13 +13,13 @@ We are going to:
 - [Docker Installation Guide](https://docs.docker.com/get-docker/)
 - [Docker Compose Installation Guide](https://docs.docker.com/compose/install/)
 
-### Install Postman 
+### Install Postman
 (Optional)
 - [Postman Installation Guide](https://www.postman.com/downloads/)
 
-### Clone the Repo in This Specific Branch 
+### Clone the Repo in This Specific Branch
 (Optional - needed when building from source)
-- `git clone -b fintech_devcon https://github.com/ballerine-io/ballerine.git`
+- `git clone -b fintech_devcon https://github.com/tillpayments/ballerine.git`
 
 
 -----
@@ -39,7 +39,7 @@ We are going to:
       curl https://raw.githubusercontent.com/ballerine-io/ballerine/fintech_devcon/deploy/docker-compose-ex-prebuilt.yml -O
       docker-compose -f docker-compose-ex-prebuilt.yml up
       ``````
-      
+
 
 2. **Build Images from Source Code:**
    - You can build the images directly from the source code instead of downloading pre-built images.
@@ -264,7 +264,7 @@ curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows
                             "transformer": "jmespath",
                             "mapping": "@"
                         }
-                    ]                    
+                    ]
                 }
             }
         ]
@@ -363,7 +363,7 @@ curl --location --request PATCH 'http://localhost:3000/api/v1/external/workflows
                 }
             }
         ]
-     
+
     }
 }'
 ```
