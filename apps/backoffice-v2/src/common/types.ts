@@ -127,14 +127,14 @@ export type PolymorphicComponentPropsWithRef<
 export const Severity = {
   CRITICAL: 'critical',
   HIGH: 'high',
-  MODERATE: 'moderate',
+  MEDIUM: 'medium',
   LOW: 'low',
 } as const;
 
 export const Severities = [
   Severity.CRITICAL,
   Severity.HIGH,
-  Severity.MODERATE,
+  Severity.MEDIUM,
   Severity.LOW,
 ] as const satisfies ReadonlyArray<TObjectValues<typeof Severity>>;
 

@@ -103,7 +103,7 @@ export const columns = [
                 severityToClassName[
                   (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
                 ],
-                'w-20 py-0.5',
+                'w-20 py-0.5 font-bold',
               )}
             >
               {titleCase(severity ?? '')}

@@ -14,11 +14,9 @@ export const useMerchantMonitoringTableLogic = () => {
     );
   }, [pathname, search]);
   const Cell: IDataTableProps<TBusinessReports>['CellContentWrapper'] = ({ cell, children }) => {
-    const itemId = cell.id.replace(`_${cell.column.id}`, '');
-
     return (
       <Link
-        to={`/${locale}/merchant-monitoring/${itemId}`}
+        to={`/${locale}/merchant-monitoring/${cell.row.id}`}
         className={`d-full flex p-4`}
         onClick={onClick}
       >

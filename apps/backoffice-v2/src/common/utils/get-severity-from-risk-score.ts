@@ -6,7 +6,7 @@ export const getSeverityFromRiskScore = (riskScore: number): TSeverity => {
   }
 
   if (riskScore <= 69) {
-    return Severity.MODERATE;
+    return Severity.MEDIUM;
   }
 
   if (riskScore <= 84) {
