@@ -129,8 +129,8 @@ export class HookCallbackHandlerService {
     const customer = await this.customerService.getByProjectId(currentProjectId);
 
     const { context } = workflowRuntime;
-    const { reportData: onboardingReortData, base64Pdf, reportId, reportType } = data;
-    const reportData = ReportWithRiskScoreSchema;
+    const { reportData: unvalidatedReportData, base64Pdf, reportId, reportType } = data;
+    const reportData = ReportWithRiskScoreSchema.parse(unvalidatedReportData);
 
     const { documents, pdfReportBallerineFileId } =
       await this.__peristPDFReportDocumentWithWorkflowDocuments({
@@ -140,7 +140,7 @@ export class HookCallbackHandlerService {
         base64PDFString: base64Pdf as string,
       });
 
-    const reportRiskScore = ReportWithRiskScoreSchema.parse(onboardingReortData).summary.riskScore;
+    const reportRiskScore = reportData?.summary?.riskScore;
 
     const business = await this.businessService.getByCorrelationId(context.entity.id, [
       currentProjectId,

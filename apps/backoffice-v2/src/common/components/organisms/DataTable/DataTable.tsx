@@ -225,28 +225,31 @@ export const DataTable = <TData extends RowData, TValue = any>({
                         props?.head?.className,
                       )}
                     >
-                      {header.column.id === 'select' && (
+                      {header.column.id === 'select' && !header.isPlaceholder && (
                         <span className={'pe-4'}>
                           {flexRender(header.column.columnDef.header, header.getContext())}
                         </span>
                       )}
-                      {header.column.getCanSort() && header.column.id !== 'select' && (
-                        <button
-                          className="flex h-9 flex-row items-center gap-x-2 px-3 text-left text-[#A3A3A3]"
-                          onClick={() => header.column.toggleSorting()}
-                        >
-                          <span>
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                          </span>
-                          <ChevronDown
-                            className={ctw('d-4', {
-                              'rotate-180': header.column.getIsSorted() === 'asc',
-                            })}
-                          />
-                        </button>
-                      )}
+                      {header.column.getCanSort() &&
+                        !header.isPlaceholder &&
+                        header.column.id !== 'select' && (
+                          <button
+                            className="flex h-9 flex-row items-center gap-x-2 px-3 text-left text-[#A3A3A3]"
+                            onClick={() => header.column.toggleSorting()}
+                          >
+                            <span>
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                            </span>
+                            <ChevronDown
+                              className={ctw('d-4', {
+                                'rotate-180': header.column.getIsSorted() === 'asc',
+                              })}
+                            />
+                          </button>
+                        )}
                       {!header.column.getCanSort() &&
                         !header.isPlaceholder &&
+                        header.column.id !== 'select' &&
                         flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   );

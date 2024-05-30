@@ -12,6 +12,7 @@ import {
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { PrismaService } from '@/prisma/prisma.service';
+import _ from 'lodash';
 
 const getNestedCounterpartyBusinessData = ({
   projectId,
@@ -122,26 +123,30 @@ const getTransactionCreateData = ({ projectId }: { projectId: string }): Transac
   };
 };
 
-const createBusinessCounterparty = async ({
+export const createBusinessCounterparty = async ({
   prismaService,
   projectId,
+  correlationIdFn,
+  businessTypeFn,
 }: {
   prismaService: PrismaService;
   projectId: string;
+  correlationIdFn?: (...args: any[]) => string;
+  businessTypeFn?: (...args: any[]) => string;
 }) => {
-  const correlationId = faker.datatype.uuid();
+  const correlationId = correlationIdFn ? correlationIdFn() : faker.datatype.uuid();
 
   return await prismaService.counterparty.create({
     data: {
       project: { connect: { id: projectId } },
-      correlationId: correlationId,
+      correlationId,
       business: {
         create: {
-          correlationId: correlationId,
+          correlationId,
           companyName: faker.company.name(),
           registrationNumber: faker.datatype.uuid(),
           mccCode: faker.datatype.number({ min: 1000, max: 9999 }),
-          businessType: faker.lorem.word(),
+          businessType: businessTypeFn ? businessTypeFn() : faker.lorem.word(),
           project: { connect: { id: projectId } },
         },
       },
@@ -149,22 +154,24 @@ const createBusinessCounterparty = async ({
   });
 };
 
-const createEndUserCounterparty = async ({
+export const createEndUserCounterparty = async ({
   prismaService,
   projectId,
+  correlationIdFn,
 }: {
   prismaService: PrismaService;
   projectId: string;
+  correlationIdFn?: (...args: any[]) => string;
 }) => {
-  const correlationId = faker.datatype.uuid();
+  const correlationId = correlationIdFn ? correlationIdFn() : faker.datatype.uuid();
 
   return await prismaService.counterparty.create({
     data: {
       project: { connect: { id: projectId } },
-      correlationId: correlationId,
+      correlationId,
       endUser: {
         create: {
-          correlationId: correlationId,
+          correlationId,
           firstName: faker.name.firstName(),
           lastName: faker.name.lastName(),
           email: faker.internet.email(),
@@ -216,7 +223,7 @@ export class TransactionFactory {
       prisma: this.prisma,
       number: this.number,
       data: this.data,
-      runBeforeCreate: this.runBeforeCreate,
+      runBeforeCreate: [...this.runBeforeCreate],
       projectId: this.projectId,
     });
   }
@@ -253,13 +260,21 @@ export class TransactionFactory {
     return factory;
   }
 
-  public withBusinessOriginator() {
+  public withBusinessOriginator({
+    correlationIdFn,
+    businessTypeFn,
+  }: {
+    correlationIdFn?: () => string;
+    businessTypeFn?: () => string;
+  } = {}) {
     const factory = this.clone();
 
     factory.runBeforeCreate.push(async () => {
       const counterparty = await createBusinessCounterparty({
         prismaService: this.prisma,
         projectId: this.projectId,
+        correlationIdFn,
+        businessTypeFn,
       });
 
       factory.data.counterpartyOriginator = {
@@ -270,13 +285,18 @@ export class TransactionFactory {
     return factory;
   }
 
-  public withBusinessBeneficiary() {
+  public withBusinessBeneficiary({
+    correlationIdFn,
+    businessTypeFn,
+  }: { correlationIdFn?: () => string; businessTypeFn?: () => string } = {}) {
     const factory = this.clone();
 
     factory.runBeforeCreate.push(async () => {
       const counterparty = await createBusinessCounterparty({
         prismaService: this.prisma,
         projectId: this.projectId,
+        correlationIdFn,
+        businessTypeFn,
       });
 
       factory.data.counterpartyBeneficiary = {
@@ -304,13 +324,14 @@ export class TransactionFactory {
     return factory;
   }
 
-  public withEndUserOriginator() {
+  public withEndUserOriginator({ correlationIdFn }: { correlationIdFn?: () => string } = {}) {
     const factory = this.clone();
 
     factory.runBeforeCreate.push(async () => {
       const counterparty = await createEndUserCounterparty({
         prismaService: this.prisma,
         projectId: this.projectId,
+        correlationIdFn,
       });
 
       factory.data.counterpartyOriginator = {
@@ -362,8 +383,7 @@ export class TransactionFactory {
     for (const runBeforeCreate of this.runBeforeCreate) {
       await runBeforeCreate();
     }
-
-    const promiseArray = new Array(this.number).fill(null).map(() => {
+    const promiseArray = new Array(this.number).fill(null).map(async () => {
       return this.prisma.transactionRecord.create({
         data: {
           ...getTransactionCreateData({ projectId: this.projectId }),

@@ -17,7 +17,7 @@
   "dependencies": {
     "@astrojs/starlight": "0.11.1",
     "@astrojs/tailwind": "^4.0.0",
-    "@ballerine/common": "^0.9.5",
+    "@ballerine/common": "^0.9.6",
     "astro": "3.3.3",
     "sharp": "^0.32.4",
     "shiki": "^0.14.3"
