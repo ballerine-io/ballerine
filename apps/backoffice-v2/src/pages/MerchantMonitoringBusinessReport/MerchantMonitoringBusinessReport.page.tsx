@@ -21,6 +21,19 @@ import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
 import { createColumnHelper } from '@tanstack/react-table';
 import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
 import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
+import { getSeverityFromRiskScore } from '@/common/utils/get-severity-from-risk-score';
+import { severityToClassName, severityToTextClassName } from '@/common/constants';
+import { titleCase } from 'string-ts';
+import { Severity, TSeverity } from '@/common/types';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/common/components/atoms/Table';
+import { ScrollArea } from '@/common/components/molecules/ScrollArea/ScrollArea';
 
 const RiskIndicator = ({
   title,
@@ -80,47 +93,15 @@ const RiskIndicator = ({
   );
 };
 
-const BusinessReportSummary: FunctionComponent = () => {
-  const riskIndicators = [
-    {
-      title: "Website's Company Analysis",
-      to: '?activeTab=websitesCompany',
-      violations: [
-        {
-          label: 'IP Infringement',
-          severity: 'high',
-        },
-      ],
-    },
-    {
-      title: 'Website Credibility Analysis',
-      to: '?activeTab=websiteCredibility',
-      violations: [],
-    },
-    {
-      title: 'Ads and Social Media Analysis',
-      to: '?activeTab=adsAndSocialMedia',
-      violations: [],
-    },
-    {
-      title: 'Website Line of Business Analysis',
-      to: '?activeTab=websiteLineOfBusiness',
-      violations: [
-        { label: 'Complaints about scams', severity: 'high' },
-        { label: 'Low ratings on reputation platforms', severity: 'high' },
-        { label: 'Missing Privacy Policy', severity: 'low' },
-        { label: 'Missing Returns Policy', severity: 'low' },
-      ],
-    },
-    {
-      title: 'Ecosystem and Transactions Analysis View',
-      to: '?activeTab=ecosystemAndTransactions',
-      violations: [
-        { label: 'Inconsistent Line of Business', severity: 'high' },
-        { label: 'Scam & Fraud Indications', severity: 'high' },
-      ],
-    },
-  ] as const satisfies ReadonlyArray<{
+const BusinessReportSummary: FunctionComponent<{
+  summary: string;
+  riskLevels: {
+    legalRisk: TSeverity;
+    chargebackRisk: TSeverity;
+    reputationRisk: TSeverity;
+    transactionLaunderingRisk: TSeverity;
+  };
+  riskIndicators: Array<{
     title: string;
     to: string;
     violations: Array<{
@@ -128,20 +109,88 @@ const BusinessReportSummary: FunctionComponent = () => {
       severity: string;
     }>;
   }>;
-  const recommendations = [
-    'Reassess the relationship with antsport.store.',
-    'It is advised to further investigate the merchant activity following the scan findings.',
-    'Ensure that the company, Metal Addicted LLC is not associated with any merchants within the portfolio.',
-    'Monitor transactions for the website, for detection of patterns that might indicate money laundering.',
-    'Such patterns could include unusually large transactions, a high volume of transactions over a short period, or transactions that are inconsistent with the expected business model.',
-  ];
+  riskScore: number;
+  recommendations: string[];
+}> = ({ riskIndicators, summary, riskLevels, riskScore, recommendations }) => {
+  const severity = getSeverityFromRiskScore(riskScore);
 
   return (
-    <div className={'space-y-8'}>
+    <div className={'grid grid-cols-[340px_1fr] gap-8'}>
       <Card>
+        <CardHeader className={'pb-2 pt-4 font-bold'}>Overall Risk Level</CardHeader>
+        <CardContent>
+          <div className="mb-8 flex items-center space-x-2">
+            <TextWithNAFallback
+              className={ctw(
+                {
+                  [severityToTextClassName[
+                    (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
+                  ]]: riskScore || riskScore === 0,
+                },
+                'text-4xl font-bold',
+              )}
+              checkFalsy={false}
+            >
+              {riskScore}
+            </TextWithNAFallback>
+            {(riskScore || riskScore === 0) && (
+              <Badge
+                className={ctw(
+                  severityToClassName[
+                    (severity?.toUpperCase() as keyof typeof severityToClassName) ?? 'DEFAULT'
+                  ],
+                  'min-w-20 rounded-lg font-bold',
+                )}
+              >
+                {titleCase(severity ?? '')} Risk
+              </Badge>
+            )}
+          </div>
+          <Table>
+            <TableHeader className={'[&_tr]:border-b-0'}>
+              <TableRow className={'hover:bg-[unset]'}>
+                <TableHead className={'h-0 ps-0 font-bold text-foreground'}>Risk Type</TableHead>
+                <TableHead className={'h-0 ps-0 font-bold text-foreground'}>Risk Level</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Object.entries(riskLevels ?? {}).map(([riskType, riskLevel]) => (
+                <TableRow
+                  key={`${riskType}:${riskLevel}`}
+                  className={'border-b-0 hover:bg-[unset]'}
+                >
+                  <TableCell className={'pb-0 ps-0'}>{titleCase(riskType ?? '')}</TableCell>
+                  <TableCell
+                    className={ctw(
+                      'pb-0 ps-0 font-bold',
+                      severityToTextClassName[
+                        riskLevel.toUpperCase() as keyof typeof severityToTextClassName
+                      ],
+                    )}
+                  >
+                    {titleCase(riskLevel ?? '')}
+                  </TableCell>
+                </TableRow>
+              ))}
+              {!Object.keys(riskLevels ?? {}).length && (
+                <TableRow>
+                  <TableCell colSpan={2} className={'ps-0'}>
+                    No results found.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className={'pt-4 font-bold'}>Merchant Risk Summary</CardHeader>
+        <CardContent>{summary ?? 'No summary found.'}</CardContent>
+      </Card>
+      <Card className={'col-span-full'}>
         <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
         <CardContent className={'grid grid-cols-3 gap-4'}>
-          {riskIndicators.map(riskIndicator => (
+          {riskIndicators?.map(riskIndicator => (
             <RiskIndicator
               key={riskIndicator.title}
               title={riskIndicator.title}
@@ -151,12 +200,25 @@ const BusinessReportSummary: FunctionComponent = () => {
           ))}
         </CardContent>
       </Card>
-      <Card>
+      <Card className={'col-span-full'}>
         <CardHeader className={'pt-4 font-bold'}>Recommendations</CardHeader>
         <CardContent>
           <ul className={'space-y-2'}>
-            {recommendations.map(recommendation => (
-              <li key={recommendation} className={'flex list-none items-center'}>
+            {!!recommendations?.length &&
+              recommendations.map(recommendation => (
+                <li key={recommendation} className={'flex list-none items-center'}>
+                  <CheckCircle
+                    size={20}
+                    className={`stroke-transparent`}
+                    containerProps={{
+                      className: 'me-3 bg-info/20',
+                    }}
+                  />
+                  {recommendation}
+                </li>
+              ))}
+            {!recommendations.length && (
+              <li className={'flex list-none items-center'}>
                 <CheckCircle
                   size={20}
                   className={`stroke-transparent`}
@@ -164,9 +226,9 @@ const BusinessReportSummary: FunctionComponent = () => {
                     className: 'me-3 bg-info/20',
                   }}
                 />
-                {recommendation}
+                No recommendations found.
               </li>
-            ))}
+            )}
           </ul>
         </CardContent>
       </Card>
@@ -194,7 +256,7 @@ export const Analysis: FunctionComponent<{
                   <WarningFilledSvg
                     className={ctw('me-3 mt-px', {
                       'text-slate-300 [&>:not(:first-child)]:stroke-background':
-                        violation.severity === 'low',
+                        violation.severity === Severity.MEDIUM,
                     })}
                     width={'20'}
                     height={'20'}
@@ -521,11 +583,70 @@ export const EcosystemAndTransactions: FunctionComponent = () => {
 };
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
+  const riskIndicators = [
+    {
+      title: "Website's Company Analysis",
+      to: '?activeTab=websitesCompany',
+      violations: [
+        {
+          label: 'IP Infringement',
+          severity: 'high',
+        },
+      ],
+    },
+    {
+      title: 'Website Credibility Analysis',
+      to: '?activeTab=websiteCredibility',
+      violations: [],
+    },
+    {
+      title: 'Ads and Social Media Analysis',
+      to: '?activeTab=adsAndSocialMedia',
+      violations: [],
+    },
+    {
+      title: 'Website Line of Business Analysis',
+      to: '?activeTab=websiteLineOfBusiness',
+      violations: [
+        { label: 'Complaints about scams', severity: 'high' },
+        { label: 'Low ratings on reputation platforms', severity: 'high' },
+        { label: 'Missing Privacy Policy', severity: 'low' },
+        { label: 'Missing Returns Policy', severity: 'low' },
+      ],
+    },
+    {
+      title: 'Ecosystem and Transactions Analysis View',
+      to: '?activeTab=ecosystemAndTransactions',
+      violations: [
+        { label: 'Inconsistent Line of Business', severity: 'high' },
+        { label: 'Scam & Fraud Indications', severity: 'high' },
+      ],
+    },
+  ] as const satisfies ReadonlyArray<{
+    title: string;
+    to: string;
+    violations: Array<{
+      label: string;
+      severity: string;
+    }>;
+  }>;
+  const { businessReportId } = useParams();
+  const { data: businessReport } = useBusinessReportByIdQuery({
+    id: businessReportId ?? '',
+  });
   const tabs = [
     {
       label: 'Summary',
       value: 'summary',
-      content: <BusinessReportSummary />,
+      content: (
+        <BusinessReportSummary
+          summary={businessReport?.report?.data?.summary?.summary}
+          riskScore={businessReport?.report?.data?.summary?.riskScore}
+          riskIndicators={riskIndicators}
+          recommendations={businessReport?.report?.data?.summary?.recommendations}
+          riskLevels={businessReport?.report?.data?.summary?.riskLevels}
+        />
+      ),
     },
     {
       label: "Website's Company",
@@ -582,10 +703,8 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     navigate(previousPath);
     sessionStorage.removeItem('merchant-monitoring:business-report:previous-path');
   }, [navigate]);
-  const { businessReportId } = useParams();
-  const { data: businessReport } = useBusinessReportByIdQuery({
-    id: businessReportId ?? '',
-  });
+  const websitesCompanyAnalysis =
+    businessReport?.report?.data?.websiteCompanyAnalysis?.companyAnalysis?.indicators;
   const statusToBadgeData = {
     [BusinessReportStatus.COMPLETED]: { variant: 'info', text: 'Manual Review' },
     [BusinessReportStatus.IN_PROGRESS]: { variant: 'violet', text: 'In-progress' },
@@ -637,11 +756,13 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
             </TabsTrigger>
           ))}
         </TabsList>
-        {tabs.map(tab => (
-          <TabsContent key={tab.value} value={tab.value}>
-            {tab.content}
-          </TabsContent>
-        ))}
+        <ScrollArea orientation={'vertical'} className={'h-[75vh]'}>
+          {tabs.map(tab => (
+            <TabsContent key={tab.value} value={tab.value}>
+              {tab.content}
+            </TabsContent>
+          ))}
+        </ScrollArea>
       </Tabs>
     </section>
   );

@@ -4,7 +4,7 @@ import { Method } from '@/common/enums';
 import { handleZodError } from '@/common/utils/handle-zod-error/handle-zod-error';
 import { TBusinessReportType } from '@/domains/business-reports/types';
 import qs from 'qs';
-import { TObjectValues } from '@/common/types';
+import { Severities, TObjectValues } from '@/common/types';
 
 export const BusinessReportStatus = {
   IN_PROGRESS: 'in_progress',
@@ -20,6 +20,14 @@ export const BusinessReportStatuses = [
   BusinessReportStatus.COMPLETED,
 ] as const satisfies readonly TBusinessReportStatus[];
 
+export const SeveritySchema = z.preprocess(value => {
+  if (value === 'moderate') {
+    return 'medium';
+  }
+
+  return value;
+}, z.enum(Severities));
+
 export const BusinessReportSchema = z
   .object({
     id: z.string(),
@@ -29,6 +37,35 @@ export const BusinessReportSchema = z
     status: z.enum(BusinessReportStatuses),
     report: z.object({
       reportFileId: z.string(),
+      data: z.object({
+        summary: z.object({
+          riskScore: z.number(),
+          summary: z.union([z.string(), z.undefined()]),
+          riskLevels: z.union([
+            z.object({
+              legalRisk: SeveritySchema,
+              chargebackRisk: SeveritySchema,
+              reputationRisk: SeveritySchema,
+              transactionLaunderingRisk: SeveritySchema,
+            }),
+            z.undefined(),
+          ]),
+          recommendations: z.array(z.string()),
+        }),
+        websiteCompanyAnalysis: z.union([
+          z.object({
+            companyAnalysis: z.object({
+              indicators: z.array(
+                z.object({
+                  name: z.string(),
+                  riskLevel: z.string(),
+                }),
+              ),
+            }),
+          }),
+          z.undefined(),
+        ]),
+      }),
     }),
     business: z
       .object({
