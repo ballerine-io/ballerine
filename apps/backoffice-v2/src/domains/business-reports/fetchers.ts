@@ -51,20 +51,39 @@ export const BusinessReportSchema = z
             z.undefined(),
           ]),
           recommendations: z.array(z.string()),
-        }),
-        websiteCompanyAnalysis: z.union([
-          z.object({
-            companyAnalysis: z.object({
-              indicators: z.array(
-                z.object({
-                  name: z.string(),
-                  riskLevel: z.string(),
-                }),
-              ),
-            }),
+          riskIndicatorsByDomain: z.object({
+            companyNameViolations: z.array(
+              z.object({
+                name: z.string(),
+                riskLevel: z.string(),
+              }),
+            ),
+            adsAndSocialViolations: z.array(
+              z.object({
+                name: z.string(),
+                riskLevel: z.string(),
+              }),
+            ),
+            lineOfBusinessViolations: z.array(
+              z.object({
+                name: z.string(),
+                riskLevel: z.string(),
+              }),
+            ),
+            ecosystemViolations: z.array(
+              z.object({
+                name: z.string(),
+                riskLevel: z.string(),
+              }),
+            ),
+            tldViolations: z.array(
+              z.object({
+                name: z.string(),
+                riskLevel: z.string(),
+              }),
+            ),
           }),
-          z.undefined(),
-        ]),
+        }),
       }),
     }),
     business: z

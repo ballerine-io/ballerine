@@ -1,4 +1,4 @@
-import React, { FunctionComponent, ReactNode, useCallback } from 'react';
+import React, { FunctionComponent, ReactNode, useCallback, useMemo } from 'react';
 import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
@@ -62,7 +62,7 @@ const RiskIndicator = ({
         </Link>
       </h3>
       <ul className="list-inside list-disc">
-        {!!violations.length &&
+        {!!violations?.length &&
           violations.map(violation => (
             <li key={violation.label} className="flex list-none items-center text-slate-500">
               <WarningFilledSvg
@@ -76,7 +76,7 @@ const RiskIndicator = ({
               {violation.label}
             </li>
           ))}
-        {!violations.length && (
+        {!violations?.length && (
           <li className="flex list-none items-center text-slate-500">
             <CheckCircle
               size={18}
@@ -217,7 +217,7 @@ const BusinessReportSummary: FunctionComponent<{
                   {recommendation}
                 </li>
               ))}
-            {!recommendations.length && (
+            {!recommendations?.length && (
               <li className={'flex list-none items-center'}>
                 <CheckCircle
                   size={20}
@@ -250,7 +250,7 @@ export const Analysis: FunctionComponent<{
         <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
         <CardContent>
           <ul className="list-inside list-disc">
-            {!!violations.length &&
+            {!!violations?.length &&
               violations.map(violation => (
                 <li key={violation.label} className="flex list-none items-center text-slate-500">
                   <WarningFilledSvg
@@ -264,7 +264,7 @@ export const Analysis: FunctionComponent<{
                   {violation.label}
                 </li>
               ))}
-            {!violations.length && (
+            {!violations?.length && (
               <li className="flex list-none items-center text-slate-500">
                 <CheckCircle
                   size={18}
@@ -536,13 +536,13 @@ export const EcosystemAndTransactions: FunctionComponent = () => {
         <CardHeader className={'pt-4 font-bold'}>Risk Indicators</CardHeader>
         <CardContent>
           <ul className="list-inside list-disc">
-            {!!violations.length &&
+            {!!violations?.length &&
               violations.map(violation => (
                 <li key={violation.label} className="flex list-none items-center text-slate-500">
                   <WarningFilledSvg
                     className={ctw('me-3 mt-px', {
                       'text-slate-300 [&>:not(:first-child)]:stroke-background':
-                        violation.severity === 'low',
+                        violation.severity.toUpperCase() === Severity.MEDIUM,
                     })}
                     width={'20'}
                     height={'20'}
@@ -583,44 +583,85 @@ export const EcosystemAndTransactions: FunctionComponent = () => {
 };
 
 export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
+  const { businessReportId } = useParams();
+  const { data: businessReport } = useBusinessReportByIdQuery({
+    id: businessReportId ?? '',
+  });
+  const websitesCompanyAnalysis = useMemo(
+    () =>
+      businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.companyNameViolations?.map(
+        ({ name, riskLevel }) => ({
+          label: name,
+          severity: riskLevel,
+        }),
+      ),
+    [businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.companyNameViolations],
+  );
+  const adsAndSocialMediaAnalysis = useMemo(
+    () =>
+      businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations?.map(
+        ({ name, riskLevel }) => ({
+          label: name,
+          severity: riskLevel,
+        }),
+      ),
+    [businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.adsAndSocialViolations],
+  );
+  const websiteLineOfBusinessAnalysis = useMemo(
+    () =>
+      businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations?.map(
+        ({ name, riskLevel }) => ({
+          label: name,
+          severity: riskLevel,
+        }),
+      ),
+    [businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.lineOfBusinessViolations],
+  );
+  const ecosystemAndTransactionsAnalysis = useMemo(
+    () =>
+      businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.ecosystemViolations?.map(
+        ({ name, riskLevel }) => ({
+          label: name,
+          severity: riskLevel,
+        }),
+      ),
+    [businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.ecosystemViolations],
+  );
+  const websiteCredibilityAnalysis = useMemo(
+    () =>
+      businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.tldViolations?.map(
+        ({ name, riskLevel }) => ({
+          label: name,
+          severity: riskLevel,
+        }),
+      ),
+    [businessReport?.report?.data?.summary?.riskIndicatorsByDomain?.tldViolations],
+  );
   const riskIndicators = [
     {
       title: "Website's Company Analysis",
       to: '?activeTab=websitesCompany',
-      violations: [
-        {
-          label: 'IP Infringement',
-          severity: 'high',
-        },
-      ],
+      violations: websitesCompanyAnalysis ?? [],
     },
     {
       title: 'Website Credibility Analysis',
       to: '?activeTab=websiteCredibility',
-      violations: [],
+      violations: websiteCredibilityAnalysis,
     },
     {
       title: 'Ads and Social Media Analysis',
       to: '?activeTab=adsAndSocialMedia',
-      violations: [],
+      violations: adsAndSocialMediaAnalysis ?? [],
     },
     {
       title: 'Website Line of Business Analysis',
       to: '?activeTab=websiteLineOfBusiness',
-      violations: [
-        { label: 'Complaints about scams', severity: 'high' },
-        { label: 'Low ratings on reputation platforms', severity: 'high' },
-        { label: 'Missing Privacy Policy', severity: 'low' },
-        { label: 'Missing Returns Policy', severity: 'low' },
-      ],
+      violations: websiteLineOfBusinessAnalysis ?? [],
     },
     {
       title: 'Ecosystem and Transactions Analysis View',
       to: '?activeTab=ecosystemAndTransactions',
-      violations: [
-        { label: 'Inconsistent Line of Business', severity: 'high' },
-        { label: 'Scam & Fraud Indications', severity: 'high' },
-      ],
+      violations: ecosystemAndTransactionsAnalysis ?? [],
     },
   ] as const satisfies ReadonlyArray<{
     title: string;
@@ -630,10 +671,6 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
       severity: string;
     }>;
   }>;
-  const { businessReportId } = useParams();
-  const { data: businessReport } = useBusinessReportByIdQuery({
-    id: businessReportId ?? '',
-  });
   const tabs = [
     {
       label: 'Summary',
@@ -703,8 +740,6 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     navigate(previousPath);
     sessionStorage.removeItem('merchant-monitoring:business-report:previous-path');
   }, [navigate]);
-  const websitesCompanyAnalysis =
-    businessReport?.report?.data?.websiteCompanyAnalysis?.companyAnalysis?.indicators;
   const statusToBadgeData = {
     [BusinessReportStatus.COMPLETED]: { variant: 'info', text: 'Manual Review' },
     [BusinessReportStatus.IN_PROGRESS]: { variant: 'violet', text: 'In-progress' },
