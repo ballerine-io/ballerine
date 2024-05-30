@@ -9,7 +9,11 @@ import { createCustomer } from '@/test/helpers/create-customer';
 import { createProject } from '@/test/helpers/create-project';
 import { cleanupDatabase, tearDownDatabase } from '@/test/helpers/database-helper';
 import { commonTestingModules } from '@/test/helpers/nest-app-helper';
-import { TransactionFactory } from '@/transaction/test-utils/transaction-factory';
+import {
+  TransactionFactory,
+  createBusinessCounterparty,
+  createEndUserCounterparty,
+} from '@/transaction/test-utils/transaction-factory';
 import { faker } from '@faker-js/faker';
 import { Test } from '@nestjs/testing';
 import {
@@ -23,13 +27,28 @@ import {
 } from '@prisma/client';
 import {
   ALERT_DEFINITIONS,
+  generateAlertDefinitions,
   getAlertDefinitionCreateData,
 } from '../../scripts/alerts/generate-alerts';
+
 import { PrismaService } from './../prisma/prisma.service';
 
 type AsyncTransactionFactoryCallback = (
   transactionFactory: TransactionFactory,
 ) => Promise<TransactionFactory | void>;
+
+const maskedVisaCardNumber = () => {
+  const cardNumber: string = faker.finance.creditCardNumber('visa');
+
+  // Extract the required parts of the card number
+  const firstSix = cardNumber.substring(0, 6);
+  const lastFour = cardNumber.substring(cardNumber.length - 4);
+
+  // Construct the masked number with the desired pattern
+  const maskedNumber = `${firstSix}******${lastFour}`.replace('-', '');
+
+  return maskedNumber;
+};
 
 const createTransactionsWithCounterpartyAsync = async (
   project: Project | undefined,
@@ -66,6 +85,8 @@ describe('AlertService', () => {
         ProjectScopeService,
         AlertRepository,
         AlertDefinitionRepository,
+        BusinessReportService,
+        BusinessReportRepository,
         BusinessReportService,
         BusinessReportRepository,
         AlertService,
@@ -122,6 +143,8 @@ describe('AlertService', () => {
               enabled: true,
             },
             project,
+            undefined,
+            { crossEnvKey: 'TEST' },
           ),
         });
 
@@ -187,6 +210,8 @@ describe('AlertService', () => {
               enabled: true,
             },
             project,
+            undefined,
+            { crossEnvKey: 'TEST' },
           ),
         });
 
@@ -288,6 +313,8 @@ describe('AlertService', () => {
               enabled: true,
             },
             project,
+            undefined,
+            { crossEnvKey: 'TEST' },
           ),
         });
 
@@ -396,6 +423,8 @@ describe('AlertService', () => {
               enabled: true,
             },
             project,
+            undefined,
+            { crossEnvKey: 'TEST' },
           ),
         });
       });
@@ -462,6 +491,8 @@ describe('AlertService', () => {
               enabled: true,
             },
             project,
+            undefined,
+            { crossEnvKey: 'TEST' },
           ),
         });
       });
@@ -526,7 +557,9 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.CHCR_C, project),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.CHCR_C, project, undefined, {
+            crossEnvKey: 'TEST',
+          }),
         });
       });
 
@@ -586,7 +619,9 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.SHCAR_C, project),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.SHCAR_C, project, undefined, {
+            crossEnvKey: 'TEST',
+          }),
         });
       });
 
@@ -662,7 +697,9 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.HPC, project),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.HPC, project, undefined, {
+            crossEnvKey: 'TEST',
+          }),
         });
         const correlationId = faker.datatype.uuid();
         counteryparty = await prismaService.counterparty.create({
@@ -776,6 +813,8 @@ describe('AlertService', () => {
               enabled: true,
             },
             project,
+            undefined,
+            { crossEnvKey: 'TEST' },
           ),
         });
 
@@ -860,6 +899,8 @@ describe('AlertService', () => {
               enabled: true,
             },
             project,
+            undefined,
+            { crossEnvKey: 'TEST' },
           ),
         });
 
@@ -943,7 +984,9 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.PAY_HCA_CC, project),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.PAY_HCA_CC, project, undefined, {
+            crossEnvKey: 'TEST',
+          }),
         });
 
         expect(
@@ -1009,7 +1052,9 @@ describe('AlertService', () => {
 
       beforeEach(async () => {
         alertDefinition = await prismaService.alertDefinition.create({
-          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.PAY_HCA_APM, project),
+          data: getAlertDefinitionCreateData(ALERT_DEFINITIONS.PAY_HCA_APM, project, undefined, {
+            crossEnvKey: 'TEST',
+          }),
         });
 
         expect(
@@ -1083,6 +1128,8 @@ describe('AlertService', () => {
               enabled: true,
             },
             project,
+            undefined,
+            { crossEnvKey: 'TEST' },
           ),
         });
 
@@ -1185,6 +1232,8 @@ describe('AlertService', () => {
               enabled: true,
             },
             project,
+            undefined,
+            { crossEnvKey: 'TEST' },
           ),
         });
 
@@ -1298,6 +1347,8 @@ describe('AlertService', () => {
               enabled: true,
             },
             project,
+            undefined,
+            { crossEnvKey: 'TEST' },
           ),
         });
 
@@ -1393,6 +1444,8 @@ describe('AlertService', () => {
               enabled: true,
             },
             project,
+            undefined,
+            { crossEnvKey: 'TEST' },
           ),
         });
 
@@ -1471,11 +1524,358 @@ describe('AlertService', () => {
         expect(alerts).toHaveLength(0);
       });
     });
+
+    describe('Rule: MMOC_CC', () => {
+      let _transactionFactory: TransactionFactory;
+
+      let alertDefinition: AlertDefinition;
+      let counteryparty: Counterparty;
+
+      beforeEach(async () => {
+        counteryparty = await createEndUserCounterparty({
+          prismaService,
+          projectId: project.id,
+          correlationIdFn: maskedVisaCardNumber,
+        });
+
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.MMOC_CC,
+              enabled: true,
+            },
+            project,
+            undefined,
+            { crossEnvKey: 'TEST' },
+          ),
+        });
+
+        _transactionFactory = transactionFactory
+          .withBusinessBeneficiary()
+          .withCounterpartyOriginator(counteryparty.id)
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .transactionDate(faker.date.recent(6))
+          .count(1);
+
+        await Promise.all(
+          new Array(ALERT_DEFINITIONS.MMOC_CC.inlineRule.options.minimumCount + 1)
+            .fill(null)
+            .map(async () => {
+              return await _transactionFactory.create();
+            }),
+        );
+      });
+
+      it(`Trigger an alert`, async () => {
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(1);
+
+        expect(alerts[0]?.severity).toEqual('high');
+
+        expect(alerts[0]?.counterpartyId).toEqual(counteryparty.id);
+
+        expect(alerts[0]?.executionDetails).toMatchObject({
+          checkpoint: {
+            hash: expect.any(String),
+          },
+          executionRow: {
+            counterpartyId: counteryparty.id,
+            counterpertyInManyBusinessesCount: `${
+              ALERT_DEFINITIONS.MMOC_CC.inlineRule.options.minimumCount + 1
+            }`,
+          },
+        });
+      });
+
+      it.skip(`When ignore the originator counter party`, async () => {
+        // Arrange
+        await generateAlertDefinitions(
+          prismaService,
+          {
+            project,
+            alertsDef: {
+              MMOC_CC: {
+                ...ALERT_DEFINITIONS.MMOC_CC,
+                inlineRule: {
+                  ...ALERT_DEFINITIONS.MMOC_CC.inlineRule,
+                  options: {
+                    ...ALERT_DEFINITIONS.MMOC_CC.inlineRule.options,
+                    excludedCounterparty: {
+                      // @ts-ignore -- change list
+                      counterpartyOriginatorIds: [counteryparty.correlationId],
+                      // @ts-ignore -- change list
+                      counterpartyBeneficiaryIds: [],
+                    },
+                  },
+                },
+                correlationId: faker.datatype.uuid() + 123123,
+              },
+            },
+          },
+          {
+            crossEnvKeyPrefix: 'TEST' + faker.datatype.uuid(),
+          },
+        );
+
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(0);
+      });
+    });
+
+    describe('Rule: MGAV_CC', () => {
+      let counterpartiesA: Array<Awaited<ReturnType<typeof createEndUserCounterparty>>> = [];
+      let alertDefinition: AlertDefinition;
+
+      beforeEach(async () => {
+        counterpartiesA = [];
+
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.MGAV_CC,
+
+              ...ALERT_DEFINITIONS.MGAV_CC,
+              inlineRule: {
+                ...ALERT_DEFINITIONS.MGAV_CC.inlineRule,
+                options: {
+                  ...ALERT_DEFINITIONS.MGAV_CC.inlineRule.options,
+                  transactionFactor: 1,
+                },
+              },
+
+              enabled: true,
+            },
+            project,
+            undefined,
+            { crossEnvKey: 'TEST' },
+          ),
+        });
+
+        const counterpartyByType = (
+          businessType: string,
+        ): ReturnType<typeof createBusinessCounterparty> =>
+          createBusinessCounterparty({
+            prismaService,
+            projectId: project.id,
+            businessTypeFn: () => businessType,
+          });
+
+        counterpartiesA = await Promise.all(
+          new Array(3).fill(null).map(async () => counterpartyByType('businessA')),
+        );
+
+        await Promise.all(
+          new Array(3).fill(null).map(async (_, i) =>
+            counterpartiesA.map(async _counteryparty =>
+              new TransactionFactory({
+                prisma: prismaService,
+                projectId: project.id,
+              })
+                .withCounterpartyBeneficiary(_counteryparty.id)
+                .withEndUserOriginator()
+                .direction(TransactionDirection.inbound)
+                .paymentMethod(PaymentMethod.credit_card)
+                .transactionDate(faker.date.past(2))
+                .count(1 + i)
+                .create(),
+            ),
+          ),
+        );
+
+        await Promise.all(
+          new Array(2).fill(null).map(async (_, i) =>
+            counterpartiesA.splice(1, 2).map(async _counteryparty =>
+              new TransactionFactory({
+                prisma: prismaService,
+                projectId: project.id,
+              })
+                .withCounterpartyBeneficiary(_counteryparty.id)
+                .withEndUserOriginator()
+                .direction(TransactionDirection.inbound)
+                .paymentMethod(PaymentMethod.credit_card)
+                .transactionDate(faker.date.recent(2))
+                .count(i % 2 === 0 ? 3 : 2)
+                .create(),
+            ),
+          ),
+        );
+
+        await new TransactionFactory({
+          prisma: prismaService,
+          projectId: project.id,
+        })
+          // @ts-ignore
+          .withCounterpartyBeneficiary(counterpartiesA[0].id)
+          .withEndUserOriginator()
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .transactionDate(faker.date.recent(5))
+          .count(10)
+          .create();
+
+        await new TransactionFactory({
+          prisma: prismaService,
+          projectId: project.id,
+        })
+          // @ts-ignore
+          .withCounterpartyBeneficiary(counterpartiesA[0].id)
+          .withEndUserOriginator()
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.credit_card)
+          .transactionDate(faker.date.past(5))
+          .count(10)
+          .create();
+      });
+
+      it(`Trigger an alert`, async () => {
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(1);
+      });
+    });
+
+    describe('Rule: MGAV_APM', () => {
+      let counterpartiesA: Array<Awaited<ReturnType<typeof createEndUserCounterparty>>> = [];
+      let alertDefinition: AlertDefinition;
+
+      beforeEach(async () => {
+        counterpartiesA = [];
+
+        alertDefinition = await prismaService.alertDefinition.create({
+          data: getAlertDefinitionCreateData(
+            {
+              ...ALERT_DEFINITIONS.MGAV_APM,
+
+              ...ALERT_DEFINITIONS.MGAV_APM,
+              inlineRule: {
+                ...ALERT_DEFINITIONS.MGAV_APM.inlineRule,
+                options: {
+                  ...ALERT_DEFINITIONS.MGAV_APM.inlineRule.options,
+                  transactionFactor: 1,
+                },
+              },
+
+              enabled: true,
+            },
+            project,
+            undefined,
+            { crossEnvKey: 'TEST' },
+          ),
+        });
+
+        const counterpartyByType = (businessType: string) =>
+          createBusinessCounterparty({
+            prismaService,
+            projectId: project.id,
+            businessTypeFn: () => businessType,
+          });
+
+        counterpartiesA = await Promise.all(
+          new Array(3).fill(null).map(async () => counterpartyByType('businessA')),
+        );
+
+        await Promise.all(
+          new Array(3).fill(null).map(async (_, i) =>
+            counterpartiesA.map(
+              async _counteryparty =>
+                await new TransactionFactory({
+                  prisma: prismaService,
+                  projectId: project.id,
+                })
+                  .withCounterpartyBeneficiary(_counteryparty.id)
+                  .withEndUserOriginator()
+                  .direction(TransactionDirection.inbound)
+                  .paymentMethod(PaymentMethod.apple_pay)
+                  .transactionDate(faker.date.past(2))
+                  .count(1 + i)
+                  .create(),
+            ),
+          ),
+        );
+
+        await Promise.all(
+          new Array(2).fill(null).map(async (_, i) =>
+            counterpartiesA.splice(1, 2).map(
+              async _counteryparty =>
+                await new TransactionFactory({
+                  prisma: prismaService,
+                  projectId: project.id,
+                })
+                  .withCounterpartyBeneficiary(_counteryparty.id)
+                  .withEndUserOriginator()
+                  .direction(TransactionDirection.inbound)
+                  .paymentMethod(PaymentMethod.apple_pay)
+                  .transactionDate(faker.date.recent(2))
+                  .count(i % 2 === 0 ? 3 : 2)
+                  .create(),
+            ),
+          ),
+        );
+
+        await new TransactionFactory({
+          prisma: prismaService,
+          projectId: project.id,
+        })
+          // @ts-ignore
+          .withCounterpartyBeneficiary(counterpartiesA[0].id)
+          .withEndUserOriginator()
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.bank_transfer)
+          .transactionDate(faker.date.recent(5))
+          .count(10)
+          .create();
+
+        await new TransactionFactory({
+          prisma: prismaService,
+          projectId: project.id,
+        })
+          // @ts-ignore
+          .withCounterpartyBeneficiary(counterpartiesA[0].id)
+          .withEndUserOriginator()
+          .direction(TransactionDirection.inbound)
+          .paymentMethod(PaymentMethod.debit_card)
+          .transactionDate(faker.date.past(5))
+          .count(10)
+          .create();
+      });
+
+      it(`Trigger an alert`, async () => {
+        // Act
+        await alertService.checkAllAlerts();
+
+        // Assert
+        const alerts = await prismaService.alert.findMany();
+
+        expect(alerts).toHaveLength(1);
+      });
+    });
   });
 });
-
-const createCounterparty = async (prismaService: PrismaService, proj?: Pick<Project, 'id'>) => {
-  const correlationId = faker.datatype.uuid();
+const createCounterparty = async (
+  prismaService: PrismaService,
+  proj?: Pick<Project, 'id'>,
+  {
+    correlationIdFn,
+  }: {
+    correlationIdFn?: () => string;
+  } = {},
+) => {
+  const correlationId = correlationIdFn ? correlationIdFn() : faker.datatype.uuid();
 
   if (!proj) {
     const customer = await createCustomer(
@@ -1493,10 +1893,10 @@ const createCounterparty = async (prismaService: PrismaService, proj?: Pick<Proj
   return await prismaService.counterparty.create({
     data: {
       project: { connect: { id: proj.id } },
-      correlationId: correlationId,
+      correlationId,
       business: {
         create: {
-          correlationId: correlationId,
+          correlationId,
           companyName: faker.company.name(),
           registrationNumber: faker.datatype.uuid(),
           mccCode: faker.datatype.number({ min: 1000, max: 9999 }),

@@ -97,7 +97,9 @@ export class AlertService {
             in: findAlertsDto.filter?.status,
           },
           alertDefinition: {
-            monitoringType,
+            monitoringType: {
+              equals: monitoringType,
+            },
             correlationId: {
               in: findAlertsDto.filter?.correlationIds,
             },
