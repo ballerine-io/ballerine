@@ -3,7 +3,7 @@ import { Tabs } from '@/common/components/organisms/Tabs/Tabs';
 import { TabsList } from '@/common/components/organisms/Tabs/Tabs.List';
 import { TabsTrigger } from '@/common/components/organisms/Tabs/Tabs.Trigger';
 import { TabsContent } from '@/common/components/organisms/Tabs/Tabs.Content';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { Button, buttonVariants } from '@/common/components/atoms/Button/Button';
 import { useZodSearchParams } from '@/common/hooks/useZodSearchParams/useZodSearchParams';
@@ -20,6 +20,7 @@ import { CheckCircle } from '@/common/components/atoms/CheckCircle/CheckCircle';
 import { DataTable } from '@/common/components/organisms/DataTable/DataTable';
 import { createColumnHelper } from '@tanstack/react-table';
 import { TextWithNAFallback } from '@/common/components/atoms/TextWithNAFallback/TextWithNAFallback';
+import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/queries/useBusinessReportByIdQuery/useBusinessReportByIdQuery';
 
 const RiskIndicator = ({
   title,
@@ -574,12 +575,14 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     navigate(previousPath);
     sessionStorage.removeItem('merchant-monitoring:business-report:previous-path');
   }, [navigate]);
-  const status = BusinessReportStatus.COMPLETED;
+  const { businessReportId } = useParams();
+  const { data: businessReport } = useBusinessReportByIdQuery({
+    id: businessReportId ?? '',
+  });
   const statusToBadgeData = {
     [BusinessReportStatus.COMPLETED]: { variant: 'info', text: 'Manual Review' },
     [BusinessReportStatus.IN_PROGRESS]: { variant: 'violet', text: 'In-progress' },
-  };
-  const createdAt = '2021-09-01T12:00:00Z';
+  } as const;
 
   return (
     <section className="flex h-full flex-col px-6 pb-6 pt-4">
@@ -592,22 +595,25 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           <ChevronLeft size={18} /> <span>Back</span>
         </Button>
       </div>
-      <h2 className="pb-4 text-2xl font-bold">ACME Corp.</h2>
+      <h2 className="pb-4 text-2xl font-bold">{businessReport?.business?.companyName}</h2>
       <div className={`flex space-x-8`}>
         <div className={`flex items-center pb-4`}>
           <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
           <Badge
-            variant={statusToBadgeData[status].variant}
+            variant={
+              statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData].variant
+            }
             className={ctw(`text-sm font-bold`, {
-              'bg-info/20 text-info': status === BusinessReportStatus.COMPLETED,
+              'bg-info/20 text-info': businessReport?.status === BusinessReportStatus.COMPLETED,
             })}
           >
-            {statusToBadgeData[status].text}
+            {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData].text}
           </Badge>
         </div>
         <div>
           <span className={`me-2 text-sm leading-6 text-slate-400`}>Created at</span>
-          {dayjs(new Date(createdAt)).format('HH:mm MMM Do, YYYY')}
+          {businessReport?.createdAt &&
+            dayjs(new Date(businessReport?.createdAt)).format('HH:mm MMM Do, YYYY')}
         </div>
       </div>
       <Tabs defaultValue={activeTab} className="w-full">

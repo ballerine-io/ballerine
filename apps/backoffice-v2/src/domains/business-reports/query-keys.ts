@@ -1,6 +1,7 @@
 import { createQueryKeys } from '@lukemorales/query-key-factory';
 
 import {
+  fetchBusinessReportById,
   fetchBusinessReports,
   fetchLatestBusinessReport,
 } from '@/domains/business-reports/fetchers';
@@ -43,5 +44,9 @@ export const businessReportsQueryKey = createQueryKeys('business-reports', {
   }) => ({
     queryKey: [{ businessId, reportType }],
     queryFn: () => fetchLatestBusinessReport({ businessId, reportType }),
+  }),
+  byId: ({ id }: { id: string }) => ({
+    queryKey: [{ id }],
+    queryFn: () => fetchBusinessReportById({ id }),
   }),
 });

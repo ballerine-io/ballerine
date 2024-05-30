@@ -90,6 +90,16 @@ export const fetchBusinessReports = async ({
   return handleZodError(error, filter);
 };
 
+export const fetchBusinessReportById = async ({ id }: { id: string }) => {
+  const [filter, error] = await apiClient({
+    endpoint: `business-reports/${id}`,
+    method: Method.GET,
+    schema: BusinessReportSchema,
+  });
+
+  return handleZodError(error, filter);
+};
+
 export const createBusinessReport = async ({
   websiteUrl,
   operatingCountry,
