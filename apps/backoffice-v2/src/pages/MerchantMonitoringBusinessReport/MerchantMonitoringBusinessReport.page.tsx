@@ -24,9 +24,11 @@ import { useBusinessReportByIdQuery } from '@/domains/business-reports/hooks/que
 
 const RiskIndicator = ({
   title,
+  to,
   violations,
 }: {
   title: string;
+  to: string;
   violations: Array<{
     label: string;
     severity: string;
@@ -36,17 +38,15 @@ const RiskIndicator = ({
     <div>
       <h3 className="mb-3 space-x-4 font-bold text-slate-500">
         <span>{title}</span>
-        <a
+        <Link
           className={buttonVariants({
             variant: 'link',
             className: 'h-[unset] cursor-pointer !p-0 !text-blue-500',
           })}
-          target={'_blank'}
-          rel={'noopener noreferrer'}
-          href={'#'}
+          to={to}
         >
           View
-        </a>
+        </Link>
       </h3>
       <ul className="list-inside list-disc">
         {!!violations.length &&
@@ -84,6 +84,7 @@ const BusinessReportSummary: FunctionComponent = () => {
   const riskIndicators = [
     {
       title: "Website's Company Analysis",
+      to: '?activeTab=websitesCompany',
       violations: [
         {
           label: 'IP Infringement',
@@ -93,14 +94,17 @@ const BusinessReportSummary: FunctionComponent = () => {
     },
     {
       title: 'Website Credibility Analysis',
+      to: '?activeTab=websiteCredibility',
       violations: [],
     },
     {
       title: 'Ads and Social Media Analysis',
+      to: '?activeTab=adsAndSocialMedia',
       violations: [],
     },
     {
       title: 'Website Line of Business Analysis',
+      to: '?activeTab=websiteLineOfBusiness',
       violations: [
         { label: 'Complaints about scams', severity: 'high' },
         { label: 'Low ratings on reputation platforms', severity: 'high' },
@@ -110,6 +114,7 @@ const BusinessReportSummary: FunctionComponent = () => {
     },
     {
       title: 'Ecosystem and Transactions Analysis View',
+      to: '?activeTab=ecosystemAndTransactions',
       violations: [
         { label: 'Inconsistent Line of Business', severity: 'high' },
         { label: 'Scam & Fraud Indications', severity: 'high' },
@@ -117,6 +122,7 @@ const BusinessReportSummary: FunctionComponent = () => {
     },
   ] as const satisfies ReadonlyArray<{
     title: string;
+    to: string;
     violations: Array<{
       label: string;
       severity: string;
@@ -139,6 +145,7 @@ const BusinessReportSummary: FunctionComponent = () => {
             <RiskIndicator
               key={riskIndicator.title}
               title={riskIndicator.title}
+              to={riskIndicator.to}
               violations={riskIndicator.violations}
             />
           ))}
@@ -527,12 +534,12 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
     },
     {
       label: 'Website Line of Business',
-      value: 'lineOfBusiness',
+      value: 'websiteLineOfBusiness',
       content: <WebsiteLineOfBusiness />,
     },
     {
       label: 'Website Credibility',
-      value: 'credibility',
+      value: 'websiteCredibility',
       content: <WebsiteCredibility />,
     },
     {
@@ -601,13 +608,13 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
           <span className={`me-4 text-sm leading-6 text-slate-400`}>Status</span>
           <Badge
             variant={
-              statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData].variant
+              statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]?.variant
             }
             className={ctw(`text-sm font-bold`, {
               'bg-info/20 text-info': businessReport?.status === BusinessReportStatus.COMPLETED,
             })}
           >
-            {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData].text}
+            {statusToBadgeData[businessReport?.status as keyof typeof statusToBadgeData]?.text}
           </Badge>
         </div>
         <div>
@@ -616,7 +623,7 @@ export const MerchantMonitoringBusinessReport: FunctionComponent = () => {
             dayjs(new Date(businessReport?.createdAt)).format('HH:mm MMM Do, YYYY')}
         </div>
       </div>
-      <Tabs defaultValue={activeTab} className="w-full">
+      <Tabs defaultValue={activeTab} className="w-full" key={activeTab}>
         <TabsList className={'mb-4'}>
           {tabs.map(tab => (
             <TabsTrigger key={tab.value} value={tab.value} asChild>
