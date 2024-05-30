@@ -1,8 +1,13 @@
 import { config } from 'dotenv';
 import { createEnv } from '@t3-oss/env-core';
 import { z } from 'zod';
+import { Base64 } from 'js-base64';
 
-config({ path: process.env.CI ? '.env.example' : '.env' });
+const path = process.env.CI ? '.env.example' : '.env';
+
+console.log('Loading environment variables from', path);
+
+config({ path });
 
 const urlArrayTransformer = (value: string) => {
   const urlSchema = z.string().url();
@@ -11,7 +16,7 @@ const urlArrayTransformer = (value: string) => {
   return urlArray.map(url => urlSchema.parse(url)).sort((a, b) => a.length - b.length);
 };
 
-export const serverSchema = {
+export const serverEnvSchema = {
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
   NODE_ENV: z.enum(['development', 'production', 'test', 'local']), // TODO: remove 'test', 'local'
   ENVIRONMENT_NAME: z.enum(['development', 'sandbox', 'production', 'staging', 'test', 'local']),
@@ -21,7 +26,7 @@ export const serverSchema = {
   DB_URL: z.string().url(),
   SESSION_SECRET: z.string(),
   HASHING_KEY_SECRET: z.string().optional(),
-  HASHING_KEY_SECRET_BASE64: z.string().optional(),
+  HASHING_KEY_SECRET_BASE64: z.string().refine(Base64.isValid).optional(),
   SESSION_EXPIRATION_IN_MINUTES: z.coerce.number().nonnegative().gt(0).default(60),
   BACKOFFICE_CORS_ORIGIN: z.string().transform(urlArrayTransformer),
   WORKFLOW_DASHBOARD_CORS_ORIGIN: z.string().transform(urlArrayTransformer),
@@ -72,12 +77,25 @@ export const serverSchema = {
     .describe('Bucket name of Data migration folders'),
 };
 
+if (!process.env['ENVIRONMENT_NAME'] || process.env['ENVIRONMENT_NAME'] === 'local') {
+  const severEnvVars: Record<string, string> = {};
+
+  // Use a for loop to populate severEnvVars
+  for (const key of Object.keys(serverEnvSchema)) {
+    if (process.env[key]) {
+      severEnvVars[key] = process.env[key] as string;
+    }
+  }
+
+  console.log('Environment variables loaded', severEnvVars);
+}
+
 export const env = createEnv({
   /*
    * clientPrefix is required.
    */
   clientPrefix: 'PUBLIC_',
-  server: serverSchema,
+  server: serverEnvSchema,
   client: {},
   /**
    * What object holds the environment variables at runtime.
