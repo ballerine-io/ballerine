@@ -50,40 +50,51 @@ export const BusinessReportSchema = z
             }),
             z.undefined(),
           ]),
-          recommendations: z.array(z.string()),
-          riskIndicatorsByDomain: z.object({
-            companyNameViolations: z.array(
-              z.object({
-                name: z.string(),
-                riskLevel: z.string(),
-              }),
-            ),
-            adsAndSocialViolations: z.array(
-              z.object({
-                name: z.string(),
-                riskLevel: z.string(),
-              }),
-            ),
-            lineOfBusinessViolations: z.array(
-              z.object({
-                name: z.string(),
-                riskLevel: z.string(),
-              }),
-            ),
-            ecosystemViolations: z.array(
-              z.object({
-                name: z.string(),
-                riskLevel: z.string(),
-              }),
-            ),
-            tldViolations: z.array(
-              z.object({
-                name: z.string(),
-                riskLevel: z.string(),
-              }),
-            ),
-          }),
+          recommendations: z.union([z.array(z.string()), z.undefined()]),
+          riskIndicatorsByDomain: z.union([
+            z.object({
+              companyNameViolations: z.array(
+                z.object({
+                  name: z.string(),
+                  riskLevel: z.string(),
+                }),
+              ),
+              adsAndSocialViolations: z.array(
+                z.object({
+                  name: z.string(),
+                  riskLevel: z.string(),
+                }),
+              ),
+              lineOfBusinessViolations: z.array(
+                z.object({
+                  name: z.string(),
+                  riskLevel: z.string(),
+                }),
+              ),
+              ecosystemViolations: z.array(
+                z.object({
+                  name: z.string(),
+                  riskLevel: z.string(),
+                }),
+              ),
+              tldViolations: z.array(
+                z.object({
+                  name: z.string(),
+                  riskLevel: z.string(),
+                }),
+              ),
+            }),
+            z.undefined(),
+          ]),
         }),
+        lineOfBusiness: z.union([
+          z.object({
+            lobDescription: z.string(),
+            mccProvided: z.string().nullable(),
+            mccMatching: z.string().nullable(),
+          }),
+          z.undefined(),
+        ]),
       }),
     }),
     business: z
