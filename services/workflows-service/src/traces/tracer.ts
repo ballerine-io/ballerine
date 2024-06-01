@@ -6,7 +6,6 @@ import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { Resource } from '@opentelemetry/resources';
 import { trace } from '@opentelemetry/api';
 import * as opentelemetry from '@opentelemetry/sdk-node';
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { dockerCGroupV1Detector } from '@opentelemetry/resource-detector-docker';
 import { B3Propagator } from '@opentelemetry/propagator-b3';
 import { version } from '../../package.json';
@@ -59,5 +58,5 @@ process.on('SIGTERM', () => {
   tracingSdk
     .shutdown()
     .then(() => console.log('Tracing terminated'))
-    .catch((error: unknown) => logger.error('Error terminating tracing', error));
+    .catch((error: unknown) => console.error('Error terminating tracing', error));
 });
