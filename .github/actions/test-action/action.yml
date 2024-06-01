@@ -36,4 +36,6 @@ runs:
 
     - name: Test
       shell: bash
-      run: pnpm test
+      run: pnpm test -- --verbose false
+      env:
+        LOG_LEVEL: error

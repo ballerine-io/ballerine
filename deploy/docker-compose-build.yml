@@ -27,6 +27,7 @@ services:
       VITE_KYB_DEFINITION_ID: 'kyb_parent_kyc_session_example'
   ballerine-workflow-service:
     container_name: workflow-service
+    platform: linux/amd64
     image: ghcr.io/ballerine-io/workflows-service:latest
     command:
       - /bin/sh
@@ -59,6 +60,7 @@ services:
       UNIFIED_API_TOKEN: ''
       UNIFIED_API_SHARED_SECRET: ''
       ENVIRONMENT_NAME: 'development'
+      HASHING_KEY_SECRET: ${HASHING_KEY_SECRET}
     depends_on:
       ballerine-postgres:
         condition: service_healthy

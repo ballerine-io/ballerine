@@ -4,7 +4,7 @@ import { Prisma } from '@prisma/client';
 import { PRISMA_UNIQUE_CONSTRAINT_ERROR } from '@/prisma/prisma.util';
 
 export type ErrorCodesStatusMapping = {
-  [key: string]: number;
+  [key: string]: (typeof HttpStatus)[keyof typeof HttpStatus];
 };
 
 /**

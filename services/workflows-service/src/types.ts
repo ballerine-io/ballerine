@@ -40,3 +40,7 @@ export type GenericFunction = (...args: AnyArray) => any;
 export type GenericAsyncFunction = (...args: AnyArray) => Promise<any>;
 
 export type PrismaTransaction = Omit<PrismaClient, runtime.ITXClientDenyList>;
+
+export type PrismaTransactionMethod = Parameters<PrismaClient['$transaction']>[0];
+
+export type PrismaTransactionClient = Parameters<PrismaTransactionMethod>[0];
