@@ -1,5 +1,5 @@
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
-import { IncomingMessage } from 'http';
+import { IncomingMessage } from 'node:http';
 
 const createFilter = (filters: RegExp[] | string) => {
   let f: RegExp[];
