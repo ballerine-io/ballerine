@@ -36,6 +36,8 @@ import { SalesforceIntegrationRepository } from '@/salesforce/salesforce-integra
 import { CollectionFlowEndUserController } from '@/collection-flow/controllers/collection-flow.end-user.controller';
 import { TranslationService } from '@/providers/translation/translation.service';
 import { BusinessReportModule } from '@/business-report/business-report.module';
+import { AlertModule } from '@/alert/alert.module';
+import { DataAnalyticsModule } from '@/data-analytics/data-analytics.module';
 
 @Module({
   imports: [
@@ -46,6 +48,8 @@ import { BusinessReportModule } from '@/business-report/business-report.module';
     TokenAuthModule,
     UiDefinitionModule,
     BusinessReportModule,
+    AlertModule,
+    DataAnalyticsModule,
   ],
   controllers: [
     ColectionFlowController,

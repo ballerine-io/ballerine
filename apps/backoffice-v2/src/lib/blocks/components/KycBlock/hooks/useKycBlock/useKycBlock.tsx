@@ -1,6 +1,7 @@
 import { StateTag, TStateTags, isObject } from '@ballerine/common';
 import { ComponentProps, useCallback, useMemo } from 'react';
 
+import { Separator } from '@/common/components/atoms/Separator/Separator';
 import { MotionButton } from '@/common/components/molecules/MotionButton/MotionButton';
 import { useFilterId } from '@/common/hooks/useFilterId/useFilterId';
 import { ctw } from '@/common/utils/ctw/ctw';
@@ -21,7 +22,6 @@ import { capitalize } from '../../../../../../common/utils/capitalize/capitalize
 import { valueOrNA } from '../../../../../../common/utils/value-or-na/value-or-na';
 import { useStorageFilesQuery } from '../../../../../../domains/storage/hooks/queries/useStorageFilesQuery/useStorageFilesQuery';
 import { TWorkflowById } from '../../../../../../domains/workflows/fetchers';
-import { Separator } from '@/common/components/atoms/Separator/Separator';
 
 const motionBadgeProps = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
@@ -346,7 +346,7 @@ export const useKycBlock = ({
         .addBlock()
         .addCell(headerCell)
         .addCell({
-          type: 'nodeCell',
+          type: 'node',
           value: <Separator className={`my-2`} />,
         })
         .addCell({
@@ -453,7 +453,7 @@ export const useKycBlock = ({
             .flat(1),
         })
         .addCell({
-          type: 'nodeCell',
+          type: 'node',
           value: <Separator className={`my-2`} />,
         })
         .addCell({

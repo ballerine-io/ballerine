@@ -131,7 +131,7 @@ export class WorkflowService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto, projectId: TProjectId) {
+  async createWorkflowDefinition(data: WorkflowDefinitionCreateDto) {
     const select = {
       id: true,
       name: true,
@@ -142,14 +142,31 @@ export class WorkflowService {
       extensions: true,
       persistStates: true,
       submitStates: true,
-      parentRuntimeDataId: true,
     };
 
+    const createWorkflowDefinitionPayload = {
+      data: {
+        ...data,
+        definition: data.definition as InputJsonValue,
+        contextSchema: data.contextSchema as InputJsonValue,
+        documentsSchema: data.documentsSchema as InputJsonValue,
+        config: data.config as InputJsonValue,
+        supportedPlatforms: data.supportedPlatforms as InputJsonValue,
+        extensions: data.extensions as InputJsonValue,
+        backend: data.backend as InputJsonValue,
+        persistStates: data.persistStates as InputJsonValue,
+        submitStates: data.submitStates as InputJsonValue,
+      },
+      select,
+    } satisfies Parameters<WorkflowDefinitionRepository['create']>['0'];
+
     if (data.isPublic) {
-      return await this.workflowDefinitionRepository.createUnscoped({ data, select });
+      return await this.workflowDefinitionRepository.createUnscoped(
+        createWorkflowDefinitionPayload,
+      );
     }
 
-    return await this.workflowDefinitionRepository.create({ data, select });
+    return await this.workflowDefinitionRepository.create(createWorkflowDefinitionPayload);
   }
 
   async cloneWorkflowDefinition(data: WorkflowDefinitionCloneDto, projectId: string) {
@@ -780,6 +797,7 @@ export class WorkflowService {
     decision: {
       status: 'approve' | 'reject' | 'revision' | 'revised' | null;
       reason?: string;
+      comment?: string;
     },
     projectIds: TProjectIds,
     currentProjectId: TProjectId,
@@ -810,6 +828,7 @@ export class WorkflowService {
           return {
             revisionReason: null,
             rejectionReason: null,
+            comment: decision.comment,
           };
         }
 
@@ -817,6 +836,7 @@ export class WorkflowService {
           return {
             revisionReason: null,
             rejectionReason: decision?.reason,
+            comment: decision.comment,
           };
         }
 
@@ -824,6 +844,7 @@ export class WorkflowService {
           return {
             revisionReason: decision?.reason,
             rejectionReason: null,
+            comment: decision.comment,
           };
         }
 
@@ -1352,6 +1373,11 @@ export class WorkflowService {
       const result = ConfigSchema.safeParse(config);
 
       if (!result.success) {
+        this.logger.error('Invalid workflow config', {
+          config,
+          error: result.error,
+        });
+
         throw ValidationError.fromZodError(result.error);
       }
 

@@ -1,9 +1,9 @@
 import { Download, ExternalLinkIcon, FileText } from 'lucide-react';
 import { FunctionComponent } from 'react';
 
+import { ImageViewer } from '@/common/components/organisms/ImageViewer/ImageViewer';
 import { ctw } from '@/common/utils/ctw/ctw';
 import { isPdf } from '@/common/utils/is-pdf/is-pdf';
-import { ImageViewer } from '@/common/components/organisms/ImageViewer/ImageViewer';
 import { useDocumentsToolbarLogic } from '@/pages/Entity/components/Case/hooks/useDocumentsToolbarLogic/useDocumentsToolbarLogic';
 
 export const DocumentsToolbar: FunctionComponent<{
@@ -60,9 +60,6 @@ export const DocumentsToolbar: FunctionComponent<{
       <a
         className={ctw(
           `btn btn-circle btn-ghost btn-sm bg-base-300/70 text-[0.688rem] focus:outline-primary`,
-          {
-            'pointer-events-none opacity-50': !shouldDownload,
-          },
         )}
         download={image?.fileName}
         href={fileToDownloadBase64}

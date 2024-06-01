@@ -5,7 +5,7 @@
     regexp: '^(.*)VITE_API_URL(.*)$'
     line: "VITE_API_URL=https://{{ vite_api_url }}/api/v1/internal"
     backrefs: yes
-  when: vite_api_url is defined
+  when: vite_api_url != ""
 
 - name: Replace VITE URL for kyb-app
   lineinfile:
@@ -13,7 +13,7 @@
     regexp: '^(.*)VITE_API_URL(.*)$'
     line: "VITE_API_URL=https://{{ vite_api_url }}/api/v1/"
     backrefs: yes
-  when: vite_api_url is defined
+  when: vite_api_url != ""
 
 - name: Replace VITE URL for workflow-dashboard
   lineinfile:
@@ -21,210 +21,28 @@
     regexp: '^(.*)VITE_API_URL(.*)$'
     line: "VITE_API_URL=https://{{ vite_api_url }}/api/v1/"
     backrefs: yes
-  when: vite_api_url is defined
+  when: vite_api_url != ""
 
 - name: Create Caddy directory for https
   ansible.builtin.file:
     path: "{{ install_dir }}/deploy/caddy"
     state: directory
-  when: vite_api_url is defined
+  when: vite_api_url != ""
 
 - name: create Caddyfile for https
   ansible.builtin.template:
     src: templates/Caddyfile.j2
     dest: "{{ install_dir }}/deploy/caddy/Caddyfile"
-  when: vite_api_url is defined
+  when: vite_api_url != ""
 
-- name: Deploy Ballerine with https
-  community.docker.docker_compose:
-    project_name: ballerine
-    definition:
-      version: '3'
-      services:
-        ballerine-case-managment:
-          container_name: backoffice
-          build:
-            context: "{{ install_dir }}/apps/backoffice-v2/"
-            args:
-              NPM_LOG_LEVEL: notice
-          ports:
-            - "{{ backoffice_port }}:80"
-          depends_on:
-            - ballerine-workflow-service
-          restart: on-failure
-        ballerine-kyb-app:
-          container_name: kyb-app
-          build:
-            context: "{{ install_dir }}/apps/kyb-app"
-            args:
-              NPM_LOG_LEVEL: notice
-          ports:
-            - "{{ kyb_app_port }}:80"
-          depends_on:
-            - ballerine-workflow-service
-          restart: on-failure
-          environment:
-            VITE_API_URL: 'https://{{ vite_api_url }}/api/v1/'
-            VITE_KYB_DEFINITION_ID: 'kyb_parent_kyc_session_example'
-        ballerine-postgres:
-          container_name: postgres
-          image: sibedge/postgres-plv8:15.3-3.1.7
-          ports:
-            - "{{ postgres_port }}:{{ postgres_port }}"
-          environment:
-            POSTGRES_USER: "{{ postgres_user }}"
-            POSTGRES_PASSWORD: "{{ postgres_password }}"
-        ballerine-workflow-service:
-          container_name: workflow-service
-          image: ghcr.io/ballerine-io/workflows-service:latest
-          command:
-            - /bin/sh
-            - -c
-            - |
-              npm run db:init
-              npm run seed
-              dumb-init npm run prod
-          ports:
-            - "{{ workflow_svc_port }}:{{ workflow_svc_port }}"
-          environment:
-            BCRYPT_SALT: "{{ bcrypt_salt }}"
-            SESSION_EXPIRATION_IN_MINUTES: "{{ session_expiration_in_minutes }}"
-            DB_URL: "postgres://{{ postgres_user }}:{{ postgres_password }}@postgres:{{ postgres_port }}"
-            API_KEY: "{{ api_key }}"
-            NODE_ENV: "{{ node_env }}"
-            COMPOSE_PROJECT_NAME: "{{ compose_project_name }}"
-            DB_PORT: "{{ postgres_port }}"
-            DB_USER: "{{ postgres_user }}"
-            DB_PASSWORD: "{{ postgres_password }}"
-            SESSION_SECRET: "{{ session_secret }}"
-            BACKOFFICE_CORS_ORIGIN: "https://{{ backoffice_url }}"
-            WORKFLOW_DASHBOARD_CORS_ORIGIN: "https://{{ workflow_dashboard_url }}"
-            PORT: "{{ workflow_svc_port }}"
-            KYB_EXAMPLE_CORS_ORIGIN: "https://{{ kyb_url }}"
-            APP_API_URL: https://alon.ballerine.dev
-            EMAIL_API_TOKEN: ''
-            EMAIL_API_URL: https://api.sendgrid.com/v3/mail/send
-            UNIFIED_API_URL: 'https://unified-api-test.eu.ballerine.app'
-            UNIFIED_API_TOKEN: ''
-            UNIFIED_API_SHARED_SECRET: ''
-            ENVIRONMENT_NAME: 'development'
-          depends_on:
-            - ballerine-postgres
-        ballerine-workflows-dashboard:
-          container_name: workflows-dashboard
-          build:
-            context: "{{ install_dir }}/apps/workflows-dashboard"
-            args:
-              NPM_LOG_LEVEL: notice
-          ports:
-            - "{{ workflow_dashboard_port }}:80"
-          depends_on:
-            - ballerine-workflow-service
-        caddy:
-          image: caddy:latest
-          restart: unless-stopped
-          container_name: caddy
-          ports:
-            - 80:80
-            - 443:443
-          volumes:
-            - "{{ install_dir }}/deploy/caddy/Caddyfile:/etc/caddy/Caddyfile"
-            - "{{ install_dir }}/deploy/./caddy/site:/srv"
-            - "{{ install_dir }}/deploy/caddy/caddy_data:/data"
-            - "{{ install_dir }}/deploy/caddy/caddy_config:/config"
-      volumes:
-        postgres15: ~
-  become: true
-  register: output
-  when: vite_api_url is defined
+- name: Deploy Ballerine up locally
+  shell: docker-compose -f docker-compose-build.yml up -d
+  args:
+    chdir: "{{ install_dir }}/deploy"
+  when: vite_api_url == ""
 
-- name: Deploy Ballerine locally
-  community.docker.docker_compose:
-    project_name: ballerine
-    definition:
-      version: '3'
-      services:
-        ballerine-case-managment:
-          container_name: backoffice
-          build:
-            context: "{{ install_dir }}/apps/backoffice-v2/"
-            args:
-              NPM_LOG_LEVEL: notice
-          ports:
-            - "{{ backoffice_port }}:80"
-          depends_on:
-            - ballerine-workflow-service
-          restart: on-failure
-        ballerine-kyb-app:
-          container_name: kyb-app
-          build:
-            context: "{{ install_dir }}/apps/kyb-app"
-            args:
-              NPM_LOG_LEVEL: notice
-          ports:
-            - "{{ kyb_app_port }}:80"
-          depends_on:
-            - ballerine-workflow-service
-          restart: on-failure
-          environment:
-            VITE_API_URL: 'http://localhost:3000/api/v1/'
-            VITE_KYB_DEFINITION_ID: 'kyb_parent_kyc_session_example'
-        ballerine-postgres:
-          container_name: postgres
-          image: sibedge/postgres-plv8:15.3-3.1.7
-          ports:
-            - "{{ postgres_port }}:{{ postgres_port }}"
-          environment:
-            POSTGRES_USER: "{{ postgres_user }}"
-            POSTGRES_PASSWORD: "{{ postgres_password }}"
-        ballerine-workflow-service:
-          container_name: workflow-service
-          image: ghcr.io/ballerine-io/workflows-service:latest
-          command:
-            - /bin/sh
-            - -c
-            - |
-              npm run db:init
-              npm run seed
-              dumb-init npm run prod
-          ports:
-            - "{{ workflow_svc_port }}:{{ workflow_svc_port }}"
-          environment:
-            BCRYPT_SALT: "{{ bcrypt_salt }}"
-            SESSION_EXPIRATION_IN_MINUTES: "{{ session_expiration_in_minutes }}"
-            DB_URL: "postgres://{{ postgres_user }}:{{ postgres_password }}@postgres:{{ postgres_port }}"
-            API_KEY: "{{ api_key }}"
-            NODE_ENV: "{{ node_env }}"
-            COMPOSE_PROJECT_NAME: "{{ compose_project_name }}"
-            DB_PORT: "{{ postgres_port }}"
-            DB_USER: "{{ postgres_user }}"
-            DB_PASSWORD: "{{ postgres_password }}"
-            SESSION_SECRET: "{{ session_secret }}"
-            BACKOFFICE_CORS_ORIGIN: "http://localhost:{{ backoffice_port }}"
-            WORKFLOW_DASHBOARD_CORS_ORIGIN: "http://localhost:{{ workflow_dashboard_port }}"
-            PORT: "{{ workflow_svc_port }}"
-            KYB_EXAMPLE_CORS_ORIGIN: "http://localhost:{{ kyb_app_port }}"
-            APP_API_URL: https://alon.ballerine.dev
-            EMAIL_API_TOKEN: ''
-            EMAIL_API_URL: https://api.sendgrid.com/v3/mail/send
-            UNIFIED_API_URL: 'https://unified-api-test.eu.ballerine.app'
-            UNIFIED_API_TOKEN: ''
-            UNIFIED_API_SHARED_SECRET: ''
-            ENVIRONMENT_NAME: 'development'
-          depends_on:
-            - ballerine-postgres
-        ballerine-workflows-dashboard:
-          container_name: workflows-dashboard
-          build:
-            context: "{{ install_dir }}/apps/workflows-dashboard"
-            args:
-              NPM_LOG_LEVEL: notice
-          ports:
-            - "{{ workflow_dashboard_port }}:80"
-          depends_on:
-            - ballerine-workflow-service
-      volumes:
-        postgres15: ~
-  become: true
-  register: output
-  when: vite_api_url is not defined
+- name: Deploy Ballerine up remote
+  shell: docker-compose -f docker-compose-build-https.yml up -d
+  args:
+    chdir: "{{ install_dir }}/deploy"
+  when: vite_api_url != ""

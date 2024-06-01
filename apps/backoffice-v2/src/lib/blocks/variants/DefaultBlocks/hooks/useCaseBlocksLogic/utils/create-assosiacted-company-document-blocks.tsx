@@ -17,7 +17,7 @@ export const createAssociatedCompanyDocumentBlocks = (
 
   childWorkflows.forEach(childWorkflow => {
     blocks.addCell({
-      type: 'nodeCell',
+      type: 'node',
       value: (
         <ChildDocumentBlocks
           parentWorkflowId={workflow.id}
