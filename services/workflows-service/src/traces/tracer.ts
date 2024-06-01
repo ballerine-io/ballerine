@@ -15,6 +15,7 @@ import { AwsInstrumentation } from '@opentelemetry/instrumentation-aws-sdk';
 import { ExpressInstrumentation } from '@opentelemetry/instrumentation-express';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { PrismaInstrumentation } from '@prisma/instrumentation';
+import { BallerineHttpInstrumentation } from './http-intrumentation';
 
 const traceExporter = new OTLPTraceExporter();
 
@@ -40,7 +41,9 @@ export const tracingSdk = new opentelemetry.NodeSDK({
     new opentelemetry.tracing.SimpleSpanProcessor(new opentelemetry.tracing.ConsoleSpanExporter()),
   ],
   instrumentations: [
-    new HttpInstrumentation(),
+    new BallerineHttpInstrumentation({
+      excludeUrls: [/(api\/v\d\/_health).*/g, /favicon.ico/g],
+    }),
     new WinstonInstrumentation(),
     new NestInstrumentation({ enabled: false }),
     new AwsInstrumentation(),
