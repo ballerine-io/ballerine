@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
 import { Base64 } from 'js-base64';
+import _ from 'lodash';
 
 const ONE_DAY_IN_MS = 1000 * 60 * 60 * 24;
 
@@ -23,7 +24,9 @@ const DEFAULT_HASHIING_OPTIONS = {
 };
 
 export const hashKey = async (key: string, salt?: string | number) => {
-  if (!salt && !SALT) {
+  if (_.isEmpty(salt) && _.isEmpty(SALT)) {
+    console.log('salt', salt);
+    console.log('SALT', SALT);
     throw new Error('Invalid salt value');
   }
 
