@@ -38,4 +38,13 @@ runs:
       shell: bash
       run: pnpm test -- --verbose false
       env:
-        LOG_LEVEL: error
+        JEST_HTML_REPORTER_PAGE_TITLE: ${{ github.ref_name }}
+
+    - name: Store test result
+      uses: actions/upload-artifact@v4.3.3
+      id: artifact-upload-step
+      with:
+        name: test-report.html
+        path: services/workflows-service/ci/test-report.html
+        retention-days: 7
+
