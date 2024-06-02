@@ -1,0 +1,56 @@
+name: Test Ballerine workflows
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      # Run this pipeline only if there are changes in specified path
+      - "services/workflows-service/**"
+    branches:
+      - dev
+      - test
+      - prod
+      - staging
+      - sb
+      - demo
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+
+        defaults:
+          run:
+            shell: bash
+      
+        steps:
+          - name: Checkout the code
+            uses: actions/checkout@v4
+
+          - name: Install Node.js
+            uses: actions/setup-node@v4
+            with:
+              node-version: 20
+  
+          - name: Install Pnpm
+            uses: pnpm/action-setup@v4
+            with:
+              version: 8          
+
+          - name: Install dependencies
+            run: pnpm install
+
+          - name: Monorepo init
+            run: pnpm monorepo:init
+
+          - name: Run Docker DB
+            run: docker-compose -f services/workflows-service/docker-compose.db.yml up -d
+
+          - name: Run KYB example
+            run: nohup pnpm run kyb-manual-review-example > nohup.out & 
+            
+          - name: Sleep for 60 seconds
+            run: sleep 60
+
+          - name : Tail output
+            run: |
+              tail -n 250 nohup.out
