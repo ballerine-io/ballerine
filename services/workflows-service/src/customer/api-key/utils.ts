@@ -10,9 +10,11 @@ const API_KEY_LEN = 50;
 
 export const KEY_MIN_LENGTH = 5;
 
-const SALT = process.env.HASHING_KEY_SECRET_BASE64
-  ? Base64.decode(process.env.HASHING_KEY_SECRET_BASE64)
-  : process.env.HASHING_KEY_SECRET;
+const SALT = (
+  process.env.HASHING_KEY_SECRET_BASE64
+    ? Base64.decode(process.env.HASHING_KEY_SECRET_BASE64)
+    : process.env.HASHING_KEY_SECRET
+) as string;
 
 const DEFAULT_HASHIING_OPTIONS = {
   key: undefined,
@@ -20,7 +22,7 @@ const DEFAULT_HASHIING_OPTIONS = {
   salt: SALT,
 };
 
-export const hashKeyOrThrow = async (key: string, salt: string) => {
+export const hashKeyOrThrow = async (key: string, salt?: string) => {
   if (salt === undefined || !salt) {
     throw new Error('Invalid salt value: HASHING_KEY_SECRET_BASE64');
   }
@@ -28,13 +30,13 @@ export const hashKeyOrThrow = async (key: string, salt: string) => {
   return hashKey('check salt value', salt);
 };
 
-export const hashKey = async (key: string, salt: string | number = SALT) => {
+export const hashKey = async (key: string, salt?: string | number) => {
   return new Promise<string>((resolve, reject) => {
     if (key && key.length < KEY_MIN_LENGTH) {
       return reject(new Error('Invalid key length'));
     }
 
-    bcrypt.hash(key, salt, (err, hashedKey) => {
+    bcrypt.hash(key, salt ?? SALT, (err, hashedKey) => {
       if (err) {
         reject(err);
       } else {
