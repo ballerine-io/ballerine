@@ -50,7 +50,7 @@ update_env_file() {
 
   for file in "$env_file" "$env_example_file"; do
     grep -v '^HASHING_KEY_SECRET_BASE64=' "$file" > "${file}.tmp" && mv "${file}.tmp" "$file"
-    echo -e "HASHING_KEY_SECRET_BASE64=\"$sanitized_value\"" >> "$file"
+    echo -e "HASHING_KEY_SECRET_BASE64=$sanitized_value" >> "$file"
   done
   
   echo "HASHING_KEY_SECRET_BASE64 has been set in the .env file with value: $adjusted_value"

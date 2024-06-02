@@ -22,15 +22,11 @@ const DEFAULT_HASHIING_OPTIONS = {
   salt: SALT,
 };
 
-export const hashKeyOrThrow = async (key: string, salt?: string) => {
-  if (salt === undefined || !salt) {
-    throw new Error('Invalid salt value: HASHING_KEY_SECRET_BASE64');
+export const hashKey = async (key: string, salt?: string | number) => {
+  if (!salt && !SALT) {
+    throw new Error('Invalid salt value');
   }
 
-  return hashKey('check salt value', salt);
-};
-
-export const hashKey = async (key: string, salt?: string | number) => {
   return new Promise<string>((resolve, reject) => {
     if (key && key.length < KEY_MIN_LENGTH) {
       return reject(new Error('Invalid key length'));

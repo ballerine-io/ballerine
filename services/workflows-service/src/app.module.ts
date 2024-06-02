@@ -45,7 +45,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { CronModule } from '@/workflow/cron/cron.module';
 import z from 'zod';
 import { Base64 } from 'js-base64';
-import { hashKeyOrThrow } from './customer/api-key/utils';
+import { hashKey } from './customer/api-key/utils';
 
 export const validate = (config: Record<string, unknown>) => {
   const zodEnvSchema = z
@@ -57,13 +57,6 @@ export const validate = (config: Record<string, unknown>) => {
 
   const result = zodEnvSchema.safeParse(config);
 
-  // validate salt value
-  const salt = env.HASHING_KEY_SECRET_BASE64
-    ? Base64.decode(env.HASHING_KEY_SECRET_BASE64)
-    : env.HASHING_KEY_SECRET;
-
-  hashKeyOrThrow('check salt value', salt);
-
   if (!result.success) {
     const errors = result.error.errors.map(zodIssue => ({
       message: `❌ ${zodIssue.message}`,
@@ -72,6 +65,9 @@ export const validate = (config: Record<string, unknown>) => {
 
     throw new Error(JSON.stringify(errors, null, 2));
   }
+
+  // validate salt value
+  hashKey('check salt value');
 
   return result.data;
 };
