@@ -9,7 +9,7 @@ import CodeBlock from '../../../../components/CodeBlock/CodeBlock.astro';
 
 ### Installation steps on a remote virtual machine
 
-We recommend installation using Ansible
+We recommend installation using Ansible.
 
 1. **Install Ansible**: We recommend installing Ansible with apt:
 <CodeBlock lang={`shell`}  code={`sudo apt install -y ansible`}/>
@@ -36,14 +36,14 @@ using `ansible_ssh_private_key_file`
 
 <CodeBlock lang={`shell`}  code={`all ansible_host={{ SERVER_HOST }} ansible_port={{ SERVER_PORT }} ansible_user={{ SERVER_USER }} ansible_ssh_private_key_file={{ SSH_PRIVATE_KEY_FILE }}`}/>
 
-After you completed the above step then we're pretty much done with the inventory
+After completing the above steps, the inventory setup is complete.
 
 
 ### Start Ballerine
 
 **Run the Ansible playbook**:
 
-After complete the above step. Now the only remain step we need to do is run the Ansible playbook.
+After completing the above steps, the remaining action is to run the Ansible playbook.
 You can run the Ansible playbook with the following command
 
 <CodeBlock lang={`shell`}  code={`cd ballerine/deploy/ansible/ballerine_playbook;
@@ -68,7 +68,7 @@ Incase you want to deploy ballerine on a remote server and serve it on HTTPS
 
 **Note: You need to own a domain and ports 80 and 443 should allow inbound traffic**
 
-### Setup your configuration vars for Ballerine:
+### Set up your configuration vars for Ballerine:
 
 Once the inventory is setup and want to deploy on HTTPS.
 
@@ -78,13 +78,13 @@ First you need to open `deploy/ansible/ballerine_playbook/roles/setup-ballerine/
 There are some variables that will need input from you to get the application start correctly
 
 - `install_dir`: The absolute path of your app's installation folder on the server (required). Default: `/home/ubuntu/ballerine`
-- `vite_api_url`: Incase you want to deploy ballerine on a remote server and run it on HTTPS
+- `vite_api_url`: In case you want to deploy Ballerine on a remote server and run it on HTTPS
 - `backoffice_url`: URL you wish to deploy Case-Management on
 - `kyb_url`: URL you wish to deploy KYB on
 - `workflow_dashboard_url`: URL you wish to deploy Workflows-Dashboard on
 - `workflow_svc_url`: URL you wish to deploy Workflows-Service on
 
-Once you complete setup config vars for your app then we are ready to deploy our app on your server.
+Once you have completed setting up the configuration variables for your app, we are ready to deploy our app on your server.
 
 **Run the Ansible playbook**:
 
