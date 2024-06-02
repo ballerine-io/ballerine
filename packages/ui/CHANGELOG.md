@@ -1,5 +1,49 @@
 # @ballerine/ui
 
+## 0.5.2
+
+### Patch Changes
+
+- Added test ids to inputs
+
+## 0.5.1
+
+### Patch Changes
+
+- bumo
+- Updated dependencies
+  - @ballerine/common@0.9.1
+
+## 0.5.0
+
+### Minor Changes
+
+- 9fe7a5c10: Bump
+
+### Patch Changes
+
+- ver bump
+- 9fe7a5c10: bump
+- 9fe7a5c10: Version bump
+- Updated dependencies
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+  - @ballerine/common@0.9.0
+
+## 0.5.0-11210907c.0
+
+### Minor Changes
+
+- Bump
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.0-11210907c.0
+
 ## 0.4.0
 
 ### Minor Changes
@@ -47,6 +91,7 @@
 
 ### Patch Changes
 
+- Added RadioGroup & RadioGroup adapter
 - version bump
 - Updated dependencies
   - @ballerine/common@0.7.40
@@ -59,6 +104,7 @@
 - Added process tracker changes
 - Updated dependencies
   - @ballerine/common@0.7.38
+- Added CountryPicker adapter for DynamicForm & portal on Popover now could be disabled by prop
 
 ## 0.3.25
 

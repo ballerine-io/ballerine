@@ -1,6 +1,5 @@
-import React, { ComponentProps, FocusEvent } from 'react';
-import { string } from 'fast-glob/out/utils';
 import { PopoverContent } from '@/components';
+import React, { ComponentProps, FocusEvent } from 'react';
 
 export interface DropdownOption {
   label: string;
@@ -32,4 +31,5 @@ export interface DropdownInputProps {
       variant: string;
     };
   };
+  testId?: string;
 }

@@ -1,6 +1,6 @@
 import { AlertsTable } from '@/pages/TransactionMonitoringAlerts/components/AlertsTable';
 import { AlertsHeader } from 'src/pages/TransactionMonitoringAlerts/components/AlertsHeader';
-import { AlertsPagination } from '@/pages/TransactionMonitoringAlerts/AlertsPagination/AlertsPagination';
+import { AlertsPagination } from '@/pages/TransactionMonitoringAlerts/components/AlertsPagination/AlertsPagination';
 import { useTransactionMonitoringAlertsLogic } from '@/pages/TransactionMonitoringAlerts/hooks/useTransactionMonitoringAlertsLogic/useTransactionMonitoringAlertsLogic';
 import { Outlet } from 'react-router-dom';
 import { isNonEmptyArray } from '@ballerine/common';
@@ -11,7 +11,7 @@ export const TransactionMonitoringAlerts = () => {
     alerts,
     isLoadingAlerts,
     assignees,
-    labels,
+    correlationIds,
     authenticatedUser,
     page,
     onPrevPage,
@@ -28,7 +28,7 @@ export const TransactionMonitoringAlerts = () => {
       <div className="flex flex-1 flex-col gap-6 overflow-auto">
         <AlertsHeader
           assignees={assignees ?? []}
-          labels={labels ?? []}
+          correlationIds={correlationIds ?? []}
           authenticatedUser={authenticatedUser}
           search={search}
           onSearch={onSearch}

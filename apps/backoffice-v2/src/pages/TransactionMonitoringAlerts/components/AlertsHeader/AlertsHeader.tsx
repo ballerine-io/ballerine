@@ -6,7 +6,7 @@ import { useSelect } from '@/common/hooks/useSelect/useSelect';
 import { useAssignAlertsByIdsMutation } from '@/domains/alerts/hooks/mutations/useAssignAlertsMutation/useAssignAlertsMutation';
 import { AlertsAssignDropdown } from '@/pages/TransactionMonitoringAlerts/components/AlertsAssignDropdown/AlertsAssignDropdown';
 import { alertDecisionToState, AlertStates, alertStateToDecision } from '@/domains/alerts/fetchers';
-import { lowerCase } from 'string-ts';
+import { capitalize, lowerCase } from 'string-ts';
 import { useAlertsDecisionByIdsMutation } from '@/domains/alerts/hooks/mutations/useAlertsDecisionByIdsMutation/useAlertsDecisionByIdsMutation';
 import { toScreamingSnakeCase } from '@/common/utils/to-screaming-snake-case/to-screaming-snake-case';
 import { AlertsDecisionDropdown } from '@/pages/TransactionMonitoringAlerts/components/AlertsDecisionDropdown/AlertsDecisionDropdown';
@@ -23,11 +23,11 @@ export const decisionToClassName = {
 
 export const AlertsHeader: FunctionComponent<{
   assignees: TUsers;
-  labels: string[];
+  correlationIds: string[];
   authenticatedUser: TUsers[number];
   search: ComponentProps<typeof Search>['value'];
   onSearch: (search: string) => void;
-}> = ({ assignees, labels, authenticatedUser, search, onSearch }) => {
+}> = ({ assignees, correlationIds, authenticatedUser, search, onSearch }) => {
   const { selected, onClearSelect } = useSelect();
   const isNoAlertsSelected = Object.keys(selected ?? {}).length === 0;
   const { mutate: mutateAssignAlerts } = useAssignAlertsByIdsMutation({
@@ -74,7 +74,7 @@ export const AlertsHeader: FunctionComponent<{
               decisionToClassName[lowerCase(decision ?? '') as keyof typeof decisionToClassName]
             }
           >
-            {decision}
+            {capitalize(decision)}
           </span>
         ),
       })),
@@ -82,7 +82,7 @@ export const AlertsHeader: FunctionComponent<{
       id: decision,
       value: (
         <div className={'flex items-center gap-x-2 text-slate-400'}>
-          {decision} <span className={'text-xs'}>(soon)</span>
+          {capitalize(decision ?? '')} <span className={'text-xs'}>(soon)</span>
         </div>
       ),
     })),
@@ -95,7 +95,7 @@ export const AlertsHeader: FunctionComponent<{
         {/*<Search value={search} onChange={onSearch} />*/}
         <AlertsFilters
           assignees={assignees}
-          labels={labels}
+          correlationIds={correlationIds}
           authenticatedUserId={authenticatedUser?.id}
         />
       </div>

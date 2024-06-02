@@ -14,6 +14,7 @@ export const DateInputAdapter: RJSFInputAdapter<string | null> = ({
   formData,
   disabled,
   uiSchema,
+  testId,
   onBlur,
   onChange,
 }) => {
@@ -52,6 +53,7 @@ export const DateInputAdapter: RJSFInputAdapter<string | null> = ({
       onChange={handleChange}
       disabled={disabled}
       onBlur={handleBlur}
+      testId={testId}
     />
   );
 };

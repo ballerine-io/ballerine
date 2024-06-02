@@ -6,6 +6,7 @@ import { TProjectId } from '@/types';
 import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { DateTimeFilter } from '@/common/query-filters/date-time-filter';
 import { toPrismaOrderByGeneric } from '@/workflow/utils/toPrismaOrderBy';
+import { TIME_UNITS } from '@/data-analytics/consts';
 
 @Injectable()
 export class TransactionRepository {
@@ -49,14 +50,18 @@ export class TransactionRepository {
       args.orderBy = toPrismaOrderByGeneric(getTransactionsParameters.orderBy);
     }
 
-    return this.prisma.transactionRecord.findMany({
-      ...options,
-      where: {
-        projectId, //  Always restrict to project
-        ...this.buildFilters(getTransactionsParameters),
-      },
-      ...args,
-    });
+    return this.prisma.transactionRecord.findMany(
+      this.scopeService.scopeFindMany(
+        {
+          ...options,
+          where: {
+            ...this.buildFilters(getTransactionsParameters),
+          },
+          ...args,
+        },
+        [projectId],
+      ),
+    );
   }
 
   // eslint-disable-next-line ballerine/verify-repository-project-scoped
@@ -96,19 +101,19 @@ export class TransactionRepository {
       let subtractValue = 0;
 
       switch (getTransactionsParameters.timeUnit) {
-        case 'minutes':
+        case TIME_UNITS.minutes:
           subtractValue = getTransactionsParameters.timeValue * 60 * 1000;
           break;
-        case 'hours':
+        case TIME_UNITS.hours:
           subtractValue = getTransactionsParameters.timeValue * 60 * 60 * 1000;
           break;
-        case 'days':
+        case TIME_UNITS.days:
           subtractValue = getTransactionsParameters.timeValue * 24 * 60 * 60 * 1000;
           break;
-        case 'months':
+        case TIME_UNITS.months:
           now.setMonth(now.getMonth() - getTransactionsParameters.timeValue);
           break;
-        case 'years':
+        case TIME_UNITS.years:
           now.setFullYear(now.getFullYear() - getTransactionsParameters.timeValue);
           break;
       }

@@ -1,5 +1,40 @@
 # @ballerine/blocks
 
+## 0.2.3
+
+### Patch Changes
+
+- Added buildFlat to the blocks packages to reduce the need for .build().flat(1)
+
+## 0.2.2
+
+### Patch Changes
+
+- bumo
+- Updated dependencies
+  - @ballerine/common@0.9.1
+
+## 0.2.1
+
+### Patch Changes
+
+- ver bump
+- 9fe7a5c10: bump
+- Updated dependencies
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+- Updated dependencies [9fe7a5c10]
+  - @ballerine/common@0.9.0
+
+## 0.2.1-11210907c.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @ballerine/common@0.9.0-11210907c.0
+
 ## 0.2.0
 
 ### Minor Changes

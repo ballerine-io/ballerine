@@ -1,39 +1,39 @@
+import { defaultPrismaTransactionOptions, isRecordNotFoundError } from '@/prisma/prisma.util';
 import { UserData } from '@/user/user-data.decorator';
 import { UserInfo } from '@/user/user-info';
-import { defaultPrismaTransactionOptions, isRecordNotFoundError } from '@/prisma/prisma.util';
 import * as common from '@nestjs/common';
 import { NotFoundException, Query, Res } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { ApiOkResponse } from '@nestjs/swagger';
 import { WorkflowRuntimeData } from '@prisma/client';
 // import * as nestAccessControl from 'nest-access-control';
+import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
+import { CurrentProject } from '@/common/decorators/current-project.decorator';
+import { ProjectIds } from '@/common/decorators/project-ids.decorator';
+import { Public } from '@/common/decorators/public.decorator';
+import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
+import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
+import { env } from '@/env';
+import { PrismaService } from '@/prisma/prisma.service';
+import type { TProjectId, TProjectIds } from '@/types';
+import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
+import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
+import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
+import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
+import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
+import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
+import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
+import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
+import { plainToClass } from 'class-transformer';
+import type { Response } from 'express';
 import * as errors from '../errors';
 import { WorkflowDefinitionUpdateInput } from './dtos/workflow-definition-update-input';
 import { WorkflowEventInput } from './dtos/workflow-event-input';
+import { WorkflowRunDto } from './dtos/workflow-run';
 import { WorkflowDefinitionWhereUniqueInput } from './dtos/workflow-where-unique-input';
 import { RunnableWorkflowData } from './types';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
-import type { Response } from 'express';
-import { WorkflowRunDto } from './dtos/workflow-run';
-import { plainToClass } from 'class-transformer';
-import { GetWorkflowsRuntimeInputDto } from '@/workflow/dtos/get-workflows-runtime-input.dto';
-import { GetWorkflowsRuntimeOutputDto } from '@/workflow/dtos/get-workflows-runtime-output.dto';
-import { WorkflowIdWithEventInput } from '@/workflow/dtos/workflow-id-with-event-input';
-import { WorkflowHookQuery } from '@/workflow/dtos/workflow-hook-query';
-import { HookCallbackHandlerService } from '@/workflow/hook-callback-handler.service';
-import { UseCustomerAuthGuard } from '@/common/decorators/use-customer-auth-guard.decorator';
-import { ProjectIds } from '@/common/decorators/project-ids.decorator';
-import type { TProjectId, TProjectIds } from '@/types';
-import { VerifyUnifiedApiSignatureDecorator } from '@/common/decorators/verify-unified-api-signature.decorator';
-import { CurrentProject } from '@/common/decorators/current-project.decorator';
-import { WorkflowTokenService } from '@/auth/workflow-token/workflow-token.service';
-import { Public } from '@/common/decorators/public.decorator';
-import { WorkflowDefinitionService } from '@/workflow-defintion/workflow-definition.service';
-import { CreateCollectionFlowUrlDto } from '@/workflow/dtos/create-collection-flow-url';
-import { env } from '@/env';
-import { PrismaService } from '@/prisma/prisma.service';
-import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT } from '@ballerine/workflow-core';
 
 @swagger.ApiBearerAuth()
 @swagger.ApiTags('Workflows')
@@ -137,9 +137,57 @@ export class WorkflowControllerExternal {
 
   @common.Post('/run')
   @swagger.ApiOkResponse()
+  @swagger.ApiOperation({
+    summary: `The /run endpoint initiates and executes various workflows based on initial data and configurations. Supported workflows include KYB, KYC, KYB with UBOs, KYB with Associated Companies, Ongoing Sanctions, and Merchant Monitoring. To start a workflow, provide workflowId, context (with entity and documents), and config (with checks) in the request body. Customization is possible through the config object. The response includes workflowDefinitionId, workflowRuntimeId, ballerineEntityId, and entities. Workflow execution is asynchronous, with progress tracked via webhook notifications.`,
+  })
   @UseCustomerAuthGuard()
   @common.HttpCode(200)
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
+  @swagger.ApiBody({
+    type: WorkflowRunDto,
+    description: 'Workflow run data.',
+    examples: {
+      'Merchant Monitoring': {
+        value: {
+          workflowId: '0k3j3k3g3h3i3j3k3g3h3i3',
+          context: {
+            entity: {
+              type: 'business',
+              id: '432109',
+              data: {
+                companyWebsite: 'https://example.com',
+                lineOfBusiness: 'Retail',
+              },
+            },
+          },
+          config: {
+            checks: {
+              ecosystem: {
+                enabled: true,
+                parameters: {},
+              },
+              lineOfBusiness: {
+                enabled: true,
+                parameters: {},
+              },
+              socialMediaReport: {
+                enabled: true,
+                parameters: {},
+              },
+              transactionLaundering: {
+                enabled: true,
+                parameters: {},
+              },
+              websiteCompanyAnalysis: {
+                enabled: true,
+                parameters: {},
+              },
+            },
+          },
+        },
+      },
+    },
+  })
   async createWorkflowRuntimeData(
     @common.Body() body: WorkflowRunDto,
     @Res() res: Response,

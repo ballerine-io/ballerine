@@ -10,9 +10,6 @@ export class CustomerRepository {
   async create<T extends Prisma.CustomerCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>,
   ): Promise<Customer> {
-    // @ts-expect-error - prisma json not updated
-    await this.validateApiKey(args.data?.authenticationConfiguration?.authValue);
-
     return this.prisma.customer.create<T>(args);
   }
 

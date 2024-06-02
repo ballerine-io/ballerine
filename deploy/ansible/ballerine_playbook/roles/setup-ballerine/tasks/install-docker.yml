@@ -87,9 +87,3 @@
 
 - name: reset ssh connection to allow user changes to affect 'current login user'
   meta: reset_connection
-
-- name: Install docker and docker-compose python package
-  ansible.builtin.pip:
-    name:
-      - docker-compose
-      - docker==6.1.3

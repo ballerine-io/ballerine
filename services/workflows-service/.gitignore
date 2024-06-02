@@ -9,9 +9,4 @@ dist
 *.log
 scripts/seed_*.ts
 vite.config.ts.timestamp-*.mjs
-#prisma/data-migrations/dev/*
-#prisma/data-migrations/common/*
-#prisma/data-migrations/local/*
-#prisma/data-migrations/sb/*
-#prisma/data-migrations/prod/*
-#prisma/data-migrations/**/*
+prisma/data-migrations

@@ -6,9 +6,9 @@ import { AppLoggerService } from '@/common/app-logger/app-logger.service';
 import { GetTransactionsDto } from './dtos/get-transactions.dto';
 import { TProjectId } from '@/types';
 import { TransactionCreatedDto } from '@/transaction/dtos/transaction-created.dto';
-import { Prisma } from '@prisma/client';
 import { SentryService } from '@/sentry/sentry.service';
-import { PRISMA_UNIQUE_CONSTRAINT_ERROR } from '@/prisma/prisma.util';
+import { isPrismaClientKnownRequestError } from '@/prisma/prisma.util';
+import { getErrorMessageFromPrismaError } from '@/common/filters/HttpExceptions.filter';
 
 @Injectable()
 export class TransactionService {
@@ -32,30 +32,34 @@ export class TransactionService {
       }),
     );
 
-    const response: Array<TransactionCreatedDto | { error: Error; correlationId: string }> = [];
+    const response: Array<TransactionCreatedDto | { errorMessage: string; correlationId: string }> =
+      [];
 
     for (const transactionPayload of mappedTransactions) {
+      const correlationId = transactionPayload.transactionCorrelationId;
       try {
         const transaction = await this.repository.create({ data: transactionPayload });
 
         response.push({
           id: transaction.id,
-          correlationId: transaction.transactionCorrelationId,
+          correlationId,
         });
       } catch (error) {
-        let errorToLog: Error = new Error('Unknown error', { cause: error });
+        if (mappedTransactions.length === 1) {
+          throw error;
+        }
 
-        if (
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          error.code === PRISMA_UNIQUE_CONSTRAINT_ERROR
-        ) {
-          errorToLog = new Error('Transaction already exists', { cause: error });
+        let errorMessage = 'Unknown error';
+
+        if (isPrismaClientKnownRequestError(error)) {
+          errorMessage = getErrorMessageFromPrismaError(error);
         } else {
-          this.sentry.captureException(errorToLog);
+          this.sentry.captureException(error as Error);
+          this.logger.error(error as Error);
         }
 
         response.push({
-          error: errorToLog,
+          errorMessage,
           correlationId: transactionPayload.transactionCorrelationId,
         });
       }

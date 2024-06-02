@@ -1,23 +1,16 @@
-import { Alert, AlertDefinition, Business, User } from '@prisma/client';
+import { Alert, AlertDefinition, Business, EndUser, User } from '@prisma/client';
 
 export type TExecutionDetails = {
   checkpoint: {
     hash: string;
   };
+  subject: Array<Record<string, unknown>>;
   executionRow: unknown;
 };
 
 export type TDedupeStrategy = {
   mute: boolean;
   cooldownTimeframeInMinutes: number;
-};
-
-export type TAuthenticationConfiguration = {
-  apiType: 'API_KEY' | 'OAUTH2' | 'BASIC_AUTH';
-  authValue: string;
-  validUntil?: string;
-  isValid: boolean;
-  webhookSharedSecret: string;
 };
 
 export const BulkStatus = {
@@ -28,12 +21,19 @@ export const BulkStatus = {
 export type TBulkStatus = (typeof BulkStatus)[keyof typeof BulkStatus];
 
 export type TAlertResponse = Alert & {
-  alertDefinition: Pick<AlertDefinition, 'description' | 'label'>;
-  assignee: Pick<User, 'id' | 'firstName' | 'lastName'>;
+  alertDefinition: Pick<AlertDefinition, 'description' | 'correlationId'>;
+  assignee: Pick<User, 'id' | 'firstName' | 'lastName' | 'avatarUrl'>;
+};
+
+export type TAlertTransactionResponse = TAlertResponse & {
   counterparty: {
-    business: Pick<Business, 'id' | 'companyName'>;
-    endUser: Pick<User, 'id' | 'firstName' | 'lastName'>;
+    business: Pick<Business, 'id' | 'companyName' | 'correlationId'>;
+    endUser: Pick<EndUser, 'id' | 'firstName' | 'lastName' | 'correlationId'>;
   };
+};
+
+export type TAlertMerchantResponse = TAlertResponse & {
+  business: Pick<Business, 'id' | 'companyName'>;
 };
 
 export type TAlertUpdateResponse = Array<{

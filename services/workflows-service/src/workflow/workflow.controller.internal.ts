@@ -29,8 +29,8 @@ import { UseGuards, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 // import * as nestAccessControl from 'nest-access-control';
-import * as errors from '../errors';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import * as errors from '../errors';
 import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
 import { DocumentUpdateInput } from './dtos/document-update-update-input';
 import { EmitSystemBodyInput, EmitSystemParamInput } from './dtos/emit-system-event-input';
@@ -61,11 +61,8 @@ export class WorkflowControllerInternal {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: WorkflowDefinitionModel })
   @swagger.ApiForbiddenResponse({ type: errors.ForbiddenException })
-  async createWorkflowDefinition(
-    @common.Body() data: WorkflowDefinitionCreateDto,
-    @ProjectIds() projectId: TProjectId,
-  ) {
-    return await this.service.createWorkflowDefinition(data, projectId);
+  async createWorkflowDefinition(@common.Body() data: WorkflowDefinitionCreateDto) {
+    return await this.service.createWorkflowDefinition(data);
   }
 
   @common.Post('/clone')
@@ -289,6 +286,7 @@ export class WorkflowControllerInternal {
         {
           status: data?.decision,
           reason: data?.reason,
+          comment: data?.comment,
         },
         projectIds,
         currentProjectId,

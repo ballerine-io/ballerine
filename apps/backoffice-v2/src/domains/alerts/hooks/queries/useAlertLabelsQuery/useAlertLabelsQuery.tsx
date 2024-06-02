@@ -2,11 +2,11 @@ import { useIsAuthenticated } from '@/domains/auth/context/AuthProvider/hooks/us
 import { useQuery } from '@tanstack/react-query';
 import { alertsQueryKeys } from '@/domains/alerts/query-keys';
 
-export const useAlertLabelsQuery = () => {
+export const useAlertCorrelationIdsQuery = () => {
   const isAuthenticated = useIsAuthenticated();
 
   return useQuery({
-    ...alertsQueryKeys.alertLabels(),
+    ...alertsQueryKeys.alertCorrelationIds(),
     enabled: isAuthenticated,
     staleTime: 100_000,
   });

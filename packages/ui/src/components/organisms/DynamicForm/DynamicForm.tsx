@@ -1,3 +1,4 @@
+import Form, { IChangeEvent } from '@rjsf/core';
 import {
   RegistryFieldsType,
   RJSFSchema,
@@ -5,11 +6,10 @@ import {
   TemplatesType,
   UiSchema,
 } from '@rjsf/utils';
-import Form, { IChangeEvent } from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
+import { forwardRef, useCallback, useMemo } from 'react';
 import { fields as baseFields, fields } from './fields';
 import { layouts as baseLayouts } from './layouts';
-import { forwardRef, useCallback, useMemo } from 'react';
 import { Provider, WarningsContext } from './warnings.context';
 
 type InputName = string;
@@ -29,6 +29,7 @@ export interface DynamicFormProps<TFormData> {
   fields?: typeof fields;
   layouts?: Partial<TemplatesType>;
   liveValidate?: boolean;
+  testId?: string;
   transformErrors?: (errors: RJSFValidationError[], uiSchema: UiSchema) => RJSFValidationError[];
   onChange?: (formData: TFormData) => void;
   onSubmit: (formData: TFormData) => void;
@@ -46,6 +47,7 @@ export const DynamicForm = forwardRef(
       fields = baseFields,
       liveValidate = false,
       layouts,
+      testId,
       transformErrors,
       onChange,
       onSubmit,
@@ -98,9 +100,20 @@ export const DynamicForm = forwardRef(
           liveValidate={liveValidate}
           // @ts-ignore
           transformErrors={transformErrors}
-          ref={ref}
+          //@ts-ignore
+          ref={innerRef => {
+            if (testId) {
+              innerRef?.formElement?.current?.setAttribute('data-testid', testId);
+            }
+
+            if (ref) {
+              ref.current = innerRef;
+            }
+          }}
         />
       </Provider>
     );
   },
 );
+
+DynamicForm.displayName = 'DynamicForm';
