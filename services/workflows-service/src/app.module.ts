@@ -44,10 +44,9 @@ import { BusinessReportModule } from '@/business-report/business-report.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CronModule } from '@/workflow/cron/cron.module';
 import z from 'zod';
-import { Base64 } from 'js-base64';
 import { hashKey } from './customer/api-key/utils';
 
-export const validate = (config: Record<string, unknown>) => {
+export const validate = async (config: Record<string, unknown>) => {
   const zodEnvSchema = z
     .object(serverEnvSchema)
     .refine(data => data.HASHING_KEY_SECRET || data.HASHING_KEY_SECRET_BASE64, {
@@ -67,7 +66,7 @@ export const validate = (config: Record<string, unknown>) => {
   }
 
   // validate salt value
-  hashKey('check salt value');
+  await hashKey('check salt value');
 
   return result.data;
 };

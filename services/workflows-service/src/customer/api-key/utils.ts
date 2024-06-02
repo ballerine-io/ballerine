@@ -1,7 +1,7 @@
+import { env } from '@/env';
 import { faker } from '@faker-js/faker';
 import * as bcrypt from 'bcrypt';
 import { Base64 } from 'js-base64';
-import _ from 'lodash';
 
 const ONE_DAY_IN_MS = 1000 * 60 * 60 * 24;
 
@@ -11,17 +11,19 @@ const API_KEY_LEN = 50;
 
 export const KEY_MIN_LENGTH = 5;
 
+export const SALT = (
+  env.HASHING_KEY_SECRET_BASE64
+    ? Base64.decode(env.HASHING_KEY_SECRET_BASE64)
+    : env.HASHING_KEY_SECRET
+) as string;
+
 const DEFAULT_HASHIING_OPTIONS = {
   key: undefined,
   expiresInDays: undefined,
 };
 
 export const hashKey = async (key: string, salt?: string | number) => {
-  const _salt =
-    salt ||
-    ((process.env.HASHING_KEY_SECRET_BASE64
-      ? Base64.decode(process.env.HASHING_KEY_SECRET_BASE64)
-      : process.env.HASHING_KEY_SECRET) as string);
+  const _salt = salt ?? SALT;
 
   return new Promise<string>((resolve, reject) => {
     if (key && key.length < KEY_MIN_LENGTH) {
