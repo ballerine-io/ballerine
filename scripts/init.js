@@ -37,4 +37,6 @@ directories.forEach(directory => {
   ensureEnvFileIsPresent(path.join(rootDir, directory));
 });
 
+run('./generate-salt.sh', path.join(rootDir, 'scripts'));
+
 console.log('✅ All done!');

@@ -12,7 +12,6 @@ import {
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { PrismaService } from '@/prisma/prisma.service';
-import _ from 'lodash';
 
 const getNestedCounterpartyBusinessData = ({
   projectId,
@@ -383,6 +382,7 @@ export class TransactionFactory {
     for (const runBeforeCreate of this.runBeforeCreate) {
       await runBeforeCreate();
     }
+
     const promiseArray = new Array(this.number).fill(null).map(async () => {
       return this.prisma.transactionRecord.create({
         data: {

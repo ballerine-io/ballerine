@@ -1595,33 +1595,27 @@ describe('AlertService', () => {
 
       it.skip(`When ignore the originator counter party`, async () => {
         // Arrange
-        await generateAlertDefinitions(
-          prismaService,
-          {
-            project,
-            alertsDef: {
-              MMOC_CC: {
-                ...ALERT_DEFINITIONS.MMOC_CC,
-                inlineRule: {
-                  ...ALERT_DEFINITIONS.MMOC_CC.inlineRule,
-                  options: {
-                    ...ALERT_DEFINITIONS.MMOC_CC.inlineRule.options,
-                    excludedCounterparty: {
-                      // @ts-ignore -- change list
-                      counterpartyOriginatorIds: [counteryparty.correlationId],
-                      // @ts-ignore -- change list
-                      counterpartyBeneficiaryIds: [],
-                    },
+        await generateAlertDefinitions(prismaService, {
+          project,
+          alertsDef: {
+            MMOC_CC: {
+              ...ALERT_DEFINITIONS.MMOC_CC,
+              inlineRule: {
+                ...ALERT_DEFINITIONS.MMOC_CC.inlineRule,
+                options: {
+                  ...ALERT_DEFINITIONS.MMOC_CC.inlineRule.options,
+                  excludedCounterparty: {
+                    // @ts-ignore -- change list
+                    counterpartyOriginatorIds: [counteryparty.correlationId],
+                    // @ts-ignore -- change list
+                    counterpartyBeneficiaryIds: [],
                   },
                 },
-                correlationId: faker.datatype.uuid() + 123123,
               },
+              correlationId: faker.datatype.uuid() + 123123,
             },
           },
-          {
-            crossEnvKeyPrefix: 'TEST' + faker.datatype.uuid(),
-          },
-        );
+        });
 
         // Act
         await alertService.checkAllAlerts();

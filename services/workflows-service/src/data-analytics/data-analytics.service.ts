@@ -98,6 +98,7 @@ export class DataAnalyticsService {
       conditions: [],
       join: [],
     };
+
     if (excludedCounterparty) {
       if (excludedCounterparty.counterpartyBeneficiaryIds.length) {
         excludedCounterpartyClause.join.push(COUNTERPARTY_BENEFICIARY_JOIN_CLAUSE);
