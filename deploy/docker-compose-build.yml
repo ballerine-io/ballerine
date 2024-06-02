@@ -61,6 +61,7 @@ services:
       UNIFIED_API_SHARED_SECRET: ''
       ENVIRONMENT_NAME: 'development'
       HASHING_KEY_SECRET: ${HASHING_KEY_SECRET}
+      HASHING_KEY_SECRET_BASE64: ${HASHING_KEY_SECRET_BASE64}
     depends_on:
       ballerine-postgres:
         condition: service_healthy
