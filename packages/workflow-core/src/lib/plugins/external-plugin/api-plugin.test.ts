@@ -3,18 +3,19 @@ import { WorkflowRunner } from '../../workflow-runner';
 import { WorkflowRunnerArgs } from '../../types';
 import { ISerializableHttpPluginParams } from './types';
 
-function createWorkflowRunner(
+const createWorkflowRunner = (
   definition: WorkflowRunnerArgs['definition'],
   apiPluginsSchemas: ISerializableHttpPluginParams[],
-) {
+) => {
   return new WorkflowRunner({
+    runtimeId: '',
     definition,
     extensions: {
       apiPlugins: apiPluginsSchemas,
     },
     workflowContext: { machineContext: { entity: { id: 'some_id' } } },
   });
-}
+};
 
 describe('workflow-runner', () => {
   describe('api plugins', () => {
@@ -46,6 +47,7 @@ describe('workflow-runner', () => {
     const apiPluginsSchemas = [
       {
         name: 'ballerineEnrichment',
+        displayName: 'Ballerine Enrichment',
         url: 'https://simple-kyb-demo.s3.eu-central-1.amazonaws.com/mock-data/business_test_us.json',
         method: 'GET' as const,
         stateNames: ['checkBusinessScore'],
@@ -73,7 +75,7 @@ describe('workflow-runner', () => {
         expect(workflow.state).toEqual('checkBusinessScoreSuccess');
         expect(
           (
-            workflow.#__context as {
+            workflow.context as {
               pluginsOutput: Record<string, unknown>;
             }
           ).pluginsOutput,
@@ -107,7 +109,7 @@ describe('workflow-runner', () => {
         expect(workflow.state).toEqual('testManually');
         expect(
           (
-            workflow.#__context as {
+            workflow.context as {
               pluginsOutput: Record<string, unknown>;
             }
           ).pluginsOutput,
@@ -145,7 +147,7 @@ describe('workflow-runner', () => {
           expect(workflow.state).toEqual('testManually');
           expect(
             (
-              workflow.#__context as {
+              workflow.context as {
                 pluginsOutput: Record<string, unknown>;
               }
             ).pluginsOutput,
@@ -181,7 +183,7 @@ describe('workflow-runner', () => {
           expect(
             Object.keys(
               (
-                workflow.#__context as {
+                workflow.context as {
                   pluginsOutput: {
                     ballerineEnrichment: Record<string, unknown>;
                   };

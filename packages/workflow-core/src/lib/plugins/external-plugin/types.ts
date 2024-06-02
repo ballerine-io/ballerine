@@ -2,7 +2,6 @@ import { TJsonSchema, Transformers, Validator } from '../../utils';
 import { THelperFormatingLogic } from '../../utils/context-transformers/types';
 import { ActionablePlugin } from '../types';
 import { ChildWorkflowPluginParams } from '../common-plugin/types';
-import { WorkflowEvents } from '../../types';
 import { AnyRecord } from '@ballerine/common';
 
 export interface ValidatableTransformer {
@@ -28,12 +27,12 @@ export interface IApiPluginParams {
 
 export interface IDispatchEventPluginParams {
   name: string;
+  eventName: string;
   payload?: AnyRecord;
   stateNames: string[];
   displayName?: string;
   errorAction?: string;
   successAction?: string;
-  eventName: keyof typeof WorkflowEvents;
   transformers?: SerializableValidatableTransformer['transform'];
 }
 

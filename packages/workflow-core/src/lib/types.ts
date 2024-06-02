@@ -19,11 +19,8 @@ import type { DispatchEventPlugin } from './plugins/external-plugin/dispatch-eve
 export type ObjectValues<TObject extends Record<any, any>> = TObject[keyof TObject];
 
 export interface Workflow {
-  subscribe: (
-    eventName: keyof typeof WorkflowEvents,
-    callback: (event: WorkflowEvent) => Promise<void>,
-  ) => void;
-  sendEvent: (event: Omit<WorkflowEvent, 'state'>) => Promise<void>;
+  subscribe: (eventName: string, callback: (event: WorkflowEvent) => Promise<void>) => void;
+  sendEvent: (event: WorkflowEventWithoutState) => Promise<void>;
   getSnapshot: () => Record<PropertyKey, any>;
   invokePlugin: (pluginName: string) => Promise<void>;
   overrideContext: (context: any) => any;
@@ -33,7 +30,7 @@ export interface WorkflowEvent {
   type: string;
   state: string;
   error?: unknown;
-  payload?: Record<PropertyKey, any>;
+  payload?: Record<PropertyKey, unknown>;
 }
 
 export interface WorkflowExtensions {
@@ -115,7 +112,6 @@ export type SerializableTransformer = {
 };
 
 export const WorkflowEvents = {
-  ENTITIES_UPDATE: 'ENTITIES_UPDATE',
   STATE_UPDATE: 'STATE_UPDATE',
   STATUS_UPDATE: 'STATUS_UPDATE',
   EVALUATION_ERROR: 'EVALUATION_ERROR',

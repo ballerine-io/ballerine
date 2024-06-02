@@ -1,7 +1,6 @@
 import { IDispatchEventPluginParams } from './types';
-import { WorkflowEvents } from '../../types';
-import { Transformer, Transformers } from '@/lib/utils';
-import { WorkflowRunner } from '@/lib/workflow-runner';
+import { WorkflowRunner } from '../../../lib/workflow-runner';
+import { Transformer, Transformers } from '../../../lib/utils';
 import { AnyRecord, isErrorWithMessage } from '@ballerine/common';
 
 export type IDispatchEventPluginParamsWithTransfomers = Omit<
@@ -14,13 +13,13 @@ export type IDispatchEventPluginParamsWithTransfomers = Omit<
 export class DispatchEventPlugin {
   public static pluginKind = 'dispatch-event';
   name: string;
+  eventName: string;
   payload?: AnyRecord;
   stateNames: string[];
   errorAction?: string;
   successAction?: string;
   transformers?: Transformers;
   displayName: string | undefined;
-  eventName: keyof typeof WorkflowEvents;
 
   constructor(pluginParams: IDispatchEventPluginParamsWithTransfomers) {
     this.name = pluginParams.name;

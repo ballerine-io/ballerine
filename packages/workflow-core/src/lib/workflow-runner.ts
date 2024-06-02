@@ -66,9 +66,7 @@ export interface ChildCallabackable {
 }
 
 export class WorkflowRunner {
-  #__subscriptions: Partial<
-    Record<keyof typeof WorkflowEvents, Array<(event: WorkflowEvent) => Promise<void>>>
-  >;
+  #__subscriptions: Partial<Record<string, Array<(event: WorkflowEvent) => Promise<void>>>>;
   #__workflow: StateMachine<any, any, any>;
   #__currentState: string | undefined | symbol | number | any;
   #__context: any;
@@ -150,7 +148,7 @@ export class WorkflowRunner {
     this.#__config = config;
   }
 
-  async notify(eventName: keyof typeof WorkflowEvents, event: WorkflowEvent) {
+  async notify(eventName: string, event: WorkflowEvent) {
     await Promise.all(
       this.#__subscriptions?.[eventName]?.map(async callback => {
         await callback(event);
@@ -756,10 +754,7 @@ export class WorkflowRunner {
     }
   }
 
-  subscribe(
-    eventName: keyof typeof WorkflowEvents,
-    callback: (event: WorkflowEvent) => Promise<void>,
-  ) {
+  subscribe(eventName: string, callback: (event: WorkflowEvent) => Promise<void>) {
     if (!this.#__subscriptions[eventName]) {
       this.#__subscriptions[eventName] = [];
     }

@@ -1,26 +1,26 @@
-import { BusinessPosition, EndUser, Prisma } from '@prisma/client';
-import { ARRAY_MERGE_OPTION, BUILT_IN_EVENT, WorkflowEvent } from '@ballerine/workflow-core';
-import { EndUserService } from '@/end-user/end-user.service';
+import { BusinessPosition } from '@prisma/client';
+import type { EndUser, Prisma } from '@prisma/client';
+import type { EndUserService } from '@/end-user/end-user.service';
+import {
+  ARRAY_MERGE_OPTION,
+  BUILT_IN_EVENT,
+  WorkflowEventWithoutState,
+} from '@ballerine/workflow-core';
 
 export const entitiesUpdate = async ({
-  payload,
+  payload: { ubos, directors },
   projectId,
   businessId,
   endUserService,
   sendEvent,
 }: {
-  payload: any;
+  payload: { ubos: Array<Partial<EndUser>>; directors: Array<Partial<EndUser>> };
   projectId: string;
   businessId: string | null;
   endUserService: EndUserService;
-  sendEvent: (event: Omit<WorkflowEvent, 'state'>) => Promise<void>;
+  sendEvent: (event: WorkflowEventWithoutState) => Promise<void>;
 }) => {
-  if (!payload) {
-    return;
-  }
-
-  const promises = [];
-  const { ubos, directors } = payload;
+  const promises: Array<Promise<void>> = [];
 
   const updatedUbos: Array<{ ballerineEntityId: string }> = [];
   const updatedDirectors: Array<{ ballerineEntityId: string }> = [];
@@ -28,15 +28,13 @@ export const entitiesUpdate = async ({
   if (ubos && Array.isArray(ubos)) {
     promises.push(
       ...ubos.map(async ubo => {
-        const data = ubo as Partial<EndUser>;
-
         const { id: endUserId } = await endUserService.create({
           data: {
-            email: data.email,
-            firstName: data.firstName,
-            lastName: data.lastName,
-            nationalId: data.nationalId,
-            additionalInfo: data.additionalInfo,
+            email: ubo.email,
+            firstName: ubo.firstName,
+            lastName: ubo.lastName,
+            nationalId: ubo.nationalId,
+            additionalInfo: ubo.additionalInfo,
             project: { connect: { id: projectId } },
             endUsersOnBusinesses: {
               create: {
@@ -60,15 +58,13 @@ export const entitiesUpdate = async ({
   if (directors && Array.isArray(directors)) {
     promises.push(
       ...directors.map(async director => {
-        const data = director as Partial<EndUser>;
-
         const { id: endUserId } = await endUserService.create({
           data: {
-            email: data.email,
-            firstName: data.firstName,
-            lastName: data.lastName,
-            nationalId: data.nationalId,
-            additionalInfo: data.additionalInfo,
+            email: director.email,
+            firstName: director.firstName,
+            lastName: director.lastName,
+            nationalId: director.nationalId,
+            additionalInfo: director.additionalInfo,
             project: { connect: { id: projectId } },
             endUsersOnBusinesses: {
               create: {

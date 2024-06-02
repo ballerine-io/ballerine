@@ -7,7 +7,7 @@ import type {
   SerializableValidatableTransformer,
   SerializableWebhookPluginParams,
 } from '../../plugins/external-plugin/types';
-import type { WorkflowEvents, WorkflowExtensions } from '../../types';
+import { WorkflowEvents, WorkflowExtensions } from '../../types';
 import { ruleValidator } from './rule-validator';
 import { isErrorWithMessage } from '@ballerine/common';
 import type { DispatchEventPlugin } from '@/lib/plugins';

@@ -60,7 +60,6 @@ import {
   SerializableTransformer,
   THelperFormatingLogic,
   Transformer,
-  WorkflowEvents,
 } from '@ballerine/workflow-core';
 import {
   BadRequestException,
@@ -70,6 +69,7 @@ import {
 } from '@nestjs/common';
 import {
   ApprovalState,
+  EndUser,
   Prisma,
   PrismaClient,
   UiDefinitionContext,
@@ -1934,15 +1934,30 @@ export class WorkflowService {
         },
       });
 
-      service.subscribe(WorkflowEvents.ENTITIES_UPDATE, ({ payload }) =>
-        entitiesUpdate({
+      service.subscribe('ENTITIES_UPDATE', async ({ payload }) => {
+        if (
+          !payload ||
+          !payload.ubos ||
+          !payload.directors ||
+          !Array.isArray(payload.ubos) ||
+          !Array.isArray(payload.directors)
+        ) {
+          return;
+        }
+
+        const typedPayload = payload as {
+          ubos: Array<Partial<EndUser>>;
+          directors: Array<Partial<EndUser>>;
+        };
+
+        await entitiesUpdate({
           endUserService: this.endUserService,
           projectId: currentProjectId,
           businessId: workflowRuntimeData.businessId,
           sendEvent: service.sendEvent,
-          payload,
-        }),
-      );
+          payload: typedPayload,
+        });
+      });
 
       if (!service.getSnapshot().nextEvents.includes(type)) {
         throw new BadRequestException(
@@ -1957,9 +1972,10 @@ export class WorkflowService {
 
       const snapshot = service.getSnapshot();
       const currentState = snapshot.value;
-      const context = snapshot.machine.context;
+      const context = snapshot.machine?.context;
       // TODO: Refactor to use snapshot.done instead
-      const isFinal = snapshot.machine.states[currentState].type === 'final';
+      // @ts-ignore
+      const isFinal = snapshot.machine?.states[currentState].type === 'final';
       const entityType = aliasIndividualAsEndUser(context?.entity?.type);
       const entityId = workflowRuntimeData[`${entityType}Id`];
 
@@ -1973,6 +1989,7 @@ export class WorkflowService {
         workflowRuntimeData.id,
         {
           context,
+          // @ts-ignore
           state: currentState,
           tags: Array.from(snapshot.tags) as unknown as WorkflowDefinitionUpdateInput['tags'],
           status: isFinal ? 'completed' : workflowRuntimeData.status,
@@ -1989,6 +2006,7 @@ export class WorkflowService {
           projectIds,
           currentProjectId,
           transaction,
+          // @ts-ignore
           currentState,
         );
       }
