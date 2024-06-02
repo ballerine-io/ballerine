@@ -65,6 +65,7 @@
     "@sentry/integrations": "^7.52.1",
     "@sentry/node": "^7.52.1",
     "@sinclair/typebox": "^0.31.7",
+    "@supabase/supabase-js": "^2.43.1",
     "@t3-oss/env-core": "^0.6.1",
     "ajv": "^8.12.0",
     "ajv-formats": "^2.1.1",
