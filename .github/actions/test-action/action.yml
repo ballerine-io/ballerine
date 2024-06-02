@@ -38,6 +38,7 @@ runs:
       shell: bash
       run: pnpm test -- --verbose false
       env:
+        ENVIRONMENT_NAME: test
         JEST_HTML_REPORTER_PAGE_TITLE: ${{ github.ref_name }}
 
     - name: Store test result
