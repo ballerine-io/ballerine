@@ -1,19 +1,10 @@
 import * as common from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { ErrorObject } from 'ajv';
+import startCase from 'lodash/startCase';
+import lowerCase from 'lodash/lowerCase';
 import { ZodError } from 'zod';
 import { ValidationError as ClassValidatorValidationError } from 'class-validator';
-import { ValueError } from '@sinclair/typebox/errors';
-import { camelCase } from 'lodash';
-
-const normalizeValidationPath = (path: string) =>
-  path
-    // Remove first slash and replace the rest with '.'
-    .replace('/', '')
-    .replace(/\//g, '.')
-    .split('.')
-    .map(path => camelCase(path))
-    .join('.');
 
 export class ForbiddenException extends common.ForbiddenException {
   @ApiProperty()
@@ -73,14 +64,10 @@ export class ValidationError extends common.BadRequestException {
   }
 
   static fromAjvError(error: Array<ErrorObject<string, Record<string, any>, unknown>>) {
-    const errors = error.map(({ instancePath, message }) => {
-      const normalizedPath = normalizeValidationPath(instancePath);
-
-      return {
-        message: `${normalizedPath} - ${message}.`,
-        path: normalizedPath,
-      };
-    });
+    const errors = error.map(({ instancePath, message }) => ({
+      message: `${startCase(lowerCase(instancePath)).replace('/', '.')} ${message}.`,
+      path: instancePath,
+    }));
 
     return new ValidationError(errors);
   }
@@ -103,19 +90,6 @@ export class ValidationError extends common.BadRequestException {
         path: property,
       })),
     );
-  }
-
-  static fromTypeboxError(error: ValueError[]) {
-    const errors = error.map(({ path, message }) => {
-      const normalizedPath = normalizeValidationPath(path);
-
-      return {
-        message: `${normalizedPath} - ${message}.`,
-        path: normalizedPath,
-      };
-    });
-
-    return new ValidationError(errors);
   }
 }
 

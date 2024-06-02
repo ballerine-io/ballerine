@@ -29,7 +29,9 @@ import { UseGuards, UsePipes } from '@nestjs/common';
 import * as swagger from '@nestjs/swagger';
 import { WorkflowDefinition, WorkflowRuntimeData } from '@prisma/client';
 // import * as nestAccessControl from 'nest-access-control';
+import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
 import { isRecordNotFoundError } from '@/prisma/prisma.util';
+import { FilterQuery } from '@/workflow/types';
 import * as errors from '../errors';
 import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
 import { DocumentUpdateInput } from './dtos/document-update-update-input';
@@ -42,9 +44,7 @@ import {
 } from './dtos/workflow-where-unique-input';
 import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
-import { WorkflowAssigneeGuard } from '@/auth/assignee-asigned-guard.service';
-import { FilterQuery } from '@/workflow/types';
-import { Validate } from 'nestjs-typebox';
+import { Validate } from 'ballerine-nestjs-typebox';
 import { type Static, Type } from '@sinclair/typebox';
 
 @swagger.ApiExcludeController()
