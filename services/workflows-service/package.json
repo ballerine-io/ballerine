@@ -5,7 +5,7 @@
   "description": "workflow-service",
   "scripts": {
     "spellcheck": "cspell \"*\"",
-    "setup": "npm run docker:db && npm run db:reset && npm run db:migrate-dev && npm run seed",
+    "setup": "npm run docker:db:down && npm run docker:db && npm run db:reset && npm run seed",
     "format": "prettier --write . '!**/*.{md,hbs}'",
     "format:check": "prettier --check . '!**/*.{md,hbs}'",
     "lint": "eslint . --fix",
@@ -31,6 +31,7 @@
     "db:init": "npm run db:migrate-dev -- --name 'initial version' && npm run db:migrate-up seed",
     "prisma:generate": "prisma generate",
     "docker:db": "docker compose -f docker-compose.db.yml up -d --wait",
+    "docker:db:down": "docker compose -f docker-compose.db.yml down --volumes",
     "docker:build": "docker build .",
     "compose:up": "docker compose up -d",
     "compose:down": "docker compose down --volumes",
