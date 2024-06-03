@@ -69,6 +69,7 @@ import {
 } from '@nestjs/common';
 import {
   ApprovalState,
+  EndUser,
   Prisma,
   PrismaClient,
   UiDefinitionContext,
@@ -94,6 +95,7 @@ import {
 import { addPropertiesSchemaToDocument } from './utils/add-properties-schema-to-document';
 import { WorkflowEventEmitterService } from './workflow-event-emitter.service';
 import { WorkflowRuntimeDataRepository } from './workflow-runtime-data.repository';
+import { entitiesUpdate } from './utils/entities-update';
 
 type TEntityId = string;
 
@@ -1812,6 +1814,8 @@ export class WorkflowService {
   ): Promise<TEntityId | null> {
     if (entity.ballerineEntityId) {
       return entity.ballerineEntityId as TEntityId;
+    } else if ('data' in entity && isObject(entity.data) && entity.data.ballerineEntityId) {
+      return entity.data.ballerineEntityId as TEntityId;
     } else if (!entity.id) {
       return null;
     } else {
@@ -1874,12 +1878,14 @@ export class WorkflowService {
 
     return await beginTransactionIfNotExist(async transaction => {
       this.logger.log('Workflow event received', { id, type });
+
       const workflowRuntimeData = await this.workflowRuntimeDataRepository.findByIdAndLock(
         id,
         {},
         projectIds,
         transaction,
       );
+
       const workflowDefinition = await this.workflowDefinitionRepository.findById(
         workflowRuntimeData.workflowDefinitionId,
         {},
@@ -1928,6 +1934,31 @@ export class WorkflowService {
         },
       });
 
+      service.subscribe('ENTITIES_UPDATE', async ({ payload }) => {
+        if (
+          !payload ||
+          !payload.ubos ||
+          !payload.directors ||
+          !Array.isArray(payload.ubos) ||
+          !Array.isArray(payload.directors)
+        ) {
+          return;
+        }
+
+        const typedPayload = payload as {
+          ubos: Array<Partial<EndUser>>;
+          directors: Array<Partial<EndUser>>;
+        };
+
+        await entitiesUpdate({
+          endUserService: this.endUserService,
+          projectId: currentProjectId,
+          businessId: workflowRuntimeData.businessId,
+          sendEvent: service.sendEvent,
+          payload: typedPayload,
+        });
+      });
+
       if (!service.getSnapshot().nextEvents.includes(type)) {
         throw new BadRequestException(
           `Event ${type} does not exist for workflow ${workflowDefinition.id}'s state: ${workflowRuntimeData.state}`,
@@ -1941,9 +1972,10 @@ export class WorkflowService {
 
       const snapshot = service.getSnapshot();
       const currentState = snapshot.value;
-      const context = snapshot.machine.context;
+      const context = snapshot.machine?.context;
       // TODO: Refactor to use snapshot.done instead
-      const isFinal = snapshot.machine.states[currentState].type === 'final';
+      // @ts-ignore
+      const isFinal = snapshot.machine?.states[currentState].type === 'final';
       const entityType = aliasIndividualAsEndUser(context?.entity?.type);
       const entityId = workflowRuntimeData[`${entityType}Id`];
 
@@ -1957,6 +1989,7 @@ export class WorkflowService {
         workflowRuntimeData.id,
         {
           context,
+          // @ts-ignore
           state: currentState,
           tags: Array.from(snapshot.tags) as unknown as WorkflowDefinitionUpdateInput['tags'],
           status: isFinal ? 'completed' : workflowRuntimeData.status,
@@ -1973,6 +2006,7 @@ export class WorkflowService {
           projectIds,
           currentProjectId,
           transaction,
+          // @ts-ignore
           currentState,
         );
       }

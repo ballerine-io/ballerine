@@ -1,4 +1,4 @@
-import type { Error, HttpError, WorkflowEvent, WorkflowOptions } from '@ballerine/workflow-core';
+import { Error, HttpError, WorkflowEvent, WorkflowOptions } from '@ballerine/workflow-core';
 import type { BaseActionObject } from 'xstate';
 import type { Event, Persistence } from './enums';
 import type { WorkflowBrowserSDK } from './workflow-browser-sdk';
@@ -85,42 +85,43 @@ export type TWorkflowStateActionStatusEvent = TWorkflowEvent & {
   error?: InstanceType<typeof HttpError> | unknown;
 };
 
-export type TSubscriber = {
-  event: BrowserWorkflowEvent;
-  cb(
-    event:
-      | {
-          type: BrowserWorkflowEvent;
-          payload?: AnyRecord;
-          state: string;
-          error?: InstanceType<typeof HttpError> | unknown;
-        }
-      | {
-          type: BrowserWorkflowEvent;
-          state: string;
-        }
-      | {
-          type: typeof Error.ERROR;
-          state: string;
-          error: InstanceType<typeof HttpError> | unknown;
-        }
-      | {
-          type: typeof Error.HTTP_ERROR;
-          state: string;
-          error: InstanceType<typeof HttpError>;
-        }
-      | {
-          type: BrowserWorkflowEvent;
-          payload?: AnyRecord;
-          state: string;
-        }
-      | {
-          payload?: AnyRecord;
-          state: string;
-        },
-  ): void;
-};
-export type TSubscribers = TSubscriber[];
+export type TSubscriptions = Record<
+  BrowserWorkflowEvent,
+  Array<
+    (
+      event:
+        | {
+            type: BrowserWorkflowEvent;
+            payload?: AnyRecord;
+            state: string;
+            error?: InstanceType<typeof HttpError> | unknown;
+          }
+        | {
+            type: BrowserWorkflowEvent;
+            state: string;
+          }
+        | {
+            type: typeof Error.ERROR;
+            state: string;
+            error: InstanceType<typeof HttpError> | unknown;
+          }
+        | {
+            type: typeof Error.HTTP_ERROR;
+            state: string;
+            error: InstanceType<typeof HttpError>;
+          }
+        | {
+            type: BrowserWorkflowEvent;
+            payload?: AnyRecord;
+            state: string;
+          }
+        | {
+            payload?: AnyRecord;
+            state: string;
+          },
+    ) => Promise<void>
+  >
+>;
 
 export interface IUserStepEvent {
   type: string;

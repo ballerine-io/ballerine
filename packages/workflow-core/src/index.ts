@@ -23,6 +23,7 @@ export {
   createWorkflow,
   Error,
   Errors,
+  WorkflowEvents,
   HttpError,
   JmespathTransformer,
   JsonSchemaValidator,
