@@ -144,7 +144,7 @@ export class WorkflowControllerInternal {
     request: [
       {
         type: 'param',
-        name: 'some',
+        name: 'id',
         schema: WorkflowDefinitionWhereUniqueInputSchema,
       },
       {
