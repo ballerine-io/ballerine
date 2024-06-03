@@ -72,20 +72,20 @@
     "@branchlint/cli": "^1.0.5",
     "@branchlint/default-config": "^1.0.3",
     "@changesets/changelog-git": "^0.1.14",
-    "@changesets/cli": "^2.26.1",
-    "@commitlint/cli": "^17.5.0",
-    "@commitlint/config-conventional": "^17.4.4",
+    "@changesets/cli": "^2.27.5",
+    "@commitlint/cli": "^17.8.1",
+    "@commitlint/config-conventional": "^17.8.1",
     "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
-    "editorconfig": "^1.0.2",
+    "editorconfig": "^1.0.4",
     "husky": "^8.0.3",
     "lint-staged": "^11.2.6",
     "nx": "15.0.2",
-    "prettier": "^2.8.7"
+    "prettier": "^2.8.8"
   },
   "dependencies": {
     "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
-    "wait-on": "^7.0.1"
+    "wait-on": "^7.2.0"
   }
 }

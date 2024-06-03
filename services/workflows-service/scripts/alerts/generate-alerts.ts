@@ -736,7 +736,7 @@ export const generateAlertDefinitions = async (
   }: {
     createdBy?: string;
     project: Project;
-    alertsDef:
+    alertsDef?:
       | Partial<typeof ALERT_DEFINITIONS>
       | Partial<typeof MERCHANT_MONITORING_ALERT_DEFINITIONS>;
   },
@@ -747,7 +747,7 @@ export const generateAlertDefinitions = async (
   } = {},
 ) =>
   Promise.all(
-    Object.values(alertsDef)
+    Object.values(alertsDef ?? {})
       .map(alert => ({
         correlationId: alert.inlineRule.id,
         ...alert,

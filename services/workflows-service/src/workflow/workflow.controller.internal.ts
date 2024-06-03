@@ -37,7 +37,6 @@ import { DocumentUpdateParamsInput } from './dtos/document-update-params-input';
 import { DocumentUpdateInput } from './dtos/document-update-update-input';
 import { EmitSystemBodyInput, EmitSystemParamInput } from './dtos/emit-system-event-input';
 import { WorkflowDefinitionCreateDto } from './dtos/workflow-definition-create';
-import { WorkflowEventInputSchema } from './dtos/workflow-event-input';
 import {
   WorkflowDefinitionWhereUniqueInput,
   WorkflowDefinitionWhereUniqueInputSchema,
@@ -46,8 +45,8 @@ import { WorkflowDefinitionModel } from './workflow-definition.model';
 import { WorkflowService } from './workflow.service';
 import { Validate } from 'ballerine-nestjs-typebox';
 import { type Static, Type } from '@sinclair/typebox';
+import { WorkflowEventInputSchema } from '@/workflow/dtos/workflow-event-input';
 
-@swagger.ApiExcludeController()
 @common.Controller('internal/workflows')
 export class WorkflowControllerInternal {
   constructor(
@@ -145,7 +144,7 @@ export class WorkflowControllerInternal {
     request: [
       {
         type: 'param',
-        name: 'id',
+        name: 'some',
         schema: WorkflowDefinitionWhereUniqueInputSchema,
       },
       {
@@ -160,7 +159,7 @@ export class WorkflowControllerInternal {
     @common.Body() data: Static<typeof WorkflowEventInputSchema>,
     @ProjectIds() projectIds: TProjectIds,
     @CurrentProject() currentProjectId: TProjectId,
-  ): Promise<void> {
+  ) {
     await this.service.event(
       {
         ...data,
