@@ -68,6 +68,7 @@ export const errorCodesStatusMapping: ErrorCodesStatusMapping = {
 export const getErrorMessageFromPrismaError = (error: Prisma.PrismaClientKnownRequestError) => {
   if (error.code === PRISMA_UNIQUE_CONSTRAINT_ERROR) {
     const fields = (error.meta as { target: string[] }).target;
+
     return `Another record with the requested (${fields.join(', ')}) already exists`;
   } else {
     return `[${error.code}]: ` + exceptionShortMessage(error.message);
