@@ -41,7 +41,7 @@ export class DispatchEventPlugin {
           ...record,
           ...this.payload,
         }),
-        state: this.stateNames[0]!,
+        state: this.stateNames[0] ?? '',
       },
     };
   }

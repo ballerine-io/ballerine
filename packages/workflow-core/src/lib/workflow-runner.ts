@@ -736,6 +736,7 @@ export class WorkflowRunner {
     try {
       logger.log('Dispatching event', {
         eventName,
+        event,
       });
 
       await this.notify(eventName, event);
@@ -746,7 +747,7 @@ export class WorkflowRunner {
         await this.sendEvent({ type: dispatchEventPlugin.successAction });
       }
     } catch (error) {
-      logger.error('Failed dispatching event', { eventName, error });
+      logger.error('Failed dispatching event', { eventName, event, error });
 
       if (dispatchEventPlugin.errorAction) {
         await this.sendEvent({ type: dispatchEventPlugin.errorAction });
