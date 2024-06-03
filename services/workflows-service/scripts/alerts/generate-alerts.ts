@@ -732,7 +732,7 @@ export const generateAlertDefinitions = async (
   {
     project,
     createdBy = 'SYSTEM',
-    alertsDef,
+    alertsDef = ALERT_DEFINITIONS,
   }: {
     createdBy?: string;
     project: Project;
@@ -747,7 +747,7 @@ export const generateAlertDefinitions = async (
   } = {},
 ) =>
   Promise.all(
-    Object.values(alertsDef ?? {})
+    Object.values(alertsDef)
       .map(alert => ({
         correlationId: alert.inlineRule.id,
         ...alert,
